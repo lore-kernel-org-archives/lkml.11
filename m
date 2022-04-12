@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A6BC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1DBC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384112AbiDLIjM (ORCPT
+        id S1384135AbiDLIjT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
+        Tue, 12 Apr 2022 04:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357104AbiDLHjr (ORCPT
+        with ESMTP id S1357144AbiDLHjt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:47 -0400
+        Tue, 12 Apr 2022 03:39:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989DEDEA4;
-        Tue, 12 Apr 2022 00:12:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EBC12747;
+        Tue, 12 Apr 2022 00:12:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34EA56153F;
-        Tue, 12 Apr 2022 07:12:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415B6C385A6;
-        Tue, 12 Apr 2022 07:12:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E30A6176E;
+        Tue, 12 Apr 2022 07:12:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AEC0C385A1;
+        Tue, 12 Apr 2022 07:12:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747526;
-        bh=LiN4xAlbtOMQmCAMYa+oEGTr4Vv1YS5mZ2fgoK15uO0=;
+        s=korg; t=1649747578;
+        bh=L4AE/btcFbCZktUVXKI6UoJsesrXhv9p0ciRMSDqhhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FD04ZgobCRENG1h0YSZ8DxEEIh42Ch/PugylS6e0nx0q5OQoq1SHDWgVZCGI+sZIO
-         4gvf4GbcoZz8T2bi1qS/GbHY150u5zURoSZKYY2ktW9LK8f4+eMiHZN+h2qT1PIjdx
-         l8+dQT2oss2r8eTkZk1Y/5+D0kjIDHL/j8FIpGQg=
+        b=RJZpVU8IpKrl4DqJEVDvyP9zpUcgGr8YxHtRVpIlxeqKHMO1rNai3IhiERU4Sc1nM
+         ftkVg8b/8KXN9EyjZ2hjMGHE3M0TYLSmGCAvM786wm8rQ4RXFwj4vCRdk1gvjc5qG/
+         k25FvGdehVRuNcfexxZp8yYFubHYQ9QoZ9FNt4kY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 070/343] libbpf: Fix accessing the first syscall argument on arm64
-Date:   Tue, 12 Apr 2022 08:28:08 +0200
-Message-Id: <20220412062953.123150338@linuxfoundation.org>
+Subject: [PATCH 5.17 130/343] powerpc/secvar: fix refcount leak in format_show()
+Date:   Tue, 12 Apr 2022 08:29:08 +0200
+Message-Id: <20220412062955.136639329@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,51 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Leoshkevich <iii@linux.ibm.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit fbca4a2f649730b67488a8b36140ce4d2cf13c63 ]
+[ Upstream commit d601fd24e6964967f115f036a840f4f28488f63f ]
 
-On arm64, the first syscall argument should be accessed via orig_x0
-(see arch/arm64/include/asm/syscall.h). Currently regs[0] is used
-instead, leading to bpf_syscall_macro test failure.
+Refcount leak will happen when format_show returns failure in multiple
+cases. Unified management of of_node_put can fix this problem.
 
-orig_x0 cannot be added to struct user_pt_regs, since its layout is a
-part of the ABI. Therefore provide access to it only through
-PT_REGS_PARM1_CORE_SYSCALL() by using a struct pt_regs flavor.
-
-Reported-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220209021745.2215452-10-iii@linux.ibm.com
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220302021959.10959-1-hbh25y@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/bpf_tracing.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/powerpc/kernel/secvar-sysfs.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-index 41f5f3149875..bed07c35b8de 100644
---- a/tools/lib/bpf/bpf_tracing.h
-+++ b/tools/lib/bpf/bpf_tracing.h
-@@ -140,6 +140,10 @@
+diff --git a/arch/powerpc/kernel/secvar-sysfs.c b/arch/powerpc/kernel/secvar-sysfs.c
+index a0a78aba2083..1ee4640a2641 100644
+--- a/arch/powerpc/kernel/secvar-sysfs.c
++++ b/arch/powerpc/kernel/secvar-sysfs.c
+@@ -26,15 +26,18 @@ static ssize_t format_show(struct kobject *kobj, struct kobj_attribute *attr,
+ 	const char *format;
  
- #elif defined(bpf_target_arm64)
+ 	node = of_find_compatible_node(NULL, NULL, "ibm,secvar-backend");
+-	if (!of_device_is_available(node))
+-		return -ENODEV;
++	if (!of_device_is_available(node)) {
++		rc = -ENODEV;
++		goto out;
++	}
  
-+struct pt_regs___arm64 {
-+	unsigned long orig_x0;
-+};
-+
- /* arm64 provides struct user_pt_regs instead of struct pt_regs to userspace */
- #define __PT_REGS_CAST(x) ((const struct user_pt_regs *)(x))
- #define __PT_PARM1_REG regs[0]
-@@ -152,6 +156,8 @@
- #define __PT_RC_REG regs[0]
- #define __PT_SP_REG sp
- #define __PT_IP_REG pc
-+#define PT_REGS_PARM1_SYSCALL(x) ({ _Pragma("GCC error \"use PT_REGS_PARM1_CORE_SYSCALL() instead\""); 0l; })
-+#define PT_REGS_PARM1_CORE_SYSCALL(x) BPF_CORE_READ((const struct pt_regs___arm64 *)(x), orig_x0)
+ 	rc = of_property_read_string(node, "format", &format);
+ 	if (rc)
+-		return rc;
++		goto out;
  
- #elif defined(bpf_target_mips)
+ 	rc = sprintf(buf, "%s\n", format);
  
++out:
+ 	of_node_put(node);
+ 
+ 	return rc;
 -- 
 2.35.1
 
