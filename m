@@ -2,120 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A93EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230391AbiDLXbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
+        id S230350AbiDLXbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230337AbiDLXbW (ORCPT
+        with ESMTP id S230401AbiDLXbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:31:22 -0400
-Received: from mail-oi1-x249.google.com (mail-oi1-x249.google.com [IPv6:2607:f8b0:4864:20::249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7124A1637F6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:28:19 -0700 (PDT)
-Received: by mail-oi1-x249.google.com with SMTP id s21-20020a056808009500b002d9b146c8d6so106609oic.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=u+9yLdrvqv+15A9PShNP0Bj2lgMYcE44VCQG0+LZtrY=;
-        b=mwfr+1QL20PQIeOZQZw4zuZEGgBuBUOGgqdqpg6THGQZKaFw5Wj8PV8H59rdqaaBLU
-         96DEcj2/yCle2oJspe3XQ+wvE7SynQC2qq8T45bjBHdWr775iHRDb1Awf9JLNlMzGg0Z
-         g9Vavh5XkBcZCDWPUCYqQaA2bJ40hvxQocKz/LgmqNRswWSq0TrGjsidj6Uh160Cxgg9
-         Br/LGeUfE2qBk04WfS9pWdcxkZ6ZfhQUGAQUPaDVZVTwx2AivA1G7qb2eWdfFOoTI0KO
-         79/zwiYoOluzurGB1K8giL4K789L/VwUjzCmIrbzk2s/dgPratqPJ30cmLHHGCauiOdw
-         Ag0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=u+9yLdrvqv+15A9PShNP0Bj2lgMYcE44VCQG0+LZtrY=;
-        b=epUvTt2lE4ISiaBTZFn41btqhEK/UakSx+BHlT4o2V2Ll5H1U1cJMKU0nOR7OSTK1M
-         5DRUU7weZASA53K+Dk1m0nJ7qItCdhXwd6QWBl9NtEIyrcw+KivtHsO/+c4eb6G6q53E
-         LC4tIRAV3DpbTTPtmt8bOI0MumN0WePGWg5N3KIIYlJ5GCySQkEJB3wEdjzczkNwBpCZ
-         5ICNrbNcFHCF3Zv1l0CEY0sI+2qDJPS7wgPNjGgoSUl0/ewPHDaiNdMZ92Ui/SssvmUv
-         T5lJhPbnG3Y+YPlY8jYH1QTbytMhi4aVgWMqipqxUvsS8PqxZKxvkoD/I3LKj4fc9RM6
-         bcLA==
-X-Gm-Message-State: AOAM5326b6kizzUNOWEgK654tOZeppau2/bnThelk37+OirZiJLmcz1u
-        HvH21/2u78569/zJSmX+D81zSIUd2PTSpQ3SJSiF
-X-Google-Smtp-Source: ABdhPJzT2Zt45zo3Wf9Ef/5d1NiGtDnKycptXlg/R76ipboiOT8KRuG6nigv1WkYm1tB4Mt/wit/6RMj+xbJNsBmESHI
-X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:8927:f9ed:8b14:ddae])
- (user=axelrasmussen job=sendgmr) by 2002:a17:90b:3c47:b0:1cb:8121:dcc8 with
- SMTP id pm7-20020a17090b3c4700b001cb8121dcc8mr6997487pjb.35.1649795391430;
- Tue, 12 Apr 2022 13:29:51 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 13:29:42 -0700
-In-Reply-To: <20220412202942.386981-1-axelrasmussen@google.com>
-Message-Id: <20220412202942.386981-2-axelrasmussen@google.com>
-Mime-Version: 1.0
-References: <20220412202942.386981-1-axelrasmussen@google.com>
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH 2/2] userfaultfd: selftests: modify selftest to use /dev/userfaultfd
-From:   Axel Rasmussen <axelrasmussen@google.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Tue, 12 Apr 2022 19:31:23 -0400
+Received: from mail-4327.protonmail.ch (mail-4327.protonmail.ch [185.70.43.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC5B9FCD
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:16:17 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 21:59:16 +0000
+Authentication-Results: mail-4321.protonmail.ch;
+        dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="M2J2L0iK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+        s=protonmail2; t=1649800761;
+        bh=JJtIRzBfNpDrJ/fFtvW6vi1j9+8vDctIDP1NHWiTvOk=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:From:To:Cc:Date:
+         Subject:Reply-To:Feedback-ID:Message-ID;
+        b=M2J2L0iK2Kc/JQTIjkwhDUkVqWiZJr3O/27pjBoOkV0WQ7k3QLKoWiEY4P8AO2cMT
+         OApMkeZx7jZ147jSo5zdtUJ4MYUQI3LZGgFLt5lQy2IbjAyfDr3JdfIat6WFFXrrpK
+         w6L6qXuzVppbmyai1QnXQf3zVPlwQmukLWSYtXStunKKc6w2+Je+8XmI1/jRXcuKZM
+         ugzbjMCdqaBj+SICra5VB2NALMPCUFd/dOxLuvqDVK4p7PmM55sl91uTxRYp3lYwIP
+         Wplktu5ck2NSYZL+AmRdzhMhpS9KKb3ZVDMPNH0oQPlAk2NVHCT0SYTlSBPdbNDOXO
+         jnYDIIyAsO8UQ==
+To:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
         Andrew Morton <akpm@linux-foundation.org>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <namit@vmware.com>, Peter Xu <peterx@redhat.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Axel Rasmussen <axelrasmussen@google.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Lobakin <alobakin@pm.me>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH RESEND] asm-generic: fix __get_unaligned_be48() on 32 bit platforms
+Message-ID: <20220412215220.75677-1-alobakin@pm.me>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Prefer this new interface, but if using it fails for any reason just
-fall back to using userfaultfd(2) as before.
+While testing the new macros for working with 48 bit containers,
+I faced a weird problem:
 
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+32 + 16: 0x2ef6e8da 0x79e60000
+48: 0xffffe8da + 0x79e60000
+
+All the bits starting from the 32nd were getting 1d in 9/10 cases.
+The debug showed:
+
+p[0]: 0x00002e0000000000
+p[1]: 0x00002ef600000000
+p[2]: 0xffffffffe8000000
+p[3]: 0xffffffffe8da0000
+p[4]: 0xffffffffe8da7900
+p[5]: 0xffffffffe8da79e6
+
+that the value becomes a garbage after the third OR, i.e. on
+`p[2] << 24`.
+When the 31st bit is 1 and there's no explicit cast to an unsigned,
+it's being considered as a signed int and getting sign-extended on
+OR, so `e8000000` becomes `ffffffffe8000000` and messes up the
+result.
+Cast the @p[2] to u64 as well to avoid this. Now:
+
+32 + 16: 0x7ef6a490 0xddc10000
+48: 0x7ef6a490 + 0xddc10000
+
+p[0]: 0x00007e0000000000
+p[1]: 0x00007ef600000000
+p[2]: 0x00007ef6a4000000
+p[3]: 0x00007ef6a4900000
+p[4]: 0x00007ef6a490dd00
+p[5]: 0x00007ef6a490ddc1
+
+Fixes: c2ea5fcf53d5 ("asm-generic: introduce be48 unaligned accessors")
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- tools/testing/selftests/vm/userfaultfd.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+Resend: target linux-block, expand Ccs a bit
 
-diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-index 92a4516f8f0d..a50c430f036c 100644
---- a/tools/testing/selftests/vm/userfaultfd.c
-+++ b/tools/testing/selftests/vm/userfaultfd.c
-@@ -383,13 +383,32 @@ static void assert_expected_ioctls_present(uint64_t mode, uint64_t ioctls)
- 	}
- }
- 
-+static void __userfaultfd_open_dev(void)
-+{
-+	int fd;
-+
-+	uffd = -1;
-+	fd = open("/dev/userfaultfd", O_RDWR | O_CLOEXEC);
-+	if (fd < 0)
-+		return;
-+
-+	uffd = ioctl(fd, USERFAULTFD_IOC_NEW,
-+		     O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
-+	close(fd);
-+}
-+
- static void userfaultfd_open(uint64_t *features)
+ include/asm-generic/unaligned.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/asm-generic/unaligned.h b/include/asm-generic/unaligne=
+d.h
+index 8fc637379899..df30f11b4a46 100644
+--- a/include/asm-generic/unaligned.h
++++ b/include/asm-generic/unaligned.h
+@@ -143,7 +143,7 @@ static inline void put_unaligned_be48(const u64 val, vo=
+id *p)
+
+ static inline u64 __get_unaligned_be48(const u8 *p)
  {
- 	struct uffdio_api uffdio_api;
- 
--	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
-+	__userfaultfd_open_dev();
-+	if (uffd < 0) {
-+		printf("/dev/userfaultfd failed, fallback to userfaultfd(2)\n");
-+		uffd = syscall(__NR_userfaultfd,
-+			       O_CLOEXEC | O_NONBLOCK | UFFD_USER_MODE_ONLY);
-+	}
- 	if (uffd < 0)
--		err("userfaultfd syscall not available in this kernel");
-+		err("userfaultfd syscall failed");
- 	uffd_flags = fcntl(uffd, F_GETFD, NULL);
- 
- 	uffdio_api.api = UFFD_API;
--- 
-2.35.1.1178.g4f1659d476-goog
+-=09return (u64)p[0] << 40 | (u64)p[1] << 32 | p[2] << 24 |
++=09return (u64)p[0] << 40 | (u64)p[1] << 32 | (u64)p[2] << 24 |
+ =09=09p[3] << 16 | p[4] << 8 | p[5];
+ }
+
+--
+2.35.2
+
 
