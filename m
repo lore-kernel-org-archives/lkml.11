@@ -2,130 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC5DAC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2856C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355487AbiDLH1i (ORCPT
+        id S1355590AbiDLH1q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        Tue, 12 Apr 2022 03:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351710AbiDLHMv (ORCPT
+        with ESMTP id S1351715AbiDLHMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:51 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F171E15FE7;
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id q19so16335177pgm.6;
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=RBbYU01e+AFbhWY3ZuGeFMRIuU/CVxN8Q/n9EQ09lHU=;
-        b=a8AKCKRLwEJ+ICpyl0Ua49RR5GoUvlGs65zLny8zLr9rq8FPqaowjaciyPlu0e0Ra5
-         K38C9SACTeDtneV0qgjKDJBJUEWchIR3VIhC9SpjB3IXVvUnsnuVOkKl9UFn60wHF9N4
-         JMw0aiBOyEdWx9p+NYgkcgqLhB7jNVb8eS1V2+vluyREM6O2fqdKfAdlLOt1xz7uWDTN
-         dws3dSdt0MyP5UQhVa68Spk7WNjnYcPTgH+KtTzNkjZwyCBJHqy2nDP9oqdP1YDoavPZ
-         MA6Qx75v3pkISAyQJgVWK+UJjDfbAk4jHEqdT5BM1mpcOuzxHlGUkGZ32J3dlFvJxCxN
-         SZcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=RBbYU01e+AFbhWY3ZuGeFMRIuU/CVxN8Q/n9EQ09lHU=;
-        b=YIqAbpAtf2hwWBiPWfpIWDryoprTp9g9xkBpfgTwBCV852cqazVIAl5tRtX8UWO2TG
-         0ftFffsEWSKSEr8qBvY2gWdUy00ERydWBlM3Sku5flgw9bJgLwNcPRa9hB5YLgHcXGvo
-         awaO13NC+pSoxHtGMxBoqs4Af0B3hpL7E9gpxClnIEkpmgHqy/UTZw8pwjPltgN8hXeH
-         YHWx8U2H3Lpx9KDFqAbXUpGHeG7MdCY84jKQjBm6OW0271UqGHrcI3mesU77wLgyNGPg
-         kGuzIMl2QrhgffkvUJ3ESbY7HipbEvyF6/mpjd4DMnCes9h27bGtx/GrvGITmEiFzESA
-         u2mA==
-X-Gm-Message-State: AOAM530gMkwAUxPgeaGu/7k5zsLvldYKNrycSvr9R9LPilV3tt1w4FZr
-        P24L3X/TTEQ7jDAUDBDJXk8=
-X-Google-Smtp-Source: ABdhPJxPK9vIH5rkg+Zivi5zxRj7BATlOjv/oQFrgbrSqTgZiffo9i573UyyUxob/kW5MlB279CmGA==
-X-Received: by 2002:a05:6a00:1488:b0:4fa:ac61:8b11 with SMTP id v8-20020a056a00148800b004faac618b11mr37315301pfu.58.1649746315502;
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id ng17-20020a17090b1a9100b001c9f79927bfsm1654577pjb.25.2022.04.11.23.51.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio: adc: stmpe-adc: Fix wait_for_completion_timeout return value check
-Date:   Tue, 12 Apr 2022 06:51:45 +0000
-Message-Id: <20220412065150.14486-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <PH0PR03MB6786157EDA63137DF0071D1F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
-References: <PH0PR03MB6786157EDA63137DF0071D1F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3752216585;
+        Mon, 11 Apr 2022 23:51:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC302B81B47;
+        Tue, 12 Apr 2022 06:51:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C96BC385A1;
+        Tue, 12 Apr 2022 06:51:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746314;
+        bh=l46cSs6DjSOBqAacpO48W9M8+IBy8zm1uWvxKy7t0Bk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b9MBWCoggNFOVwDf34ALpe5exgxU8Ol/nmg4U2tGmHrYuhOXFYZz9jyV+08fErNPo
+         Kl9a9dAhlK3eLaTHsZ1MNM76WrevyESYXeZgc98xlxfNsv87vGbJpTv1UYSjU+Q9Xj
+         4Hcve47DPR5bYKq84UZYrH1yuWJNrn1v9Eh+TILU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shirish S <shirish.s@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 239/277] amd/display: set backlight only if required
+Date:   Tue, 12 Apr 2022 08:30:42 +0200
+Message-Id: <20220412062948.962324739@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
+References: <20220412062942.022903016@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-wait_for_completion_timeout() returns unsigned long not long.
-it returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case
+From: Shirish S <shirish.s@amd.com>
 
-Fixes: e813dde6f833 ("iio: stmpe-adc: Use wait_for_completion_timeout")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-changes in v2:
-- Fix same issue in stmpe_read_temp.
----
-changes in v3:
-- update the patch subject.
----
- drivers/iio/adc/stmpe-adc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+commit 4052287a75eb3fc0f487fcc5f768a38bede455c8 upstream.
 
-diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-index d2d405388499..83e0ac4467ca 100644
---- a/drivers/iio/adc/stmpe-adc.c
-+++ b/drivers/iio/adc/stmpe-adc.c
-@@ -61,7 +61,7 @@ struct stmpe_adc {
- static int stmpe_read_voltage(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
+[Why]
+comparing pwm bl values (coverted) with user brightness(converted)
+levels in commit_tail leads to continuous setting of backlight via dmub
+as they don't to match.
+This leads overdrive in queuing of commands to DMCU that sometimes lead
+to depending on load on DMCU fw:
+
+"[drm:dc_dmub_srv_wait_idle] *ERROR* Error waiting for DMUB idle: status=3"
+
+[How]
+Store last successfully set backlight value and compare with it instead
+of pwm reads which is not what we should compare with.
+
+Signed-off-by: Shirish S <shirish.s@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    7 ++++---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h |    6 ++++++
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3522,7 +3522,7 @@ static u32 convert_brightness_to_user(co
+ 				 max - min);
+ }
+ 
+-static int amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
++static void amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
+ 					 int bl_idx,
+ 					 u32 user_brightness)
  {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA,
- 				STMPE_ADC_CH(info->channel));
- 		mutex_unlock(&info->lock);
-@@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- static int stmpe_read_temp(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		mutex_unlock(&info->lock);
- 		return -ETIMEDOUT;
+@@ -3550,7 +3550,8 @@ static int amdgpu_dm_backlight_set_level
+ 			DRM_DEBUG("DM: Failed to update backlight on eDP[%d]\n", bl_idx);
  	}
--- 
-2.17.1
+ 
+-	return rc ? 0 : 1;
++	if (rc)
++		dm->actual_brightness[bl_idx] = user_brightness;
+ }
+ 
+ static int amdgpu_dm_backlight_update_status(struct backlight_device *bd)
+@@ -9316,7 +9317,7 @@ static void amdgpu_dm_atomic_commit_tail
+ 	/* restore the backlight level */
+ 	for (i = 0; i < dm->num_of_edps; i++) {
+ 		if (dm->backlight_dev[i] &&
+-		    (amdgpu_dm_backlight_get_level(dm, i) != dm->brightness[i]))
++		    (dm->actual_brightness[i] != dm->brightness[i]))
+ 			amdgpu_dm_backlight_set_level(dm, i, dm->brightness[i]);
+ 	}
+ #endif
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
+@@ -446,6 +446,12 @@ struct amdgpu_display_manager {
+ 	 * cached backlight values.
+ 	 */
+ 	u32 brightness[AMDGPU_DM_MAX_NUM_EDP];
++	/**
++	 * @actual_brightness:
++	 *
++	 * last successfully applied backlight values.
++	 */
++	u32 actual_brightness[AMDGPU_DM_MAX_NUM_EDP];
+ };
+ 
+ enum dsc_clock_force_state {
+
 
