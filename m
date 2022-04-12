@@ -2,59 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B72C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D21EC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244800AbiDLAwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
+        id S244700AbiDLAwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244444AbiDLAvT (ORCPT
+        with ESMTP id S244329AbiDLAuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D710932997;
-        Mon, 11 Apr 2022 17:47:20 -0700 (PDT)
+        Mon, 11 Apr 2022 20:50:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4626730566;
+        Mon, 11 Apr 2022 17:47:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E67A617D9;
-        Tue, 12 Apr 2022 00:47:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF30C385A3;
-        Tue, 12 Apr 2022 00:47:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D7FCB819BF;
+        Tue, 12 Apr 2022 00:47:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F28EC385AA;
+        Tue, 12 Apr 2022 00:46:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724439;
-        bh=RO4VURSzGblH2Wzjw1WVHexM3Ohq0iWaMKap2YwaHcc=;
+        s=k20201202; t=1649724420;
+        bh=lfWgNDuTl3Fsk91sCVN2UOdFZ9227/ZxwTLk25yq+7Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tN2CycUF+CEiAYh1RMBtmduCzWy3mT4e605OHoHsK6y9S+1vtqMY4jSkv/xeExUDO
-         rhvC+z1cJ19e+jklCTK57kKQSZh+3Ts4LJTpmZ1xFyZ6LbCfo1Hv1o+jBdMAXFbZFD
-         +sQfKaMmVwgvLWE3zISF8HpI32ICOTIZjuQq4dWa8k4VqQCSeH9DDy6KWfbVgbza6A
-         FcZaVXb0KTtzu8TIBaHRRlrWJ7d/pMjNK7mq4fIwE9HT4nWZjl2heK/9INKamajarb
-         G5TLRoNE/yLatVTAIvJZE0i0XlprJw3AB8KEYSU3b8Yi8rKOsV1R6HNKqS7krSYKW6
-         UC0CADNip4AMg==
+        b=W8rfxafzEZ4tvGtjwTOXAHpNUO4kqif79y0wgXeK9gJ+P5ffH35EQpMRoobAmdvgq
+         OEAVOFAA3ULmLkSPj2R3aBvDHpO0hol8dmClj1DTH2AouxSvvT7o7uOizN0AP+Qt+n
+         xp25/YLUIdaQKpvRStr9EC7wAgDXtHOl+Rw6kM18KExgsUscmLX9U1tkurrcjEFWcD
+         y/YW2BIQ8lFdztuDLXSEHJdv7vMXYx6o4EvAhxIL93j4sOwQVBs4RfuxN3ZpmrWyJY
+         5KRGfxtHb3IWlo5h7jHUMNDzlHVEUXG+W9ofOJN2X2S0ge6a0aTwAZSHELCHjJ20zg
+         r+iSHgvE3Ep5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, andrey.grodzovsky@amd.com,
-        guchun.chen@amd.com, kevin1.wang@amd.com, lang.yu@amd.com,
-        tao.zhou1@amd.com, YiPeng.Chai@amd.com, ray.huang@amd.com,
-        Yuliang.Shi@amd.com, Jack.Gui@amd.com, PengJu.Zhou@amd.com,
-        victor.skvortsov@amd.com, Xiaojian.Du@amd.com,
-        lee.jones@linaro.org, nirmoy.das@amd.com, evan.quan@amd.com,
-        Felix.Kuehling@amd.com, zhouzongmin@kylinos.cn,
-        Hawking.Zhang@amd.com, john.clements@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 05/41] drm/amdgpu/gmc: use PCI BARs for APUs in passthrough
-Date:   Mon, 11 Apr 2022 20:46:17 -0400
-Message-Id: <20220412004656.350101-5-sashal@kernel.org>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 02/41] btrfs: fix fallocate to use file_modified to update permissions consistently
+Date:   Mon, 11 Apr 2022 20:46:14 -0400
+Message-Id: <20220412004656.350101-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004656.350101-1-sashal@kernel.org>
 References: <20220412004656.350101-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -62,105 +53,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-[ Upstream commit b818a5d374542ccec73dcfe578a081574029820e ]
+[ Upstream commit 05fd9564e9faf0f23b4676385e27d9405cef6637 ]
 
-If the GPU is passed through to a guest VM, use the PCI
-BAR for CPU FB access rather than the physical address of
-carve out.  The physical address is not valid in a guest.
+Since the initial introduction of (posix) fallocate back at the turn of
+the century, it has been possible to use this syscall to change the
+user-visible contents of files.  This can happen by extending the file
+size during a preallocation, or through any of the newer modes (punch,
+zero range).  Because the call can be used to change file contents, we
+should treat it like we do any other modification to a file -- update
+the mtime, and drop set[ug]id privileges/capabilities.
 
-v2: Fix HDP handing as suggested by Michel
+The VFS function file_modified() does all this for us if pass it a
+locked inode, so let's make fallocate drop permissions correctly.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 4 ++--
- drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c     | 2 +-
- drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c      | 5 +++--
- drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c      | 2 +-
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c      | 2 +-
- 5 files changed, 8 insertions(+), 7 deletions(-)
+ fs/btrfs/file.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index 33026b3eafd2..2f2ae26a8068 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -5625,7 +5625,7 @@ void amdgpu_device_flush_hdp(struct amdgpu_device *adev,
- 		struct amdgpu_ring *ring)
+diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
+index a1762363f61f..dc1e4d1b7291 100644
+--- a/fs/btrfs/file.c
++++ b/fs/btrfs/file.c
+@@ -2878,8 +2878,9 @@ int btrfs_replace_file_extents(struct btrfs_inode *inode,
+ 	return ret;
+ }
+ 
+-static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
++static int btrfs_punch_hole(struct file *file, loff_t offset, loff_t len)
  {
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU)
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
- 		return;
- #endif
- 	if (adev->gmc.xgmi.connected_to_cpu)
-@@ -5641,7 +5641,7 @@ void amdgpu_device_invalidate_hdp(struct amdgpu_device *adev,
- 		struct amdgpu_ring *ring)
- {
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU)
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
- 		return;
- #endif
- 	if (adev->gmc.xgmi.connected_to_cpu)
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-index 3c01be661014..93a4da4284ed 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-@@ -788,7 +788,7 @@ static int gmc_v10_0_mc_init(struct amdgpu_device *adev)
- 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
- 
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU) {
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
- 		adev->gmc.aper_base = adev->gfxhub.funcs->get_mc_fb_offset(adev);
- 		adev->gmc.aper_size = adev->gmc.real_vram_size;
++	struct inode *inode = file_inode(file);
+ 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
+ 	struct btrfs_root *root = BTRFS_I(inode)->root;
+ 	struct extent_state *cached_state = NULL;
+@@ -2911,6 +2912,10 @@ static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
+ 		goto out_only_mutex;
  	}
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
-index 0a50fdaced7e..63c47f61d0df 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
-@@ -381,8 +381,9 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
- 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
  
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU &&
--	    adev->gmc.real_vram_size > adev->gmc.aper_size) {
-+	if ((adev->flags & AMD_IS_APU) &&
-+	    adev->gmc.real_vram_size > adev->gmc.aper_size &&
-+	    !amdgpu_passthrough(adev)) {
- 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
- 		adev->gmc.aper_size = adev->gmc.real_vram_size;
++	ret = file_modified(file);
++	if (ret)
++		goto out_only_mutex;
++
+ 	lockstart = round_up(offset, btrfs_inode_sectorsize(BTRFS_I(inode)));
+ 	lockend = round_down(offset + len,
+ 			     btrfs_inode_sectorsize(BTRFS_I(inode))) - 1;
+@@ -3351,7 +3356,7 @@ static long btrfs_fallocate(struct file *file, int mode,
+ 		return -EOPNOTSUPP;
+ 
+ 	if (mode & FALLOC_FL_PUNCH_HOLE)
+-		return btrfs_punch_hole(inode, offset, len);
++		return btrfs_punch_hole(file, offset, len);
+ 
+ 	/*
+ 	 * Only trigger disk allocation, don't trigger qgroup reserve
+@@ -3373,6 +3378,10 @@ static long btrfs_fallocate(struct file *file, int mode,
+ 			goto out;
  	}
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-index 63b890f1e8af..bef9610084f1 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-@@ -581,7 +581,7 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
- 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
  
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU) {
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
- 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
- 		adev->gmc.aper_size = adev->gmc.real_vram_size;
- 	}
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index 6dc16ccf6c81..0e731016921b 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -1387,7 +1387,7 @@ static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
- 	 */
- 
- 	/* check whether both host-gpu and gpu-gpu xgmi links exist */
--	if ((adev->flags & AMD_IS_APU) ||
-+	if (((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) ||
- 	    (adev->gmc.xgmi.supported &&
- 	     adev->gmc.xgmi.connected_to_cpu)) {
- 		adev->gmc.aper_base =
++	ret = file_modified(file);
++	if (ret)
++		goto out;
++
+ 	/*
+ 	 * TODO: Move these two operations after we have checked
+ 	 * accurate reserved space, or fallocate can still fail but
 -- 
 2.35.1
 
