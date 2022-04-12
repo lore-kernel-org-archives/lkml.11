@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A972DC3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7626C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352288AbiDLHNn (ORCPT
+        id S1352428AbiDLHOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
+        Tue, 12 Apr 2022 03:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352075AbiDLGzB (ORCPT
+        with ESMTP id S1352316AbiDLGzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:55:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71ED1326ED;
-        Mon, 11 Apr 2022 23:44:54 -0700 (PDT)
+        Tue, 12 Apr 2022 02:55:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F6C3A18E;
+        Mon, 11 Apr 2022 23:45:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E843CB818BD;
-        Tue, 12 Apr 2022 06:44:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D37EC385A1;
-        Tue, 12 Apr 2022 06:44:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CCF060C1B;
+        Tue, 12 Apr 2022 06:45:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A802FC385A6;
+        Tue, 12 Apr 2022 06:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745891;
-        bh=YQ4+cMZJsMnC7ysgebX1ln8YgoZj4kAtFg5vqp/IsZM=;
+        s=korg; t=1649745917;
+        bh=y/u96vZ793nrYR/50kxGeRzF5tIcQXK3h5BNc9Lj49U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZJDCwfzJlZdRepVfU30GgaXzIPG5+EjS+03rAett2W5oJhw/QUKv8l5MjNnNF+fb3
-         czTiUQp8Lc29Hag74Xws1dMyPaNqlFIfylo+xE0tgfk5lL3VP/qgxkM885V+Sv92Nq
-         r9t8ohF2TmsLjuAOIE0uLQCw8Gwa9I1dXd8Ncbmg=
+        b=vO8aVPWM54Ne7IFIvmU41NNA/FYR6cjtHdHX4QhlzSpiDFcwjK34pV6TJ6STuh1Nw
+         CqAJhSB/DiBr9H6iJiEOP5paoYCiDTra6l3NDgbYJc9K8LesRJq8hlb6A9dRI3PviY
+         DU6qgbJLrqw95OWDBskEdzzPHSsNexk+yVl2aM6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Colin Winegarden <colin.winegarden@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 084/277] bnxt_en: Eliminate unintended link toggle during FW reset
-Date:   Tue, 12 Apr 2022 08:28:07 +0200
-Message-Id: <20220412062944.478460834@linuxfoundation.org>
+Subject: [PATCH 5.15 092/277] can: etas_es58x: es58x_fd_rx_event_msg(): initialize rx_event_msg before calling es58x_check_msg_len()
+Date:   Tue, 12 Apr 2022 08:28:15 +0200
+Message-Id: <20220412062944.706674633@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -53,45 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
+[ Upstream commit 7a8cd7c0ee823a1cc893ab3feaa23e4b602bfb9a ]
 
-If the flow control settings have been changed, a subsequent FW reset
-may cause the ethernet link to toggle unnecessarily.  This link toggle
-will increase the down time by a few seconds.
+Function es58x_fd_rx_event() invokes the es58x_check_msg_len() macro:
 
-The problem is caused by bnxt_update_phy_setting() detecting a false
-mismatch in the flow control settings between the stored software
-settings and the current FW settings after the FW reset.  This mismatch
-is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
-inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
-bit should not be added to link_info->req_flow_ctrl.
+| 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
 
-Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+While doing so, it dereferences an uninitialized
+variable: *rx_event_msg.
+
+This is actually harmless because es58x_check_msg_len() only uses
+preprocessor macros (sizeof() and __stringify()) on
+*rx_event_msg. c.f. [1].
+
+Nonetheless, this pattern is confusing so the lines are reordered to
+make sure that rx_event_msg is correctly initialized.
+
+This patch also fixes a false positive warning reported by cppcheck:
+
+| cppcheck possible warnings: (new ones prefixed by >>, may not be real problems)
+|
+|    In file included from drivers/net/can/usb/etas_es58x/es58x_fd.c:
+| >> drivers/net/can/usb/etas_es58x/es58x_fd.c:174:8: warning: Uninitialized variable: rx_event_msg [uninitvar]
+|     ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
+|           ^
+
+[1] https://elixir.bootlin.com/linux/v5.16/source/drivers/net/can/usb/etas_es58x/es58x_core.h#L467
+
+Link: https://lore.kernel.org/all/20220306101302.708783-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/can/usb/etas_es58x/es58x_fd.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index af7de9ee66cf..0f276ce2d1eb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2074,9 +2074,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
- 		}
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+index af042aa55f59..26bf4775e884 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+@@ -171,12 +171,11 @@ static int es58x_fd_rx_event_msg(struct net_device *netdev,
+ 	const struct es58x_fd_rx_event_msg *rx_event_msg;
+ 	int ret;
  
- 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
--		if (bp->hwrm_spec_code >= 0x10201)
--			link_info->req_flow_ctrl =
--				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
-+		link_info->req_flow_ctrl = 0;
- 	} else {
- 		/* when transition from auto pause to force pause,
- 		 * force a link change
++	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
+ 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
+ 	if (ret)
+ 		return ret;
+ 
+-	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
+-
+ 	return es58x_rx_err_msg(netdev, rx_event_msg->error_code,
+ 				rx_event_msg->event_code,
+ 				get_unaligned_le64(&rx_event_msg->timestamp));
 -- 
 2.35.1
 
