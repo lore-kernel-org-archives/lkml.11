@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C145FC48BCF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F05A4C48BCD
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356205AbiDLHeu (ORCPT
+        id S1356249AbiDLHfB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
+        Tue, 12 Apr 2022 03:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351800AbiDLHM6 (ORCPT
+        with ESMTP id S1351929AbiDLHNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD845F7E;
-        Mon, 11 Apr 2022 23:52:59 -0700 (PDT)
+        Tue, 12 Apr 2022 03:13:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC195F99;
+        Mon, 11 Apr 2022 23:54:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0CD26149D;
-        Tue, 12 Apr 2022 06:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F70C385A6;
-        Tue, 12 Apr 2022 06:52:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F46AB81B44;
+        Tue, 12 Apr 2022 06:54:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 078EEC385A8;
+        Tue, 12 Apr 2022 06:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746378;
-        bh=QaNOR5RKZom6VvVT+7/5NSchd1phah1uvn1QBNxVMAE=;
+        s=korg; t=1649746447;
+        bh=j+rku0b+Icgd7VM9KfTkDjJB1stnzRIZQZl4d330c/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i5XxdwfjqhKMQ++99tfk0YSQQbScKSYFmGBYWhHQvDy/EwLMK4cPwddZxhZer+ufK
-         ktHhlJ18FF8NKxwuEIj46WYaNJd1jIpl8hnPSHp3N8OsPcS0De6oOoeEBSQmG1vIFG
-         1Q5mDji+ha1rD9EhsQPenDsUVeJLfYq73NeOsw6Y=
+        b=apTHhR1H3xEZfXRDJfVPBB9GxW8i7Avy3l5gMG5RtIeOkqjtE4sZXzMXpiWsOK5We
+         bZtHaXN5tRayrWP9TZZF8be/rbFrIkTcwL9eAYBdzg1LeuwMy8mzqDkGgwSoz2qXah
+         zcESfTG6LUJn8Yy2tnWJpRnTVPt1WdxXb2dKJHO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 260/277] dmaengine: Revert "dmaengine: shdma: Fix runtime PM imbalance on error"
-Date:   Tue, 12 Apr 2022 08:31:03 +0200
-Message-Id: <20220412062949.569617322@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 001/285] lib/logic_iomem: correct fallback config references
+Date:   Tue, 12 Apr 2022 08:27:38 +0200
+Message-Id: <20220412062943.716483290@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,33 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit d143f939a95696d38ff800ada14402fa50ebbd6c upstream.
+[ Upstream commit 2a6852cb8ff0c8c1363cac648d68489343813212 ]
 
-This reverts commit 455896c53d5b ("dmaengine: shdma: Fix runtime PM
-imbalance on error") as the patch wrongly reduced the count on error and
-did not bail out. So drop the count by reverting the patch .
+Due to some renaming, we ended up with the "indirect iomem"
+naming in Kconfig, following INDIRECT_PIO. However, clearly
+I missed following through on that in the ifdefs, but so far
+INDIRECT_IOMEM_FALLBACK isn't used by any architecture.
 
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Fixes: ca2e334232b6 ("lib: add iomem emulation (logic_iomem)")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/shdma-base.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ lib/logic_iomem.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -115,10 +115,8 @@ static dma_cookie_t shdma_tx_submit(stru
- 		ret = pm_runtime_get(schan->dev);
+diff --git a/lib/logic_iomem.c b/lib/logic_iomem.c
+index 549b22d4bcde..e7ea9b28d8db 100644
+--- a/lib/logic_iomem.c
++++ b/lib/logic_iomem.c
+@@ -68,7 +68,7 @@ int logic_iomem_add_region(struct resource *resource,
+ }
+ EXPORT_SYMBOL(logic_iomem_add_region);
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0) {
-+		if (ret < 0)
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
--			pm_runtime_put(schan->dev);
--		}
+-#ifndef CONFIG_LOGIC_IOMEM_FALLBACK
++#ifndef CONFIG_INDIRECT_IOMEM_FALLBACK
+ static void __iomem *real_ioremap(phys_addr_t offset, size_t size)
+ {
+ 	WARN(1, "invalid ioremap(0x%llx, 0x%zx)\n",
+@@ -81,7 +81,7 @@ static void real_iounmap(void __iomem *addr)
+ 	WARN(1, "invalid iounmap for addr 0x%llx\n",
+ 	     (unsigned long long)(uintptr_t __force)addr);
+ }
+-#endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
++#endif /* CONFIG_INDIRECT_IOMEM_FALLBACK */
  
- 		pm_runtime_barrier(schan->dev);
+ void __iomem *ioremap(phys_addr_t offset, size_t size)
+ {
+@@ -168,7 +168,7 @@ void iounmap(void __iomem *addr)
+ }
+ EXPORT_SYMBOL(iounmap);
  
+-#ifndef CONFIG_LOGIC_IOMEM_FALLBACK
++#ifndef CONFIG_INDIRECT_IOMEM_FALLBACK
+ #define MAKE_FALLBACK(op, sz) 						\
+ static u##sz real_raw_read ## op(const volatile void __iomem *addr)	\
+ {									\
+@@ -213,7 +213,7 @@ static void real_memcpy_toio(volatile void __iomem *addr, const void *buffer,
+ 	WARN(1, "Invalid memcpy_toio at address 0x%llx\n",
+ 	     (unsigned long long)(uintptr_t __force)addr);
+ }
+-#endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
++#endif /* CONFIG_INDIRECT_IOMEM_FALLBACK */
+ 
+ #define MAKE_OP(op, sz) 						\
+ u##sz __raw_read ## op(const volatile void __iomem *addr)		\
+-- 
+2.35.1
+
 
 
