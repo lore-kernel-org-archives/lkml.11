@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C967C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE43C3525B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385728AbiDLIwp (ORCPT
+        id S1385699AbiDLIwd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        Tue, 12 Apr 2022 04:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359046AbiDLHm1 (ORCPT
+        with ESMTP id S1359020AbiDLHm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCAB54FAD;
-        Tue, 12 Apr 2022 00:20:04 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307AF54F97;
+        Tue, 12 Apr 2022 00:19:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08DED617E4;
-        Tue, 12 Apr 2022 07:20:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16521C385AB;
-        Tue, 12 Apr 2022 07:20:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C79A0B81B67;
+        Tue, 12 Apr 2022 07:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12AD8C385A5;
+        Tue, 12 Apr 2022 07:19:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748003;
-        bh=Z0ywCF85g7Mq7CTMi0zgdCOMKY9zQ6PXZ9PeYzZcMC8=;
+        s=korg; t=1649747995;
+        bh=cK5XG9/wD9csGt9BDkyE+vq4CVXvZjL5MTLufJbB8FI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLOOt/Qven2i7CLHf6fc9yily5fLG1AvmdSw+wKFSrvfnslLvVQewQdhRZQ6c9nZf
-         geo762SbWzGY5zy42acTp7tlJDvM3VutEyKynykt5cIEDDjOcKChczvdSOUMlq6V03
-         ZFR8j7MB0ahU0DzGY5IQlJ2JyLaOrpaga/vBZW4w=
+        b=gk5DMfh3UpLG0DS+TM+R3ysFaMeC1eb7xu2t+a7o8I6Qg1V3CiQM+gADGRKNoF3hK
+         dfNtYduzTM0ywMNQMdVbGjWL4+obwdPKNF9TmBSsuiUNJ1O+VpaCQhpii1vWRRYUJw
+         Q72CpUd4vUeo15qsLjQFSsPujpcrojnfL2bbVNpQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 244/343] net: phy: mscc-miim: reject clause 45 register accesses
-Date:   Tue, 12 Apr 2022 08:31:02 +0200
-Message-Id: <20220412062958.372957379@linuxfoundation.org>
+Subject: [PATCH 5.17 241/343] net: openvswitch: fix leak of nested actions
+Date:   Tue, 12 Apr 2022 08:30:59 +0200
+Message-Id: <20220412062958.288018808@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,48 +53,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-[ Upstream commit 8d90991e5bf7fdb9f264f5f579d18969913054b7 ]
+[ Upstream commit 1f30fb9166d4f15a1aa19449b9da871fe0ed4796 ]
 
-The driver doesn't support clause 45 register access yet, but doesn't
-check if the access is a c45 one either. This leads to spurious register
-reads and writes. Add the check.
+While parsing user-provided actions, openvswitch module may dynamically
+allocate memory and store pointers in the internal copy of the actions.
+So this memory has to be freed while destroying the actions.
 
-Fixes: 542671fe4d86 ("net: phy: mscc-miim: Add MDIO driver")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Currently there are only two such actions: ct() and set().  However,
+there are many actions that can hold nested lists of actions and
+ovs_nla_free_flow_actions() just jumps over them leaking the memory.
+
+For example, removal of the flow with the following actions will lead
+to a leak of the memory allocated by nf_ct_tmpl_alloc():
+
+  actions:clone(ct(commit),0)
+
+Non-freed set() action may also leak the 'dst' structure for the
+tunnel info including device references.
+
+Under certain conditions with a high rate of flow rotation that may
+cause significant memory leak problem (2MB per second in reporter's
+case).  The problem is also hard to mitigate, because the user doesn't
+have direct control over the datapath flows generated by OVS.
+
+Fix that by iterating over all the nested actions and freeing
+everything that needs to be freed recursively.
+
+New build time assertion should protect us from this problem if new
+actions will be added in the future.
+
+Unfortunately, openvswitch module doesn't use NLA_F_NESTED, so all
+attributes has to be explicitly checked.  sample() and clone() actions
+are mixing extra attributes into the user-provided action list.  That
+prevents some code generalization too.
+
+Fixes: 34ae932a4036 ("openvswitch: Make tunnel set action attach a metadata dst")
+Link: https://mail.openvswitch.org/pipermail/ovs-dev/2022-March/392922.html
+Reported-by: Stéphane Graber <stgraber@ubuntu.com>
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/openvswitch/flow_netlink.c | 95 ++++++++++++++++++++++++++++++++--
+ 1 file changed, 90 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 64fb76c1e395..08381038810d 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -93,6 +93,9 @@ static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
- 	u32 val;
- 	int ret;
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 2679007f8aeb..c591b923016a 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2288,6 +2288,62 @@ static struct sw_flow_actions *nla_alloc_flow_actions(int size)
+ 	return sfa;
+ }
  
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len);
 +
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret)
- 		goto out;
-@@ -136,6 +139,9 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- 	struct mscc_miim_dev *miim = bus->priv;
- 	int ret;
++static void ovs_nla_free_check_pkt_len_action(const struct nlattr *action)
++{
++	const struct nlattr *a;
++	int rem;
++
++	nla_for_each_nested(a, action, rem) {
++		switch (nla_type(a)) {
++		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_LESS_EQUAL:
++		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_GREATER:
++			ovs_nla_free_nested_actions(nla_data(a), nla_len(a));
++			break;
++		}
++	}
++}
++
++static void ovs_nla_free_clone_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
++
++	switch (nla_type(a)) {
++	case OVS_CLONE_ATTR_EXEC:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
++}
++
++static void ovs_nla_free_dec_ttl_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++
++	switch (nla_type(a)) {
++	case OVS_DEC_TTL_ATTR_ACTION:
++		ovs_nla_free_nested_actions(nla_data(a), nla_len(a));
++		break;
++	}
++}
++
++static void ovs_nla_free_sample_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
++
++	switch (nla_type(a)) {
++	case OVS_SAMPLE_ATTR_ARG:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
++}
++
+ static void ovs_nla_free_set_action(const struct nlattr *a)
+ {
+ 	const struct nlattr *ovs_key = nla_data(a);
+@@ -2301,25 +2357,54 @@ static void ovs_nla_free_set_action(const struct nlattr *a)
+ 	}
+ }
  
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
+-void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len)
+ {
+ 	const struct nlattr *a;
+ 	int rem;
+ 
+-	if (!sf_acts)
++	/* Whenever new actions are added, the need to update this
++	 * function should be considered.
++	 */
++	BUILD_BUG_ON(OVS_ACTION_ATTR_MAX != 23);
 +
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret < 0)
- 		goto out;
++	if (!actions)
+ 		return;
+ 
+-	nla_for_each_attr(a, sf_acts->actions, sf_acts->actions_len, rem) {
++	nla_for_each_attr(a, actions, len, rem) {
+ 		switch (nla_type(a)) {
+-		case OVS_ACTION_ATTR_SET:
+-			ovs_nla_free_set_action(a);
++		case OVS_ACTION_ATTR_CHECK_PKT_LEN:
++			ovs_nla_free_check_pkt_len_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_CLONE:
++			ovs_nla_free_clone_action(a);
+ 			break;
++
+ 		case OVS_ACTION_ATTR_CT:
+ 			ovs_ct_free_action(a);
+ 			break;
++
++		case OVS_ACTION_ATTR_DEC_TTL:
++			ovs_nla_free_dec_ttl_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_SAMPLE:
++			ovs_nla_free_sample_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_SET:
++			ovs_nla_free_set_action(a);
++			break;
+ 		}
+ 	}
++}
++
++void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++{
++	if (!sf_acts)
++		return;
+ 
++	ovs_nla_free_nested_actions(sf_acts->actions, sf_acts->actions_len);
+ 	kfree(sf_acts);
+ }
+ 
 -- 
 2.35.1
 
