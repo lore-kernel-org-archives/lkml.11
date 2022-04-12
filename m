@@ -2,120 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D91C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 042A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbiDLX25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39126 "EHLO
+        id S230194AbiDLX3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiDLX0r (ORCPT
+        with ESMTP id S231316AbiDLX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:26:47 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6418EE5E17;
-        Tue, 12 Apr 2022 15:36:41 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b584e329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:584e:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 774D31EC0559;
-        Tue, 12 Apr 2022 23:20:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649798400;
+        Tue, 12 Apr 2022 19:28:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 19A25E0AEC
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:34:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649802841;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:
-         content-transfer-encoding:content-transfer-encoding:in-reply-to:
-         references; bh=GlHl/2jxkBEfPRxyBRwwLrraiX+W/kin918whTHPlOY=;
-        b=GDw+J8xtvQ5oIO+Jja/gzzTP10OTdC0r8F11tzXJjpGP5kt7wQAxvd3icFSuskkl2EOI9Y
-        fTNBgkLgCsa/GgnSm87cKXkoQicQ/nBnr7/0Bvi5LOm6MXXy9hJbs6lQbPV4Gqb4tYkgIg
-        W7vZg8SkFqoPQADWiQcFOBs58wrHb3E=
-From:   Borislav Petkov <bp@alien8.de>
-To:     linux-edac <linux-edac@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] EDAC: Use kcalloc()
-Date:   Tue, 12 Apr 2022 23:19:57 +0200
-Message-Id: <20220412211957.28899-1-bp@alien8.de>
-X-Mailer: git-send-email 2.35.1
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QA0FeCUr4bLfjKoIaw8u1rHYCmWADNz6x1PRseUplPs=;
+        b=ErJNn4OQVIBihGuNAhnL3bQp47BOECWayegniReH6ZslPNRmZKFOaHfa3MC174JGW0bnTD
+        XzDaA8AVSXSJiK7hP4RC8CxpSRvo8nuovZ5ccSrPD/cb8D6GsMtbIFUA286e32Chjyob5i
+        QJAZrY1kbJFo8lY8BOY5Hy8Tg2npZRY=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-48-WOdkxwytPo6lkFy_EgXcbw-1; Tue, 12 Apr 2022 16:14:16 -0400
+X-MC-Unique: WOdkxwytPo6lkFy_EgXcbw-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3F6281C05B0C;
+        Tue, 12 Apr 2022 20:14:11 +0000 (UTC)
+Received: from cmirabil.remote.csb (unknown [10.22.32.76])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B04B2401DAC;
+        Tue, 12 Apr 2022 20:14:10 +0000 (UTC)
+From:   Charles Mirabile <cmirabil@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Charles Mirabile <cmirabil@redhat.com>,
+        Serge Schneider <serge@raspberrypi.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Mattias Brugger <mbrugger@suse.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
+        Lee Jones <lee.jones@linaro.org>,
+        Mwesigwa Guma <mguma@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>
+Subject: [PATCH v8 1/6] drivers/mfd: sensehat: Add Raspberry Pi Sense HAT to simple_mfd_i2c
+Date:   Tue, 12 Apr 2022 16:13:38 -0400
+Message-Id: <20220412201343.8074-2-cmirabil@redhat.com>
+In-Reply-To: <20220412201343.8074-1-cmirabil@redhat.com>
+References: <20220412201343.8074-1-cmirabil@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+This patch adds the compatible string for the Sense HAT device to
+the list of compatible strings in the simple_mfd_i2c driver so that
+it can match against the device and load its children and their drivers
 
-It is syntactic sugar anyway:
-
-  # drivers/edac/edac_mc.o:
-
-   text    data     bss     dec     hex filename
-  13378     324       8   13710    358e edac_mc.o.before
-  13378     324       8   13710    358e edac_mc.o.after
-
-md5:
-   70a53ee3ac7f867730e35c2be9110748  edac_mc.o.before.asm
-   70a53ee3ac7f867730e35c2be9110748  edac_mc.o.after.asm
-
-  # drivers/edac/edac_device.o:
-
-   text    data     bss     dec     hex filename
-   5684     120       4    5808    16b0 edac_device.o.before
-   5684     120       4    5808    16b0 edac_device.o.after
-
-md5:
-   811325c80acb5a1d6df7b290df3e1636  edac_device.o.before.asm
-   811325c80acb5a1d6df7b290df3e1636  edac_device.o.after.asm
-
-No functional changes.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
+Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
+Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
 ---
- drivers/edac/edac_device.c | 9 +++------
- drivers/edac/edac_mc.c     | 2 +-
- 2 files changed, 4 insertions(+), 7 deletions(-)
+ drivers/mfd/simple-mfd-i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/edac/edac_device.c b/drivers/edac/edac_device.c
-index b737349184e3..3d5a4944735f 100644
---- a/drivers/edac/edac_device.c
-+++ b/drivers/edac/edac_device.c
-@@ -70,9 +70,7 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
- 	if (!dev_ctl)
- 		return NULL;
- 
--	dev_inst = kmalloc_array(nr_instances,
--				 sizeof(struct edac_device_instance),
--				 GFP_KERNEL | __GFP_ZERO);
-+	dev_inst = kcalloc(nr_instances, sizeof(struct edac_device_instance), GFP_KERNEL);
- 	if (!dev_inst)
- 		goto free;
- 
-@@ -87,9 +85,8 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
- 	dev_ctl->blocks = dev_blk;
- 
- 	if (nr_attrib) {
--		dev_attrib = kmalloc_array(nr_attrib,
--					   sizeof(struct edac_dev_sysfs_block_attribute),
--					   GFP_KERNEL | __GFP_ZERO);
-+		dev_attrib = kcalloc(nr_attrib, sizeof(struct edac_dev_sysfs_block_attribute),
-+				     GFP_KERNEL);
- 		if (!dev_attrib)
- 			goto free;
- 
-diff --git a/drivers/edac/edac_mc.c b/drivers/edac/edac_mc.c
-index 387b6851c975..eb58644bb019 100644
---- a/drivers/edac/edac_mc.c
-+++ b/drivers/edac/edac_mc.c
-@@ -366,7 +366,7 @@ struct mem_ctl_info *edac_mc_alloc(unsigned int mc_num,
- 	if (!mci)
- 		return NULL;
- 
--	mci->layers = kmalloc_array(n_layers, sizeof(struct edac_mc_layer), GFP_KERNEL | __GFP_ZERO);
-+	mci->layers = kcalloc(n_layers, sizeof(struct edac_mc_layer), GFP_KERNEL);
- 	if (!mci->layers)
- 		goto error;
- 
+diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
+index f4c8fc3ee463..c47f36581f3f 100644
+--- a/drivers/mfd/simple-mfd-i2c.c
++++ b/drivers/mfd/simple-mfd-i2c.c
+@@ -75,6 +75,7 @@ static const struct simple_mfd_data silergy_sy7636a = {
+ static const struct of_device_id simple_mfd_i2c_of_match[] = {
+ 	{ .compatible = "kontron,sl28cpld" },
+ 	{ .compatible = "silergy,sy7636a", .data = &silergy_sy7636a},
++	{ .compatible = "raspberrypi,sensehat" },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, simple_mfd_i2c_of_match);
 -- 
-2.35.1
+2.31.1
 
