@@ -2,122 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4100C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C049EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbiDLNz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51120 "EHLO
+        id S1356395AbiDLNzb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 09:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356343AbiDLNzT (ORCPT
+        with ESMTP id S1356352AbiDLNzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:55:19 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FE057B29
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:52:56 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2ec42eae76bso52109087b3.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:52:56 -0700 (PDT)
+        Tue, 12 Apr 2022 09:55:25 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7955757488;
+        Tue, 12 Apr 2022 06:53:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=njLwfv8x5JN57bKLpVncTJBpmJAluBvNUAao+ufJQVs=;
-        b=IUcm7168yr61eaw7ivYWGEyT23AxhnCbYXke4iUGZgMbINLFHJLuAItPbIIPTGF1hu
-         iQHMFqsZTIuHg1PyUwDsS6saljpW9ifCzLiLGy0z39XxrH9vu0jyLJsbdVPxsCphmzYv
-         J4ss2fxbbCO017Bs+QOJuRDFC9XaaPVyCc7y69IuVwe4p+V77qA0SmCciDRIdsyrB7SD
-         i3Ax2glCeFiLPlWZJg9L0ctgopKhOnD0RPLYR3O04FJa1nkHQCd+v0GcM/jn7F818ig0
-         8CJCcFwfJkri1xlmaqs3UyN6LlyHA6Nlkq2dXJUy+Y0H+D8ZUG2CERUaaM2vX0JUdu6B
-         IlTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=njLwfv8x5JN57bKLpVncTJBpmJAluBvNUAao+ufJQVs=;
-        b=XS25Oy8/fDUlmFRFjJ3ykYFB0u9v4x1WALKYl+iYRzW6oJtG0mL9AxX/Ec9idivCyi
-         2B4qOjH/LKjXb+iAYFH7MePzj5FKuI9LYMZSCgYL/r5GCXWTyJq81bHqJwf/VhQGWubG
-         snX8gVA9/Yl/LH1rxNw6qGdm6j2DtoP0OS4G9k0GCcb8wXDK6IVDP04n0mFm0xPGGCSv
-         vbzDPXCBt00qSBcKkPaKJgKyEJfu+Ua9jSyz51+iok71X/ME3x8IW1pEsLdDofb1KXXh
-         IhKoTkaqfL6skzqQydLw5wAi/evaCl1m/xjMJIXVsGgw087EreRCZLsOfC23Y7x95VVi
-         xojA==
-X-Gm-Message-State: AOAM530HP+oXgSf3t8ADRgqdxluvmEM7M5MA2EtyrKeVhP9E95CujQ2v
-        44SWpjx162LEIlcoaDGMpkr4zF1B+CmitkmJlPA=
-X-Google-Smtp-Source: ABdhPJy+wpmkGn/cBMOXz+R9oOaKRn7/QkXMqoTKaja1dTLCZFpokixqxoGBDGuQKvM795owh+PENquBzq6Y6Il5PcY=
-X-Received: by 2002:a0d:d850:0:b0:2ec:26bb:3468 with SMTP id
- a77-20020a0dd850000000b002ec26bb3468mr8956701ywe.369.1649771575793; Tue, 12
- Apr 2022 06:52:55 -0700 (PDT)
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649771588;
+  x=1681307588;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=jupemliQ8dJWnscgwhDk1djkO0V1yNDM+5JWRzk83NE=;
+  b=AsPkKyqRtkZeyL7JAWRqNjITpIQwd2aRv3sIsgEO3000zpSp1w7RwlHG
+   9iaNT6vCNeCQdXD+dAmx3OKQbEGaag9JLgIMG3QITu4CDDSo8t+4MiUrt
+   sv1UOvMIO7W+b+/BaG9G9Ji/uyncRR7ExGGmXLYCZkem/zHYpWLqyYdqF
+   cMLDu36juukh721NzCbP/+J7U0AFr1oLzI8UUjoNqQ9ZVAJ/9Qe93ovld
+   VVDqHlyZKvS/E7+NvXwJHB7NnUO9UGCn4WNiCect5HZmBrb4orkf3sWRq
+   v/Wi1Ik27HultEwH27w2Sq7i68Jq11RFgt1Z0XWO8QGn8bM5Ea63DG5r7
+   A==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <vigneshr@ti.com>, <richard@nod.at>, <miquel.raynal@bootlin.com>,
+        <joern@lazybastard.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-mtd@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <frowand.list@gmail.com>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 2/4] dt-bindings: reserved-memory: Support MTD/block device
+Date:   Tue, 12 Apr 2022 15:53:00 +0200
+Message-ID: <20220412135302.1682890-3-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220412135302.1682890-1-vincent.whitchurch@axis.com>
+References: <20220412135302.1682890-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-References: <20220412121541.4595-1-jiangshanlai@gmail.com> <20220412121541.4595-4-jiangshanlai@gmail.com>
- <YlV+B8faRD2lDoO3@zn.tnic>
-In-Reply-To: <YlV+B8faRD2lDoO3@zn.tnic>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Tue, 12 Apr 2022 21:52:44 +0800
-Message-ID: <CAJhGHyAsPZAeXUoOa5LJ5bxuMOWzg=cvYNYPVT9kpBM7Tsf3xA@mail.gmail.com>
-Subject: Re: [PATCH V5 3/7] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, X86 ML <x86@kernel.org>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 9:26 PM Borislav Petkov <bp@alien8.de> wrote:
->
-> On Tue, Apr 12, 2022 at 08:15:37PM +0800, Lai Jiangshan wrote:
-> > From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> >
-> > error_entry() doesn't handle the stack balanced.
->
-> What does that mean?
+Add bindings to allow MTD/block devices to be used in reserved-memory
+regions using the "phram" (MTD in PHysical RAM) driver.
 
-For a normal function, e.g. a function complied from a C function,
-the stack will return to its original place when the function
-returns.  The size of memory pushed and popped are the same in
-a function.
+This allows things like partitioning to be specified via the existing
+devicetree bindings.
 
->
-> > It includes
-> > PUSH_AND_CLEAR_REGS which is commonly needed for all IDT entries and
-> > can't pop the regs before it returns.
-> >
-> > Move PUSH_AND_CLEAR_REGS out of error_entry() and make error_entry()
-> > works on the stack normally.
-> >
-> > After this, XENPV doesn't need error_entry() since PUSH_AND_CLEAR_REGS
-> > is moved out and error_entry() can be converted to C code in future
-> > since it doesn't fiddle the stack.
->
-> This is not a justification for this size increase:
->
->    text    data     bss     dec     hex filename
-> 16060616        128131358       36384888        180576862       ac3625e vmlinux.before
-> 16065626        128131358       36380792        180577776       ac365f0 vmlinux.after
->
-> ~5K text increase already with my tailored config.
->
-> You can have a asm_error_entry(), written in asm, which does the regs
-> pushing and which calls error_entry() - the latter being the C version.
-> And no need for the size increase.
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
 
-The mapped size for the text is always 2M when the kernel is booted
-since it is 2M-aligned.  So I don't think the size is a concern.
+Notes:
+    v3:
+    - Reword description.
+    
+    v2:
+    - Add note on what "phram" means.
+    - Use /schemas/mtd/mtd.yaml instead of relative pathUse /schemas/mtd/mtd.yaml instead of relative path.
 
-The only concern is the footprint when different interrupts and
-exceptions happen heavily at the same time.  In this case, different
-copies of PUSH_AND_CLEAR_REGS in the text will be touched.
+ .../bindings/reserved-memory/phram.yaml       | 47 +++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/reserved-memory/phram.yaml
 
-For example, a heavy page fault and IPI or timer at the same time.
-I'm not sure if it is a real case.
+diff --git a/Documentation/devicetree/bindings/reserved-memory/phram.yaml b/Documentation/devicetree/bindings/reserved-memory/phram.yaml
+new file mode 100644
+index 000000000000..6c4db28015f1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reserved-memory/phram.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/reserved-memory/phram.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MTD/block device in RAM
++
++description: |
++  Specifies that the reserved memory region can be used as an MTD or block
++  device.
++
++  The "phram" node is named after the "MTD in PHysical RAM" driver which
++  provides an implementation of this functionality in Linux.
++
++maintainers:
++  - Vincent Whitchurch <vincent.whitchurch@axis.com>
++
++allOf:
++  - $ref: "reserved-memory.yaml"
++  - $ref: "/schemas/mtd/mtd.yaml"
++
++properties:
++  compatible:
++    const: phram
++
++  reg:
++    description: region of memory that can be used as an MTD/block device
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    reserved-memory {
++        #address-cells = <1>;
++        #size-cells = <1>;
++
++        phram: flash@12340000 {
++            compatible = "phram";
++            label = "rootfs";
++            reg = <0x12340000 0x00800000>;
++        };
++    };
+-- 
+2.34.1
 
-I'm Okay with asm_error_entry().  And also we can use an ASM function
-containing PUSH_AND_CLEAR_REGS only.
-
-Thanks
-Lai
