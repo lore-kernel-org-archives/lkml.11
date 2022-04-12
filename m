@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C34C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE42C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357297AbiDLHj4 (ORCPT
+        id S1357194AbiDLHjv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        Tue, 12 Apr 2022 03:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353040AbiDLHOq (ORCPT
+        with ESMTP id S1353015AbiDLHOo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC2B326F2;
-        Mon, 11 Apr 2022 23:55:48 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF04326EE;
+        Mon, 11 Apr 2022 23:55:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B26BB81B35;
-        Tue, 12 Apr 2022 06:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C55E8C385A1;
-        Tue, 12 Apr 2022 06:55:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 901BF61451;
+        Tue, 12 Apr 2022 06:55:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BECAC385A6;
+        Tue, 12 Apr 2022 06:55:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746546;
-        bh=bWbmMtCwHDj7WBYZ7MqbFUn8n+43IBiBL0oK60/Kaac=;
+        s=korg; t=1649746538;
+        bh=dMiiXN6fiIZd8AkFsJ0x1GHU2NK6UPmydR0s3f+eJjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mXBYZ/aPWgxtkWB/2ETvNZnnwq3MwxVEmAnYcX3XOKM+G8iLckzYhsWwpHqufUIqd
-         kj4kwLfeWhat5fXKMywohkldvHjXuq1x9Z9xtVr0DTDZ0wk2ibkRvANgdNj2DngzHv
-         jXZkAUAC7RIceJinZhZMNDhmVP6ysb/8+OceI/UY=
+        b=oCD4kHcv1JJNNg1hkQH84A4uaRHgJblY4/tmdRUTVmwVdGw8iDU5U2/rKZVq27B7b
+         9+kiJsUvDuR6Ms0RLFqC9F+nY58DVaJRTQGMe8acjme+WPsJW1W05crgcZztesFSmn
+         QbwdUBN0iPPrTtlzg99+K+diYJJD0uzs9CHlbAiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kevin Barnett <kevin.barnett@microchip.com>,
-        Scott Benesh <scott.benesh@microchip.com>,
-        Scott Teel <scott.teel@microchip.com>,
-        Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>,
-        Don Brace <don.brace@microchip.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Abdul haleem <abdhalee@linux.vnet.ibm.com>,
+        Sourabh Jain <sourabhjain@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 045/285] scsi: smartpqi: Fix kdump issue when controller is locked up
-Date:   Tue, 12 Apr 2022 08:28:22 +0200
-Message-Id: <20220412062944.976618062@linuxfoundation.org>
+Subject: [PATCH 5.16 042/285] powerpc: Set crashkernel offset to mid of RMA region
+Date:   Tue, 12 Apr 2022 08:28:19 +0200
+Message-Id: <20220412062944.889843485@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -55,98 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>
+From: Sourabh Jain <sourabhjain@linux.ibm.com>
 
-[ Upstream commit 3ada501d602abf02353445c03bb3258146445d90 ]
+[ Upstream commit 7c5ed82b800d8615cdda00729e7b62e5899f0b13 ]
 
-Avoid dropping into shell if the controller is in locked up state.
+On large config LPARs (having 192 and more cores), Linux fails to boot
+due to insufficient memory in the first memblock. It is due to the
+memory reservation for the crash kernel which starts at 128MB offset of
+the first memblock. This memory reservation for the crash kernel doesn't
+leave enough space in the first memblock to accommodate other essential
+system resources.
 
-Driver issues SIS soft reset to bring back the controller to SIS mode while
-OS boots into kdump mode.
+The crash kernel start address was set to 128MB offset by default to
+ensure that the crash kernel get some memory below the RMA region which
+is used to be of size 256MB. But given that the RMA region size can be
+512MB or more, setting the crash kernel offset to mid of RMA size will
+leave enough space for the kernel to allocate memory for other system
+resources.
 
-If the controller is in lockup state, SIS soft reset does not work.
+Since the above crash kernel offset change is only applicable to the LPAR
+platform, the LPAR feature detection is pushed before the crash kernel
+reservation. The rest of LPAR specific initialization will still
+be done during pseries_probe_fw_features as usual.
 
-Since the controller lockup code has not been cleared, driver considers the
-firmware is no longer up and running. Driver returns back an error code to
-OS and the kdump fails.
+This patch is dependent on changes to paca allocation for boot CPU. It
+expect boot CPU to discover 1T segment support which is introduced by
+the patch posted here:
+https://lists.ozlabs.org/pipermail/linuxppc-dev/2022-January/239175.html
 
-Link: https://lore.kernel.org/r/164375212337.440833.11955356190354940369.stgit@brunhilda.pdev.net
-Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
-Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
-Reviewed-by: Scott Teel <scott.teel@microchip.com>
-Signed-off-by: Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>
-Signed-off-by: Don Brace <don.brace@microchip.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Abdul haleem <abdhalee@linux.vnet.ibm.com>
+Signed-off-by: Sourabh Jain <sourabhjain@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220204085601.107257-1-sourabhjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/smartpqi/smartpqi_init.c | 39 ++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 16 deletions(-)
+ arch/powerpc/kernel/rtas.c |  6 ++++++
+ arch/powerpc/kexec/core.c  | 15 +++++++++++----
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 2db9f874cc51..f3749e508673 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -7855,6 +7855,21 @@ static int pqi_force_sis_mode(struct pqi_ctrl_info *ctrl_info)
- 	return pqi_revert_to_sis_mode(ctrl_info);
- }
+diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
+index ff80bbad22a5..e18a725a8e5d 100644
+--- a/arch/powerpc/kernel/rtas.c
++++ b/arch/powerpc/kernel/rtas.c
+@@ -1235,6 +1235,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
+ 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
+ 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
  
-+static void pqi_perform_lockup_action(void)
-+{
-+	switch (pqi_lockup_action) {
-+	case PANIC:
-+		panic("FATAL: Smart Family Controller lockup detected");
-+		break;
-+	case REBOOT:
-+		emergency_restart();
-+		break;
-+	case NONE:
-+	default:
-+		break;
-+	}
-+}
++#ifdef CONFIG_PPC64
++	/* need this feature to decide the crashkernel offset */
++	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
++		powerpc_firmware_features |= FW_FEATURE_LPAR;
++#endif
 +
- static int pqi_ctrl_init(struct pqi_ctrl_info *ctrl_info)
- {
- 	int rc;
-@@ -7879,8 +7894,15 @@ static int pqi_ctrl_init(struct pqi_ctrl_info *ctrl_info)
- 	 * commands.
- 	 */
- 	rc = sis_wait_for_ctrl_ready(ctrl_info);
--	if (rc)
-+	if (rc) {
-+		if (reset_devices) {
-+			dev_err(&ctrl_info->pci_dev->dev,
-+				"kdump init failed with error %d\n", rc);
-+			pqi_lockup_action = REBOOT;
-+			pqi_perform_lockup_action();
-+		}
- 		return rc;
-+	}
- 
- 	/*
- 	 * Get the controller properties.  This allows us to determine
-@@ -8605,21 +8627,6 @@ static int pqi_ofa_ctrl_restart(struct pqi_ctrl_info *ctrl_info, unsigned int de
- 	return pqi_ctrl_init_resume(ctrl_info);
- }
- 
--static void pqi_perform_lockup_action(void)
--{
--	switch (pqi_lockup_action) {
--	case PANIC:
--		panic("FATAL: Smart Family Controller lockup detected");
--		break;
--	case REBOOT:
--		emergency_restart();
--		break;
--	case NONE:
--	default:
--		break;
--	}
--}
--
- static struct pqi_raid_error_info pqi_ctrl_offline_raid_error_info = {
- 	.data_out_result = PQI_DATA_IN_OUT_HARDWARE_ERROR,
- 	.status = SAM_STAT_CHECK_CONDITION,
+ 	if (basep && entryp && sizep) {
+ 		rtas.base = *basep;
+ 		rtas.entry = *entryp;
+diff --git a/arch/powerpc/kexec/core.c b/arch/powerpc/kexec/core.c
+index a2242017e55f..11b327fa135c 100644
+--- a/arch/powerpc/kexec/core.c
++++ b/arch/powerpc/kexec/core.c
+@@ -134,11 +134,18 @@ void __init reserve_crashkernel(void)
+ 	if (!crashk_res.start) {
+ #ifdef CONFIG_PPC64
+ 		/*
+-		 * On 64bit we split the RMO in half but cap it at half of
+-		 * a small SLB (128MB) since the crash kernel needs to place
+-		 * itself and some stacks to be in the first segment.
++		 * On the LPAR platform place the crash kernel to mid of
++		 * RMA size (512MB or more) to ensure the crash kernel
++		 * gets enough space to place itself and some stack to be
++		 * in the first segment. At the same time normal kernel
++		 * also get enough space to allocate memory for essential
++		 * system resource in the first segment. Keep the crash
++		 * kernel starts at 128MB offset on other platforms.
+ 		 */
+-		crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
++		if (firmware_has_feature(FW_FEATURE_LPAR))
++			crashk_res.start = ppc64_rma_size / 2;
++		else
++			crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
+ #else
+ 		crashk_res.start = KDUMP_KERNELBASE;
+ #endif
 -- 
 2.35.1
 
