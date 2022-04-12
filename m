@@ -2,211 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 03:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85CD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 03:37:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344720AbiDLDis (ORCPT
+        id S1344701AbiDLDj4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 23:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
+        Mon, 11 Apr 2022 23:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344575AbiDLDig (ORCPT
+        with ESMTP id S238723AbiDLDjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 23:38:36 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E134192B6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 20:36:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649734580; x=1681270580;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=USgLlHicqdKbRyScUUYgIH7kQzveCbYodWpEhoAeAus=;
-  b=ZDY/xLIRuNAEhHOaZkJZfrTzxD2kV3EudVZJ9DTcFTpYjg8LxYxxHFGY
-   wkdcM5s/1/PkWSzNVbuSXNb5SA7k4SvKcHODjN5Nv1Pr3f4J7C4KMupM0
-   27UZjZ1p8zEaWl7Sxd3wUqhdeOjR6htRXCXuglOxo7mAWF1jsoYHKsEQf
-   BeGBgDZ9ncuDBDzyn3LlOJ7Ec1NdMNF6lXPsr2TotNmgN8GBWM1084JYo
-   x43menl+WxEZZkA02Yzv9WzKCVz9mut9+CadA/Xw0l9EQAzYk4aOSvYbS
-   y2jU58F99nwkxBaXMTMqrrYcNqXCXV38iMqtMC3KAurmBoxUMHPgdAYzr
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="322713037"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="322713037"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 20:36:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="654908588"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 11 Apr 2022 20:36:15 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ne7KA-0002U5-FR;
-        Tue, 12 Apr 2022 03:36:14 +0000
-Date:   Tue, 12 Apr 2022 11:35:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        dri-devel@lists.freedesktop.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: Re: [PATCH v3 11/15] drm/shmem-helper: Add generic memory shrinker
-Message-ID: <202204121135.zXHzC28U-lkp@intel.com>
-References: <20220411215937.281655-12-dmitry.osipenko@collabora.com>
+        Mon, 11 Apr 2022 23:39:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07BF0192B6;
+        Mon, 11 Apr 2022 20:37:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CCB761739;
+        Tue, 12 Apr 2022 03:37:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECEA3C385AB;
+        Tue, 12 Apr 2022 03:37:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649734657;
+        bh=mrnyWd53bMjtQiofKd1ZScd6fhayzsp2b2W3MoHNM2E=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=LAYKihxMKJhnXPTa4WZrVPzXkSQ4ejSv+VLVFkiuj3Eru0PQl9kBMjevSg6xsM+v2
+         FtanT70z7YqHF3wjZD00oCpQtZDHYtOcZZzel4991POxPZshKdW+/Gl3Vv6U9p7w+A
+         x3cv+EsDTmxhKJHgIBW4whnYppweYwBgPee+KAFshc5xwEIddIQzx/nMuq7mjABnka
+         I1h/p8jOE6qAE6LVEw7H0mLrryGlPwmVyaCfgEayjTvUsA8mJmMUYNQCVwBwN41g4P
+         TnSo9iMnLfv34CbEfa2JedDh0Sw6294d4S61z4OKpgb+vbPQ+CZqtYqZv+XCDl610S
+         vnXt1EdX21Rkw==
+Received: by mail-wr1-f50.google.com with SMTP id u3so25820246wrg.3;
+        Mon, 11 Apr 2022 20:37:36 -0700 (PDT)
+X-Gm-Message-State: AOAM530iZkitFGGo7ijzTHdG4EzLOAHAjAf64jp6aUqjxeSIXGGwGvTv
+        yVW8oUj6FnUqpwlTnd5vWetOZ3YwxRlPTuzIYL4=
+X-Google-Smtp-Source: ABdhPJz0KUn6IlpgNB3uSlVMKzj8lqhrvusdBUInVzLjf0fRn0xOig95EqNNIf17wcv5AUFXeQYozDt9L7lvUt+1E9k=
+X-Received: by 2002:a05:6000:1ca:b0:207:acc8:c153 with SMTP id
+ t10-20020a05600001ca00b00207acc8c153mr1969999wrx.165.1649734655137; Mon, 11
+ Apr 2022 20:37:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411215937.281655-12-dmitry.osipenko@collabora.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: by 2002:a05:6000:2c1:0:0:0:0 with HTTP; Mon, 11 Apr 2022 20:37:34
+ -0700 (PDT)
+In-Reply-To: <01626f93-e982-8631-4196-112a8bb4a01a@kernel.dk>
+References: <HK2PR04MB3891FCECADD7AECEEF5DD63081E99@HK2PR04MB3891.apcprd04.prod.outlook.com>
+ <Yk/DpSwR8kGKWJYl@infradead.org> <CAKYAXd9NAUjdxT2GOWGoPvH5nOXSFtD7u0t_9rCiZx7hSGC0PA@mail.gmail.com>
+ <01626f93-e982-8631-4196-112a8bb4a01a@kernel.dk>
+From:   Namjae Jeon <linkinjeon@kernel.org>
+Date:   Tue, 12 Apr 2022 12:37:34 +0900
+X-Gmail-Original-Message-ID: <CAKYAXd9D85wpwFOzii2yMfA9jZuRC0Q5XZ89OAHZYdHw0pyqWg@mail.gmail.com>
+Message-ID: <CAKYAXd9D85wpwFOzii2yMfA9jZuRC0Q5XZ89OAHZYdHw0pyqWg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] block: add sync_blockdev_range()
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        "Yuezhang.Mo@sony.com" <Yuezhang.Mo@sony.com>,
+        "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "Andy.Wu@sony.com" <Andy.Wu@sony.com>,
+        "Wataru.Aoyama@sony.com" <Wataru.Aoyama@sony.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dmitry,
+2022-04-12 10:12 GMT+09:00, Jens Axboe <axboe@kernel.dk>:
+> On 4/10/22 8:08 PM, Namjae Jeon wrote:
+>> 2022-04-08 14:09 GMT+09:00, Christoph Hellwig <hch@infradead.org>:
+>>> Looks good:
+>>>
+>>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>> Thanks for your review!
+>>
+>> Hi Jens,
+>>
+>> Can I apply this patch with your Ack to exfat #dev ?
+>
+> Yes go ahead:
+>
+> Reviewed-by: Jens Axboe <axboe@kernel.dk>
+Applied, Thanks for your review!
 
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on next-20220411]
-[cannot apply to drm/drm-next v5.18-rc2 v5.18-rc1 v5.17 v5.18-rc2]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Osipenko/Add-generic-memory-shrinker-to-VirtIO-GPU-and-Panfrost-DRM-drivers/20220412-060325
-base:    d12d7e1cfe38e0c36d28c7a9fbbc436ad0d17c14
-config: arc-buildonly-randconfig-r002-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121135.zXHzC28U-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/683ba8a9d72ba7770a61a9266a2b33949f3874f2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Dmitry-Osipenko/Add-generic-memory-shrinker-to-VirtIO-GPU-and-Panfrost-DRM-drivers/20220412-060325
-        git checkout 683ba8a9d72ba7770a61a9266a2b33949f3874f2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/gpu/drm/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/gpu/drm/drm_gem_shmem_helper.c: In function 'drm_gem_shmem_shrinker_run_objects_scan':
->> drivers/gpu/drm/drm_gem_shmem_helper.c:1358:56: warning: implicit conversion from 'enum <anonymous>' to 'enum dma_resv_usage' [-Wenum-conversion]
-    1358 |                 if (!dma_resv_test_signaled(obj->resv, true))
-         |                                                        ^~~~
-
-
-vim +1358 drivers/gpu/drm/drm_gem_shmem_helper.c
-
-  1299	
-  1300	static unsigned long
-  1301	drm_gem_shmem_shrinker_run_objects_scan(struct shrinker *shrinker,
-  1302						unsigned long nr_to_scan,
-  1303						bool *lock_contention,
-  1304						bool evict)
-  1305	{
-  1306		struct drm_gem_shmem_shrinker *gem_shrinker = to_drm_shrinker(shrinker);
-  1307		struct drm_gem_shmem_object *shmem;
-  1308		struct list_head still_in_list;
-  1309		struct drm_gem_object *obj;
-  1310		unsigned long freed = 0;
-  1311		struct list_head *lru;
-  1312		size_t page_count;
-  1313	
-  1314		INIT_LIST_HEAD(&still_in_list);
-  1315	
-  1316		mutex_lock(&gem_shrinker->lock);
-  1317	
-  1318		if (evict)
-  1319			lru = &gem_shrinker->lru_evictable;
-  1320		else
-  1321			lru = &gem_shrinker->lru_purgeable;
-  1322	
-  1323		while (freed < nr_to_scan) {
-  1324			shmem = list_first_entry_or_null(lru, typeof(*shmem), madv_list);
-  1325			if (!shmem)
-  1326				break;
-  1327	
-  1328			obj = &shmem->base;
-  1329			page_count = obj->size >> PAGE_SHIFT;
-  1330			list_move_tail(&shmem->madv_list, &still_in_list);
-  1331	
-  1332			if (evict && get_nr_swap_pages() < page_count)
-  1333				continue;
-  1334	
-  1335			/*
-  1336			 * If it's in the process of being freed, gem_object->free()
-  1337			 * may be blocked on lock waiting to remove it.  So just
-  1338			 * skip it.
-  1339			 */
-  1340			if (!kref_get_unless_zero(&obj->refcount))
-  1341				continue;
-  1342	
-  1343			mutex_unlock(&gem_shrinker->lock);
-  1344	
-  1345			/* prevent racing with job-submission code paths */
-  1346			if (!dma_resv_trylock(obj->resv)) {
-  1347				*lock_contention |= true;
-  1348				goto shrinker_lock;
-  1349			}
-  1350	
-  1351			/* prevent racing with the dma-buf exporting */
-  1352			if (!mutex_trylock(&gem_shrinker->dev->object_name_lock)) {
-  1353				*lock_contention |= true;
-  1354				goto resv_unlock;
-  1355			}
-  1356	
-  1357			/* check whether h/w uses this object */
-> 1358			if (!dma_resv_test_signaled(obj->resv, true))
-  1359				goto object_name_unlock;
-  1360	
-  1361			/* GEM may've become unpurgeable while shrinker was unlocked */
-  1362			if (evict) {
-  1363				if (!drm_gem_shmem_is_evictable(shmem))
-  1364					goto object_name_unlock;
-  1365			} else {
-  1366				if (!drm_gem_shmem_is_purgeable(shmem))
-  1367					goto object_name_unlock;
-  1368			}
-  1369	
-  1370			if (evict)
-  1371				freed += obj->funcs->evict(obj);
-  1372			else
-  1373				freed += obj->funcs->purge(obj);
-  1374	object_name_unlock:
-  1375			mutex_unlock(&gem_shrinker->dev->object_name_lock);
-  1376	resv_unlock:
-  1377			dma_resv_unlock(obj->resv);
-  1378	shrinker_lock:
-  1379			drm_gem_object_put(&shmem->base);
-  1380			mutex_lock(&gem_shrinker->lock);
-  1381		}
-  1382	
-  1383		list_splice_tail(&still_in_list, lru);
-  1384	
-  1385		mutex_unlock(&gem_shrinker->lock);
-  1386	
-  1387		return freed;
-  1388	}
-  1389	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+> --
+> Jens Axboe
+>
+>
