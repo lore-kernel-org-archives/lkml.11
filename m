@@ -2,135 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC30C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240427AbiDLMgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33644 "EHLO
+        id S1352903AbiDLMg3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350979AbiDLMf6 (ORCPT
+        with ESMTP id S1348150AbiDLMf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 08:35:58 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF340387BB;
-        Tue, 12 Apr 2022 04:54:47 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9CE3B1424;
-        Tue, 12 Apr 2022 04:54:47 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.38.213])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E949A3F70D;
-        Tue, 12 Apr 2022 04:54:39 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-perf-users@vger.kernel.org
-Subject: [RFC V2 1/8] perf: Consolidate branch sample filter helpers
-Date:   Tue, 12 Apr 2022 17:24:48 +0530
-Message-Id: <20220412115455.293119-2-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412115455.293119-1-anshuman.khandual@arm.com>
-References: <20220412115455.293119-1-anshuman.khandual@arm.com>
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC98344D2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:54:46 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id r13so36852535ejd.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:54:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6udN7p84mQQbGIPlPrTSL/PLuG+dh1guReUObCKNXP8=;
+        b=DpJ5xce5z1oKLNoQI5H77n+qFkrR2trfG6eiMK3QQPicwsTlh1LbOMYrgQK2Jwkdwj
+         LK4vOsQSTqEtifdm6tfTeWzv5O6laFEG0jqXYJI8aqW9qc8WznM4Wh4ljvA2WY057Y2X
+         BOGQY5uI3BLeoeBOdfi3C/KNrD9lwiHjVqr88X5WIDgjNizuqzL4SvOf5YrNCrawGh8A
+         sXIlPr21fu2tSAT5DJoGwj0mpoVZPaVDZ20xJ6aJQ94w8uMTA94CkuyR12nglFQ5Ks7w
+         RaEhnkEIVS+j23IO68YdoptMq+MMdR6wiU1zJDTfHdQgmNoaxVKVcknvT8kKsjeHBk2v
+         d0QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6udN7p84mQQbGIPlPrTSL/PLuG+dh1guReUObCKNXP8=;
+        b=piU4JRnUK2wZDXU87nCNIimJnGhS2887l8Fo0Gz8v0E5V2QF6TquS1lT/T6DULKgU9
+         fSxQ660M+GQ8r/x3QKRnbw1/gTyupF5c9QoYwCQsXLBrGN0oo+obOB5sIxiGl7FCbfG8
+         XRHYBvxKrqA75Xn+bmZiaTTQfVpnLzss75aS65QdrYsT7F6F7EHQZwhIageUU/EBa4gj
+         I+v7bnGHc2a7X8OyA1Msar3c72r7bV7NqWJKk8nfdz/NGkGhhK5u8s2HdGvEOnglke0U
+         P3stReFYigM0B7JG81qEytXo+bFKDRDSDpcJT/vhtdNsA0qPoquH0gezRTwQ4evfQOXQ
+         kQaw==
+X-Gm-Message-State: AOAM5333wO5U6X+gC+pGjnsmeeKYo6u8iKhAtCH2ilm/tAR9CSph55p+
+        +gYUohrmGxZeskv/XmnaMqdnZA==
+X-Google-Smtp-Source: ABdhPJyJhJm8ZVPk7tw6VD+la4hCwdTsmQiQ9k85Y+ogd6oPi0J+6g0dtxAMCcJdiZDIn+K32a4jtw==
+X-Received: by 2002:a17:907:1b1b:b0:6e4:7fac:6ce0 with SMTP id mp27-20020a1709071b1b00b006e47fac6ce0mr34100414ejc.617.1649764485066;
+        Tue, 12 Apr 2022 04:54:45 -0700 (PDT)
+Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id u4-20020aa7db84000000b004136c2c357csm16632865edt.70.2022.04.12.04.54.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 04:54:44 -0700 (PDT)
+Message-ID: <1b0c00bd-de0e-3096-556d-4d944e5d9b00@linaro.org>
+Date:   Tue, 12 Apr 2022 13:54:43 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 4/7] dt-bindings: arm-smmu: Add binding for SDX65 SMMU
+Content-Language: en-US
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, will@kernel.org,
+        robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, ulf.hansson@linaro.org, agross@kernel.org,
+        bjorn.andersson@linaro.org
+Cc:     manivannan.sadhasivam@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1649670615-21268-5-git-send-email-quic_rohiagar@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1649670615-21268-5-git-send-email-quic_rohiagar@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Besides the branch type filtering requests, 'event.attr.branch_sample_type'
-also contains various flags indicating which additional information should
-be captured, along with the base branch record. These flags help configure
-the underlying hardware, and capture the branch records appropriately when
-required e.g after PMU interrupt. But first, this moves an existing helper
-perf_sample_save_hw_index() into the header before adding some more helpers
-for other branch sample filter flags.
+On 11/04/2022 11:50, Rohit Agarwal wrote:
+> Add devicetree binding for Qualcomm SDX65 SMMU.
+> 
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: linux-perf-users@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- include/linux/perf_event.h | 24 ++++++++++++++++++++++++
- kernel/events/core.c       |  9 ++-------
- 2 files changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index af97dd427501..07710ae148c7 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -1660,4 +1660,28 @@ typedef int (perf_snapshot_branch_stack_t)(struct perf_branch_entry *entries,
- 					   unsigned int cnt);
- DECLARE_STATIC_CALL(perf_snapshot_branch_stack, perf_snapshot_branch_stack_t);
- 
-+static inline bool branch_sample_no_flags(const struct perf_event *event)
-+{
-+	return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_NO_FLAGS;
-+}
-+
-+static inline bool branch_sample_no_cycles(const struct perf_event *event)
-+{
-+	return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_NO_CYCLES;
-+}
-+
-+static inline bool branch_sample_type(const struct perf_event *event)
-+{
-+	return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_TYPE_SAVE;
-+}
-+
-+static inline bool branch_sample_hw_index(const struct perf_event *event)
-+{
-+	return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_HW_INDEX;
-+}
-+
-+static inline bool branch_sample_priv(const struct perf_event *event)
-+{
-+	return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_PRIV_SAVE;
-+}
- #endif /* _LINUX_PERF_EVENT_H */
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index cfde994ce61c..3883bb7472b4 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -7058,11 +7058,6 @@ static void perf_output_read(struct perf_output_handle *handle,
- 		perf_output_read_one(handle, event, enabled, running);
- }
- 
--static inline bool perf_sample_save_hw_index(struct perf_event *event)
--{
--	return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_HW_INDEX;
--}
--
- void perf_output_sample(struct perf_output_handle *handle,
- 			struct perf_event_header *header,
- 			struct perf_sample_data *data,
-@@ -7151,7 +7146,7 @@ void perf_output_sample(struct perf_output_handle *handle,
- 			     * sizeof(struct perf_branch_entry);
- 
- 			perf_output_put(handle, data->br_stack->nr);
--			if (perf_sample_save_hw_index(event))
-+			if (branch_sample_hw_index(event))
- 				perf_output_put(handle, data->br_stack->hw_idx);
- 			perf_output_copy(handle, data->br_stack->entries, size);
- 		} else {
-@@ -7445,7 +7440,7 @@ void perf_prepare_sample(struct perf_event_header *header,
- 	if (sample_type & PERF_SAMPLE_BRANCH_STACK) {
- 		int size = sizeof(u64); /* nr */
- 		if (data->br_stack) {
--			if (perf_sample_save_hw_index(event))
-+			if (branch_sample_hw_index(event))
- 				size += sizeof(u64);
- 
- 			size += data->br_stack->nr
--- 
-2.25.1
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
