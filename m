@@ -2,121 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F391CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A21C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358955AbiDLKTP (ORCPT
+        id S1380034AbiDLKUH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
+        Tue, 12 Apr 2022 06:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355219AbiDLKJD (ORCPT
+        with ESMTP id S1376701AbiDLJ7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:09:03 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61436FF51
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:11:29 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C9B19H123978;
-        Tue, 12 Apr 2022 04:11:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649754661;
-        bh=8hO/8Dci2SJSEgmGxnVfMhUAImO5GUV+8DRYO0LqYl0=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=hzj5nh8sw4F030IO93nlWpVt/0e8wVuRUUfAVHZAUwmiQcBxUq2a0f45pMGBSumKb
-         p5/eXNfWDUrqqyBd9JJg6k5Rk+6T9dYO4MczWTDsHOdybPmCzCHybEwZNOLH/GXuBl
-         E6jG+aeEul4tTXJBrYIQqO4nZ0dEDi29Km00SDAw=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C9B1tY001312
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 Apr 2022 04:11:01 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
- Apr 2022 04:11:00 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 12 Apr 2022 04:11:01 -0500
-Received: from [172.24.221.43] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C9AufX068426;
-        Tue, 12 Apr 2022 04:10:57 -0500
-Message-ID: <c0b9825d-a066-1a26-f428-854ddf6d9186@ti.com>
-Date:   Tue, 12 Apr 2022 14:40:55 +0530
+        Tue, 12 Apr 2022 05:59:19 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46F61F60C;
+        Tue, 12 Apr 2022 02:03:04 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id q142so16626081pgq.9;
+        Tue, 12 Apr 2022 02:03:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qeL9OUUuVYyPAwmLxhfNrEy3AwKesyiaX46zNs16JBw=;
+        b=PDCh3y1YtisU9UUHOnDvKa5w6dKulSdUSg3Sj9TdSOkJpLKfiIFdUzcix8WEdWnOrG
+         t9Ul/Wsp1nJ2qt6RCbSnxTCAwd/KwVJPdrZ4dyRKbl+Jauh1XpQ3alf/NkwmD6XTM+Ms
+         BBEHaSyP4cDW8FFWBV4E3BAQxv9Vk+KyRqP8Yf2vY0xHXEoVOIsbpy/ta11eLZe3WBqH
+         flCy4GlDBO367JzYAayNLqTLGvVB8RQcSeeRJ/wCKi69Jw2ie7nrBS0EJUEj++ofXO9T
+         mbdwEWqOAklYtCAb7dPu+CEw/IcY5MeMJb1ySIlut+Ix+13Q1T3PDWSxFHMixAj4Kc9s
+         6u2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qeL9OUUuVYyPAwmLxhfNrEy3AwKesyiaX46zNs16JBw=;
+        b=rlN+QSkvbf+JcD4U3w7Qpug7/CT+aNocWQplYKC4CR2yqk1+UxYVF7XOJsuxl6QIa9
+         +i7RTcFxRMaz1qY9soF2eYu5X549xTd5NoCiCnYpqMf6X0gx/P6dDO9w/J+/UkZkc8h4
+         CUk5Mdf4vXhRRb8y9iH+/F9v//iAwtA2XkoaVDZGMArFoUAY4VLXzBXZ6GYzgxpCzfas
+         YBty0D+JqhWy83zC+DL7XLcnF87o1E8EL6tClVA7gcuLSXhyFJQt4p62CNs7XDLErisU
+         7gemIXsBt1B9mZysptusXOhr8pM7xoSodfwEvg5BLrBmpl0+/GBrmYdd6VIF7vQQbb4Y
+         BuuA==
+X-Gm-Message-State: AOAM531J4Mta7l9HW8zJdJQsXfDcfvyAzFLXSFpRZmVuTzFu9mCQZPcj
+        CT9Shx1tS0/gsDydx3jZdW4=
+X-Google-Smtp-Source: ABdhPJy7OVOB4oSM//e1PiinQTfpq0sbwC5nxLoAJdtrcRvnN5OvTFVdRKhIFveJM1YiiZTQXJHNwQ==
+X-Received: by 2002:a63:dc4e:0:b0:39c:c5b2:94d6 with SMTP id f14-20020a63dc4e000000b0039cc5b294d6mr22046984pgj.365.1649754184245;
+        Tue, 12 Apr 2022 02:03:04 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id r8-20020a17090a0ac800b001c9e35d3a3asm2110537pje.24.2022.04.12.02.03.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 02:03:03 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        srinivas.kandagatla@linaro.org
+Cc:     gregkh@linuxfoundation.org, sdharia@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] slimbus: qcom: fix error check return value of platform_get_irq()
+Date:   Tue, 12 Apr 2022 09:02:59 +0000
+Message-Id: <20220412090259.2533316-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/tidss: Soft Reset DISPC on startup
-Content-Language: en-US
-To:     <linux-kernel@vger.kernel.org>, <jyri.sarha@iki.fi>,
-        <tomba@kernel.org>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dri-devel@lists.freedesktop.org>,
-        <laurent.pinchart@ideasonboard.com>,
-        <tomi.valkeinen@ideasonboard.com>
-CC:     <nm@ti.com>, <a-bhatia1@ti.com>, <r-ravikumar@ti.com>,
-        <nikhil.nd@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <vigneshr@ti.com>
-References: <20220314113739.18000-1-devarsht@ti.com>
-From:   Devarsh Thakkar <devarsht@ti.com>
-In-Reply-To: <20220314113739.18000-1-devarsht@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent, Tomi,
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-On 14/03/22 17:07, Devarsh Thakkar wrote:
-> Soft reset the display subsystem controller on startup and wait for
-> the reset to complete. This helps the scenario where display was
-> already in use by some other core before the linux was booted.
+platform_get_irq() return negative value on failure, so null check of
+ctrl->irq is incorrect. Fix it by comparing whether it is less than zero.
 
-Could you please help review this patch ?
+Fixes: ad7fcbc308b0 ("slimbus: qcom: Add Qualcomm Slimbus controller driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ drivers/slimbus/qcom-ctrl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
+diff --git a/drivers/slimbus/qcom-ctrl.c b/drivers/slimbus/qcom-ctrl.c
+index f04b961b96cd..b2f01e155d77 100644
+--- a/drivers/slimbus/qcom-ctrl.c
++++ b/drivers/slimbus/qcom-ctrl.c
+@@ -510,7 +510,7 @@ static int qcom_slim_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ctrl->irq = platform_get_irq(pdev, 0);
+-	if (!ctrl->irq) {
++	if (ctrl->irq < 0) {
+ 		dev_err(&pdev->dev, "no slimbus IRQ\n");
+ 		return -ENODEV;
+ 	}
+-- 
+2.25.1
 
-Devarsh
-
-> Signed-off-by: Devarsh Thakkar <devarsht@ti.com>
-> ---
->  drivers/gpu/drm/tidss/tidss_dispc.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->
-> diff --git a/drivers/gpu/drm/tidss/tidss_dispc.c b/drivers/gpu/drm/tidss/tidss_dispc.c
-> index 60b92df615aa..dae47853b728 100644
-> --- a/drivers/gpu/drm/tidss/tidss_dispc.c
-> +++ b/drivers/gpu/drm/tidss/tidss_dispc.c
-> @@ -2650,6 +2650,20 @@ static void dispc_init_errata(struct dispc_device *dispc)
->  	}
->  }
->  
-> +static void dispc_softreset(struct dispc_device *dispc)
-> +{
-> +	u32 val;
-> +	int ret = 0;
-> +
-> +	/* Soft reset */
-> +	REG_FLD_MOD(dispc, DSS_SYSCONFIG, 1, 1, 1);
-> +	/* Wait for reset to complete */
-> +	ret = readl_poll_timeout(dispc->base_common + DSS_SYSSTATUS,
-> +				 val, val & 1, 100, 5000);
-> +	if (ret)
-> +		dev_warn(dispc->dev, "failed to reset dispc\n");
-> +}
-> +
->  int dispc_init(struct tidss_device *tidss)
->  {
->  	struct device *dev = tidss->dev;
-> @@ -2709,6 +2723,10 @@ int dispc_init(struct tidss_device *tidss)
->  			return r;
->  	}
->  
-> +	/* K2G display controller does not support soft reset */
-> +	if (feat->subrev != DISPC_K2G)
-> +		dispc_softreset(dispc);
-> +
->  	for (i = 0; i < dispc->feat->num_vps; i++) {
->  		u32 gamma_size = dispc->feat->vp_feat.color.gamma_size;
->  		u32 *gamma_table;
