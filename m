@@ -2,145 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07540C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B611C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354607AbiDLMy4 (ORCPT
+        id S1354640AbiDLMzC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
+        Tue, 12 Apr 2022 08:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355223AbiDLMsH (ORCPT
+        with ESMTP id S1355299AbiDLMsK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:48:07 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63D01BE95
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:16 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id s137so14360105pgs.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:16 -0700 (PDT)
+        Tue, 12 Apr 2022 08:48:10 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604D3DEC7;
+        Tue, 12 Apr 2022 05:16:47 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id g18so11988787ejc.10;
+        Tue, 12 Apr 2022 05:16:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Q5RIw3Y6iFyQPwywIArOqCVkO5sLf9t/GzdrB82aITI=;
-        b=I1wYevuxtaS9lLUaPCx+RCwFaW38RY7DlLemfEmzjcYFDvvTkcgeY1LaNtemO00ecC
-         TdSRY0Oa9GNs2MJ/5xNISNYYpP9Rh6s6rAjBpnRvztHk/Gj5hDZUcJlYyGDsYeTb1mCu
-         9obdPHkW+ixlUWB+NjAypOeSbA88if21PMufKT61cgY4xWNkOJNJZ8IOq4JuVglNNfG8
-         0B2Tu6jrYo6XQcXT100W0X0pE9h8XZfjXenqK2PlsWyfn6frDFzoQpDsnHUXPkYIHNfN
-         I7h1WuwXFc6SnAlCga9YYmV5Jdj9oj7pri48IqYeYkFOhNbXGed9UzjoS7zsEI12Pa2+
-         /NYA==
+        bh=vgJhsUA0t53G3i/our+ohO3psku9eyW28VU5QSKiZig=;
+        b=MbpelD1kO9fpd+TInbPP84SQTrTYFohS7QmbpAgzqeblyAZFn3SqJtplp4zUHPDIN+
+         TiPBFcZy1uzoaGj6w8UCN6eSvYKqFm/GpqOxZZDGhiOnnw64ZPG+a3cL8ayI5PBKEmiV
+         Bm5PiVvPrfxKiQYkNWj/y67f/behHd+xZYG6SJ27oZudVrF4fvY8p1PDKl019RGHD90r
+         od4La0PkXqCWYS8vORcSOuwIokgKkz4LnPqN9FF8H6Gz4v61Oxb2jWhUrpJgNql9m2mM
+         RmUwLOrTNPjZ+TlQ2pnRdHrWNs7b6qt/pSyuJ7YK37HQvNRjkmsEEhMx0Y0j+so2ZdhI
+         C92A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Q5RIw3Y6iFyQPwywIArOqCVkO5sLf9t/GzdrB82aITI=;
-        b=n4+1it2mooR1CvW9SxotF5ZQEd/gs/xCwauOy1nHUt23CD+FaeCwkFcE0UFFuDfuRH
-         sNF2lWjmoO5Zc+PTeXI2g3AOwTf1E0APdjHicwRbeYILiWQTApReHoaMlvR2BtZQjgoa
-         n5Zllqjjo/6eDj4JaFkK8aDUxxQkO5BeiM4rpZrwfjpjJe42dJYWBMVzoQaxTAForkIJ
-         BbSoVUTONvyhd+p1pxoXIDof0a1MRZ/9+s4oKBud7R219bcOHU8JFxRrONTywSWIFGHi
-         KCnWT6txuow+LJ0tMiz3twgx/QBfwke0ndeMwTXVkVM/GAQlZsTS4sup/MOdupvj3Wny
-         5yug==
-X-Gm-Message-State: AOAM530DczURmAuVCxQdZvW0PDjAW5qYEBJf7m7gPgtBMh2JAVJViasm
-        HwS6hR2Pi+lwdVq2CMdxbiNLn/lmHZg=
-X-Google-Smtp-Source: ABdhPJy8cZBru6/sIUb5kyQTBRAn1lSqPhw5iX3k5evZnJuDmrM/zdH2RXN4krEK1uS+vJfcuU6KJw==
-X-Received: by 2002:a65:6951:0:b0:381:f10:ccaa with SMTP id w17-20020a656951000000b003810f10ccaamr29687821pgq.587.1649765715900;
-        Tue, 12 Apr 2022 05:15:15 -0700 (PDT)
-Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id u18-20020a056a00125200b004fb112ee9b7sm35342414pfi.75.2022.04.12.05.15.14
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Apr 2022 05:15:15 -0700 (PDT)
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH V5 3/7] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
-Date:   Tue, 12 Apr 2022 20:15:37 +0800
-Message-Id: <20220412121541.4595-4-jiangshanlai@gmail.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20220412121541.4595-1-jiangshanlai@gmail.com>
-References: <20220412121541.4595-1-jiangshanlai@gmail.com>
+        bh=vgJhsUA0t53G3i/our+ohO3psku9eyW28VU5QSKiZig=;
+        b=ajjky8+bEmdeOr93RrGzX1xaw8vSjxMEPkqwP2eBT1dM/2hoB1Y8jQCkNRka0pVEkt
+         ltXpwPy6sr72fgewMNgW0WwTB6fevGusPtASdirTYcjcQBSptda2eGHqTwUGjiFUtSnP
+         D43+Tw4Rwy18CWD3cwi6J73Jrt//QBVldeG3zoKqsBl+ktFltbLRDaptSGL8yjrmGdlF
+         xrnyPQPS1G8WhbFyve0J5OHCpgjRRjfYWoNkwEj5LorwWRmcI+f/TJD33dLUzKn+5uHa
+         +rQN8OMCoiqJZvA+a+BRAahVQ27NV1VuOiGEpYjEGs/QkCjPu8IbFpmrPO+HwzAQIIPe
+         hFWw==
+X-Gm-Message-State: AOAM530MFvkphX+jdEQR+Sd4dy/JD5BpQ3kgOB7PpSXYmr8gaR8zrGFl
+        uNE4wG+wVzWxHbVz5wv39P4=
+X-Google-Smtp-Source: ABdhPJyMo6KTIk8H1Og/i+lDyMmyHBej66pIRzx61AXonnOv1vkfSgXfoiYQQvHnWxdCDwIqyLYSRw==
+X-Received: by 2002:a17:906:a046:b0:6b9:20c:47c1 with SMTP id bg6-20020a170906a04600b006b9020c47c1mr34222677ejb.615.1649765805743;
+        Tue, 12 Apr 2022 05:16:45 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 05:16:45 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Michael Walle <michael@walle.cc>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Colin Ian King <colin.king@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH net-next v3 16/18] ps3_gelic: Replace usage of found with dedicated list iterator variable
+Date:   Tue, 12 Apr 2022 14:15:55 +0200
+Message-Id: <20220412121557.3553555-17-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220412121557.3553555-1-jakobkoschel@gmail.com>
+References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-error_entry() doesn't handle the stack balanced.  It includes
-PUSH_AND_CLEAR_REGS which is commonly needed for all IDT entries and
-can't pop the regs before it returns.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-Move PUSH_AND_CLEAR_REGS out of error_entry() and make error_entry()
-works on the stack normally.
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
-After this, XENPV doesn't need error_entry() since PUSH_AND_CLEAR_REGS
-is moved out and error_entry() can be converted to C code in future
-since it doesn't fiddle the stack.
-
-The text size will be enlarged:
-
-size arch/x86/entry/entry_64.o.before:
-   text	   data	    bss	    dec	    hex	filename
-  17916	    384	      0	  18300	   477c	arch/x86/entry/entry_64.o
-
-size --format=SysV arch/x86/entry/entry_64.o.before:
-.entry.text                      5528      0
-.orc_unwind                      6456      0
-.orc_unwind_ip                   4304      0
-
-size arch/x86/entry/entry_64.o.after:
-   text	   data	    bss	    dec	    hex	filename
-  26868	    384	      0	  27252	   6a74	arch/x86/entry/entry_64.o
-
-size --format=SysV arch/x86/entry/entry_64.o.after:
-.entry.text                      8200      0
-.orc_unwind                     10224      0
-.orc_unwind_ip                   6816      0
-
-The tables .orc_unwind[_ip] are enlarged due to it adds many pushes.
-
-But .entry.text in x86_64 is 2M aligned, enlarging it to 8.2k doesn't
-enlarge the final text size.
-
-And it will only increase the footprint when different interrupts and
-exceptions happen unlikely heavily at the same time.
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- arch/x86/entry/entry_64.S | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../net/ethernet/toshiba/ps3_gelic_wireless.c | 30 +++++++++----------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index e1efc56fbcd4..835b798556fb 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -325,6 +325,9 @@ SYM_CODE_END(ret_from_fork)
+diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c b/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
+index dc14a66583ff..c8a016c902cd 100644
+--- a/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
++++ b/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
+@@ -1495,14 +1495,14 @@ static int gelic_wl_start_scan(struct gelic_wl_info *wl, int always_scan,
   */
- .macro idtentry_body cfunc has_error_code:req
+ static void gelic_wl_scan_complete_event(struct gelic_wl_info *wl)
+ {
++	struct gelic_wl_scan_info *target = NULL, *iter, *tmp;
+ 	struct gelic_eurus_cmd *cmd = NULL;
+-	struct gelic_wl_scan_info *target, *tmp;
+ 	struct gelic_wl_scan_info *oldest = NULL;
+ 	struct gelic_eurus_scan_info *scan_info;
+ 	unsigned int scan_info_size;
+ 	union iwreq_data data;
+ 	unsigned long this_time = jiffies;
+-	unsigned int data_len, i, found, r;
++	unsigned int data_len, i, r;
+ 	void *buf;
  
-+	PUSH_AND_CLEAR_REGS
-+	ENCODE_FRAME_POINTER
-+
- 	call	error_entry
- 	movq	%rax, %rsp			/* switch to the task stack if from userspace */
- 	ENCODE_FRAME_POINTER
-@@ -987,8 +990,6 @@ SYM_CODE_END(paranoid_exit)
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
--	PUSH_AND_CLEAR_REGS save_ret=1
--	ENCODE_FRAME_POINTER 8
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
+ 	pr_debug("%s:start\n", __func__);
+@@ -1539,14 +1539,14 @@ static void gelic_wl_scan_complete_event(struct gelic_wl_info *wl)
+ 	wl->scan_stat = GELIC_WL_SCAN_STAT_GOT_LIST;
  
+ 	/* mark all entries are old */
+-	list_for_each_entry_safe(target, tmp, &wl->network_list, list) {
+-		target->valid = 0;
++	list_for_each_entry_safe(iter, tmp, &wl->network_list, list) {
++		iter->valid = 0;
+ 		/* expire too old entries */
+-		if (time_before(target->last_scanned + wl->scan_age,
++		if (time_before(iter->last_scanned + wl->scan_age,
+ 				this_time)) {
+-			kfree(target->hwinfo);
+-			target->hwinfo = NULL;
+-			list_move_tail(&target->list, &wl->network_free_list);
++			kfree(iter->hwinfo);
++			iter->hwinfo = NULL;
++			list_move_tail(&iter->list, &wl->network_free_list);
+ 		}
+ 	}
+ 
+@@ -1569,22 +1569,22 @@ static void gelic_wl_scan_complete_event(struct gelic_wl_info *wl)
+ 			continue;
+ 		}
+ 
+-		found = 0;
++		target = NULL;
+ 		oldest = NULL;
+-		list_for_each_entry(target, &wl->network_list, list) {
+-			if (ether_addr_equal(&target->hwinfo->bssid[2],
++		list_for_each_entry(iter, &wl->network_list, list) {
++			if (ether_addr_equal(&iter->hwinfo->bssid[2],
+ 					     &scan_info->bssid[2])) {
+-				found = 1;
++				target = iter;
+ 				pr_debug("%s: same BBS found scanned list\n",
+ 					 __func__);
+ 				break;
+ 			}
+ 			if (!oldest ||
+-			    (target->last_scanned < oldest->last_scanned))
+-				oldest = target;
++			    (iter->last_scanned < oldest->last_scanned))
++				oldest = iter;
+ 		}
+ 
+-		if (!found) {
++		if (!target) {
+ 			/* not found in the list */
+ 			if (list_empty(&wl->network_free_list)) {
+ 				/* expire oldest */
 -- 
-2.19.1.6.gb485710b
+2.25.1
 
