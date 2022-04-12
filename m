@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D91D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358484AbiDLRkw (ORCPT
+        id S1358501AbiDLRlB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
+        Tue, 12 Apr 2022 13:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358478AbiDLRke (ORCPT
+        with ESMTP id S1358481AbiDLRkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:40:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2556662BDD
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:38:16 -0700 (PDT)
+        Tue, 12 Apr 2022 13:40:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167D362A36
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:38:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA10BB81F62
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 17:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5614CC385A5;
-        Tue, 12 Apr 2022 17:38:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2CA1619D7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 17:38:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F98C385A5;
+        Tue, 12 Apr 2022 17:38:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649785093;
-        bh=TZTX+w/+zW7qddMqOIK0hPgH/PbZ/aVnw54OFqAFprU=;
+        s=k20201202; t=1649785098;
+        bh=HD2LcDKvmyG1fX0S/usHPsdJIssyypdemdstvg2vvdw=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=qk14KPFhxSpUtSDDpUrQPtmZKHEA8QRq9okCEXCsHg7m5qRx9Tl19b6P4UV0kjHN+
-         za0ptCA2WKxtEBh/kq/2dh3a2OTm4Ik70VdQNLgGzXMesS0HljfDMg5G0aFMmdiPoG
-         DZzLJ2y0JhfoEQPVjC1mwsWJK1nqO1in92GR7ByI9Dwq1UBP8AA2W5y6y9M/DPsd2t
-         qX4ifT9/av9A/kwhrASs4L97lM2Gx6IO7EurkfutQOVtK36zievHtBaK0HTpxPzdoR
-         ybQJmXHCw42SSGwgg9mZmvCYtLDvA0x8XViMREzYB/ALeUybnEP4IFiDEbwvIXW2gc
-         f3bSF/fKG82uQ==
+        b=gqoXRvUimZcFcceovn2J+Rf0GqMz1odxtZPMaghx4ByR0cKWfTWG5VEM2QrVeBYH1
+         npd9mnieADkXqady/jsxlCiUZNyO3H1Fb8/8MIVfRg58BELqI/sFUv6e80KNj3f/ln
+         YGDdmdqlVQilOFekgWKjXfw/XYyjj0gQENx6LwaD2HeyY8Ty8MEagMBL1g1giCdRhg
+         BLPA7o6y6XTBh743y7nn8IJlBCze24QHMaWADOrpBKh7SZ/VhLNzhKeWz05rwi9+Ed
+         wJkuwyvditcl0ucOyA+bG6E43tHGpppAk+5hOoV4X9ymQjf1kdT8gP3bXSveDJc4Wx
+         ltUG7WEEPRamQ==
 From:   Mark Brown <broonie@kernel.org>
-To:     Vijendar.Mukunda@amd.com, alsa-devel@alsa-project.org
-Cc:     Basavaraj.Hiregoudar@amd.com, Richard.Gong@amd.com,
-        lgirdwood@gmail.com, Alexander.Deucher@amd.com,
-        Takashi Iwai <tiwai@suse.com>, Mario.Limonciello@amd.com,
-        open list <linux-kernel@vger.kernel.org>,
-        dan.carpenter@oracle.com, Jaroslav Kysela <perex@perex.cz>,
-        Sunil-kumar.Dommati@amd.com
-In-Reply-To: <20220411134119.1767646-1-Vijendar.Mukunda@amd.com>
-References: <20220411134119.1767646-1-Vijendar.Mukunda@amd.com>
-Subject: Re: [PATCH] ASoC: amd: yc: add new YC platform varaint support
-Message-Id: <164978509107.404572.15074301323548091062.b4-ty@kernel.org>
-Date:   Tue, 12 Apr 2022 18:38:11 +0100
+To:     mchehab@kernel.org, alsa-devel@alsa-project.org
+Cc:     pierre-louis.bossart@linux.intel.com, cezary.rojewski@intel.com,
+        linux-kernel@vger.kernel.org, yang.jie@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, hdegoede@redhat.com,
+        Takashi Iwai <tiwai@suse.com>, peter.ujfalusi@linux.intel.com,
+        liam.r.girdwood@linux.intel.com, Jaroslav Kysela <perex@perex.cz>
+In-Reply-To: <cover.1649357263.git.mchehab@kernel.org>
+References: <cover.1649357263.git.mchehab@kernel.org>
+Subject: Re: [PATCH v5 0/4] Make headphone work on Huawei Matebook D15
+Message-Id: <164978509553.404572.15488518886546999478.b4-ty@kernel.org>
+Date:   Tue, 12 Apr 2022 18:38:15 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -53,10 +52,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022 19:11:15 +0530, Vijendar Mukunda wrote:
-> Update PCI revision id check for the new YC platform varaint.
+On Thu, 7 Apr 2022 20:49:55 +0200, Mauro Carvalho Chehab wrote:
+> Huawei Matebook D15 uses two different GPIOs are used to control the output:
 > 
+> 	- gpio0 controls the speaker output;
+> 	- gpio1 controls the headphone output.
 > 
+> Changing both at the same time cause spurious events that are mis-interpreted
+> as input events, causing troubles on apps. So, a delay is needed before turning
+> on such gpios.
+> 
+> [...]
 
 Applied to
 
@@ -64,8 +70,14 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: amd: yc: add new YC platform varaint support
-      commit: b1630fcbfde6c071d964b1c475871db0ebc96048
+[1/4] ASoC: Intel: sof_es8336: simplify speaker gpio naming
+      commit: 890a4087a6c2045911b5002566d1528f710cd723
+[2/4] ASoC: Intel: sof_es8336: support a separate gpio to control headphone
+      commit: 6e1ff1459e0086312e61c2d1ff8b74395a082fcb
+[3/4] ASoC: Intel: sof_es8336: add a quirk for headset at mic1 port
+      commit: 7c7bb2a059b226ebadb14ce07460f6357023d56c
+[4/4] ASoC: Intel: sof_es8336: Add a quirk for Huawei Matebook D15
+      commit: c7cb4717f641db68e8117635bfcf62a9c27dc8d3
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
