@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EFA3C38161
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32025C38A02
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351969AbiDLHXG (ORCPT
+        id S1352014AbiDLHXM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        Tue, 12 Apr 2022 03:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353038AbiDLHGx (ORCPT
+        with ESMTP id S1353034AbiDLHGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:06:53 -0400
+        Tue, 12 Apr 2022 03:06:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7928410F7;
-        Mon, 11 Apr 2022 23:49:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC88F49915;
+        Mon, 11 Apr 2022 23:49:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FA1861471;
-        Tue, 12 Apr 2022 06:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBE4C385A6;
-        Tue, 12 Apr 2022 06:49:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27E4561464;
+        Tue, 12 Apr 2022 06:49:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 351BDC385A1;
+        Tue, 12 Apr 2022 06:49:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746151;
-        bh=aYjbmozvRP0Y6GF6WshL6ZK6wocwCPdx4W6SMiYjpFk=;
+        s=korg; t=1649746146;
+        bh=e3NcP0WQTUBNTnL50EsGpQnLN+HIvQDqCEHRACb0Kgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kpYMHJs3kjcMddAFcEicjGAQoqc3sVGJYP8fft0KuZA1/ExxkrlJK5nB70oB98Y3t
-         WGTNp0fbWdIvus9wY3DC0zU26uJvUo5xIZTbPhL5YRcOjq+Kfcmod2gf4yTV8OIM/b
-         0DdE+D1p5lvPWHIOltvIH1ZjW68uw6ZlYQquMaA0=
+        b=cBs62zUY6SIGBiF4+BuBouu0RzxCGaWB4t4xM6KF+4GOeVjazHHHowxFN0Qy5dqfY
+         IXbLeOiloddBWsi2FdHAsRh7znVt5Oz4L12sY+opQxQtMP2890ZS+QkHuEeKjOp4dZ
+         iZUUAhEhzVBxP2reAj/Z0fEsg+kYV7SquKoVBvms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
+        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 177/277] IB/cm: Cancel mad on the DREQ event when the state is MRA_REP_RCVD
-Date:   Tue, 12 Apr 2022 08:29:40 +0200
-Message-Id: <20220412062947.159318219@linuxfoundation.org>
+Subject: [PATCH 5.15 176/277] RDMA/mlx5: Add a missing update of cache->last_add
+Date:   Tue, 12 Apr 2022 08:29:39 +0200
+Message-Id: <20220412062947.130685580@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,47 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Zhang <markzhang@nvidia.com>
+From: Aharon Landau <aharonl@nvidia.com>
 
-[ Upstream commit 107dd7beba403a363adfeb3ffe3734fe38a05cce ]
+[ Upstream commit 1d735eeee63a0beb65180ca0224f239cc0c9f804 ]
 
-On the passive side when the disconnectReq event comes, if the current
-state is MRA_REP_RCVD, it needs to cancel the MAD before entering the
-DREQ_RCVD and TIMEWAIT states, otherwise the destroy_id may block until
-this mad will reach timeout.
+Update cache->last_add when returning an MR to the cache so that the cache
+work won't remove it.
 
-Fixes: a977049dacde ("[PATCH] IB: Add the kernel CM implementation")
-Link: https://lore.kernel.org/r/75261c00c1d82128b1d981af9ff46e994186e621.1649062436.git.leonro@nvidia.com
-Signed-off-by: Mark Zhang <markzhang@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Fixes: b9358bdbc713 ("RDMA/mlx5: Fix locking in MR cache work queue")
+Link: https://lore.kernel.org/r/c99f076fce4b44829d434936bbcd3b5fc4c95020.1649062436.git.leonro@nvidia.com
+Signed-off-by: Aharon Landau <aharonl@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/cm.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/infiniband/hw/mlx5/mr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/core/cm.c b/drivers/infiniband/core/cm.c
-index 35f0d5e7533d..1c107d6d03b9 100644
---- a/drivers/infiniband/core/cm.c
-+++ b/drivers/infiniband/core/cm.c
-@@ -2824,6 +2824,7 @@ static int cm_dreq_handler(struct cm_work *work)
- 	switch (cm_id_priv->id.state) {
- 	case IB_CM_REP_SENT:
- 	case IB_CM_DREQ_SENT:
-+	case IB_CM_MRA_REP_RCVD:
- 		ib_cancel_mad(cm_id_priv->msg);
- 		break;
- 	case IB_CM_ESTABLISHED:
-@@ -2831,8 +2832,6 @@ static int cm_dreq_handler(struct cm_work *work)
- 		    cm_id_priv->id.lap_state == IB_CM_MRA_LAP_RCVD)
- 			ib_cancel_mad(cm_id_priv->msg);
- 		break;
--	case IB_CM_MRA_REP_RCVD:
--		break;
- 	case IB_CM_TIMEWAIT:
- 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
- 						     [CM_DREQ_COUNTER]);
+diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
+index 85289fddc2ae..cf203f879d34 100644
+--- a/drivers/infiniband/hw/mlx5/mr.c
++++ b/drivers/infiniband/hw/mlx5/mr.c
+@@ -635,6 +635,7 @@ static void mlx5_mr_cache_free(struct mlx5_ib_dev *dev, struct mlx5_ib_mr *mr)
+ {
+ 	struct mlx5_cache_ent *ent = mr->cache_ent;
+ 
++	WRITE_ONCE(dev->cache.last_add, jiffies);
+ 	spin_lock_irq(&ent->lock);
+ 	list_add_tail(&mr->list, &ent->head);
+ 	ent->available_mrs++;
 -- 
 2.35.1
 
