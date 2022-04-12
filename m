@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2A2C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE56EC3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359094AbiDLJUW (ORCPT
+        id S1354212AbiDLJSs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        Tue, 12 Apr 2022 05:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357024AbiDLHjm (ORCPT
+        with ESMTP id S1357662AbiDLHkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:42 -0400
+        Tue, 12 Apr 2022 03:40:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2B2532C2;
-        Tue, 12 Apr 2022 00:10:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E53326F2;
+        Tue, 12 Apr 2022 00:16:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26196B81A8F;
-        Tue, 12 Apr 2022 07:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F876C385A5;
-        Tue, 12 Apr 2022 07:10:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56290B81B60;
+        Tue, 12 Apr 2022 07:16:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDF57C385A5;
+        Tue, 12 Apr 2022 07:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747451;
-        bh=6x8yKFGa5U5mRxTV0zTicniMpUeHjVzDeMdNkP+EaOU=;
+        s=korg; t=1649747778;
+        bh=WxPLjrKQ8eRD1EGKTuVP56FWs6l0pz+Qv7AArwyle8Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RVfwNrioM9CGtgBjd5b5SXATmKSh4pVd7W1VH+JUZGf9T5l+sKtUC13D9hzd25WcQ
-         vHfnxgncKWjm/5Ymx4B4khcxAdLgG0j86Zzq7jpSWC7++VwxcZZ/VPrBxYi5O0aWgo
-         nZRqgyenqddK7ISQvMkZ4sWeNlpS08nQk8hlFEmY=
+        b=Uo9R4QbcQkB8lJWmW/1cxnCAG6JjpVS7jAUNIbNOTNvTkXdxXNBAd6wqgrpaSS8T4
+         mL91MMml+evxQCmy6W3YYp9RVNIhvl1bH3I39uT0jYcZnq+6vCx8yUokwXwr/mi8Zx
+         ItSuDXoMIWbjWq7kphBG7rzJoS+9LuGwDbNxhJEE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 084/343] HID: apple: Report Magic Keyboard 2021 battery over USB
-Date:   Tue, 12 Apr 2022 08:28:22 +0200
-Message-Id: <20220412062953.524501912@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 203/343] vdpa: mlx5: prevent cvq work from hogging CPU
+Date:   Tue, 12 Apr 2022 08:30:21 +0200
+Message-Id: <20220412062957.212295308@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,42 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Jason Wang <jasowang@redhat.com>
 
-[ Upstream commit 8ae5c16c9d421d43f32f66d2308031f1bd3f9336 ]
+[ Upstream commit 55ebf0d60e3cc6c9e8593399e185842c00e12f36 ]
 
-Like the Apple Magic Keyboard 2015, when connected over USB, the 2021
-version registers 2 different interfaces. One of them is used to report
-the battery level.
+A userspace triggerable infinite loop could happen in
+mlx5_cvq_kick_handler() if userspace keeps sending a huge amount of
+cvq requests.
 
-However, unlike when connected over Bluetooth, the battery level is not
-reported automatically and it is required to fetch it manually.
+Fixing this by introducing a quota and re-queue the work if we're out
+of the budget (currently the implicit budget is one) . While at it,
+using a per device work struct to avoid on demand memory allocation
+for cvq.
 
-Add the APPLE_RDESC_BATTERY quirk to fix the battery report descriptor
-and manually fetch the battery level.
-
-Tested with the ANSI, ISO and JIS variants of the keyboard.
-
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: 5262912ef3cfc ("vdpa/mlx5: Add support for control VQ and MAC setting")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20220329042109.4029-1-jasowang@redhat.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Eli Cohen <elic@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-apple.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 7dc89dc6b0f0..18de4ccb0fb2 100644
---- a/drivers/hid/hid-apple.c
-+++ b/drivers/hid/hid-apple.c
-@@ -748,7 +748,7 @@ static const struct hid_device_id apple_devices[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER1_TP_ONLY),
- 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
--		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
- 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
- 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 9fe1071a9644..1b5de3af1a62 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -163,6 +163,7 @@ struct mlx5_vdpa_net {
+ 	u32 cur_num_vqs;
+ 	struct notifier_block nb;
+ 	struct vdpa_callback config_cb;
++	struct mlx5_vdpa_wq_ent cvq_ent;
+ };
+ 
+ static void free_resources(struct mlx5_vdpa_net *ndev);
+@@ -1616,10 +1617,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+ 	ndev = to_mlx5_vdpa_ndev(mvdev);
+ 	cvq = &mvdev->cvq;
+ 	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
+-		goto out;
++		return;
+ 
+ 	if (!cvq->ready)
+-		goto out;
++		return;
+ 
+ 	while (true) {
+ 		err = vringh_getdesc_iotlb(&cvq->vring, &cvq->riov, &cvq->wiov, &cvq->head,
+@@ -1653,9 +1654,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+ 
+ 		if (vringh_need_notify_iotlb(&cvq->vring))
+ 			vringh_notify(&cvq->vring);
++
++		queue_work(mvdev->wq, &wqent->work);
++		break;
+ 	}
+-out:
+-	kfree(wqent);
+ }
+ 
+ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+@@ -1663,7 +1665,6 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+ 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+ 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+ 	struct mlx5_vdpa_virtqueue *mvq;
+-	struct mlx5_vdpa_wq_ent *wqent;
+ 
+ 	if (!is_index_valid(mvdev, idx))
+ 		return;
+@@ -1672,13 +1673,7 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+ 		if (!mvdev->wq || !mvdev->cvq.ready)
+ 			return;
+ 
+-		wqent = kzalloc(sizeof(*wqent), GFP_ATOMIC);
+-		if (!wqent)
+-			return;
+-
+-		wqent->mvdev = mvdev;
+-		INIT_WORK(&wqent->work, mlx5_cvq_kick_handler);
+-		queue_work(mvdev->wq, &wqent->work);
++		queue_work(mvdev->wq, &ndev->cvq_ent.work);
+ 		return;
+ 	}
+ 
+@@ -2668,6 +2663,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
+ 	if (err)
+ 		goto err_mr;
+ 
++	ndev->cvq_ent.mvdev = mvdev;
++	INIT_WORK(&ndev->cvq_ent.work, mlx5_cvq_kick_handler);
+ 	mvdev->wq = create_singlethread_workqueue("mlx5_vdpa_wq");
+ 	if (!mvdev->wq) {
+ 		err = -ENOMEM;
 -- 
 2.35.1
 
