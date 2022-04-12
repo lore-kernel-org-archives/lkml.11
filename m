@@ -2,119 +2,620 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E845EC46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26116C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388992AbiDLJXR (ORCPT
+        id S1357004AbiDLJ0q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        Tue, 12 Apr 2022 05:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357333AbiDLHkA (ORCPT
+        with ESMTP id S1356470AbiDLIKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA36924BE9;
-        Tue, 12 Apr 2022 00:15:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3A8EB81B46;
-        Tue, 12 Apr 2022 07:15:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18DC4C385A5;
-        Tue, 12 Apr 2022 07:15:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747719;
-        bh=vWX/olCOiZMgMIxLWD6bJ7lU8zBx3ops744NpZqiIiI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=up/UhgkP5ZtVVoAqEBRv5NnGpmSFcDw4iWL2Tgb++se2qSri7f+7x/Jg0XdZ67K3T
-         FWS51rfbOgQMJFbKbnl3PkVIFhJVmjSoFDEczwENzXPPfDr33rGict86Hh/PUAgfLO
-         ycyGKRjOEKXgcjRrZ8zxlEPK5Gz1rYFEI237bzUo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 180/343] NFS: swap-out must always use STABLE writes.
-Date:   Tue, 12 Apr 2022 08:29:58 +0200
-Message-Id: <20220412062956.559664790@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 04:10:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281E1E08E
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:25 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB8F-0007gL-F6; Tue, 12 Apr 2022 09:40:11 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB89-00AQaM-Ka; Tue, 12 Apr 2022 09:40:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
+Cc:     David Jander <david@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>
+Subject: [PATCH v1 12/17] arm: dts: imx6qdl-vicut1.dtsi: Move some node out to DTS files
+Date:   Tue, 12 Apr 2022 09:39:59 +0200
+Message-Id: <20220412074004.2485264-13-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: David Jander <david@protonic.nl>
 
-[ Upstream commit c265de257f558a05c1859ee9e3fed04883b9ec0e ]
+This commit will finally make this file identical to imx6qdl-victgo.dtsi.
+All nodes that are removed here are added as-is to the DTS files that
+include this file.
 
-The commit handling code is not safe against memory-pressure deadlocks
-when writing to swap.  In particular, nfs_commitdata_alloc() blocks
-indefinitely waiting for memory, and this can consume all available
-workqueue threads.
-
-swap-out most likely uses STABLE writes anyway as COND_STABLE indicates
-that a stable write should be used if the write fits in a single
-request, and it normally does.  However if we ever swap with a small
-wsize, or gather unusually large numbers of pages for a single write,
-this might change.
-
-For safety, make it explicit in the code that direct writes used for swap
-must always use FLUSH_STABLE.
-
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: David Jander <david@protonic.nl>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- fs/nfs/direct.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/imx6dl-vicut1.dts   | 122 ++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6q-vicut1.dts    | 122 ++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 120 -------------------------
+ arch/arm/boot/dts/imx6qp-vicutp.dts   | 122 ++++++++++++++++++++++++++
+ 4 files changed, 366 insertions(+), 120 deletions(-)
 
-diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
-index 04aaf39a05cb..11c566d8769f 100644
---- a/fs/nfs/direct.c
-+++ b/fs/nfs/direct.c
-@@ -794,7 +794,7 @@ static const struct nfs_pgio_completion_ops nfs_direct_write_completion_ops = {
-  */
- static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
- 					       struct iov_iter *iter,
--					       loff_t pos)
-+					       loff_t pos, int ioflags)
- {
- 	struct nfs_pageio_descriptor desc;
- 	struct inode *inode = dreq->inode;
-@@ -802,7 +802,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
- 	size_t requested_bytes = 0;
- 	size_t wsize = max_t(size_t, NFS_SERVER(inode)->wsize, PAGE_SIZE);
+diff --git a/arch/arm/boot/dts/imx6dl-vicut1.dts b/arch/arm/boot/dts/imx6dl-vicut1.dts
+index 174fd913bf96..c6a904bbed01 100644
+--- a/arch/arm/boot/dts/imx6dl-vicut1.dts
++++ b/arch/arm/boot/dts/imx6dl-vicut1.dts
+@@ -10,4 +10,126 @@
+ / {
+ 	model = "Kverneland UT1 Board";
+ 	compatible = "kvg,vicut1", "fsl,imx6dl";
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpiokeys>;
++		autorepeat;
++
++		power {
++			label = "Power Button";
++			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_POWER>;
++			wakeup-source;
++		};
++	};
++
++	panel {
++		compatible = "kyo,tcg121xglp";
++		backlight = <&backlight_lcd>;
++		power-supply = <&reg_3v3>;
++
++		port {
++			panel_in: endpoint {
++				remote-endpoint = <&lvds0_out>;
++			};
++		};
++	};
++};
++
++&fec {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&rgmii_phy>;
++	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Microchip KSZ9031RNX PHY */
++		rgmii_phy: ethernet-phy@0 {
++			reg = <0>;
++			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
++			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
++			reset-assert-us = <10000>;
++			reset-deassert-us = <300>;
++		};
++	};
++};
++
++&gpio1 {
++	gpio-line-names =
++		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
++			"CAM2_MIRROR", "", "", "SMBALERT",
++		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
++		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
++			"SD1_DATA3", "ETH_MDIO", "",
++		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
++};
++
++&gpio4 {
++	gpio-line-names =
++		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
++		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
++			"CAN2_SR", "CAN2_TX", "CAN2_RX",
++		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
++			"HITCH_IN_OUT",
++		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
++			"ISB_LED";
++};
++
++&gpio5 {
++	gpio-line-names =
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
++			"I2S_BITCLK", "I2S_DOUT",
++		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
++			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
++};
++
++&gpio6 {
++	gpio-line-names =
++		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
++			"ITU656_D6", "ITU656_D7", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
++			"RGMII_TD3",
++		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
++			"RGMII_RD2", "RGMII_RD3", "", "";
++};
++
++&iomuxc {
++	pinctrl_enet: enetgrp {
++		fsl,pins = <
++			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
++			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
++			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
++			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
++			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
++			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
++			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
++			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
++			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
++			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
++			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
++			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
++			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
++			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
++			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
++			/* Phy reset */
++			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
++			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
++		>;
++	};
++
++	pinctrl_gpiokeys: gpiokeygrp {
++		fsl,pins = <
++			/* nON_SWITCH */
++			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
++		>;
++	};
+ };
+diff --git a/arch/arm/boot/dts/imx6q-vicut1.dts b/arch/arm/boot/dts/imx6q-vicut1.dts
+index e6c5d3cb48d7..8b228d5fc4a3 100644
+--- a/arch/arm/boot/dts/imx6q-vicut1.dts
++++ b/arch/arm/boot/dts/imx6q-vicut1.dts
+@@ -10,4 +10,126 @@
+ / {
+ 	model = "Kverneland UT1Q Board";
+ 	compatible = "kvg,vicut1q", "fsl,imx6q";
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpiokeys>;
++		autorepeat;
++
++		power {
++			label = "Power Button";
++			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_POWER>;
++			wakeup-source;
++		};
++	};
++
++	panel {
++		compatible = "kyo,tcg121xglp";
++		backlight = <&backlight_lcd>;
++		power-supply = <&reg_3v3>;
++
++		port {
++			panel_in: endpoint {
++				remote-endpoint = <&lvds0_out>;
++			};
++		};
++	};
++};
++
++&fec {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&rgmii_phy>;
++	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Microchip KSZ9031RNX PHY */
++		rgmii_phy: ethernet-phy@0 {
++			reg = <0>;
++			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
++			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
++			reset-assert-us = <10000>;
++			reset-deassert-us = <300>;
++		};
++	};
++};
++
++&gpio1 {
++	gpio-line-names =
++		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
++			"CAM2_MIRROR", "", "", "SMBALERT",
++		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
++		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
++			"SD1_DATA3", "ETH_MDIO", "",
++		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
++};
++
++&gpio4 {
++	gpio-line-names =
++		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
++		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
++			"CAN2_SR", "CAN2_TX", "CAN2_RX",
++		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
++			"HITCH_IN_OUT",
++		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
++			"ISB_LED";
++};
++
++&gpio5 {
++	gpio-line-names =
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
++			"I2S_BITCLK", "I2S_DOUT",
++		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
++			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
++};
++
++&gpio6 {
++	gpio-line-names =
++		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
++			"ITU656_D6", "ITU656_D7", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
++			"RGMII_TD3",
++		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
++			"RGMII_RD2", "RGMII_RD3", "", "";
++};
++
++&iomuxc {
++	pinctrl_enet: enetgrp {
++		fsl,pins = <
++			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
++			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
++			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
++			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
++			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
++			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
++			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
++			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
++			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
++			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
++			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
++			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
++			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
++			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
++			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
++			/* Phy reset */
++			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
++			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
++		>;
++	};
++
++	pinctrl_gpiokeys: gpiokeygrp {
++		fsl,pins = <
++			/* nON_SWITCH */
++			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
++		>;
++	};
+ };
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index 6c943ca950f4..2a86136a04e8 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -70,20 +70,6 @@ counter-2 {
+ 		gpios = <&gpio2 2 GPIO_ACTIVE_LOW>;
+ 	};
  
--	nfs_pageio_init_write(&desc, inode, FLUSH_COND_STABLE, false,
-+	nfs_pageio_init_write(&desc, inode, ioflags, false,
- 			      &nfs_direct_write_completion_ops);
- 	desc.pg_dreq = dreq;
- 	get_dreq(dreq);
-@@ -948,11 +948,13 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
- 	pnfs_init_ds_commit_info_ops(&dreq->ds_cinfo, inode);
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_gpiokeys>;
+-		autorepeat;
+-
+-		power {
+-			label = "Power Button";
+-			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
+-			linux,code = <KEY_POWER>;
+-			wakeup-source;
+-		};
+-	};
+-
+ 	leds {
+ 		compatible = "gpio-leds";
+ 		pinctrl-names = "default";
+@@ -111,18 +97,6 @@ led-2 {
+ 		};
+ 	};
  
- 	if (swap) {
--		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
-+		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
-+							    FLUSH_STABLE);
- 	} else {
- 		nfs_start_io_direct(inode);
+-	panel {
+-		compatible = "kyo,tcg121xglp";
+-		backlight = <&backlight_lcd>;
+-		power-supply = <&reg_3v3>;
+-
+-		port {
+-			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
+-			};
+-		};
+-	};
+-
+ 	reg_1v8: regulator-1v8 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "1v8";
+@@ -231,38 +205,6 @@ flash@0 {
+ 	};
+ };
  
--		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
-+		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
-+							    FLUSH_COND_STABLE);
+-&fec {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_enet>;
+-	phy-mode = "rgmii-id";
+-	phy-handle = <&rgmii_phy>;
+-	status = "okay";
+-
+-	mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		/* Microchip KSZ9031RNX PHY */
+-		rgmii_phy: ethernet-phy@0 {
+-			reg = <0>;
+-			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
+-			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
+-			reset-assert-us = <10000>;
+-			reset-deassert-us = <300>;
+-		};
+-	};
+-};
+-
+-&gpio1 {
+-	gpio-line-names =
+-		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
+-			"CAM2_MIRROR", "", "", "SMBALERT",
+-		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
+-		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
+-			"SD1_DATA3", "ETH_MDIO", "",
+-		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
+-};
+-
+ &gpio2 {
+ 	gpio-line-names =
+ 		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
+@@ -282,38 +224,6 @@ &gpio3 {
+ 			"YACO_RESET";
+ };
  
- 		if (mapping->nrpages) {
- 			invalidate_inode_pages2_range(mapping,
+-&gpio4 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
+-		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
+-			"CAN2_SR", "CAN2_TX", "CAN2_RX",
+-		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
+-			"HITCH_IN_OUT",
+-		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
+-			"ISB_LED";
+-};
+-
+-&gpio5 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
+-			"I2S_BITCLK", "I2S_DOUT",
+-		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
+-			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
+-};
+-
+-&gpio6 {
+-	gpio-line-names =
+-		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
+-			"ITU656_D6", "ITU656_D7", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
+-			"RGMII_TD3",
+-		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
+-			"RGMII_RD2", "RGMII_RD3", "", "";
+-};
+-
+ &gpio7 {
+ 	gpio-line-names =
+ 		"EMMC_DAT5", "EMMC_DAT4", "EMMC_CMD", "EMMC_CLK", "EMMC_DAT0",
+@@ -589,36 +499,6 @@ MX6QDL_PAD_EIM_D19__GPIO3_IO19			0x000b1
+ 		>;
+ 	};
+ 
+-	pinctrl_enet: enetgrp {
+-		fsl,pins = <
+-			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
+-			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
+-			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
+-			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
+-			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
+-			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
+-			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
+-			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
+-			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
+-			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
+-			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
+-			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
+-			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
+-			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
+-			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
+-			/* Phy reset */
+-			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
+-			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
+-		>;
+-	};
+-
+-	pinctrl_gpiokeys: gpiokeygrp {
+-		fsl,pins = <
+-			/* nON_SWITCH */
+-			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
+-		>;
+-	};
+-
+ 	pinctrl_hog: hoggrp {
+ 		fsl,pins = <
+ 			/* ITU656_nRESET */
+diff --git a/arch/arm/boot/dts/imx6qp-vicutp.dts b/arch/arm/boot/dts/imx6qp-vicutp.dts
+index 7bad7ca6b12e..31c748e9d92f 100644
+--- a/arch/arm/boot/dts/imx6qp-vicutp.dts
++++ b/arch/arm/boot/dts/imx6qp-vicutp.dts
+@@ -10,4 +10,126 @@
+ / {
+ 	model = "Kverneland UT1P Board";
+ 	compatible = "kvg,vicutp", "fsl,imx6qp";
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpiokeys>;
++		autorepeat;
++
++		power {
++			label = "Power Button";
++			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_POWER>;
++			wakeup-source;
++		};
++	};
++
++	panel {
++		compatible = "kyo,tcg121xglp";
++		backlight = <&backlight_lcd>;
++		power-supply = <&reg_3v3>;
++
++		port {
++			panel_in: endpoint {
++				remote-endpoint = <&lvds0_out>;
++			};
++		};
++	};
++};
++
++&fec {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&rgmii_phy>;
++	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Microchip KSZ9031RNX PHY */
++		rgmii_phy: ethernet-phy@0 {
++			reg = <0>;
++			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
++			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
++			reset-assert-us = <10000>;
++			reset-deassert-us = <300>;
++		};
++	};
++};
++
++&gpio1 {
++	gpio-line-names =
++		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
++			"CAM2_MIRROR", "", "", "SMBALERT",
++		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
++		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
++			"SD1_DATA3", "ETH_MDIO", "",
++		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
++};
++
++&gpio4 {
++	gpio-line-names =
++		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
++		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
++			"CAN2_SR", "CAN2_TX", "CAN2_RX",
++		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
++			"HITCH_IN_OUT",
++		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
++			"ISB_LED";
++};
++
++&gpio5 {
++	gpio-line-names =
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
++			"I2S_BITCLK", "I2S_DOUT",
++		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
++			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
++};
++
++&gpio6 {
++	gpio-line-names =
++		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
++			"ITU656_D6", "ITU656_D7", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
++			"RGMII_TD3",
++		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
++			"RGMII_RD2", "RGMII_RD3", "", "";
++};
++
++&iomuxc {
++	pinctrl_enet: enetgrp {
++		fsl,pins = <
++			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
++			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
++			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
++			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
++			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
++			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
++			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
++			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
++			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
++			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
++			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
++			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
++			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
++			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
++			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
++			/* Phy reset */
++			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
++			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
++		>;
++	};
++
++	pinctrl_gpiokeys: gpiokeygrp {
++		fsl,pins = <
++			/* nON_SWITCH */
++			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
++		>;
++	};
+ };
 -- 
-2.35.1
-
-
+2.30.2
 
