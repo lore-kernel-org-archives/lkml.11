@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5055BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C2FC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351182AbiDLHCj (ORCPT
+        id S1351281AbiDLHCz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
+        Tue, 12 Apr 2022 03:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351530AbiDLGxz (ORCPT
+        with ESMTP id S1351524AbiDLGxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:53:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B4A18377;
-        Mon, 11 Apr 2022 23:41:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49651837E;
+        Mon, 11 Apr 2022 23:42:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E3B2B81B43;
-        Tue, 12 Apr 2022 06:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C09C385A6;
-        Tue, 12 Apr 2022 06:41:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40D7160A69;
+        Tue, 12 Apr 2022 06:42:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F79C385A1;
+        Tue, 12 Apr 2022 06:42:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745717;
-        bh=CWMqiwxtlvgKbd+NivmB/OV5GOd11UOQAsCVPwOiIpw=;
+        s=korg; t=1649745722;
+        bh=qjaUBTBW20T7UWuTxWW0iMkCQ6k2PxjPtqmtjDEux3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xh8W2pAMqqFA2JlH+BM+QglAF6TWvHJlNuWcn4BPQ1G8E+piCbVcjVJbVRPzF/TA6
-         0Xo4sab0r7biuZAK0c73H5umXKvx8w+aSWxO71CEKbfsL8bf63Njd3NADX4ravw/9g
-         x3r2qLtGhd7mliojzIfajs30H+m9c9W34e2CViQg=
+        b=dAKgLfVgY85zc3mEzO+tDDPmvk6NDJf5XoxzrDPELCPvlZelzc26b6Hv2t1JTjwFk
+         rcVzWbc4SyZ7B3JtvvWuMEkzKqbbJjNrymIzkqL2CRTUv9vEN5wxOi0vWyLxzSRrcQ
+         85XMnHt7xPO+Z6yjgofoDdu9wM/K/8aibYLNVB60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wayne Chang <waynec@nvidia.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 023/277] usb: gadget: tegra-xudc: Fix control endpoints definitions
-Date:   Tue, 12 Apr 2022 08:27:06 +0200
-Message-Id: <20220412062942.711886943@linuxfoundation.org>
+Subject: [PATCH 5.15 025/277] ptp: replace snprintf with sysfs_emit
+Date:   Tue, 12 Apr 2022 08:27:08 +0200
+Message-Id: <20220412062942.769429177@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,62 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wayne Chang <waynec@nvidia.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
+[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
 
-According to the Tegra Technical Reference Manual, the seq_num
-field of control endpoint is not [31:24] but [31:27]. Bit 24
-is reserved and bit 26 is splitxstate.
+coccinelle report:
+./drivers/ptp/ptp_sysfs.c:17:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/ptp/ptp_sysfs.c:390:8-16:
+WARNING: use scnprintf or sprintf
 
-The change fixes the wrong control endpoint's definitions.
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-Signed-off-by: Wayne Chang <waynec@nvidia.com>
-Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/ptp/ptp_sysfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
-index 716d9ab2d2ff..be76f891b9c5 100644
---- a/drivers/usb/gadget/udc/tegra-xudc.c
-+++ b/drivers/usb/gadget/udc/tegra-xudc.c
-@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
- BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
- BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
- BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
--BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
-+BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
- BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
-+BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
-+BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
- BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
- BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
- BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
-@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
- 		ep_reload(xudc, ep->index);
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index 41b92dc2f011..9233bfedeb17 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -14,7 +14,7 @@ static ssize_t clock_name_show(struct device *dev,
+ 			       struct device_attribute *attr, char *page)
+ {
+ 	struct ptp_clock *ptp = dev_get_drvdata(dev);
+-	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
++	return sysfs_emit(page, "%s\n", ptp->info->name);
+ }
+ static DEVICE_ATTR_RO(clock_name);
  
- 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
-+		ep_ctx_write_rsvd(ep->context, 0);
-+		ep_ctx_write_partial_td(ep->context, 0);
-+		ep_ctx_write_splitxstate(ep->context, 0);
- 		ep_ctx_write_seq_num(ep->context, 0);
+@@ -387,7 +387,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
  
- 		ep_reload(xudc, ep->index);
-@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
- 	xudc->setup_seq_num = 0;
- 	xudc->queued_setup_packet = false;
+ 	mutex_unlock(&ptp->pincfg_mux);
  
--	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
-+	ep_ctx_write_rsvd(ep0->context, 0);
-+	ep_ctx_write_partial_td(ep0->context, 0);
-+	ep_ctx_write_splitxstate(ep0->context, 0);
-+	ep_ctx_write_seq_num(ep0->context, 0);
+-	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
++	return sysfs_emit(page, "%u %u\n", func, chan);
+ }
  
- 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
- 
+ static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
 -- 
 2.35.1
 
