@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3703FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E283FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379013AbiDLITd (ORCPT
+        id S1346729AbiDLIP6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
+        Tue, 12 Apr 2022 04:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354764AbiDLH0m (ORCPT
+        with ESMTP id S1355300AbiDLH1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234C946B38;
-        Tue, 12 Apr 2022 00:06:35 -0700 (PDT)
+        Tue, 12 Apr 2022 03:27:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD1C49250;
+        Tue, 12 Apr 2022 00:07:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D50F615B9;
-        Tue, 12 Apr 2022 07:06:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C3B8C385A1;
-        Tue, 12 Apr 2022 07:06:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBDC5B81A8F;
+        Tue, 12 Apr 2022 07:07:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42E16C385A1;
+        Tue, 12 Apr 2022 07:07:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747194;
-        bh=yACMg3K5W5/I6pA+flBzd9n3DRtIlF1HetQbnpP/24s=;
+        s=korg; t=1649747244;
+        bh=o4f5gXCbaB4CQFduw7VkVXm88MSd43BcGFbgkllltIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F+pJakB8iYIANmIYEpvzBcb0gtLTeddWOzTXYN5stuSnwqFNpI/0ECG9NNB3GXu+u
-         aQBVRiL0bhwjlDQAPBK3NUmbDms+uuqF722tMVirfCXtK9jx4ei0MkuQyyZcEopxw4
-         h0sBSqL/ECF5RqSXrR1POR3V5YGgBulGdtMcB30A=
+        b=kDt0lbraaGJc8atbTu4YI5M2N9nKrkrdJuxi6rTCWkzsLaJQjV7Bir70/kCVZmT0O
+         G0HmwDUTF0SIKVfgP3rn0KyMufLA9ns+fWX9XOKsblZb0HE4yrqYB3IYtbvGT8ihM/
+         cWJSl6viH33xX3l3wnbznJRJg5+yxxXeyDWvmOUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 276/285] powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit
-Date:   Tue, 12 Apr 2022 08:32:13 +0200
-Message-Id: <20220412062951.621295308@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 010/343] KVM: x86/emulator: Emulate RDPID only if it is enabled in guest
+Date:   Tue, 12 Apr 2022 08:27:08 +0200
+Message-Id: <20220412062951.402249565@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,91 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
+From: Hou Wenlong <houwenlong.hwl@antgroup.com>
 
-commit ffa0b64e3be58519ae472ea29a1a1ad681e32f48 upstream.
+[ Upstream commit a836839cbfe60dc434c5476a7429cf2bae36415d ]
 
-mpe: On 64-bit Book3E vmalloc space starts at 0x8000000000000000.
+When RDTSCP is supported but RDPID is not supported in host,
+RDPID emulation is available. However, __kvm_get_msr() would
+only fail when RDTSCP/RDPID both are disabled in guest, so
+the emulator wouldn't inject a #UD when RDPID is disabled but
+RDTSCP is enabled in guest.
 
-Because of the way __pa() works we have:
-  __pa(0x8000000000000000) == 0, and therefore
-  virt_to_pfn(0x8000000000000000) == 0, and therefore
-  virt_addr_valid(0x8000000000000000) == true
-
-Which is wrong, virt_addr_valid() should be false for vmalloc space.
-In fact all vmalloc addresses that alias with a valid PFN will return
-true from virt_addr_valid(). That can cause bugs with hardened usercopy
-as described below by Kefeng Wang:
-
-  When running ethtool eth0 on 64-bit Book3E, a BUG occurred:
-
-    usercopy: Kernel memory exposure attempt detected from SLUB object not in SLUB page?! (offset 0, size 1048)!
-    kernel BUG at mm/usercopy.c:99
-    ...
-    usercopy_abort+0x64/0xa0 (unreliable)
-    __check_heap_object+0x168/0x190
-    __check_object_size+0x1a0/0x200
-    dev_ethtool+0x2494/0x2b20
-    dev_ioctl+0x5d0/0x770
-    sock_do_ioctl+0xf0/0x1d0
-    sock_ioctl+0x3ec/0x5a0
-    __se_sys_ioctl+0xf0/0x160
-    system_call_exception+0xfc/0x1f0
-    system_call_common+0xf8/0x200
-
-  The code shows below,
-
-    data = vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
-    copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
-
-  The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
-  on 64-bit Book3E, which leads to the panic.
-
-  As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
-  and __pa addresses") does, make sure the virt addr above PAGE_OFFSET in
-  the virt_addr_valid() for 64-bit, also add upper limit check to make
-  sure the virt is below high_memory.
-
-  Meanwhile, for 32-bit PAGE_OFFSET is the virtual address of the start
-  of lowmem, high_memory is the upper low virtual address, the check is
-  suitable for 32-bit, this will fix the issue mentioned in commit
-  602946ec2f90 ("powerpc: Set max_mapnr correctly") too.
-
-On 32-bit there is a similar problem with high memory, that was fixed in
-commit 602946ec2f90 ("powerpc: Set max_mapnr correctly"), but that
-commit breaks highmem and needs to be reverted.
-
-We can't easily fix __pa(), we have code that relies on its current
-behaviour. So for now add extra checks to virt_addr_valid().
-
-For 64-bit Book3S the extra checks are not necessary, the combination of
-virt_to_pfn() and pfn_valid() should yield the correct result, but they
-are harmless.
-
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-[mpe: Add additional change log detail]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406145802.538416-1-mpe@ellerman.id.au
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fb6d4d340e05 ("KVM: x86: emulate RDPID")
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Message-Id: <1dfd46ae5b76d3ed87bde3154d51c64ea64c99c1.1646226788.git.houwenlong.hwl@antgroup.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/page.h |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/kvm/emulate.c     | 4 +++-
+ arch/x86/kvm/kvm_emulate.h | 1 +
+ arch/x86/kvm/x86.c         | 6 ++++++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/include/asm/page.h
-+++ b/arch/powerpc/include/asm/page.h
-@@ -132,7 +132,11 @@ static inline bool pfn_valid(unsigned lo
- #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
- #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 02d061a06aa1..de9d8a27387c 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -3523,8 +3523,10 @@ static int em_rdpid(struct x86_emulate_ctxt *ctxt)
+ {
+ 	u64 tsc_aux = 0;
  
--#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
-+#define virt_addr_valid(vaddr)	({					\
-+	unsigned long _addr = (unsigned long)vaddr;			\
-+	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
-+	pfn_valid(virt_to_pfn(_addr));					\
-+})
+-	if (ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux))
++	if (!ctxt->ops->guest_has_rdpid(ctxt))
+ 		return emulate_ud(ctxt);
++
++	ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux);
+ 	ctxt->dst.val = tsc_aux;
+ 	return X86EMUL_CONTINUE;
+ }
+diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
+index 39eded2426ff..a2a7654d8ace 100644
+--- a/arch/x86/kvm/kvm_emulate.h
++++ b/arch/x86/kvm/kvm_emulate.h
+@@ -226,6 +226,7 @@ struct x86_emulate_ops {
+ 	bool (*guest_has_long_mode)(struct x86_emulate_ctxt *ctxt);
+ 	bool (*guest_has_movbe)(struct x86_emulate_ctxt *ctxt);
+ 	bool (*guest_has_fxsr)(struct x86_emulate_ctxt *ctxt);
++	bool (*guest_has_rdpid)(struct x86_emulate_ctxt *ctxt);
  
- /*
-  * On Book-E parts we need __va to parse the device tree and we can't
+ 	void (*set_nmi_mask)(struct x86_emulate_ctxt *ctxt, bool masked);
+ 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 9b6166348c94..c81ec70197fb 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -7675,6 +7675,11 @@ static bool emulator_guest_has_fxsr(struct x86_emulate_ctxt *ctxt)
+ 	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_FXSR);
+ }
+ 
++static bool emulator_guest_has_rdpid(struct x86_emulate_ctxt *ctxt)
++{
++	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_RDPID);
++}
++
+ static ulong emulator_read_gpr(struct x86_emulate_ctxt *ctxt, unsigned reg)
+ {
+ 	return kvm_register_read_raw(emul_to_vcpu(ctxt), reg);
+@@ -7757,6 +7762,7 @@ static const struct x86_emulate_ops emulate_ops = {
+ 	.guest_has_long_mode = emulator_guest_has_long_mode,
+ 	.guest_has_movbe     = emulator_guest_has_movbe,
+ 	.guest_has_fxsr      = emulator_guest_has_fxsr,
++	.guest_has_rdpid     = emulator_guest_has_rdpid,
+ 	.set_nmi_mask        = emulator_set_nmi_mask,
+ 	.get_hflags          = emulator_get_hflags,
+ 	.exiting_smm         = emulator_exiting_smm,
+-- 
+2.35.1
+
 
 
