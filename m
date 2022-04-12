@@ -2,95 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85657C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243070AbiDLJlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50986 "EHLO
+        id S230167AbiDLJlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388758AbiDLJWp (ORCPT
+        with ESMTP id S1389932AbiDLJYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:22:45 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0D94CD54
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:29:28 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso2115752pjf.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:29:28 -0700 (PDT)
+        Tue, 12 Apr 2022 05:24:22 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9482926ADB;
+        Tue, 12 Apr 2022 01:39:52 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id v15so11409831edb.12;
+        Tue, 12 Apr 2022 01:39:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0dFyqLvQ2p1xNfcfzu7O9DJMNp2UmrxAZtgZZyFjc4U=;
-        b=QJycfqPJQWovgMgDFefko+ZRTgkQeqaDHh4yrF684RIOJqogHdrZXuNkJWtD1e86CH
-         JfhnULKhAQyzatcivRyRpLB1X6sxBZzUwJuEV+o9PvY4Qt50KpyO+B3dFnvqWNVDe6Aa
-         vRjjk1DEXQMKON402pyAAp0fWh2szazajsdfotENvQ6Nz3IsZDa9hd7JPyssGJ0bQ2xb
-         jyuOpHy5EPHjebY5hjNMbvD8dTk17H7KqFEu3M5JbAwRMe/MpZ3DXdRNiHJDKUpXKkng
-         UwDmjD/Pwh/gx2kdhOHF6NWCr19mYdVlJEtcEho1XjNFtn6QY2WkYeJkr6BVWciQwijO
-         nTug==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/h7cVVserNqUb3YyYC9xHnLSaItStAPV1/7k0c5Uc38=;
+        b=oG8NoJx4rLD9iGB0rQxfTkpmikuRl+uEX+dLf92eoRrPh4Q24PCaTFMW1AFyeeivWy
+         FE8UrS0Hw5PfWqz8a0nGjS9cgQm/FJEanbo+cymkkBhKyN3LGfhZd8lQzwmV0CG0QlLu
+         JaZSRc9WIH0ciykVTxVkrKBd//oOTyAtMTswBUBR6JLNfN6luY49Bkr+2dEdP7ZBncjT
+         IfGB3ZL+tu35IfSPKXgXin7U6TV9E4mDRav9UxXaR9yjfqesOHZpqwKf/5simE2mXwvY
+         4Ra4OolPViSeDmqopUG8JLhPBFFHA9DQiQYclEksF+R2QtzOiUaErAL/FUHzWBGMGiHg
+         JhJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0dFyqLvQ2p1xNfcfzu7O9DJMNp2UmrxAZtgZZyFjc4U=;
-        b=gaZB30DP4sQFSHEGObQwEtSJnLsbXY5dxGmlRHMIw65Nf6f12FfgTwJn90+ax6tqQ6
-         tavhBWrLxoVPDYgokWzKIY71EcOfYSGDfm0o49Eomwnru0rQbsR/KCCVkUtlSU4r3BHm
-         NKw9IEEAiFealGgwW5wfTeuLcdQ8bNHv+fRkn6/MaIcfoH9luQw9D2aVQ5BJz4A5PsHO
-         HAW2JOrapHH4+gTBH8X8ulMywKBMBr2WWBD1TiQIkGlsuJpHuobZtniAC1ynau1hmKWp
-         wLUg2QxES1CGuYJzP6ddGFJm7s9OVkv8yKRuiLZgFKd/IJVGcjY1WHSwifE8yQDHR5Ap
-         nYJQ==
-X-Gm-Message-State: AOAM531S5TMMbcMz/DSYHzH5ckLq1wVyRixDx6GqCjBRbQhpbPwB+DiU
-        3C1bZMhROd0rAHYjLO9B5fw=
-X-Google-Smtp-Source: ABdhPJwFEUBPcpn/+JQSCImfBLLqIXo/H9gF9nfIejTfltPkVQGUiz6pmaIRVoVcSfDik/juAAZfWg==
-X-Received: by 2002:a17:902:7006:b0:156:3cbe:6b04 with SMTP id y6-20020a170902700600b001563cbe6b04mr35586867plk.68.1649752167314;
-        Tue, 12 Apr 2022 01:29:27 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id j18-20020a633c12000000b0038204629cc9sm2093888pga.10.2022.04.12.01.29.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 01:29:27 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     nm@ti.com
-Cc:     ssantosh@kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] soc: ti: knav_dma: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Tue, 12 Apr 2022 08:29:23 +0000
-Message-Id: <20220412082923.2532649-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/h7cVVserNqUb3YyYC9xHnLSaItStAPV1/7k0c5Uc38=;
+        b=CoZj2IN6JjeFsqA4rhQt4e4OAjUi0VZvcdQXjWy0EwoAhAJYOLWNL2Bj5ZAregy8im
+         hWbxN2QlOXbXSBc6IcajWb8dWL90eYxEAX9W+SXzaCqJA/CzU5m3j79t34wp/F4PyUAp
+         Zn/Lbzx9egHOh3GmqvdtINRW/hXCxL+hH4hThXiV677O20b4sGprgDayTSLc8o4f3qP0
+         dWeq6HPlKwNs+mm3SKAwIDQbIrj0ZpzNHaPKVUzJ/ApXQo0zvgpDh2Grt4/p7+lQ15he
+         7aLCQesDBSlbQKBf8Tbt/Uuwk8CuisoTESLXjbas4lHh3+8mNmTaeS1pt3oYnLgEUOyy
+         cqPA==
+X-Gm-Message-State: AOAM531ks29yoY4nUmdtqDf+cf1OutsDnY+naNPyj3TcDrZoTe/C7835
+        2+9CmCafO1sSj9g9Juo+SGl6cXqmx1P78ZGDIKo=
+X-Google-Smtp-Source: ABdhPJz9T3JpupKlqRf7GpnslB1SuvXlu2IUplRT6C7G/KJGAAneW539NGav1r0nAc5Zm8hYK3IeM1NR9WozbXE5Nzs=
+X-Received: by 2002:a50:fe19:0:b0:41d:84be:6541 with SMTP id
+ f25-20020a50fe19000000b0041d84be6541mr6395337edt.270.1649752790968; Tue, 12
+ Apr 2022 01:39:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHp75VePiCm6wH7aXcbnrt-4nntqx99s45wYk3+C2AKs=Usang@mail.gmail.com>
+ <20220412070355.139507-1-andrei.lalaev@emlid.com>
+In-Reply-To: <20220412070355.139507-1-andrei.lalaev@emlid.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 12 Apr 2022 11:35:38 +0300
+Message-ID: <CAHp75VceMuo8u5FpMvtg_YgZwEYbSJ2JCa4DXLvBRfC7c-ZAkg@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: of: fix bounds check for valid mask
+To:     Andrei Lalaev <andrei.lalaev@emlid.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On Tue, Apr 12, 2022 at 10:13 AM Andrei Lalaev <andrei.lalaev@emlid.com> wrote:
+> On Mon, Apr 11, 2022 at 7:55 PM Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+...
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/soc/ti/knav_dma.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> > On top of that, it would be nice to be sure that at least all current
+> > in-kernel users (meaning all DTS provided so far by the kernel) do
+> > interpret it as start,size.
+>
+> I checked the DTS and only 36 of them use "gpio-reserved-ranges".
+> The 33 of them use tuple with the second element that is less than the first.
+> So it means that the maintainers interpreted it as "start,size".
+>
+> And only 3 of them use one tuple with the second element is greater than the first.
+> The list of this DTS:
+>     1. arch/arm64/boot/dts/qcom/msm8996-sony-xperia-tone.dtsi
+>         AngeloGioacchino Del Regno added it in the commit 9da65e441d4d
+>         ("arm64: dts: qcom: Add support for SONY Xperia X Performance / XZ / XZs (msm8996, Tone platform)")
+>         But in another commit 8b36c824b9a77 ("arm64: dts: qcom: sdm630-xperia-nile: Add all RPM and fixed regulators")
+>         he clearly interpreted it as "start,size" because the second element
+>         is less than the first.
+>
+>     2. arch/arm64/boot/dts/qcom/msm8998-fxtec-pro1.dts
+>         The same maintainer as for the previous DTS.
+>         He added "reserved-range" in the commit 122d2c5f31b6e
+>         ("arm64: dts: qcom: Add support for MSM8998 F(x)tec Pro1 QX1000")
+>
+>     3. arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+>         Bhupesh Sharma added it in the commit 12dd4ebda47ab
+>         ("arm64: dts: qcom: Fix usb entries for SA8155p adp board")
+>
+> Should I ask these maintainers how they interpreted this property?
 
-diff --git a/drivers/soc/ti/knav_dma.c b/drivers/soc/ti/knav_dma.c
-index 700d8eecd8c4..061f92c8cf7d 100644
---- a/drivers/soc/ti/knav_dma.c
-+++ b/drivers/soc/ti/knav_dma.c
-@@ -747,9 +747,8 @@ static int knav_dma_probe(struct platform_device *pdev)
- 	INIT_LIST_HEAD(&kdev->list);
- 
- 	pm_runtime_enable(kdev->dev);
--	ret = pm_runtime_get_sync(kdev->dev);
-+	ret = pm_runtime_resume_and_get(kdev->dev);
- 	if (ret < 0) {
--		pm_runtime_put_noidle(kdev->dev);
- 		dev_err(kdev->dev, "unable to enable pktdma, err %d\n", ret);
- 		goto err_pm_disable;
- 	}
+Ideally it would be nice to have their responses. Meanwhile...
+
+> > Otherwise this will be an (unacceptable) ABI change and hence documentation
+> > would need to be fixed with variable names in the code
+>
+> I want you to notice that "of_gpiochip_init_valid_mask" uses "bitmap_clear"
+> that clears "nbits" bits starting from the "start". So it can't be interpreted
+> as "start,end". That's why I think everyone interprets it as "start,size" because
+> it works like "start,size" and the documentation tells it is "start,size".
+
+...meanwhile try to compress above into a few sentences and put it to
+the commit message explaining that the de facto use of the values
+seems as start,size and questioned DTSes have been asked for an
+explanation from the current maintainers.
+
+I'm now 99% confident that your patch is correct.
+Thanks for doing all this analysis.
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
