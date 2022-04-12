@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37623C47084
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB5CC3527E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355855AbiDLH3b (ORCPT
+        id S1355998AbiDLHaP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
+        Tue, 12 Apr 2022 03:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351781AbiDLHM4 (ORCPT
+        with ESMTP id S1351823AbiDLHM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E972FE9F;
-        Mon, 11 Apr 2022 23:52:36 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C4D17E0A;
+        Mon, 11 Apr 2022 23:53:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84E8E61472;
-        Tue, 12 Apr 2022 06:52:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9845BC385A1;
-        Tue, 12 Apr 2022 06:52:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2C5EB81B46;
+        Tue, 12 Apr 2022 06:53:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C501C385A1;
+        Tue, 12 Apr 2022 06:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746356;
-        bh=3zwlakTVIipcz1ydV+u+L1C8sR5wbpROIWfDBj7mPGE=;
+        s=korg; t=1649746397;
+        bh=3RUt2KxfRxSsYsWSSjP4U2KH/Rhc8qyzgbW8l/zg94U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DIkHzsmUpDVgVdHi1mKCdRYMOo0p8B77qonaxkgbHrCpQkz1z40xnL8U4Hm4MsVcf
-         5G1tAs+mTu1WGru3iN2tU73gDqRZKkZFR61iReV290WSU8x1EE+V69DAGtN2u+/2J/
-         Tc9ASCyBhU577GmWlI2Kv2heXR9ONvWlJY9u8/hY=
+        b=xMJqyyHSVS+FGDqXAJt2FXwRN7a/hzhvWuKj+7aCbNO2VYS+vzUeuEgMBNrSogD8w
+         /vZjibZ6VOazQNWGF8sMYqoudHw7l+xePeQYnYe6rrfkGX3n/reNqPhp5uDO1OnDYv
+         g+IdDGnK3LbBKizSlTovq4HkzknvzK8KXW3u+rrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robbie Ko <robbieko@synology.com>,
-        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
-        Kaiwen Hu <kevinhu@synology.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 226/277] btrfs: prevent subvol with swapfile from being deleted
-Date:   Tue, 12 Apr 2022 08:30:29 +0200
-Message-Id: <20220412062948.584408185@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.15 228/277] arm64: patch_text: Fixup last cpu should be master
+Date:   Tue, 12 Apr 2022 08:30:31 +0200
+Message-Id: <20220412062948.643072909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,91 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kaiwen Hu <kevinhu@synology.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 60021bd754c6ca0addc6817994f20290a321d8d6 upstream.
+commit 31a099dbd91e69fcab55eef4be15ed7a8c984918 upstream.
 
-A subvolume with an active swapfile must not be deleted otherwise it
-would not be possible to deactivate it.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-After the subvolume is deleted, we cannot swapoff the swapfile in this
-deleted subvolume because the path is unreachable.  The swapfile is
-still active and holding references, the filesystem cannot be unmounted.
-
-The test looks like this:
-
-  mkfs.btrfs -f $dev > /dev/null
-  mount $dev $mnt
-
-  btrfs sub create $mnt/subvol
-  touch $mnt/subvol/swapfile
-  chmod 600 $mnt/subvol/swapfile
-  chattr +C $mnt/subvol/swapfile
-  dd if=/dev/zero of=$mnt/subvol/swapfile bs=1K count=4096
-  mkswap $mnt/subvol/swapfile
-  swapon $mnt/subvol/swapfile
-
-  btrfs sub delete $mnt/subvol
-  swapoff $mnt/subvol/swapfile  # failed: No such file or directory
-  swapoff --all
-
-  unmount $mnt                  # target is busy.
-
-To prevent above issue, we simply check that whether the subvolume
-contains any active swapfile, and stop the deleting process.  This
-behavior is like snapshot ioctl dealing with a swapfile.
-
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-by: Robbie Ko <robbieko@synology.com>
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Kaiwen Hu <kevinhu@synology.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: ae16480785de ("arm64: introduce interfaces to hotpatch kernel and module code")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220407073323.743224-2-guoren@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/inode.c |   24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ arch/arm64/kernel/patching.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -4450,6 +4450,13 @@ int btrfs_delete_subvolume(struct inode
- 			   dest->root_key.objectid);
- 		return -EPERM;
- 	}
-+	if (atomic_read(&dest->nr_swapfiles)) {
-+		spin_unlock(&dest->root_item_lock);
-+		btrfs_warn(fs_info,
-+			   "attempt to delete subvolume %llu with active swapfile",
-+			   root->root_key.objectid);
-+		return -EPERM;
-+	}
- 	root_flags = btrfs_root_flags(&dest->root_item);
- 	btrfs_set_root_flags(&dest->root_item,
- 			     root_flags | BTRFS_ROOT_SUBVOL_DEAD);
-@@ -10721,8 +10728,23 @@ static int btrfs_swap_activate(struct sw
- 	 * set. We use this counter to prevent snapshots. We must increment it
- 	 * before walking the extents because we don't want a concurrent
- 	 * snapshot to run after we've already checked the extents.
--	 */
-+	 *
-+	 * It is possible that subvolume is marked for deletion but still not
-+	 * removed yet. To prevent this race, we check the root status before
-+	 * activating the swapfile.
-+	 */
-+	spin_lock(&root->root_item_lock);
-+	if (btrfs_root_dead(root)) {
-+		spin_unlock(&root->root_item_lock);
-+
-+		btrfs_exclop_finish(fs_info);
-+		btrfs_warn(fs_info,
-+		"cannot activate swapfile because subvolume %llu is being deleted",
-+			root->root_key.objectid);
-+		return -EPERM;
-+	}
- 	atomic_inc(&root->nr_swapfiles);
-+	spin_unlock(&root->root_item_lock);
+--- a/arch/arm64/kernel/patching.c
++++ b/arch/arm64/kernel/patching.c
+@@ -117,8 +117,8 @@ static int __kprobes aarch64_insn_patch_
+ 	int i, ret = 0;
+ 	struct aarch64_insn_patch *pp = arg;
  
- 	isize = ALIGN_DOWN(inode->i_size, fs_info->sectorsize);
- 
+-	/* The first CPU becomes master */
+-	if (atomic_inc_return(&pp->cpu_count) == 1) {
++	/* The last CPU becomes master */
++	if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
+ 		for (i = 0; ret == 0 && i < pp->insn_cnt; i++)
+ 			ret = aarch64_insn_patch_text_nosync(pp->text_addrs[i],
+ 							     pp->new_insns[i]);
 
 
