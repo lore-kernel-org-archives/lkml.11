@@ -2,85 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C85FBC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B347C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349329AbiDLGg6 (ORCPT
+        id S1349361AbiDLGhB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51082 "EHLO
+        Tue, 12 Apr 2022 02:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349108AbiDLGgI (ORCPT
+        with ESMTP id S1349319AbiDLGgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:36:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B7035DE2;
+        Tue, 12 Apr 2022 02:36:07 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD8135DD0;
         Mon, 11 Apr 2022 23:33:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44671618DC;
-        Tue, 12 Apr 2022 06:33:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C65C385A6;
-        Tue, 12 Apr 2022 06:33:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745216;
-        bh=b4QnvRsKEKn1wn//dgDzAOcbGkrbaHGztOICLGZamFk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tx3mrBSqj8/45chf7Rv6ItPE93TkMrI0Ha3lMhPVjqqgXFRW/6xT5JFTJs6tNFyJg
-         htv6H1hVQcCzq4Z2+k+YqpeHsnGghJOEJcBfu7HwcJHZm0tw2oHy5ujUuiRwbcVc1I
-         Sy7K6gqzwbeohJErDJXJ8W+cFqcEk8/L+oMA5Xek=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 002/171] gfs2: Check for active reservation in gfs2_release
-Date:   Tue, 12 Apr 2022 08:28:13 +0200
-Message-Id: <20220412062927.946485133@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
-References: <20220412062927.870347203@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649745218; x=1681281218;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mq3h1yyGxNGjLIox7hCoYlBU0GvesA0gIlk/iL9J+Ac=;
+  b=xlcVY3vuqAP/1KahK/gFvzKh2pFeVhE5OX8XIi/KPQQSz/uRAR3+aeul
+   OqUsGvT/n9XsPS4mvpCRY8cSJzxAiyLBa+cUnQeHmicxTqXL3WV4ITmiA
+   u8yabzO/VCd/Pnk+QHl3r4dqMirmDDiDM/9jo9tQA09ze8M2n460N8DBm
+   gltW7q+qFiow7Wm9KGOfVLempPq0C5+1OMAvcLwHWS6QzmtPzqsc93xm2
+   PgHj228aJiJBUE4s7hesgsBJCay07956vX5RhrbF3ymOgXcl+AW8NbFar
+   jMv23BsEkJ+us+v0BVtgBjGrFlBSJUo9g7q5JKQ0rwaJFIWvTYurFszga
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,253,1643698800"; 
+   d="scan'208";a="159767808"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 23:33:38 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 11 Apr 2022 23:33:36 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 23:33:33 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>
+Subject: [Patch net-next 1/3] net: phy: LAN937x: added PHY_POLL_CABLE_TEST flag
+Date:   Tue, 12 Apr 2022 12:03:15 +0530
+Message-ID: <20220412063317.4173-2-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220412063317.4173-1-arun.ramadoss@microchip.com>
+References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+Added the phy_poll_cable_test flag for the lan937x phy driver.
+Tested using command -  ethtool --cable-test <dev>
 
-[ Upstream commit 0ec9b9ea4f83303bfd8f052a3d8b2bd179b002e1 ]
-
-In gfs2_release, check if the inode has an active reservation to avoid
-unnecessary lock taking.
-
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- fs/gfs2/file.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/phy/microchip_t1.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index cfd9d03f604f..59318b1eaa60 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -716,10 +716,10 @@ static int gfs2_release(struct inode *inode, struct file *file)
- 	kfree(file->private_data);
- 	file->private_data = NULL;
- 
--	if (file->f_mode & FMODE_WRITE) {
-+	if (gfs2_rs_active(&ip->i_res))
- 		gfs2_rs_delete(ip, &inode->i_writecount);
-+	if (file->f_mode & FMODE_WRITE)
- 		gfs2_qa_put(ip);
--	}
- 	return 0;
- }
- 
+diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
+index 389df3f4293c..363bfbfa182b 100644
+--- a/drivers/net/phy/microchip_t1.c
++++ b/drivers/net/phy/microchip_t1.c
+@@ -748,6 +748,7 @@ static struct phy_driver microchip_t1_phy_driver[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_LAN937X),
+ 		.name		= "Microchip LAN937x T1",
++		.flags          = PHY_POLL_CABLE_TEST,
+ 		.features	= PHY_BASIC_T1_FEATURES,
+ 		.config_init	= lan87xx_config_init,
+ 		.suspend	= genphy_suspend,
 -- 
-2.35.1
-
-
+2.33.0
 
