@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F09C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB20C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351306AbiDLIze (ORCPT
+        id S1354861AbiDLIzr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        Tue, 12 Apr 2022 04:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359396AbiDLHnA (ORCPT
+        with ESMTP id S1359405AbiDLHnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:43:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F05A2C664;
-        Tue, 12 Apr 2022 00:22:21 -0700 (PDT)
+        Tue, 12 Apr 2022 03:43:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E333A2CE0A;
+        Tue, 12 Apr 2022 00:22:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D493B81B66;
-        Tue, 12 Apr 2022 07:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89DE3C385A5;
-        Tue, 12 Apr 2022 07:22:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80013616B2;
+        Tue, 12 Apr 2022 07:22:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B754C385A5;
+        Tue, 12 Apr 2022 07:22:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748138;
-        bh=D9WIdFhluHES3x6ARYx49n7SFgTgXokZUrYuVIU6mVw=;
+        s=korg; t=1649748157;
+        bh=PYNQeBE5FIvK7ttjTSwyhrldUg+LR6Jt9gF2vnHvEZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KTolrNEnVeYMGNFVfcX6tP8qiU59h4KKR+Qbw9Jl64VyBJMKWJpHqnHAFzz8ztzUW
-         jS+Ygi8X0O80SXE5WnmQI/xUONJnyMJbH8FNNzKkzvPnfghDFn8CvNwE4/W4xUbPlv
-         pM2k49ZcMXpywmIaU4yhcnngOwb+bj8ZIXcDwwVY=
+        b=2S8NPbnFTJx2Mjw+EPfbBfSfn4vCkcRGjyyYXjsIsiyx+HzlVAS5JStJ3JP/jZ9/E
+         RSOBhln0oxrqWMbCdoescdD40BT8S0TsQiNSgzPtPsCawAQFz4IefvA1ItYiSaLhTh
+         W4m+qoO8wYxNDkiWdtciTyu+7jZLIErgtl6Lb9w0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernardo Meurer Costa <beme@google.com>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.17 334/343] x86/extable: Prefer local labels in .set directives
-Date:   Tue, 12 Apr 2022 08:32:32 +0200
-Message-Id: <20220412063000.959501433@linuxfoundation.org>
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 5.17 323/343] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
+Date:   Tue, 12 Apr 2022 08:32:21 +0200
+Message-Id: <20220412063000.643931062@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,88 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 334865b2915c33080624e0d06f1c3e917036472c upstream.
+commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
 
-Bernardo reported an error that Nathan bisected down to
-(x86_64) defconfig+LTO_CLANG_FULL+X86_PMEM_LEGACY.
+Just like its done for ldopts and for both in tools/perf/Makefile.config.
 
-    LTO     vmlinux.o
-  ld.lld: error: <instantiation>:1:13: redefinition of 'found'
-  .set found, 0
-              ^
+Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
 
-  <inline asm>:29:1: while in macro instantiation
-  extable_type_reg reg=%eax, type=(17 | ((0) << 16))
-  ^
+  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
 
-This appears to be another LTO specific issue similar to what was folded
-into commit 4b5305decc84 ("x86/extable: Extend extable functionality"),
-where the `.set found, 0` in DEFINE_EXTABLE_TYPE_REG in
-arch/x86/include/asm/asm.h conflicts with the symbol for the static
-function `found` in arch/x86/kernel/pmem.c.
+And we need to do it to allow for building with versions of clang where
+some gcc options selected by distros are not available.
 
-Assembler .set directive declare symbols with global visibility, so the
-assembler may not rename such symbols in the event of a conflict. LTO
-could rename static functions if there was a conflict in C sources, but
-it cannot see into symbols defined in inline asm.
-
-The symbols are also retained in the symbol table, regardless of LTO.
-
-Give the symbols .L prefixes making them locally visible, so that they
-may be renamed for LTO to avoid conflicts, and to drop them from the
-symbol table regardless of LTO.
-
-Fixes: 4b5305decc84 ("x86/extable: Extend extable functionality")
-Reported-by: Bernardo Meurer Costa <beme@google.com>
-Debugged-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20220329202148.2379697-1-ndesaulniers@google.com
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/asm.h |   20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ tools/build/feature/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/include/asm/asm.h
-+++ b/arch/x86/include/asm/asm.h
-@@ -154,24 +154,24 @@
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -217,7 +217,7 @@ strip-libs = $(filter-out -l%,$(1))
+ PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+ PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+ PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+-PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
++PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+ FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
  
- # define DEFINE_EXTABLE_TYPE_REG \
- 	".macro extable_type_reg type:req reg:req\n"						\
--	".set found, 0\n"									\
--	".set regnr, 0\n"									\
-+	".set .Lfound, 0\n"									\
-+	".set .Lregnr, 0\n"									\
- 	".irp rs,rax,rcx,rdx,rbx,rsp,rbp,rsi,rdi,r8,r9,r10,r11,r12,r13,r14,r15\n"		\
- 	".ifc \\reg, %%\\rs\n"									\
--	".set found, found+1\n"									\
--	".long \\type + (regnr << 8)\n"								\
-+	".set .Lfound, .Lfound+1\n"								\
-+	".long \\type + (.Lregnr << 8)\n"							\
- 	".endif\n"										\
--	".set regnr, regnr+1\n"									\
-+	".set .Lregnr, .Lregnr+1\n"								\
- 	".endr\n"										\
--	".set regnr, 0\n"									\
-+	".set .Lregnr, 0\n"									\
- 	".irp rs,eax,ecx,edx,ebx,esp,ebp,esi,edi,r8d,r9d,r10d,r11d,r12d,r13d,r14d,r15d\n"	\
- 	".ifc \\reg, %%\\rs\n"									\
--	".set found, found+1\n"									\
--	".long \\type + (regnr << 8)\n"								\
-+	".set .Lfound, .Lfound+1\n"								\
-+	".long \\type + (.Lregnr << 8)\n"							\
- 	".endif\n"										\
--	".set regnr, regnr+1\n"									\
-+	".set .Lregnr, .Lregnr+1\n"								\
- 	".endr\n"										\
--	".if (found != 1)\n"									\
-+	".if (.Lfound != 1)\n"									\
- 	".error \"extable_type_reg: bad register argument\"\n"					\
- 	".endif\n"										\
- 	".endm\n"
+ ifeq ($(CC_NO_CLANG), 0)
 
 
