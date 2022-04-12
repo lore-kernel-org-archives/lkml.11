@@ -2,206 +2,624 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9522DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C353C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355442AbiDLNQS (ORCPT
+        id S1355498AbiDLNQa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58866 "EHLO
+        Tue, 12 Apr 2022 09:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355781AbiDLNNW (ORCPT
+        with ESMTP id S1356571AbiDLNN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:13:22 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DA0121;
-        Tue, 12 Apr 2022 05:56:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649768195; x=1681304195;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=C6dk3/dvShTsf13TiSzcqE0mSsR+MyMx9FW9JNjPSEc=;
-  b=IlQ+qM+lSvXREDyZPdFJBADUBmzYaIoxpNzHab0Z2DnLdct/2m/90irC
-   T3C91766te3/JbiSOaWHTxGgiBR+dbB2ZUIv75+GX8Q9uOtPqehJcELRi
-   ARAbqT7/u8THH5Jd+E6OQSy6zhBD81NFmhDIZiLiH8TPDV1FXF/SLUwDk
-   MfrCYmCXqsVfs1Elz9DOYPoaC5oaz29SrDT1rvMGrrF5LvxsK2zfleAnv
-   mjc0MAbGz5Gastm6/WIzBh6KkboqCW9ELhvI8eZ0wuClZm5spftwXXZR5
-   aJdjDx80Dp8vMC+Ybr5Cl71mqip+QKG8kC97PmKxxjlVs+0F6lGiYxJGb
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262547300"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="262547300"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:56:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="699824982"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2022 05:56:28 -0700
-Date:   Tue, 12 Apr 2022 20:56:18 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 12/13] KVM: Expose KVM_MEM_PRIVATE
-Message-ID: <20220412125618.GC8013@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-13-chao.p.peng@linux.intel.com>
- <YkNaPLVLk/pO0zjr@google.com>
+        Tue, 12 Apr 2022 09:13:57 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8183DFB2;
+        Tue, 12 Apr 2022 05:58:51 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23C9vT05014200;
+        Tue, 12 Apr 2022 08:58:36 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3fb7w83rde-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 08:58:36 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 23CCwZOe025274
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 08:58:35 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 12 Apr
+ 2022 08:58:34 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 12 Apr 2022 08:58:34 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 23CCw8pa026349;
+        Tue, 12 Apr 2022 08:58:27 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <andrew@lunn.ch>
+CC:     <o.rempel@pengutronix.de>, <alexandru.tachici@analog.com>,
+        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
+Subject: [PATCH v6 4/7] net: phy: Add 10BASE-T1L support in phy-c45
+Date:   Tue, 12 Apr 2022 16:07:03 +0300
+Message-ID: <20220412130706.36767-5-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220412130706.36767-1-alexandru.tachici@analog.com>
+References: <20220412130706.36767-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkNaPLVLk/pO0zjr@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: fuMW8GPRRuvYCj08R1HTzyfsADWbAAD1
+X-Proofpoint-ORIG-GUID: fuMW8GPRRuvYCj08R1HTzyfsADWbAAD1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_04,2022-04-12_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 mlxscore=0 priorityscore=1501 adultscore=0 clxscore=1011
+ mlxlogscore=837 impostorscore=0 bulkscore=0 spamscore=0 suspectscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204120062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 07:13:00PM +0000, Sean Christopherson wrote:
-> On Thu, Mar 10, 2022, Chao Peng wrote:
-> > KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
-> > on it by implementing kvm_arch_private_memory_supported().
-> > 
-> > Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > ---
-> >  include/linux/kvm_host.h |  1 +
-> >  virt/kvm/kvm_main.c      | 24 +++++++++++++++++++-----
-> >  2 files changed, 20 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> > index 186b9b981a65..0150e952a131 100644
-> > --- a/include/linux/kvm_host.h
-> > +++ b/include/linux/kvm_host.h
-> > @@ -1432,6 +1432,7 @@ bool kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu);
-> >  int kvm_arch_post_init_vm(struct kvm *kvm);
-> >  void kvm_arch_pre_destroy_vm(struct kvm *kvm);
-> >  int kvm_arch_create_vm_debugfs(struct kvm *kvm);
-> > +bool kvm_arch_private_memory_supported(struct kvm *kvm);
-> >  
-> >  #ifndef __KVM_HAVE_ARCH_VM_ALLOC
-> >  /*
-> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> > index 52319f49d58a..df5311755a40 100644
-> > --- a/virt/kvm/kvm_main.c
-> > +++ b/virt/kvm/kvm_main.c
-> > @@ -1485,10 +1485,19 @@ static void kvm_replace_memslot(struct kvm *kvm,
-> >  	}
-> >  }
-> >  
-> > -static int check_memory_region_flags(const struct kvm_userspace_memory_region *mem)
-> > +bool __weak kvm_arch_private_memory_supported(struct kvm *kvm)
-> > +{
-> > +	return false;
-> > +}
-> > +
-> > +static int check_memory_region_flags(struct kvm *kvm,
-> > +				const struct kvm_userspace_memory_region *mem)
-> >  {
-> >  	u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
-> >  
-> > +	if (kvm_arch_private_memory_supported(kvm))
-> > +		valid_flags |= KVM_MEM_PRIVATE;
-> > +
-> >  #ifdef __KVM_HAVE_READONLY_MEM
-> >  	valid_flags |= KVM_MEM_READONLY;
-> >  #endif
-> > @@ -1900,7 +1909,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
-> >  	int as_id, id;
-> >  	int r;
-> >  
-> > -	r = check_memory_region_flags(mem);
-> > +	r = check_memory_region_flags(kvm, mem);
-> >  	if (r)
-> >  		return r;
-> >  
-> > @@ -1913,10 +1922,12 @@ int __kvm_set_memory_region(struct kvm *kvm,
-> >  		return -EINVAL;
-> >  	if (mem->guest_phys_addr & (PAGE_SIZE - 1))
-> >  		return -EINVAL;
-> > -	/* We can read the guest memory with __xxx_user() later on. */
-> >  	if ((mem->userspace_addr & (PAGE_SIZE - 1)) ||
-> > -	    (mem->userspace_addr != untagged_addr(mem->userspace_addr)) ||
-> > -	     !access_ok((void __user *)(unsigned long)mem->userspace_addr,
-> > +	    (mem->userspace_addr != untagged_addr(mem->userspace_addr)))
-> > +		return -EINVAL;
-> > +	/* We can read the guest memory with __xxx_user() later on. */
-> > +	if (!(mem->flags & KVM_MEM_PRIVATE) &&
-> > +	    !access_ok((void __user *)(unsigned long)mem->userspace_addr,
-> 
-> This should sanity check private_offset for private memslots.  At a bare minimum,
-> wrapping should be disallowed.
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Will add this.
+This patch is needed because the BASE-T1 uses different registers
+for status, control and advertisement to those already
+employed in the existing phy-c45 functions.
 
-> 
-> >  			mem->memory_size))
-> >  		return -EINVAL;
-> >  	if (as_id >= KVM_ADDRESS_SPACE_NUM || id >= KVM_MEM_SLOTS_NUM)
-> > @@ -1957,6 +1968,9 @@ int __kvm_set_memory_region(struct kvm *kvm,
-> >  		if ((kvm->nr_memslot_pages + npages) < kvm->nr_memslot_pages)
-> >  			return -EINVAL;
-> >  	} else { /* Modify an existing slot. */
-> > +		/* Private memslots are immutable, they can only be deleted. */
-> > +		if (mem->flags & KVM_MEM_PRIVATE)
-> > +			return -EINVAL;
-> 
-> These sanity checks belong in "KVM: Register private memslot to memory backing store",
-> e.g. that patch is "broken" without the immutability restriction.  It's somewhat moot
-> because the code is unreachable, but it makes reviewing confusing/difficult.
-> 
-> But rather than move the sanity checks back, I think I'd prefer to pull all of patch 10
-> here.  I think it also makes sense to drop "KVM: Use memfile_pfn_ops to obtain pfn for
-> private pages" and add the pointer in "struct kvm_memory_slot" in patch "KVM: Extend the
-> memslot to support fd-based private memory", with the use of the ops folded into
-> "KVM: Handle page fault for private memory".  Adding code to KVM and KVM-x86 in a single
-> patch is ok, and overall makes things easier to review because the new helpers have a
-> user right away, especially since there will be #ifdeffery.
-> 
-> I.e. end up with something like:
-> 
->   mm: Introduce memfile_notifier
->   mm/shmem: Restrict MFD_INACCESSIBLE memory against RLIMIT_MEMLOCK
->   KVM: Extend the memslot to support fd-based private memory
->   KVM: Use kvm_userspace_memory_region_ext
->   KVM: Add KVM_EXIT_MEMORY_ERROR exit
->   KVM: Handle page fault for private memory
->   KVM: Register private memslot to memory backing store
->   KVM: Zap existing KVM mappings when pages changed in the private fd
->   KVM: Enable and expose KVM_MEM_PRIVATE
+Where required, genphy_c45 functions will now check whether
+the device supports BASE-T1 and use the specific registers
+instead: 45.2.7.19 BASE-T1 AN control register,
+45.2.7.20 BASE-T1 AN status, 45.2.7.21 BASE-T1 AN
+advertisement register, 45.2.7.22 BASE-T1 AN LP Base
+Page ability register, 45.2.1.185 BASE-T1 PMA/PMD control
+register.
 
-Thanks for the suggestion. That makes sense.
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+---
+ drivers/net/phy/phy-c45.c    | 257 ++++++++++++++++++++++++++++++++++-
+ drivers/net/phy/phy_device.c |   1 +
+ include/linux/mdio.h         |  70 ++++++++++
+ include/linux/phy.h          |   2 +
+ include/uapi/linux/mdio.h    |  10 ++
+ 5 files changed, 335 insertions(+), 5 deletions(-)
 
-Chao
-> 
-> >  		if ((mem->userspace_addr != old->userspace_addr) ||
-> >  		    (npages != old->npages) ||
-> >  		    ((mem->flags ^ old->flags) & KVM_MEM_READONLY))
-> > -- 
-> > 2.17.1
-> > 
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index db709d30bf84..eefdd67d5556 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -8,6 +8,25 @@
+ #include <linux/mii.h>
+ #include <linux/phy.h>
+ 
++/**
++ * genphy_c45_baset1_able - checks if the PMA has BASE-T1 extended abilities
++ * @phydev: target phy_device struct
++ */
++static bool genphy_c45_baset1_able(struct phy_device *phydev)
++{
++	int val;
++
++	if (phydev->pma_extable == -ENODATA) {
++		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
++		if (val < 0)
++			return false;
++
++		phydev->pma_extable = val;
++	}
++
++	return !!(phydev->pma_extable & MDIO_PMA_EXTABLE_BT1);
++}
++
+ /**
+  * genphy_c45_pma_can_sleep - checks if the PMA have sleep support
+  * @phydev: target phy_device struct
+@@ -80,7 +99,10 @@ int genphy_c45_pma_setup_forced(struct phy_device *phydev)
+ 
+ 	switch (phydev->speed) {
+ 	case SPEED_10:
+-		ctrl2 |= MDIO_PMA_CTRL2_10BT;
++		if (genphy_c45_baset1_able(phydev))
++			ctrl2 |= MDIO_PMA_CTRL2_BASET1;
++		else
++			ctrl2 |= MDIO_PMA_CTRL2_10BT;
+ 		break;
+ 	case SPEED_100:
+ 		ctrl1 |= MDIO_PMA_CTRL1_SPEED100;
+@@ -118,10 +140,95 @@ int genphy_c45_pma_setup_forced(struct phy_device *phydev)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	if (genphy_c45_baset1_able(phydev)) {
++		int ctl = 0;
++
++		switch (phydev->master_slave_set) {
++		case MASTER_SLAVE_CFG_MASTER_PREFERRED:
++		case MASTER_SLAVE_CFG_MASTER_FORCE:
++			ctl = MDIO_PMA_PMD_BT1_CTRL_CFG_MST;
++			break;
++		case MASTER_SLAVE_CFG_SLAVE_FORCE:
++		case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
++		case MASTER_SLAVE_CFG_UNKNOWN:
++		case MASTER_SLAVE_CFG_UNSUPPORTED:
++			break;
++		default:
++			phydev_warn(phydev, "Unsupported Master/Slave mode\n");
++			return -EOPNOTSUPP;
++		}
++
++		ret = phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL,
++				     MDIO_PMA_PMD_BT1_CTRL_CFG_MST, ctl);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	return genphy_c45_an_disable_aneg(phydev);
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_pma_setup_forced);
+ 
++/* Sets master/slave preference and supported technologies.
++ * The preference is set in the BIT(4) of BASE-T1 AN
++ * advertisement register 7.515 and whether the status
++ * is forced or not, it is set in the BIT(12) of BASE-T1
++ * AN advertisement register 7.514.
++ * Sets 10BASE-T1L Ability BIT(14) in BASE-T1 autonegotiation
++ * advertisement register [31:16] if supported.
++ */
++static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
++{
++	int changed = 0;
++	u16 adv_l = 0;
++	u16 adv_m = 0;
++	int ret;
++
++	switch (phydev->master_slave_set) {
++	case MASTER_SLAVE_CFG_MASTER_FORCE:
++	case MASTER_SLAVE_CFG_SLAVE_FORCE:
++		adv_l |= MDIO_AN_T1_ADV_L_FORCE_MS;
++		break;
++	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
++	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
++		break;
++	default:
++		break;
++	}
++
++	switch (phydev->master_slave_set) {
++	case MASTER_SLAVE_CFG_MASTER_FORCE:
++	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
++		adv_m |= MDIO_AN_T1_ADV_M_MST;
++		break;
++	case MASTER_SLAVE_CFG_SLAVE_FORCE:
++	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
++		break;
++	default:
++		break;
++	}
++
++	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
++
++	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
++				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
++				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
++	if (ret < 0)
++		return ret;
++	if (ret > 0)
++		changed = 1;
++
++	adv_m |= linkmode_adv_to_mii_t1_adv_m_t(phydev->advertising);
++
++	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M,
++				     MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L, adv_m);
++	if (ret < 0)
++		return ret;
++	if (ret > 0)
++		changed = 1;
++
++	return changed;
++}
++
+ /**
+  * genphy_c45_an_config_aneg - configure advertisement registers
+  * @phydev: target phy_device struct
+@@ -141,6 +248,9 @@ int genphy_c45_an_config_aneg(struct phy_device *phydev)
+ 
+ 	changed = genphy_config_eee_advert(phydev);
+ 
++	if (genphy_c45_baset1_able(phydev))
++		return genphy_c45_baset1_an_config_aneg(phydev);
++
+ 	adv = linkmode_adv_to_mii_adv_t(phydev->advertising);
+ 
+ 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_ADVERTISE,
+@@ -178,8 +288,12 @@ EXPORT_SYMBOL_GPL(genphy_c45_an_config_aneg);
+  */
+ int genphy_c45_an_disable_aneg(struct phy_device *phydev)
+ {
++	u16 reg = MDIO_CTRL1;
+ 
+-	return phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MDIO_CTRL1,
++	if (genphy_c45_baset1_able(phydev))
++		reg = MDIO_AN_T1_CTRL;
++
++	return phy_clear_bits_mmd(phydev, MDIO_MMD_AN, reg,
+ 				  MDIO_AN_CTRL1_ENABLE | MDIO_AN_CTRL1_RESTART);
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_an_disable_aneg);
+@@ -194,7 +308,12 @@ EXPORT_SYMBOL_GPL(genphy_c45_an_disable_aneg);
+  */
+ int genphy_c45_restart_aneg(struct phy_device *phydev)
+ {
+-	return phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_CTRL1,
++	u16 reg = MDIO_CTRL1;
++
++	if (genphy_c45_baset1_able(phydev))
++		reg = MDIO_AN_T1_CTRL;
++
++	return phy_set_bits_mmd(phydev, MDIO_MMD_AN, reg,
+ 				MDIO_AN_CTRL1_ENABLE | MDIO_AN_CTRL1_RESTART);
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_restart_aneg);
+@@ -210,11 +329,15 @@ EXPORT_SYMBOL_GPL(genphy_c45_restart_aneg);
+  */
+ int genphy_c45_check_and_restart_aneg(struct phy_device *phydev, bool restart)
+ {
++	u16 reg = MDIO_CTRL1;
+ 	int ret;
+ 
++	if (genphy_c45_baset1_able(phydev))
++		reg = MDIO_AN_T1_CTRL;
++
+ 	if (!restart) {
+ 		/* Configure and restart aneg if it wasn't set before */
+-		ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_CTRL1);
++		ret = phy_read_mmd(phydev, MDIO_MMD_AN, reg);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -242,7 +365,13 @@ EXPORT_SYMBOL_GPL(genphy_c45_check_and_restart_aneg);
+  */
+ int genphy_c45_aneg_done(struct phy_device *phydev)
+ {
+-	int val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_STAT1);
++	int reg = MDIO_STAT1;
++	int val;
++
++	if (genphy_c45_baset1_able(phydev))
++		reg = MDIO_AN_T1_STAT;
++
++	val = phy_read_mmd(phydev, MDIO_MMD_AN, reg);
+ 
+ 	return val < 0 ? val : val & MDIO_AN_STAT1_COMPLETE ? 1 : 0;
+ }
+@@ -307,6 +436,49 @@ int genphy_c45_read_link(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_read_link);
+ 
++/* Read the Clause 45 defined BASE-T1 AN (7.513) status register to check
++ * if autoneg is complete. If so read the BASE-T1 Autonegotiation
++ * Advertisement registers filling in the link partner advertisement,
++ * pause and asym_pause members in phydev.
++ */
++static int genphy_c45_baset1_read_lpa(struct phy_device *phydev)
++{
++	int val;
++
++	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_STAT);
++	if (val < 0)
++		return val;
++
++	if (!(val & MDIO_AN_STAT1_COMPLETE)) {
++		linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->lp_advertising);
++		mii_t1_adv_l_mod_linkmode_t(phydev->lp_advertising, 0);
++		mii_t1_adv_m_mod_linkmode_t(phydev->lp_advertising, 0);
++
++		phydev->pause = 0;
++		phydev->asym_pause = 0;
++
++		return 0;
++	}
++
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->lp_advertising, 1);
++
++	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_LP_L);
++	if (val < 0)
++		return val;
++
++	mii_t1_adv_l_mod_linkmode_t(phydev->lp_advertising, val);
++	phydev->pause = val & MDIO_AN_T1_ADV_L_PAUSE_CAP ? 1 : 0;
++	phydev->asym_pause = val & MDIO_AN_T1_ADV_L_PAUSE_ASYM ? 1 : 0;
++
++	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_LP_M);
++	if (val < 0)
++		return val;
++
++	mii_t1_adv_m_mod_linkmode_t(phydev->lp_advertising, val);
++
++	return 0;
++}
++
+ /**
+  * genphy_c45_read_lpa - read the link partner advertisement and pause
+  * @phydev: target phy_device struct
+@@ -321,6 +493,9 @@ int genphy_c45_read_lpa(struct phy_device *phydev)
+ {
+ 	int val;
+ 
++	if (genphy_c45_baset1_able(phydev))
++		return genphy_c45_baset1_read_lpa(phydev);
++
+ 	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_STAT1);
+ 	if (val < 0)
+ 		return val;
+@@ -399,6 +574,17 @@ int genphy_c45_read_pma(struct phy_device *phydev)
+ 
+ 	phydev->duplex = DUPLEX_FULL;
+ 
++	if (genphy_c45_baset1_able(phydev)) {
++		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL);
++		if (val < 0)
++			return val;
++
++		if (MDIO_PMA_PMD_BT1_CTRL_CFG_MST)
++			phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
++		else
++			phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_read_pma);
+@@ -530,12 +716,67 @@ int genphy_c45_pma_read_abilities(struct phy_device *phydev)
+ 					 phydev->supported,
+ 					 val & MDIO_PMA_NG_EXTABLE_5GBT);
+ 		}
++
++		if (val & MDIO_PMA_EXTABLE_BT1) {
++			val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1);
++			if (val < 0)
++				return val;
++
++			linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
++					 phydev->supported,
++					 val & MDIO_PMA_PMD_BT1_B10L_ABLE);
++
++			val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_STAT);
++			if (val < 0)
++				return val;
++
++			linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
++					 phydev->supported,
++					 val & MDIO_AN_STAT1_ABLE);
++		}
+ 	}
+ 
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_pma_read_abilities);
+ 
++/* Read master/slave preference from registers.
++ * The preference is read from the BIT(4) of BASE-T1 AN
++ * advertisement register 7.515 and whether the preference
++ * is forced or not, it is read from BASE-T1 AN advertisement
++ * register 7.514.
++ */
++static int genphy_c45_baset1_read_status(struct phy_device *phydev)
++{
++	int ret;
++	int cfg;
++
++	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
++	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L);
++	if (ret < 0)
++		return ret;
++
++	cfg = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M);
++	if (cfg < 0)
++		return cfg;
++
++	if (ret & MDIO_AN_T1_ADV_L_FORCE_MS) {
++		if (cfg & MDIO_AN_T1_ADV_M_MST)
++			phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
++		else
++			phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
++	} else {
++		if (cfg & MDIO_AN_T1_ADV_M_MST)
++			phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_PREFERRED;
++		else
++			phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_PREFERRED;
++	}
++
++	return 0;
++}
++
+ /**
+  * genphy_c45_read_status - read PHY status
+  * @phydev: target phy_device struct
+@@ -560,6 +801,12 @@ int genphy_c45_read_status(struct phy_device *phydev)
+ 		if (ret)
+ 			return ret;
+ 
++		if (genphy_c45_baset1_able(phydev)) {
++			ret = genphy_c45_baset1_read_status(phydev);
++			if (ret < 0)
++				return ret;
++		}
++
+ 		phy_resolve_aneg_linkmode(phydev);
+ 	} else {
+ 		ret = genphy_c45_read_pma(phydev);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 8406ac739def..5edf44f6f276 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -599,6 +599,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
+ 
+ 	dev->autoneg = AUTONEG_ENABLE;
+ 
++	dev->pma_extable = -ENODATA;
+ 	dev->is_c45 = is_c45;
+ 	dev->phy_id = phy_id;
+ 	if (c45_ids)
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index ecac96d52e01..00177567cfef 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -340,6 +340,76 @@ static inline void mii_10gbt_stat_mod_linkmode_lpa_t(unsigned long *advertising,
+ 			 advertising, lpa & MDIO_AN_10GBT_STAT_LP10G);
+ }
+ 
++/**
++ * mii_t1_adv_l_mod_linkmode_t
++ * @advertising: target the linkmode advertisement settings
++ * @lpa: value of the BASE-T1 Autonegotiation Advertisement [15:0] Register
++ *
++ * A small helper function that translates BASE-T1 Autonegotiation
++ * Advertisement [15:0] Register bits to linkmode advertisement settings.
++ * Other bits in advertising aren't changed.
++ */
++static inline void mii_t1_adv_l_mod_linkmode_t(unsigned long *advertising, u32 lpa)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertising,
++			 lpa & MDIO_AN_T1_ADV_L_PAUSE_CAP);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertising,
++			 lpa & MDIO_AN_T1_ADV_L_PAUSE_ASYM);
++}
++
++/**
++ * mii_t1_adv_m_mod_linkmode_t
++ * @advertising: target the linkmode advertisement settings
++ * @lpa: value of the BASE-T1 Autonegotiation Advertisement [31:16] Register
++ *
++ * A small helper function that translates BASE-T1 Autonegotiation
++ * Advertisement [31:16] Register bits to linkmode advertisement settings.
++ * Other bits in advertising aren't changed.
++ */
++static inline void mii_t1_adv_m_mod_linkmode_t(unsigned long *advertising, u32 lpa)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
++			 advertising, lpa & MDIO_AN_T1_ADV_M_B10L);
++}
++
++/**
++ * linkmode_adv_to_mii_t1_adv_l_t
++ * @advertising: the linkmode advertisement settings
++ *
++ * A small helper function that translates linkmode advertisement
++ * settings to phy autonegotiation advertisements for the
++ * BASE-T1 Autonegotiation Advertisement [15:0] Register.
++ */
++static inline u32 linkmode_adv_to_mii_t1_adv_l_t(unsigned long *advertising)
++{
++	u32 result = 0;
++
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertising))
++		result |= MDIO_AN_T1_ADV_L_PAUSE_CAP;
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertising))
++		result |= MDIO_AN_T1_ADV_L_PAUSE_ASYM;
++
++	return result;
++}
++
++/**
++ * linkmode_adv_to_mii_t1_adv_m_t
++ * @advertising: the linkmode advertisement settings
++ *
++ * A small helper function that translates linkmode advertisement
++ * settings to phy autonegotiation advertisements for the
++ * BASE-T1 Autonegotiation Advertisement [31:16] Register.
++ */
++static inline u32 linkmode_adv_to_mii_t1_adv_m_t(unsigned long *advertising)
++{
++	u32 result = 0;
++
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT, advertising))
++		result |= MDIO_AN_T1_ADV_M_B10L;
++
++	return result;
++}
++
+ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
+ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
+ int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 36ca2b5c2253..6c3048e2a3ce 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -698,6 +698,8 @@ struct phy_device {
+ 	u8 mdix;
+ 	u8 mdix_ctrl;
+ 
++	int pma_extable;
++
+ 	void (*phy_link_change)(struct phy_device *phydev, bool up);
+ 	void (*adjust_link)(struct net_device *dev);
+ 
+diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+index fa3515257f54..75b7257a51e1 100644
+--- a/include/uapi/linux/mdio.h
++++ b/include/uapi/linux/mdio.h
+@@ -70,6 +70,7 @@
+ #define MDIO_B10L_PMA_CTRL	2294	/* 10BASE-T1L PMA control */
+ #define MDIO_PMA_10T1L_STAT	2295	/* 10BASE-T1L PMA status */
+ #define MDIO_PCS_10T1L_CTRL	2278	/* 10BASE-T1L PCS control */
++#define MDIO_PMA_PMD_BT1	18	/* BASE-T1 PMA/PMD extended ability */
+ #define MDIO_AN_T1_CTRL		512	/* BASE-T1 AN control */
+ #define MDIO_AN_T1_STAT		513	/* BASE-T1 AN status */
+ #define MDIO_AN_T1_ADV_L	514	/* BASE-T1 AN advertisement register [15:0] */
+@@ -78,6 +79,7 @@
+ #define MDIO_AN_T1_LP_L		517	/* BASE-T1 AN LP Base Page ability register [15:0] */
+ #define MDIO_AN_T1_LP_M		518	/* BASE-T1 AN LP Base Page ability register [31:16] */
+ #define MDIO_AN_T1_LP_H		519	/* BASE-T1 AN LP Base Page ability register [47:32] */
++#define MDIO_PMA_PMD_BT1_CTRL	2100	/* BASE-T1 PMA/PMD control register */
+ 
+ /* LASI (Link Alarm Status Interrupt) registers, defined by XENPAK MSA. */
+ #define MDIO_PMA_LASI_RXCTRL	0x9000	/* RX_ALARM control */
+@@ -170,6 +172,7 @@
+ #define MDIO_PMA_CTRL2_10BT		0x000f	/* 10BASE-T type */
+ #define MDIO_PMA_CTRL2_2_5GBT		0x0030  /* 2.5GBaseT type */
+ #define MDIO_PMA_CTRL2_5GBT		0x0031  /* 5GBaseT type */
++#define MDIO_PMA_CTRL2_BASET1		0x003D  /* BASE-T1 type */
+ #define MDIO_PCS_CTRL2_TYPE		0x0003	/* PCS type selection */
+ #define MDIO_PCS_CTRL2_10GBR		0x0000	/* 10GBASE-R type */
+ #define MDIO_PCS_CTRL2_10GBX		0x0001	/* 10GBASE-X type */
+@@ -223,6 +226,7 @@
+ #define MDIO_PMA_EXTABLE_1000BKX	0x0040	/* 1000BASE-KX ability */
+ #define MDIO_PMA_EXTABLE_100BTX		0x0080	/* 100BASE-TX ability */
+ #define MDIO_PMA_EXTABLE_10BT		0x0100	/* 10BASE-T ability */
++#define MDIO_PMA_EXTABLE_BT1		0x0800	/* BASE-T1 ability */
+ #define MDIO_PMA_EXTABLE_NBT		0x4000  /* 2.5/5GBASE-T ability */
+ 
+ /* PHY XGXS lane state register. */
+@@ -301,6 +305,9 @@
+ #define MDIO_PCS_10T1L_CTRL_LB		0x4000	/* Enable PCS level loopback mode */
+ #define MDIO_PCS_10T1L_CTRL_RESET	0x8000	/* PCS reset */
+ 
++/* BASE-T1 PMA/PMD extended ability register. */
++#define MDIO_PMA_PMD_BT1_B10L_ABLE	0x0004	/* 10BASE-T1L Ability */
++
+ /* BASE-T1 auto-negotiation advertisement register [15:0] */
+ #define MDIO_AN_T1_ADV_L_PAUSE_CAP	ADVERTISE_PAUSE_CAP
+ #define MDIO_AN_T1_ADV_L_PAUSE_ASYM	ADVERTISE_PAUSE_ASYM
+@@ -333,6 +340,9 @@
+ #define MDIO_AN_T1_LP_H_10L_TX_HI_REQ	0x1000	/* 10BASE-T1L High Level LP Transmit Request */
+ #define MDIO_AN_T1_LP_H_10L_TX_HI	0x2000	/* 10BASE-T1L High Level LP Transmit Ability */
+ 
++/* BASE-T1 PMA/PMD control register */
++#define MDIO_PMA_PMD_BT1_CTRL_CFG_MST	0x4000 /* MASTER-SLAVE config value */
++
+ /* EEE Supported/Advertisement/LP Advertisement registers.
+  *
+  * EEE capability Register (3.20), Advertisement (7.60) and
+-- 
+2.25.1
+
