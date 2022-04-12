@@ -2,150 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B229FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E59C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbiDLXcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
+        id S231144AbiDLXck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230410AbiDLXb5 (ORCPT
+        with ESMTP id S230419AbiDLXb6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:31:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D9A90247;
-        Tue, 12 Apr 2022 15:17:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A6C7B82053;
-        Tue, 12 Apr 2022 21:28:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0F4CC385A1;
-        Tue, 12 Apr 2022 21:28:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649798896;
-        bh=7S+oixBL7sX4olcPvEogXh1CnNUMKSWXUwyI+LxpXRE=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=VeaZBY812RM8tTVwEPyJ9MBmgJnUTNE3sOrPD+M+bRRQd4EXv4xZNTVDRWsnHQnwQ
-         nuEGf6ZS9C+ddtULVHoelJ+Sys31+fgbgfzbPl7GYMkrHkx+KbamhWBM51zUmpa7uC
-         Nz3+aaac1rGMVm9tdy/qnGNhTl0Owq87IWjWQ2D1s4XMov8f45oX8L5UFp5j14fKB1
-         fUi8j32KOY9GS5oSTtfMNRglZuQ3KRzJIVrSoHc2j3VWCyxbo7QDEh3cyg9pjOTG/b
-         pJpnm81PNU1smIdqbJ2fvppy3P5h96qGmyCkUvdLdvoFWbMMEm49cfILB22CFnvhk1
-         qy5OI5cnCaJyQ==
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 7946527C0054;
-        Tue, 12 Apr 2022 17:28:14 -0400 (EDT)
-Received: from imap48 ([10.202.2.98])
-  by compute2.internal (MEProxy); Tue, 12 Apr 2022 17:28:14 -0400
-X-ME-Sender: <xms:7O5VYs8lwj5MdavzExLyZhrEgbyrMiXO1_DykQcKY2g__StryccvLg>
-    <xme:7O5VYksvbMuraQrcmnb8o2HTVmPudvAs7MmppnApRRSbRQMEWGcVhYJ_I038GcBsW
-    oGC0DG9AcdNarZgApI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekkedgudeitdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedftehn
-    ugihucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecugg
-    ftrfgrthhtvghrnheptdfhheettddvtedvtedugfeuuefhtddugedvleevleefvdetleff
-    gfefvdekgeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheprghnugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudek
-    heeifedvqddvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuh
-    igrdhluhhtohdruhhs
-X-ME-Proxy: <xmx:7O5VYiDdEWrfajiYcqB6p9FGUWaxorJ-LkXsFLirb2kvXcFcs9_BxA>
-    <xmx:7O5VYsdSqRSo04iR81u4yMDTPrY70kYHKZ8P32NVv-cia2RpB69IFQ>
-    <xmx:7O5VYhPNLgqdnPVunYupFyg9opu97sHVHE74yrryNGsN3ZjS8OKsMA>
-    <xmx:7u5VYouNmHo5xGvWKYHuRhvQVKHXleE35LAx2SW8yLyHvIsfA3MUUA>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 8882521E0073; Tue, 12 Apr 2022 17:28:12 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-386-g4174665229-fm-20220406.001-g41746652
-Mime-Version: 1.0
-Message-Id: <6f44ddf9-6755-4120-be8b-7a62f0abc0e0@www.fastmail.com>
-In-Reply-To: <20220412143636.GG64706@ziepe.ca>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-5-chao.p.peng@linux.intel.com>
- <Yk8L0CwKpTrv3Rg3@google.com>
- <02e18c90-196e-409e-b2ac-822aceea8891@www.fastmail.com>
- <YlB3Z8fqJ+67a2Ck@google.com>
- <7ab689e7-e04d-5693-f899-d2d785b09892@redhat.com>
- <20220412143636.GG64706@ziepe.ca>
-Date:   Tue, 12 Apr 2022 14:27:52 -0700
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Jason Gunthorpe" <jgg@ziepe.ca>,
-        "David Hildenbrand" <david@redhat.com>
-Cc:     "Sean Christopherson" <seanjc@google.com>,
-        "Chao Peng" <chao.p.peng@linux.intel.com>,
-        "kvm list" <kvm@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        "Linux API" <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
-        "Paolo Bonzini" <pbonzini@redhat.com>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
-        "Wanpeng Li" <wanpengli@tencent.com>,
-        "Jim Mattson" <jmattson@google.com>,
-        "Joerg Roedel" <joro@8bytes.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Hugh Dickins" <hughd@google.com>,
-        "Jeff Layton" <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "Mike Rapoport" <rppt@kernel.org>,
-        "Steven Price" <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        "Vlastimil Babka" <vbabka@suse.cz>,
-        "Vishal Annapurve" <vannapurve@google.com>,
-        "Yu Zhang" <yu.c.zhang@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        "Dave Hansen" <dave.hansen@intel.com>,
-        "Andi Kleen" <ak@linux.intel.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Linux API" <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory against
- RLIMIT_MEMLOCK
-Content-Type: text/plain
+        Tue, 12 Apr 2022 19:31:58 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70CBD90FC8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:17:53 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 8D1B592009C; Wed, 13 Apr 2022 00:17:50 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 7EA6492009B;
+        Tue, 12 Apr 2022 23:17:50 +0100 (BST)
+Date:   Tue, 12 Apr 2022 23:17:50 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Thomas Gleixner <tglx@linutronix.de>
+cc:     Daniel Vacek <neelx@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] x86/apic: Clarify i82489DX bit overlap in APIC_LVT0
+In-Reply-To: <87ee22f3ci.ffs@tglx>
+Message-ID: <alpine.DEB.2.21.2204122235140.9383@angie.orcam.me.uk>
+References: <20220202140244.1681140-1-neelx@redhat.com> <874k361liu.ffs@tglx> <CACjP9X_A7aLmvypyOz1UrXM571gx_X5q7=w-1j+G+MSbCteiEw@mail.gmail.com> <87ee22f3ci.ffs@tglx>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022, at 7:36 AM, Jason Gunthorpe wrote:
-> On Fri, Apr 08, 2022 at 08:54:02PM +0200, David Hildenbrand wrote:
->
->> RLIMIT_MEMLOCK was the obvious candidate, but as we discovered int he
->> past already with secretmem, it's not 100% that good of a fit (unmovable
->> is worth than mlocked). But it gets the job done for now at least.
->
-> No, it doesn't. There are too many different interpretations how
-> MELOCK is supposed to work
->
-> eg VFIO accounts per-process so hostile users can just fork to go past
-> it.
->
-> RDMA is per-process but uses a different counter, so you can double up
->
-> iouring is per-user and users a 3rd counter, so it can triple up on
-> the above two
->
->> So I'm open for alternative to limit the amount of unmovable memory we
->> might allocate for user space, and then we could convert seretmem as well.
->
-> I think it has to be cgroup based considering where we are now :\
->
+On Tue, 12 Apr 2022, Thomas Gleixner wrote:
 
-So this is another situation where the actual backend (TDX, SEV, pKVM, pure software) makes a difference -- depending on exactly what backend we're using, the memory may not be unmoveable.  It might even be swappable (in the potentially distant future).
+> Daniel stumbled over the undocumented bit overlap of the i82498DX external
+> APIC and the TSC deadline timer configuration bit in modern APICs.
 
-Anyway, here's a concrete proposal, with a bit of handwaving:
+ For the record, it's documented in the i82498DX datasheet[1] and user 
+manual[2]:
 
-We add new cgroup limits:
+'Bits [19:18] Timer Base: This field selects the time base input to be 
+used by the timer.
 
-memory.unmoveable
-memory.locked
+  00: (Base 0): Uses "CLKIN" as input.
 
-These can be set to an actual number or they can be set to the special value ROOT_CAP.  If they're set to ROOT_CAP, then anyone in the cgroup with capable(CAP_SYS_RESOURCE) (i.e. the global capability) can allocate movable or locked memory with this (and potentially other) new APIs.  If it's 0, then they can't.  If it's another value, then the memory can be allocated, charged to the cgroup, up to the limit, with no particular capability needed.  The default at boot is ROOT_CAP.  Anyone who wants to configure it differently is free to do so.  This avoids introducing a DoS, makes it easy to run tests without configuring cgroup, and lets serious users set up their cgroups.
+  01: (Base 1): Uses "TMBASE".
 
-Nothing is charge per mm.
+  10: (Base 2): Uses the output of the divider (Base 2).'
 
-To make this fully sensible, we need to know what the backend is for the private memory before allocating any so that we can charge it accordingly.
+(the wording is virtually the same in both sources).  Base 2 setting is 
+compatible with later APIC implementations. 
+
+ Since you're removing the macros and the documents referred aren't easily 
+available it may be worth to mention the settings somewhere, such as the 
+comment you're adding.
+
+ Intel indeed did not document the two-bit field in any later literature, 
+and the i82498DX part cannot be used with any other APIC device due to a 
+protocol (and also wiring) difference in the inter-APIC communication bus.
+
+ There's also bit 2 of the Divide Configuration Register.  That bit is 
+hardwired to 0 in later APIC versions, however in the i82498DX it selects 
+the time base input to be used by the divider, 0 for CLK (CLKIN) or 1 for 
+TMBASE.  Conversely bit 3 is hardwired to 0 in the i82498DX.
+
+References:
+
+[1] "82489DX Advanced Programmable Interrupt Controller", Intel 
+    Corporation, Order Number: 290446-002, October 1993, Section 6.12 
+    "Timer Registers", p.27
+
+[2] M. Jayakumar, "AP-388 82489DX User's Manual", Multiprocessor 
+    Technology Group, Intel Corporation, Order Number: 292116-002, 
+    November 1995, Section "Register Programming Details", p.22
+
+ FWIW,
+
+  Maciej
