@@ -2,76 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D972C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A86C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231424AbiDLXlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
+        id S230117AbiDLXoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230422AbiDLXkz (ORCPT
+        with ESMTP id S232067AbiDLXn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:40:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55EBA92850;
-        Tue, 12 Apr 2022 16:22:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1D3B61253;
-        Tue, 12 Apr 2022 23:22:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADCAC385A1;
-        Tue, 12 Apr 2022 23:22:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1649805743;
-        bh=LhsrzMk77NQcPYdzCX5hauu5G7NVYwkJ4kIRPOYv+jk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OUPqbvxsOygFrdjKnucWtXRA6pZ58t4BbVh6aJItY6VIkO0ECkmgTLNww9ch3/54L
-         /cgUn+gNN3s6PE28IRe52XAJ1cKjhDDVt6/4sGzmDIbG5elo2++1OewvsV5XqSxRYr
-         Wea5kCBi12XMe7idooeG7FBpQy+8iPUMmt4Xga7M=
-Date:   Tue, 12 Apr 2022 16:22:21 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Patrice CHOTARD <patrice.chotard@foss.st.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Lukas Czerner <lczerner@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Borislav Petkov <bp@alien8.de>, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com, viro@zeniv.linux.org.uk
-Subject: Re: [PATCH] tmpfs: fix regressions from wider use of ZERO_PAGE
-Message-Id: <20220412162221.7c55379548017bab61ea5103@linux-foundation.org>
-In-Reply-To: <f73cfd56-35d2-53a3-3a59-4ff9495d7d34@google.com>
-References: <9a978571-8648-e830-5735-1f4748ce2e30@google.com>
-        <20220409050638.GB17755@lst.de>
-        <f73cfd56-35d2-53a3-3a59-4ff9495d7d34@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 12 Apr 2022 19:43:29 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69806EBAC6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:25:22 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id 17so236497lji.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:25:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sEf3ghNJkoFaoWuY+1wI1QnhHwrm43YYsrClV3MyqfI=;
+        b=REbi327RrkR6HSTgkHSf+nZ3SQfIOuOq2YEO+YINnAhIuEKbRbk23Oj4KWA5yWFdXF
+         pBvcZAq7HFUQl0JgP0of0X9f+/dcqWixfDipfytfFy4mshNdYQsjyIWrzcStRvzJxz72
+         pzBvPQjmX1wRRKbyjJuqOV/6DQkkGws4nvIkI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sEf3ghNJkoFaoWuY+1wI1QnhHwrm43YYsrClV3MyqfI=;
+        b=wMmZrLhoPusyb5gjH6G+n8vbBnNIazHQjYAXPIQ4i4+QG7tho7CfWkn4efsK2hjogI
+         VthZXvwHPxc4w13lKcddqe6F4QgA41fqvKxVENT6DT62wG49y3Lh6e1eppP9kPfkNWTN
+         lyelf+lNfcYyODjhRxcFr2gQORQYMiQZbZosuzw/kstvhfJd+B0y/OgCjgLlESM7ZyKC
+         b4EMT8VGp51rSOJHqQ44TEubHbtIkIU7frtX7SByx4bXfhhwNttLg/W/XC2cJ1YyPbBJ
+         Z57HRsqjccUHv2F8cklwx5XOCjPXoVJN4Q1T4/3ruvD788wXIdQ3E2SzODPsxjoW5KSK
+         BZkg==
+X-Gm-Message-State: AOAM5324avWeS1cx39fO6nlgOiQKuXIUq3sDjWEt9GuxoFNsCg3/e5Q2
+        2g3ZueA8EwydOzVl0eOjWVai+M+NdBp98ECX
+X-Google-Smtp-Source: ABdhPJy5NyPw4C81VjTM7ObOP4ccxsGyGvbGoOMHDyyGsjfyxN2iJkmXo4SZAwHTztXoN1q4sQ/XBg==
+X-Received: by 2002:a2e:918d:0:b0:24c:84ca:199b with SMTP id f13-20020a2e918d000000b0024c84ca199bmr125278ljg.339.1649805920474;
+        Tue, 12 Apr 2022 16:25:20 -0700 (PDT)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id z7-20020a195047000000b0046bb9225f5fsm407771lfj.234.2022.04.12.16.25.18
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 16:25:19 -0700 (PDT)
+Received: by mail-lf1-f54.google.com with SMTP id x33so545314lfu.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:25:18 -0700 (PDT)
+X-Received: by 2002:ac2:5483:0:b0:46b:9dc3:cdd4 with SMTP id
+ t3-20020ac25483000000b0046b9dc3cdd4mr11503890lfk.542.1649805918419; Tue, 12
+ Apr 2022 16:25:18 -0700 (PDT)
+MIME-Version: 1.0
+References: <alpine.LRH.2.02.2204111023230.6206@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wijDnLH2K3Rh2JJo-SmWL_ntgzQCDxPeXbJ9A-vTF3ZvA@mail.gmail.com>
+ <alpine.LRH.2.02.2204111236390.31647@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com>
+ <alpine.LRH.2.02.2204120520140.19025@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wiJTqx4Pec653ZFKEiNv2jtfWsNyevoV9TYa05kD0vVsg@mail.gmail.com> <alpine.LRH.2.02.2204121253260.26107@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <alpine.LRH.2.02.2204121253260.26107@file01.intranet.prod.int.rdu2.redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 12 Apr 2022 13:25:02 -1000
+X-Gmail-Original-Message-ID: <CAHk-=whu4qvXYPwh3HS1bcJMOuMiap_g8=EqcHb7P3TQyvM6Cw@mail.gmail.com>
+Message-ID: <CAHk-=whu4qvXYPwh3HS1bcJMOuMiap_g8=EqcHb7P3TQyvM6Cw@mail.gmail.com>
+Subject: Re: [PATCH] stat: fix inconsistency between struct stat and struct compat_stat
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 8 Apr 2022 23:08:29 -0700 (PDT) Hugh Dickins <hughd@google.com> wrote:
+On Tue, Apr 12, 2022 at 7:42 AM Mikulas Patocka <mpatocka@redhat.com> wrote:
+>
+> As long as both major and minor numbers are less than 256, these functions
+> return equivalent results. So, I think it's safe to replace old_encode_dev
+> with new_encode_dev.
 
-> > 
-> > Either way I'd rather do this optimization in iov_iter_zero rather
-> > than hiding it in tmpfs.
-> 
-> Let's see what others say.  I think we would all prefer clear_user() to be
-> enhanced, and hack around it neither here in tmpfs nor in iov_iter_zero().
-> But that careful work won't get done by magic, nor by me.
-> 
-> And iov_iter_zero() has to deal with a wider range of possibilities,
-> when pulling in cache lines of ZERO_PAGE(0) will be less advantageous,
-> than in tmpfs doing a large dd - the case I'm aiming not to regress here
-> (tmpfs has been copying ZERO_PAGE(0) like this for years).
+You are of course 100% right, and I should have looked more closely at
+the code rather than going by my (broken) assumptions based on old
+memory of what we did when we did that "new" stat expansion.
 
-We do need something to get 5.18 fixed.  Christoph, do you think we
-should proceed with this patch for 5.18?
+I take back all my objections that were completely bogus.
+
+             Linus
