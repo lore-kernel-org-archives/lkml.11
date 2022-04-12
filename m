@@ -2,60 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 816D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6817C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357897AbiDLRAD (ORCPT
+        id S1357898AbiDLRBa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
+        Tue, 12 Apr 2022 13:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbiDLRAB (ORCPT
+        with ESMTP id S1350604AbiDLRB2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:00:01 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B085F4DA;
-        Tue, 12 Apr 2022 09:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Ca/PobVuuugLsLlVKWC9+miV8+H16um9gFhD916Locc=; b=Tvy81zNTMlR4rVAWDi+negn2Nv
-        1y1W6DxynCxSlSj5Xtf0D7vy/w0Baf1+m6LPB79oaRU4Sxyq0F3/0GzBM7VlL9dyadnvfuMF6BKhe
-        lXPRI1S9aiSVoUw+0/A6/1ovxj+u0G7w+ogWG7Ydcq5yoc9RVAQl/AGuiytV3aQkktWg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1neJpl-00FUFn-IG; Tue, 12 Apr 2022 18:57:41 +0200
-Date:   Tue, 12 Apr 2022 18:57:41 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [Patch net-next 2/3] net: phy: LAN87xx: add ethtool SQI support
-Message-ID: <YlWvhatIIPxurgiO@lunn.ch>
-References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
- <20220412063317.4173-3-arun.ramadoss@microchip.com>
+        Tue, 12 Apr 2022 13:01:28 -0400
+X-Greylist: delayed 397 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 09:59:09 PDT
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B3CCC5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:59:08 -0700 (PDT)
+Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4KdBbf3jHxzDrNK;
+        Tue, 12 Apr 2022 09:52:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1649782350; bh=mqIkrmMc3bt9SF6MVOjnFO/Z9nRa+OeF8I4cZ4B5EqM=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=SQnwxSdFaRv0TpSyDqeAtShH/Crkg4pUtCFYAMnJ1ElyLjqNaZripECStyfCMgKFG
+         vp/udeHjSlEsLCBwyRULLhVZ2+WKPwPFVGcPbrwczGTJPXQiSzWJ73SZ5MmTDHTH3c
+         642ut0tljgwH1GS6+vCt9ZHFU9cxlWvxuDThVirA=
+X-Riseup-User-ID: 326DD260AC5C707B7ABD8D7E28AE5FD39250B3D2E2B8BE61D0BE289715F30496
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4KdBbb3Bw1z5vLq;
+        Tue, 12 Apr 2022 09:52:27 -0700 (PDT)
+Message-ID: <166f88cd-80aa-ea6c-9503-f15ba7b8da89@riseup.net>
+Date:   Tue, 12 Apr 2022 13:52:24 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412063317.4173-3-arun.ramadoss@microchip.com>
+Subject: Re: [PATCH 1/1] drm/vkms: check plane_composer->map[0] before using
+ it
+Content-Language: en-US
+To:     Tales Lelo da Aparecida <tales.aparecida@gmail.com>,
+        Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
+        Haneen Mohammed <hamohammed.sa@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220411233801.36297-1-tales.aparecida@gmail.com>
+ <20220411233801.36297-2-tales.aparecida@gmail.com>
+From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@riseup.net>
+In-Reply-To: <20220411233801.36297-2-tales.aparecida@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 12:03:16PM +0530, Arun Ramadoss wrote:
-> This patch add the support for measuring Signal Quality Index for
-> LAN87xx and LAN937x T1 Phy. It uses the SQI Method 5 for obtaining the
-> values.
+Hi Tales,
+
+Às 20:38 de 11/04/22, Tales Lelo da Aparecida escreveu:
+> Fix a copypasta error, which resulted in checking repeatedly if the
+> primary_composer->map[0] was null, instead of checking each
+> plane_composer while composing planes.
 > 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> Signed-off-by: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Reviewed-by: André Almeida <andrealmeid@riseup.net>
