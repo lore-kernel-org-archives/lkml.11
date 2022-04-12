@@ -2,175 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA40C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 835DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356575AbiDLOe5 (ORCPT
+        id S1356587AbiDLOfy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 10:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
+        Tue, 12 Apr 2022 10:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbiDLOex (ORCPT
+        with ESMTP id S1343787AbiDLOfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 10:34:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF2E5EDDE;
-        Tue, 12 Apr 2022 07:32:34 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CD7eWM029884;
-        Tue, 12 Apr 2022 14:32:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=HXBMRHEi2/708n5x9K+5FRvYId0NbVxKCUq5l1FNyng=;
- b=SNBk/OyhGmCWc+/YCk3nr5VKFMJAAkcewE6C+iN4vgDXDZib9lFXYFg/w5jakNruklFr
- S/sX3bShAPWrd1hNAbr0Ph2MdVIaRJtbOkXiN5N3/PTMLA36QkSKeht9FtkHdoQVzC2e
- z05Hp8CBKWBaHumBZKug/nRdjSlX/hrzL5JZK21O83NZz6LH4lzWSjIWno3d9T64S5f+
- RK7N0GK3ft0nQlq+Xun7MqjkLhUJmXE4vaKzU+Ql3xIg0Hu3cMn919VcMFwUgVG/3phQ
- B8dAwAfzzcJDu+E6CTvWY7MPFRCj5IhqQCi3l2IuHKqXDlvHLl6asEA7qsHWAoPDuPM2 4w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fd8b5mv7p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 14:32:34 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CDVFoq023898;
-        Tue, 12 Apr 2022 14:32:33 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fd8b5mv79-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 14:32:33 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CEDvoU017750;
-        Tue, 12 Apr 2022 14:32:32 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma02dal.us.ibm.com with ESMTP id 3fb1s9pqqr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 14:32:32 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CEWVvS25952684
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Apr 2022 14:32:31 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C0DDAB205F;
-        Tue, 12 Apr 2022 14:32:31 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 58B3AB2065;
-        Tue, 12 Apr 2022 14:32:26 +0000 (GMT)
-Received: from [9.211.106.50] (unknown [9.211.106.50])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Apr 2022 14:32:26 +0000 (GMT)
-Message-ID: <cf92d65e-f069-cd4b-d229-9fea794eea5d@linux.ibm.com>
-Date:   Tue, 12 Apr 2022 10:32:25 -0400
+        Tue, 12 Apr 2022 10:35:48 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE045EDF7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:33:30 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id q189so19168848oia.9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:33:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=16zlRzLQaeI5Lfq40tI5fznUUSFHqeb4rIP0NZlx/SQ=;
+        b=Yxf2BarqXD49Rg5pPEzAsbZfIxsRPjLqwPvITATmpdxok2SSsbM/iYks+nfuqBQigr
+         nDCBRlN7mCKzkI89CjibB1uxl9u9jP7ipB4s+uwEiys8JquRT2uYww4xmgVJUfDDpNyR
+         //ShnjTJVLq0IGQzoQk7ziTPRicwOKGIfXO4zF8SKU6I/KHlFQAd6V+xtk00ll8hQrIX
+         eijXCOoAkfp/icuxYYnr67QwhOYuQCM9+vi7KyDcomRxFz0dotMn053stN/37SYtsfUp
+         UBg3K6CSBtKk02yFpipFL8N3kOZA4OodYha7zAq5Nb6vZIeAgco28PrrS8t/Hkhx0y0o
+         p48Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=16zlRzLQaeI5Lfq40tI5fznUUSFHqeb4rIP0NZlx/SQ=;
+        b=0T1YhTQN0P8wSMm6oWCkalfIW7kNyW5wDsm6vmhVtZ+fuPpMRMw+F3Ksa5aDxc3tJb
+         +eQAcDxMx2S36HRSeJS2lPRg76oaRqTfMtCMB7X7dHApA0VzoXkmPTYqUUZ07pwHlV0l
+         liVjs2Gn9FtluUPIstQut0rWqfDSKx79syUaYYEY+Q2Im2uWMv3ayg/voTh3aCu/Q5wD
+         zk5ZkhdInkRPJjFueqlZlc7/fuJ5tZCpB78PB+wTiJGjBAyXOKCBR/DSPU/qjAw+/rcl
+         hO3p7j8Rtu94XsUa/rfmOAD7hjVC13/pm1cLBoIeTZs5kN7xAJuJz9lDQYvu8WQN3XI2
+         Rgtg==
+X-Gm-Message-State: AOAM532/wJofrL0tU7GvQPhgVrVm0SG/7YpdSQxsgWF0smDDlIvesjYq
+        OZQ5CUosVvwWQcUJcQUUy2Autw==
+X-Google-Smtp-Source: ABdhPJwBA/222PiQAxJQ9fHmUWxwdJWC/fMo3zEL9Y5yWbFkh8by223DqgzbHY3HiGCeOXOxguRrMw==
+X-Received: by 2002:a05:6808:11c4:b0:2f9:ccd6:15a4 with SMTP id p4-20020a05680811c400b002f9ccd615a4mr1938023oiv.219.1649774010211;
+        Tue, 12 Apr 2022 07:33:30 -0700 (PDT)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id l92-20020a9d1b65000000b005e8a3a4aca6sm290716otl.25.2022.04.12.07.33.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 07:33:29 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 09:33:27 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v8 1/2] arm64: dts: qcom: sc7280: Add pinmux for I2S
+ speaker and Headset
+Message-ID: <YlWNt7f5EUk7I4by@builder.lan>
+References: <1649769281-12458-1-git-send-email-quic_srivasam@quicinc.com>
+ <1649769281-12458-2-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 16/21] KVM: vfio: add s390x hook to register KVM guest
- designation
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     alex.williamson@redhat.com, linux-s390@vger.kernel.org,
-        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
-        pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, frankja@linux.ibm.com,
-        david@redhat.com, imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
- <20220404174349.58530-17-mjrosato@linux.ibm.com>
- <20220408124536.GX64706@ziepe.ca>
- <3639d5fb-ff71-d42e-ef09-0b297f7e1a45@linux.ibm.com>
- <20220412135517.GE64706@ziepe.ca>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20220412135517.GE64706@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: ZGwu49q27VBGXYCaTEyco3gw89qlNgyL
-X-Proofpoint-GUID: M4clunag9ROxfedXJmYuNZItOYxpujxh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-12_05,2022-04-12_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- bulkscore=0 spamscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- priorityscore=1501 lowpriorityscore=0 clxscore=1015 malwarescore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204120070
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649769281-12458-2-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/12/22 9:55 AM, Jason Gunthorpe wrote:
-> On Tue, Apr 12, 2022 at 09:39:44AM -0400, Matthew Rosato wrote:
->> On 4/8/22 8:45 AM, Jason Gunthorpe wrote:
->>> On Mon, Apr 04, 2022 at 01:43:44PM -0400, Matthew Rosato wrote:
->>>> At the time a KVM is associated with a vfio group, s390x zPCI devices
->>>> must register a special guest indication (GISA designation) to allow
->>>> for the use of interpretive execution facilities.  This indication is
->>>> used to ensure that only the specified KVM can interact with the device.
->>>> Similarly, the indication must be removed once the KVM is no longer
->>>> associated with the device.
->>>>
->>>> This patch adds an s390-specific hook to invoke a KVM registration routine
->>>> for each device associated with the iommu group; in reality, it will be a
->>>> NOP for all but zPCI devices on s390x.
->>>>
->>>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->>>>    virt/kvm/vfio.c | 35 ++++++++++++++++++++++++++++++++++-
->>>>    1 file changed, 34 insertions(+), 1 deletion(-)
->>>
->>> I wonder if this should be done in the vfio_pci side from the existing
->>> kvm notifier
->>>
->>
->> So you mean rather than hooking into virt as I do here, drive something out
->> of drivers/vfio/vfio.c:vfio_group_set_kvm?  Note, the kvm notifier is
->> handled in vfio, not vfio_pci, so if you want to handle it in vfio_pci I
->> think we'd need to add a new routine to vfio_device_ops and only define it
->> vfio_pci for s390
-> 
-> I've been thinking about doing that anyhow, exactly for reasons like
-> this..
-> 
->> static const struct vfio_device_ops vfio_pci_ops = {
->> 	.name		= "vfio-pci",
->> [...]
->> #ifdef CONFIG_S390
->> 	.set_kvm = vfio_pci_zdev_set_kvm,
->> #endif
->> };
->>
->> and something like...
->>
->> void vfio_group_set_kvm(struct vfio_group *group, struct kvm *kvm)
->> {
->> 	struct vfio_device *vdev;
->> 	group->kvm = kvm;
->>
->> 	mutex_lock(&group->device_lock);
->> 	list_for_each_entry(vdev, &group->device_list, group_next) {
->> 		if (vdev->ops->set_kvm)
->> 			it->ops->set_kvm(vdev, kvm);
->> 	}
->> 	mutex_unlock(&group->device_lock);
-> 
-> Almost, the device should be open before calling the callback
-> 
-> And you have to inject a callback during open if the device is opened
-> after the kvm was set.
-> 
-> But I don't think you need to do this, you can just register a
-> notifier in zpci when it hooks open_device like everything else,
-> right?
+On Tue 12 Apr 08:14 CDT 2022, Srinivasa Rao Mandadapu wrote:
 
-Yes, that would also work -- I was registering a notifier for a few 
-prior versions of this series (granted, not from open_device) but got 
-the impression I should avoid registering a notifier from within 
-vfio_pci_zdev.
+> Add pinmux nodes for primary and secondary I2S for SC7280 based platforms.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 14 +++++++++++
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi     | 40 ++++++++++++++++++++++++++++++++
+>  2 files changed, 54 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index ecbf2b8..1fc94b5 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -359,6 +359,20 @@
+>  	bias-disable;
+>  };
+>  
+> +&mi2s1_data0 {
+> +	drive-strength = <6>;
+> +	bias-disable;
+> +};
+> +
+> +&mi2s1_sclk {
+> +	drive-strength = <6>;
+> +	bias-disable;
+> +};
+> +
+> +&mi2s1_ws {
+> +	drive-strength = <6>;
+> +};
+> +
+>  &pm7325_gpios {
+>  	key_vol_up_default: key-vol-up-default {
+>  		pins = "gpio6";
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index f0b64be..6e6cfeda 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -3522,6 +3522,46 @@
+>  				function = "edp_hot";
+>  			};
+>  
+> +			mi2s0_data0: mi2s0-data0 {
 
-I will go ahead and add register/unregister notifiers hooked from 
-vfio_pci_core_finish_enable/vfio_pci_core_close_device for zpci (e.g. 
-vfio_pci_zdev_{open,close}) and use the notifier events to drive the 
-routines from patch 15.
+Are these ever going to be selected individually, or could this be:
+
+mi2s0_state: mi2s0-state {
+	data0 {
+		...;
+	};
+
+	data1 {
+		...;
+	};
+
+	mclk {
+		...;
+	};
+
+	etc
+};
+
+mi2s1-state {
+	...;
+};
+
+And then a single pinctrl-0 = <&mi2c0_state>;
+
+Regards,
+Bjorn
+
+> +				pins = "gpio98";
+> +				function = "mi2s0_data0";
+> +			};
+> +
+> +			mi2s0_data1: mi2s0-data1 {
+> +				pins = "gpio99";
+> +				function = "mi2s0_data1";
+> +			};
+> +
+> +			mi2s0_mclk: mi2s0-mclk {
+> +				pins = "gpio96";
+> +				function = "pri_mi2s";
+> +			};
+> +
+> +			mi2s0_sclk: mi2s0-sclk {
+> +				pins = "gpio97";
+> +				function = "mi2s0_sck";
+> +			};
+> +
+> +			mi2s0_ws: mi2s0-ws {
+> +				pins = "gpio100";
+> +				function = "mi2s0_ws";
+> +			};
+> +
+> +			mi2s1_data0: mi2s1-data0 {
+> +				pins = "gpio107";
+> +				function = "mi2s1_data0";
+> +			};
+> +
+> +			mi2s1_sclk: mi2s1-sclk {
+> +				pins = "gpio106";
+> +				function = "mi2s1_sck";
+> +			};
+> +
+> +			mi2s1_ws: mi2s1-ws {
+> +				pins = "gpio108";
+> +				function = "mi2s1_ws";
+> +			};
+> +
+>  			pcie1_clkreq_n: pcie1-clkreq-n {
+>  				pins = "gpio79";
+>  				function = "pcie1_clkreqn";
+> -- 
+> 2.7.4
+> 
