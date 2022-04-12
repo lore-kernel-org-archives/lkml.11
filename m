@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D01C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1388C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351225AbiDLHKC (ORCPT
+        id S1351265AbiDLHKG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:10:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
+        Tue, 12 Apr 2022 03:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351981AbiDLGyt (ORCPT
+        with ESMTP id S1351988AbiDLGyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6873135D;
-        Mon, 11 Apr 2022 23:44:29 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438A13137F;
+        Mon, 11 Apr 2022 23:44:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B7282CE1C08;
-        Tue, 12 Apr 2022 06:44:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C878BC385A1;
-        Tue, 12 Apr 2022 06:44:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B91A60EF9;
+        Tue, 12 Apr 2022 06:44:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D57C385A1;
+        Tue, 12 Apr 2022 06:44:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745866;
-        bh=0esSlio+DRYXSR+lSY4Lgf9cTRy6zvApUNto4bGbsVY=;
+        s=korg; t=1649745886;
+        bh=qaSj/7LegKEakoTuH7bRNXzfMCErFLQzfr9njREQeCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h+Altcs4vWUIgFSvhG8k40iH1wsfPL86p9sfm8G7hvNbRsw23ukiRfLUwdb7T9aTE
-         tDk5ipOe15uFARIvfAMAz8aQKqkY757p8JOY74nOTqZd0ae3ED6hSGqr4bGX/qIwlY
-         6MENiVuSoLYANRdF7t3qrOlJTY1mma/agaNr5wjM=
+        b=xVQTpHAer47rYmGZyp/7Gd4aZ7rCpHuHxhL0odzdgubIOVaOwQDoaYCQDQjso9ncp
+         PBJCHc8XZvc+ZILzYpnY5HoTn7sIb2u07hv17x76Gj6Ip8JLWj2xnBm2Mk0jHLzv63
+         AICpnC28n5hWo4MwPe/erP0z4VEwW7r4zQreugok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qi Liu <liuqi115@huawei.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 076/277] scsi: hisi_sas: Free irq vectors in order for v3 HW
-Date:   Tue, 12 Apr 2022 08:27:59 +0200
-Message-Id: <20220412062944.249625952@linuxfoundation.org>
+Subject: [PATCH 5.15 082/277] Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
+Date:   Tue, 12 Apr 2022 08:28:05 +0200
+Message-Id: <20220412062944.422009023@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,107 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qi Liu <liuqi115@huawei.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 554fb72ee34f4732c7f694f56c3c6e67790352a0 ]
+[ Upstream commit 9b392e0e0b6d026da5a62bb79a08f32e27af858e ]
 
-If the driver probe fails to request the channel IRQ or fatal IRQ, the
-driver will free the IRQ vectors before freeing the IRQs in free_irq(),
-and this will cause a kernel BUG like this:
+This fixes attemting to print hdev->name directly which causes them to
+print an error:
 
-------------[ cut here ]------------
-kernel BUG at drivers/pci/msi.c:369!
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-Call trace:
-   free_msi_irqs+0x118/0x13c
-   pci_disable_msi+0xfc/0x120
-   pci_free_irq_vectors+0x24/0x3c
-   hisi_sas_v3_probe+0x360/0x9d0 [hisi_sas_v3_hw]
-   local_pci_probe+0x44/0xb0
-   work_for_cpu_fn+0x20/0x34
-   process_one_work+0x1d0/0x340
-   worker_thread+0x2e0/0x460
-   kthread+0x180/0x190
-   ret_from_fork+0x10/0x20
----[ end trace b88990335b610c11 ]---
+kernel: read_version:367: (efault): sock 000000006a3008f2
 
-So we use devm_add_action() to control the order in which we free the
-vectors.
-
-Link: https://lore.kernel.org/r/1645703489-87194-4-git-send-email-john.garry@huawei.com
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ include/net/bluetooth/bluetooth.h | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 1942970f9eb7..6010acae4cf3 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -2392,17 +2392,25 @@ static irqreturn_t cq_interrupt_v3_hw(int irq_no, void *p)
- 	return IRQ_WAKE_THREAD;
- }
+diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+index 9125effbf448..3fecc4a411a1 100644
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -180,19 +180,21 @@ void bt_err_ratelimited(const char *fmt, ...);
+ #define BT_DBG(fmt, ...)	pr_debug(fmt "\n", ##__VA_ARGS__)
+ #endif
  
-+static void hisi_sas_v3_free_vectors(void *data)
-+{
-+	struct pci_dev *pdev = data;
++#define bt_dev_name(hdev) ((hdev) ? (hdev)->name : "null")
 +
-+	pci_free_irq_vectors(pdev);
-+}
-+
- static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
- {
- 	int vectors;
- 	int max_msi = HISI_SAS_MSI_COUNT_V3_HW, min_msi;
- 	struct Scsi_Host *shost = hisi_hba->shost;
-+	struct pci_dev *pdev = hisi_hba->pci_dev;
- 	struct irq_affinity desc = {
- 		.pre_vectors = BASE_VECTORS_V3_HW,
- 	};
+ #define bt_dev_info(hdev, fmt, ...)				\
+-	BT_INFO("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_INFO("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_warn(hdev, fmt, ...)				\
+-	BT_WARN("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_WARN("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err(hdev, fmt, ...)				\
+-	BT_ERR("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_ERR("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_dbg(hdev, fmt, ...)				\
+-	BT_DBG("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_DBG("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
  
- 	min_msi = MIN_AFFINE_VECTORS_V3_HW;
--	vectors = pci_alloc_irq_vectors_affinity(hisi_hba->pci_dev,
-+	vectors = pci_alloc_irq_vectors_affinity(pdev,
- 						 min_msi, max_msi,
- 						 PCI_IRQ_MSI |
- 						 PCI_IRQ_AFFINITY,
-@@ -2414,6 +2422,7 @@ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
- 	hisi_hba->cq_nvecs = vectors - BASE_VECTORS_V3_HW;
- 	shost->nr_hw_queues = hisi_hba->cq_nvecs;
+ #define bt_dev_warn_ratelimited(hdev, fmt, ...)			\
+-	bt_warn_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_warn_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err_ratelimited(hdev, fmt, ...)			\
+-	bt_err_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_err_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
  
-+	devm_add_action(&pdev->dev, hisi_sas_v3_free_vectors, pdev);
- 	return 0;
- }
- 
-@@ -4763,7 +4772,7 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	dev_err(dev, "%d hw queues\n", shost->nr_hw_queues);
- 	rc = scsi_add_host(shost, dev);
- 	if (rc)
--		goto err_out_free_irq_vectors;
-+		goto err_out_debugfs;
- 
- 	rc = sas_register_ha(sha);
- 	if (rc)
-@@ -4792,8 +4801,6 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	sas_unregister_ha(sha);
- err_out_register_ha:
- 	scsi_remove_host(shost);
--err_out_free_irq_vectors:
--	pci_free_irq_vectors(pdev);
- err_out_debugfs:
- 	debugfs_exit_v3_hw(hisi_hba);
- err_out_ha:
-@@ -4821,7 +4828,6 @@ hisi_sas_v3_destroy_irqs(struct pci_dev *pdev, struct hisi_hba *hisi_hba)
- 
- 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, nr), cq);
- 	}
--	pci_free_irq_vectors(pdev);
- }
- 
- static void hisi_sas_v3_remove(struct pci_dev *pdev)
+ /* Connection and socket states */
+ enum {
 -- 
 2.35.1
 
