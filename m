@@ -2,196 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB69CC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E93C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383343AbiDLJf0 (ORCPT
+        id S1391693AbiDLJf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:35:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50934 "EHLO
+        Tue, 12 Apr 2022 05:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389913AbiDLJYV (ORCPT
+        with ESMTP id S1389364AbiDLJXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:24:21 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791842459E;
-        Tue, 12 Apr 2022 01:39:44 -0700 (PDT)
-X-UUID: 88867b4216d24856b6005e31d2c9c5d0-20220412
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:6c7e3c15-4e3f-4ddf-9ac6-026e158614b3,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.4,REQID:6c7e3c15-4e3f-4ddf-9ac6-026e158614b3,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:faefae9,CLOUDID:bd8f1d78-0afa-4dca-bdec-ca54c998425a,C
-        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
-        l,QS:0,BEC:nil
-X-UUID: 88867b4216d24856b6005e31d2c9c5d0-20220412
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1283748203; Tue, 12 Apr 2022 16:39:37 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 12 Apr 2022 16:39:36 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 16:39:36 +0800
-Message-ID: <d900f8181bddb20a56231310d46b9427c40e77b8.camel@mediatek.com>
-Subject: Re: [PATCH v2 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
- devfreq driver
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <cw00.choi@samsung.com>, <krzk+dt@kernel.org>,
-        <robh+dt@kernel.org>, <kyungmin.park@samsung.com>
-CC:     <khilman@kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <jia-wei.chang@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 12 Apr 2022 16:39:36 +0800
-In-Reply-To: <76d58182-2f56-32b2-42e9-2ecbdd09ba3d@linaro.org>
-References: <20220408052150.22536-1-johnson.wang@mediatek.com>
-         <20220408052150.22536-3-johnson.wang@mediatek.com>
-         <76d58182-2f56-32b2-42e9-2ecbdd09ba3d@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 12 Apr 2022 05:23:42 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B3421BD
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:37:52 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id e21so10105670wrc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:37:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KueaafBCeJeb8X5fTOt3ZTO9jhoa81nVXCf85JsoVfg=;
+        b=hGWUwdEGiI8eiml7vIPA0KT83FdxzPsvJULyHlUCmNhsqgSH4R3tDCXlxp3SwdvlLP
+         5XIPXzt/t26kseGz1CWRON00uHpRPfGEJtKuqN1pT5SOvaB51YLu/F8dOvRI28o8pSWc
+         7Al7QpJlXjIFkmkLIfd9l05lv7Hz6juD/cYlZakeZc6D8NL13hk6sFGfW3W0PgtIz4kO
+         yRTQQ2HnmZ5XMmnLVXio5GzBS47SxrJBPqvW5P/VQ6fvx0a4Whe1IetCdFoiEQEO2L+s
+         0bE8OY0wxEjyrHgdDFuNOZoZsIokwx1WJa7KdMUTc8guZ3IKPI1g4ghkRo6bqkKGIEzt
+         fg6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KueaafBCeJeb8X5fTOt3ZTO9jhoa81nVXCf85JsoVfg=;
+        b=zyUorYTGfPvFAlDIq/N8H1QHe6dKwooflPTcU/f8UaJry+2Tji6ZXTUSoQ98189m4h
+         cfC5TrF0ch01WhI2zkTyhHLh+ublCa3IrRs+Fn+ixEg53UjFkM4CFJQKpEo1V+0a7C0+
+         a0QR0/FiANVf+6oieg14KP3qdZBvV7ds2oD6Ine3k3zOrQxOW6lYRLd4SNO6iKzkncgq
+         /Fgxd4osx4Vbq1Dp8eww0xcwxbtan2x3JRyqm3+nUk/q+dbzIxyjjiUHDv64DAQFZKrP
+         Zkp/AeJcyys3rsmxQ3IAeolZOw0k826DH6bbrcdqZU2RpfSZ3i7Hk45/mmOVJ/VeuwWJ
+         06cw==
+X-Gm-Message-State: AOAM533i/n27JLZRaM3WkWKBGrlACBVUd15A64QE1gHg87FAXdr/9LSu
+        DRLflhhbpEo8o67q0mXJK+KxqdOraOB7iLX1fh3+FA==
+X-Google-Smtp-Source: ABdhPJzlR1P1z3GTJ0AcRQ80Hob6Wx2eGcmvHIHVYR2jJRQ8HI/D9Gk32iW2lSDPivgRP+0NCc64XiIZcmGzNCqtBgs=
+X-Received: by 2002:adf:e108:0:b0:1ef:97ad:5372 with SMTP id
+ t8-20020adfe108000000b001ef97ad5372mr27423376wrz.658.1649752671320; Tue, 12
+ Apr 2022 01:37:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+References: <20220304171913.2292458-1-james.clark@arm.com> <20220304171913.2292458-5-james.clark@arm.com>
+In-Reply-To: <20220304171913.2292458-5-james.clark@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Tue, 12 Apr 2022 09:37:39 +0100
+Message-ID: <CAJ9a7Vi7fEXNTPbN_d1Gnf0pqtmoK6xUvioq3mvuUpdA0yq7Yw@mail.gmail.com>
+Subject: Re: [PATCH v3 04/15] coresight: etm4x: Cleanup TRCIDR4 register accesses
+To:     James Clark <James.Clark@arm.com>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        Anshuman.Khandual@arm.com, mathieu.poirier@linaro.org,
+        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-On Fri, 2022-04-08 at 10:21 +0200, Krzysztof Kozlowski wrote:
-> On 08/04/2022 07:21, Johnson Wang wrote:
-> > We introduce a devfreq driver for the MediaTek Cache Coherent
-> > Interconnect
-> > (CCI) used by some MediaTek SoCs.
-> > 
-> 
-> (...)
-> 
-> > index 87eb2b837e68..d985597f343f 100644
-> > --- a/drivers/devfreq/Kconfig
-> > +++ b/drivers/devfreq/Kconfig
-> > @@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
-> >  	  It reads ACTMON counters of memory controllers and adjusts
-> > the
-> >  	  operating frequencies and voltages with OPP support.
-> >  
-> > +config ARM_MEDIATEK_CCI_DEVFREQ
-> > +	tristate "MEDIATEK CCI DEVFREQ Driver"
-> > +	depends on ARM_MEDIATEK_CPUFREQ
-> > > COMPILE_TEST? And check if it test compiles.
+On Fri, 4 Mar 2022 at 17:19, James Clark <james.clark@arm.com> wrote:
+>
+> This is a no-op change for style and consistency and has no effect on
+> the binary output by the compiler. In sysreg.h fields are defined as
+> the register name followed by the field name and then _MASK. This
+> allows for grepping for fields by name rather than using magic numbers.
+>
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm4x-core.c | 12 ++++++------
+>  drivers/hwtracing/coresight/coresight-etm4x.h      |  8 ++++++++
+>  2 files changed, 14 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> index 1b377f6b31bf..c52ab7f29f41 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> @@ -1155,9 +1155,9 @@ static void etm4_init_arch_data(void *info)
+>         /* number of resources trace unit supports */
+>         etmidr4 = etm4x_relaxed_read32(csa, TRCIDR4);
+>         /* NUMACPAIRS, bits[0:3] number of addr comparator pairs for tracing */
+> -       drvdata->nr_addr_cmp = BMVAL(etmidr4, 0, 3);
+> +       drvdata->nr_addr_cmp = FIELD_GET(TRCIDR4_NUMACPAIRS_MASK, etmidr4);
+>         /* NUMPC, bits[15:12] number of PE comparator inputs for tracing */
+> -       drvdata->nr_pe_cmp = BMVAL(etmidr4, 12, 15);
+> +       drvdata->nr_pe_cmp = FIELD_GET(TRCIDR4_NUMPC_MASK, etmidr4);
+>         /*
+>          * NUMRSPAIR, bits[19:16]
+>          * The number of resource pairs conveyed by the HW starts at 0, i.e a
+> @@ -1168,7 +1168,7 @@ static void etm4_init_arch_data(void *info)
+>          * the default TRUE and FALSE resource selectors are omitted.
+>          * Otherwise for values 0x1 and above the number is N + 1 as per v4.2.
+>          */
+> -       drvdata->nr_resource = BMVAL(etmidr4, 16, 19);
+> +       drvdata->nr_resource = FIELD_GET(TRCIDR4_NUMRSPAIR_MASK, etmidr4);
+>         if ((drvdata->arch < ETM_ARCH_V4_3) || (drvdata->nr_resource > 0))
+>                 drvdata->nr_resource += 1;
+>         /*
+> @@ -1176,15 +1176,15 @@ static void etm4_init_arch_data(void *info)
+>          * comparator control for tracing. Read any status regs as these
+>          * also contain RO capability data.
+>          */
+> -       drvdata->nr_ss_cmp = BMVAL(etmidr4, 20, 23);
+> +       drvdata->nr_ss_cmp = FIELD_GET(TRCIDR4_NUMSSCC_MASK, etmidr4);
+>         for (i = 0; i < drvdata->nr_ss_cmp; i++) {
+>                 drvdata->config.ss_status[i] =
+>                         etm4x_relaxed_read32(csa, TRCSSCSRn(i));
+>         }
+>         /* NUMCIDC, bits[27:24] number of Context ID comparators for tracing */
+> -       drvdata->numcidc = BMVAL(etmidr4, 24, 27);
+> +       drvdata->numcidc = FIELD_GET(TRCIDR4_NUMCIDC_MASK, etmidr4);
+>         /* NUMVMIDC, bits[31:28] number of VMID comparators for tracing */
+> -       drvdata->numvmidc = BMVAL(etmidr4, 28, 31);
+> +       drvdata->numvmidc = FIELD_GET(TRCIDR4_NUMVMIDC_MASK, etmidr4);
+>
+>         etmidr5 = etm4x_relaxed_read32(csa, TRCIDR5);
+>         /* NUMEXTIN, bits[8:0] number of external inputs implemented */
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
+> index 1b95c63938f0..c9c5fd655196 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
+> @@ -157,6 +157,14 @@
+>  #define TRCIDR3_NUMPROC_LO_MASK                        GENMASK(30, 28)
+>  #define TRCIDR3_NUMPROC_HI_MASK                        GENMASK(13, 12)
+>  #define TRCIDR3_NOOVERFLOW                     BIT(31)
+> +
+> +#define TRCIDR4_NUMACPAIRS_MASK                        GENMASK(3, 0)
+> +#define TRCIDR4_NUMPC_MASK                     GENMASK(15, 12)
+> +#define TRCIDR4_NUMRSPAIR_MASK                 GENMASK(19, 16)
+> +#define TRCIDR4_NUMSSCC_MASK                   GENMASK(23, 20)
+> +#define TRCIDR4_NUMCIDC_MASK                   GENMASK(27, 24)
+> +#define TRCIDR4_NUMVMIDC_MASK                  GENMASK(31, 28)
+> +
+>  /*
+>   * System instructions to access ETM registers.
+>   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+> --
+> 2.28.0
+>
 
-Thank you for your review.
-I will add COMPILE_TEST and see if this driver is compiled with it.
 
-> 
-> (...)
-> 
-> > +
-> > +static int mtk_ccifreq_remove(struct platform_device *pdev)
-> > +{
-> > +	struct device *cci_dev = &pdev->dev;
-> 
-> s/cci_dev/dev/
-> Everywhere.
-> 
-
-Sure, I will modify it in the next version.
-
-> > +	struct mtk_ccifreq_drv *drv;
-> > +
-> > +	drv = platform_get_drvdata(pdev);
-> > +
-> > +	dev_pm_opp_unregister_notifier(cci_dev, &drv->opp_nb);
-> > +	dev_pm_opp_of_remove_table(cci_dev);
-> > +	clk_disable_unprepare(drv->inter_clk);
-> > +	clk_disable_unprepare(drv->cci_clk);
-> > +	regulator_disable(drv->proc_reg);
-> > +	if (!IS_ERR(drv->sram_reg))
-> > +		regulator_disable(drv->sram_reg);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct mtk_ccifreq_platform_data mt8183_platform_data
-> > = {
-> > +	.min_volt_shift = 100000,
-> > +	.max_volt_shift = 200000,
-> > +	.proc_max_volt = 1150000,
-> > +	.sram_min_volt = 0,
-> > +	.sram_max_volt = 1150000,
-> > +};
-> > +
-> > +static const struct mtk_ccifreq_platform_data mt8186_platform_data
-> > = {
-> > +	.min_volt_shift = 100000,
-> > +	.max_volt_shift = 250000,
-> > +	.proc_max_volt = 1118750,
-> > +	.sram_min_volt = 850000,
-> > +	.sram_max_volt = 1118750,
-> > +};
-> > +
-> > +static const struct of_device_id mtk_ccifreq_machines[] = {
-> > +	{ .compatible = "mediatek,mt8183-cci", .data =
-> > &mt8183_platform_data },
-> > +	{ .compatible = "mediatek,mt8186-cci", .data =
-> > &mt8186_platform_data },
-> > +	{ },
-> > +};
-> > +MODULE_DEVICE_TABLE(of, mtk_ccifreq_machines);
-> > +
-> > +static struct platform_driver mtk_ccifreq_platdrv = {
-> > +	.probe	= mtk_ccifreq_probe,
-> > +	.remove	= mtk_ccifreq_remove,
-> > +	.driver = {
-> > +		.name = "mtk-ccifreq",
-> > +		.of_match_table = of_match_ptr(mtk_ccifreq_machines),
-> 
-> You use of_match_ptr() so is it possible to build it without OF? If
-> so,
-> then mtk_ccifreq_machines needs maybe_unused.
-> 
-
-No, this driver must be built with OF due to our CPU arch.
-Should I add some dependencies in Kconfig to ensure OF is enabled?
-
-> > +	},
-> > +};
-> > +
-> > +static int __init mtk_ccifreq_platdrv_init(void)
-> > +{
-> > +	return platform_driver_register(&mtk_ccifreq_platdrv);
-> > +}
-> > +module_init(mtk_ccifreq_platdrv_init)
-> > +
-> > +static void __exit mtk_ccifreq_platdrv_exit(void)
-> > +{
-> > +	platform_driver_unregister(&mtk_ccifreq_platdrv);
-> > +}
-> > +module_exit(mtk_ccifreq_platdrv_exit)
-> 
-> Why not module_platform_driver()?
-
-I will try to use module_platform_driver() and update it in the next
-version.
-
-> 
-> > +
-> > +MODULE_DESCRIPTION("MediaTek CCI devfreq driver");
-> > +MODULE_AUTHOR("Jia-Wei Chang <jia-wei.chang@mediatek.com>");
-> > +MODULE_LICENSE("GPL v2");
-> 
-> 
-> Best regards,
-> Krzysztof
-
-BRs,
-Johnson Wang
-
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
