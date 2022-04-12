@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CACC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350960AbiDLGv7 (ORCPT
+        id S1350758AbiDLGwD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
+        Tue, 12 Apr 2022 02:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350429AbiDLGpk (ORCPT
+        with ESMTP id S1349647AbiDLGpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:45:40 -0400
+        Tue, 12 Apr 2022 02:45:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4DFFD17;
-        Mon, 11 Apr 2022 23:39:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65E05FB3;
+        Mon, 11 Apr 2022 23:39:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F636B81B4A;
-        Tue, 12 Apr 2022 06:39:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB144C385A1;
-        Tue, 12 Apr 2022 06:39:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C3AEB81B4F;
+        Tue, 12 Apr 2022 06:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBED4C385A6;
+        Tue, 12 Apr 2022 06:39:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745547;
-        bh=wYo+gFcW6YEWMBxADo3fn9rhGvO3HbHRnUEEkVALwhY=;
+        s=korg; t=1649745544;
+        bh=t5LAneBW0xwJksceGW3NDKuV1HAHZgjMgjUcEloWtU8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ls4FRstplMKyuVYrvBoNrgQYw8y/vFbDNMP9a/hh0ismKTsek07Cqq2i1oN1BIGIi
-         XVgzaPsaS6Mu1O64FegkaAFUjDaNgsq5QI9hUPYCYEmjLaZOjC94dXnvtE1GXUpRUy
-         CQFKv2d2h8oqP1AXrD9hriFeKVo/e4zw+f64Zf0Q=
+        b=04sXqNVgIj1FRBilrMD/1U4R0kROaSOZAHsEHWYKUSdnkcdtcJ8jUDY2593b/Bw4/
+         TPCwaEtxbDQ83Fgl0qyJX51w1jZ4niI9P8N6fRr/47sA3S0XHr5b9TQzg55w9dnqWp
+         nhPkvoFHCqHUEWOqljFw6jWQYlvVaytNbKO3amBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Denis Nikitin <denik@chromium.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org,
+        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Alice Michael <alice.michael@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 133/171] perf session: Remap buf if there is no space for event
-Date:   Tue, 12 Apr 2022 08:30:24 +0200
-Message-Id: <20220412062931.733159919@linuxfoundation.org>
+Subject: [PATCH 5.10 115/171] ice: Do not skip not enabled queues in ice_vc_dis_qs_msg
+Date:   Tue, 12 Apr 2022 08:30:06 +0200
+Message-Id: <20220412062931.212987496@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -55,76 +54,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis Nikitin <denik@chromium.org>
+From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
 
-[ Upstream commit bc21e74d4775f883ae1f542c1f1dc7205b15d925 ]
+[ Upstream commit 05ef6813b234db3196f083b91db3963f040b65bb ]
 
-If a perf event doesn't fit into remaining buffer space return NULL to
-remap buf and fetch the event again.
+Disable check for queue being enabled in ice_vc_dis_qs_msg, because
+there could be a case when queues were created, but were not enabled.
+We still need to delete those queues.
 
-Keep the logic to error out on inadequate input from fuzzing.
+Normal workflow for VF looks like:
+Enable path:
+VIRTCHNL_OP_ADD_ETH_ADDR (opcode 10)
+VIRTCHNL_OP_CONFIG_VSI_QUEUES (opcode 6)
+VIRTCHNL_OP_ENABLE_QUEUES (opcode 8)
 
-This fixes perf failing on ChromeOS (with 32b userspace):
+Disable path:
+VIRTCHNL_OP_DISABLE_QUEUES (opcode 9)
+VIRTCHNL_OP_DEL_ETH_ADDR (opcode 11)
 
-  $ perf report -v -i perf.data
-  ...
-  prefetch_event: head=0x1fffff8 event->header_size=0x30, mmap_size=0x2000000: fuzzed or compressed perf.data?
-  Error:
-  failed to process sample
+The issue appears only in stress conditions when VF is enabled and
+disabled very fast.
+Eventually there will be a case, when queues are created by
+VIRTCHNL_OP_CONFIG_VSI_QUEUES, but are not enabled by
+VIRTCHNL_OP_ENABLE_QUEUES.
+In turn, these queues are not deleted by VIRTCHNL_OP_DISABLE_QUEUES,
+because there is a check whether queues are enabled in
+ice_vc_dis_qs_msg.
 
-Fixes: 57fc032ad643ffd0 ("perf session: Avoid infinite loop when seeing invalid header.size")
-Reviewed-by: James Clark <james.clark@arm.com>
-Signed-off-by: Denis Nikitin <denik@chromium.org>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220330031130.2152327-1-denik@chromium.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+When we bring up the VF again, we will see the "Failed to set LAN Tx queue
+context" error during VIRTCHNL_OP_CONFIG_VSI_QUEUES step. This
+happens because old 16 queues were not deleted and VF requests to create
+16 more, but ice_sched_get_free_qparent in ice_ena_vsi_txq would fail to
+find a parent node for first newly requested queue (because all nodes
+are allocated to 16 old queues).
+
+Testing Hints:
+
+Just enable and disable VF fast enough, so it would be disabled before
+reaching VIRTCHNL_OP_ENABLE_QUEUES.
+
+while true; do
+        ip link set dev ens785f0v0 up
+        sleep 0.065 # adjust delay value for you machine
+        ip link set dev ens785f0v0 down
+done
+
+Fixes: 77ca27c41705 ("ice: add support for virtchnl_queue_select.[tx|rx]_queues bitmap")
+Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Alice Michael <alice.michael@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/session.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index 9dddec19a494..354e1e04a266 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -2056,6 +2056,7 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	       bool needs_swap, union perf_event *error)
- {
- 	union perf_event *event;
-+	u16 event_size;
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 5134342ff70f..a980d337861d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -2723,9 +2723,9 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
+ 				goto error_param;
+ 			}
  
- 	/*
- 	 * Ensure we have enough space remaining to read
-@@ -2068,15 +2069,23 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
+-			/* Skip queue if not enabled */
+ 			if (!test_bit(vf_q_id, vf->txq_ena))
+-				continue;
++				dev_dbg(ice_pf_to_dev(vsi->back), "Queue %u on VSI %u is not enabled, but stopping it anyway\n",
++					vf_q_id, vsi->vsi_num);
  
--	if (head + event->header.size <= mmap_size)
-+	event_size = event->header.size;
-+	if (head + event_size <= mmap_size)
- 		return event;
+ 			ice_fill_txq_meta(vsi, ring, &txq_meta);
  
- 	/* We're not fetching the event so swap back again */
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
- 
--	pr_debug("%s: head=%#" PRIx64 " event->header_size=%#x, mmap_size=%#zx:"
--		 " fuzzed or compressed perf.data?\n",__func__, head, event->header.size, mmap_size);
-+	/* Check if the event fits into the next mmapped buf. */
-+	if (event_size <= mmap_size - head % page_size) {
-+		/* Remap buf and fetch again. */
-+		return NULL;
-+	}
-+
-+	/* Invalid input. Event size should never exceed mmap_size. */
-+	pr_debug("%s: head=%#" PRIx64 " event->header.size=%#x, mmap_size=%#zx:"
-+		 " fuzzed or compressed perf.data?\n", __func__, head, event_size, mmap_size);
- 
- 	return error;
- }
 -- 
 2.35.1
 
