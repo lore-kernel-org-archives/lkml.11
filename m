@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2291CC3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75748C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380876AbiDLIW7 (ORCPT
+        id S1381372AbiDLIX2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        Tue, 12 Apr 2022 04:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353742AbiDLHZx (ORCPT
+        with ESMTP id S1353694AbiDLHZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFBF388C;
-        Tue, 12 Apr 2022 00:04:15 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36C427B3B;
+        Tue, 12 Apr 2022 00:03:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31DB8B81A8F;
-        Tue, 12 Apr 2022 07:04:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D46C385A6;
-        Tue, 12 Apr 2022 07:04:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D6BF60B2B;
+        Tue, 12 Apr 2022 07:03:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57815C385A1;
+        Tue, 12 Apr 2022 07:03:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747053;
-        bh=xd+6zkjK1T71bZdK8lxeDi33yn7elOo0gA8j9wLhbsc=;
+        s=korg; t=1649747027;
+        bh=6iOz0h+rSag54oCMMWfVDb4JSipqbiqWgKKLZ5sy698=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zbF+THV9ljcC3+mGDuScILWsJhVR9TODxK6lykfw8TPDzG666H+Wm5NwufpKp1+4A
-         y46uTl6rvWnvyoUg6NXMKJLh9fBfZVxhWoNcatm1KKV9ZDyjrLSBUvcPbf/UTrIkaD
-         9nfDfOkK1Gp4hhYMvFhyvgltiUz1ynrdQmWl3/g0=
+        b=fo2rGmEelyqGtkao5laJLy35HaZRbKHe7JpeKyL6b1lhNh5K5nrivhG2M3f8ZpBPn
+         nJamLr0YxNd4yeNPItam5+slZykRuwCmLqpm23Xzx1s8KpnI2T162KtfgiwqXDRGCF
+         7uaTU95JnrTLLSggAPNiOB0c/8kJId4dVVxS7FgU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eugene Syromiatnikov <esyr@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 226/285] io_uring: implement compat handling for IORING_REGISTER_IOWQ_AFF
-Date:   Tue, 12 Apr 2022 08:31:23 +0200
-Message-Id: <20220412062950.182021874@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.16 218/285] mmc: renesas_sdhi: dont overwrite TAP settings when HS400 tuning is complete
+Date:   Tue, 12 Apr 2022 08:31:15 +0200
+Message-Id: <20220412062949.949915916@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,39 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugene Syromiatnikov <esyr@redhat.com>
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-commit 0f5e4b83b37a96e3643951588ed7176b9b187c0a upstream.
+commit 03e59b1e2f56245163b14c69e0a830c24b1a3a47 upstream.
 
-Similarly to the way it is done im mbind syscall.
+When HS400 tuning is complete and HS400 is going to be activated, we
+have to keep the current number of TAPs and should not overwrite them
+with a hardcoded value. This was probably a copy&paste mistake when
+upporting HS400 support from the BSP.
 
-Cc: stable@vger.kernel.org # 5.14
-Fixes: fe76421d1da1dcdb ("io_uring: allow user configurable IO thread CPU affinity")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 26eb2607fa28 ("mmc: renesas_sdhi: add eMMC HS400 mode support")
+Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220404114902.12175-1-wsa+renesas@sang-engineering.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/mmc/host/renesas_sdhi_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -10799,7 +10799,15 @@ static __cold int io_register_iowq_aff(s
- 	if (len > cpumask_size())
- 		len = cpumask_size();
+--- a/drivers/mmc/host/renesas_sdhi_core.c
++++ b/drivers/mmc/host/renesas_sdhi_core.c
+@@ -382,10 +382,10 @@ static void renesas_sdhi_hs400_complete(
+ 			SH_MOBILE_SDHI_SCC_TMPPORT2_HS400OSEL) |
+ 			sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT2));
  
--	if (copy_from_user(new_mask, arg, len)) {
-+	if (in_compat_syscall()) {
-+		ret = compat_get_bitmap(cpumask_bits(new_mask),
-+					(const compat_ulong_t __user *)arg,
-+					len * 8 /* CHAR_BIT */);
-+	} else {
-+		ret = copy_from_user(new_mask, arg, len);
-+	}
-+
-+	if (ret) {
- 		free_cpumask_var(new_mask);
- 		return -EFAULT;
- 	}
+-	/* Set the sampling clock selection range of HS400 mode */
+ 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_DTCNTL,
+ 		       SH_MOBILE_SDHI_SCC_DTCNTL_TAPEN |
+-		       0x4 << SH_MOBILE_SDHI_SCC_DTCNTL_TAPNUM_SHIFT);
++		       sd_scc_read32(host, priv,
++				     SH_MOBILE_SDHI_SCC_DTCNTL));
+ 
+ 	/* Avoid bad TAP */
+ 	if (bad_taps & BIT(priv->tap_set)) {
 
 
