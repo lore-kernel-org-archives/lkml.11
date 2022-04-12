@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D882C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C55FC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346654AbiDLBIK (ORCPT
+        id S1346787AbiDLBIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
+        Mon, 11 Apr 2022 21:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348314AbiDLA7U (ORCPT
+        with ESMTP id S1348558AbiDLA7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:59:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F48377D9;
-        Mon, 11 Apr 2022 17:52:35 -0700 (PDT)
+        Mon, 11 Apr 2022 20:59:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A4B37A00;
+        Mon, 11 Apr 2022 17:52:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBA6960C26;
-        Tue, 12 Apr 2022 00:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3785CC385AB;
-        Tue, 12 Apr 2022 00:52:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C6D3B819C5;
+        Tue, 12 Apr 2022 00:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17F15C385AA;
+        Tue, 12 Apr 2022 00:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724748;
-        bh=+hLm5oVQl3rCOm+Tv3ZDVA98eqa1DK4EZn9zi/zyyP0=;
+        s=k20201202; t=1649724757;
+        bh=rHmNXuzeV8iJKUzH6+x3ln2ySZEFmVKkG1uO2fuHIks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dPie/Toisa2LUl1i7+xwE9f6oaFGQXC1VIv4I6sWLssd9zRIH/o2PVv50vuswCk1h
-         JgbkmKsACMy6L7wISIHuX6QsMQV4Y38HFp1pXUtY7m/Ks+4qhDN15Cjo9K7b4TLjAt
-         4EhMtluQbBotF3G0tKgpTdX580aZuLb+wfm1hlqHWNoo7k2P6Xp1gyOrLMNTnTt4zZ
-         IZH1Ou4leT6W9mgYrU3iewyiC+SdEiRKFilC7WbazqDTSgkgM6gv46oGhtivrBwjZX
-         Tlmr9uHz3DGqq6oo+1D9WsPgXU2dBNUyjop2AXfRCWUu0FVSTf7o7fAIzD/Zuk1uNj
-         AYUDlei8PC6Bg==
+        b=Rg9BwiECKv40znIioakWvAI06T91HqJEnu4QM9E/kwlgT5F7MAQYAVSABXwmEnWSF
+         zlnACVf+3eNKBo6ZNBVsZjpAIi8phvhjp7Cazw7XpsKORgqshC6Dq8Khgz+TEReiZF
+         7wZKUJwzk+m1saSghJu94nYSw7LJe00Q3yL/CnyE50jfTO8+wtDYJWwgghRO18hy/+
+         +lNf7+dZAHB84tT3mSiRk7f7OFrcomeGc/erHkU6ArYcREpneA5T7iPDj/3nmd/6uH
+         KT6B2hXsTiYh4fZE96nPNt7N9SqF9hgCiNtZJGsvnt+8SDjbax8f2i1tkgtCLdGdI7
+         rsQOYLGgoAANw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Kelley <mikelley@microsoft.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        decui@microsoft.com, linux-hyperv@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 03/11] Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
-Date:   Mon, 11 Apr 2022 20:52:12 -0400
-Message-Id: <20220412005222.351554-3-sashal@kernel.org>
+Cc:     Leo Ruan <tingquan.ruan@cn.bosch.com>,
+        Mark Jonas <mark.jonas@de.bosch.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 08/11] gpu: ipu-v3: Fix dev_dbg frequency output
+Date:   Mon, 11 Apr 2022 20:52:17 -0400
+Message-Id: <20220412005222.351554-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412005222.351554-1-sashal@kernel.org>
 References: <20220412005222.351554-1-sashal@kernel.org>
@@ -54,55 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Leo Ruan <tingquan.ruan@cn.bosch.com>
 
-[ Upstream commit b6cae15b5710c8097aad26a2e5e752c323ee5348 ]
+[ Upstream commit 070a88fd4a03f921b73a2059e97d55faaa447dab ]
 
-When reading a packet from a host-to-guest ring buffer, there is no
-memory barrier between reading the write index (to see if there is
-a packet to read) and reading the contents of the packet. The Hyper-V
-host uses store-release when updating the write index to ensure that
-writes of the packet data are completed first. On the guest side,
-the processor can reorder and read the packet data before the write
-index, and sometimes get stale packet data. Getting such stale packet
-data has been observed in a reproducible case in a VM on ARM64.
+This commit corrects the printing of the IPU clock error percentage if
+it is between -0.1% to -0.9%. For example, if the pixel clock requested
+is 27.2 MHz but only 27.0 MHz can be achieved the deviation is -0.8%.
+But the fixed point math had a flaw and calculated error of 0.2%.
 
-Fix this by using virt_load_acquire() to read the write index,
-ensuring that reads of the packet data cannot be reordered
-before it. Preventing such reordering is logically correct, and
-with this change, getting stale data can no longer be reproduced.
+Before:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error 0.2%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Link: https://lore.kernel.org/r/1648394710-33480-1-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+After:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error -0.8%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
+
+Signed-off-by: Leo Ruan <tingquan.ruan@cn.bosch.com>
+Signed-off-by: Mark Jonas <mark.jonas@de.bosch.com>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220207151411.5009-1-mark.jonas@de.bosch.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/ring_buffer.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/gpu/ipu-v3/ipu-di.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
-index 74c1dfb8183b..6b08e9d9b382 100644
---- a/drivers/hv/ring_buffer.c
-+++ b/drivers/hv/ring_buffer.c
-@@ -340,7 +340,16 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
- static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
- {
- 	u32 priv_read_loc = rbi->priv_read_index;
--	u32 write_loc = READ_ONCE(rbi->ring_buffer->write_index);
-+	u32 write_loc;
-+
-+	/*
-+	 * The Hyper-V host writes the packet data, then uses
-+	 * store_release() to update the write_index.  Use load_acquire()
-+	 * here to prevent loads of the packet data from being re-ordered
-+	 * before the read of the write_index and potentially getting
-+	 * stale data.
-+	 */
-+	write_loc = virt_load_acquire(&rbi->ring_buffer->write_index);
+diff --git a/drivers/gpu/ipu-v3/ipu-di.c b/drivers/gpu/ipu-v3/ipu-di.c
+index d2f1bd9d3deb..c498dc7d8838 100644
+--- a/drivers/gpu/ipu-v3/ipu-di.c
++++ b/drivers/gpu/ipu-v3/ipu-di.c
+@@ -460,8 +460,9 @@ static void ipu_di_config_clock(struct ipu_di *di,
  
- 	if (write_loc >= priv_read_loc)
- 		return write_loc - priv_read_loc;
+ 		error = rate / (sig->mode.pixelclock / 1000);
+ 
+-		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %d.%u%%\n",
+-			rate, div, (signed)(error - 1000) / 10, error % 10);
++		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %c%d.%d%%\n",
++			rate, div, error < 1000 ? '-' : '+',
++			abs(error - 1000) / 10, abs(error - 1000) % 10);
+ 
+ 		/* Allow a 1% error */
+ 		if (error < 1010 && error >= 990) {
 -- 
 2.35.1
 
