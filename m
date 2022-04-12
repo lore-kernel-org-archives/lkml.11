@@ -2,54 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B48D6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CACAC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354915AbiDLIGU (ORCPT
+        id S1354982AbiDLIGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        Tue, 12 Apr 2022 04:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353988AbiDLH0A (ORCPT
+        with ESMTP id S1354111AbiDLH0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:00 -0400
+        Tue, 12 Apr 2022 03:26:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609FB13E0A;
-        Tue, 12 Apr 2022 00:05:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0305F2E9EA;
+        Tue, 12 Apr 2022 00:05:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FD99B81B4F;
-        Tue, 12 Apr 2022 07:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C77BC385A6;
-        Tue, 12 Apr 2022 07:05:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B01A2B81B4E;
+        Tue, 12 Apr 2022 07:05:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA15C385A6;
+        Tue, 12 Apr 2022 07:05:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747116;
-        bh=48IJ3esSaUzBji8rEvxkx01bcGDqcGgwVzYB+0ZPDAg=;
+        s=korg; t=1649747144;
+        bh=Smfi/ZN8i0dzhQnYNGCmXNvOH3W9oqoPSzPGo96g0v8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsGP4Pr6ftXxisuyN02/4hzwXCq5IisKZqp26X27Dgpt6Mll6CY17x8EEPLg0ermV
-         KjoWaO4MY4YHXtcGVE7bQ7oFVnlmv1Syo+IJD5w37xuLECmkx/x/iQraceGSEedoay
-         kvlLLKNDvb2CLGXLnvhQRREtgtSPWYE7/CjvKt3o=
+        b=BvcsbUDzEv19iGTjPgS5HHKnVf929NoAp1lM87pOv3pto9Nrc6oFyFsSNdcJDcdxZ
+         76jgYnPnp4FncwAd531G1yBdivnTiKChEqmghJm3nGryluMeH/Ri8sb3/qQ7kOS8vn
+         PRQpBMrseDkYfmNIHXt/bZtvaE83cLWm4Eow1DkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        German Gomez <german.gomez@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
-        Will Deacon <will@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 209/285] perf: arm-spe: Fix perf report --mem-mode
-Date:   Tue, 12 Apr 2022 08:31:06 +0200
-Message-Id: <20220412062949.691397574@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 260/285] KVM: SVM: Allow AVIC support on system w/ physical APIC ID > 255
+Date:   Tue, 12 Apr 2022 08:31:57 +0200
+Message-Id: <20220412062951.165772564@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -61,60 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-[ Upstream commit ffab487052054162b3b6c9c6005777ec6cfcea05 ]
+commit 4a204f7895878363ca8211f50ec610408c8c70aa upstream.
 
-Since commit bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem
-info is not available") "perf mem report" and "perf report --mem-mode"
-don't allow opening the file unless one of the events has
-PERF_SAMPLE_DATA_SRC set.
+Expand KVM's mask for the AVIC host physical ID to the full 12 bits defined
+by the architecture.  The number of bits consumed by hardware is model
+specific, e.g. early CPUs ignored bits 11:8, but there is no way for KVM
+to enumerate the "true" size.  So, KVM must allow using all bits, else it
+risks rejecting completely legal x2APIC IDs on newer CPUs.
 
-SPE doesn't have this set even though synthetic memory data is generated
-after it is decoded. Fix this issue by setting DATA_SRC on SPE events.
-This has no effect on the data collected because the SPE driver doesn't
-do anything with that flag and doesn't generate samples.
+This means KVM relies on hardware to not assign x2APIC IDs that exceed the
+"true" width of the field, but presumably hardware is smart enough to tie
+the width to the max x2APIC ID.  KVM also relies on hardware to support at
+least 8 bits, as the legacy xAPIC ID is writable by software.  But, those
+assumptions are unavoidable due to the lack of any way to enumerate the
+"true" width.
 
-Fixes: bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem info is not available")
-Signed-off-by: James Clark <james.clark@arm.com>
-Tested-by: Leo Yan <leo.yan@linaro.org>
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: German Gomez <german.gomez@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220408144056.1955535-1-james.clark@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Cc: Maxim Levitsky <mlevitsk@redhat.com>
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Fixes: 44a95dae1d22 ("KVM: x86: Detect and Initialize AVIC support")
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Message-Id: <20220211000851.185799-1-suravee.suthikulpanit@amd.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[modified due to the conflict caused by the commit 391503528257 ("KVM:
+x86: SVM: move avic definitions from AMD's spec to svm.h")]
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/arch/arm64/util/arm-spe.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/kvm/svm/avic.c |    7 +------
+ arch/x86/kvm/svm/svm.h  |    2 +-
+ 2 files changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/tools/perf/arch/arm64/util/arm-spe.c b/tools/perf/arch/arm64/util/arm-spe.c
-index 2100d46ccf5e..bb4ab99afa7f 100644
---- a/tools/perf/arch/arm64/util/arm-spe.c
-+++ b/tools/perf/arch/arm64/util/arm-spe.c
-@@ -239,6 +239,12 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
- 		arm_spe_set_timestamp(itr, arm_spe_evsel);
- 	}
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -949,15 +949,10 @@ out:
+ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ {
+ 	u64 entry;
+-	/* ID = 0xff (broadcast), ID > 0xff (reserved) */
+ 	int h_physical_id = kvm_cpu_get_apicid(cpu);
+ 	struct vcpu_svm *svm = to_svm(vcpu);
  
-+	/*
-+	 * Set this only so that perf report knows that SPE generates memory info. It has no effect
-+	 * on the opening of the event or the SPE data produced.
-+	 */
-+	evsel__set_sample_bit(arm_spe_evsel, DATA_SRC);
-+
- 	/* Add dummy event to keep tracking */
- 	err = parse_events(evlist, "dummy:u", NULL);
- 	if (err)
--- 
-2.35.1
-
+-	/*
+-	 * Since the host physical APIC id is 8 bits,
+-	 * we can support host APIC ID upto 255.
+-	 */
+-	if (WARN_ON(h_physical_id > AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
++	if (WARN_ON(h_physical_id & ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
+ 		return;
+ 
+ 	entry = READ_ONCE(*(svm->avic_physical_id_cache));
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -510,7 +510,7 @@ extern struct kvm_x86_nested_ops svm_nes
+ #define AVIC_LOGICAL_ID_ENTRY_VALID_BIT			31
+ #define AVIC_LOGICAL_ID_ENTRY_VALID_MASK		(1 << 31)
+ 
+-#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	(0xFFULL)
++#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	GENMASK_ULL(11, 0)
+ #define AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK	(0xFFFFFFFFFFULL << 12)
+ #define AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK		(1ULL << 62)
+ #define AVIC_PHYSICAL_ID_ENTRY_VALID_MASK		(1ULL << 63)
 
 
