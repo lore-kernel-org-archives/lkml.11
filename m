@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32025C38A02
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C61C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352014AbiDLHXM (ORCPT
+        id S1352059AbiDLHXU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
+        Tue, 12 Apr 2022 03:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353034AbiDLHGw (ORCPT
+        with ESMTP id S1351230AbiDLHCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:06:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC88F49915;
-        Mon, 11 Apr 2022 23:49:07 -0700 (PDT)
+        Tue, 12 Apr 2022 03:02:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160242656C;
+        Mon, 11 Apr 2022 23:46:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27E4561464;
-        Tue, 12 Apr 2022 06:49:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 351BDC385A1;
-        Tue, 12 Apr 2022 06:49:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA79FB81B35;
+        Tue, 12 Apr 2022 06:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB98C385A1;
+        Tue, 12 Apr 2022 06:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746146;
-        bh=e3NcP0WQTUBNTnL50EsGpQnLN+HIvQDqCEHRACb0Kgs=;
+        s=korg; t=1649746016;
+        bh=cujhILB3y4EmBcmQA2MsmHaHwN6l2MKCzazXJMiUZUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBs62zUY6SIGBiF4+BuBouu0RzxCGaWB4t4xM6KF+4GOeVjazHHHowxFN0Qy5dqfY
-         IXbLeOiloddBWsi2FdHAsRh7znVt5Oz4L12sY+opQxQtMP2890ZS+QkHuEeKjOp4dZ
-         iZUUAhEhzVBxP2reAj/Z0fEsg+kYV7SquKoVBvms=
+        b=mwfYcPWWG4DX6M6AXA5sl73dcRi0ElNolR+mcq/cN86gqURuJfS5n/8OfNApkQWHD
+         XdNzNGbc9cWtsHoB6vmKT00TOR306Supelcms75ii8YN5/L5VY5/IiQgprn4huoRll
+         cGWl8gpL/JKQwP1auSU5oA+wggoQXH99DLg/9xOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 176/277] RDMA/mlx5: Add a missing update of cache->last_add
-Date:   Tue, 12 Apr 2022 08:29:39 +0200
-Message-Id: <20220412062947.130685580@linuxfoundation.org>
+Subject: [PATCH 5.15 129/277] SUNRPC: remove scheduling boost for "SWAPPER" tasks.
+Date:   Tue, 12 Apr 2022 08:28:52 +0200
+Message-Id: <20220412062945.771752748@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,36 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aharon Landau <aharonl@nvidia.com>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit 1d735eeee63a0beb65180ca0224f239cc0c9f804 ]
+[ Upstream commit a80a8461868905823609be97f91776a26befe839 ]
 
-Update cache->last_add when returning an MR to the cache so that the cache
-work won't remove it.
+Currently, tasks marked as "swapper" tasks get put to the front of
+non-priority rpc_queues, and are sorted earlier than non-swapper tasks on
+the transport's ->xmit_queue.
 
-Fixes: b9358bdbc713 ("RDMA/mlx5: Fix locking in MR cache work queue")
-Link: https://lore.kernel.org/r/c99f076fce4b44829d434936bbcd3b5fc4c95020.1649062436.git.leonro@nvidia.com
-Signed-off-by: Aharon Landau <aharonl@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+This is pointless as currently *all* tasks for a mount that has swap
+enabled on *any* file are marked as "swapper" tasks.  So the net result
+is that the non-priority rpc_queues are reverse-ordered (LIFO).
+
+This scheduling boost is not necessary to avoid deadlocks, and hurts
+fairness, so remove it.  If there were a need to expedite some requests,
+the tk_priority mechanism is a more appropriate tool.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/mr.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/sunrpc/sched.c |  7 -------
+ net/sunrpc/xprt.c  | 11 -----------
+ 2 files changed, 18 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 85289fddc2ae..cf203f879d34 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -635,6 +635,7 @@ static void mlx5_mr_cache_free(struct mlx5_ib_dev *dev, struct mlx5_ib_mr *mr)
- {
- 	struct mlx5_cache_ent *ent = mr->cache_ent;
+diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+index 6e4d476c6324..f0f55fbd1375 100644
+--- a/net/sunrpc/sched.c
++++ b/net/sunrpc/sched.c
+@@ -186,11 +186,6 @@ static void __rpc_add_wait_queue_priority(struct rpc_wait_queue *queue,
  
-+	WRITE_ONCE(dev->cache.last_add, jiffies);
- 	spin_lock_irq(&ent->lock);
- 	list_add_tail(&mr->list, &ent->head);
- 	ent->available_mrs++;
+ /*
+  * Add new request to wait queue.
+- *
+- * Swapper tasks always get inserted at the head of the queue.
+- * This should avoid many nasty memory deadlocks and hopefully
+- * improve overall performance.
+- * Everyone else gets appended to the queue to ensure proper FIFO behavior.
+  */
+ static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
+ 		struct rpc_task *task,
+@@ -199,8 +194,6 @@ static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
+ 	INIT_LIST_HEAD(&task->u.tk_wait.timer_list);
+ 	if (RPC_IS_PRIORITY(queue))
+ 		__rpc_add_wait_queue_priority(queue, task, queue_priority);
+-	else if (RPC_IS_SWAPPER(task))
+-		list_add(&task->u.tk_wait.list, &queue->tasks[0]);
+ 	else
+ 		list_add_tail(&task->u.tk_wait.list, &queue->tasks[0]);
+ 	task->tk_waitqueue = queue;
+diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
+index 61603c2664a6..f5dff09154da 100644
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -1353,17 +1353,6 @@ xprt_request_enqueue_transmit(struct rpc_task *task)
+ 				INIT_LIST_HEAD(&req->rq_xmit2);
+ 				goto out;
+ 			}
+-		} else if (RPC_IS_SWAPPER(task)) {
+-			list_for_each_entry(pos, &xprt->xmit_queue, rq_xmit) {
+-				if (pos->rq_cong || pos->rq_bytes_sent)
+-					continue;
+-				if (RPC_IS_SWAPPER(pos->rq_task))
+-					continue;
+-				/* Note: req is added _before_ pos */
+-				list_add_tail(&req->rq_xmit, &pos->rq_xmit);
+-				INIT_LIST_HEAD(&req->rq_xmit2);
+-				goto out;
+-			}
+ 		} else if (!req->rq_seqno) {
+ 			list_for_each_entry(pos, &xprt->xmit_queue, rq_xmit) {
+ 				if (pos->rq_task->tk_owner != task->tk_owner)
 -- 
 2.35.1
 
