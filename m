@@ -2,99 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B650C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348467AbiDLMWR (ORCPT
+        id S1350626AbiDLMWV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
+        Tue, 12 Apr 2022 08:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357106AbiDLMUj (ORCPT
+        with ESMTP id S1355410AbiDLMTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:20:39 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D164AE3F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:27:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649762867; x=1681298867;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gIs6XvcWXzPcGcyZ4rwFB88kIQ7FOgRfZOHvOled5dE=;
-  b=QcsPXEs9Gz6QA2nD7BpODxRIY7Y6uaY7XWHknIwXRPY0xJhG/F8QxIx1
-   g73NzHEECaLgx8CbJevCo+CGuad/YnOeCqk93dq3e3T6pZGeOZp2Pda7i
-   1VRtwcEcM0QjeqpqzrD/8TRHvb/InM1Ac3pDrpsPrVRBC39tn3LUQ9tZ2
-   Gqe65jHgy+HJybZaHqbMtTo9Ok1Kc0/zwUW+HbT6pdZYcyuI117q8V6PD
-   qp7ITjUai+Cr81J8FezlIZkfbl8m3tbSCnhuy1GgoQYPqo2h8Y+jpCmGP
-   sOgyHUhHfrnxbIihf6Ucttv+eub99mRXji5PUnyRouwNM3rw3O4gN6Qxq
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="249636870"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="249636870"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:24:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="611397331"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:24:48 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1neEa4-001YkI-Tg;
-        Tue, 12 Apr 2022 14:21:08 +0300
-Date:   Tue, 12 Apr 2022 14:21:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Subject: Re: [PATCH v2 4/5] drm/solomon: Move device info from ssd130x-i2c to
- the core driver
-Message-ID: <YlVgpHqqqFy43L37@smile.fi.intel.com>
-References: <20220411211243.11121-1-javierm@redhat.com>
- <20220411211243.11121-5-javierm@redhat.com>
- <CAMuHMdVSsAtRLob5fLoBMNu-DRXJOaBrEHYEwG5iCA03XR5JSw@mail.gmail.com>
- <4128b288-2b9a-f9cd-01f3-a1d50d3e10bb@redhat.com>
+        Tue, 12 Apr 2022 08:19:09 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B572F3BF;
+        Tue, 12 Apr 2022 04:21:41 -0700 (PDT)
+X-UUID: ef620ede2cb84d1d84633f706e0fe0d0-20220412
+X-UUID: ef620ede2cb84d1d84633f706e0fe0d0-20220412
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <jia-wei.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1192516486; Tue, 12 Apr 2022 19:21:37 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 12 Apr 2022 19:21:37 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 12 Apr
+ 2022 19:21:36 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Apr 2022 19:21:36 +0800
+From:   Tim Chang <jia-wei.chang@mediatek.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Roger Lu <roger.lu@mediatek.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <hsinyi@google.com>
+Subject: [PATCH 1/2] dt-bindings: soc: mediatek: add mt8186 svs dt-bindings
+Date:   Tue, 12 Apr 2022 19:21:26 +0800
+Message-ID: <20220412112127.21570-2-jia-wei.chang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220412112127.21570-1-jia-wei.chang@mediatek.com>
+References: <20220412112127.21570-1-jia-wei.chang@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4128b288-2b9a-f9cd-01f3-a1d50d3e10bb@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:07:02AM +0200, Javier Martinez Canillas wrote:
-> On 4/12/22 09:23, Geert Uytterhoeven wrote:
-> > On Mon, Apr 11, 2022 at 11:12 PM Javier Martinez Canillas
-> > <javierm@redhat.com> wrote:
+From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 
-...
+Add mt8186 svs compatible in dt-bindings.
 
-> >> -       ssd130x->device_info = device_get_match_data(dev);
-> >> +
-> >> +       variant = (enum ssd130x_variants)device_get_match_data(dev);
-> > 
-> > (uintptr_t), to avoid a cast from pointer to integer of different
-> > size warning.
-> >
-> 
-> Indeed. The kernel test robot reported the same.
+Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+---
+ Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Not only because of this, but also with the non-NULL pointers I prefer the old
-style without ugly castings.
-
-Instead, you may export the array (in the driver's namespace) and use
-&info[ID] pointer for the specific device info.
-
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml b/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
+index eecfec13ee8b..122ffabb2be4 100644
+--- a/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
++++ b/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
+@@ -10,6 +10,7 @@ maintainers:
+   - Roger Lu <roger.lu@mediatek.com>
+   - Matthias Brugger <matthias.bgg@gmail.com>
+   - Kevin Hilman <khilman@kernel.org>
++  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
+ 
+ description: |+
+   The SVS engine is a piece of hardware which has several
+@@ -22,6 +23,7 @@ properties:
+   compatible:
+     enum:
+       - mediatek,mt8183-svs
++      - mediatek,mt8186-svs
+       - mediatek,mt8192-svs
+ 
+   reg:
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.18.0
 
