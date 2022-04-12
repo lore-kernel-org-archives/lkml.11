@@ -2,96 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A436DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6726DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356350AbiDLO0w (ORCPT
+        id S1349336AbiDLO1F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 10:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54064 "EHLO
+        Tue, 12 Apr 2022 10:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbiDLO0s (ORCPT
+        with ESMTP id S231205AbiDLO1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 10:26:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01D3B1E2;
-        Tue, 12 Apr 2022 07:24:29 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D038B210E5;
-        Tue, 12 Apr 2022 14:24:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649773467;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5Z9+hhZ/fGDkb3HZ7krEOEuYawa9iKoF641ksqlogCI=;
-        b=dHaIgAMYR2EAfTYO6A0R2+fU5tRIUF4i6UTwR1QREWZpTqcFsy/GYcoTeKGVQSNonQFsVq
-        uI9e3L7Yj3Shb6YE4IOZ4bP2gICflIDB51DsJ+fXT6LQ9KrpHSOVWQJ4xAJyBrNXMBnXGe
-        DIE5EX/OR4X4/PyZpf8m7Q0nldnLWEw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649773467;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5Z9+hhZ/fGDkb3HZ7krEOEuYawa9iKoF641ksqlogCI=;
-        b=dl+ZCfHznKNbvexa716PqmbZNk9TyHwqCrEEKRyLjeBz1PnLNpPxL8mYz4QCwdWTStMqip
-        niCTbXlwsfpWdvDg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 150F9A3B82;
-        Tue, 12 Apr 2022 14:24:26 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 562F7DA7B0; Tue, 12 Apr 2022 16:20:21 +0200 (CEST)
-Date:   Tue, 12 Apr 2022 16:20:21 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [next] ERROR: modpost: "__udivdi3" [fs/btrfs/btrfs.ko] undefined!
-Message-ID: <20220412142021.GX15609@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>, Christoph Hellwig <hch@lst.de>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Filipe Manana <fdmanana@suse.com>, Arnd Bergmann <arnd@arndb.de>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <CA+G9fYvXn1tgpESouPBwZgKnoeUNjM3CV1nzDWac6PjHqTskog@mail.gmail.com>
+        Tue, 12 Apr 2022 10:27:01 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4DAE0ED;
+        Tue, 12 Apr 2022 07:24:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nJ15T4c/j8gXqXWAc1bdFcvt372osymWsJ1i4KD/CTY=; b=29N82hv/6CXhxqVHGVE31I80I1
+        yWgYaEu66ftEyEdx7MW7lEQlt3dwTtXQl21uK12UnUWhM5jsCrkvLz8+udl9LiJomqFcmc5Hjxm+q
+        gPHz376EGKuArxWXJ6TTmbShOZ+kAtktK1ThIL8chtKfhCgMH0U9St14VOjTP9GDOwVE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1neHRT-00FT8M-H9; Tue, 12 Apr 2022 16:24:27 +0200
+Date:   Tue, 12 Apr 2022 16:24:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     robh+dt@kernel.org, joel@jms.id.au, andrew@aj.id.au,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, p.zabel@pengutronix.de,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, krzk+dt@kernel.org, BMC-SW@aspeedtech.com
+Subject: Re: [PATCH v4 2/3] net: mdio: add reset control for Aspeed MDIO
+Message-ID: <YlWLm8mRfP07VkcP@lunn.ch>
+References: <20220412065611.8930-1-dylan_hung@aspeedtech.com>
+ <20220412065611.8930-3-dylan_hung@aspeedtech.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+G9fYvXn1tgpESouPBwZgKnoeUNjM3CV1nzDWac6PjHqTskog@mail.gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220412065611.8930-3-dylan_hung@aspeedtech.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 05:28:08PM +0530, Naresh Kamboju wrote:
-> Linux next-20220412 arm and i386 build failed due to below errors
-> with kselftest merge configs.
+On Tue, Apr 12, 2022 at 02:56:10PM +0800, Dylan Hung wrote:
+> Add reset assertion/deassertion for Aspeed MDIO.  There are 4 MDIO
+> controllers embedded in Aspeed AST2600 SOC and share one reset control
+> register SCU50[3].  To work with old DT blobs which don't have the reset
+> property, devm_reset_control_get_optional_shared is used in this change.
 > 
->    - build-arm-gcc-kselftest
->    - build-i386-gcc-kselftest
-> 
-> make --silent --keep-going --jobs=8
-> O=/home/tuxbuild/.cache/tuxmake/builds/1/build ARCH=i386
-> CROSS_COMPILE=i686-linux-gnu- 'CC=sccache i686-linux-gnu-gcc'
-> 'HOSTCC=sccache gcc'
-> 
-> ERROR: modpost: "__udivdi3" [fs/btrfs/btrfs.ko] undefined!
-> make[2]: *** [/builds/linux/scripts/Makefile.modpost:134:
-> modules-only.symvers] Error 1
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 
-The fixed patches are on the way and will appear in the next for-next
-branch snapshot. Thanks.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
