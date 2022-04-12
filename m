@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D54C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2902EC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356808AbiDLHjX (ORCPT
+        id S1356928AbiDLHje (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
+        Tue, 12 Apr 2022 03:39:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352935AbiDLHOj (ORCPT
+        with ESMTP id S1352945AbiDLHOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC493206B;
-        Mon, 11 Apr 2022 23:55:23 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457DA32074;
+        Mon, 11 Apr 2022 23:55:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79E86B81B47;
-        Tue, 12 Apr 2022 06:55:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCD9FC385A1;
-        Tue, 12 Apr 2022 06:55:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F067DB81B35;
+        Tue, 12 Apr 2022 06:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B523C385A1;
+        Tue, 12 Apr 2022 06:55:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746521;
-        bh=yEpisErz6K+71iwfSBr0egtIMOIDymtqooPXz3MsouU=;
+        s=korg; t=1649746526;
+        bh=/FtJdOc3qlePh+X4i1+NxhT41uCmjejFTRj5RNY3beQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vdEELxlH8pwzIPNPPOde41Qn6NYblIcE4v/eDda1GruuaGo9Sobz3j0Gorw0yFkty
-         0/BkIZRu04MsmBwLGQ6GPVSWmcbSN/E20ZMIXNPn6VZsRxpFx+WdmFv3noB7oO2qd+
-         TuxYCn5g1coF1h8AehkYSSgu/Sp+GKrTb5gubVOQ=
+        b=wdfZGFpH+9PFJuzHPuzDSGgGNz6MPEL4gfRTjX80FPzAoA8dFF1R34abaCIb2AFno
+         VF04+BSVpOAUn9bCX9jmYj9GWyLZzE7xwlCfZDZoeFEixWGK0tVEaAe4nwS+WKSoQU
+         LSrYB1Dfuj2n527fl5gF68BHzKxEbwPurypIXGt0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Avraham Stern <avraham.stern@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 028/285] ath11k: mhi: use mhi_sync_power_up()
-Date:   Tue, 12 Apr 2022 08:28:05 +0200
-Message-Id: <20220412062944.490077730@linuxfoundation.org>
+Subject: [PATCH 5.16 038/285] cfg80211: dont add non transmitted BSS to 6GHz scanned channels
+Date:   Tue, 12 Apr 2022 08:28:15 +0200
+Message-Id: <20220412062944.775301476@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,85 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kalle Valo <quic_kvalo@quicinc.com>
+From: Avraham Stern <avraham.stern@intel.com>
 
-[ Upstream commit 3df6d74aedfdca919cca475d15dfdbc8b05c9e5d ]
+[ Upstream commit 5666ee154f4696c011dfa8544aaf5591b6b87515 ]
 
-If amss.bin was missing ath11k would crash during 'rmmod ath11k_pci'. The
-reason for that was that we were using mhi_async_power_up() which does not
-check any errors. But mhi_sync_power_up() on the other hand does check for
-errors so let's use that to fix the crash.
+When adding 6GHz channels to scan request based on reported
+co-located APs, don't add channels that have only APs with
+"non-transmitted" BSSes if they only match the wildcard SSID since
+they will be found by probing the "transmitted" BSS.
 
-I was not able to find a reason why an async version was used.
-ath11k_mhi_start() (which enables state ATH11K_MHI_POWER_ON) is called from
-ath11k_hif_power_up(), which can sleep. So sync version should be safe to use
-here.
-
-[  145.569731] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC KASAN PTI
-[  145.569789] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-[  145.569843] CPU: 2 PID: 1628 Comm: rmmod Kdump: loaded Tainted: G        W         5.16.0-wt-ath+ #567
-[  145.569898] Hardware name: Intel(R) Client Systems NUC8i7HVK/NUC8i7HVB, BIOS HNKBLi70.86A.0067.2021.0528.1339 05/28/2021
-[  145.569956] RIP: 0010:ath11k_hal_srng_access_begin+0xb5/0x2b0 [ath11k]
-[  145.570028] Code: df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 ec 01 00 00 48 8b ab a8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 ea 48 c1 ea 03 <0f> b6 14 02 48 89 e8 83 e0 07 83 c0 03 45 85 ed 75 48 38 d0 7c 08
-[  145.570089] RSP: 0018:ffffc900025d7ac0 EFLAGS: 00010246
-[  145.570144] RAX: dffffc0000000000 RBX: ffff88814fca2dd8 RCX: 1ffffffff50cb455
-[  145.570196] RDX: 0000000000000000 RSI: ffff88814fca2dd8 RDI: ffff88814fca2e80
-[  145.570252] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffffa8659497
-[  145.570329] R10: fffffbfff50cb292 R11: 0000000000000001 R12: ffff88814fca0000
-[  145.570410] R13: 0000000000000000 R14: ffff88814fca2798 R15: ffff88814fca2dd8
-[  145.570465] FS:  00007fa399988540(0000) GS:ffff888233e00000(0000) knlGS:0000000000000000
-[  145.570519] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  145.570571] CR2: 00007fa399b51421 CR3: 0000000137898002 CR4: 00000000003706e0
-[  145.570623] Call Trace:
-[  145.570675]  <TASK>
-[  145.570727]  ? ath11k_ce_tx_process_cb+0x34b/0x860 [ath11k]
-[  145.570797]  ath11k_ce_tx_process_cb+0x356/0x860 [ath11k]
-[  145.570864]  ? tasklet_init+0x150/0x150
-[  145.570919]  ? ath11k_ce_alloc_pipes+0x280/0x280 [ath11k]
-[  145.570986]  ? tasklet_clear_sched+0x42/0xe0
-[  145.571042]  ? tasklet_kill+0xe9/0x1b0
-[  145.571095]  ? tasklet_clear_sched+0xe0/0xe0
-[  145.571148]  ? irq_has_action+0x120/0x120
-[  145.571202]  ath11k_ce_cleanup_pipes+0x45a/0x580 [ath11k]
-[  145.571270]  ? ath11k_pci_stop+0x10e/0x170 [ath11k_pci]
-[  145.571345]  ath11k_core_stop+0x8a/0xc0 [ath11k]
-[  145.571434]  ath11k_core_deinit+0x9e/0x150 [ath11k]
-[  145.571499]  ath11k_pci_remove+0xd2/0x260 [ath11k_pci]
-[  145.571553]  pci_device_remove+0x9a/0x1c0
-[  145.571605]  __device_release_driver+0x332/0x660
-[  145.571659]  driver_detach+0x1e7/0x2c0
-[  145.571712]  bus_remove_driver+0xe2/0x2d0
-[  145.571772]  pci_unregister_driver+0x21/0x250
-[  145.571826]  __do_sys_delete_module+0x30a/0x4b0
-[  145.571879]  ? free_module+0xac0/0xac0
-[  145.571933]  ? lockdep_hardirqs_on_prepare.part.0+0x18c/0x370
-[  145.571986]  ? syscall_enter_from_user_mode+0x1d/0x50
-[  145.572039]  ? lockdep_hardirqs_on+0x79/0x100
-[  145.572097]  do_syscall_64+0x3b/0x90
-[  145.572153]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
-
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220127090117.2024-2-kvalo@kernel.org
+Signed-off-by: Avraham Stern <avraham.stern@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220202104617.f6ddf099f934.I231e55885d3644f292d00dfe0f42653269f2559e@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mhi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/wireless/scan.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index 49c0b1ad40a0..f2149241fb13 100644
---- a/drivers/net/wireless/ath/ath11k/mhi.c
-+++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -519,7 +519,7 @@ static int ath11k_mhi_set_state(struct ath11k_pci *ab_pci,
- 		ret = 0;
- 		break;
- 	case ATH11K_MHI_POWER_ON:
--		ret = mhi_async_power_up(ab_pci->mhi_ctrl);
-+		ret = mhi_sync_power_up(ab_pci->mhi_ctrl);
- 		break;
- 	case ATH11K_MHI_POWER_OFF:
- 		mhi_power_down(ab_pci->mhi_ctrl, true);
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 22e92be61938..ea0b768def5e 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -702,8 +702,12 @@ static bool cfg80211_find_ssid_match(struct cfg80211_colocated_ap *ap,
+ 
+ 	for (i = 0; i < request->n_ssids; i++) {
+ 		/* wildcard ssid in the scan request */
+-		if (!request->ssids[i].ssid_len)
++		if (!request->ssids[i].ssid_len) {
++			if (ap->multi_bss && !ap->transmitted_bssid)
++				continue;
++
+ 			return true;
++		}
+ 
+ 		if (ap->ssid_len &&
+ 		    ap->ssid_len == request->ssids[i].ssid_len) {
+@@ -829,6 +833,9 @@ static int cfg80211_scan_6ghz(struct cfg80211_registered_device *rdev)
+ 		    !cfg80211_find_ssid_match(ap, request))
+ 			continue;
+ 
++		if (!request->n_ssids && ap->multi_bss && !ap->transmitted_bssid)
++			continue;
++
+ 		cfg80211_scan_req_add_chan(request, chan, true);
+ 		memcpy(scan_6ghz_params->bssid, ap->bssid, ETH_ALEN);
+ 		scan_6ghz_params->short_ssid = ap->short_ssid;
 -- 
 2.35.1
 
