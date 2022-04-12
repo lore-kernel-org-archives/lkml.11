@@ -2,104 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743E0C38A2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD3AC4708D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353109AbiDLIKM (ORCPT
+        id S1355301AbiDLIKb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
+        Tue, 12 Apr 2022 04:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353705AbiDLHZw (ORCPT
+        with ESMTP id S1353701AbiDLHZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C35F2610F;
-        Tue, 12 Apr 2022 00:03:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB2860B2B;
-        Tue, 12 Apr 2022 07:03:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F259EC385A1;
-        Tue, 12 Apr 2022 07:03:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747033;
-        bh=d99ktAmACl+jsTaV4QjDI+M78GFyfOHnTePoKIlYgB0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QKjfjtsyHBX444m/ki5ioFlubnKoFfaL1O3fMTExUztCKs6kWzY7q1+BD9TZ9q5jP
-         pvavxb5Zx1BPcRULnAw9I/mKV+mAtpC8H6cxtzy2MpbDufPwAQ7Oaccdtlijyij4kx
-         LtJRx/TNLmQTHZ+FpmH0w/lQM0Nt9IFVelQCew8E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daejun Park <daejun7.park@samsung.com>,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 202/285] scsi: ufs: ufshpb: Fix a NULL check on list iterator
-Date:   Tue, 12 Apr 2022 08:30:59 +0200
-Message-Id: <20220412062949.490739902@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED11227B23;
+        Tue, 12 Apr 2022 00:03:46 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649747024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wSOBIIfV1E6zWOf6Ap6BP42f42YeWjssrthGrpaLNqo=;
+        b=yuUXZkDhtS1Q1i49HqF5bGILbELxK/GZnL8Jn+JxafbqH9uRdOYH0XloFzxS4yjiVdcotk
+        j6BOGnhzlnrKxUbopjSVQgMym8UGnW47lBEAeg0dcYHGAhiSXyL34PDMJX8BgXkqMrPGjH
+        xKwz0Kd9qKW+j+XqekCZfFBvC3oYyEt3+PB9XmVfVwb9d6F9NjDeqEQeXehvDMgAVtBSNp
+        WU2dUnTQLEtQbjxLQX3Ia9N89AWj1FKpwBzm5wowwIadQ9LeHAXRwMPz92Od6SxFJuZVbp
+        oYmaRQ0rzzedOvdjHyydXJemNj2kHToiAqAXOiPC6Ck5s+WFs9RlrdekE+iIgw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649747024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wSOBIIfV1E6zWOf6Ap6BP42f42YeWjssrthGrpaLNqo=;
+        b=eLpfoolnSQcLA7qBjjn0dS096grclyQUpFIj2A+VpoERe0u6v2ABtPMrS2o2T05GUxKV09
+        I3rnJkbs3SmEPGAg==
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] timekeeping: Introduce fast accessor to clock tai
+In-Reply-To: <87k0bvfibm.ffs@tglx>
+References: <20220409081300.4762-1-kurt@linutronix.de>
+ <20220409081300.4762-2-kurt@linutronix.de>
+ <20220409093727.7dda6371@rorschach.local.home> <871qy6hu8q.ffs@tglx>
+ <87k0bvfibm.ffs@tglx>
+Date:   Tue, 12 Apr 2022 09:03:42 +0200
+Message-ID: <87v8vepyup.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+--=-=-=
+Content-Type: text/plain
 
-[ Upstream commit bfb7789bcbd901caead43861461bc8f334c90d3b ]
+On Mon Apr 11 2022, Thomas Gleixner wrote:
+> On Sat, Apr 09 2022 at 22:33, Thomas Gleixner wrote:
+>> On Sat, Apr 09 2022 at 09:37, Steven Rostedt wrote:
+>>> On Sat,  9 Apr 2022 10:12:58 +0200
+>>> Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>>>
+>>>> ---
+>>>>  include/linux/timekeeping.h |  1 +
+>>>>  kernel/time/timekeeping.c   | 17 +++++++++++++++++
+>>>>  2 files changed, 18 insertions(+)
+>>>
+>>> If the time keeping folks are OK with this and ack it, I'm happy to
+>>> take this through my tree.
+>>
+>> Go ahead. I just sent a Reviewed-by and I don't see conflicting changes
+>> in that area. Famous last words :)
+>
+> And yes, I have some conflicting changes in the pipeline and just saw
+> that this lacks a data_race() annotation like the boot variant from
+> which this is derived.
 
-The list iterator is always non-NULL so the check 'if (!rgn)' is always
-false and the dev_err() is never called. Move the check outside the loop
-and determine if 'victim_rgn' is NULL, to fix this bug.
+Interesting, didn't see that annotation. Anyway, this patch also misses
+the corresponding documentation entry. See below.
 
-Link: https://lore.kernel.org/r/20220320150733.21824-1-xiam0nd.tong@gmail.com
-Fixes: 4b5f49079c52 ("scsi: ufs: ufshpb: L2P map management for HPB read")
-Reviewed-by: Daejun Park <daejun7.park@samsung.com>
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/ufs/ufshpb.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+Thanks,
+Kurt
 
-diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
-index ded5ba9b1466..54c3b8f34c0a 100644
---- a/drivers/scsi/ufs/ufshpb.c
-+++ b/drivers/scsi/ufs/ufshpb.c
-@@ -870,12 +870,6 @@ static struct ufshpb_region *ufshpb_victim_lru_info(struct ufshpb_lu *hpb)
- 	struct ufshpb_region *rgn, *victim_rgn = NULL;
- 
- 	list_for_each_entry(rgn, &lru_info->lh_lru_rgn, list_lru_rgn) {
--		if (!rgn) {
--			dev_err(&hpb->sdev_ufs_lu->sdev_dev,
--				"%s: no region allocated\n",
--				__func__);
--			return NULL;
--		}
- 		if (ufshpb_check_srgns_issue_state(hpb, rgn))
- 			continue;
- 
-@@ -891,6 +885,11 @@ static struct ufshpb_region *ufshpb_victim_lru_info(struct ufshpb_lu *hpb)
- 		break;
- 	}
- 
-+	if (!victim_rgn)
-+		dev_err(&hpb->sdev_ufs_lu->sdev_dev,
-+			"%s: no region allocated\n",
-+			__func__);
-+
- 	return victim_rgn;
- }
- 
--- 
-2.35.1
+diff --git a/Documentation/core-api/timekeeping.rst b/Documentation/core-api/timekeeping.rst
+index 729e24864fe7..22ec68f24421 100644
+--- a/Documentation/core-api/timekeeping.rst
++++ b/Documentation/core-api/timekeeping.rst
+@@ -132,6 +132,7 @@ Some additional variants exist for more specialized cases:
+ .. c:function:: u64 ktime_get_mono_fast_ns( void )
+                u64 ktime_get_raw_fast_ns( void )
+                u64 ktime_get_boot_fast_ns( void )
++               u64 ktime_get_tai_fast_ns( void )
+                u64 ktime_get_real_fast_ns( void )
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJVJE4THGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzghWjD/sEeBixzbfdwEh+0NSFI9u11RnAGvC9
+wycvpdO5v5MNsKBgXsnO5Ssq7a1Mzx6i6hRY452BEfUvIuFFK2hvFgnvGzIQpFJZ
+Y5orhocN5IeJTq7jv+Iq75Rk1z4Zbsng9qCaDIVZa2u3pxqeng/HbpvNc8bczx5G
+TFIdkGDHJUXjsNkBa48Wj/p18QInGdrEXqHYua3auKUB+EHF0pEjqhnzXhKTHGsy
+CtZUqRkqCp2ONr5aU8jZhMLm8uNnezWC7dz8x3iN8KhEJkJezKa8X/JK7g2zLiSy
+bTviKsrixxYY7IOaBQbqynuvYPvJL9ESIik8AitJiv0qfEzpfR6ZblSzjJgPrHVS
+h4Fvw1yJZ3hTX3SJXgLcCQAgPfaRDRuwssjVmFVmjBDclZ2BwCqxE31Uo1hucEIw
+ewDwZRa/MKqGSpUGmsZAMm1MP0FW8y8p4qpHgb0BeCCiwxFyKsr6Ky/9YRO+2zAq
+zP9UpKGle8MZXy4n1RB2WZ1uStEujYnAF1+Sgm2kEUYptjTfoWqNxEQb+S12oYYG
+0VOty1agDe+UflrRKveE+I0RS8r9ohMHeSEVda2m/Ae9h+E9KZwPOGlZMGHdJaY8
+264CmK4YqwH3jl7CL3xE3rXlBaOCgGBd+3YhVPP25yOqiCmuRyim4ZuYYd02FK4B
+7CrnH8wL+HCuaA==
+=w1aW
+-----END PGP SIGNATURE-----
+--=-=-=--
