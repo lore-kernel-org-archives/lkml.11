@@ -2,150 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84210C388F3
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90EE2C38A2E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388701AbiDLJWm (ORCPT
+        id S1390002AbiDLJY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
+        Tue, 12 Apr 2022 05:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357672AbiDLHkh (ORCPT
+        with ESMTP id S1355519AbiDLIIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097A7FEA;
-        Tue, 12 Apr 2022 00:16:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3D47B81A8F;
-        Tue, 12 Apr 2022 07:16:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F99C385A5;
-        Tue, 12 Apr 2022 07:16:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747786;
-        bh=7n1CUTwVxEhRYCfm68ufa+KXWYtqErl01OICdME7qFA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O+vou0Wf3pqvGoELB6cdmWFqqpCShFUh0gkU9Xhc2sO7YqpifOFHcYZt1wgnnbyz6
-         6pjUimfGZnbmSWxmaGvFvRQ51ISmoIgy5Pvdr2bxs1FUm0+VGxw+7nVCHMXc9S3fei
-         4lw74+8YW1XZxX0FGjA6Twmi5laQ7sTTWq3bvLwo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Tue, 12 Apr 2022 04:08:31 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E55EEBE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:37:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649749058; x=1681285058;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0LJFvrdyN/JW03J9udGK9z8Z3EITY86/qGe+UYJwVjM=;
+  b=gJsQWRuFNlFSVb2UBTGdIbx0MaUUyl0V6rgbbVVmSDL3dYZQ3dhUyAZA
+   8UtvhG/sQiT3bERBGOgyreZLdW/OU56tsxn/BW9XpRRTSfDb0cG6cIqOm
+   G10oBKJm2iW6hNKp1C6kyB+Ga/XfWVv81MlAFapGUBhsu/jfGFMJclWNm
+   s+K78gbEqyhzOcTXwhtFCBSu1bkdhOdLjR89dHKPYsfTE2jTNi+vdA4RP
+   TViwTd2LqMYUOBQoGzd0j1LaXD91F/FZs3h0er7OY7/i0RVDMqXN60f1M
+   Qq2JMl4KHdwCOO7DyBLFfkGTy4hvXyxzY3A/5WZ1fum1Bu9ajEiREgMFo
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242889079"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="242889079"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:37:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="525925955"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 12 Apr 2022 00:37:24 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neB5X-0002dU-Ck;
+        Tue, 12 Apr 2022 07:37:23 +0000
+Date:   Tue, 12 Apr 2022 15:36:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 206/343] vrf: fix packet sniffing for traffic originating from ip tunnels
-Date:   Tue, 12 Apr 2022 08:30:24 +0200
-Message-Id: <20220412062957.296361838@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [linux-stable-rc:queue/5.17 638/1505]
+ drivers/net/dsa/realtek/realtek-smi-core.c:494:34: warning: unused variable
+ 'realtek_smi_of_match'
+Message-ID: <202204121538.1pGOoGfb-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eyal Birger <eyal.birger@gmail.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/5.17
+head:   22fa848c25c536c9ec7b151d56caa65b3e5b8b68
+commit: b0cbd13db467ef03b28297d3effb6b726c0dcba8 [638/1505] net: dsa: realtek-smi: move to subdirectory
+config: x86_64-randconfig-r033-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121538.1pGOoGfb-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=b0cbd13db467ef03b28297d3effb6b726c0dcba8
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc queue/5.17
+        git checkout b0cbd13db467ef03b28297d3effb6b726c0dcba8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/dsa/realtek/
 
-[ Upstream commit 012d69fbfcc739f846766c1da56ef8b493b803b5 ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-in commit 048939088220
-("vrf: add mac header for tunneled packets when sniffer is attached")
-an Ethernet header was cooked for traffic originating from tunnel devices.
+All warnings (new ones prefixed by >>):
 
-However, the header is added based on whether the mac_header is unset
-and ignores cases where the device doesn't expose a mac header to upper
-layers, such as in ip tunnels like ipip and gre.
+>> drivers/net/dsa/realtek/realtek-smi-core.c:494:34: warning: unused variable 'realtek_smi_of_match' [-Wunused-const-variable]
+   static const struct of_device_id realtek_smi_of_match[] = {
+                                    ^
+   1 warning generated.
 
-Traffic originating from such devices still appears garbled when capturing
-on the vrf device.
 
-Fix by observing whether the original device exposes a header to upper
-layers, similar to the logic done in af_packet.
+vim +/realtek_smi_of_match +494 drivers/net/dsa/realtek/realtek-smi-core.c
 
-In addition, skb->mac_len needs to be adjusted after adding the Ethernet
-header for the skb_push/pull() surrounding dev_queue_xmit_nit() to work
-on these packets.
+0650bf52b31ff3 drivers/net/dsa/realtek-smi-core.c Vladimir Oltean 2021-09-17  493  
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14 @494  static const struct of_device_id realtek_smi_of_match[] = {
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  495  	{
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  496  		.compatible = "realtek,rtl8366rb",
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  497  		.data = &rtl8366rb_variant,
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  498  	},
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  499  	{
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  500  		/* FIXME: add support for RTL8366S and more */
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  501  		.compatible = "realtek,rtl8366s",
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  502  		.data = NULL,
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  503  	},
+4af2950c50c863 drivers/net/dsa/realtek-smi-core.c Alvin Šipraga   2021-10-18  504  	{
+4af2950c50c863 drivers/net/dsa/realtek-smi-core.c Alvin Šipraga   2021-10-18  505  		.compatible = "realtek,rtl8365mb",
+4af2950c50c863 drivers/net/dsa/realtek-smi-core.c Alvin Šipraga   2021-10-18  506  		.data = &rtl8365mb_variant,
+4af2950c50c863 drivers/net/dsa/realtek-smi-core.c Alvin Šipraga   2021-10-18  507  	},
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  508  	{ /* sentinel */ },
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  509  };
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  510  MODULE_DEVICE_TABLE(of, realtek_smi_of_match);
+d8652956cf37c5 drivers/net/dsa/realtek-smi.c      Linus Walleij   2018-07-14  511  
 
-Fixes: 048939088220 ("vrf: add mac header for tunneled packets when sniffer is attached")
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/vrf.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+:::::: The code at line 494 was first introduced by commit
+:::::: d8652956cf37c5caa8c19e0b99ce5ca235c6d5de net: dsa: realtek-smi: Add Realtek SMI driver
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index e0b1ab99a359..f37adcef4bef 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1266,6 +1266,7 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
- 	eth = (struct ethhdr *)skb->data;
- 
- 	skb_reset_mac_header(skb);
-+	skb_reset_mac_len(skb);
- 
- 	/* we set the ethernet destination and the source addresses to the
- 	 * address of the VRF device.
-@@ -1295,9 +1296,9 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
-  */
- static int vrf_add_mac_header_if_unset(struct sk_buff *skb,
- 				       struct net_device *vrf_dev,
--				       u16 proto)
-+				       u16 proto, struct net_device *orig_dev)
- {
--	if (skb_mac_header_was_set(skb))
-+	if (skb_mac_header_was_set(skb) && dev_has_header(orig_dev))
- 		return 0;
- 
- 	return vrf_prepare_mac_header(skb, vrf_dev, proto);
-@@ -1403,6 +1404,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 
- 	/* if packet is NDISC then keep the ingress interface */
- 	if (!is_ndisc) {
-+		struct net_device *orig_dev = skb->dev;
-+
- 		vrf_rx_stats(vrf_dev, skb->len);
- 		skb->dev = vrf_dev;
- 		skb->skb_iif = vrf_dev->ifindex;
-@@ -1411,7 +1414,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 			int err;
- 
- 			err = vrf_add_mac_header_if_unset(skb, vrf_dev,
--							  ETH_P_IPV6);
-+							  ETH_P_IPV6,
-+							  orig_dev);
- 			if (likely(!err)) {
- 				skb_push(skb, skb->mac_len);
- 				dev_queue_xmit_nit(skb, vrf_dev);
-@@ -1441,6 +1445,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
- 				  struct sk_buff *skb)
- {
-+	struct net_device *orig_dev = skb->dev;
-+
- 	skb->dev = vrf_dev;
- 	skb->skb_iif = vrf_dev->ifindex;
- 	IPCB(skb)->flags |= IPSKB_L3SLAVE;
-@@ -1461,7 +1467,8 @@ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
- 	if (!list_empty(&vrf_dev->ptype_all)) {
- 		int err;
- 
--		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP);
-+		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP,
-+						  orig_dev);
- 		if (likely(!err)) {
- 			skb_push(skb, skb->mac_len);
- 			dev_queue_xmit_nit(skb, vrf_dev);
+:::::: TO: Linus Walleij <linus.walleij@linaro.org>
+:::::: CC: David S. Miller <davem@davemloft.net>
+
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
