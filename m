@@ -2,435 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4DCC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D4EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357546AbiDLQYs (ORCPT
+        id S1357568AbiDLQ1F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48680 "EHLO
+        Tue, 12 Apr 2022 12:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiDLQYp (ORCPT
+        with ESMTP id S235689AbiDLQ1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:24:45 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A135D194;
-        Tue, 12 Apr 2022 09:22:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1649780544; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:references; bh=hWinARk0auuN9WWlUPURYRlRuA4SRTo94mELhKm+HaI=;
-        b=XFFBUPHgCUByXylWCQP58xdH6wsnsXaLYgCAx96V71Wn7btZwEge3eXN2RLGZIGAAAZZ/T
-        DKnHzB8a2HrrmxN8M1+4Oac2RHmvNWZNiNyHIZ+kY944xwnQxpBc4YR2JNb8cyivLEeF5+
-        pWGzpMXnGkADEXO1PQZAqxl6EET1Co8=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     od@opendingux.net, linux-mips@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2] pinctrl: ingenic: Garbage-collect code paths for SoCs disabled by config
-Date:   Tue, 12 Apr 2022 17:22:18 +0100
-Message-Id: <20220412162218.32509-1-paul@crapouillou.net>
+        Tue, 12 Apr 2022 12:27:00 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBB538192;
+        Tue, 12 Apr 2022 09:24:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649780682; x=1681316682;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UeSHKiFD9MWQD9/lwoZzgM1WMiX/Uf+MCYGmOWbS/MQ=;
+  b=IgeMVV1TefkVsW0SmgHxJRH+NyZFscL9F9bdji2rv8JrIej68zf9DmYm
+   otsDeyHUHO6CZ/UM8wAIDTtj1UKHkMM1cnUuA4R7qFZ0TLpkZy0nCEwkk
+   lNsLeeGKZqtAgFKQbmoPyQ6KUVnj9ef2+ZA9hCbHVgiNiYRVFJONnnDQd
+   YUW1GTva3e9lYnYw3suUOi5MKihzrm47Yw3TfrDd1aGt9nEGYHW25hXYv
+   55qi6Gxr8fnhIXI9n3Dr9nbKObcGrTnf+3mBVN5fv5W8pCdqgwr3q1+E/
+   ii1VOss+KOFZG8X3rYiaRF3+B/2I2BIvhQbpMTx7o7VEl5GJW6UQLrtl9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242362658"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="242362658"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:11:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="655174943"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga002.fm.intel.com with ESMTP; 12 Apr 2022 09:11:21 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23CGBKdH010632;
+        Tue, 12 Apr 2022 17:11:20 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Petr Oros <poros@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, ivecera@redhat.com,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
+Subject: Re: [Intel-wired-lan] [PATCH] ice: wait for EMP reset after firmware flash
+Date:   Tue, 12 Apr 2022 18:08:56 +0200
+Message-Id: <20220412160856.1027597-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412102753.670867-1-poros@redhat.com>
+References: <20220412102753.670867-1-poros@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By being a bit smarter about how the SoC version checks are performed,
-it is possible to have all the code paths that correspond to SoCs
-disabled in the kernel config automatically marked as dead code by the
-compiler, and therefore garbage-collected.
+From: Petr Oros <poros@redhat.com>
+Date: Tue, 12 Apr 2022 12:27:53 +0200
 
-With this patch, when compiling a kernel that only targets the JZ4760
-for instance, the driver is now about 4.5 KiB smaller.
+> We need to wait for EMP reset after firmware flash.
+> Code was extracted from OOT driver and without this wait fw_activate let
+> card in inconsistent state recoverable only by second flash/activate
+> 
+> Reproducer:
+> [root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+> Preparing to flash
+> [fw.mgmt] Erasing
+> [fw.mgmt] Erasing done
+> [fw.mgmt] Flashing 100%
+> [fw.mgmt] Flashing done 100%
+> [fw.undi] Erasing
+> [fw.undi] Erasing done
+> [fw.undi] Flashing 100%
+> [fw.undi] Flashing done 100%
+> [fw.netlist] Erasing
+> [fw.netlist] Erasing done
+> [fw.netlist] Flashing 100%
+> [fw.netlist] Flashing done 100%
+> Activate new firmware by devlink reload
+> [root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+> reload_actions_performed:
+>     fw_activate
+> [root@host ~]# ip link show ens7f0
+> 71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+>     link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+>     altname enp202s0f0
+> 
+> dmesg after flash:
+> [   55.120788] ice: Copyright (c) 2018, Intel Corporation.
+> [   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
+> [   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
+> [   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
+> [   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
+> [   55.647348] ice 0000:ca:00.0: PTP init successful
+> [   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
+> [   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
+> [   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
+> [   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
+> Reboot don't help, only second flash/activate with OOT or patched driver put card back in consistent state
+> 
+> After patch:
+> [root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+> Preparing to flash
+> [fw.mgmt] Erasing
+> [fw.mgmt] Erasing done
+> [fw.mgmt] Flashing 100%
+> [fw.mgmt] Flashing done 100%
+> [fw.undi] Erasing
+> [fw.undi] Erasing done
+> [fw.undi] Flashing 100%
+> [fw.undi] Flashing done 100%
+> [fw.netlist] Erasing
+> [fw.netlist] Erasing done
+> [fw.netlist] Flashing 100%
+> [fw.netlist] Flashing done 100%
+> Activate new firmware by devlink reload
+> [root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+> reload_actions_performed:
+>     fw_activate
+> [root@host ~]# ip link show ens7f0
+> 19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+>     link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+>     altname enp202s0f0
+> 
+> Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
+> Signed-off-by: Petr Oros <poros@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index d768925785ca79..90ea2203cdc763 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -6931,12 +6931,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+>  
+>  	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
+>  
+> +#define ICE_EMP_RESET_SLEEP 5000
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
+Ooof, 5 sec is a lot! Is there any way to poll the device readiness?
+Does it really need the whole 5 sec?
 
-Notes:
-    v2:
-    - Remove useles cast from enum jz_version
-    - Make enabled_socs a "unsigned long" instead of u32
+>  	if (reset_type == ICE_RESET_EMPR) {
+>  		/* If an EMP reset has occurred, any previously pending flash
+>  		 * update will have completed. We no longer know whether or
+>  		 * not the NVM update EMP reset is restricted.
+>  		 */
+>  		pf->fw_emp_reset_disabled = false;
+> +
+> +		msleep(ICE_EMP_RESET_SLEEP);
+>  	}
+>  
+>  	err = ice_init_all_ctrlq(hw);
+> -- 
+> 2.35.1
 
- drivers/pinctrl/pinctrl-ingenic.c | 118 ++++++++++++++++++------------
- 1 file changed, 71 insertions(+), 47 deletions(-)
-
-diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-ingenic.c
-index fa6becca1788..1ca11616db74 100644
---- a/drivers/pinctrl/pinctrl-ingenic.c
-+++ b/drivers/pinctrl/pinctrl-ingenic.c
-@@ -139,6 +139,30 @@ struct ingenic_gpio_chip {
- 	unsigned int irq, reg_base;
- };
- 
-+static const unsigned long enabled_socs =
-+	IS_ENABLED(CONFIG_MACH_JZ4730) << ID_JZ4730 |
-+	IS_ENABLED(CONFIG_MACH_JZ4740) << ID_JZ4740 |
-+	IS_ENABLED(CONFIG_MACH_JZ4725B) << ID_JZ4725B |
-+	IS_ENABLED(CONFIG_MACH_JZ4750) << ID_JZ4750 |
-+	IS_ENABLED(CONFIG_MACH_JZ4755) << ID_JZ4755 |
-+	IS_ENABLED(CONFIG_MACH_JZ4760) << ID_JZ4760 |
-+	IS_ENABLED(CONFIG_MACH_JZ4770) << ID_JZ4770 |
-+	IS_ENABLED(CONFIG_MACH_JZ4775) << ID_JZ4775 |
-+	IS_ENABLED(CONFIG_MACH_JZ4780) << ID_JZ4780 |
-+	IS_ENABLED(CONFIG_MACH_X1000) << ID_X1000 |
-+	IS_ENABLED(CONFIG_MACH_X1500) << ID_X1500 |
-+	IS_ENABLED(CONFIG_MACH_X1830) << ID_X1830 |
-+	IS_ENABLED(CONFIG_MACH_X2000) << ID_X2000 |
-+	IS_ENABLED(CONFIG_MACH_X2100) << ID_X2100;
-+
-+static bool
-+is_soc_or_above(const struct ingenic_pinctrl *jzpc, enum jz_version version)
-+{
-+	return (enabled_socs >> version) &&
-+		(!(enabled_socs & GENMASK(version - 1, 0))
-+		 || jzpc->info->version >= version);
-+}
-+
- static const u32 jz4730_pull_ups[4] = {
- 	0x3fa3320f, 0xf200ffff, 0xffffffff, 0xffffffff,
- };
-@@ -3242,7 +3266,7 @@ static u32 ingenic_gpio_read_reg(struct ingenic_gpio_chip *jzgc, u8 reg)
- static void ingenic_gpio_set_bit(struct ingenic_gpio_chip *jzgc,
- 		u8 reg, u8 offset, bool set)
- {
--	if (jzgc->jzpc->info->version == ID_JZ4730) {
-+	if (!is_soc_or_above(jzgc->jzpc, ID_JZ4740)) {
- 		regmap_update_bits(jzgc->jzpc->map, jzgc->reg_base + reg,
- 				BIT(offset), set ? BIT(offset) : 0);
- 		return;
-@@ -3300,9 +3324,9 @@ static inline bool ingenic_gpio_get_value(struct ingenic_gpio_chip *jzgc,
- static void ingenic_gpio_set_value(struct ingenic_gpio_chip *jzgc,
- 				   u8 offset, int value)
- {
--	if (jzgc->jzpc->info->version >= ID_JZ4770)
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_PAT0, offset, !!value);
--	else if (jzgc->jzpc->info->version >= ID_JZ4740)
-+	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
- 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_DATA, offset, !!value);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_DATA, offset, !!value);
-@@ -3337,10 +3361,10 @@ static void irq_set_type(struct ingenic_gpio_chip *jzgc,
- 		break;
- 	}
- 
--	if (jzgc->jzpc->info->version >= ID_JZ4770) {
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770)) {
- 		reg1 = JZ4770_GPIO_PAT1;
- 		reg2 = JZ4770_GPIO_PAT0;
--	} else if (jzgc->jzpc->info->version >= ID_JZ4740) {
-+	} else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740)) {
- 		reg1 = JZ4740_GPIO_TRIG;
- 		reg2 = JZ4740_GPIO_DIR;
- 	} else {
-@@ -3350,12 +3374,12 @@ static void irq_set_type(struct ingenic_gpio_chip *jzgc,
- 		return;
- 	}
- 
--	if (jzgc->jzpc->info->version >= ID_X2000) {
-+	if (is_soc_or_above(jzgc->jzpc, ID_X2000)) {
- 		ingenic_gpio_shadow_set_bit(jzgc, reg2, offset, val1);
- 		ingenic_gpio_shadow_set_bit(jzgc, reg1, offset, val2);
- 		ingenic_gpio_shadow_set_bit_load(jzgc);
- 		ingenic_gpio_set_bit(jzgc, X2000_GPIO_EDG, offset, val3);
--	} else if (jzgc->jzpc->info->version >= ID_X1000) {
-+	} else if (is_soc_or_above(jzgc->jzpc, ID_X1000)) {
- 		ingenic_gpio_shadow_set_bit(jzgc, reg2, offset, val1);
- 		ingenic_gpio_shadow_set_bit(jzgc, reg1, offset, val2);
- 		ingenic_gpio_shadow_set_bit_load(jzgc);
-@@ -3371,7 +3395,7 @@ static void ingenic_gpio_irq_mask(struct irq_data *irqd)
- 	struct ingenic_gpio_chip *jzgc = gpiochip_get_data(gc);
- 	int irq = irqd->hwirq;
- 
--	if (jzgc->jzpc->info->version >= ID_JZ4740)
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
- 		ingenic_gpio_set_bit(jzgc, GPIO_MSK, irq, true);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIMR, irq, true);
-@@ -3383,7 +3407,7 @@ static void ingenic_gpio_irq_unmask(struct irq_data *irqd)
- 	struct ingenic_gpio_chip *jzgc = gpiochip_get_data(gc);
- 	int irq = irqd->hwirq;
- 
--	if (jzgc->jzpc->info->version >= ID_JZ4740)
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
- 		ingenic_gpio_set_bit(jzgc, GPIO_MSK, irq, false);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIMR, irq, false);
-@@ -3395,9 +3419,9 @@ static void ingenic_gpio_irq_enable(struct irq_data *irqd)
- 	struct ingenic_gpio_chip *jzgc = gpiochip_get_data(gc);
- 	int irq = irqd->hwirq;
- 
--	if (jzgc->jzpc->info->version >= ID_JZ4770)
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, true);
--	else if (jzgc->jzpc->info->version >= ID_JZ4740)
-+	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
- 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, true);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, true);
-@@ -3413,9 +3437,9 @@ static void ingenic_gpio_irq_disable(struct irq_data *irqd)
- 
- 	ingenic_gpio_irq_mask(irqd);
- 
--	if (jzgc->jzpc->info->version >= ID_JZ4770)
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, false);
--	else if (jzgc->jzpc->info->version >= ID_JZ4740)
-+	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
- 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, false);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, false);
-@@ -3429,7 +3453,7 @@ static void ingenic_gpio_irq_ack(struct irq_data *irqd)
- 	bool high;
- 
- 	if ((irqd_get_trigger_type(irqd) == IRQ_TYPE_EDGE_BOTH) &&
--		(jzgc->jzpc->info->version < ID_X2000)) {
-+	    !is_soc_or_above(jzgc->jzpc, ID_X2000)) {
- 		/*
- 		 * Switch to an interrupt for the opposite edge to the one that
- 		 * triggered the interrupt being ACKed.
-@@ -3441,9 +3465,9 @@ static void ingenic_gpio_irq_ack(struct irq_data *irqd)
- 			irq_set_type(jzgc, irq, IRQ_TYPE_LEVEL_HIGH);
- 	}
- 
--	if (jzgc->jzpc->info->version >= ID_JZ4770)
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_FLAG, irq, false);
--	else if (jzgc->jzpc->info->version >= ID_JZ4740)
-+	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
- 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_DATA, irq, true);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPFR, irq, false);
-@@ -3468,7 +3492,7 @@ static int ingenic_gpio_irq_set_type(struct irq_data *irqd, unsigned int type)
- 		irq_set_handler_locked(irqd, handle_bad_irq);
- 	}
- 
--	if ((type == IRQ_TYPE_EDGE_BOTH) && (jzgc->jzpc->info->version < ID_X2000)) {
-+	if ((type == IRQ_TYPE_EDGE_BOTH) && !is_soc_or_above(jzgc->jzpc, ID_X2000)) {
- 		/*
- 		 * The hardware does not support interrupts on both edges. The
- 		 * best we can do is to set up a single-edge interrupt and then
-@@ -3500,9 +3524,9 @@ static void ingenic_gpio_irq_handler(struct irq_desc *desc)
- 
- 	chained_irq_enter(irq_chip, desc);
- 
--	if (jzgc->jzpc->info->version >= ID_JZ4770)
-+	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		flag = ingenic_gpio_read_reg(jzgc, JZ4770_GPIO_FLAG);
--	else if (jzgc->jzpc->info->version >= ID_JZ4740)
-+	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
- 		flag = ingenic_gpio_read_reg(jzgc, JZ4740_GPIO_FLAG);
- 	else
- 		flag = ingenic_gpio_read_reg(jzgc, JZ4730_GPIO_GPFR);
-@@ -3547,14 +3571,14 @@ static inline void ingenic_config_pin(struct ingenic_pinctrl *jzpc,
- 	unsigned int offt = pin / PINS_PER_GPIO_CHIP;
- 
- 	if (set) {
--		if (jzpc->info->version >= ID_JZ4740)
-+		if (is_soc_or_above(jzpc, ID_JZ4740))
- 			regmap_write(jzpc->map, offt * jzpc->info->reg_offset +
- 					REG_SET(reg), BIT(idx));
- 		else
- 			regmap_set_bits(jzpc->map, offt * jzpc->info->reg_offset +
- 					reg, BIT(idx));
- 	} else {
--		if (jzpc->info->version >= ID_JZ4740)
-+		if (is_soc_or_above(jzpc, ID_JZ4740))
- 			regmap_write(jzpc->map, offt * jzpc->info->reg_offset +
- 					REG_CLEAR(reg), BIT(idx));
- 		else
-@@ -3613,12 +3637,12 @@ static int ingenic_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
- 	struct ingenic_pinctrl *jzpc = jzgc->jzpc;
- 	unsigned int pin = gc->base + offset;
- 
--	if (jzpc->info->version >= ID_JZ4770) {
-+	if (is_soc_or_above(jzpc, ID_JZ4770)) {
- 		if (ingenic_get_pin_config(jzpc, pin, JZ4770_GPIO_INT) ||
- 		    ingenic_get_pin_config(jzpc, pin, JZ4770_GPIO_PAT1))
- 			return GPIO_LINE_DIRECTION_IN;
- 		return GPIO_LINE_DIRECTION_OUT;
--	} else if (jzpc->info->version == ID_JZ4730) {
-+	} else if (!is_soc_or_above(jzpc, ID_JZ4740)) {
- 		if (!ingenic_get_pin_config(jzpc, pin, JZ4730_GPIO_GPDIR))
- 			return GPIO_LINE_DIRECTION_IN;
- 		return GPIO_LINE_DIRECTION_OUT;
-@@ -3669,18 +3693,18 @@ static int ingenic_pinmux_set_pin_fn(struct ingenic_pinctrl *jzpc,
- 	dev_dbg(jzpc->dev, "set pin P%c%u to function %u\n",
- 			'A' + offt, idx, func);
- 
--	if (jzpc->info->version >= ID_X1000) {
-+	if (is_soc_or_above(jzpc, ID_X1000)) {
- 		ingenic_shadow_config_pin(jzpc, pin, JZ4770_GPIO_INT, false);
- 		ingenic_shadow_config_pin(jzpc, pin, GPIO_MSK, false);
- 		ingenic_shadow_config_pin(jzpc, pin, JZ4770_GPIO_PAT1, func & 0x2);
- 		ingenic_shadow_config_pin(jzpc, pin, JZ4770_GPIO_PAT0, func & 0x1);
- 		ingenic_shadow_config_pin_load(jzpc, pin);
--	} else if (jzpc->info->version >= ID_JZ4770) {
-+	} else if (is_soc_or_above(jzpc, ID_JZ4770)) {
- 		ingenic_config_pin(jzpc, pin, JZ4770_GPIO_INT, false);
- 		ingenic_config_pin(jzpc, pin, GPIO_MSK, false);
- 		ingenic_config_pin(jzpc, pin, JZ4770_GPIO_PAT1, func & 0x2);
- 		ingenic_config_pin(jzpc, pin, JZ4770_GPIO_PAT0, func & 0x1);
--	} else if (jzpc->info->version >= ID_JZ4740) {
-+	} else if (is_soc_or_above(jzpc, ID_JZ4740)) {
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_FUNC, true);
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_TRIG, func & 0x2);
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_SELECT, func & 0x1);
-@@ -3738,16 +3762,16 @@ static int ingenic_pinmux_gpio_set_direction(struct pinctrl_dev *pctldev,
- 	dev_dbg(pctldev->dev, "set pin P%c%u to %sput\n",
- 			'A' + offt, idx, input ? "in" : "out");
- 
--	if (jzpc->info->version >= ID_X1000) {
-+	if (is_soc_or_above(jzpc, ID_X1000)) {
- 		ingenic_shadow_config_pin(jzpc, pin, JZ4770_GPIO_INT, false);
- 		ingenic_shadow_config_pin(jzpc, pin, GPIO_MSK, true);
- 		ingenic_shadow_config_pin(jzpc, pin, JZ4770_GPIO_PAT1, input);
- 		ingenic_shadow_config_pin_load(jzpc, pin);
--	} else if (jzpc->info->version >= ID_JZ4770) {
-+	} else if (is_soc_or_above(jzpc, ID_JZ4770)) {
- 		ingenic_config_pin(jzpc, pin, JZ4770_GPIO_INT, false);
- 		ingenic_config_pin(jzpc, pin, GPIO_MSK, true);
- 		ingenic_config_pin(jzpc, pin, JZ4770_GPIO_PAT1, input);
--	} else if (jzpc->info->version >= ID_JZ4740) {
-+	} else if (is_soc_or_above(jzpc, ID_JZ4740)) {
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_SELECT, false);
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_DIR, !input);
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_FUNC, false);
-@@ -3779,7 +3803,7 @@ static int ingenic_pinconf_get(struct pinctrl_dev *pctldev,
- 	unsigned int bias, reg;
- 	bool pull, pullup, pulldown;
- 
--	if (jzpc->info->version >= ID_X2000) {
-+	if (is_soc_or_above(jzpc, ID_X2000)) {
- 		pullup = ingenic_get_pin_config(jzpc, pin, X2000_GPIO_PEPU) &&
- 				!ingenic_get_pin_config(jzpc, pin, X2000_GPIO_PEPD) &&
- 				(jzpc->info->pull_ups[offt] & BIT(idx));
-@@ -3787,7 +3811,7 @@ static int ingenic_pinconf_get(struct pinctrl_dev *pctldev,
- 				!ingenic_get_pin_config(jzpc, pin, X2000_GPIO_PEPU) &&
- 				(jzpc->info->pull_downs[offt] & BIT(idx));
- 
--	} else if (jzpc->info->version >= ID_X1830) {
-+	} else if (is_soc_or_above(jzpc, ID_X1830)) {
- 		unsigned int half = PINS_PER_GPIO_CHIP / 2;
- 		unsigned int idxh = (pin % half) * 2;
- 
-@@ -3804,9 +3828,9 @@ static int ingenic_pinconf_get(struct pinctrl_dev *pctldev,
- 		pulldown = (bias == GPIO_PULL_DOWN) && (jzpc->info->pull_downs[offt] & BIT(idx));
- 
- 	} else {
--		if (jzpc->info->version >= ID_JZ4770)
-+		if (is_soc_or_above(jzpc, ID_JZ4770))
- 			pull = !ingenic_get_pin_config(jzpc, pin, JZ4770_GPIO_PEN);
--		else if (jzpc->info->version >= ID_JZ4740)
-+		else if (is_soc_or_above(jzpc, ID_JZ4740))
- 			pull = !ingenic_get_pin_config(jzpc, pin, JZ4740_GPIO_PULL_DIS);
- 		else
- 			pull = ingenic_get_pin_config(jzpc, pin, JZ4730_GPIO_GPPUR);
-@@ -3835,9 +3859,9 @@ static int ingenic_pinconf_get(struct pinctrl_dev *pctldev,
- 		break;
- 
- 	case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
--		if (jzpc->info->version >= ID_X2000)
-+		if (is_soc_or_above(jzpc, ID_X2000))
- 			reg = X2000_GPIO_SMT;
--		else if (jzpc->info->version >= ID_X1830)
-+		else if (is_soc_or_above(jzpc, ID_X1830))
- 			reg = X1830_GPIO_SMT;
- 		else
- 			return -EINVAL;
-@@ -3846,9 +3870,9 @@ static int ingenic_pinconf_get(struct pinctrl_dev *pctldev,
- 		break;
- 
- 	case PIN_CONFIG_SLEW_RATE:
--		if (jzpc->info->version >= ID_X2000)
-+		if (is_soc_or_above(jzpc, ID_X2000))
- 			reg = X2000_GPIO_SR;
--		else if (jzpc->info->version >= ID_X1830)
-+		else if (is_soc_or_above(jzpc, ID_X1830))
- 			reg = X1830_GPIO_SR;
- 		else
- 			return -EINVAL;
-@@ -3867,7 +3891,7 @@ static int ingenic_pinconf_get(struct pinctrl_dev *pctldev,
- static void ingenic_set_bias(struct ingenic_pinctrl *jzpc,
- 		unsigned int pin, unsigned int bias)
- {
--	if (jzpc->info->version >= ID_X2000) {
-+	if (is_soc_or_above(jzpc, ID_X2000)) {
- 		switch (bias) {
- 		case GPIO_PULL_UP:
- 			ingenic_config_pin(jzpc, pin, X2000_GPIO_PEPD, false);
-@@ -3885,7 +3909,7 @@ static void ingenic_set_bias(struct ingenic_pinctrl *jzpc,
- 			ingenic_config_pin(jzpc, pin, X2000_GPIO_PEPD, false);
- 		}
- 
--	} else if (jzpc->info->version >= ID_X1830) {
-+	} else if (is_soc_or_above(jzpc, ID_X1830)) {
- 		unsigned int idx = pin % PINS_PER_GPIO_CHIP;
- 		unsigned int half = PINS_PER_GPIO_CHIP / 2;
- 		unsigned int idxh = (pin % half) * 2;
-@@ -3903,9 +3927,9 @@ static void ingenic_set_bias(struct ingenic_pinctrl *jzpc,
- 					REG_SET(X1830_GPIO_PEH), bias << idxh);
- 		}
- 
--	} else if (jzpc->info->version >= ID_JZ4770) {
-+	} else if (is_soc_or_above(jzpc, ID_JZ4770)) {
- 		ingenic_config_pin(jzpc, pin, JZ4770_GPIO_PEN, !bias);
--	} else if (jzpc->info->version >= ID_JZ4740) {
-+	} else if (is_soc_or_above(jzpc, ID_JZ4740)) {
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_PULL_DIS, !bias);
- 	} else {
- 		ingenic_config_pin(jzpc, pin, JZ4730_GPIO_GPPUR, bias);
-@@ -3915,7 +3939,7 @@ static void ingenic_set_bias(struct ingenic_pinctrl *jzpc,
- static void ingenic_set_schmitt_trigger(struct ingenic_pinctrl *jzpc,
- 		unsigned int pin, bool enable)
- {
--	if (jzpc->info->version >= ID_X2000)
-+	if (is_soc_or_above(jzpc, ID_X2000))
- 		ingenic_config_pin(jzpc, pin, X2000_GPIO_SMT, enable);
- 	else
- 		ingenic_config_pin(jzpc, pin, X1830_GPIO_SMT, enable);
-@@ -3924,9 +3948,9 @@ static void ingenic_set_schmitt_trigger(struct ingenic_pinctrl *jzpc,
- static void ingenic_set_output_level(struct ingenic_pinctrl *jzpc,
- 				     unsigned int pin, bool high)
- {
--	if (jzpc->info->version >= ID_JZ4770)
-+	if (is_soc_or_above(jzpc, ID_JZ4770))
- 		ingenic_config_pin(jzpc, pin, JZ4770_GPIO_PAT0, high);
--	else if (jzpc->info->version >= ID_JZ4740)
-+	else if (is_soc_or_above(jzpc, ID_JZ4740))
- 		ingenic_config_pin(jzpc, pin, JZ4740_GPIO_DATA, high);
- 	else
- 		ingenic_config_pin(jzpc, pin, JZ4730_GPIO_DATA, high);
-@@ -3935,7 +3959,7 @@ static void ingenic_set_output_level(struct ingenic_pinctrl *jzpc,
- static void ingenic_set_slew_rate(struct ingenic_pinctrl *jzpc,
- 		unsigned int pin, unsigned int slew)
- {
--	if (jzpc->info->version >= ID_X2000)
-+	if (is_soc_or_above(jzpc, ID_X2000))
- 		ingenic_config_pin(jzpc, pin, X2000_GPIO_SR, slew);
- 	else
- 		ingenic_config_pin(jzpc, pin, X1830_GPIO_SR, slew);
-@@ -3991,7 +4015,7 @@ static int ingenic_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 			break;
- 
- 		case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
--			if (jzpc->info->version < ID_X1830)
-+			if (!is_soc_or_above(jzpc, ID_X1830))
- 				return -EINVAL;
- 
- 			ingenic_set_schmitt_trigger(jzpc, pin, arg);
-@@ -4006,7 +4030,7 @@ static int ingenic_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 			break;
- 
- 		case PIN_CONFIG_SLEW_RATE:
--			if (jzpc->info->version < ID_X1830)
-+			if (!is_soc_or_above(jzpc, ID_X1830))
- 				return -EINVAL;
- 
- 			ingenic_set_slew_rate(jzpc, pin, arg);
--- 
-2.35.1
-
+Thanks,
+Al
