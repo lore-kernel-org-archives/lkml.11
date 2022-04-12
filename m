@@ -2,97 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7E8C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 605E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354003AbiDLM72 (ORCPT
+        id S1354813AbiDLM7d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59384 "EHLO
+        Tue, 12 Apr 2022 08:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355056AbiDLM5q (ORCPT
+        with ESMTP id S1355121AbiDLM5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:57:46 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBB9583A1;
-        Tue, 12 Apr 2022 05:31:14 -0700 (PDT)
-Received: from relay3-d.mail.gandi.net (unknown [217.70.183.195])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 215C4CF6E6;
-        Tue, 12 Apr 2022 12:22:22 +0000 (UTC)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 530E560004;
-        Tue, 12 Apr 2022 12:22:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649766138;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yYar+EZz5N7PiDMFj3b3J7ixymPwvX8499KWau8exU8=;
-        b=oapvIhjdGOscEhJufDW+Ov8FKM7b/3KQLJsXzxW+JBdJvZcIHz/Rn3A971azmySNHmlXlR
-        dTsdpG6XZzEejvt/fD/kB0Wh3n2ILRWv3CuI2akVA8g4+UwWe791zApK6fjZLVz/OAL5cB
-        r08yE0Y+enDC4q9My7eugN138dxjBSnubQEk0AociCTBUv4spDaNSoFySBk+y4ukjP6HCJ
-        a1qNz5GHmyYFDKCa0F3Imktw4t8/f6ROb34QPSVF+7XZT1ruJynINb7kL7MElrxBVSk18T
-        cKvXOUZSwB8G0w1eHijwoRGFoxrZE2X/aPJEXG7aK++8bnPkNJq8swuDu2gRsw==
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Subject: [PATCH] spi: core: Only check bits_per_word validity when explicitly provided
-Date:   Tue, 12 Apr 2022 14:22:07 +0200
-Message-Id: <20220412122207.130181-1-paul.kocialkowski@bootlin.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 12 Apr 2022 08:57:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7368459A74
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:31:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01532B81CD8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FDBAC385A5;
+        Tue, 12 Apr 2022 12:31:23 +0000 (UTC)
+Date:   Tue, 12 Apr 2022 13:31:20 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <YlVxGAHHD/j6lW3c@arm.com>
+References: <Yk7EbvYhwnQy+pAf@arm.com>
+ <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
+ <Yk8RGvF6ik34C6BO@arm.com>
+ <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
+ <Yk/6ts5sVDMDpKj3@arm.com>
+ <Yk/8QExHlggU8KgC@gondor.apana.org.au>
+ <YlVHSvkyUBXZPUr2@arm.com>
+ <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
+ <YlVOTsaTVkBOxthG@arm.com>
+ <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On SPI device probe, the core will call spi_setup in spi_add_device
-before the corresponding driver was probed. When this happens, the
-bits_per_word member of the device is not yet set by the driver,
-resulting in the default being set to 8 bits-per-word.
+On Tue, Apr 12, 2022 at 06:18:46PM +0800, Herbert Xu wrote:
+> On Tue, Apr 12, 2022 at 11:02:54AM +0100, Catalin Marinas wrote:
+> > This series does not penalise any architecture. It doesn't even make
+> > arm64 any worse than it currently is.
+> 
+> Right, the patch as it stands doesn't change anything.  However,
+> it is also broken as it stands.  As I said before, CRYPTO_MINALIGN
+> is not something that is guaranteed by the Crypto API, it is simply
+> a statement of whatever kmalloc returns.
 
-However some controllers do not support 8 bits-per-word at all, which
-results in a failure when checking the bits-per-word validity.
+I agree that CRYPTO_MINALIGN is not guaranteed by the Crypto API. What
+I'm debating is the intended use for CRYPTO_MINALIGN in some (most?) of
+the drivers. It's not just about kmalloc() but also a build-time offset
+of buffers within structures to guarantee DMA safety. This can't be
+fixed by cra_alignmask.
 
-In order to support these devices, skip the bits-per-word validity
-check when it is not explicitly provided by drivers.
+We could leave CRYPTO_MINALIGN as ARCH_KMALLOC_MINALIGN and that matches
+it being just a statement of the kmalloc() minimum alignment. But since
+it is also overloaded with the DMA in-structure offset alignment, we'd
+need a new CRYPTO_DMA_MINALIGN (and _ATTR) to annotate those structures.
+I have a suspicion there'll be fewer of the original CRYPTO_MINALIGN
+uses left, hence my approach to making this bigger from the start.
 
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
----
- drivers/spi/spi.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+There's also Ard's series introducing CRYPTO_REQ_MINALIGN while leaving
+CRYPT_MINALIGN for DMA-safe offsets (IIUC):
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 2e6d6bbeb784..563a56ce34a0 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -3518,13 +3518,18 @@ int spi_setup(struct spi_device *spi)
- 		return -EINVAL;
- 	}
- 
--	if (!spi->bits_per_word)
-+	if (!spi->bits_per_word) {
- 		spi->bits_per_word = 8;
--
--	status = __spi_validate_bits_per_word(spi->controller,
--					      spi->bits_per_word);
--	if (status)
--		return status;
-+	} else {
-+		/*
-+		 * Some controllers may not support the default 8 bits-per-word
-+		 * so only perform the check when this is explicitly provided.
-+		 */
-+		status = __spi_validate_bits_per_word(spi->controller,
-+						      spi->bits_per_word);
-+		if (status)
-+			return status;
-+	}
- 
- 	if (spi->controller->max_speed_hz &&
- 	    (!spi->max_speed_hz ||
+https://lore.kernel.org/r/20220406142715.2270256-1-ardb@kernel.org
+
+> So if kmalloc is no longer returning CRYPTO_MINALIGN-aligned
+> memory, then those drivers that need this alignment for DMA
+> will break anyway.
+
+No. As per one of my previous emails, kmalloc() will preserve the DMA
+alignment for an SoC even if smaller than CRYPTO_MINALIGN (or a new
+CRYPTO_DMA_MINALIGN). Since kmalloc() returns DMA-safe pointers and
+CRYPTO_MINALIGN (or a new CRYPTO_DMA_MINALIGN) is DMA-safe, so would an
+offset from a pointer returned by kmalloc().
+
+> If you want the Crypto API to guarantee alignment over and above
+> that returned by kmalloc, the correct way is to use cra_alignmask.
+
+For kmalloc(), this would work, but for the current CRYPTO_MINALIGN_ATTR
+uses it won't.
+
+Thanks.
+
 -- 
-2.35.1
-
+Catalin
