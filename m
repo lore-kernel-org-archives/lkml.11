@@ -2,81 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E80C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7472C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351880AbiDLHgN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
+        id S236237AbiDLHgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352185AbiDLHNg (ORCPT
+        with ESMTP id S1352161AbiDLHNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:36 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E280214026
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:54:23 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 23C6gdnT026327;
-        Tue, 12 Apr 2022 14:42:39 +0800 (GMT-8)
-        (envelope-from dylan_hung@aspeedtech.com)
-Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 12 Apr
- 2022 14:54:18 +0800
-From:   Dylan Hung <dylan_hung@aspeedtech.com>
-To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <krzk+dt@kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [PATCH v4 0/3] Add reset deassertion for Aspeed MDIO
-Date:   Tue, 12 Apr 2022 14:56:08 +0800
-Message-ID: <20220412065611.8930-1-dylan_hung@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Apr 2022 03:13:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BB014027;
+        Mon, 11 Apr 2022 23:54:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A781B81B4E;
+        Tue, 12 Apr 2022 06:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A84ACC385A6;
+        Tue, 12 Apr 2022 06:54:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746461;
+        bh=nPnF8ieIoSpabq2i+hqcSSdjOkAOC5GkThjX+q/ChqA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QKGmmZgLF3+Lix5YEnPOBHmn8h0IjRXcQ++0EkBlx+HHETB6eBkiZuuzOhgLmlGN0
+         8G4gST7xYLT4wzawc/x3ovBSbDXyRwCvlJeeXCPInfWF4ZDYcWprh2JGWPPmWnuriD
+         vkftY8VK21fe1NLO1Mh1BCQpfZsTRVg43r0pYzZ8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 014/285] drm/amd/amdgpu/amdgpu_cs: fix refcount leak of a dma_fence obj
+Date:   Tue, 12 Apr 2022 08:27:51 +0200
+Message-Id: <20220412062944.088889936@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.216]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 23C6gdnT026327
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing reset deassertion for Aspeed MDIO bus controller. The reset
-is asserted by the hardware when power-on so the driver only needs to
-deassert it. To be able to work with the old DT blobs, the reset is
-optional since it may be deasserted by the bootloader or the previous
-kernel.
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-V4:
-- use ASPEED_RESET_MII instead of hardcoding in dt-binding example
+[ Upstream commit dfced44f122c500004a48ecc8db516bb6a295a1b ]
 
-V3:
-- remove reset property from the required list of the device tree
-  bindings
-- remove "Cc: stable@vger.kernel.org" from the commit messages
-- add more description in the commit message of the dt-binding
+This issue takes place in an error path in
+amdgpu_cs_fence_to_handle_ioctl(). When `info->in.what` falls into
+default case, the function simply returns -EINVAL, forgetting to
+decrement the reference count of a dma_fence obj, which is bumped
+earlier by amdgpu_cs_get_fence(). This may result in reference count
+leaks.
 
-V2:
-- add reset property in the device tree bindings
-- add reset assertion in the error path and driver remove
+Fix it by decreasing the refcount of specific object before returning
+the error code.
 
-Dylan Hung (3):
-  dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
-  net: mdio: add reset control for Aspeed MDIO
-  ARM: dts: aspeed: add reset properties into MDIO nodes
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- .../bindings/net/aspeed,ast2600-mdio.yaml         |  5 +++++
- arch/arm/boot/dts/aspeed-g6.dtsi                  |  4 ++++
- drivers/net/mdio/mdio-aspeed.c                    | 15 ++++++++++++++-
- 3 files changed, 23 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+index 0311d799a010..894869789041 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -1510,6 +1510,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
+ 		return 0;
+ 
+ 	default:
++		dma_fence_put(fence);
+ 		return -EINVAL;
+ 	}
+ }
 -- 
-2.25.1
+2.35.1
+
+
 
