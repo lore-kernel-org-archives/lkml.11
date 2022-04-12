@@ -2,130 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 625F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243950AbiDLCJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 22:09:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
+        id S243583AbiDLCJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 22:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242379AbiDLCJV (ORCPT
+        with ESMTP id S242780AbiDLCJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 22:09:21 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8857338BF;
-        Mon, 11 Apr 2022 19:07:04 -0700 (PDT)
-Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KcpxJ1qR7zdZh4;
-        Tue, 12 Apr 2022 10:06:28 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 10:07:02 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 10:07:01 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <mkubecek@suse.cz>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>, <wangjie125@huawei.com>
-Subject: [PATCH net-next v2 3/3] net: hns3: add tx push support in hns3 ring param process
-Date:   Tue, 12 Apr 2022 10:01:21 +0800
-Message-ID: <20220412020121.14140-4-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220412020121.14140-1-huangguangbin2@huawei.com>
-References: <20220412020121.14140-1-huangguangbin2@huawei.com>
+        Mon, 11 Apr 2022 22:09:24 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A14E338BF
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:07:08 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id g11-20020a056602072b00b00645cc0735d7so10755718iox.1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:07:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=rgLhKgyYYXped5y5Egl1XGVJSyw4pIOBxrcsqBBOMPM=;
+        b=3v/o5Y7oiUl8dueJnfvD9r2vgT4g1eV12bAtkvsx9F8W/xPYPFxb+QzFm3/lRcK3LA
+         6f/S+egPyiT95+zSnXfItXDtFGJClMOnicRa5dGO38Fkck1Qzp8DqIYdyoFR1FczJY1Z
+         pjTlQ51M+Atw3P4OiFWGtP7Wf8Q0pn3O+2pFVZgDkPQJAtUQDXKm8y9Pk/Mm15C4AGx5
+         1YwBC2qgwIpWtwVYsezT6k9FvxPQPx4ybkGsboxHkrS1idrdm56S1nQ1ScmrsPG1zEPB
+         +WPPgpU7uiRrTMTcD9csR9GiIOtw87XAgh5KpRpcDZoMOvd8VaX8RUwIG/F4xcw4ZVTj
+         XxjQ==
+X-Gm-Message-State: AOAM5330VGzeSGB+QArlajCRQQUdz/UDue50p6DFh8XaBP5MxTPLX20W
+        0pmCixn3fLAzmznMzHWoGi3yaiysJWaLLD7qyQ765YKNusYX
+X-Google-Smtp-Source: ABdhPJxIQgnlTG6611QNF85mk+GE0GJsYrhE1dmIPSFt+vn4RQPBc5gWboiYalgK2FPu7DY4f5GKByS9KaJbMktyCjEYOz5HhU6T
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a05:6e02:1ba9:b0:2ca:8e77:82e1 with SMTP id
+ n9-20020a056e021ba900b002ca8e7782e1mr7327019ili.311.1649729227774; Mon, 11
+ Apr 2022 19:07:07 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 19:07:07 -0700
+In-Reply-To: <20220412015446.6243-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000098e01a05dc6b8433@google.com>
+Subject: Re: [syzbot] possible deadlock in sco_conn_del
+From:   syzbot <syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+Hello,
 
-This patch adds tx push param to hns3 ring param and adapts the set and get
-API of ring params. So users can set it by cmd ethtool -G and get it by cmd
-ethtool -g.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 33 ++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+Reported-and-tested-by: syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index f4da77452126..9f4111fd2986 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -664,6 +664,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
- 	param->tx_pending = priv->ring[0].desc_num;
- 	param->rx_pending = priv->ring[rx_queue_index].desc_num;
- 	kernel_param->rx_buf_len = priv->ring[rx_queue_index].buf_size;
-+	kernel_param->tx_push = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE,
-+					 &priv->state);
- }
- 
- static void hns3_get_pauseparam(struct net_device *netdev,
-@@ -1120,6 +1122,30 @@ static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
- 	return 0;
- }
- 
-+static int hns3_set_tx_push(struct net_device *netdev, u32 tx_push)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+	struct hnae3_handle *h = hns3_get_handle(netdev);
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
-+	u32 old_state = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+
-+	if (!test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps) && tx_push)
-+		return -EOPNOTSUPP;
-+
-+	if (tx_push == old_state)
-+		return 0;
-+
-+	netdev_dbg(netdev, "Changing tx push from %s to %s\n",
-+		   old_state ? "on" : "off", tx_push ? "on" : "off");
-+
-+	if (tx_push)
-+		set_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+	else
-+		clear_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+
-+	return 0;
-+}
-+
- static int hns3_set_ringparam(struct net_device *ndev,
- 			      struct ethtool_ringparam *param,
- 			      struct kernel_ethtool_ringparam *kernel_param,
-@@ -1139,6 +1165,10 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	if (ret)
- 		return ret;
- 
-+	ret = hns3_set_tx_push(ndev, kernel_param->tx_push);
-+	if (ret)
-+		return ret;
-+
- 	/* Hardware requires that its descriptors must be multiple of eight */
- 	new_tx_desc_num = ALIGN(param->tx_pending, HNS3_RING_BD_MULTIPLE);
- 	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
-@@ -1858,7 +1888,8 @@ static int hns3_set_tunable(struct net_device *netdev,
- 				 ETHTOOL_COALESCE_MAX_FRAMES |		\
- 				 ETHTOOL_COALESCE_USE_CQE)
- 
--#define HNS3_ETHTOOL_RING	ETHTOOL_RING_USE_RX_BUF_LEN
-+#define HNS3_ETHTOOL_RING	(ETHTOOL_RING_USE_RX_BUF_LEN |		\
-+				 ETHTOOL_RING_USE_TX_PUSH)
- 
- static int hns3_get_ts_info(struct net_device *netdev,
- 			    struct ethtool_ts_info *info)
--- 
-2.33.0
+Tested on:
 
+commit:         d12d7e1c Add linux-next specific files for 20220411
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/
+kernel config:  https://syzkaller.appspot.com/x/.config?x=58fcaf7d8df169a6
+dashboard link: https://syzkaller.appspot.com/bug?extid=b825d87fe2d043e3e652
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=13879aa8f00000
+
+Note: testing is done by a robot and is best-effort only.
