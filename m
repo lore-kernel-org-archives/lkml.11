@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 379D8C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F71C47087
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbiDLIJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        id S1356255AbiDLIJR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353672AbiDLHZv (ORCPT
+        with ESMTP id S1353649AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B1127176;
-        Tue, 12 Apr 2022 00:03:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3531727162;
+        Tue, 12 Apr 2022 00:03:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 418AC61045;
-        Tue, 12 Apr 2022 07:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EB97C385A6;
-        Tue, 12 Apr 2022 07:03:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5DE760B2E;
+        Tue, 12 Apr 2022 07:03:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB882C385A8;
+        Tue, 12 Apr 2022 07:03:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747008;
-        bh=QYtL3qHNY1I1xa0spV91JFtcnSYu9RAcJzIviIhw3Z0=;
+        s=korg; t=1649746981;
+        bh=EzKK/Wn9jXP0+oUNcaHf3bXCVHSYf6lG7D5rxxhgLLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dQxQBFWxC5S6WY8OKDRG1bjyqx0iG1FaGLjTkD7KaVVdsx0FZY/jCadpIY29kTII1
-         fLoWnBAHKwzrUCYabwGYPosQKAFMrEC7W+e/4l2/YCWvpvB3vhXwHFt/Ej+8utUWHt
-         10DPGmCu8RXUuxQKsu+ZPIEJ0pfz5hYT0gc9AE/s=
+        b=SOmzg9oRBpdTS8U/YmOb5D+SmxFQL/6OuIX29jBYqzV7RH2HMxKfPqXhiwOy7cBao
+         9dx1tAmCkD9FNXjgjNTPC+BlzSvy5lRs1H8dROB5x/PVPpN4SEvyVX3hDFOSyMt3Vw
+         ObVHZIKGNEes16lfM7C6GsWaKLwOdA1TrGz7n8FE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Denis Nikitin <denik@chromium.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 211/285] perf session: Remap buf if there is no space for event
-Date:   Tue, 12 Apr 2022 08:31:08 +0200
-Message-Id: <20220412062949.748634000@linuxfoundation.org>
+Subject: [PATCH 5.16 198/285] spi: bcm-qspi: fix MSPI only access with bcm_qspi_exec_mem_op()
+Date:   Tue, 12 Apr 2022 08:30:55 +0200
+Message-Id: <20220412062949.376401450@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -54,76 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis Nikitin <denik@chromium.org>
+From: Kamal Dasu <kdasu.kdev@gmail.com>
 
-[ Upstream commit bc21e74d4775f883ae1f542c1f1dc7205b15d925 ]
+[ Upstream commit 2c7d1b281286c46049cd22b43435cecba560edde ]
 
-If a perf event doesn't fit into remaining buffer space return NULL to
-remap buf and fetch the event again.
+This fixes case where MSPI controller is used to access spi-nor
+flash and BSPI block is not present.
 
-Keep the logic to error out on inadequate input from fuzzing.
-
-This fixes perf failing on ChromeOS (with 32b userspace):
-
-  $ perf report -v -i perf.data
-  ...
-  prefetch_event: head=0x1fffff8 event->header_size=0x30, mmap_size=0x2000000: fuzzed or compressed perf.data?
-  Error:
-  failed to process sample
-
-Fixes: 57fc032ad643ffd0 ("perf session: Avoid infinite loop when seeing invalid header.size")
-Reviewed-by: James Clark <james.clark@arm.com>
-Signed-off-by: Denis Nikitin <denik@chromium.org>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220330031130.2152327-1-denik@chromium.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 5f195ee7d830 ("spi: bcm-qspi: Implement the spi_mem interface")
+Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220328142442.7553-1-kdasu.kdev@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/session.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/spi/spi-bcm-qspi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index d8857d1b6d7c..c64953dabcf5 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -2082,6 +2082,7 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	       bool needs_swap, union perf_event *error)
- {
- 	union perf_event *event;
-+	u16 event_size;
+diff --git a/drivers/spi/spi-bcm-qspi.c b/drivers/spi/spi-bcm-qspi.c
+index 44744c55304e..c943908e5281 100644
+--- a/drivers/spi/spi-bcm-qspi.c
++++ b/drivers/spi/spi-bcm-qspi.c
+@@ -1173,7 +1173,7 @@ static int bcm_qspi_exec_mem_op(struct spi_mem *mem,
+ 	addr = op->addr.val;
+ 	len = op->data.nbytes;
  
- 	/*
- 	 * Ensure we have enough space remaining to read
-@@ -2094,15 +2095,23 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
+-	if (bcm_qspi_bspi_ver_three(qspi) == true) {
++	if (has_bspi(qspi) && bcm_qspi_bspi_ver_three(qspi) == true) {
+ 		/*
+ 		 * The address coming into this function is a raw flash offset.
+ 		 * But for BSPI <= V3, we need to convert it to a remapped BSPI
+@@ -1192,7 +1192,7 @@ static int bcm_qspi_exec_mem_op(struct spi_mem *mem,
+ 	    len < 4)
+ 		mspi_read = true;
  
--	if (head + event->header.size <= mmap_size)
-+	event_size = event->header.size;
-+	if (head + event_size <= mmap_size)
- 		return event;
+-	if (mspi_read)
++	if (!has_bspi(qspi) || mspi_read)
+ 		return bcm_qspi_mspi_exec_mem_op(spi, op);
  
- 	/* We're not fetching the event so swap back again */
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
- 
--	pr_debug("%s: head=%#" PRIx64 " event->header_size=%#x, mmap_size=%#zx:"
--		 " fuzzed or compressed perf.data?\n",__func__, head, event->header.size, mmap_size);
-+	/* Check if the event fits into the next mmapped buf. */
-+	if (event_size <= mmap_size - head % page_size) {
-+		/* Remap buf and fetch again. */
-+		return NULL;
-+	}
-+
-+	/* Invalid input. Event size should never exceed mmap_size. */
-+	pr_debug("%s: head=%#" PRIx64 " event->header.size=%#x, mmap_size=%#zx:"
-+		 " fuzzed or compressed perf.data?\n", __func__, head, event_size, mmap_size);
- 
- 	return error;
- }
+ 	ret = bcm_qspi_bspi_set_mode(qspi, op, 0);
 -- 
 2.35.1
 
