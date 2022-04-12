@@ -2,87 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F586C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC18C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350280AbiDLGkv (ORCPT
+        id S1349970AbiDLGlB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
+        Tue, 12 Apr 2022 02:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350550AbiDLGiK (ORCPT
+        with ESMTP id S1350554AbiDLGiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:38:10 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9783017E21;
-        Mon, 11 Apr 2022 23:34:51 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id z128so16332237pgz.2;
-        Mon, 11 Apr 2022 23:34:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O0xn7fbBcfT9ZD65i3XI8WVPw6/lQKVr1FVvFfZdFfU=;
-        b=ktKo1J5UX6I2KIr8lxRUOoE587v4xaDAo8VO52e3yvPJJoqc5W5+3QHrgIMlLumTqm
-         qSoLi/ZoqlOQ62mMZua6v1ztNiMHuCo5rOVZ5R3GWCVAXmQ0TdJWu1tjEja76btfROew
-         je1yMBOKUXqD17AA+u7+vqLDB1VwzUYN9Hoi/r6wLQYvMS9Vf4M1rUipBzfHjYivCBME
-         f6RW3dQ8+fgjK9/aFuJ99E/Fh2zV+aLbGNMUJfLLV3dZ8pFPiOoarMksILlJnxbFB97l
-         HDqnpGDHt+u5dnWIgxKaQfxRZd6O/u9etDxqR4BrKji7UPGdIv/aPHSdkpiSyZnqiLdC
-         KdjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O0xn7fbBcfT9ZD65i3XI8WVPw6/lQKVr1FVvFfZdFfU=;
-        b=J6/6VGtm0HCaaoj20Ld9M0D8TEIksqm5ZrzqD2R4SFnRUOkywTXj4OfQbOfpjPX0bc
-         5TpDjIQbjRj+RjLV3K4hlFtnI+WuCssyIXlbUZoUEdAsFl3mP3wLHtjKxqfMJaVhmc5M
-         pTwyUZPG8/GIJXQyIEgZywRXJ+ubXUJfyPspJ9swEi9zQckFdo9d26A7JPKKge+eMOeq
-         gJaRA6sSfakkJLZRncgAWkGdVi9PUZIisnV+zIlT0mL0KRmMjTGCg7Bfva1bRLIkzfof
-         8Fy+i3pofAWz05jSIQmSe48hhiPv2OfFyeh+TUpUcGwj19KBgi3cD5N6031mMWocU9Sp
-         PkoA==
-X-Gm-Message-State: AOAM53043pgmrrHH+wrfs++5Kcz2MT7fHS6EmDvQ3srAXQ8EAwp7ch3H
-        1MsHCbFzw7VRZaLZIIAxDgcX11GSyFn3YhciEbK4xMW6lTgwu/M=
-X-Google-Smtp-Source: ABdhPJwOC/K9SGVkUC2meA5MdUIXSRC7mUdRZxdon0F+Xn1g35vHqqoyQnulcMAGBDbgykn2BNjeSg8eKKFXiDcpIhs=
-X-Received: by 2002:a05:6a00:18a5:b0:505:c080:a4e0 with SMTP id
- x37-20020a056a0018a500b00505c080a4e0mr9065116pfh.2.1649745291160; Mon, 11 Apr
- 2022 23:34:51 -0700 (PDT)
+        Tue, 12 Apr 2022 02:38:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BA917E26;
+        Mon, 11 Apr 2022 23:34:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1116DB81B3B;
+        Tue, 12 Apr 2022 06:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C875C385A1;
+        Tue, 12 Apr 2022 06:34:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649745290;
+        bh=1Y+jWBsFsxPIvqeoXYYzHzM+nAiT96cu7eEOn+LWTpA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kVhb5Z/3zgAmvYgPxDIaRtZYH321tgRs9VutqHontK4othUukUga0uVoL2c4OUf9V
+         I715/oVsD4pCZEq7pI44C/0qEjKJ9s0r/DxNsa/FXlfSl7wYh3hqUNQ/v9s16gojS8
+         WrBJOs+uwNQSua2/3yjD9Fb58H5wvKgTSP9lIUS8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Juergen E. Fischer" <fischer@norbit.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 046/171] scsi: aha152x: Fix aha152x_setup() __setup handler return value
+Date:   Tue, 12 Apr 2022 08:28:57 +0200
+Message-Id: <20220412062929.220503548@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
+References: <20220412062927.870347203@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CAMhUBjkVME8D5KsHvT=uddBsW_Bh6wr7qeXS=UpQD4LgPmHffQ@mail.gmail.com>
- <05433153-0424-ab66-1573-993d0490c5bc@opensource.wdc.com>
-In-Reply-To: <05433153-0424-ab66-1573-993d0490c5bc@opensource.wdc.com>
-From:   Zheyu Ma <zheyuma97@gmail.com>
-Date:   Tue, 12 Apr 2022 14:34:40 +0800
-Message-ID: <CAMhUBj=JsiHnnQzrqPKzA=Z2+589Ju_HE0cFKyon58Fk0waeAQ@mail.gmail.com>
-Subject: Re: [BUG] ata: pata_marvell: Warning when probing the module
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>, linux-ide@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 7:53 AM Damien Le Moal
-<damien.lemoal@opensource.wdc.com> wrote:
->
-> On 4/10/22 15:30, Zheyu Ma wrote:
-> > Hello,
-> >
-> > I found a bug in the pata_marvell module.
-> > When probing the driver, it seems to trigger the error path and
-> > executes the function marvell_cable_detect(), but the
-> > 'ap->ioaddr.bmdma_addr' is not initialized, which causes a warning.
->
-> I do not have this hardware so I cannot debug this. Please debug it and
-> send a patch. bmdma_addr is normally set in ata_pci_bmdma_init(), but some
-> drivers set it manually in their probe functions. No idea about the
-> marvell driver, I have not checked it.
+From: Randy Dunlap <rdunlap@infradead.org>
 
-To be honest I don't have a good solution to this problem, because
-other drivers don't have similar behavior. The marvell driver doesn't
-even initialize 'bmdma_addr' before calling 'cable_detect'.
+[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
 
-So a simple idea I have is to check if 'bmdma_addr' is 0 before
-reading it and if so return the error code ATA_CBL_NONE.
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; doing so just pollutes init's
+environment with strings that are not init arguments/parameters).
 
-Zheyu Ma
+Return 1 from aha152x_setup() to indicate that the boot option has been
+handled.
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
+Cc: "Juergen E. Fischer" <fischer@norbit.de>
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/aha152x.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
+index d8e19afa7a14..c6607c4686bb 100644
+--- a/drivers/scsi/aha152x.c
++++ b/drivers/scsi/aha152x.c
+@@ -3367,13 +3367,11 @@ static int __init aha152x_setup(char *str)
+ 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
+ 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
+ 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
+-	if (ints[0] > 8) {                                                /*}*/
++	if (ints[0] > 8)
+ 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
+ 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
+-	} else {
++	else
+ 		setup_count++;
+-		return 0;
+-	}
+ 
+ 	return 1;
+ }
+-- 
+2.35.1
+
+
+
