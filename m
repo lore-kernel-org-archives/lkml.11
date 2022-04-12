@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CACC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D716C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350758AbiDLGwD (ORCPT
+        id S1350979AbiDLGwG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39498 "EHLO
+        Tue, 12 Apr 2022 02:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349647AbiDLGpi (ORCPT
+        with ESMTP id S231807AbiDLGqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:45:38 -0400
+        Tue, 12 Apr 2022 02:46:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65E05FB3;
-        Mon, 11 Apr 2022 23:39:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E697186EA;
+        Mon, 11 Apr 2022 23:39:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C3AEB81B4F;
-        Tue, 12 Apr 2022 06:39:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBED4C385A6;
-        Tue, 12 Apr 2022 06:39:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25BC2B81B49;
+        Tue, 12 Apr 2022 06:39:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D35AC385A1;
+        Tue, 12 Apr 2022 06:39:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745544;
-        bh=t5LAneBW0xwJksceGW3NDKuV1HAHZgjMgjUcEloWtU8=;
+        s=korg; t=1649745549;
+        bh=ycNbP5gI6Zk4pCC5a1+xamVVZvXItqec6nhaQNdutQk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=04sXqNVgIj1FRBilrMD/1U4R0kROaSOZAHsEHWYKUSdnkcdtcJ8jUDY2593b/Bw4/
-         TPCwaEtxbDQ83Fgl0qyJX51w1jZ4niI9P8N6fRr/47sA3S0XHr5b9TQzg55w9dnqWp
-         nhPkvoFHCqHUEWOqljFw6jWQYlvVaytNbKO3amBs=
+        b=GRCZrGKlhLs6O+rVVFI2fFR8RNJuf68qZ6SCFjnR7+CtnEJyLV58jWj3fOxKtgFj2
+         NmqJq/vyFZiYveQoZ5g2EFuq+VcYO+ABNNemyFD8iLxAf/92dv/iGVLP0WhP8sZYEH
+         2sE6BJk+EWh9acGvQOyLA+ixIGb4qPRr5T6CjH9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 115/171] ice: Do not skip not enabled queues in ice_vc_dis_qs_msg
-Date:   Tue, 12 Apr 2022 08:30:06 +0200
-Message-Id: <20220412062931.212987496@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Chanho Park <chanho61.park@samsung.com>
+Subject: [PATCH 5.10 134/171] arm64: Add part number for Arm Cortex-A78AE
+Date:   Tue, 12 Apr 2022 08:30:25 +0200
+Message-Id: <20220412062931.763362863@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -54,80 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Chanho Park <chanho61.park@samsung.com>
 
-[ Upstream commit 05ef6813b234db3196f083b91db3963f040b65bb ]
+commit 83bea32ac7ed37bbda58733de61fc9369513f9f9 upstream.
 
-Disable check for queue being enabled in ice_vc_dis_qs_msg, because
-there could be a case when queues were created, but were not enabled.
-We still need to delete those queues.
+Add the MIDR part number info for the Arm Cortex-A78AE[1] and add it to
+spectre-BHB affected list[2].
 
-Normal workflow for VF looks like:
-Enable path:
-VIRTCHNL_OP_ADD_ETH_ADDR (opcode 10)
-VIRTCHNL_OP_CONFIG_VSI_QUEUES (opcode 6)
-VIRTCHNL_OP_ENABLE_QUEUES (opcode 8)
+[1]: https://developer.arm.com/Processors/Cortex-A78AE
+[2]: https://developer.arm.com/Arm%20Security%20Center/Spectre-BHB
 
-Disable path:
-VIRTCHNL_OP_DISABLE_QUEUES (opcode 9)
-VIRTCHNL_OP_DEL_ETH_ADDR (opcode 11)
-
-The issue appears only in stress conditions when VF is enabled and
-disabled very fast.
-Eventually there will be a case, when queues are created by
-VIRTCHNL_OP_CONFIG_VSI_QUEUES, but are not enabled by
-VIRTCHNL_OP_ENABLE_QUEUES.
-In turn, these queues are not deleted by VIRTCHNL_OP_DISABLE_QUEUES,
-because there is a check whether queues are enabled in
-ice_vc_dis_qs_msg.
-
-When we bring up the VF again, we will see the "Failed to set LAN Tx queue
-context" error during VIRTCHNL_OP_CONFIG_VSI_QUEUES step. This
-happens because old 16 queues were not deleted and VF requests to create
-16 more, but ice_sched_get_free_qparent in ice_ena_vsi_txq would fail to
-find a parent node for first newly requested queue (because all nodes
-are allocated to 16 old queues).
-
-Testing Hints:
-
-Just enable and disable VF fast enough, so it would be disabled before
-reaching VIRTCHNL_OP_ENABLE_QUEUES.
-
-while true; do
-        ip link set dev ens785f0v0 up
-        sleep 0.065 # adjust delay value for you machine
-        ip link set dev ens785f0v0 down
-done
-
-Fixes: 77ca27c41705 ("ice: add support for virtchnl_queue_select.[tx|rx]_queues bitmap")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Signed-off-by: Chanho Park <chanho61.park@samsung.com>
+Link: https://lore.kernel.org/r/20220407091128.8700-1-chanho61.park@samsung.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/cputype.h |    2 ++
+ arch/arm64/kernel/proton-pack.c  |    1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 5134342ff70f..a980d337861d 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -2723,9 +2723,9 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
- 				goto error_param;
- 			}
- 
--			/* Skip queue if not enabled */
- 			if (!test_bit(vf_q_id, vf->txq_ena))
--				continue;
-+				dev_dbg(ice_pf_to_dev(vsi->back), "Queue %u on VSI %u is not enabled, but stopping it anyway\n",
-+					vf_q_id, vsi->vsi_num);
- 
- 			ice_fill_txq_meta(vsi, ring, &txq_meta);
- 
--- 
-2.35.1
-
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -75,6 +75,7 @@
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
+ #define ARM_CPU_PART_NEOVERSE_V1	0xD40
+ #define ARM_CPU_PART_CORTEX_A78		0xD41
++#define ARM_CPU_PART_CORTEX_A78AE	0xD42
+ #define ARM_CPU_PART_CORTEX_X1		0xD44
+ #define ARM_CPU_PART_CORTEX_A510	0xD46
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
+@@ -123,6 +124,7 @@
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
+ #define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
+ #define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
++#define MIDR_CORTEX_A78AE	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78AE)
+ #define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
+ #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -861,6 +861,7 @@ u8 spectre_bhb_loop_affected(int scope)
+ 	if (scope == SCOPE_LOCAL_CPU) {
+ 		static const struct midr_range spectre_bhb_k32_list[] = {
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78AE),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
 
 
