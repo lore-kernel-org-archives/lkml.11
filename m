@@ -2,150 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCABC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A184C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357704AbiDLQgD (ORCPT
+        id S1354878AbiDLQiw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
+        Tue, 12 Apr 2022 12:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351070AbiDLQgA (ORCPT
+        with ESMTP id S1351032AbiDLQis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:36:00 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEF65E774;
-        Tue, 12 Apr 2022 09:33:36 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CGPGkJ012260;
-        Tue, 12 Apr 2022 16:33:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to; s=pp1;
- bh=c9kdWw+POzaQW+fleidcvusNLGMoZpz2IqM3kYRaRSg=;
- b=FHG1G18Bs+P8aVfQEPV5AOxQ0Kp+5HIFLBoKAXJl7UfdS6MHzxFJVkZoqaoK+6AaamE3
- j4fNq1sILZ8AsrMYmj7rwMsGSlc41949zI/nZldEo5Tl69yoMAA9BdbO9cgtC/vyjTE2
- gbrXHJvO+9o/YqqUuYh0Ybol8YGhCga50F4NLxNCk5nMz431wFng4HBrZ9AbUg5b/RFR
- jqdvhxecLOymI6BDlUgCHnZ5eBlt9jAxYANwkvZb5AIPk69eI6tm/YeAQHLvUKiaetsA
- W3KOLH2fTKslTF1GQfkW5/QuisTNLeaprgYq555+SlNSJ2GHdoURXyX1JysqxGyaRr0m fQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3fdcx786us-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 16:33:29 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CGPY5R012890;
-        Tue, 12 Apr 2022 16:33:29 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3fdcx786tq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 16:33:29 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CGGDri006815;
-        Tue, 12 Apr 2022 16:33:27 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fb1dj582r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 16:33:27 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CGXN3O43974992
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Apr 2022 16:33:23 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D8D57AE04D;
-        Tue, 12 Apr 2022 16:33:23 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 442C6AE045;
-        Tue, 12 Apr 2022 16:33:19 +0000 (GMT)
-Received: from smtpclient.apple (unknown [9.163.3.143])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 12 Apr 2022 16:33:18 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH v2 0/4] Fix perf bench numa, futex and epoll to work with
- machines having #CPUs > 1K
-From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-In-Reply-To: <YlG/1cegJ3Fh/zj/@kernel.org>
-Date:   Tue, 12 Apr 2022 22:03:14 +0530
-Cc:     Ian Rogers <irogers@google.com>, maddy@linux.vnet.ibm.com,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Nageswara Sastry <rnsastry@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        kajoljain <kjain@linux.ibm.com>, disgoel@linux.vnet.ibm.com,
-        linuxppc-dev@lists.ozlabs.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <64B99006-B94E-485E-8382-91E50244A5E4@linux.vnet.ibm.com>
-References: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
- <YlGmAd3LEh9He6Pg@kernel.org> <YlG/1cegJ3Fh/zj/@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: iBl1BFr_njItt3Pb-ald9kpXGlfMjtih
-X-Proofpoint-ORIG-GUID: wPH9ZGI864VHPwR9yJmIplFR6L0lQuno
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 phishscore=0
- spamscore=0 malwarescore=0 mlxlogscore=999 priorityscore=1501
- suspectscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0 mlxscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204120079
+        Tue, 12 Apr 2022 12:38:48 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C12718B14
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649781390; x=1681317390;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8zmapAeyFTtKr42ftB7igvZstrLdaQa5K0dOWyaPelI=;
+  b=YM1mZUqE8lHoUjx6D2LgEdz24BbamrH1L7GuInh7Tpmz0xQA9AbV7GEr
+   MUpqJTgW96TChZJezH1kdJtRz9JRDm/AX+CU3KXqnYbBw03vGYYybxDEN
+   aIYytz7i3tmYWCIFkpytycL5gTi/lR9pnX/YzpHRkO5+RXygBj3rLGmDj
+   0l8J1Fc5K8bE7jsjPr/hCU1MpWmMiJxvohj7UMDEOpuDv9FpT+HhZPhoe
+   W5c6qHkDVZ4dqHWIJBh4hoT/eXbn0/dY1DUbfw12WYqLvJbBs1kRs0Izd
+   QoCLJ7ef6FH0CoLkSSPjKJsgkvHfbWI8KV5Opg3eqxy5bKSEMHrMZWpam
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="244314849"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="244314849"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:29:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="590393310"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 12 Apr 2022 09:29:27 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neJOQ-0002zk-UN;
+        Tue, 12 Apr 2022 16:29:26 +0000
+Date:   Wed, 13 Apr 2022 00:28:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com, jasowang@redhat.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, si-wei.liu@oracle.com,
+        Eli Cohen <elic@nvidia.com>
+Subject: Re: [PATCH v2 1/2] vdpa: Add support for querying vendor statistics
+Message-ID: <202204130003.fROyiuxA-lkp@intel.com>
+References: <20220412130402.46945-2-elic@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412130402.46945-2-elic@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Eli,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.18-rc2 next-20220412]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Eli-Cohen/Show-statistics-for-a-vdpa-device/20220412-212129
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
+config: i386-randconfig-a004-20220411 (https://download.01.org/0day-ci/archive/20220413/202204130003.fROyiuxA-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/813a1bf827634a8d7e148b133e2849fac37819cd
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Eli-Cohen/Show-statistics-for-a-vdpa-device/20220412-212129
+        git checkout 813a1bf827634a8d7e148b133e2849fac37819cd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/usb/typec/ drivers/vdpa/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/vdpa/vdpa.c:1122:61: warning: implicit conversion from 'int' to 's16' (aka 'short') changes value from 65535 to -1 [-Wconstant-conversion]
+           [VDPA_ATTR_DEV_QUEUE_INDEX] = NLA_POLICY_RANGE(NLA_U32, 0, 65535),
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+   include/net/netlink.h:396:9: note: expanded from macro 'NLA_POLICY_RANGE'
+           .max = _max                                     \
+                  ^~~~
+   1 warning generated.
 
 
-> On 09-Apr-2022, at 10:48 PM, Arnaldo Carvalho de Melo =
-<acme@kernel.org> wrote:
->=20
-> Em Sat, Apr 09, 2022 at 12:28:01PM -0300, Arnaldo Carvalho de Melo =
-escreveu:
->> Em Wed, Apr 06, 2022 at 11:21:09PM +0530, Athira Rajeev escreveu:
->>> The perf benchmark for collections: numa, futex and epoll
->>> hits failure in system configuration with CPU's more than 1024.
->>> These benchmarks uses "sched_getaffinity" and "sched_setaffinity"
->>> in the code to work with affinity.
->>=20
->> Applied 1-3, 4 needs some reworking and can wait for v5.19, the first =
-3
->> are fixes, so can go now.
->=20
-> Now trying to fix this:
->=20
->  26     7.89 debian:9                      : FAIL gcc version 6.3.0 =
-20170516 (Debian 6.3.0-18+deb9u1)
->    bench/numa.c: In function 'alloc_data':
->    bench/numa.c:359:6: error: 'orig_mask' may be used uninitialized in =
-this function [-Werror=3Dmaybe-uninitialized]
->      ret =3D sched_setaffinity(0, size, mask);
->      ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    bench/numa.c:409:13: note: 'orig_mask' was declared here
->      cpu_set_t *orig_mask;
->                 ^~~~~~~~~
->    cc1: all warnings being treated as errors
->    /git/perf-5.18.0-rc1/tools/build/Makefile.build:139: recipe for =
-target 'bench' failed
->    make[3]: *** [bench] Error 2
->=20
->=20
-> Happened in several distros.
+vim +1122 drivers/vdpa/vdpa.c
 
-Hi Arnaldo
+  1114	
+  1115	static const struct nla_policy vdpa_nl_policy[VDPA_ATTR_MAX + 1] = {
+  1116		[VDPA_ATTR_MGMTDEV_BUS_NAME] = { .type = NLA_NUL_STRING },
+  1117		[VDPA_ATTR_MGMTDEV_DEV_NAME] = { .type = NLA_STRING },
+  1118		[VDPA_ATTR_DEV_NAME] = { .type = NLA_STRING },
+  1119		[VDPA_ATTR_DEV_NET_CFG_MACADDR] = NLA_POLICY_ETH_ADDR,
+  1120		/* virtio spec 1.1 section 5.1.4.1 for valid MTU range */
+  1121		[VDPA_ATTR_DEV_NET_CFG_MTU] = NLA_POLICY_MIN(NLA_U16, 68),
+> 1122		[VDPA_ATTR_DEV_QUEUE_INDEX] = NLA_POLICY_RANGE(NLA_U32, 0, 65535),
+  1123	};
+  1124	
 
-Thanks for pointing it. I could be able to recreate this compile error =
-in Debian.
-The reason for this issue is variable orig_mask which is used and =
-initialised in =E2=80=9Calloc_data"
-function within if condition for "init_cpu0=E2=80=9D. We can fix this =
-issue by initialising it to NULL since
-it is accessed conditionally. I also made some changes to CPU_FREE the =
-mask in other error paths.
-I will post a V3 with these changes.
-
-Athira
-
->=20
-> - Arnaldo
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
