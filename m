@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D94AC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED46C47085
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiDLHTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46596 "EHLO
+        id S1353358AbiDLHPP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352385AbiDLHFR (ORCPT
+        with ESMTP id S1351580AbiDLG6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:05:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169A14755A;
-        Mon, 11 Apr 2022 23:48:06 -0700 (PDT)
+        Tue, 12 Apr 2022 02:58:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2312B42A3A;
+        Mon, 11 Apr 2022 23:46:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4B911CE1ACD;
-        Tue, 12 Apr 2022 06:48:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 669B3C385A1;
-        Tue, 12 Apr 2022 06:48:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B82361052;
+        Tue, 12 Apr 2022 06:46:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 543DCC385A1;
+        Tue, 12 Apr 2022 06:46:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746082;
-        bh=aerjsHYta4p5BO75zyRyU/TcN/xKZqEZrsirsAEO+Ag=;
+        s=korg; t=1649745994;
+        bh=CjZiYILE0sMX3NvJgimakPh91VJ21TadE8S4npI1Ync=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aSjT6uMpdUXQGBB82zAPUZWkJpBt8zrDguUV8lsX9Zi02XCTf9zal0MwXJBGzn/PI
-         h4q+0lWfEFz6hIK3OBJ4U3NbgUKUcI3W0+J2ZT0xoCQsacJZUAsHG3uxZKkHm7TdYO
-         Z4bc3Wr6kQN6+41a9+76plQXeT2cZPiIARZmAq74=
+        b=SMZmW6yxoFDAHboqa6NhO04hv7emjVBjEXfpuZ8ONFtm+TJn3Yt9OVv6GNFceJsJ3
+         LvuQXAyLOs8JgvRs2FMUPbP+NCELflz45vugCzz5o+czyWTgNf9dRq82ab9G1l0QhV
+         VgmRQm3CU2l+GqerBAD8s7o0SouGRsF73ws2JfYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 155/277] vdpa/mlx5: Propagate link status from device to vdpa driver
-Date:   Tue, 12 Apr 2022 08:29:18 +0200
-Message-Id: <20220412062946.525005726@linuxfoundation.org>
+Subject: [PATCH 5.15 122/277] NFSv4: Protect the state recovery thread against direct reclaim
+Date:   Tue, 12 Apr 2022 08:28:45 +0200
+Message-Id: <20220412062945.572322487@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,174 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit edf747affc41a18ccc3a616813d4c2b6d38b46ce ]
+[ Upstream commit 3e17898aca293a24dae757a440a50aa63ca29671 ]
 
-Add code to register to hardware asynchronous events. Use this
-mechanism to track link status events coming from the device and update
-the config struct.
+If memory allocation triggers a direct reclaim from the state recovery
+thread, then we can deadlock. Use memalloc_nofs_save/restore to ensure
+that doesn't happen.
 
-After doing link status change, call the vdpa callback to notify of the
-link status change.
-
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Link: https://lore.kernel.org/r/20210909123635.30884-4-elic@nvidia.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 94 ++++++++++++++++++++++++++++++-
- 1 file changed, 92 insertions(+), 2 deletions(-)
+ fs/nfs/nfs4state.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index f769e2dc6d26..92a2484c8596 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -161,6 +161,8 @@ struct mlx5_vdpa_net {
- 	bool setup;
- 	u16 mtu;
- 	u32 cur_num_vqs;
-+	struct notifier_block nb;
-+	struct vdpa_callback config_cb;
- };
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 51f5cb41e87a..57ea63e2cdb4 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -49,6 +49,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/bitops.h>
+ #include <linux/jiffies.h>
++#include <linux/sched/mm.h>
  
- static void free_resources(struct mlx5_vdpa_net *ndev);
-@@ -1868,6 +1870,7 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
- 	ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_NET_F_CTRL_VQ);
- 	ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_NET_F_CTRL_MAC_ADDR);
- 	ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_NET_F_MQ);
-+	ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_NET_F_STATUS);
+ #include <linux/sunrpc/clnt.h>
  
- 	print_features(mvdev, ndev->mvdev.mlx_features, false);
- 	return ndev->mvdev.mlx_features;
-@@ -1980,8 +1983,10 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+@@ -2559,9 +2560,17 @@ static void nfs4_layoutreturn_any_run(struct nfs_client *clp)
  
- static void mlx5_vdpa_set_config_cb(struct vdpa_device *vdev, struct vdpa_callback *cb)
+ static void nfs4_state_manager(struct nfs_client *clp)
  {
--	/* not implemented */
--	mlx5_vdpa_warn(to_mvdev(vdev), "set config callback not supported\n");
-+	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
-+	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
++	unsigned int memflags;
+ 	int status = 0;
+ 	const char *section = "", *section_sep = "";
+ 
++	/*
++	 * State recovery can deadlock if the direct reclaim code tries
++	 * start NFS writeback. So ensure memory allocations are all
++	 * GFP_NOFS.
++	 */
++	memflags = memalloc_nofs_save();
 +
-+	ndev->config_cb = *cb;
+ 	/* Ensure exclusive access to NFSv4 state */
+ 	do {
+ 		trace_nfs4_state_mgr(clp);
+@@ -2656,6 +2665,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			clear_bit(NFS4CLNT_RECLAIM_NOGRACE, &clp->cl_state);
+ 		}
+ 
++		memalloc_nofs_restore(memflags);
+ 		nfs4_end_drain_session(clp);
+ 		nfs4_clear_state_manager_bit(clp);
+ 
+@@ -2673,6 +2683,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			return;
+ 		if (test_and_set_bit(NFS4CLNT_MANAGER_RUNNING, &clp->cl_state) != 0)
+ 			return;
++		memflags = memalloc_nofs_save();
+ 	} while (refcount_read(&clp->cl_count) > 1 && !signalled());
+ 	goto out_drain;
+ 
+@@ -2685,6 +2696,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			clp->cl_hostname, -status);
+ 	ssleep(1);
+ out_drain:
++	memalloc_nofs_restore(memflags);
+ 	nfs4_end_drain_session(clp);
+ 	nfs4_clear_state_manager_bit(clp);
  }
- 
- #define MLX5_VDPA_MAX_VQ_ENTRIES 256
-@@ -2433,6 +2438,82 @@ struct mlx5_vdpa_mgmtdev {
- 	struct mlx5_vdpa_net *ndev;
- };
- 
-+static u8 query_vport_state(struct mlx5_core_dev *mdev, u8 opmod, u16 vport)
-+{
-+	u32 out[MLX5_ST_SZ_DW(query_vport_state_out)] = {};
-+	u32 in[MLX5_ST_SZ_DW(query_vport_state_in)] = {};
-+	int err;
-+
-+	MLX5_SET(query_vport_state_in, in, opcode, MLX5_CMD_OP_QUERY_VPORT_STATE);
-+	MLX5_SET(query_vport_state_in, in, op_mod, opmod);
-+	MLX5_SET(query_vport_state_in, in, vport_number, vport);
-+	if (vport)
-+		MLX5_SET(query_vport_state_in, in, other_vport, 1);
-+
-+	err = mlx5_cmd_exec_inout(mdev, query_vport_state, in, out);
-+	if (err)
-+		return 0;
-+
-+	return MLX5_GET(query_vport_state_out, out, state);
-+}
-+
-+static bool get_link_state(struct mlx5_vdpa_dev *mvdev)
-+{
-+	if (query_vport_state(mvdev->mdev, MLX5_VPORT_STATE_OP_MOD_VNIC_VPORT, 0) ==
-+	    VPORT_STATE_UP)
-+		return true;
-+
-+	return false;
-+}
-+
-+static void update_carrier(struct work_struct *work)
-+{
-+	struct mlx5_vdpa_wq_ent *wqent;
-+	struct mlx5_vdpa_dev *mvdev;
-+	struct mlx5_vdpa_net *ndev;
-+
-+	wqent = container_of(work, struct mlx5_vdpa_wq_ent, work);
-+	mvdev = wqent->mvdev;
-+	ndev = to_mlx5_vdpa_ndev(mvdev);
-+	if (get_link_state(mvdev))
-+		ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
-+	else
-+		ndev->config.status &= cpu_to_mlx5vdpa16(mvdev, ~VIRTIO_NET_S_LINK_UP);
-+
-+	if (ndev->config_cb.callback)
-+		ndev->config_cb.callback(ndev->config_cb.private);
-+
-+	kfree(wqent);
-+}
-+
-+static int event_handler(struct notifier_block *nb, unsigned long event, void *param)
-+{
-+	struct mlx5_vdpa_net *ndev = container_of(nb, struct mlx5_vdpa_net, nb);
-+	struct mlx5_eqe *eqe = param;
-+	int ret = NOTIFY_DONE;
-+	struct mlx5_vdpa_wq_ent *wqent;
-+
-+	if (event == MLX5_EVENT_TYPE_PORT_CHANGE) {
-+		switch (eqe->sub_type) {
-+		case MLX5_PORT_CHANGE_SUBTYPE_DOWN:
-+		case MLX5_PORT_CHANGE_SUBTYPE_ACTIVE:
-+			wqent = kzalloc(sizeof(*wqent), GFP_ATOMIC);
-+			if (!wqent)
-+				return NOTIFY_DONE;
-+
-+			wqent->mvdev = &ndev->mvdev;
-+			INIT_WORK(&wqent->work, update_carrier);
-+			queue_work(ndev->mvdev.wq, &wqent->work);
-+			ret = NOTIFY_OK;
-+			break;
-+		default:
-+			return NOTIFY_DONE;
-+		}
-+		return ret;
-+	}
-+	return ret;
-+}
-+
- static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name)
- {
- 	struct mlx5_vdpa_mgmtdev *mgtdev = container_of(v_mdev, struct mlx5_vdpa_mgmtdev, mgtdev);
-@@ -2477,6 +2558,11 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name)
- 	if (err)
- 		goto err_mtu;
- 
-+	if (get_link_state(mvdev))
-+		ndev->config.status |= cpu_to_mlx5vdpa16(mvdev, VIRTIO_NET_S_LINK_UP);
-+	else
-+		ndev->config.status &= cpu_to_mlx5vdpa16(mvdev, ~VIRTIO_NET_S_LINK_UP);
-+
- 	if (!is_zero_ether_addr(config->mac)) {
- 		pfmdev = pci_get_drvdata(pci_physfn(mdev->pdev));
- 		err = mlx5_mpfs_add_mac(pfmdev, config->mac);
-@@ -2508,6 +2594,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name)
- 		goto err_res2;
- 	}
- 
-+	ndev->nb.notifier_call = event_handler;
-+	mlx5_notifier_register(mdev, &ndev->nb);
- 	ndev->cur_num_vqs = 2 * mlx5_vdpa_max_qps(max_vqs);
- 	mvdev->vdev.mdev = &mgtdev->mgtdev;
- 	err = _vdpa_register_device(&mvdev->vdev, ndev->cur_num_vqs + 1);
-@@ -2538,7 +2626,9 @@ static void mlx5_vdpa_dev_del(struct vdpa_mgmt_dev *v_mdev, struct vdpa_device *
- {
- 	struct mlx5_vdpa_mgmtdev *mgtdev = container_of(v_mdev, struct mlx5_vdpa_mgmtdev, mgtdev);
- 	struct mlx5_vdpa_dev *mvdev = to_mvdev(dev);
-+	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
- 
-+	mlx5_notifier_unregister(mvdev->mdev, &ndev->nb);
- 	destroy_workqueue(mvdev->wq);
- 	_vdpa_unregister_device(dev);
- 	mgtdev->ndev = NULL;
 -- 
 2.35.1
 
