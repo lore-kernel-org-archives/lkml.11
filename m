@@ -2,118 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B783FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbiDLJlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
+        id S229840AbiDLJmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389932AbiDLJYW (ORCPT
+        with ESMTP id S1389431AbiDLJXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:24:22 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9482926ADB;
-        Tue, 12 Apr 2022 01:39:52 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id v15so11409831edb.12;
-        Tue, 12 Apr 2022 01:39:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/h7cVVserNqUb3YyYC9xHnLSaItStAPV1/7k0c5Uc38=;
-        b=oG8NoJx4rLD9iGB0rQxfTkpmikuRl+uEX+dLf92eoRrPh4Q24PCaTFMW1AFyeeivWy
-         FE8UrS0Hw5PfWqz8a0nGjS9cgQm/FJEanbo+cymkkBhKyN3LGfhZd8lQzwmV0CG0QlLu
-         JaZSRc9WIH0ciykVTxVkrKBd//oOTyAtMTswBUBR6JLNfN6luY49Bkr+2dEdP7ZBncjT
-         IfGB3ZL+tu35IfSPKXgXin7U6TV9E4mDRav9UxXaR9yjfqesOHZpqwKf/5simE2mXwvY
-         4Ra4OolPViSeDmqopUG8JLhPBFFHA9DQiQYclEksF+R2QtzOiUaErAL/FUHzWBGMGiHg
-         JhJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/h7cVVserNqUb3YyYC9xHnLSaItStAPV1/7k0c5Uc38=;
-        b=CoZj2IN6JjeFsqA4rhQt4e4OAjUi0VZvcdQXjWy0EwoAhAJYOLWNL2Bj5ZAregy8im
-         hWbxN2QlOXbXSBc6IcajWb8dWL90eYxEAX9W+SXzaCqJA/CzU5m3j79t34wp/F4PyUAp
-         Zn/Lbzx9egHOh3GmqvdtINRW/hXCxL+hH4hThXiV677O20b4sGprgDayTSLc8o4f3qP0
-         dWeq6HPlKwNs+mm3SKAwIDQbIrj0ZpzNHaPKVUzJ/ApXQo0zvgpDh2Grt4/p7+lQ15he
-         7aLCQesDBSlbQKBf8Tbt/Uuwk8CuisoTESLXjbas4lHh3+8mNmTaeS1pt3oYnLgEUOyy
-         cqPA==
-X-Gm-Message-State: AOAM531ks29yoY4nUmdtqDf+cf1OutsDnY+naNPyj3TcDrZoTe/C7835
-        2+9CmCafO1sSj9g9Juo+SGl6cXqmx1P78ZGDIKo=
-X-Google-Smtp-Source: ABdhPJz9T3JpupKlqRf7GpnslB1SuvXlu2IUplRT6C7G/KJGAAneW539NGav1r0nAc5Zm8hYK3IeM1NR9WozbXE5Nzs=
-X-Received: by 2002:a50:fe19:0:b0:41d:84be:6541 with SMTP id
- f25-20020a50fe19000000b0041d84be6541mr6395337edt.270.1649752790968; Tue, 12
- Apr 2022 01:39:50 -0700 (PDT)
+        Tue, 12 Apr 2022 05:23:45 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8A2546A4;
+        Tue, 12 Apr 2022 01:38:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649752685; x=1681288685;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QLFnvFZjCBbBm1WrCuQHfneVU5wUafBRZqi1LfvDPoE=;
+  b=mOSYN6HK4TTZts/UuOsNetTBcqvyjMVC1a0D+ojBhnMOq+qp/DfZzFbe
+   SZZd0R1XMKE2AVTGwe71xb776qGNwb/JKHiu8u5R3Gg6NEINTVeNp2nzt
+   zog34OBxVUkcZ1DyXbXlT+mGV/V5CVcd/2YY8PDelPgu0Lw9Jo+AAHdnC
+   gUKeiMmpQlNva+a/hI3RvUr84VXxCQUiecuMIMWU5fzHkZPZJev6RAIvr
+   tQDWapMylYMEFsk7JrduTu7s4GKFMcV3PPEwWbI5pAJNftVT89bqqzKc5
+   Pto7hwxOyz42XkMACv/eRIM8pxvmoe+JdGVY2NhOP5OJoScakqnP3KW07
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242257568"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="242257568"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 01:38:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="611341789"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Apr 2022 01:38:03 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neC2E-0002fc-Oa;
+        Tue, 12 Apr 2022 08:38:02 +0000
+Date:   Tue, 12 Apr 2022 16:37:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Patrick Wang <patrick.wang.shcn@gmail.com>, robh+dt@kernel.org,
+        frowand.list@gmail.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        patrick.wang.shcn@gmail.com
+Subject: Re: [PATCH] of: fdt: do not reserve memory below MIN_MEMBLOCK_ADDR
+Message-ID: <202204121637.4ZHpTqwT-lkp@intel.com>
+References: <20220412045228.35306-1-patrick.wang.shcn@gmail.com>
 MIME-Version: 1.0
-References: <CAHp75VePiCm6wH7aXcbnrt-4nntqx99s45wYk3+C2AKs=Usang@mail.gmail.com>
- <20220412070355.139507-1-andrei.lalaev@emlid.com>
-In-Reply-To: <20220412070355.139507-1-andrei.lalaev@emlid.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Apr 2022 11:35:38 +0300
-Message-ID: <CAHp75VceMuo8u5FpMvtg_YgZwEYbSJ2JCa4DXLvBRfC7c-ZAkg@mail.gmail.com>
-Subject: Re: [PATCH] gpiolib: of: fix bounds check for valid mask
-To:     Andrei Lalaev <andrei.lalaev@emlid.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412045228.35306-1-patrick.wang.shcn@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:13 AM Andrei Lalaev <andrei.lalaev@emlid.com> wrote:
-> On Mon, Apr 11, 2022 at 7:55 PM Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+Hi Patrick,
 
-...
+Thank you for the patch! Perhaps something to improve:
 
-> > On top of that, it would be nice to be sure that at least all current
-> > in-kernel users (meaning all DTS provided so far by the kernel) do
-> > interpret it as start,size.
->
-> I checked the DTS and only 36 of them use "gpio-reserved-ranges".
-> The 33 of them use tuple with the second element that is less than the first.
-> So it means that the maintainers interpreted it as "start,size".
->
-> And only 3 of them use one tuple with the second element is greater than the first.
-> The list of this DTS:
->     1. arch/arm64/boot/dts/qcom/msm8996-sony-xperia-tone.dtsi
->         AngeloGioacchino Del Regno added it in the commit 9da65e441d4d
->         ("arm64: dts: qcom: Add support for SONY Xperia X Performance / XZ / XZs (msm8996, Tone platform)")
->         But in another commit 8b36c824b9a77 ("arm64: dts: qcom: sdm630-xperia-nile: Add all RPM and fixed regulators")
->         he clearly interpreted it as "start,size" because the second element
->         is less than the first.
->
->     2. arch/arm64/boot/dts/qcom/msm8998-fxtec-pro1.dts
->         The same maintainer as for the previous DTS.
->         He added "reserved-range" in the commit 122d2c5f31b6e
->         ("arm64: dts: qcom: Add support for MSM8998 F(x)tec Pro1 QX1000")
->
->     3. arch/arm64/boot/dts/qcom/sa8155p-adp.dts
->         Bhupesh Sharma added it in the commit 12dd4ebda47ab
->         ("arm64: dts: qcom: Fix usb entries for SA8155p adp board")
->
-> Should I ask these maintainers how they interpreted this property?
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on v5.18-rc2 next-20220412]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Ideally it would be nice to have their responses. Meanwhile...
+url:    https://github.com/intel-lab-lkp/linux/commits/Patrick-Wang/of-fdt-do-not-reserve-memory-below-MIN_MEMBLOCK_ADDR/20220412-125309
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: arm-buildonly-randconfig-r006-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121637.4ZHpTqwT-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/intel-lab-lkp/linux/commit/d362274832c02bb7812c13eff968322a76f10ed3
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Patrick-Wang/of-fdt-do-not-reserve-memory-below-MIN_MEMBLOCK_ADDR/20220412-125309
+        git checkout d362274832c02bb7812c13eff968322a76f10ed3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-> > Otherwise this will be an (unacceptable) ABI change and hence documentation
-> > would need to be fixed with variable names in the code
->
-> I want you to notice that "of_gpiochip_init_valid_mask" uses "bitmap_clear"
-> that clears "nbits" bits starting from the "start". So it can't be interpreted
-> as "start,end". That's why I think everyone interprets it as "start,size" because
-> it works like "start,size" and the documentation tells it is "start,size".
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-...meanwhile try to compress above into a few sentences and put it to
-the commit message explaining that the de facto use of the values
-seems as start,size and questioned DTSes have been asked for an
-explanation from the current maintainers.
+All warnings (new ones prefixed by >>):
 
-I'm now 99% confident that your patch is correct.
-Thanks for doing all this analysis.
+>> drivers/of/fdt.c:494:4: warning: format specifies type 'unsigned long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
+                           base, phys_offset);
+                           ^~~~
+   include/linux/printk.h:499:37: note: expanded from macro 'pr_warn'
+           printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
+                                      ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   1 warning generated.
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
+   Depends on HAS_IOMEM && DRM && MMU
+   Selected by
+   - DRM_SSD130X && HAS_IOMEM && DRM
+
+
+vim +494 drivers/of/fdt.c
+
+   486	
+   487	static int __init early_init_dt_reserve_memory_arch(phys_addr_t base,
+   488						phys_addr_t size, bool nomap)
+   489	{
+   490		const u64 phys_offset = MIN_MEMBLOCK_ADDR;
+   491	
+   492		if (base < phys_offset) {
+   493			pr_warn("Ignoring reserved memory range 0x%llx - 0x%llx\n",
+ > 494				base, phys_offset);
+   495			size = (phys_offset - base) < size ?
+   496				size - (phys_offset - base) : 0;
+   497			base = phys_offset;
+   498	
+   499			if (!size)
+   500				return -EFAULT;
+   501		}
+   502	
+   503		if (nomap) {
+   504			/*
+   505			 * If the memory is already reserved (by another region), we
+   506			 * should not allow it to be marked nomap, but don't worry
+   507			 * if the region isn't memory as it won't be mapped.
+   508			 */
+   509			if (memblock_overlaps_region(&memblock.memory, base, size) &&
+   510			    memblock_is_region_reserved(base, size))
+   511				return -EBUSY;
+   512	
+   513			return memblock_mark_nomap(base, size);
+   514		}
+   515		return memblock_reserve(base, size);
+   516	}
+   517	
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
