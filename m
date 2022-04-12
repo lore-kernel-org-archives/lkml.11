@@ -2,128 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81ED1C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCD0C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353357AbiDLJSM (ORCPT
+        id S1359667AbiDLJUg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
+        Tue, 12 Apr 2022 05:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357686AbiDLHki (ORCPT
+        with ESMTP id S1356953AbiDLHjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40E61005;
-        Tue, 12 Apr 2022 00:16:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60F1261708;
-        Tue, 12 Apr 2022 07:16:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76605C385A1;
-        Tue, 12 Apr 2022 07:16:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747802;
-        bh=uyftIm97GOa/nPfrZIJfhPY3oen1ZSdn3fuNNPh3DfI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TnByObOy6iCWsCIdDckhld9DEvUZMKKgi9MpkbrOCxV8OkCBxoEFfdWknOzmwULkD
-         86RggxdyLik7XaUMeQJm0vrm8zTJbO6DZEKkZtwcSMNerC1B/B8Xhl/N1FEZ4y6E6K
-         8GewlxTtftJOlrkb/44L6TjznT5myvv+9SEpcIHk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 194/343] Drivers: hv: vmbus: Fix initialization of device object in vmbus_device_register()
-Date:   Tue, 12 Apr 2022 08:30:12 +0200
-Message-Id: <20220412062956.958068021@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:39:36 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9158289B2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:10:37 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id c1so1692839qkf.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:10:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Oakkso+e+qhsN2ZmTPlz+KXAhhWn3wzRJANvdCpqxYk=;
+        b=Q+HOoAU3/nLyYd9yfYUohPKt65udJu10tbdVwUJryH80QoNi65kxmmTeCr9w9bzzlw
+         9+CcPTMIxqaDMabg2+1y9dXeGATDuh201jif5CmGHIeqDdX0cH6DbiImoYLmwC/lc2jl
+         R/wSyhKXfQMCMUFavhPHAShEs055XqvOqGD0YXq3jA8L/pEcv1WjVETenvk1nthFTAUo
+         zismcqyOqf+cfe2yh4uTtdBlq9bnut9NBhOM0DBK2RoAZzSFxc8remZ/aznsK0JCKl+g
+         Hv/5GL8gyYCqSaLkH6Qn8hXutJ7r2UL3WIOaOwPf0iu26PdDdkLhXONNAT/cCLc8y1B8
+         p1+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Oakkso+e+qhsN2ZmTPlz+KXAhhWn3wzRJANvdCpqxYk=;
+        b=knnvF+T5uExi8fcuaDBdWNgLYR5p1Za5kyCmriZniZIEuhV5mZ1gT2SuNdie2guF7/
+         DESEXCw6yzFybdQiXDqeIkV+wrGxK07akXhqELsKQ4fJrKMSX7B9z052hy3/rnowzYSy
+         zh8baw1ilXIPu4GWkrpW/N8SWOnwcfpiRB5dl/PEmxdnG7b5tMVnNZKrxcNx1J4w40NX
+         qFYubAJyyyYybMk9gfCpfou/TqzUKhPN65fMe+Fy9uVxBJbigqPtPxAW0dTWcb1aspqd
+         IirxRlWAp33Rj8QpJSWVfs8rttWyCZk0BdOIYWRGF8NYF3C5bcycpEf0n1IWq1uCA52/
+         D5RA==
+X-Gm-Message-State: AOAM532Msf537ChEXVrLeYCLKTYawbTt1UNfpek9ya+cBOuQ0nc1CkK0
+        +0O8YfP1U3E5snRSaPCIazs=
+X-Google-Smtp-Source: ABdhPJz9HpruIk48ZvRlIQ4rkcyvLj2AR76zs2UjUSXZUe6ZnqXu1WL6aSY3Fc6MNlZTyztR5C57zw==
+X-Received: by 2002:a05:620a:2848:b0:67d:35de:bb5b with SMTP id h8-20020a05620a284800b0067d35debb5bmr2092273qkp.499.1649747436883;
+        Tue, 12 Apr 2022 00:10:36 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id f6-20020ac859c6000000b002ee0948f1aesm4653771qtf.72.2022.04.12.00.10.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 00:10:36 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     lgirdwood@gmail.com
+Cc:     broonie@kernel.org, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] regulator: stm32-vrefbuf: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Tue, 12 Apr 2022 07:10:30 +0000
+Message-Id: <20220412071030.2532230-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit 3a5469582c241abca22500f36a9cb8e9331969cf ]
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-Initialize the device's dma_{mask,parms} pointers and the device's
-dma_mask value before invoking device_register().  Address the
-following trace with 5.17-rc7:
-
-[   49.646839] WARNING: CPU: 0 PID: 189 at include/linux/dma-mapping.h:543
-	netvsc_probe+0x37a/0x3a0 [hv_netvsc]
-[   49.646928] Call Trace:
-[   49.646930]  <TASK>
-[   49.646935]  vmbus_probe+0x40/0x60 [hv_vmbus]
-[   49.646942]  really_probe+0x1ce/0x3b0
-[   49.646948]  __driver_probe_device+0x109/0x180
-[   49.646952]  driver_probe_device+0x23/0xa0
-[   49.646955]  __device_attach_driver+0x76/0xe0
-[   49.646958]  ? driver_allows_async_probing+0x50/0x50
-[   49.646961]  bus_for_each_drv+0x84/0xd0
-[   49.646964]  __device_attach+0xed/0x170
-[   49.646967]  device_initial_probe+0x13/0x20
-[   49.646970]  bus_probe_device+0x8f/0xa0
-[   49.646973]  device_add+0x41a/0x8e0
-[   49.646975]  ? hrtimer_init+0x28/0x80
-[   49.646981]  device_register+0x1b/0x20
-[   49.646983]  vmbus_device_register+0x5e/0xf0 [hv_vmbus]
-[   49.646991]  vmbus_add_channel_work+0x12d/0x190 [hv_vmbus]
-[   49.646999]  process_one_work+0x21d/0x3f0
-[   49.647002]  worker_thread+0x4a/0x3b0
-[   49.647005]  ? process_one_work+0x3f0/0x3f0
-[   49.647007]  kthread+0xff/0x130
-[   49.647011]  ? kthread_complete_and_exit+0x20/0x20
-[   49.647015]  ret_from_fork+0x22/0x30
-[   49.647020]  </TASK>
-[   49.647021] ---[ end trace 0000000000000000 ]---
-
-Fixes: 743b237c3a7b0 ("scsi: storvsc: Add Isolation VM support for storvsc driver")
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220315141053.3223-1-parri.andrea@gmail.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/hv/vmbus_drv.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/regulator/stm32-vrefbuf.c | 30 ++++++++++--------------------
+ 1 file changed, 10 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 12a2b37e87f3..0a05e10ab36c 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -2097,6 +2097,10 @@ int vmbus_device_register(struct hv_device *child_device_obj)
- 	child_device_obj->device.parent = &hv_acpi_dev->dev;
- 	child_device_obj->device.release = vmbus_device_release;
+diff --git a/drivers/regulator/stm32-vrefbuf.c b/drivers/regulator/stm32-vrefbuf.c
+index 161622ea7259..30ea3bc8ca19 100644
+--- a/drivers/regulator/stm32-vrefbuf.c
++++ b/drivers/regulator/stm32-vrefbuf.c
+@@ -44,11 +44,9 @@ static int stm32_vrefbuf_enable(struct regulator_dev *rdev)
+ 	u32 val;
+ 	int ret;
  
-+	child_device_obj->device.dma_parms = &child_device_obj->dma_parms;
-+	child_device_obj->device.dma_mask = &child_device_obj->dma_mask;
-+	dma_set_mask(&child_device_obj->device, DMA_BIT_MASK(64));
-+
- 	/*
- 	 * Register with the LDM. This will kick off the driver/device
- 	 * binding...which will eventually call vmbus_match() and vmbus_probe()
-@@ -2122,9 +2126,6 @@ int vmbus_device_register(struct hv_device *child_device_obj)
- 	}
- 	hv_debug_add_dev_dir(child_device_obj);
+-	ret = pm_runtime_get_sync(priv->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->dev);
++	ret = pm_runtime_resume_and_get(priv->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
  
--	child_device_obj->device.dma_parms = &child_device_obj->dma_parms;
--	child_device_obj->device.dma_mask = &child_device_obj->dma_mask;
--	dma_set_mask(&child_device_obj->device, DMA_BIT_MASK(64));
- 	return 0;
+ 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
+ 	val = (val & ~STM32_HIZ) | STM32_ENVR;
+@@ -81,11 +79,9 @@ static int stm32_vrefbuf_disable(struct regulator_dev *rdev)
+ 	u32 val;
+ 	int ret;
  
- err_kset_unregister:
+-	ret = pm_runtime_get_sync(priv->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->dev);
++	ret = pm_runtime_resume_and_get(priv->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
+ 	val &= ~STM32_ENVR;
+@@ -102,11 +98,9 @@ static int stm32_vrefbuf_is_enabled(struct regulator_dev *rdev)
+ 	struct stm32_vrefbuf *priv = rdev_get_drvdata(rdev);
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(priv->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->dev);
++	ret = pm_runtime_resume_and_get(priv->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	ret = readl_relaxed(priv->base + STM32_VREFBUF_CSR) & STM32_ENVR;
+ 
+@@ -123,11 +117,9 @@ static int stm32_vrefbuf_set_voltage_sel(struct regulator_dev *rdev,
+ 	u32 val;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(priv->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->dev);
++	ret = pm_runtime_resume_and_get(priv->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
+ 	val = (val & ~STM32_VRS) | FIELD_PREP(STM32_VRS, sel);
+@@ -145,11 +137,9 @@ static int stm32_vrefbuf_get_voltage_sel(struct regulator_dev *rdev)
+ 	u32 val;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(priv->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->dev);
++	ret = pm_runtime_resume_and_get(priv->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
+ 	ret = FIELD_GET(STM32_VRS, val);
 -- 
-2.35.1
-
-
+2.25.1
 
