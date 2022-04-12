@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E09C3527B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 451AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379444AbiDLIUb (ORCPT
+        id S1379542AbiDLIUh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        Tue, 12 Apr 2022 04:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355863AbiDLH3b (ORCPT
+        with ESMTP id S1354168AbiDLH0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:29:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76CC4FC4E;
-        Tue, 12 Apr 2022 00:08:24 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B050F45040;
+        Tue, 12 Apr 2022 00:06:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A88F616C5;
-        Tue, 12 Apr 2022 07:08:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DA69C385A1;
-        Tue, 12 Apr 2022 07:08:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E131B81B54;
+        Tue, 12 Apr 2022 07:06:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A627C36AEA;
+        Tue, 12 Apr 2022 07:06:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747303;
-        bh=uvmvK5G4Vh3vydzA/XSSQgtsGxMG1xvRkHz1oUWROgc=;
+        s=korg; t=1649747160;
+        bh=FN38w32qtUhnF2Zn1lD4Y4Ebgl+F/Fwi4fAlFKGu6+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1kf8i/TBlbV5LdNnS5aw6QXIdeXrZBoSzhiz8U6hp9wVVy8aMuxH2yYnrInxn5vW4
-         GBvji5V1SY7MOKT5T/cVp+a9wqqLl4gmO62ibe0d2CgA54WzFnF23arYXU5YlZpM75
-         EWkcw72dU+ebfaEE1qQ1PJyDxIrQ6jVSbA2UdgHg=
+        b=OOvf/m88OnymkuFe/ClB6wGkrZtB90K6e4FOEyOfQrdSOXikMs3wBbjVgvhfOX4E+
+         grgw2BTCyVzB1tJrwBTrSzxgQ4sUa4HQMHyMxxjcRVs+oOvM/0cDJPHzjeptucvf9y
+         tG9VQI3afe2V2O6NNyyXyIpqbA7IkAbV9DXNXEoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philip Yang <Philip.Yang@amd.com>,
-        Ruili Ji <ruili.ji@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 031/343] drm/amdkfd: Ensure mm remain valid in svm deferred_list work
-Date:   Tue, 12 Apr 2022 08:27:29 +0200
-Message-Id: <20220412062952.004344561@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Leoshkevich <iii@linux.ibm.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: [PATCH 5.16 265/285] selftests/bpf: Fix u8 narrow load checks for bpf_sk_lookup remote_port
+Date:   Tue, 12 Apr 2022 08:32:02 +0200
+Message-Id: <20220412062951.307801901@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,141 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-[ Upstream commit 367c9b0f1b8750a704070e7ae85234d591290434 ]
+commit 3c69611b8926f8e74fcf76bd97ae0e5dafbeb26a upstream.
 
-svm_deferred_list work should continue to handle deferred_range_list
-which maybe split to child range to avoid child range leak, and remove
-ranges mmu interval notifier to avoid mm mm_count leak. So taking mm
-reference when adding range to deferred list, to ensure mm is valid in
-the scheduled deferred_list_work, and drop the mm referrence after range
-is handled.
+In commit 9a69e2b385f4 ("bpf: Make remote_port field in struct
+bpf_sk_lookup 16-bit wide") ->remote_port field changed from __u32 to
+__be16.
 
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reported-by: Ruili Ji <ruili.ji@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+However, narrow load tests which exercise 1-byte sized loads from
+offsetof(struct bpf_sk_lookup, remote_port) were not adopted to reflect the
+change.
+
+As a result, on little-endian we continue testing loads from addresses:
+
+ - (__u8 *)&ctx->remote_port + 3
+ - (__u8 *)&ctx->remote_port + 4
+
+which map to the zero padding following the remote_port field, and don't
+break the tests because there is no observable change.
+
+While on big-endian, we observe breakage because tests expect to see zeros
+for values loaded from:
+
+ - (__u8 *)&ctx->remote_port - 1
+ - (__u8 *)&ctx->remote_port - 2
+
+Above addresses map to ->remote_ip6 field, which precedes ->remote_port,
+and are populated during the bpf_sk_lookup IPv6 tests.
+
+Unsurprisingly, on s390x we observe:
+
+  #136/38 sk_lookup/narrow access to ctx v4:OK
+  #136/39 sk_lookup/narrow access to ctx v6:FAIL
+
+Fix it by removing the checks for 1-byte loads from offsets outside of the
+->remote_port field.
+
+Fixes: 9a69e2b385f4 ("bpf: Make remote_port field in struct bpf_sk_lookup 16-bit wide")
+Suggested-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/20220319183356.233666-3-jakub@cloudflare.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 62 ++++++++++++++++------------
- 1 file changed, 36 insertions(+), 26 deletions(-)
+ tools/testing/selftests/bpf/progs/test_sk_lookup.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-index f2805ba74c80..225affcddbc1 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-@@ -1985,10 +1985,9 @@ svm_range_update_notifier_and_interval_tree(struct mm_struct *mm,
- }
+--- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
++++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+@@ -404,8 +404,7 @@ int ctx_narrow_access(struct bpf_sk_look
  
- static void
--svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange)
-+svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange,
-+			 struct mm_struct *mm)
- {
--	struct mm_struct *mm = prange->work_item.mm;
--
- 	switch (prange->work_item.op) {
- 	case SVM_OP_NULL:
- 		pr_debug("NULL OP 0x%p prange 0x%p [0x%lx 0x%lx]\n",
-@@ -2071,34 +2070,41 @@ static void svm_range_deferred_list_work(struct work_struct *work)
- 	pr_debug("enter svms 0x%p\n", svms);
- 
- 	p = container_of(svms, struct kfd_process, svms);
--	/* Avoid mm is gone when inserting mmu notifier */
--	mm = get_task_mm(p->lead_thread);
--	if (!mm) {
--		pr_debug("svms 0x%p process mm gone\n", svms);
--		return;
--	}
--retry:
--	mmap_write_lock(mm);
--
--	/* Checking for the need to drain retry faults must be inside
--	 * mmap write lock to serialize with munmap notifiers.
--	 */
--	if (unlikely(atomic_read(&svms->drain_pagefaults))) {
--		mmap_write_unlock(mm);
--		svm_range_drain_retry_fault(svms);
--		goto retry;
--	}
- 
- 	spin_lock(&svms->deferred_list_lock);
- 	while (!list_empty(&svms->deferred_range_list)) {
- 		prange = list_first_entry(&svms->deferred_range_list,
- 					  struct svm_range, deferred_list);
--		list_del_init(&prange->deferred_list);
- 		spin_unlock(&svms->deferred_list_lock);
- 
- 		pr_debug("prange 0x%p [0x%lx 0x%lx] op %d\n", prange,
- 			 prange->start, prange->last, prange->work_item.op);
- 
-+		mm = prange->work_item.mm;
-+retry:
-+		mmap_write_lock(mm);
-+
-+		/* Checking for the need to drain retry faults must be inside
-+		 * mmap write lock to serialize with munmap notifiers.
-+		 */
-+		if (unlikely(atomic_read(&svms->drain_pagefaults))) {
-+			mmap_write_unlock(mm);
-+			svm_range_drain_retry_fault(svms);
-+			goto retry;
-+		}
-+
-+		/* Remove from deferred_list must be inside mmap write lock, for
-+		 * two race cases:
-+		 * 1. unmap_from_cpu may change work_item.op and add the range
-+		 *    to deferred_list again, cause use after free bug.
-+		 * 2. svm_range_list_lock_and_flush_work may hold mmap write
-+		 *    lock and continue because deferred_list is empty, but
-+		 *    deferred_list work is actually waiting for mmap lock.
-+		 */
-+		spin_lock(&svms->deferred_list_lock);
-+		list_del_init(&prange->deferred_list);
-+		spin_unlock(&svms->deferred_list_lock);
-+
- 		mutex_lock(&svms->lock);
- 		mutex_lock(&prange->migrate_mutex);
- 		while (!list_empty(&prange->child_list)) {
-@@ -2109,19 +2115,20 @@ static void svm_range_deferred_list_work(struct work_struct *work)
- 			pr_debug("child prange 0x%p op %d\n", pchild,
- 				 pchild->work_item.op);
- 			list_del_init(&pchild->child_list);
--			svm_range_handle_list_op(svms, pchild);
-+			svm_range_handle_list_op(svms, pchild, mm);
- 		}
- 		mutex_unlock(&prange->migrate_mutex);
- 
--		svm_range_handle_list_op(svms, prange);
-+		svm_range_handle_list_op(svms, prange, mm);
- 		mutex_unlock(&svms->lock);
-+		mmap_write_unlock(mm);
-+
-+		/* Pairs with mmget in svm_range_add_list_work */
-+		mmput(mm);
- 
- 		spin_lock(&svms->deferred_list_lock);
- 	}
- 	spin_unlock(&svms->deferred_list_lock);
--
--	mmap_write_unlock(mm);
--	mmput(mm);
- 	pr_debug("exit svms 0x%p\n", svms);
- }
- 
-@@ -2139,6 +2146,9 @@ svm_range_add_list_work(struct svm_range_list *svms, struct svm_range *prange,
- 			prange->work_item.op = op;
- 	} else {
- 		prange->work_item.op = op;
-+
-+		/* Pairs with mmput in deferred_list_work */
-+		mmget(mm);
- 		prange->work_item.mm = mm;
- 		list_add_tail(&prange->deferred_list,
- 			      &prange->svms->deferred_range_list);
--- 
-2.35.1
-
+ 	/* Narrow loads from remote_port field. Expect SRC_PORT. */
+ 	if (LSB(ctx->remote_port, 0) != ((SRC_PORT >> 0) & 0xff) ||
+-	    LSB(ctx->remote_port, 1) != ((SRC_PORT >> 8) & 0xff) ||
+-	    LSB(ctx->remote_port, 2) != 0 || LSB(ctx->remote_port, 3) != 0)
++	    LSB(ctx->remote_port, 1) != ((SRC_PORT >> 8) & 0xff))
+ 		return SK_DROP;
+ 	if (LSW(ctx->remote_port, 0) != SRC_PORT)
+ 		return SK_DROP;
 
 
