@@ -2,90 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC714C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC76C3525B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376568AbiDLItu (ORCPT
+        id S1376522AbiDLItl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        Tue, 12 Apr 2022 04:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357825AbiDLHkr (ORCPT
+        with ESMTP id S1357791AbiDLHko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47EB39825;
-        Tue, 12 Apr 2022 00:16:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 707FAB81B4F;
-        Tue, 12 Apr 2022 07:16:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2B24C385A5;
-        Tue, 12 Apr 2022 07:16:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747816;
-        bh=gd8iSxgW8PBNOLgAnqpE0vsod2iKWP2nUWete6C1iPY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F4xRpSp5ocd3Cytdl3ARFLq60N3PCYEu7tZk91LaQv7HKwP/QayebN3X2g+dZzmiQ
-         tIA2UdbIhcov4VEJm8X840LTHkL49mqD/Wed9A1eHLVe/14eCgUeNGYwJ1CWzQ6X5N
-         EnUVPMYOyWuuiXfEQkK1RRIn+oSw/3sx3n8nxclU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 216/343] drm/imx: Fix memory leak in imx_pd_connector_get_modes
-Date:   Tue, 12 Apr 2022 08:30:34 +0200
-Message-Id: <20220412062957.578295261@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:40:44 -0400
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281B13969F;
+        Tue, 12 Apr 2022 00:16:56 -0700 (PDT)
+Received: by mail-qt1-f173.google.com with SMTP id j21so18588456qta.0;
+        Tue, 12 Apr 2022 00:16:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rxaeyf8gbGoNuQoaq4wl2Y+6pdc5/JQoS19NqHJuW/8=;
+        b=iRvVNJemv7HdIvuRfYvUWK0WCNbRqTJJhvq/STsNeUg9tpISFov480jvE+GxLuP3kE
+         Yyc/zjoRd5UDjdGJwh9rV0E8Er7Fr4xRgVAlD68t+19MtkP7V99WKJnAywX1MqURo5hN
+         29Rfw4L393EXGBVDszFMECHNIMswd39SYkoAmEooyhadvgIeLMgM9P7+DEIHPJ6+yC7P
+         i2DPWbitfn6WppzY27kE0loo7gtg3Nw3RZ9xyLJEJFwzsMzep2IBVGkLMkx0aJrhx2Z7
+         szvB+8xCD21yhzTb0wX4WETt9w19p0q+Y4gEWfkJc4xSyimg6blnyNnrMvavnBpp+8lg
+         VEmQ==
+X-Gm-Message-State: AOAM531lgq+WfkGNy2Am1LBlxiqTxak2gVJu1rHUN8or1ju8qCwA93Pt
+        dv+OHgWwZjMqTaiylZ0aChaFTE+tEFV13lJt
+X-Google-Smtp-Source: ABdhPJxzUcqZ/MqWhFtJw2JLntJeRwr7dGif60jZt68cheskfjc+q1NcLgxFTZwKq9tzQC264NmA6Q==
+X-Received: by 2002:a05:622a:64b:b0:2e1:cbc3:c9ff with SMTP id a11-20020a05622a064b00b002e1cbc3c9ffmr2300195qtb.226.1649747814528;
+        Tue, 12 Apr 2022 00:16:54 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id 203-20020a370ad4000000b0069bd97f4f1asm8014629qkk.77.2022.04.12.00.16.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 00:16:54 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ec04a2ebadso71624157b3.12;
+        Tue, 12 Apr 2022 00:16:53 -0700 (PDT)
+X-Received: by 2002:a81:618b:0:b0:2db:d952:8a39 with SMTP id
+ v133-20020a81618b000000b002dbd9528a39mr29212275ywb.132.1649747813680; Tue, 12
+ Apr 2022 00:16:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220411211243.11121-1-javierm@redhat.com> <20220411211243.11121-3-javierm@redhat.com>
+In-Reply-To: <20220411211243.11121-3-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 12 Apr 2022 09:16:42 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVuivPSRooR5CqTX6GQtxO6RQYwKUqfOK36zsiN8-v6kg@mail.gmail.com>
+Message-ID: <CAMuHMdVuivPSRooR5CqTX6GQtxO6RQYwKUqfOK36zsiN8-v6kg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] dt-bindings: display: ssd1307fb: Extend schema for
+ SPI controllers
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+Hi Javier,
 
-[ Upstream commit bce81feb03a20fca7bbdd1c4af16b4e9d5c0e1d3 ]
+On Mon, Apr 11, 2022 at 11:12 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> The Solomon SSD130x OLED displays can either have an I2C or SPI interface,
+> add to the schema the properties and examples for OLED devices under SPI.
+>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> Acked-by: Mark Brown <broonie@kernel.org>
+> ---
+>
+> Changes in v2:
+> - Don't add compatible strings with an "-spi" suffix (Geert Uytterhoeven).
 
-Avoid leaking the display mode variable if of_get_drm_display_mode
-fails.
+Thanks for the update!
 
-Fixes: 76ecd9c9fb24 ("drm/imx: parallel-display: check return code from of_get_drm_display_mode()")
-Addresses-Coverity-ID: 1443943 ("Resource leak")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220108165230.44610-1-jose.exposito89@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/imx/parallel-display.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> @@ -39,9 +39,14 @@ properties:
+>    reset-gpios:
+>      maxItems: 1
+>
+> +  dc-gpios:
+> +    maxItems: 1
+> +
 
-diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
-index 06cb1a59b9bc..63ba2ad84679 100644
---- a/drivers/gpu/drm/imx/parallel-display.c
-+++ b/drivers/gpu/drm/imx/parallel-display.c
-@@ -75,8 +75,10 @@ static int imx_pd_connector_get_modes(struct drm_connector *connector)
- 		ret = of_get_drm_display_mode(np, &imxpd->mode,
- 					      &imxpd->bus_flags,
- 					      OF_USE_NATIVE_MODE);
--		if (ret)
-+		if (ret) {
-+			drm_mode_destroy(connector->dev, mode);
- 			return ret;
-+		}
- 
- 		drm_mode_copy(mode, &imxpd->mode);
- 		mode->type |= DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
--- 
-2.35.1
+Perhaps add a description, and clarify this is for SPI only?
 
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
