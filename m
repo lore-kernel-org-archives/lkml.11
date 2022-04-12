@@ -2,213 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72557C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 355DFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiDLVIZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 17:08:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
+        id S229876AbiDLVYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 17:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiDLVIW (ORCPT
+        with ESMTP id S229455AbiDLVYf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 17:08:22 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6226E15D058;
-        Tue, 12 Apr 2022 13:56:29 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id e8so13043066wra.7;
-        Tue, 12 Apr 2022 13:56:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DqMC6Vs8XFHQhcFRE5fkKJXeyhfO8KrefwPFKdUZtCk=;
-        b=mT3f6o6xyKP/QNK6+A4sGJyXB4ue9Xe4//e6ckZZvlhk4FxoxL5Qh3J1aG2BDuU/CU
-         Mi3yLFiXqYiVnn1bb9qr/IdP4CXb8YVFmnlgj/Nm9rCf5wiaoiXb0Rf7Nl1sXe4bOExy
-         3A8TDFgsOTqSaNWAumWiCQHKLgitWLtM01YAmBYAI+wtS3vbdSZ7SBKG7cHNwmeGVDsh
-         Qfb/FWh7VgqieoO9lMqAaNabMn7DZDaESC7Q5q2JoNrMsGbzT02W/clUvxkOjoJEECBY
-         TXZMqAWsqXcYXpjoVOBNOOu244Ek//c+IDSgQpUZeCuDtgVuvuEb3zLNeKuopF8oJwqy
-         ZltQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DqMC6Vs8XFHQhcFRE5fkKJXeyhfO8KrefwPFKdUZtCk=;
-        b=uCXES36KxcJJSZ5FyjLGbg410G5PKOako6eJmKwySlvowt5knJd1AS3xk+vwGi/aPK
-         VszxSt2qz+09QN7Mo65RuFGgbH/+pzum19DSo3JrzgnAtsdUfn9aOrmofg11OX2vzCYa
-         /ViGEDev2dJgDOQwCu0IKCIByFFRIAntjmKmM0zzD4H5m61ou982X4yhaRBtORZdQDw6
-         U4sUeFijR9rSvregUT9Itd/MadR7esk+otI7DlXIXmGCgyu5vEhyEJHbfj83PA8eME3m
-         nbAUreVDj6yhCnm3EIhZQmstqRRIoyr1lYuW8SoQ0OQhqrPA8e80wgZcd/J3UEXS/jdp
-         4XeA==
-X-Gm-Message-State: AOAM532Q2T9Mibr2an+VVmDJZF2K+oz1PrEKLbtLC5VNlGAszCP7+Bmj
-        jVakU3/XS3Ua+QOfyhV/ifZ3+JWjnROtUA==
-X-Google-Smtp-Source: ABdhPJwykljm7T3aamkw4LwfP0Tg8dcXjfFJvjSrqx4NZaWASx46mBe81WwDk1WdNLoHVi9P+O2cXQ==
-X-Received: by 2002:a05:6402:2059:b0:41d:82c2:208a with SMTP id bc25-20020a056402205900b0041d82c2208amr9907207edb.379.1649796378263;
-        Tue, 12 Apr 2022 13:46:18 -0700 (PDT)
-Received: from krava ([83.240.62.142])
-        by smtp.gmail.com with ESMTPSA id c4-20020a170906340400b006d077e850b5sm13368177ejb.23.2022.04.12.13.46.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 13:46:17 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 22:46:15 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC bpf-next 1/4] kallsyms: Add kallsyms_lookup_names function
-Message-ID: <YlXlF5ivTR1QLMfk@krava>
-References: <20220407125224.310255-1-jolsa@kernel.org>
- <20220407125224.310255-2-jolsa@kernel.org>
- <20220408231925.uc2cfeev7p6nzfww@MBP-98dd607d3435.dhcp.thefacebook.com>
+        Tue, 12 Apr 2022 17:24:35 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D0218114F;
+        Tue, 12 Apr 2022 14:05:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649797537; x=1681333537;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BHLbe/RoUopliJXw7PZpTsR/hL9ogzQTYddN+kx+atU=;
+  b=KSDBD8iYzCqN0x5BreM7rl7BmaJucB/khEuSIT0O2+sKfLIOtNURroMp
+   bQHgDtDdXl42OAMFtkpdMGbpEbl03hzlKod9hWZ8ltuPBRgaVkjtVrzd3
+   morhyAleYJ+A3lNyxYaY7ia0rHEgrK0aRxQClhLaW2LUQY4TQUOtCOZ3/
+   XldR5ldXOKdBMiE6AJWBsJ8gEY+tjt0wyZurIRCD3/fZ6mGF72zT3euSz
+   T+KozsHjkg1i9y5uDnqLcFQobc7xog19ZtoWSK/cR4yRZD7/2PzaLixPH
+   9ZhzaSV6JLrRRW52HQwhdJCUp5e9hnS9fjiRtZ/J1kqZePT/5UURnFAoP
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="260098619"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="260098619"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 13:54:14 -0700
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="644899572"
+Received: from lpfafma-mobl.amr.corp.intel.com (HELO guptapa-desk) ([10.209.17.36])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 13:54:13 -0700
+Date:   Tue, 12 Apr 2022 13:54:11 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Jon Kohler <jon@nutanix.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
+        dave.hansen@intel.com, Borislav Petkov <bp@suse.de>,
+        Neelima Krishnan <neelima.krishnan@intel.com>,
+        "kvm @ vger . kernel . org" <kvm@vger.kernel.org>
+Subject: Re: [PATCH v2] x86/tsx: fix KVM guest live migration for tsx=on
+Message-ID: <20220412205411.m7n2gnon3ai7wobm@guptapa-desk>
+References: <20220411180131.5054-1-jon@nutanix.com>
+ <20220411200703.48654-1-jon@nutanix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220408231925.uc2cfeev7p6nzfww@MBP-98dd607d3435.dhcp.thefacebook.com>
+In-Reply-To: <20220411200703.48654-1-jon@nutanix.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 04:19:25PM -0700, Alexei Starovoitov wrote:
-> On Thu, Apr 07, 2022 at 02:52:21PM +0200, Jiri Olsa wrote:
-> > Adding kallsyms_lookup_names function that resolves array of symbols
-> > with single pass over kallsyms.
-> > 
-> > The user provides array of string pointers with count and pointer to
-> > allocated array for resolved values.
-> > 
-> >   int kallsyms_lookup_names(const char **syms, u32 cnt,
-> >                             unsigned long *addrs)
-> > 
-> > Before we iterate kallsyms we sort user provided symbols by name and
-> > then use that in kalsyms iteration to find each kallsyms symbol in
-> > user provided symbols.
-> > 
-> > We also check each symbol to pass ftrace_location, because this API
-> > will be used for fprobe symbols resolving. This can be optional in
-> > future if there's a need.
-> > 
-> > Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  include/linux/kallsyms.h |  6 +++++
-> >  kernel/kallsyms.c        | 48 ++++++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 54 insertions(+)
-> > 
-> > diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-> > index ce1bd2fbf23e..5320a5e77f61 100644
-> > --- a/include/linux/kallsyms.h
-> > +++ b/include/linux/kallsyms.h
-> > @@ -72,6 +72,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
-> >  #ifdef CONFIG_KALLSYMS
-> >  /* Lookup the address for a symbol. Returns 0 if not found. */
-> >  unsigned long kallsyms_lookup_name(const char *name);
-> > +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs);
-> >  
-> >  extern int kallsyms_lookup_size_offset(unsigned long addr,
-> >  				  unsigned long *symbolsize,
-> > @@ -103,6 +104,11 @@ static inline unsigned long kallsyms_lookup_name(const char *name)
-> >  	return 0;
-> >  }
-> >  
-> > +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
-> > +{
-> > +	return -ERANGE;
-> > +}
-> > +
-> >  static inline int kallsyms_lookup_size_offset(unsigned long addr,
-> >  					      unsigned long *symbolsize,
-> >  					      unsigned long *offset)
-> > diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> > index 79f2eb617a62..a3738ddf9e87 100644
-> > --- a/kernel/kallsyms.c
-> > +++ b/kernel/kallsyms.c
-> > @@ -29,6 +29,8 @@
-> >  #include <linux/compiler.h>
-> >  #include <linux/module.h>
-> >  #include <linux/kernel.h>
-> > +#include <linux/bsearch.h>
-> > +#include <linux/sort.h>
-> >  
-> >  /*
-> >   * These will be re-linked against their real values
-> > @@ -572,6 +574,52 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
-> >  	return __sprint_symbol(buffer, address, -1, 1, 1);
-> >  }
-> >  
-> > +static int symbols_cmp(const void *a, const void *b)
-> > +{
-> > +	const char **str_a = (const char **) a;
-> > +	const char **str_b = (const char **) b;
-> > +
-> > +	return strcmp(*str_a, *str_b);
-> > +}
-> > +
-> > +struct kallsyms_data {
-> > +	unsigned long *addrs;
-> > +	const char **syms;
-> > +	u32 cnt;
-> > +	u32 found;
-> > +};
-> > +
-> > +static int kallsyms_callback(void *data, const char *name,
-> > +			     struct module *mod, unsigned long addr)
-> > +{
-> > +	struct kallsyms_data *args = data;
-> > +
-> > +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-> > +		return 0;
-> > +
-> > +	addr = ftrace_location(addr);
-> > +	if (!addr)
-> > +		return 0;
-> > +
-> > +	args->addrs[args->found++] = addr;
-> > +	return args->found == args->cnt ? 1 : 0;
-> > +}
-> > +
-> > +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
-> > +{
-> > +	struct kallsyms_data args;
-> > +
-> > +	sort(syms, cnt, sizeof(*syms), symbols_cmp, NULL);
-> 
-> It's nice to share symbols_cmp for sort and bsearch,
-> but messing technically input argument 'syms' like this will cause
-> issues sooner or later.
-> Lets make caller do the sort.
-> Unordered input will cause issue with bsearch, of course,
-> but it's a lesser evil. imo.
-> 
+On Mon, Apr 11, 2022 at 04:07:01PM -0400, Jon Kohler wrote:
+>Move automatic disablement for TSX microcode deprecation from tsx_init() to
+>x86_get_tsx_auto_mode(), such that systems with tsx=on will continue to
+>see the TSX CPU features (HLE, RTM) even on updated microcode.
+>
+>KVM live migration could be possibly be broken in 5.14+ commit 293649307ef9
+>("x86/tsx: Clear CPUID bits when TSX always force aborts"). Consider the
+>following scenario:
+>
+>1. KVM hosts clustered in a live migration capable setup.
+>2. KVM guests have TSX CPU features HLE and/or RTM presented.
+>3. One of the three maintenance events occur:
+>3a. An existing host running kernel >= 5.14 in the pool updated with the
+>    new microcode.
+>3b. A new host running kernel >= 5.14 is commissioned that already has the
+>    microcode update preloaded.
+>3c. All hosts are running kernel < 5.14 with microcode update already
+>    loaded and one existing host gets updated to kernel >= 5.14.
+>4. After maintenance event, the impacted host will not have HLE and RTM
+>   exposed, and live migrations with guests with TSX features might not
+>   migrate.
 
-Masami,
-this logic bubbles up to the register_fprobe_syms, because user
-provides symbols as its argument. Can we still force this assumption
-to the 'syms' array, like with the comment change below?
+Which part was this reproduced on? AFAIK server parts(except for some
+Intel Xeon E3s) did not get such microcode update.
 
-FYI the bpf side does not use register_fprobe_syms, it uses
-register_fprobe_ips, because it always needs ips as search
-base for cookie values
-
-thanks,
-jirka
-
-
----
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index d466803dc2b2..28379c0e23e5 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -250,7 +250,7 @@ EXPORT_SYMBOL_GPL(register_fprobe_ips);
- /**
-  * register_fprobe_syms() - Register fprobe to ftrace by symbols.
-  * @fp: A fprobe data structure to be registered.
-- * @syms: An array of target symbols.
-+ * @syms: An array of target symbols, must be alphabetically sorted.
-  * @num: The number of entries of @syms.
-  *
-  * Register @fp to the symbols given by @syms array. This will be useful if
+Thanks,
+Pawan
