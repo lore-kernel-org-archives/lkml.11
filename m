@@ -2,88 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26948C47089
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96ABDC4708D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388551AbiDLJWb (ORCPT
+        id S1389552AbiDLJXy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        Tue, 12 Apr 2022 05:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358192AbiDLHlK (ORCPT
+        with ESMTP id S1377793AbiDLHxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA98424B8;
-        Tue, 12 Apr 2022 00:17:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34920B81B60;
-        Tue, 12 Apr 2022 07:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47F4C385A1;
-        Tue, 12 Apr 2022 07:17:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747849;
-        bh=CYdSPQWbDPzISEWdJ44T/uOqTRiv53C+ON7DnWkJjF0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fwYe9ufFGFVsAbjDXw2+MG6JR1uT5xGQz1zyQjq26eejVXXNNqjGYWowmtiXDEzB6
-         XpyWUuXZu+bf9STpV5J6vOkkwM5hq0TTYdXPoHA4B30R9MrmucNyWJm0SZj0kObzog
-         3XJTo1O2RYeUIfgGOnPhe0KpGeDVMRSxZn8oufxU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 227/343] RDMA/mlx5: Add a missing update of cache->last_add
-Date:   Tue, 12 Apr 2022 08:30:45 +0200
-Message-Id: <20220412062957.890059764@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:53:54 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E1A53720
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:31:32 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id k23so35499220ejd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:31:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hNe4Z5n6SgxquvKMNl7KQx+y5HXt+oFrwqEGNRcc5z4=;
+        b=wjMW80PkOqvcS43yxumpkmpgw+Av27Uu7deaKWy7Nwvxv0fDMnrJGXRlScEH9hM27v
+         60PSTU1BL+nWpCtYUZiqE0LaT/E0VLpLxJ11yCFliFsVQXmgFr02+hlbGSLDzjNWUJjZ
+         Cx4RfyoKjf6xRSNpi5B7jvSayk2db/7aMrjTml3nBv/wO0A8Dl2fZkc3j7Y5mb15lsdK
+         hHvlotngCHek82ky3yaC13i+NB6o4vlAT6rZuJSd827lKJmiLT6KSKz1YPhPhiT69mMr
+         kLLRKBlVD6SCkuZJmX/S2ZevIs+LbWpNuP9PXnnw3Y9/GYj75gvVvvcAfgPKIc14exEv
+         koxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hNe4Z5n6SgxquvKMNl7KQx+y5HXt+oFrwqEGNRcc5z4=;
+        b=1f7cirD9dykWiXcrhSKsVT0HhtFf+JT3YgXsO5302nZLUoWUXwfeu8g6ECyDOrhZJw
+         lxQA2YaVgwcpXyUpgCLbzaXtAifaW9BEzHEOWTn8v7s5lE4ZLcvpwwpAtEmF+47NY7xl
+         8sfjH+Sp06oKo+3tahdYoFVLrfb1mh7mrS1Fk3MfQi6pW9+CLxadhFpZc+v0+d+h0Yl+
+         OTK/ZN6Sbr5Og4QTR/aovRdhOg0g23yNkLi6muqdc+ogVlZHtij17GnWwBVYdAbAUcc9
+         Zs4HPxk1nqVRhs/Np+h3xcaJxXyYj55hyFP9pboYOCMlt4o4MH6Imk66vCh4l0RR18S4
+         qflA==
+X-Gm-Message-State: AOAM530S/ehgKhyPTX86OgDKut0oMa6HsZ+ePzm4Cjyj1nX5LpuEzwuD
+        /OteclGF9jhSgn44eHITH66b0w==
+X-Google-Smtp-Source: ABdhPJybnYRzd4oTw/UKCt6YSg9tnEFOnLlLmbhOqi75QmarBAVUMLlCkNsPPv91AAAiHSUa4HKiZw==
+X-Received: by 2002:a17:907:97cc:b0:6df:83bc:314c with SMTP id js12-20020a17090797cc00b006df83bc314cmr33755928ejc.587.1649748691460;
+        Tue, 12 Apr 2022 00:31:31 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm12571234edl.28.2022.04.12.00.31.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 00:31:31 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 0/2] regulator: dt-bindings: qcom,rpmh: minor cleanups and extend supplies
+Date:   Tue, 12 Apr 2022 09:31:21 +0200
+Message-Id: <20220412073123.27229-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aharon Landau <aharonl@nvidia.com>
+Hi,
 
-[ Upstream commit 1d735eeee63a0beb65180ca0224f239cc0c9f804 ]
+Extend the RPMH regulator bindings with minor fixes and adding narrow supply
+matching.
 
-Update cache->last_add when returning an MR to the cache so that the cache
-work won't remove it.
+Changes since v1
+================
+1. Use "defs" method instead of referencing additional YAML file, because the
+   latter was not working properly.
 
-Fixes: b9358bdbc713 ("RDMA/mlx5: Fix locking in MR cache work queue")
-Link: https://lore.kernel.org/r/c99f076fce4b44829d434936bbcd3b5fc4c95020.1649062436.git.leonro@nvidia.com
-Signed-off-by: Aharon Landau <aharonl@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/infiniband/hw/mlx5/mr.c | 1 +
- 1 file changed, 1 insertion(+)
+Best regards,
+Krzysztof
 
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index d3b2d02a4872..d40a1460ef97 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -632,6 +632,7 @@ static void mlx5_mr_cache_free(struct mlx5_ib_dev *dev, struct mlx5_ib_mr *mr)
- {
- 	struct mlx5_cache_ent *ent = mr->cache_ent;
- 
-+	WRITE_ONCE(dev->cache.last_add, jiffies);
- 	spin_lock_irq(&ent->lock);
- 	list_add_tail(&mr->list, &ent->head);
- 	ent->available_mrs++;
+Krzysztof Kozlowski (2):
+  regulator: dt-bindings: qcom,rpmh: document supplies per variant
+  regulator: dt-bindings: qcom,rpmh: document vdd-l7-bob-supply on
+    PMR735A
+
+ .../regulator/qcom,rpmh-regulator.yaml        | 291 +++++++++++++++++-
+ 1 file changed, 277 insertions(+), 14 deletions(-)
+
 -- 
-2.35.1
-
-
+2.32.0
 
