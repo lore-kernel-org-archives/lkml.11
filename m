@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82112C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB82C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379785AbiDLIU4 (ORCPT
+        id S1380650AbiDLIWb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42618 "EHLO
+        Tue, 12 Apr 2022 04:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354086AbiDLH0D (ORCPT
+        with ESMTP id S1353806AbiDLHZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5C9186DE;
-        Tue, 12 Apr 2022 00:05:37 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C0F9FD8;
+        Tue, 12 Apr 2022 00:04:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAC8F60B2B;
-        Tue, 12 Apr 2022 07:05:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC7A4C385A8;
-        Tue, 12 Apr 2022 07:05:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1766C60B65;
+        Tue, 12 Apr 2022 07:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 209CEC385A1;
+        Tue, 12 Apr 2022 07:04:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747136;
-        bh=sXMl2ZYE8rt5NfFeBPGIcHAYJuUylPNTH8SOiNKZ7n8=;
+        s=korg; t=1649747080;
+        bh=3URoS/TUJZ3MsAy6YxJ1sR6pRPkgsVOwX30cNz/8tWg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZsWSO8dTr9fvqk3u3QMlJaBNdJmETeeasegn3livoQLDcEjamKMixcs+3XSwKdRQ
-         GK/EfhI5y7xLm2j1Kjx+uLCRPmzxb/4rRz797lu6d9HeHZnB/wZnOuJpytiXq0rczH
-         iSH/gTPcsRwibLs7Ry5KgXpxMZIEbv7W93RJ4rr0=
+        b=Xe8Z/L13oCYhAToa/YttnnlDsRG8ATbUnKdmgLv5Evrr92DZnbN2uXDwiN/3q3JAs
+         cNl6Wn0ybSYMLp1LhpId1WYn8OWyhZbBs2famfp4nHZQlgO/3c79WICUg5kgWsAKP5
+         6jvdGOVOzjYjqoiAWU38MwYYPh+njb0/sx78MBtc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.16 257/285] drm/amdkfd: Create file descriptor after client is added to smi_clients list
-Date:   Tue, 12 Apr 2022 08:31:54 +0200
-Message-Id: <20220412062951.079211206@linuxfoundation.org>
+        stable@vger.kernel.org, Robbie Ko <robbieko@synology.com>,
+        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
+        Kaiwen Hu <kevinhu@synology.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 235/285] btrfs: prevent subvol with swapfile from being deleted
+Date:   Tue, 12 Apr 2022 08:31:32 +0200
+Message-Id: <20220412062950.444603043@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -54,70 +51,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lee Jones <lee.jones@linaro.org>
+From: Kaiwen Hu <kevinhu@synology.com>
 
-commit e79a2398e1b2d47060474dca291542368183bc0f upstream.
+commit 60021bd754c6ca0addc6817994f20290a321d8d6 upstream.
 
-This ensures userspace cannot prematurely clean-up the client before
-it is fully initialised which has been proven to cause issues in the
-past.
+A subvolume with an active swapfile must not be deleted otherwise it
+would not be possible to deactivate it.
 
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: amd-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+After the subvolume is deleted, we cannot swapoff the swapfile in this
+deleted subvolume because the path is unreachable.  The swapfile is
+still active and holding references, the filesystem cannot be unmounted.
+
+The test looks like this:
+
+  mkfs.btrfs -f $dev > /dev/null
+  mount $dev $mnt
+
+  btrfs sub create $mnt/subvol
+  touch $mnt/subvol/swapfile
+  chmod 600 $mnt/subvol/swapfile
+  chattr +C $mnt/subvol/swapfile
+  dd if=/dev/zero of=$mnt/subvol/swapfile bs=1K count=4096
+  mkswap $mnt/subvol/swapfile
+  swapon $mnt/subvol/swapfile
+
+  btrfs sub delete $mnt/subvol
+  swapoff $mnt/subvol/swapfile  # failed: No such file or directory
+  swapoff --all
+
+  unmount $mnt                  # target is busy.
+
+To prevent above issue, we simply check that whether the subvolume
+contains any active swapfile, and stop the deleting process.  This
+behavior is like snapshot ioctl dealing with a swapfile.
+
+CC: stable@vger.kernel.org # 5.4+
+Reviewed-by: Robbie Ko <robbieko@synology.com>
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Kaiwen Hu <kevinhu@synology.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c |   24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ fs/btrfs/inode.c |   24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-@@ -270,15 +270,6 @@ int kfd_smi_event_open(struct kfd_dev *d
- 		return ret;
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -4462,6 +4462,13 @@ int btrfs_delete_subvolume(struct inode
+ 			   dest->root_key.objectid);
+ 		return -EPERM;
  	}
- 
--	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
--			       O_RDWR);
--	if (ret < 0) {
--		kfifo_free(&client->fifo);
--		kfree(client);
--		return ret;
--	}
--	*fd = ret;
--
- 	init_waitqueue_head(&client->wait_queue);
- 	spin_lock_init(&client->lock);
- 	client->events = 0;
-@@ -288,5 +279,20 @@ int kfd_smi_event_open(struct kfd_dev *d
- 	list_add_rcu(&client->list, &dev->smi_clients);
- 	spin_unlock(&dev->smi_lock);
- 
-+	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
-+			       O_RDWR);
-+	if (ret < 0) {
-+		spin_lock(&dev->smi_lock);
-+		list_del_rcu(&client->list);
-+		spin_unlock(&dev->smi_lock);
-+
-+		synchronize_rcu();
-+
-+		kfifo_free(&client->fifo);
-+		kfree(client);
-+		return ret;
++	if (atomic_read(&dest->nr_swapfiles)) {
++		spin_unlock(&dest->root_item_lock);
++		btrfs_warn(fs_info,
++			   "attempt to delete subvolume %llu with active swapfile",
++			   root->root_key.objectid);
++		return -EPERM;
 +	}
-+	*fd = ret;
+ 	root_flags = btrfs_root_flags(&dest->root_item);
+ 	btrfs_set_root_flags(&dest->root_item,
+ 			     root_flags | BTRFS_ROOT_SUBVOL_DEAD);
+@@ -10764,8 +10771,23 @@ static int btrfs_swap_activate(struct sw
+ 	 * set. We use this counter to prevent snapshots. We must increment it
+ 	 * before walking the extents because we don't want a concurrent
+ 	 * snapshot to run after we've already checked the extents.
+-	 */
++	 *
++	 * It is possible that subvolume is marked for deletion but still not
++	 * removed yet. To prevent this race, we check the root status before
++	 * activating the swapfile.
++	 */
++	spin_lock(&root->root_item_lock);
++	if (btrfs_root_dead(root)) {
++		spin_unlock(&root->root_item_lock);
 +
- 	return 0;
- }
++		btrfs_exclop_finish(fs_info);
++		btrfs_warn(fs_info,
++		"cannot activate swapfile because subvolume %llu is being deleted",
++			root->root_key.objectid);
++		return -EPERM;
++	}
+ 	atomic_inc(&root->nr_swapfiles);
++	spin_unlock(&root->root_item_lock);
+ 
+ 	isize = ALIGN_DOWN(inode->i_size, fs_info->sectorsize);
+ 
 
 
