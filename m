@@ -2,154 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5478C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBCFC35294
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387095AbiDLJFb (ORCPT
+        id S1387195AbiDLJGB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32954 "EHLO
+        Tue, 12 Apr 2022 05:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359826AbiDLHnn (ORCPT
+        with ESMTP id S1359252AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:43:43 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F92643AE1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:26:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649748383; x=1681284383;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gkhGiepzPyOKcCmGXkN+87sWY6kjgK6MU99iQQlt3gs=;
-  b=bYgezipwarSpl1rtElh+SM2Cy7w0gSIOuB4JJFxfS1s473Ycxf7zVELG
-   TllL5AtQrbr+51+cYrfKlt6KFJeAG+OwYMMuI+y13j+84879jtqk/9YXg
-   puRQTKWGfBO86RuxDZtMg278Jd0cK2xk7pE4D2uJYkEmQw2C+IhNkpiXy
-   xHParV5UVORiaWXkaW8+UrX/uLjkiSBAI5jbeq2P421HM5eUx6kAW8GH+
-   lBKuk7UToBDaNbgtLYcpp8LTG2SidsYQdlLo6eX0rw+Qr5MGLYjzREPjv
-   8J8ldS+44aZ38XhakIl+DZR6cERHtoW3i3kpnqrHcF+lWFJ8yyw4dmNmS
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="322743446"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="322743446"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:26:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="802118281"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2022 00:26:17 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neAum-0002ci-L0;
-        Tue, 12 Apr 2022 07:26:16 +0000
-Date:   Tue, 12 Apr 2022 15:25:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        dri-devel@lists.freedesktop.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: Re: [PATCH v3 11/15] drm/shmem-helper: Add generic memory shrinker
-Message-ID: <202204121504.gLR3FHQe-lkp@intel.com>
-References: <20220411215937.281655-12-dmitry.osipenko@collabora.com>
+        Tue, 12 Apr 2022 03:42:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855032A732;
+        Tue, 12 Apr 2022 00:21:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 232AF616B2;
+        Tue, 12 Apr 2022 07:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 348BAC385A1;
+        Tue, 12 Apr 2022 07:21:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649748066;
+        bh=McsC9ZufxaUuzydXB9cDgdwI6fwZUeI+va5tpXteTiA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yOeraF9OU7MskwCcYrGjyfTmC89tk33P+8FQxxECXcLZAPy9XMo3jKa50HtFACUDP
+         zrJqeoRgAkrlX7zZSAwQDgizRRS17ayZgFMz3lCoBL8BWwwbPiT/D5vfSIs3HP6kIQ
+         qmLLTp4u5Ug6A61YHr+wSQS1WOq26Q+Hupl1JEMo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 307/343] drm/amdgpu/smu10: fix SoC/fclk units in auto mode
+Date:   Tue, 12 Apr 2022 08:32:05 +0200
+Message-Id: <20220412063000.184100798@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411215937.281655-12-dmitry.osipenko@collabora.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dmitry,
+From: Alex Deucher <alexander.deucher@amd.com>
 
-I love your patch! Perhaps something to improve:
+commit 2f25d8ce09b7ba5d769c132ba3d4eb84a941d2cb upstream.
 
-[auto build test WARNING on next-20220411]
-[cannot apply to drm/drm-next v5.18-rc2 v5.18-rc1 v5.17 v5.18-rc2]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+SMU takes clock limits in Mhz units.  socclk and fclk were
+using 10 khz units in some cases.  Switch to Mhz units.
+Fixes higher than required SoC clocks.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Osipenko/Add-generic-memory-shrinker-to-VirtIO-GPU-and-Panfrost-DRM-drivers/20220412-060325
-base:    d12d7e1cfe38e0c36d28c7a9fbbc436ad0d17c14
-config: hexagon-randconfig-r045-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121504.gLR3FHQe-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/683ba8a9d72ba7770a61a9266a2b33949f3874f2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Dmitry-Osipenko/Add-generic-memory-shrinker-to-VirtIO-GPU-and-Panfrost-DRM-drivers/20220412-060325
-        git checkout 683ba8a9d72ba7770a61a9266a2b33949f3874f2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/gpu/drm/
+Fixes: 97cf32996c46d9 ("drm/amd/pm: Removed fixed clock in auto mode DPM")
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
+@@ -773,13 +773,13 @@ static int smu10_dpm_force_dpm_level(str
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetHardMinFclkByFreq,
+ 						hwmgr->display_config->num_display > 3 ?
+-						data->clock_vol_info.vdd_dep_on_fclk->entries[0].clk :
++						(data->clock_vol_info.vdd_dep_on_fclk->entries[0].clk / 100) :
+ 						min_mclk,
+ 						NULL);
+ 
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetHardMinSocclkByFreq,
+-						data->clock_vol_info.vdd_dep_on_socclk->entries[0].clk,
++						data->clock_vol_info.vdd_dep_on_socclk->entries[0].clk / 100,
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetHardMinVcn,
+@@ -792,11 +792,11 @@ static int smu10_dpm_force_dpm_level(str
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetSoftMaxFclkByFreq,
+-						data->clock_vol_info.vdd_dep_on_fclk->entries[index_fclk].clk,
++						data->clock_vol_info.vdd_dep_on_fclk->entries[index_fclk].clk / 100,
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetSoftMaxSocclkByFreq,
+-						data->clock_vol_info.vdd_dep_on_socclk->entries[index_socclk].clk,
++						data->clock_vol_info.vdd_dep_on_socclk->entries[index_socclk].clk / 100,
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetSoftMaxVcn,
 
-All warnings (new ones prefixed by >>):
 
->> drivers/gpu/drm/drm_gem_shmem_helper.c:289:11: warning: variable 'new_state' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           else if (shmem->madv < 0)
-                    ^~~~~~~~~~~~~~~
-   drivers/gpu/drm/drm_gem_shmem_helper.c:292:46: note: uninitialized use occurs here
-           drm_gem_shmem_set_pages_state_locked(shmem, new_state);
-                                                       ^~~~~~~~~
-   drivers/gpu/drm/drm_gem_shmem_helper.c:289:7: note: remove the 'if' if its condition is always true
-           else if (shmem->madv < 0)
-                ^~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/drm_gem_shmem_helper.c:278:2: note: variable 'new_state' is declared here
-           enum drm_gem_shmem_pages_state new_state;
-           ^
-   1 warning generated.
-
-
-vim +289 drivers/gpu/drm/drm_gem_shmem_helper.c
-
-   273	
-   274	static void drm_gem_shmem_update_pages_state_locked(struct drm_gem_shmem_object *shmem)
-   275	{
-   276		struct drm_gem_object *obj = &shmem->base;
-   277		struct drm_gem_shmem_shrinker *gem_shrinker = obj->dev->shmem_shrinker;
-   278		enum drm_gem_shmem_pages_state new_state;
-   279	
-   280		if (!gem_shrinker || obj->import_attach)
-   281			return;
-   282	
-   283		mutex_lock(&gem_shrinker->lock);
-   284	
-   285		if (!shmem->madv)
-   286			new_state = DRM_GEM_SHMEM_PAGES_STATE_ACTIVE;
-   287		else if (shmem->madv > 0)
-   288			new_state = DRM_GEM_SHMEM_PAGES_STATE_PURGEABLE;
- > 289		else if (shmem->madv < 0)
-   290			new_state = DRM_GEM_SHMEM_PAGES_STATE_PURGED;
-   291	
-   292		drm_gem_shmem_set_pages_state_locked(shmem, new_state);
-   293	
-   294		mutex_unlock(&gem_shrinker->lock);
-   295	}
-   296	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
