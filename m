@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C3CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D43C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347413AbiDLMHW (ORCPT
+        id S1351201AbiDLMHM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
+        Tue, 12 Apr 2022 08:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351367AbiDLMCh (ORCPT
+        with ESMTP id S1351776AbiDLMCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:02:37 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6FC76E06;
-        Tue, 12 Apr 2022 03:58:57 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id l7so31104712ejn.2;
-        Tue, 12 Apr 2022 03:58:57 -0700 (PDT)
+        Tue, 12 Apr 2022 08:02:43 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3C74A3D3;
+        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bg10so36567333ejb.4;
+        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8gxZv9czNrqSsp+NwDMxwad6YKQOb4DD102M9ETWSEU=;
-        b=ITHb5Z6Ro2j7h9KvVs8LnHP+X9FORr367PPN32rttpJ+hrNMecB/3XZ4h+su6UDu5Q
-         UHw8l+Pjwclo5Ysc5IzDvHR9VYp8P7ICq84aWXUN5djTntioSeCBzqLrmWEVOmxMzo/i
-         lTo2zLR/QC4uKo0xVTLDz3Stqpju1oz1DsJ3jrjvDHTyr+zTXgTAcEffm7Wio8myKENt
-         wbSzkkHS7T+8h5HggSK/6g02VLekQa/Em0l750WCJr+KqES7vhEzWKH+ooie57tmdXlR
-         7uNWoRy+loFZl+7EYx6sA58obekFJFD4IGE7LZEGMkR2VSocff0x2mtDG+azcl2C6gjr
-         ZO/g==
+        bh=0WZ3VKnVxGM80qdLHkweZkrBfRptzeVUXSKm7/OGDn8=;
+        b=XZluyyXBrSJrDF64OiHdboQ+ZaxK2ykPWgKXHz6CncWVY4DziM2RY4qNmsykbtsgUu
+         08JLMlZV9OcMJWqB86aOYu+iw263HRolsP+H7z/noCeKqqK8hXMsdAW0XZPPXMYQWksG
+         w6l4nkpBI3i6/4vSvZvI3HlokHsF0U6Q4egmb0iFo/TvYWrnsqz3YxzyCuGiighxHsQ5
+         2kA0FM43PbosMl/yrvykkSxyrD9FonhzgPMFEyNRyWk54oCH++MECb1/FQpjWuKTtphB
+         uJ/04nx57SCToZr7ZC+YTdHhACyjXy/VhUka6PZwXXJFi8lrElMpOpoPfSM9kFVEjH8d
+         8JMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8gxZv9czNrqSsp+NwDMxwad6YKQOb4DD102M9ETWSEU=;
-        b=rfbcZ8MSUe61tPDzhcYqVo/dnDjjsptHZ3NjcOY7JkBqmJfN5oj1BVzf2ug3Wtbrtz
-         0TmD95eZIdQ+b5uRJK9pd7s74/v1B//lAJERlhuQZq8JUspMjLK0rHy4duUaF4UBsw3I
-         Tst+4ydUT9h17vo+NoaGEikdpRLPN/fwwdvyquHwy/sxDf450DkkjsZjdKG3zLmnO2M6
-         AbVXTHutfChYy1CztKQI3E4meMFq7iWlA/g6Cx1cmMxtEeBBtdjGUrKUMB1G968z3PTo
-         ucQrkyhNvAYFbk++whBZDw9FSXubTIeOGpQK+hASxN+NgBIqETpuGVMPFCwHdic5nwVu
-         ArTQ==
-X-Gm-Message-State: AOAM532+DLgoUmZBYLW5RYgT/dSz4T4ufwvolgqCnmVtAykGS1k3uH/H
-        x+zMA/JkoyZ2ZU64XwcYWDg=
-X-Google-Smtp-Source: ABdhPJzNTHWGl2lSK5El9AwYn/g4QL+TmEsz0QZcXmoF0HHdlRFYvO6ANFjRh9vxOm6k30pcEG3CMw==
-X-Received: by 2002:a17:906:2883:b0:6e8:7012:4185 with SMTP id o3-20020a170906288300b006e870124185mr14014409ejd.204.1649761135581;
-        Tue, 12 Apr 2022 03:58:55 -0700 (PDT)
+        bh=0WZ3VKnVxGM80qdLHkweZkrBfRptzeVUXSKm7/OGDn8=;
+        b=bJOUldjZYHv9Rczvkctc0pCig3DhaQrARLjmCvb+amx7bLxInqQ0YpEDpM99qks8S/
+         haLjLdosVSSLappEHqpEIwZ/Ke0ri/LqioewulIdSi/pErB2HBPAErTnlRgNWn27Ru6l
+         E5T50hTUzGV1K7iMjMfmZdAkPKQBZUR7NyYxjr1KXm8vbWnQh6DIP+Qg7JfONgGIc2oU
+         HlSMmYtfiQJ/SsY7uN2fWDDXIP2Lu2OiiUFxJ4crSDFPftq89XnZT/f0hrJdd07VlxSq
+         WG3cB0AdvGmxRK7A8EEtj/f0xz6GR8eXTD03xlU0qS0sZMo6TUIOprK6O3Pe9w1/HmHh
+         Qpww==
+X-Gm-Message-State: AOAM531XPsgG9KrxmKCQE2MoP1868PG2jXRHb3sNKzs7D2NP9RJp0QAT
+        DV1uWh3M6lpjV0Llp8ItObw=
+X-Google-Smtp-Source: ABdhPJxDHNie4r8skUxjeBcgyxDVwngRrhoDRWdvCwq105U3Ymrsz4/WteZI1QKZZU0ouaxPdY/MNw==
+X-Received: by 2002:a17:907:e91:b0:6e8:61d0:9e4d with SMTP id ho17-20020a1709070e9100b006e861d09e4dmr16468938ejc.507.1649761147299;
+        Tue, 12 Apr 2022 03:59:07 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.58.54
+        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:58:55 -0700 (PDT)
+        Tue, 12 Apr 2022 03:59:06 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -86,11 +86,10 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v2 03/18] net: dsa: sja1105: reorder sja1105_first_entry_longer_than with memory allocation
-Date:   Tue, 12 Apr 2022 12:58:15 +0200
-Message-Id: <20220412105830.3495846-4-jakobkoschel@gmail.com>
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH net-next v2 12/18] net: qede: Replace usage of found with dedicated list iterator variable
+Date:   Tue, 12 Apr 2022 12:58:24 +0200
+Message-Id: <20220412105830.3495846-13-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
@@ -100,60 +99,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sja1105_first_entry_longer_than() does not make use of the full struct
-sja1105_gate_entry *e, just of e->interval which is set from the passed
-entry_time.
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-This means that if there is a gate conflict, we have allocated e for
-nothing, just to free it later. Reorder the memory allocation and the
-function call, to avoid that and simplify the error unwind path.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
+
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_vl.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede_rdma.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
-index 369be2ac3587..e5ea8eb9ec4e 100644
---- a/drivers/net/dsa/sja1105/sja1105_vl.c
-+++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-@@ -36,7 +36,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_rdma.c b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
+index 6304514a6f2c..2eb03ffe2484 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_rdma.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
+@@ -246,18 +246,17 @@ static void qede_rdma_change_mtu(struct qede_dev *edev)
+ static struct qede_rdma_event_work *
+ qede_rdma_get_free_event_node(struct qede_dev *edev)
  {
- 	struct sja1105_gate_entry *e;
- 	struct list_head *pos;
--	int rc;
-+
-+	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
-+					      entry_time, extack);
-+	if (IS_ERR(pos))
-+		return PTR_ERR(pos);
+-	struct qede_rdma_event_work *event_node = NULL;
+-	bool found = false;
++	struct qede_rdma_event_work *event_node = NULL, *iter;
  
- 	e = kzalloc(sizeof(*e), GFP_KERNEL);
- 	if (!e)
-@@ -45,22 +49,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- 	e->rule = rule;
- 	e->gate_state = gate_state;
- 	e->interval = entry_time;
--
--	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
--					      e->interval, extack);
--	if (IS_ERR(pos)) {
--		rc = PTR_ERR(pos);
--		goto err;
--	}
--
- 	list_add(&e->list, pos->prev);
+-	list_for_each_entry(event_node, &edev->rdma_info.rdma_event_list,
++	list_for_each_entry(iter, &edev->rdma_info.rdma_event_list,
+ 			    list) {
+-		if (!work_pending(&event_node->work)) {
+-			found = true;
++		if (!work_pending(&iter->work)) {
++			event_node = iter;
+ 			break;
+ 		}
+ 	}
  
- 	gating_cfg->num_entries++;
- 
- 	return 0;
--err:
--	kfree(e);
--	return rc;
- }
- 
- /* The gate entries contain absolute times in their e->interval field. Convert
+-	if (!found) {
++	if (!event_node) {
+ 		event_node = kzalloc(sizeof(*event_node), GFP_ATOMIC);
+ 		if (!event_node) {
+ 			DP_NOTICE(edev,
 -- 
 2.25.1
 
