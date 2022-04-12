@@ -2,109 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A133C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B03C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355531AbiDLNYM (ORCPT
+        id S1355593AbiDLNYU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
+        Tue, 12 Apr 2022 09:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356021AbiDLNWY (ORCPT
+        with ESMTP id S1356417AbiDLNXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:22:24 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53340D6D;
-        Tue, 12 Apr 2022 06:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649769192; x=1681305192;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=THXNbE6uwc6VmEva3UG39/ka2/jfkbL0RmRgTIEQt8M=;
-  b=fCmZykE24AWdHyuYnbHbQjNmK3JasMMSy1iz72xn/BCaWcAeky3CT4dT
-   XtGXnXgagHs6cPge+VGDAPOFS9MggTd68WJ6jpRKeVhM4sEiew7fHNbT9
-   y3H+PQ9lC6ImGFXOOpWgbKbEQ49T6Fw/spHDK0wbbb1KHK2ezmQ4IkyGS
-   nsgfrx0WDMpqfJkvuu1kL10uKmS9m/w24hbPk0wKWaaRRJ/C0JPZiegQC
-   MOgYINf9rzDI3e6WlKBvcgCCdR70uWtjknODOzseEg0bLP84XdBAq+OmU
-   bAWooNWUdBHNRUeSxMS+XeRnuv7C9fiqImRlnrA2dW+ImFGJAIgOUbOLX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262550916"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="262550916"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:13:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="699828966"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2022 06:13:04 -0700
-Date:   Tue, 12 Apr 2022 21:12:54 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Wanpeng Li <wanpengli@tencent.com>, jun.nakajima@intel.com,
-        david@redhat.com, "J . Bruce Fields" <bfields@fieldses.org>,
-        dave.hansen@intel.com, "H . Peter Anvin" <hpa@zytor.com>,
-        ak@linux.intel.com, Jonathan Corbet <corbet@lwn.net>,
-        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
-        Hugh Dickins <hughd@google.com>,
-        Steven Price <steven.price@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Borislav Petkov <bp@alien8.de>, luto@kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jim Mattson <jmattson@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH v5 03/13] mm/shmem: Support memfile_notifier
-Message-ID: <20220412131254.GF8013@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-4-chao.p.peng@linux.intel.com>
- <20220411152647.uvl2ukuwishsckys@box.shutemov.name>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411152647.uvl2ukuwishsckys@box.shutemov.name>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        Tue, 12 Apr 2022 09:23:10 -0400
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D785F56;
+        Tue, 12 Apr 2022 06:14:07 -0700 (PDT)
+Received: by mail-ot1-f54.google.com with SMTP id a17-20020a9d3e11000000b005cb483c500dso13351016otd.6;
+        Tue, 12 Apr 2022 06:14:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=4Hu29V9bbNGQ7NeMGoWiDLgZuDde0wP79E71crt9DdM=;
+        b=6xDjFtAoU9TZO0esno4Hf4cS5FCI+aIIpNOUkbHDbAuuFwTt4JaIR20bDh9d6DSjfs
+         kAsGSx5LffWFabhBQ7aTEoMNwg1PSL5ed77c9J6xP9GlMkMjvYhtFLxi3tRSmKZWe9gH
+         Euc77qwslSDI9a5R8ODHwNjD43tmFQ6vZcYUFlaNJRFrXOol400alUhSwpI3SmzOSMl0
+         BhI/kargNL8AMuBC4jLIoGZrutqqr+34SjGLtbgMSIj/pNV+KgaMU2nHpA9/6rzSRdBT
+         pp8G7HePqq5VK33vCIP6SBf8i/keNDmT0K1IPrcoqSdwVo3INlQLZPVsV1AocB4KqI2P
+         MLpQ==
+X-Gm-Message-State: AOAM5334wWwbGUWYGN1J6buNWOhED6p1FJzd82JcMM7ueKBP2a0Hcs+L
+        TLuCsqSMAHVVp/kw/bl2Dw==
+X-Google-Smtp-Source: ABdhPJy/ZMhWQUc529yUtvgnyCadjBqr7fjsWtZYK6b6y58vnNMwVPuq1IYac7H3Y8QrDWl4AkwVgw==
+X-Received: by 2002:a05:6830:2aa1:b0:5e6:cccf:419b with SMTP id s33-20020a0568302aa100b005e6cccf419bmr6816302otu.208.1649769246965;
+        Tue, 12 Apr 2022 06:14:06 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n62-20020acaef41000000b002ef646e6690sm12947467oih.53.2022.04.12.06.14.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 06:14:06 -0700 (PDT)
+Received: (nullmailer pid 3815484 invoked by uid 1000);
+        Tue, 12 Apr 2022 13:14:05 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        linux-aspeed@lists.ozlabs.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        devicetree@vger.kernel.org, joel@jms.id.au, hkallweit1@gmail.com,
+        pabeni@redhat.com, linux-arm-kernel@lists.infradead.org,
+        andrew@aj.id.au, robh+dt@kernel.org, p.zabel@pengutronix.de,
+        krzk+dt@kernel.org, linux-kernel@vger.kernel.org, andrew@lunn.ch,
+        BMC-SW@aspeedtech.com, linux@armlinux.org.uk, davem@davemloft.net
+In-Reply-To: <20220412065611.8930-2-dylan_hung@aspeedtech.com>
+References: <20220412065611.8930-1-dylan_hung@aspeedtech.com> <20220412065611.8930-2-dylan_hung@aspeedtech.com>
+Subject: Re: [PATCH v4 1/3] dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
+Date:   Tue, 12 Apr 2022 08:14:05 -0500
+Message-Id: <1649769245.688561.3815481.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 06:26:47PM +0300, Kirill A. Shutemov wrote:
-> On Thu, Mar 10, 2022 at 10:09:01PM +0800, Chao Peng wrote:
-> > diff --git a/mm/shmem.c b/mm/shmem.c
-> > index 9b31a7056009..7b43e274c9a2 100644
-> > --- a/mm/shmem.c
-> > +++ b/mm/shmem.c
-> > @@ -903,6 +903,28 @@ static struct folio *shmem_get_partial_folio(struct inode *inode, pgoff_t index)
-> >  	return page ? page_folio(page) : NULL;
-> >  }
-> >  
-> > +static void notify_fallocate(struct inode *inode, pgoff_t start, pgoff_t end)
-> > +{
-> > +#ifdef CONFIG_MEMFILE_NOTIFIER
-> > +	struct shmem_inode_info *info = SHMEM_I(inode);
-> > +
-> > +	memfile_notifier_fallocate(&info->memfile_notifiers, start, end);
-> > +#endif
+On Tue, 12 Apr 2022 14:56:09 +0800, Dylan Hung wrote:
+> The AST2600 MDIO bus controller has a reset control bit and must be
+> deasserted before manipulating the MDIO controller. By default, the
+> hardware asserts the reset so the driver only need to deassert it.
 > 
-> All these #ifdefs look ugly. Could you provide dummy memfile_* for
-> !MEMFILE_NOTIFIER case?
-Sure.
+> Regarding to the old DT blobs which don't have reset property in them,
+> the reset deassertion is usually done by the bootloader so the reset
+> property is optional to work with them.
+> 
+> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>  .../devicetree/bindings/net/aspeed,ast2600-mdio.yaml         | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
 
-Chao
-> 
-> -- 
->  Kirill A. Shutemov
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.example.dts:25.35-36 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
