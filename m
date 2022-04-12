@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CCEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C919BC46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350968AbiDLGno (ORCPT
+        id S1351010AbiDLGnt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
+        Tue, 12 Apr 2022 02:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350258AbiDLGkm (ORCPT
+        with ESMTP id S1350327AbiDLGkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:40:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC80D1116D;
-        Mon, 11 Apr 2022 23:36:06 -0700 (PDT)
+        Tue, 12 Apr 2022 02:40:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F31D13EA3;
+        Mon, 11 Apr 2022 23:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ADA8618FF;
-        Tue, 12 Apr 2022 06:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BEBC385A6;
-        Tue, 12 Apr 2022 06:36:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97EFEB81B40;
+        Tue, 12 Apr 2022 06:36:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F347C385A1;
+        Tue, 12 Apr 2022 06:36:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745365;
-        bh=wdYPro3k5WfmoGlF+aTuYueHR2pQQgno184Tf5huwgA=;
+        s=korg; t=1649745371;
+        bh=5Yo9zPmpBKuLXJEskPXMJiqE3CJEvDRDKoo0TjzcPK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vvBeFgIoty6LanrvDQDNIB4NpT0elDNpxMATvLCa35EJsC4HJhc0p/lTqZP36LjNi
-         oJPbz0Zo1KA5UwkVhwXU90vNZJhaC5Y6pI5zj0q0gitN6l+FntMReJPLb2juJTlyLQ
-         K6d6rMJJOZ3zG5PbO3BC1C8TBIgWd3chrcWf/8Oo=
+        b=PuZARJk4REljDBy5+T9fW15RKbdCpVotJCJiHR1OOo2gLXcSWL0GVo3qrsO++6aID
+         h6lq/2KXTxijpAtVyyd1zrQrTeM1Izs6e50+7vfs8sxxtGjEqO34nQf6vv0tW+j5SF
+         Afy6YmcXKSQROY15XqEi4XOm2caxHpRS+NdjjfkA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Galbraith <efault@gmx.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 032/171] tcp: Dont acquire inet_listen_hashbucket::lock with disabled BH.
-Date:   Tue, 12 Apr 2022 08:28:43 +0200
-Message-Id: <20220412062928.816380293@linuxfoundation.org>
+Subject: [PATCH 5.10 034/171] power: supply: axp288-charger: Set Vhold to 4.4V
+Date:   Tue, 12 Apr 2022 08:28:45 +0200
+Message-Id: <20220412062928.874615850@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,171 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 4f9bf2a2f5aacf988e6d5e56b961ba45c5a25248 ]
+[ Upstream commit 5ac121b81b4051e7fc83d5b3456a5e499d5bd147 ]
 
-Commit
-   9652dc2eb9e40 ("tcp: relax listening_hash operations")
+The AXP288's recommended and factory default Vhold value (minimum
+input voltage below which the input current draw will be reduced)
+is 4.4V. This lines up with other charger IC's such as the TI
+bq2419x/bq2429x series which use 4.36V or 4.44V.
 
-removed the need to disable bottom half while acquiring
-listening_hash.lock. There are still two callers left which disable
-bottom half before the lock is acquired.
+For some reason some BIOS-es initialize Vhold to 4.6V or even 4.7V
+which combined with the typical voltage drop over typically low
+wire gauge micro-USB cables leads to the input-current getting
+capped below 1A (with a 2A capable dedicated charger) based on Vhold.
 
-On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
-as a lock to ensure that resources, that are protected by disabling
-bottom halves, remain protected.
-This leads to a circular locking dependency if the lock acquired with
-disabled bottom halves is also acquired with enabled bottom halves
-followed by disabling bottom halves. This is the reverse locking order.
-It has been observed with inet_listen_hashbucket::lock:
+This leads to slow charging, or even to the device slowly discharging
+if the device is in heavy use.
 
-local_bh_disable() + spin_lock(&ilb->lock):
-  inet_listen()
-    inet_csk_listen_start()
-      sk->sk_prot->hash() := inet_hash()
-	local_bh_disable()
-	__inet_hash()
-	  spin_lock(&ilb->lock);
-	    acquire(&ilb->lock);
+As the Linux AXP288 drivers use the builtin BC1.2 charger detection
+and send the input-current-limit according to the detected charger
+there really is no reason not to use the recommended 4.4V Vhold.
 
-Reverse order: spin_lock(&ilb2->lock) + local_bh_disable():
-  tcp_seq_next()
-    listening_get_next()
-      spin_lock(&ilb2->lock);
-	acquire(&ilb2->lock);
+Set Vhold to 4.4V to fix the slow charging issue on various devices.
 
-  tcp4_seq_show()
-    get_tcp4_sock()
-      sock_i_ino()
-	read_lock_bh(&sk->sk_callback_lock);
-	  acquire(softirq_ctrl)	// <---- whoops
-	  acquire(&sk->sk_callback_lock)
+There is one exception, the special-case of the HP X2 2-in-1s which
+combine this BC1.2 capable PMIC with a Type-C port and a 5V/3A factory
+provided charger with a Type-C plug which does not do BC1.2. These
+have their input-current-limit hardcoded to 3A (like under Windows)
+and use a higher Vhold on purpose to limit the current when used
+with other chargers. To avoid touching Vhold on these HP X2 laptops
+the code setting Vhold is added to an else branch of the if checking
+for these models.
 
-Drop local_bh_disable() around __inet_hash() which acquires
-listening_hash->lock. Split inet_unhash() and acquire the
-listen_hashbucket lock without disabling bottom halves; the inet_ehash
-lock with disabled bottom halves.
+Note this also fixes the sofar unused VBUS_ISPOUT_VHOLD_SET_MASK
+define, which was wrong.
 
-Reported-by: Mike Galbraith <efault@gmx.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Link: https://lkml.kernel.org/r/12d6f9879a97cd56c09fb53dee343cbb14f7f1f7.camel@gmx.de
-Link: https://lkml.kernel.org/r/X9CheYjuXWc75Spa@hirez.programming.kicks-ass.net
-Link: https://lore.kernel.org/r/YgQOebeZ10eNx1W6@linutronix.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_hashtables.c  | 53 ++++++++++++++++++++++---------------
- net/ipv6/inet6_hashtables.c |  5 +---
- 2 files changed, 33 insertions(+), 25 deletions(-)
+ drivers/power/supply/axp288_charger.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index e093847c334d..915b8e1bd9ef 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -637,7 +637,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
- 	int err = 0;
+diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
+index a4df1ea92386..f65bf7b295c5 100644
+--- a/drivers/power/supply/axp288_charger.c
++++ b/drivers/power/supply/axp288_charger.c
+@@ -41,11 +41,11 @@
+ #define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
+ #define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
+ #define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
+-#define VBUS_ISPOUT_VHOLD_SET_MASK	0x31
++#define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
+ #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
+ #define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
+ #define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
+-#define VBUS_ISPOUT_VHOLD_SET_4300MV	0x3	/* 4300mV */
++#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
+ #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
  
- 	if (sk->sk_state != TCP_LISTEN) {
-+		local_bh_disable();
- 		inet_ehash_nolisten(sk, osk, NULL);
-+		local_bh_enable();
- 		return 0;
- 	}
- 	WARN_ON(!sk_unhashed(sk));
-@@ -669,45 +671,54 @@ int inet_hash(struct sock *sk)
- {
- 	int err = 0;
- 
--	if (sk->sk_state != TCP_CLOSE) {
--		local_bh_disable();
-+	if (sk->sk_state != TCP_CLOSE)
- 		err = __inet_hash(sk, NULL);
--		local_bh_enable();
--	}
- 
- 	return err;
- }
- EXPORT_SYMBOL_GPL(inet_hash);
- 
--void inet_unhash(struct sock *sk)
-+static void __inet_unhash(struct sock *sk, struct inet_listen_hashbucket *ilb)
- {
--	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
--	struct inet_listen_hashbucket *ilb = NULL;
--	spinlock_t *lock;
--
- 	if (sk_unhashed(sk))
- 		return;
- 
--	if (sk->sk_state == TCP_LISTEN) {
--		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
--		lock = &ilb->lock;
--	} else {
--		lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
--	}
--	spin_lock_bh(lock);
--	if (sk_unhashed(sk))
--		goto unlock;
--
- 	if (rcu_access_pointer(sk->sk_reuseport_cb))
- 		reuseport_detach_sock(sk);
- 	if (ilb) {
-+		struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
-+
- 		inet_unhash2(hashinfo, sk);
- 		ilb->count--;
- 	}
- 	__sk_nulls_del_node_init_rcu(sk);
- 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
--unlock:
--	spin_unlock_bh(lock);
-+}
-+
-+void inet_unhash(struct sock *sk)
-+{
-+	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
-+
-+	if (sk_unhashed(sk))
-+		return;
-+
-+	if (sk->sk_state == TCP_LISTEN) {
-+		struct inet_listen_hashbucket *ilb;
-+
-+		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
-+		/* Don't disable bottom halves while acquiring the lock to
-+		 * avoid circular locking dependency on PREEMPT_RT.
-+		 */
-+		spin_lock(&ilb->lock);
-+		__inet_unhash(sk, ilb);
-+		spin_unlock(&ilb->lock);
+ #define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
+@@ -744,6 +744,16 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
+ 		ret = axp288_charger_vbus_path_select(info, true);
+ 		if (ret < 0)
+ 			return ret;
 +	} else {
-+		spinlock_t *lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
-+
-+		spin_lock_bh(lock);
-+		__inet_unhash(sk, NULL);
-+		spin_unlock_bh(lock);
-+	}
- }
- EXPORT_SYMBOL_GPL(inet_unhash);
++		/* Set Vhold to the factory default / recommended 4.4V */
++		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
++		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
++					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
++		if (ret < 0) {
++			dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
++				AXP20X_VBUS_IPSOUT_MGMT, ret);
++			return ret;
++		}
+ 	}
  
-diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-index 67c9114835c8..0a2e7f228391 100644
---- a/net/ipv6/inet6_hashtables.c
-+++ b/net/ipv6/inet6_hashtables.c
-@@ -333,11 +333,8 @@ int inet6_hash(struct sock *sk)
- {
- 	int err = 0;
- 
--	if (sk->sk_state != TCP_CLOSE) {
--		local_bh_disable();
-+	if (sk->sk_state != TCP_CLOSE)
- 		err = __inet_hash(sk, NULL);
--		local_bh_enable();
--	}
- 
- 	return err;
- }
+ 	/* Read current charge voltage and current limit */
 -- 
 2.35.1
 
