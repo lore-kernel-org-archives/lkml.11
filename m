@@ -2,125 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3118C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232795AbiDLLvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47034 "EHLO
+        id S235447AbiDLLv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354998AbiDLLtI (ORCPT
+        with ESMTP id S1355056AbiDLLtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:49:08 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E1EB39;
-        Tue, 12 Apr 2022 03:32:31 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so2427096pjb.0;
-        Tue, 12 Apr 2022 03:32:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j/diUgJ6on6fJMFNZB8r5qR9Df3QD60+s0BeH3kCZZE=;
-        b=eqPtoZXzQy7EibLkilIePwxil9cDXhi/222u6HQ2xkHFy75qv8m1UEp+2XcV9YhqkW
-         p3je/XJIODmDyyGCDBKS9Jmn0dg4o/PFO1+1Azg+eluYxdUV8KxfEtNsJ7svBi/TOwKM
-         sSPcvpjYZx7RQbfeQ4IBRkNzDn4OpDRwFmftZTa9dzB6IO8cFYhXR7GcQQYbVkorRwBP
-         5uU+FN9jHnKI/bTKHafONRvng3twc2hF1FQWmeUptt4Z+SnkXExC3M+4EdC3k3K52iXU
-         MdUp3TckFSJDchBbp6Mb8NH7d2wVL3T1DEHoxVExopqRIurj5lML/4Fz3Vy9CHzNpFYq
-         VUwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j/diUgJ6on6fJMFNZB8r5qR9Df3QD60+s0BeH3kCZZE=;
-        b=w1SUXwDPaifQYAvkxkKi0+u59K1kz8FNtxNr4pXEm0UDwWuPhjqEZkDe36DFhipVVw
-         /pcC0X2HFdTVWikl/784UkdjpKVDN2FXFophoGoDoNCyVvzpNBDmQODm+zKfD5FzPWJg
-         wQ3EBls8MnzOdSIyb2jXzDRKBBuSQk2CIZYln0w7k0KZsFbgYCS38/rLlMHkaNu1t46z
-         JghvXpU2dFclKTm3fnNc6ZiIB+6+FpKhNc6jItGSRQmnErFIBpSR+fJ2/YlkN9QkmOc6
-         /dnNMyM8kA6H+29aZQ7Z5+8WYfojpnxgJ0tmQtLJQe8g2Y37K+zLb1cahgcCelJlh5Zj
-         It0A==
-X-Gm-Message-State: AOAM532rIcTcpyu3dGO8DuRaiva457raAXnSG7LGYWPahWRdSTKzsxse
-        mPrBvc0kWz1nwTeZjpoeQ1ghNqB/mdcTrZMqwC4=
-X-Google-Smtp-Source: ABdhPJxJgTuTm/K4D0Rn0JofYXhgZEIj20GsEhgefL/eIQuy+S3UNBl/Ih83/Cuo5UxX8n90jH9/N/sU99mGf9nIj20=
-X-Received: by 2002:a17:902:edc5:b0:156:68e4:416 with SMTP id
- q5-20020a170902edc500b0015668e40416mr36483483plk.87.1649759551356; Tue, 12
- Apr 2022 03:32:31 -0700 (PDT)
+        Tue, 12 Apr 2022 07:49:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69867B7DD;
+        Tue, 12 Apr 2022 03:34:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00C8D6189B;
+        Tue, 12 Apr 2022 10:34:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BF10C385A1;
+        Tue, 12 Apr 2022 10:33:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649759639;
+        bh=h/Lw9izRLusTDmD2KCubgYWO5EB0A5SrBYBfsF6EwZk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=b61UQ4X4zw6b2oqj7cqsksnVXuQh9qJJdTlX3mzgxfveyIxmCmtf8lGtk7t/KIU4/
+         8KWpULW509FC+eUFEQvwEY9UlYa+9ykC2UgVDxngpNkJ+yrIuJWcpryAzpT3tRB3dH
+         P2tiezjzuF2emFaeVhIRg1EHSBrhgn/EU+3v5s/IKYlo2y/66AEBvtoApANjBVn5qL
+         qVU4HVdRH7pe49LUiABwacPBbDdo83V+4Xu5aW5tq8ZXgXRyGz+f8Ei9zi5mNC4LRl
+         I2p9vq5G6dRG5UpuHGe+I2mbNqtIw9WJmAyRBFMrgkbEccPu+TCfoqnqYl38EG7hx4
+         X9N3CA/7efcLg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Philippe Schenker <dev@pschenker.ch>,
+        linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        "David S. Miller" <davem@davemloft.net>,
+        Deren Wu <deren.wu@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        "regressions\@lists.linux.dev" <regressions@lists.linux.dev>
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+References: <20220412090415.17541-1-dev@pschenker.ch>
+        <87y20aod5d.fsf@kernel.org>
+        <7aa0bbd0-5498-ba74-ad6d-6dacbade8a3d@leemhuis.info>
+Date:   Tue, 12 Apr 2022 13:33:52 +0300
+In-Reply-To: <7aa0bbd0-5498-ba74-ad6d-6dacbade8a3d@leemhuis.info> (Thorsten
+        Leemhuis's message of "Tue, 12 Apr 2022 11:55:13 +0200")
+Message-ID: <87sfqioajz.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20220411133428.42165-1-manivannan.sadhasivam@linaro.org>
-In-Reply-To: <20220411133428.42165-1-manivannan.sadhasivam@linaro.org>
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Tue, 12 Apr 2022 12:30:18 +0200
-Message-ID: <CAGRyCJEFjx6unWLavitXzyWU9G7vLnW9=b+xU-sLLq6LwU3Aow@mail.gmail.com>
-Subject: Re: [PATCH v2] bus: mhi: host: pci_generic: Sort mhi_pci_id_table
- based on the PID
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mani,
+Thorsten Leemhuis <regressions@leemhuis.info> writes:
 
-Il giorno lun 11 apr 2022 alle ore 15:34 Manivannan Sadhasivam
-<manivannan.sadhasivam@linaro.org> ha scritto:
+> On 12.04.22 11:37, Kalle Valo wrote:
+>> Philippe Schenker <dev@pschenker.ch> writes:
+>> 
+>>> This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+>>>
+>>> This commit introduces a regression on some systems where the kernel is
+>>> crashing in different locations after a reboot was issued.
+>>>
+>>> This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest firmware.
+>>>
+>>> Link:
+>>> https://lore.kernel.org/linux-wireless/5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/
+>>> Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+>> 
+>> Can I take this to wireless tree? Felix, ack?
+>> 
+>> I'll also add:
+>> 
+>> Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
 >
-> Sorting this way helps in identifying the products of vendors. There is no
-> sorting required for VID and the new VID should be added as the last entry.
->
-> Let's also add a note clarifying this.
->
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->
+> Sorry, stupid questions from the regression tracker: wouldn't this cause
+> a regression for users of kernel versions post-bf3747ae2e25, as the
+> power consumption is likely to increase for them? Without having dug
+> into the backstory much: would disabling ASPM for this particular
+> machine using a quirk be the better approach? Or are we assuming a lot
+> of machines are affected?
 
-Reviewed-by: Daniele Palmas <dnlplm@gmail.com>
+Kernel crashing is far more serious than increased power consumption. If
+there's a better fix available in the next day or two of course that can
+be considered. But if there's no such fix available, we have to revert
+the commit.
 
-I will wait for this change to be merged, then rebase the FN980 one.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Thanks,
-Daniele
-
-> Changes in v2:
->
-> * Fixup the 0x0306 entry by moving it after subid
->
->  drivers/bus/mhi/host/pci_generic.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
-> index 541ced27d941..8858f3bf4f04 100644
-> --- a/drivers/bus/mhi/host/pci_generic.c
-> +++ b/drivers/bus/mhi/host/pci_generic.c
-> @@ -446,20 +446,21 @@ static const struct mhi_pci_dev_info mhi_sierra_em919x_info = {
->         .sideband_wake = false,
->  };
->
-> +/* Keep the list sorted based on the PID. New VID should be added as the last entry */
->  static const struct pci_device_id mhi_pci_id_table[] = {
-> +       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
-> +               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx24_info },
->         /* EM919x (sdx55), use the same vid:pid as qcom-sdx55m */
->         { PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0306, 0x18d7, 0x0200),
->                 .driver_data = (kernel_ulong_t) &mhi_sierra_em919x_info },
->         { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0306),
->                 .driver_data = (kernel_ulong_t) &mhi_qcom_sdx55_info },
-> -       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
-> -               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx24_info },
-> +       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0308),
-> +               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx65_info },
->         { PCI_DEVICE(0x1eac, 0x1001), /* EM120R-GL (sdx24) */
->                 .driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
->         { PCI_DEVICE(0x1eac, 0x1002), /* EM160R-GL (sdx24) */
->                 .driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
-> -       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0308),
-> -               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx65_info },
->         /* T99W175 (sdx55), Both for eSIM and Non-eSIM */
->         { PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
->                 .driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-> --
-> 2.25.1
->
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
