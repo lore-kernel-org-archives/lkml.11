@@ -2,111 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EECF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:31:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F57DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241818AbiDLJav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        id S1380476AbiDLJ2H (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:28:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384691AbiDLImO (ORCPT
+        with ESMTP id S1380526AbiDLIWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:42:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84A8A517D7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:07:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649750875;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=c1YyOBaSlUAB1FecJdXpHWi3Q4lLTndl19zr2Spu2No=;
-        b=eRdoo+y+hlBPwFuOePOY7KPDNS1muoytKvzxkWfK3R+LLM9GNbUhr/TaIqCa0/fjr91+s+
-        IZwFYrPEYnlT7XQ6H3y9Mdz5YXJG121ksTRaW9B/Jg4QxR0Zy0BRC286pCmzM4G8s7Iq+q
-        fGzb76fKUWw4XEoCon+tcgy2e5QoKds=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-634-vaoLSJYSN02V-7011k6g5g-1; Tue, 12 Apr 2022 04:07:54 -0400
-X-MC-Unique: vaoLSJYSN02V-7011k6g5g-1
-Received: by mail-wm1-f69.google.com with SMTP id i184-20020a1c3bc1000000b0038e4c5968b5so964379wma.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:07:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=c1YyOBaSlUAB1FecJdXpHWi3Q4lLTndl19zr2Spu2No=;
-        b=SVUxcCBBfaewcQy3ThoU7N6xBKZTCkIVJj6PvI6cYRmYE3dkvSRck9Jrmh5Wt7p2Z7
-         56/W3mQNxFCDCBicGaLlJLiVm0fxR4G0o6kIl5nwBZ2c8wWU8vZMCUF9cQdgRqPt3l7n
-         uxfSPcxSnMK39tVIg88j1Ev+wxKIpTW++0RUPRV94vGaPCpaXk6VPygqoT0AuYJFqHva
-         /C6aBM5QzCGGsoYE2OUKBvT/lgFGkH6hVWm8VYudJb0IKV8R6Q17w8MxN6J2W+sqbM6+
-         O9m9PtR32bLu6cnhBqDFdOXiPf729DTV8PnZ0u3kMl7R22xFPjQlNSaws69gW0XVeMFt
-         vM9A==
-X-Gm-Message-State: AOAM530KO+Q0rAS5zK34ZUaRw3xs4u5L4mcvgk2PcZVD+/nYi/bYLaLc
-        1iGcXgL6L5AApcXxQl3XGc2shHEUv9S/LBzXjm1Ez+6YXeiMFxc8eGg2KrOGtXWSSUAnbWGys1a
-        itn4k5sdJoVkHE+5nAqj3+5Aj
-X-Received: by 2002:a05:600c:3487:b0:38c:9a42:4d49 with SMTP id a7-20020a05600c348700b0038c9a424d49mr2952294wmq.29.1649750872749;
-        Tue, 12 Apr 2022 01:07:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzDglW+gKXgj96dHt92B2SeHkQs0c4KFSOD9iFaRTxgb+0c2t9/xh8a8ox8ht2X97EXHVi9og==
-X-Received: by 2002:a05:600c:3487:b0:38c:9a42:4d49 with SMTP id a7-20020a05600c348700b0038c9a424d49mr2952269wmq.29.1649750872365;
-        Tue, 12 Apr 2022 01:07:52 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm1922805wmp.44.2022.04.12.01.07.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 01:07:51 -0700 (PDT)
-Message-ID: <6be74110-a65b-7b77-ceac-9da640964ba0@redhat.com>
-Date:   Tue, 12 Apr 2022 10:07:51 +0200
+        Tue, 12 Apr 2022 04:22:23 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E523DA4D;
+        Tue, 12 Apr 2022 00:50:24 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C7oAar018043;
+        Tue, 12 Apr 2022 02:50:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649749810;
+        bh=yM/9cc78S1i8HEddMD3wxGuXek/48V7OQ8kUXBP1COc=;
+        h=From:To:CC:Subject:Date;
+        b=wTlLh+2aiIHe/vSA35f87ddCmK6FIbnIwtwXeZlzB2M1ERbrTq6XgmgNdql8xPsjN
+         Ij8j/Kvis/coBNfqn8PSVNK3x93aI6R8gYF+5dMcjPQlnOfv8vDrAoKlJmxKdZYXAa
+         VJSD55R0PuY9fcdiPgfPwvhvTQsPRUfvs85WgTPc=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C7oASf010873
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 02:50:10 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
+ Apr 2022 02:50:09 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 12 Apr 2022 02:50:09 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C7o9u6120301;
+        Tue, 12 Apr 2022 02:50:09 -0500
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+To:     <nm@ti.com>
+CC:     <vigneshr@ti.com>, <kristo@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <j-choudhary@ti.com>
+Subject: [PATCH] arm64: dts: ti: k3-am62: Add SA3UL ranges in cbass_main
+Date:   Tue, 12 Apr 2022 13:20:08 +0530
+Message-ID: <20220412075008.10553-1-j-choudhary@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 5/5] drm/solomon: Add SSD130x OLED displays SPI support
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <maxime@cerno.tech>,
-        YueHaibing <yuehaibing@huawei.com>
-References: <20220411211243.11121-1-javierm@redhat.com>
- <20220411211243.11121-6-javierm@redhat.com>
- <CAMuHMdWsmtBdcV=LL4yqprtbum4f9cSu8orjoPACECa5QENmsg@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAMuHMdWsmtBdcV=LL4yqprtbum4f9cSu8orjoPACECa5QENmsg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/12/22 09:31, Geert Uytterhoeven wrote:
+Add the address space for SA3UL to the ranges property of the
+cbass_main node.
 
-[snip]
+Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-am62.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
->> +
->> +       t->spi = spi;
->> +
->> +       t->dc = ssd130x_spi_get_dc(&spi->dev);
->> +       if (IS_ERR(t->dc))
->> +               return PTR_ERR(t->dc);
-> 
-> This can be simplified (no need for the PTR_ERR(ERR_PTR(...) dance)
-> by open-coding ssd130x_spi_get_dc() here.
->
-
-Right, that will be better indeed.
-
+diff --git a/arch/arm64/boot/dts/ti/k3-am62.dtsi b/arch/arm64/boot/dts/ti/k3-am62.dtsi
+index bc2997b18556..37fcbe7a3c33 100644
+--- a/arch/arm64/boot/dts/ti/k3-am62.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am62.dtsi
+@@ -66,6 +66,7 @@
+ 			 <0x00 0x30200000 0x00 0x30200000 0x00 0x00010000>, /* DSS */
+ 			 <0x00 0x31000000 0x00 0x31000000 0x00 0x00050000>, /* USB0 DWC3 Core window */
+ 			 <0x00 0x31100000 0x00 0x31100000 0x00 0x00050000>, /* USB1 DWC3 Core window */
++			 <0x00 0x40900000 0x00 0x40900000 0x00 0x00030000>, /* SA3UL */
+ 			 <0x00 0x43600000 0x00 0x43600000 0x00 0x00010000>, /* SA3 sproxy data */
+ 			 <0x00 0x44043000 0x00 0x44043000 0x00 0x00000fe0>, /* TI SCI DEBUG */
+ 			 <0x00 0x44860000 0x00 0x44860000 0x00 0x00040000>, /* SA3 sproxy config */
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.17.1
 
