@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354953AbiDLNHV (ORCPT
+        id S1355272AbiDLNH1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        Tue, 12 Apr 2022 09:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356376AbiDLND1 (ORCPT
+        with ESMTP id S1356328AbiDLND0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:27 -0400
+        Tue, 12 Apr 2022 09:03:26 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 537DFDE87
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F87E6C97D
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:01 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1336F1570;
-        Tue, 12 Apr 2022 05:45:24 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBCE2169C;
+        Tue, 12 Apr 2022 05:45:00 -0700 (PDT)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B5E103F70D;
-        Tue, 12 Apr 2022 05:45:21 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 898FC3F70D;
+        Tue, 12 Apr 2022 05:44:58 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -38,9 +38,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 14/21] x86/resctrl: Allow per-rmid arch private storage to be reset
-Date:   Tue, 12 Apr 2022 12:44:12 +0000
-Message-Id: <20220412124419.30689-15-james.morse@arm.com>
+Subject: [PATCH v4 05/21] x86/resctrl: Add domain offline callback for resctrl work
+Date:   Tue, 12 Apr 2022 12:44:03 +0000
+Message-Id: <20220412124419.30689-6-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
 References: <20220412124419.30689-1-james.morse@arm.com>
@@ -50,15 +50,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To abstract the rmid counters into a helper that returns the number
-of bytes counted, architecture specific per-rmid state is needed.
+Because domains are exposed to user-space via resctrl, the filesystem
+must update its state when CPU hotplug callbacks are triggered.
 
-It needs to be possible to reset this hidden state, as the values
-may outlive the life of an rmid, or the mount time of the filesystem.
+Some of this work is common to any architecture that would support
+resctrl, but the work is tied up with the architecture code to
+free the memory.
 
-mon_event_read() is called with first = true when an rmid is first
-allocated in mkdir_mondata_subdir(). Add resctrl_arch_reset_rmid()
-and call it from __mon_event_count()'s rr->first check.
+Move the monitor subdir removal and the cancelling of the mbm/limbo
+works into a new resctrl_offline_domain() call. These bits are not
+specific to the architecture. Grouping them in one function allows
+that code to be moved to /fs/ and re-used by another architecture.
 
 Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
 Tested-by: Xin Hao <xhao@linux.alibaba.com>
@@ -66,157 +68,158 @@ Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
-
 ---
+Changes since v2:
+ * Moved kfree()ing to domain_destroy_mon_state() for later re-use.
+
 Changes since v1:
- * Aded WARN_ON_ONCE() for a case that should never happen.
+ * Removed a redundant mon_capable check
+ * Capitalisation
+ * Removed inline comment
+ * Added to the commit message
 ---
- arch/x86/kernel/cpu/resctrl/internal.h | 18 ++++---------
- arch/x86/kernel/cpu/resctrl/monitor.c  | 35 +++++++++++++++++++++++++-
- include/linux/resctrl.h                | 23 +++++++++++++++++
- 3 files changed, 62 insertions(+), 14 deletions(-)
+ arch/x86/kernel/cpu/resctrl/core.c     | 26 ++-------------
+ arch/x86/kernel/cpu/resctrl/internal.h |  2 --
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c | 45 +++++++++++++++++++++++---
+ include/linux/resctrl.h                |  1 +
+ 4 files changed, 44 insertions(+), 30 deletions(-)
 
+diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
+index e37889f7a1a5..f69182973175 100644
+--- a/arch/x86/kernel/cpu/resctrl/core.c
++++ b/arch/x86/kernel/cpu/resctrl/core.c
+@@ -523,27 +523,8 @@ static void domain_remove_cpu(int cpu, struct rdt_resource *r)
+ 
+ 	cpumask_clear_cpu(cpu, &d->cpu_mask);
+ 	if (cpumask_empty(&d->cpu_mask)) {
+-		/*
+-		 * If resctrl is mounted, remove all the
+-		 * per domain monitor data directories.
+-		 */
+-		if (static_branch_unlikely(&rdt_mon_enable_key))
+-			rmdir_mondata_subdir_allrdtgrp(r, d->id);
++		resctrl_offline_domain(r, d);
+ 		list_del(&d->list);
+-		if (r->mon_capable && is_mbm_enabled())
+-			cancel_delayed_work(&d->mbm_over);
+-		if (is_llc_occupancy_enabled() &&  has_busy_rmid(r, d)) {
+-			/*
+-			 * When a package is going down, forcefully
+-			 * decrement rmid->ebusy. There is no way to know
+-			 * that the L3 was flushed and hence may lead to
+-			 * incorrect counts in rare scenarios, but leaving
+-			 * the RMID as busy creates RMID leaks if the
+-			 * package never comes back.
+-			 */
+-			__check_limbo(d, true);
+-			cancel_delayed_work(&d->cqm_limbo);
+-		}
+ 
+ 		/*
+ 		 * rdt_domain "d" is going to be freed below, so clear
+@@ -551,11 +532,8 @@ static void domain_remove_cpu(int cpu, struct rdt_resource *r)
+ 		 */
+ 		if (d->plr)
+ 			d->plr->d = NULL;
+-
+-		bitmap_free(d->rmid_busy_llc);
+-		kfree(d->mbm_total);
+-		kfree(d->mbm_local);
+ 		domain_free(hw_dom);
++
+ 		return;
+ 	}
+ 
 diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index 4de8e5bb93e1..b34a1403f033 100644
+index be48a682dbdb..e12b55f815bf 100644
 --- a/arch/x86/kernel/cpu/resctrl/internal.h
 +++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -22,14 +22,6 @@
- 
- #define L2_QOS_CDP_ENABLE		0x01ULL
- 
--/*
-- * Event IDs are used to program IA32_QM_EVTSEL before reading event
-- * counter from IA32_QM_CTR
-- */
--#define QOS_L3_OCCUP_EVENT_ID		0x01
--#define QOS_L3_MBM_TOTAL_EVENT_ID	0x02
--#define QOS_L3_MBM_LOCAL_EVENT_ID	0x03
--
- #define CQM_LIMBOCHECK_INTERVAL	1000
- 
- #define MBM_CNTR_WIDTH_BASE		24
-@@ -73,7 +65,7 @@ DECLARE_STATIC_KEY_FALSE(rdt_mon_enable_key);
-  * @list:		entry in &rdt_resource->evt_list
+@@ -522,8 +522,6 @@ void free_rmid(u32 rmid);
+ int rdt_get_mon_l3_config(struct rdt_resource *r);
+ void mon_event_count(void *info);
+ int rdtgroup_mondata_show(struct seq_file *m, void *arg);
+-void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
+-				    unsigned int dom_id);
+ void mon_event_read(struct rmid_read *rr, struct rdt_resource *r,
+ 		    struct rdt_domain *d, struct rdtgroup *rdtgrp,
+ 		    int evtid, int first);
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index 53bdc07f9dac..00d7164a7441 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -2499,14 +2499,12 @@ static int mon_addfile(struct kernfs_node *parent_kn, const char *name,
+  * Remove all subdirectories of mon_data of ctrl_mon groups
+  * and monitor groups with given domain id.
   */
- struct mon_evt {
--	u32			evtid;
-+	enum resctrl_event_id	evtid;
- 	char			*name;
- 	struct list_head	list;
- };
-@@ -90,9 +82,9 @@ struct mon_evt {
- union mon_data_bits {
- 	void *priv;
- 	struct {
--		unsigned int rid	: 10;
--		unsigned int evtid	: 8;
--		unsigned int domid	: 14;
-+		unsigned int rid		: 10;
-+		enum resctrl_event_id evtid	: 8;
-+		unsigned int domid		: 14;
- 	} u;
- };
+-void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r, unsigned int dom_id)
++static void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
++					   unsigned int dom_id)
+ {
+ 	struct rdtgroup *prgrp, *crgrp;
+ 	char name[32];
  
-@@ -100,7 +92,7 @@ struct rmid_read {
- 	struct rdtgroup		*rgrp;
- 	struct rdt_resource	*r;
- 	struct rdt_domain	*d;
--	int			evtid;
-+	enum resctrl_event_id	evtid;
- 	bool			first;
- 	u64			val;
- };
-diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index a15f870363b2..71a13c04a846 100644
---- a/arch/x86/kernel/cpu/resctrl/monitor.c
-+++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -137,7 +137,37 @@ static inline struct rmid_entry *__rmid_entry(u32 rmid)
- 	return entry;
+-	if (!r->mon_capable)
+-		return;
+-
+ 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
+ 		sprintf(name, "mon_%s_%02d", r->name, dom_id);
+ 		kernfs_remove_by_name(prgrp->mon.mon_data_kn, name);
+@@ -3233,6 +3231,45 @@ static int __init rdtgroup_setup_root(void)
+ 	return ret;
  }
  
--static u64 __rmid_read(u32 rmid, u32 eventid)
-+static struct arch_mbm_state *get_arch_mbm_state(struct rdt_hw_domain *hw_dom,
-+						 u32 rmid,
-+						 enum resctrl_event_id eventid)
++static void domain_destroy_mon_state(struct rdt_domain *d)
 +{
-+	switch (eventid) {
-+	case QOS_L3_OCCUP_EVENT_ID:
-+		return NULL;
-+	case QOS_L3_MBM_TOTAL_EVENT_ID:
-+		return &hw_dom->arch_mbm_total[rmid];
-+	case QOS_L3_MBM_LOCAL_EVENT_ID:
-+		return &hw_dom->arch_mbm_local[rmid];
++	bitmap_free(d->rmid_busy_llc);
++	kfree(d->mbm_total);
++	kfree(d->mbm_local);
++}
++
++void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d)
++{
++	lockdep_assert_held(&rdtgroup_mutex);
++
++	if (!r->mon_capable)
++		return;
++
++	/*
++	 * If resctrl is mounted, remove all the
++	 * per domain monitor data directories.
++	 */
++	if (static_branch_unlikely(&rdt_mon_enable_key))
++		rmdir_mondata_subdir_allrdtgrp(r, d->id);
++
++	if (is_mbm_enabled())
++		cancel_delayed_work(&d->mbm_over);
++	if (is_llc_occupancy_enabled() && has_busy_rmid(r, d)) {
++		/*
++		 * When a package is going down, forcefully
++		 * decrement rmid->ebusy. There is no way to know
++		 * that the L3 was flushed and hence may lead to
++		 * incorrect counts in rare scenarios, but leaving
++		 * the RMID as busy creates RMID leaks if the
++		 * package never comes back.
++		 */
++		__check_limbo(d, true);
++		cancel_delayed_work(&d->cqm_limbo);
 +	}
 +
-+	/* Never expect to get here */
-+	WARN_ON_ONCE(1);
-+
-+	return NULL;
++	domain_destroy_mon_state(d);
 +}
 +
-+void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
-+			     u32 rmid, enum resctrl_event_id eventid)
-+{
-+	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
-+	struct arch_mbm_state *am;
-+
-+	am = get_arch_mbm_state(hw_dom, rmid, eventid);
-+	if (am)
-+		memset(am, 0, sizeof(*am));
-+}
-+
-+static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
+ static int domain_setup_mon_state(struct rdt_resource *r, struct rdt_domain *d)
  {
- 	u64 val;
- 
-@@ -291,6 +321,9 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
- 	struct mbm_state *m;
- 	u64 chunks, tval;
- 
-+	if (rr->first)
-+		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
-+
- 	tval = __rmid_read(rmid, rr->evtid);
- 	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL)) {
- 		return tval;
+ 	size_t tsize;
 diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 84e815cb3be6..0b48239f5920 100644
+index d512455b4c3a..5d283bdd6162 100644
 --- a/include/linux/resctrl.h
 +++ b/include/linux/resctrl.h
-@@ -32,6 +32,16 @@ enum resctrl_conf_type {
- 
- #define CDP_NUM_TYPES	(CDP_DATA + 1)
- 
-+/*
-+ * Event IDs, the values match those used to program IA32_QM_EVTSEL before
-+ * reading IA32_QM_CTR on RDT systems.
-+ */
-+enum resctrl_event_id {
-+	QOS_L3_OCCUP_EVENT_ID		= 0x01,
-+	QOS_L3_MBM_TOTAL_EVENT_ID	= 0x02,
-+	QOS_L3_MBM_LOCAL_EVENT_ID	= 0x03,
-+};
-+
- /**
-  * struct resctrl_staged_config - parsed configuration to be applied
-  * @new_ctrl:		new ctrl value to be loaded
-@@ -210,4 +220,17 @@ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
+@@ -193,5 +193,6 @@ int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid);
+ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
+ 			    u32 closid, enum resctrl_conf_type type);
  int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
- void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
++void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
  
-+/**
-+ * resctrl_arch_reset_rmid() - Reset any private state associated with rmid
-+ *			       and eventid.
-+ * @r:		The domain's resource.
-+ * @d:		The rmid's domain.
-+ * @rmid:	The rmid whose counter values should be reset.
-+ * @eventid:	The eventid whose counter values should be reset.
-+ *
-+ * This can be called from any CPU.
-+ */
-+void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
-+			     u32 rmid, enum resctrl_event_id eventid);
-+
  #endif /* _RESCTRL_H */
 -- 
 2.30.2
