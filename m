@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 558C1C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CF2C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385906AbiDLIx3 (ORCPT
+        id S1385935AbiDLIxi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
+        Tue, 12 Apr 2022 04:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359261AbiDLHmw (ORCPT
+        with ESMTP id S1359251AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA4F2C114;
-        Tue, 12 Apr 2022 00:21:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AE229C9B;
+        Tue, 12 Apr 2022 00:21:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76229B81B58;
-        Tue, 12 Apr 2022 07:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4257C385A1;
-        Tue, 12 Apr 2022 07:21:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 509F9B81B62;
+        Tue, 12 Apr 2022 07:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E6CC385A1;
+        Tue, 12 Apr 2022 07:20:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748080;
-        bh=RThewDuSSaDhfeV7W7Ch/9tNuzdmzLS9RuWbGQ+yvVI=;
+        s=korg; t=1649748058;
+        bh=YMs7DdWMitcpwA45VOAPxYqNjZD+cfm5Xmc4BAEvph4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xqXwXfHc+vOVy+4KFuRsAwMRy0ox25IWcDZsvNtYF0r0CtayzTkUc80Ujmz4ksu8e
-         pPoGK8Zaiqo7rC9HhNzGrPiW6+Y01rX37V9Pcz+zHZUWHfMsOOo7FOZz1/+ackeNSx
-         ebkDwPjbCmED903yNGhWGSM5bpVLjxIQR0XU1ooE=
+        b=Dxno26LCdcq90ndP0UOJiHUfV/GE4eCuGLulWNCSDhk/JgfgN6r3Mv2TXyXnHWSxo
+         p53xGa0/cb935SrL1qhExy8S/I3BMQ1GzdRdHv5T9yzkGHt8yEPcuumRPAMyAVtS7H
+         Qk0wZaEc9VEtCSn+PefRGwuZGr6u3bZ0KOtGUGUc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 311/343] drm/amdgpu: dont use BACO for reset in S3
-Date:   Tue, 12 Apr 2022 08:32:09 +0200
-Message-Id: <20220412063000.299598642@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Mack <daniel@zonque.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: [PATCH 5.17 304/343] drm/panel: ili9341: fix optional regulator handling
+Date:   Tue, 12 Apr 2022 08:32:02 +0200
+Message-Id: <20220412063000.099144337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,42 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Daniel Mack <daniel@zonque.org>
 
-commit ebc002e3ee78409c42156e62e4e27ad1d09c5a75 upstream.
+commit d14eb80e27795b7b20060f7b151cdfe39722a813 upstream.
 
-Seems to cause a reboots or hangs on some systems.
+If the optional regulator lookup fails, reset the pointer to NULL.
+Other functions such as mipi_dbi_poweron_reset_conditional() only do
+a NULL pointer check and will otherwise dereference the error pointer.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1924
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1953
-Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 5a04227326b04c15 ("drm/panel: Add ilitek ili9341 panel driver")
+Signed-off-by: Daniel Mack <daniel@zonque.org>
 Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220317225537.826302-1-daniel@zonque.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/pm/amdgpu_dpm.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/gpu/drm/panel/panel-ilitek-ili9341.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
-+++ b/drivers/gpu/drm/amd/pm/amdgpu_dpm.c
-@@ -1045,6 +1045,17 @@ bool amdgpu_dpm_is_baco_supported(struct
+--- a/drivers/gpu/drm/panel/panel-ilitek-ili9341.c
++++ b/drivers/gpu/drm/panel/panel-ilitek-ili9341.c
+@@ -612,8 +612,10 @@ static int ili9341_dbi_probe(struct spi_
+ 	int ret;
  
- 	if (!pp_funcs || !pp_funcs->get_asic_baco_capability)
- 		return false;
-+	/* Don't use baco for reset in S3.
-+	 * This is a workaround for some platforms
-+	 * where entering BACO during suspend
-+	 * seems to cause reboots or hangs.
-+	 * This might be related to the fact that BACO controls
-+	 * power to the whole GPU including devices like audio and USB.
-+	 * Powering down/up everything may adversely affect these other
-+	 * devices.  Needs more investigation.
-+	 */
-+	if (adev->in_s3)
-+		return false;
+ 	vcc = devm_regulator_get_optional(dev, "vcc");
+-	if (IS_ERR(vcc))
++	if (IS_ERR(vcc)) {
+ 		dev_err(dev, "get optional vcc failed\n");
++		vcc = NULL;
++	}
  
- 	if (pp_funcs->get_asic_baco_capability(pp_handle, &baco_cap))
- 		return false;
+ 	dbidev = devm_drm_dev_alloc(dev, &ili9341_dbi_driver,
+ 				    struct mipi_dbi_dev, drm);
 
 
