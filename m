@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61079C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343961AbiDLA5K (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
+        id S245573AbiDLA5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244237AbiDLAyY (ORCPT
+        with ESMTP id S245571AbiDLAyf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:54:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DB934BA4;
-        Mon, 11 Apr 2022 17:48:58 -0700 (PDT)
+        Mon, 11 Apr 2022 20:54:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5D2275F7;
+        Mon, 11 Apr 2022 17:49:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04682B8198C;
-        Tue, 12 Apr 2022 00:48:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14F21C385AD;
-        Tue, 12 Apr 2022 00:48:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47ECD617FB;
+        Tue, 12 Apr 2022 00:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65701C385A4;
+        Tue, 12 Apr 2022 00:49:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724535;
-        bh=UYPUE9Y3Aabbs8//bLRaLLuC72yw9bYNN85tgxuGTDs=;
+        s=k20201202; t=1649724541;
+        bh=ResghmII99n/SG65QwcSI9j5RgNFRUjFsjQqNkCWCW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ub5qsW04CM1+uqZQ9t5x3jB+XppvPYaQBuc8dJ0D3sM5BM5ZCFD1zCesBwuVCc6Dk
-         MoJJkdfgBj1I9hSo8v7G867f7tmn4O+fYDcCqPVxsKQ3fdbbmp/SyKsAZuuJks0XRx
-         obCwyL+b9w7mDpsqBYkJ3Rhs9IOWES7wJ+ZKp/SpTprvetoQbPsrpWIkIIqm0OEvYt
-         EsfdcBYnDRIjvrIIOh6wPYpY5kg6rTtk67ftAvuaIOtD2cRi7UliE4jhPlWvoJID4T
-         2dRnAE5+/aHqTIFgawuLb0c3xQ7W07gNNAsPVYwUXqEDXs4+CwFHhfVeZn0VU6vqHe
-         Sg6wA0Y3E8XwQ==
+        b=YxQXUnmg/QNIk1jZOjWL+061sYTunYq1e9e9FBSVbLY22TbydzlNFzGsRPvZDxFDX
+         jivdyFbpSAYfS01h40u6E/4N04iiEpUEsLlc+ITgLiQqZ5PmgPFFjjYe9GXOt4ORna
+         7yOgi1dK2v2QshGLzdH7p6bNz0gipOJ60FQd8GlfhnOAHT6b3nUawQlQ315qEBTzop
+         51aO/h4qoeoW/aU9WyBFnJQmo25kb+FUEQCG3hJqu2f3nOjaH/tBHEtEpIQ4zehlU+
+         nd5bvpVt30+byIj5BottQMXOSjEiLfJilfv5u8ecB772viVpeCMM/ZbEU57FjqPQhZ
+         ejdA+gzej9OTg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        io-uring@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 38/41] io_uring: zero tag on rsrc removal
-Date:   Mon, 11 Apr 2022 20:46:50 -0400
-Message-Id: <20220412004656.350101-38-sashal@kernel.org>
+Cc:     Chanho Park <chanho61.park@samsung.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Sasha Levin <sashal@kernel.org>, anshuman.khandual@arm.com,
+        suzuki.poulose@arm.com, lcherian@marvell.com,
+        rmk+kernel@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 40/41] arm64: Add part number for Arm Cortex-A78AE
+Date:   Mon, 11 Apr 2022 20:46:52 -0400
+Message-Id: <20220412004656.350101-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004656.350101-1-sashal@kernel.org>
 References: <20220412004656.350101-1-sashal@kernel.org>
@@ -52,43 +56,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Chanho Park <chanho61.park@samsung.com>
 
-[ Upstream commit 8f0a24801bb44aa58496945aabb904c729176772 ]
+[ Upstream commit 83bea32ac7ed37bbda58733de61fc9369513f9f9 ]
 
-Automatically default rsrc tag in io_queue_rsrc_removal(), it's safer
-than leaving it there and relying on the rest of the code to behave and
-not use it.
+Add the MIDR part number info for the Arm Cortex-A78AE[1] and add it to
+spectre-BHB affected list[2].
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/1cf262a50df17478ea25b22494dcc19f3a80301f.1649336342.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[1]: https://developer.arm.com/Processors/Cortex-A78AE
+[2]: https://developer.arm.com/Arm%20Security%20Center/Spectre-BHB
+
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: James Morse <james.morse@arm.com>
+Signed-off-by: Chanho Park <chanho61.park@samsung.com>
+Link: https://lore.kernel.org/r/20220407091128.8700-1-chanho61.park@samsung.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/include/asm/cputype.h | 2 ++
+ arch/arm64/kernel/proton-pack.c  | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 5fc3a62eae72..d49d83a99c9f 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8419,13 +8419,15 @@ static int io_sqe_file_register(struct io_ring_ctx *ctx, struct file *file,
- static int io_queue_rsrc_removal(struct io_rsrc_data *data, unsigned idx,
- 				 struct io_rsrc_node *node, void *rsrc)
- {
-+	u64 *tag_slot = io_get_tag_slot(data, idx);
- 	struct io_rsrc_put *prsrc;
- 
- 	prsrc = kzalloc(sizeof(*prsrc), GFP_KERNEL);
- 	if (!prsrc)
- 		return -ENOMEM;
- 
--	prsrc->tag = *io_get_tag_slot(data, idx);
-+	prsrc->tag = *tag_slot;
-+	*tag_slot = 0;
- 	prsrc->rsrc = rsrc;
- 	list_add(&prsrc->list, &node->rsrc_list);
- 	return 0;
+diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+index bfbf0c4c7c5e..39f5c1672f48 100644
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -75,6 +75,7 @@
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
+ #define ARM_CPU_PART_NEOVERSE_V1	0xD40
+ #define ARM_CPU_PART_CORTEX_A78		0xD41
++#define ARM_CPU_PART_CORTEX_A78AE	0xD42
+ #define ARM_CPU_PART_CORTEX_X1		0xD44
+ #define ARM_CPU_PART_CORTEX_A510	0xD46
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
+@@ -123,6 +124,7 @@
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
+ #define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
+ #define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
++#define MIDR_CORTEX_A78AE	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78AE)
+ #define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
+ #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
+diff --git a/arch/arm64/kernel/proton-pack.c b/arch/arm64/kernel/proton-pack.c
+index 5777929d35bf..40be3a7c2c53 100644
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -853,6 +853,7 @@ u8 spectre_bhb_loop_affected(int scope)
+ 	if (scope == SCOPE_LOCAL_CPU) {
+ 		static const struct midr_range spectre_bhb_k32_list[] = {
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78AE),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
 -- 
 2.35.1
 
