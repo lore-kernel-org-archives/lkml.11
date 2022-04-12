@@ -2,104 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E00AC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357157AbiDLPmX (ORCPT
+        id S1357217AbiDLPnL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
+        Tue, 12 Apr 2022 11:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242784AbiDLPmV (ORCPT
+        with ESMTP id S1357332AbiDLPnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:42:21 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECAD75C661;
-        Tue, 12 Apr 2022 08:40:02 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id i23-20020a9d6117000000b005cb58c354e6so13614444otj.10;
-        Tue, 12 Apr 2022 08:40:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=updOeMl3EWnF1pS4jf+Nm9m7E0WIYeBIm4x0SWDVuQY=;
-        b=PQ1wyr2FrAehgU4XTU9Yq48fQ96SLtAlPQ1SmXWhEoqumJPpAQsYXy1tAj3/aUXef0
-         mGuT0p+Fb30D00GWkZPd6bty/UWN7noW5Kbb9PsRM2XKvpBMl/1jJyOj8gRtSo5fjWQn
-         XVO4MXgvOy4EvcS5m2JwvjJU1EFAmLhiIk3xzH0WB1Nwp0ijnfEcOd5X1gT3V2tw5o42
-         8X7ZsuixtWfhS8w7XKBgWuhNeOrxIB8caNYeF4cv58bVBfa4YLsAwSvZ47gga1wIew+j
-         OnFT/9p5yl7y6QoDuj8lTpQkqzqoV+EL1xQFV1mBqKzamEX1zjBTJMPsSN7TCm3zY7U+
-         fKQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=updOeMl3EWnF1pS4jf+Nm9m7E0WIYeBIm4x0SWDVuQY=;
-        b=gEqa4dHYwXhuvnY4hhEcGp8BonvWd79Qn3MQMp2GgklpGahhUeQjJyTFLpVNoIJONO
-         6U+xNTxCCluS+7qXM/973lcKBlcxjfv6Gof0BZ8iv9N1tgCkOiB0UliSWxu+rUnXqZDB
-         Uho2+Qtr8rNHSnzx3RvcMMy/vlySMB/2DP1Slo7lEZkH3zthRcFGkOwbJVkAtwHmjM4h
-         VT+xku1pLzo1i5vsMIQw53PbsTv1bgjR5N3XzPY2qOkQPeWtI74ax3hmJJjFoglT9qCJ
-         touaa4ZiY5CQXfUhcRRy0zoX1EdhxK+XPR6r71TsYHz7uIHN3kN3hGhUDDLUcF7H14Hz
-         mFxA==
-X-Gm-Message-State: AOAM533w1h+whPg4eo7AYDAWKKRenWy+CJ8fo1PCpXQL1yDK3Og+WUlZ
-        ScvHQ6lrXVxW9pe0MnXWi7XgnE8WvZ8=
-X-Google-Smtp-Source: ABdhPJy/T/3w8cKGQssXTNtCqPm9zBUIk/NHOB/rjCK54RUN25uHKkBKjcc5oxStvgusk0u6YDxKxw==
-X-Received: by 2002:a9d:4c14:0:b0:5e6:c6be:824d with SMTP id l20-20020a9d4c14000000b005e6c6be824dmr7488255otf.204.1649778002283;
-        Tue, 12 Apr 2022 08:40:02 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id q203-20020acad9d4000000b002f8ee3f69e2sm12694109oig.52.2022.04.12.08.40.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 08:40:01 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <6d0ce49e-06e8-ce9b-ee8d-8bbabbe398f5@roeck-us.net>
-Date:   Tue, 12 Apr 2022 08:39:59 -0700
+        Tue, 12 Apr 2022 11:43:05 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 2137D5D661
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:40:47 -0700 (PDT)
+Received: (qmail 377970 invoked by uid 1000); 12 Apr 2022 11:40:46 -0400
+Date:   Tue, 12 Apr 2022 11:40:45 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc:     Evan Green <evgreen@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Rajat Jain <rajatja@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Youngjin Jang <yj84.jang@samsung.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
+Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
+Message-ID: <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
+References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
+ <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
+ <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
+ <YlDoSY19HYNJGI50@rowland.harvard.edu>
+ <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
+ <YlRATrMxRWt9gVqt@rowland.harvard.edu>
+ <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Michael Ellerman <mpe@ellerman.id.au>
-References: <20220412062942.022903016@linuxfoundation.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 5.15 000/277] 5.15.34-rc1 review
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/11/22 23:26, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.34 release.
-> There are 277 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue, Apr 12, 2022 at 05:56:42PM +0300, Mathias Nyman wrote:
+> On 11.4.2022 17.50, Alan Stern wrote:
+> > For example, what would happen if the user unplugs a device right in the 
+> > middle of the freeze transition, after the root hub has been frozen but 
+> > before the controller is frozen?  We don't want such an unplug event to 
+> > prevent the system from going into hibernation -- especially if the root 
+> > hub was not enabled for wakeup.
 > 
-> Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
-> Anything received after that time might be too late.
+> We should be able to let system go to hibernate even if we get a disconnect
+> interrupt between roothub and host controller freeze.
+> Host is not yet suspended so no PME# wake is generated, only an interrupt.
 > 
+> From Linux PM point of view it should be ok as well as the actual xhci
+> device that is generating the interrupt is hasnt completer freeze() 
+> 
+> The xhci interrupt handler just needs to make sure that the disconnect
+> isn't propagated if roothub is suspended and wake on disconnect
+> is not set. And definitely make sure xhci doesn't start roothub polling. 
+> 
+> When freeze() is called for the host we should prevent the host from 
+> generating interrupts.
 
+I guess that means adding a new callback.  Or we could just suspend the 
+controller, like Evan proposed originally.
 
-Building powerpc:skiroot_defconfig ... failed
---------------
-Error log:
-arch/powerpc/lib/code-patching.c:119:19: error: conflicting types for 'unmap_patch_area'; have 'int(long unsigned int)'
-   119 | static inline int unmap_patch_area(unsigned long addr)
-       |                   ^~~~~~~~~~~~~~~~
-arch/powerpc/lib/code-patching.c:51:13: note: previous declaration of 'unmap_patch_area' with type 'void(long unsigned int)'
-    51 | static void unmap_patch_area(unsigned long addr);
-       |             ^~~~~~~~~~~~~~~~
-arch/powerpc/lib/code-patching.c:51:13: error: 'unmap_patch_area' used but never defined [-Werror]
+> > (If the root hub _is_ enabled for wakeup then it's questionable.  
+> > Unplugging a device would be a wakeup event, so you could easily argue 
+> > that it _should_ prevent the system from going into hibernation.  After 
+> > all, if the unplug happened a few milliseconds later, after the system 
+> > had fully gone into hibernation, then it would cause the system to wake 
+> > up.)
+> > 
+> >> Would it make sense prevent xHCI interrupt generation in the host
+> >> freeze() stage, clearing the xHCI EINT bit in addition to calling 
+> >> check_roothub_suspend()?
+> >> Then enable it back in thaw()
+> > 
+> > That won't fully eliminate the problem mentioned in the preceding 
+> > paragraphs, although I guess it would help somewhat.
+> 
+> Would the following steps solve this?
+> 
+> 1. Disable device initiated resume for connected usb devices in freeze()
+> 
+> 2. Don't propagate connect or OC changes if roothub is suspended and port wake
+>    flags are disabled. I.E don't kick roothub polling in xhci interrupt
+>    handler here.
 
-Commit 520c23a20890 ("powerpc/code-patching: Pre-map patch area")
-is the last patch in a series of patches applied to the file since v5.15.
-It is not tagged for stable, and it does not include a Fixes: tag.
-I am not sure if it makes sense to apply it on its own. Copying
-Michael.
+I guess you can't just halt the entire host controller when only one of 
+the root hubs is suspended with wakeup disabled.  That does complicate 
+things.  But you could halt it as soon as both of the root hubs are 
+frozen.  Wouldn't that prevent interrupt generation?
 
-Guenter
+> 3 Disable host interrupt generation in host freeze(), and re-enable in thaw()
+
+And then this step wouldn't be necessary, right?
+
+Alan Stern
