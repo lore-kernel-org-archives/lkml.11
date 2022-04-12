@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E77CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F25C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376722AbiDLIuM (ORCPT
+        id S1376763AbiDLIuQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        Tue, 12 Apr 2022 04:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358022AbiDLHk7 (ORCPT
+        with ESMTP id S1358132AbiDLHlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:59 -0400
+        Tue, 12 Apr 2022 03:41:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D0F3BF9A;
-        Tue, 12 Apr 2022 00:17:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC3541F8B;
+        Tue, 12 Apr 2022 00:17:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88C0AB81B7A;
-        Tue, 12 Apr 2022 07:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D73D9C385A1;
-        Tue, 12 Apr 2022 07:17:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFCCEB81B66;
+        Tue, 12 Apr 2022 07:17:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A29C385A1;
+        Tue, 12 Apr 2022 07:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747830;
-        bh=YiaJDBbTcuhQHMi1q1uJq5SwFO2vcgROG+bHHXW7V2Y=;
+        s=korg; t=1649747843;
+        bh=6uhKsBVK/85T0zV+8oTAuD9p40iNznVFuvXgxUB+jLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FqJXmaFn5dC+1lSvJ6jRreHKZH2z8ixED2mwcADmcAb+zjGQ/RnExgH4WRfKA8leT
-         hi0sHLbPjBUc3njjv4mStMwdMDuvlepvhymCbixvMV/ONDNyc3lAxf8Qj4w1sSmjB9
-         AYiWmFgPyLOYZ7iiYp+2pvKNU+pL82WLSo+lUxHo=
+        b=geeFk2Uv0jgq46cLSV5QGgakYySyO7Ck6MmLXCnk6L01h6jkcH4vn0tyhyda9AFWB
+         dsy7uIN/sjuU1ZNtXpDGu9cY9+7zyX1ACf4ZockbBvVviYWiDgVzg0bkV+n5iqXuMI
+         zIt84gyEH0M0z8xf23OGgeKZCzE2IF0nZ9mHSDHk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 221/343] arch/arm64: Fix topology initialization for core scheduling
-Date:   Tue, 12 Apr 2022 08:30:39 +0200
-Message-Id: <20220412062957.719266199@linuxfoundation.org>
+        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 225/343] sfc: Do not free an empty page_ring
+Date:   Tue, 12 Apr 2022 08:30:43 +0200
+Message-Id: <20220412062957.832625390@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,72 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Auld <pauld@redhat.com>
+From: Martin Habets <habetsm.xilinx@gmail.com>
 
-[ Upstream commit 5524cbb1bfcdff0cad0aaa9f94e6092002a07259 ]
+[ Upstream commit 458f5d92df4807e2a7c803ed928369129996bf96 ]
 
-Arm64 systems rely on store_cpu_topology() to call update_siblings_masks()
-to transfer the toplogy to the various cpu masks. This needs to be done
-before the call to notify_cpu_starting() which tells the scheduler about
-each cpu found, otherwise the core scheduling data structures are setup
-in a way that does not match the actual topology.
+When the page_ring is not used page_ptr_mask is 0.
+Do not dereference page_ring[0] in this case.
 
-With smt_mask not setup correctly we bail on `cpumask_weight(smt_mask) == 1`
-for !leaders in:
-
- notify_cpu_starting()
-   cpuhp_invoke_callback_range()
-     sched_cpu_starting()
-       sched_core_cpu_starting()
-
-which leads to rq->core not being correctly set for !leader-rq's.
-
-Without this change stress-ng (which enables core scheduling in its prctl
-tests in newer versions -- i.e. with PR_SCHED_CORE support) causes a warning
-and then a crash (trimmed for legibility):
-
-[ 1853.805168] ------------[ cut here ]------------
-[ 1853.809784] task_rq(b)->core != rq->core
-[ 1853.809792] WARNING: CPU: 117 PID: 0 at kernel/sched/fair.c:11102 cfs_prio_less+0x1b4/0x1c4
-...
-[ 1854.015210] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
-...
-[ 1854.231256] Call trace:
-[ 1854.233689]  pick_next_task+0x3dc/0x81c
-[ 1854.237512]  __schedule+0x10c/0x4cc
-[ 1854.240988]  schedule_idle+0x34/0x54
-
-Fixes: 9edeaea1bc45 ("sched: Core-wide rq->lock")
-Signed-off-by: Phil Auld <pauld@redhat.com>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Link: https://lore.kernel.org/r/20220331153926.25742-1-pauld@redhat.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 2768935a4660 ("sfc: reuse pages to avoid DMA mapping/unmapping costs")
+Reported-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/smp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/rx_common.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-index 27df5c1e6baa..3b46041f2b97 100644
---- a/arch/arm64/kernel/smp.c
-+++ b/arch/arm64/kernel/smp.c
-@@ -234,6 +234,7 @@ asmlinkage notrace void secondary_start_kernel(void)
- 	 * Log the CPU info before it is marked online and might get read.
- 	 */
- 	cpuinfo_store_cpu();
-+	store_cpu_topology(cpu);
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 633ca77a26fd..b925de9b4302 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -166,6 +166,9 @@ static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
+ 	struct efx_nic *efx = rx_queue->efx;
+ 	int i;
  
- 	/*
- 	 * Enable GIC and timers.
-@@ -242,7 +243,6 @@ asmlinkage notrace void secondary_start_kernel(void)
- 
- 	ipi_setup(cpu);
- 
--	store_cpu_topology(cpu);
- 	numa_add_cpu(cpu);
- 
- 	/*
++	if (unlikely(!rx_queue->page_ring))
++		return;
++
+ 	/* Unmap and release the pages in the recycle ring. Remove the ring. */
+ 	for (i = 0; i <= rx_queue->page_ptr_mask; i++) {
+ 		struct page *page = rx_queue->page_ring[i];
 -- 
 2.35.1
 
