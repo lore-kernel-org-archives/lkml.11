@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACD8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4ADCC47081
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387209AbiDLJGH (ORCPT
+        id S1387281AbiDLJGc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        Tue, 12 Apr 2022 05:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359232AbiDLHmw (ORCPT
+        with ESMTP id S1359185AbiDLHmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A4055775;
-        Tue, 12 Apr 2022 00:20:50 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C36F554A1;
+        Tue, 12 Apr 2022 00:20:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 408E96153F;
-        Tue, 12 Apr 2022 07:20:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57FC8C385A1;
-        Tue, 12 Apr 2022 07:20:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDFFD61045;
+        Tue, 12 Apr 2022 07:20:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7DB8C385A5;
+        Tue, 12 Apr 2022 07:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748049;
-        bh=Jh0HxlaHDCPkrzXaR6A0TjXlWJhTiro1dmjnLAkCRbA=;
+        s=korg; t=1649748022;
+        bh=U2/FILndl4co+BlYvc00C3mSRpRj6SmZahSvs4PQbsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tWIROBpHZbSO+lNDwRvJOnMnTjHgWvwEs0B3PPiZnhs1k6nU1EZ2TtUQ3/Ieh71E0
-         sNAaB/ofpKN4RyQVEdM7M+DXqAGPWDaKJmOASXP9Txnz2oOaK5lUPNxdlvtPWF8SQN
-         eLcsNmW3wAT3FYOxX6B7u3pOX/Zh4+RmZehZSsKc=
+        b=zCmE1VjWh8ZSjvlyNgtKa7EIKWoZY1vhdMyO0uGYU6bewvbaMFPrNQvZQQfYDiw4A
+         GCMEJwfKVDLg985EjXCYO5YtBPTjdynkoKgNGWZrQIU+omzfuO9Px+cFMWjbJvqGXl
+         HE0GlVQT6jBVgPhaqi7eivw9RSgV4V8eCHe8hKvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.17 301/343] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
-Date:   Tue, 12 Apr 2022 08:31:59 +0200
-Message-Id: <20220412063000.011949903@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Douglas Miller <doug.miller@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.17 292/343] RDMA/hfi1: Fix use-after-free bug for mm struct
+Date:   Tue, 12 Apr 2022 08:31:50 +0200
+Message-Id: <20220412062959.756103757@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,61 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Douglas Miller <doug.miller@cornelisnetworks.com>
 
-commit 0df6664531a12cdd8fc873f0cac0dcb40243d3e9 upstream.
+commit 2bbac98d0930e8161b1957dc0ec99de39ade1b3c upstream.
 
-It turns out that our polling of RWP is totally wrong when checking
-for it in the redistributors, as we test the *distributor* bit index,
-whereas it is a different bit number in the RDs... Oopsie boo.
+Under certain conditions, such as MPI_Abort, the hfi1 cleanup code may
+represent the last reference held on the task mm.
+hfi1_mmu_rb_unregister() then drops the last reference and the mm is freed
+before the final use in hfi1_release_user_pages().  A new task may
+allocate the mm structure while it is still being used, resulting in
+problems. One manifestation is corruption of the mmap_sem counter leading
+to a hang in down_write().  Another is corruption of an mm struct that is
+in use by another task.
 
-This is embarassing. Not only because it is wrong, but also because
-it took *8 years* to notice the blunder...
-
-Just fix the damn thing.
-
-Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
+Fixes: 3d2a9d642512 ("IB/hfi1: Ensure correct mm is used at all times")
+Link: https://lore.kernel.org/r/20220408133523.122165.72975.stgit@awfm-01.cornelisnetworks.com
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/infiniband/hw/hfi1/mmu_rb.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -206,11 +206,11 @@ static inline void __iomem *gic_dist_bas
- 	}
+--- a/drivers/infiniband/hw/hfi1/mmu_rb.c
++++ b/drivers/infiniband/hw/hfi1/mmu_rb.c
+@@ -80,6 +80,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
+ 	unsigned long flags;
+ 	struct list_head del_list;
+ 
++	/* Prevent freeing of mm until we are completely finished. */
++	mmgrab(handler->mn.mm);
++
+ 	/* Unregister first so we don't get any more notifications. */
+ 	mmu_notifier_unregister(&handler->mn, handler->mn.mm);
+ 
+@@ -102,6 +105,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
+ 
+ 	do_remove(handler, &del_list);
+ 
++	/* Now the mm may be freed. */
++	mmdrop(handler->mn.mm);
++
+ 	kfree(handler);
  }
  
--static void gic_do_wait_for_rwp(void __iomem *base)
-+static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
- {
- 	u32 count = 1000000;	/* 1s! */
- 
--	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
-+	while (readl_relaxed(base + GICD_CTLR) & bit) {
- 		count--;
- 		if (!count) {
- 			pr_err_ratelimited("RWP timeout, gone fishing\n");
-@@ -224,13 +224,13 @@ static void gic_do_wait_for_rwp(void __i
- /* Wait for completion of a distributor change */
- static void gic_dist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data.dist_base);
-+	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
- }
- 
- /* Wait for completion of a redistributor change */
- static void gic_redist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
-+	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
- }
- 
- #ifdef CONFIG_ARM64
 
 
