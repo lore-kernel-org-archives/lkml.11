@@ -2,113 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1885C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:55:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352859AbiDLK5t (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53712 "EHLO
+        id S231698AbiDLK6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355763AbiDLKpL (ORCPT
+        with ESMTP id S1351477AbiDLKxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:45:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9492382314
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:40:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B214C617E6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:40:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6226C385A5;
-        Tue, 12 Apr 2022 09:40:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649756433;
-        bh=jVAiChky5XX869hnpykLtLDYrh8c1aa/BDWMt3amk14=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=g8d6E3SHmnIbwDRuBR0k95nVWyQ+FaHlxYfPG31jWnLLSolp05CdsBP9e9VpmBYRM
-         4K+plM2+vmPAGGDIy89SkpCtCoQ/5AW2324yq2wX+hwKMT45FRslo8TCK0z6qPFsXu
-         efFdZrGUb/fd+OQpIfZ8XP5dG+jR8yadnBc4PNMfP4iU+A8RrFdPePlYK93lsg0sZk
-         7HCyXWDBtRLfP6cBrGEWdiwItYBcyp1N0dbjeXMH1WBe/CEOn0gJK524UOqSIEAbzW
-         dpC4ITvNriWYnrx8wBxrTmNfIY92/jT4zJiXF0MlmdZtwHosy660VsV52GpMgdxJav
-         RagKazrobyMag==
-Message-ID: <4d54f494-b143-8885-a31e-924a83409e2d@kernel.org>
-Date:   Tue, 12 Apr 2022 17:40:27 +0800
+        Tue, 12 Apr 2022 06:53:32 -0400
+Received: from out28-123.mail.aliyun.com (out28-123.mail.aliyun.com [115.124.28.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E04923178;
+        Tue, 12 Apr 2022 02:49:14 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07437479|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.016684-0.000618175-0.982698;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047198;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=9;RT=9;SR=0;TI=SMTPD_---.NP95aWT_1649756947;
+Received: from 192.168.30.128(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NP95aWT_1649756947)
+          by smtp.aliyun-inc.com(33.37.72.206);
+          Tue, 12 Apr 2022 17:49:08 +0800
+Subject: Re: [PATCH 07/18] MIPS: DTS: jz4780: fix otg node as reported by
+ dtbscheck
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+References: <cover.1649443080.git.hns@goldelico.com>
+ <298162bfa2e7225ccc753865e1ffa39ce2722b2a.1649443080.git.hns@goldelico.com>
+ <bd19b6eb-d53a-b665-749d-46c275c85ccc@linaro.org>
+ <822182F3-5429-4731-9FA1-8F18C5D95DEC@goldelico.com>
+ <535e3eab-a28e-46f3-2a7e-f1ffd1913470@linaro.org>
+ <7B66AC66-EF73-4F75-A775-589A4F98BEFC@goldelico.com>
+ <3e95f567-03f5-bf9c-1856-9fe602e9b025@linaro.org>
+ <81BA49E3-AFDE-4DFD-BB77-2B03488C727B@goldelico.com>
+ <b6090a27-12b7-0c01-6d33-ae32b31b4b74@wanyeetech.com>
+ <8FA36CE4-CD39-4767-B49E-D112E4313036@goldelico.com>
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Message-ID: <3e088e18-5df9-bf50-0070-b24b8a3c5f41@wanyeetech.com>
+Date:   Tue, 12 Apr 2022 17:49:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] f2fs: use separate list iterator variable to call
- list_move_tail()
+In-Reply-To: <8FA36CE4-CD39-4767-B49E-D112E4313036@goldelico.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-To:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-References: <20220331221650.891790-1-jakobkoschel@gmail.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220331221650.891790-1-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/1 6:16, Jakob Koschel wrote:
-> In preparation to limit the scope of a list iterator to the list
-> traversal loop, use a dedicated pointer to point to the found element
-> [1].
-> 
-> If no break is hit or the list is empty, 'next' will be NULL and
-> list_move_tail() should be called explicitly on the head directly.
-> 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> ---
->   fs/f2fs/segment.c | 12 ++++++++----
->   1 file changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-> index 22dfeb991529..81ef2c3d08e5 100644
-> --- a/fs/f2fs/segment.c
-> +++ b/fs/f2fs/segment.c
-> @@ -4175,16 +4175,20 @@ static void release_sit_entry_set(struct sit_entry_set *ses)
->   static void adjust_sit_entry_set(struct sit_entry_set *ses,
->   						struct list_head *head)
->   {
-> -	struct sit_entry_set *next = ses;
-> +	struct sit_entry_set *next = NULL, *iter = ses;
->   
->   	if (list_is_last(&ses->set_list, head))
->   		return;
->   
-> -	list_for_each_entry_continue(next, head, set_list)
-> -		if (ses->entry_cnt <= next->entry_cnt)
-> +	list_for_each_entry_continue(iter, head, set_list)
-> +		if (ses->entry_cnt <= iter->entry_cnt) {
-> +			next = iter;
-> +			list_move_tail(&ses->set_list, &iter->set_list);
->   			break;
+Hi Nikolaus,
 
-return;
+On 2022/4/11 上午3:13, H. Nikolaus Schaller wrote:
+> Hi,
+>
+>> Am 10.04.2022 um 18:32 schrieb Zhou Yanjie <zhouyanjie@wanyeetech.com>:
+>>
+>> Hi folks,
+>>
+>> On 2022/4/9 下午9:53, H. Nikolaus Schaller wrote:
+>>>> Am 09.04.2022 um 15:44 schrieb Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>:
+>>>>
+>>>> On 09/04/2022 15:32, H. Nikolaus Schaller wrote:
+>>>>>> Am 09.04.2022 um 15:15 schrieb Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>:
+>>>>>>
+>>>>>> On 09/04/2022 15:05, H. Nikolaus Schaller wrote:
+>>>>>>>> This looks wrong, the block usually should have a specific compatible.
+>>>>>>>> Please mention why it does not.
+>>>>>>> Well, I did not even have that idea that it could need an explanation.
+>>>>>>>
+>>>>>>> There is no "ingenic,jz4780-otg" and none is needed here to make it work.
+>>>>>> Make it work in what terms? We talk about hardware description, right?
+>>>>> Yes.
+>>>>>
+>>>>>>> Therefore the generic "snps,dwc2" is sufficient.
+>>>>>> No, you are mixing now driver behavior (is sufficient) with hardware
+>>>>>> description.
+>>>>> No. "snps,dwc2" is a hardware description for a licensed block.
+>>>>> Not a driver behavior.
+>>>> snps,dwc2 matches the original block, not necessarily this
+>>>> implementation. Unless you are sure?
+>>> I assume. Nobody has reported an issue without having any specific jz4780 driver in place.
+>>> Well, that is only evidence, not bullet proof.
+>>>
+>>>>>> Most of licensed blocks require the specific compatible to
+>>>>>> differentiate it.
+>>>>> If there is a need to differentiate.
+>>>> No, regardless whether there is a need currently, most of them have
+>>>> specific compatibles, because there are some minor differences. Even if
+>>>> difference is not visible from programming model or wiring, it might
+>>>> justify it's own specific compatible. For example because maybe once
+>>>> that tiny difference will require some changes.
+>>>>
+>>>> Someone added the ingenic compatible, so why do you assume that one tool
+>>>> (bindings) is correct but other piece of code (using specific
+>>>> compatible) is not? You use the argument "bindings warning" which is not
+>>>> enough. Argument that blocks are 100% same, is good enough, if you are
+>>>> sure. Just use it in commit msg. But are you sure that these are the
+>>>> same? Same pins, same programming model (entire model, not used by Linux)?
+>>> The compatible ingenic,jz4780-otg was introduced in 158c774d3c64859e84dd20e04d5fb18c8d3d318e.
+>>> Hence I have added Yanjie for clarification why he added it in the .dts and not in the bindings.
+>>
+>> It's my fault, last year I made an OTG driver for Ingenic SoCs and sent it
+>> to the mailing list, and then I received some revision comments, but for
+>> some personal reasons I didn't continue to improve it.
+>>
+>> I'll finish these modifications as soon as possible and send them out.
+>> Then after they merge into the mainline, this problem will be solved.
+> No need to apologize.
+>
+> If you agree I can add "ingenic,jz4780-otg" to the schema file and keep
+> the .dts in the v2 of my series.
 
-> +		}
->   
-> -	list_move_tail(&ses->set_list, &next->set_list);
-> +	if (!next)
-> +		list_move_tail(&ses->set_list, head);
 
-list_move_tail(&ses->set_list, head);
+Sure.
 
-Then we don't need @next variable, right?
+Or you can wait a bit, I plan to send out new patches later today, it 
+contains "ingenic,jz4780-otg".
 
-Thanks,
 
->   }
->   
->   static void add_sit_entry(unsigned int segno, struct list_head *head)
-> 
-> base-commit: d888c83fcec75194a8a48ccd283953bdba7b2550
+> And I'll add you to the list of reviewers, so you can please comment v2
+> if it is correct or if we are still missing something.
+
+
+Okay, thanks!
+
+
+>
+> Best regards and thanks,
+> Nikolaus
