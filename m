@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B48C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C3EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358492AbiDLIbE (ORCPT
+        id S1358663AbiDLIbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
+        Tue, 12 Apr 2022 04:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353587AbiDLHZr (ORCPT
+        with ESMTP id S1353555AbiDLHZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC8043AE8;
-        Tue, 12 Apr 2022 00:01:56 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D5B43AE0;
+        Tue, 12 Apr 2022 00:01:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8905660B65;
-        Tue, 12 Apr 2022 07:01:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DAB9C385A1;
-        Tue, 12 Apr 2022 07:01:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4F18B81A8F;
+        Tue, 12 Apr 2022 07:01:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3ABC385A6;
+        Tue, 12 Apr 2022 07:01:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746916;
-        bh=sUfbTdgOYaBlIvDge6G7uCvBJzdC1rRZljQx/lsDyaw=;
+        s=korg; t=1649746868;
+        bh=bAPP0KeYlE4Rw4hQig6h+AE3aP+2SVdMxEk/gwMuZbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AYASFbbwMFn+qQJFIeMI4b6fjWYIiXTKpk7U50MC7PdZpH/dMsPbiuOMN9gW6CUoB
-         qhf8vQDJQKPacRb/8vvm2fesocbTdQ8K1EPfiBVz/Ze4zkHEJrQy5etiIPkI+wZWha
-         gsD181TBWFGUluxQ78WvDIzw25uJBGUcXsg8RzSI=
+        b=Ob2X0hmi8dnX74+hNnb0Efn9dlto1xfxTpcroCBT5V3fh4RPhm4rkU+wlHNr6IKQh
+         LIgYSww8wSrWjDGjPEkOLiRkCE6AJhy3BPy7e7HkwzHl5ajvu43oxDclvXYKNZ0UiI
+         icYYtTgD+tlesuum/hNZ1odSlRFGor0LdtmYc+MY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 159/285] vdpa: mlx5: prevent cvq work from hogging CPU
-Date:   Tue, 12 Apr 2022 08:30:16 +0200
-Message-Id: <20220412062948.260582822@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 119/285] phy: amlogic: meson8b-usb2: Use dev_err_probe()
+Date:   Tue, 12 Apr 2022 08:29:36 +0200
+Message-Id: <20220412062947.101224050@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,99 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
 
-[ Upstream commit 55ebf0d60e3cc6c9e8593399e185842c00e12f36 ]
+[ Upstream commit 6466ba1898d415b527e1013bd8551a6fdfece94c ]
 
-A userspace triggerable infinite loop could happen in
-mlx5_cvq_kick_handler() if userspace keeps sending a huge amount of
-cvq requests.
+Use the existing dev_err_probe() helper instead of open-coding the same
+operation.
 
-Fixing this by introducing a quota and re-queue the work if we're out
-of the budget (currently the implicit budget is one) . While at it,
-using a per device work struct to avoid on demand memory allocation
-for cvq.
-
-Fixes: 5262912ef3cfc ("vdpa/mlx5: Add support for control VQ and MAC setting")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220329042109.4029-1-jasowang@redhat.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Eli Cohen <elic@nvidia.com>
+Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220111095255.176141-3-aouledameur@baylibre.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ drivers/phy/amlogic/phy-meson8b-usb2.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index 57bed3d74060..be50c15609b7 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -164,6 +164,7 @@ struct mlx5_vdpa_net {
- 	u32 cur_num_vqs;
- 	struct notifier_block nb;
- 	struct vdpa_callback config_cb;
-+	struct mlx5_vdpa_wq_ent cvq_ent;
- };
+diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
+index cf10bed40528..77e7e9b1428c 100644
+--- a/drivers/phy/amlogic/phy-meson8b-usb2.c
++++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
+@@ -265,8 +265,9 @@ static int phy_meson8b_usb2_probe(struct platform_device *pdev)
+ 		return PTR_ERR(priv->clk_usb);
  
- static void free_resources(struct mlx5_vdpa_net *ndev);
-@@ -1627,10 +1628,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
- 	ndev = to_mlx5_vdpa_ndev(mvdev);
- 	cvq = &mvdev->cvq;
- 	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
--		goto out;
-+		return;
+ 	priv->reset = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
+-	if (PTR_ERR(priv->reset) == -EPROBE_DEFER)
+-		return PTR_ERR(priv->reset);
++	if (IS_ERR(priv->reset))
++		return dev_err_probe(&pdev->dev, PTR_ERR(priv->reset),
++				     "Failed to get the reset line");
  
- 	if (!cvq->ready)
--		goto out;
-+		return;
- 
- 	while (true) {
- 		err = vringh_getdesc_iotlb(&cvq->vring, &cvq->riov, &cvq->wiov, &cvq->head,
-@@ -1664,9 +1665,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
- 
- 		if (vringh_need_notify_iotlb(&cvq->vring))
- 			vringh_notify(&cvq->vring);
-+
-+		queue_work(mvdev->wq, &wqent->work);
-+		break;
- 	}
--out:
--	kfree(wqent);
- }
- 
- static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
-@@ -1674,7 +1676,6 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
- 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
- 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
- 	struct mlx5_vdpa_virtqueue *mvq;
--	struct mlx5_vdpa_wq_ent *wqent;
- 
- 	if (!is_index_valid(mvdev, idx))
- 		return;
-@@ -1683,13 +1684,7 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
- 		if (!mvdev->wq || !mvdev->cvq.ready)
- 			return;
- 
--		wqent = kzalloc(sizeof(*wqent), GFP_ATOMIC);
--		if (!wqent)
--			return;
--
--		wqent->mvdev = mvdev;
--		INIT_WORK(&wqent->work, mlx5_cvq_kick_handler);
--		queue_work(mvdev->wq, &wqent->work);
-+		queue_work(mvdev->wq, &ndev->cvq_ent.work);
- 		return;
- 	}
- 
-@@ -2634,6 +2629,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
- 	if (err)
- 		goto err_mr;
- 
-+	ndev->cvq_ent.mvdev = mvdev;
-+	INIT_WORK(&ndev->cvq_ent.work, mlx5_cvq_kick_handler);
- 	mvdev->wq = create_singlethread_workqueue("mlx5_vdpa_wq");
- 	if (!mvdev->wq) {
- 		err = -ENOMEM;
+ 	priv->dr_mode = of_usb_get_dr_mode_by_phy(pdev->dev.of_node, -1);
+ 	if (priv->dr_mode == USB_DR_MODE_UNKNOWN) {
 -- 
 2.35.1
 
