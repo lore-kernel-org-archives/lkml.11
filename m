@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A498C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 039BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377015AbiDLHrH (ORCPT
+        id S1377049AbiDLHrO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
+        Tue, 12 Apr 2022 03:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351701AbiDLHMv (ORCPT
+        with ESMTP id S1351809AbiDLHM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:51 -0400
+        Tue, 12 Apr 2022 03:12:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F49615FD6;
-        Mon, 11 Apr 2022 23:51:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2466148;
+        Mon, 11 Apr 2022 23:53:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 540C1B81B46;
-        Tue, 12 Apr 2022 06:51:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1DF5C385A6;
-        Tue, 12 Apr 2022 06:51:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1DF2B81B46;
+        Tue, 12 Apr 2022 06:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24BE6C385A1;
+        Tue, 12 Apr 2022 06:53:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746309;
-        bh=Jh0HxlaHDCPkrzXaR6A0TjXlWJhTiro1dmjnLAkCRbA=;
+        s=korg; t=1649746383;
+        bh=ZD/EFkcltEj3oRNOMofn0Fu5/aRgslFsdd0GlSSGkgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Anl/4Tqcs6dOvkWsRolH4YTPc3pvNMxzl/3J8WW4ggdWE2bFffq0aP0Yad7Kln7SG
-         ecH+0K8sG+7unxecOGwiTl8EUBNINGYrEputGO0LEhKtmAfxNJzL+0YoJJs1RGw6qF
-         Wf5Mff+nA5ZZdZbdwQiIihYv49LgIIUUoyQisGos=
+        b=ftoK2I7nzEgNoTytn+PnimK8FG2RUzLadaB5q+DIqcvjdBtGfF5NpOeMjpiPBobZa
+         gHc5S74zPx1QB3lStcwx90rJWn8t8LoBnWIyi8p5H8DKJexHqeh1RQgmDzGW+N88E8
+         va45biPefMAYIHoQBnlJFPJ6md3wD7mzq+ulRzGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.15 237/277] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
-Date:   Tue, 12 Apr 2022 08:30:40 +0200
-Message-Id: <20220412062948.902442685@linuxfoundation.org>
+        stable@vger.kernel.org, amirtz@nvidia.com,
+        Leon Romanovsky <leonro@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 5.15 262/277] Revert "net/mlx5: Accept devlink user input after driver initialization complete"
+Date:   Tue, 12 Apr 2022 08:31:05 +0200
+Message-Id: <20220412062949.626572910@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,61 +52,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: dann frazier <dann.frazier@canonical.com>
 
-commit 0df6664531a12cdd8fc873f0cac0dcb40243d3e9 upstream.
+This reverts commit 9cc25e8529d567e08da98d11f092b21449763144 which is
+commit 64ea2d0e7263b67d8efc93fa1baace041ed36d1e upstream.
 
-It turns out that our polling of RWP is totally wrong when checking
-for it in the redistributors, as we test the *distributor* bit index,
-whereas it is a different bit number in the RDs... Oopsie boo.
+This patch was shown to introduce a regression:
 
-This is embarassing. Not only because it is wrong, but also because
-it took *8 years* to notice the blunder...
+  # devlink dev param show pci/0000:24:00.0 name flow_steering_mode
+  pci/0000:24:00.0:
+    name flow_steering_mode type driver-specific
+      values:
 
-Just fix the damn thing.
+  (flow steering mode description is missing beneath "values:")
 
-Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
+  # devlink dev param set pci/0000:24:00.0 name flow_steering_mode value smfs cmode runtime
+  Segmentation fault (core dumped)
+
+  and also with upstream iproute
+  # ./iproute2/devlink/devlink dev param set pci/0000:24:00.0 name flow_steering_mode value smfs cmode runtime
+  Configuration mode not supported
+
+Note: Instead of reverting, we could instead also backport commit cf530217408e
+("devlink: Notify users when objects are accessible"). However, that makes
+changes to core devlink code that I'm not sure are suitable for a stable
+backport.
+
+Cc: Leon Romanovsky <leonro@nvidia.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Sasha Levin <sashal@kernel.org>
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c       |   12 ++++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/main.c          |    2 --
+ drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c |    2 --
+ 3 files changed, 10 insertions(+), 6 deletions(-)
 
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -206,11 +206,11 @@ static inline void __iomem *gic_dist_bas
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -793,11 +793,14 @@ int mlx5_devlink_register(struct devlink
+ {
+ 	int err;
+ 
+-	err = devlink_params_register(devlink, mlx5_devlink_params,
+-				      ARRAY_SIZE(mlx5_devlink_params));
++	err = devlink_register(devlink);
+ 	if (err)
+ 		return err;
+ 
++	err = devlink_params_register(devlink, mlx5_devlink_params,
++				      ARRAY_SIZE(mlx5_devlink_params));
++	if (err)
++		goto params_reg_err;
+ 	mlx5_devlink_set_params_init_values(devlink);
+ 
+ 	err = mlx5_devlink_auxdev_params_register(devlink);
+@@ -808,6 +811,7 @@ int mlx5_devlink_register(struct devlink
+ 	if (err)
+ 		goto traps_reg_err;
+ 
++	devlink_params_publish(devlink);
+ 	return 0;
+ 
+ traps_reg_err:
+@@ -815,13 +819,17 @@ traps_reg_err:
+ auxdev_reg_err:
+ 	devlink_params_unregister(devlink, mlx5_devlink_params,
+ 				  ARRAY_SIZE(mlx5_devlink_params));
++params_reg_err:
++	devlink_unregister(devlink);
+ 	return err;
+ }
+ 
+ void mlx5_devlink_unregister(struct devlink *devlink)
+ {
++	devlink_params_unpublish(devlink);
+ 	mlx5_devlink_traps_unregister(devlink);
+ 	mlx5_devlink_auxdev_params_unregister(devlink);
+ 	devlink_params_unregister(devlink, mlx5_devlink_params,
+ 				  ARRAY_SIZE(mlx5_devlink_params));
++	devlink_unregister(devlink);
+ }
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1541,7 +1541,6 @@ static int probe_one(struct pci_dev *pde
+ 		dev_err(&pdev->dev, "mlx5_crdump_enable failed with error code %d\n", err);
+ 
+ 	pci_save_state(pdev);
+-	devlink_register(devlink);
+ 	if (!mlx5_core_is_mp_slave(dev))
+ 		devlink_reload_enable(devlink);
+ 	return 0;
+@@ -1564,7 +1563,6 @@ static void remove_one(struct pci_dev *p
+ 	struct devlink *devlink = priv_to_devlink(dev);
+ 
+ 	devlink_reload_disable(devlink);
+-	devlink_unregister(devlink);
+ 	mlx5_crdump_disable(dev);
+ 	mlx5_drain_health_wq(dev);
+ 	mlx5_uninit_one(dev);
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+@@ -46,7 +46,6 @@ static int mlx5_sf_dev_probe(struct auxi
+ 		mlx5_core_warn(mdev, "mlx5_init_one err=%d\n", err);
+ 		goto init_one_err;
  	}
- }
+-	devlink_register(devlink);
+ 	devlink_reload_enable(devlink);
+ 	return 0;
  
--static void gic_do_wait_for_rwp(void __iomem *base)
-+static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
- {
- 	u32 count = 1000000;	/* 1s! */
+@@ -66,7 +65,6 @@ static void mlx5_sf_dev_remove(struct au
  
--	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
-+	while (readl_relaxed(base + GICD_CTLR) & bit) {
- 		count--;
- 		if (!count) {
- 			pr_err_ratelimited("RWP timeout, gone fishing\n");
-@@ -224,13 +224,13 @@ static void gic_do_wait_for_rwp(void __i
- /* Wait for completion of a distributor change */
- static void gic_dist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data.dist_base);
-+	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
- }
- 
- /* Wait for completion of a redistributor change */
- static void gic_redist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
-+	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
- }
- 
- #ifdef CONFIG_ARM64
+ 	devlink = priv_to_devlink(sf_dev->mdev);
+ 	devlink_reload_disable(devlink);
+-	devlink_unregister(devlink);
+ 	mlx5_uninit_one(sf_dev->mdev);
+ 	iounmap(sf_dev->mdev->iseg);
+ 	mlx5_mdev_uninit(sf_dev->mdev);
 
 
