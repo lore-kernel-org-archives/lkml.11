@@ -2,139 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE42C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4100C35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357194AbiDLHjv (ORCPT
+        id S1357335AbiDLHkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
+        Tue, 12 Apr 2022 03:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353015AbiDLHOo (ORCPT
+        with ESMTP id S1353056AbiDLHOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF04326EE;
-        Mon, 11 Apr 2022 23:55:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 901BF61451;
-        Tue, 12 Apr 2022 06:55:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BECAC385A6;
-        Tue, 12 Apr 2022 06:55:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746538;
-        bh=dMiiXN6fiIZd8AkFsJ0x1GHU2NK6UPmydR0s3f+eJjI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oCD4kHcv1JJNNg1hkQH84A4uaRHgJblY4/tmdRUTVmwVdGw8iDU5U2/rKZVq27B7b
-         9+kiJsUvDuR6Ms0RLFqC9F+nY58DVaJRTQGMe8acjme+WPsJW1W05crgcZztesFSmn
-         QbwdUBN0iPPrTtlzg99+K+diYJJD0uzs9CHlbAiA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abdul haleem <abdhalee@linux.vnet.ibm.com>,
-        Sourabh Jain <sourabhjain@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 042/285] powerpc: Set crashkernel offset to mid of RMA region
-Date:   Tue, 12 Apr 2022 08:28:19 +0200
-Message-Id: <20220412062944.889843485@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:14:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 838B532982
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:56:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649746559;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GN5vkjRmgkPNx751McI5DU0rpDoKJKayXCERhKWgOHo=;
+        b=Y7YT1DqfvmfsKxlCPnDCj4Jv4U/0jM0yGkirC9SYD61x6cWreACj+kd4oSkKEMsVXV70x4
+        +8jwls1qmUrG68HaLs8KQJy8Ks9QpuM/GMwt9x761h72pOuFAwWO/h9RWScpvMuv66+oJo
+        ud1qMMq9WmBr+EcsYniR+LoI/J0lwdk=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-151-Dnhq3bfwPeyKLYXdsrYgtA-1; Tue, 12 Apr 2022 02:55:58 -0400
+X-MC-Unique: Dnhq3bfwPeyKLYXdsrYgtA-1
+Received: by mail-ed1-f69.google.com with SMTP id cn27-20020a0564020cbb00b0041b5b91adb5so10356403edb.15
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:55:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GN5vkjRmgkPNx751McI5DU0rpDoKJKayXCERhKWgOHo=;
+        b=TpO4wx8bhGQp3PPyZ2zu9RXehHBvKRRq11s0bTXvr66YqCiIDEdxH4fj9fU1UecUCa
+         I/cUE1hj9C+2qisBL4TOWheHL9uA5iLea5pR2PX4a+cRCCSy48yJvXdzxPeY/Fc5gx9N
+         rcrkrB17djSjumTIyfaH4ssQrhX/QQySa12xONl8JeZKj/SlE2uVoFRbWWGTnijL9FkE
+         i+9lVATh3kbMjrbu7p5E18B/Oe152TL6TrkMnOIzd5zdwkrCiRKsxRjHRn2WgYmXGADn
+         UGtnXuSObWsHq03e5fetjiP5jh6T5ms3tifAuA3QmD+ez0nUYOwF4wnzH96xiySi8thE
+         P5jg==
+X-Gm-Message-State: AOAM530vzyvkl9MStOxEzWs7n4xPSo28n+yHjYxIaH6CDlwSRgRcikgX
+        FzBErBQfBTh2yNQQ1aV3MPH5Zqdf/ebWMEyoXn/kSMY/yw8qEauSiceW0Mr3VjdCfQqq1mtMSQv
+        WpC6dYVqoyXbg01CjK/6MbjiF
+X-Received: by 2002:aa7:cc96:0:b0:410:b9ac:241 with SMTP id p22-20020aa7cc96000000b00410b9ac0241mr37641963edt.246.1649746557016;
+        Mon, 11 Apr 2022 23:55:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxGPxug4QSaPb0hUaH35LBenThin66afliFP6NyNmncmrZUcM1TJgpijjoRwtDcypb/fdXkvA==
+X-Received: by 2002:aa7:cc96:0:b0:410:b9ac:241 with SMTP id p22-20020aa7cc96000000b00410b9ac0241mr37641949edt.246.1649746556825;
+        Mon, 11 Apr 2022 23:55:56 -0700 (PDT)
+Received: from redhat.com ([2.52.1.156])
+        by smtp.gmail.com with ESMTPSA id c4-20020a170906340400b006d077e850b5sm12693341ejb.23.2022.04.11.23.55.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 23:55:56 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 02:55:52 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Keir Fraser <keirf@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re:
+Message-ID: <20220412025405-mutt-send-email-mst@kernel.org>
+References: <Yj1hkpyUqJE9sQ2p@redhat.com>
+ <CACGkMEunsuWhn+aB2dM7noU257M9JV6jDjkQXLyOA+GjEoz_iw@mail.gmail.com>
+ <20220325050947-mutt-send-email-mst@kernel.org>
+ <CACGkMEvioAVMmB+ab2xXB2YPECtwi1J55u8mRRk9-JAjFSZ8vg@mail.gmail.com>
+ <20220325060659-mutt-send-email-mst@kernel.org>
+ <CACGkMEu4mRfNbJXJtAFzhyd55fD7phUDKnVtYW0aqRnQmT_bYw@mail.gmail.com>
+ <20220328015757-mutt-send-email-mst@kernel.org>
+ <CACGkMEu+fax6YYwhfbc1yoSxv6o1FTQyrOheVTmUfqGvmbAEfA@mail.gmail.com>
+ <20220328062452-mutt-send-email-mst@kernel.org>
+ <87fsn1f96e.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87fsn1f96e.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sourabh Jain <sourabhjain@linux.ibm.com>
+On Tue, Mar 29, 2022 at 10:35:21AM +0200, Thomas Gleixner wrote:
+> On Mon, Mar 28 2022 at 06:40, Michael S. Tsirkin wrote:
+> > On Mon, Mar 28, 2022 at 02:18:22PM +0800, Jason Wang wrote:
+> >> > > So I think we might talk different issues:
+> >> > >
+> >> > > 1) Whether request_irq() commits the previous setups, I think the
+> >> > > answer is yes, since the spin_unlock of desc->lock (release) can
+> >> > > guarantee this though there seems no documentation around
+> >> > > request_irq() to say this.
+> >> > >
+> >> > > And I can see at least drivers/video/fbdev/omap2/omapfb/dss/dispc.c is
+> >> > > using smp_wmb() before the request_irq().
+> 
+> That's a complete bogus example especially as there is not a single
+> smp_rmb() which pairs with the smp_wmb().
+> 
+> >> > > And even if write is ordered we still need read to be ordered to be
+> >> > > paired with that.
+> >
+> > IMO it synchronizes with the CPU to which irq is
+> > delivered. Otherwise basically all drivers would be broken,
+> > wouldn't they be?
+> > I don't know whether it's correct on all platforms, but if not
+> > we need to fix request_irq.
+> 
+> There is nothing to fix:
+> 
+> request_irq()
+>    raw_spin_lock_irq(desc->lock);       // ACQUIRE
+>    ....
+>    raw_spin_unlock_irq(desc->lock);     // RELEASE
+> 
+> interrupt()
+>    raw_spin_lock(desc->lock);           // ACQUIRE
+>    set status to IN_PROGRESS
+>    raw_spin_unlock(desc->lock);         // RELEASE
+>    invoke handler()
+> 
+> So anything which the driver set up _before_ request_irq() is visible to
+> the interrupt handler. No?
+> 
+> >> What happens if an interrupt is raised in the middle like:
+> >> 
+> >> smp_store_release(dev->irq_soft_enabled, true)
+> >> IRQ handler
+> >> synchornize_irq()
+> 
+> This is bogus. The obvious order of things is:
+> 
+>     dev->ok = false;
+>     request_irq();
+> 
+>     moar_setup();
+>     synchronize_irq();  // ACQUIRE + RELEASE
+>     dev->ok = true;
+> 
+> The reverse operation on teardown:
+> 
+>     dev->ok = false;
+>     synchronize_irq();  // ACQUIRE + RELEASE
+> 
+>     teardown();
+> 
+> So in both cases a simple check in the handler is sufficient:
+> 
+> handler()
+>     if (!dev->ok)
+>     	return;
 
-[ Upstream commit 7c5ed82b800d8615cdda00729e7b62e5899f0b13 ]
-
-On large config LPARs (having 192 and more cores), Linux fails to boot
-due to insufficient memory in the first memblock. It is due to the
-memory reservation for the crash kernel which starts at 128MB offset of
-the first memblock. This memory reservation for the crash kernel doesn't
-leave enough space in the first memblock to accommodate other essential
-system resources.
-
-The crash kernel start address was set to 128MB offset by default to
-ensure that the crash kernel get some memory below the RMA region which
-is used to be of size 256MB. But given that the RMA region size can be
-512MB or more, setting the crash kernel offset to mid of RMA size will
-leave enough space for the kernel to allocate memory for other system
-resources.
-
-Since the above crash kernel offset change is only applicable to the LPAR
-platform, the LPAR feature detection is pushed before the crash kernel
-reservation. The rest of LPAR specific initialization will still
-be done during pseries_probe_fw_features as usual.
-
-This patch is dependent on changes to paca allocation for boot CPU. It
-expect boot CPU to discover 1T segment support which is introduced by
-the patch posted here:
-https://lists.ozlabs.org/pipermail/linuxppc-dev/2022-January/239175.html
-
-Reported-by: Abdul haleem <abdhalee@linux.vnet.ibm.com>
-Signed-off-by: Sourabh Jain <sourabhjain@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220204085601.107257-1-sourabhjain@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/kernel/rtas.c |  6 ++++++
- arch/powerpc/kexec/core.c  | 15 +++++++++++----
- 2 files changed, 17 insertions(+), 4 deletions(-)
-
-diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
-index ff80bbad22a5..e18a725a8e5d 100644
---- a/arch/powerpc/kernel/rtas.c
-+++ b/arch/powerpc/kernel/rtas.c
-@@ -1235,6 +1235,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
- 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
- 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
- 
-+#ifdef CONFIG_PPC64
-+	/* need this feature to decide the crashkernel offset */
-+	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
-+		powerpc_firmware_features |= FW_FEATURE_LPAR;
-+#endif
-+
- 	if (basep && entryp && sizep) {
- 		rtas.base = *basep;
- 		rtas.entry = *entryp;
-diff --git a/arch/powerpc/kexec/core.c b/arch/powerpc/kexec/core.c
-index a2242017e55f..11b327fa135c 100644
---- a/arch/powerpc/kexec/core.c
-+++ b/arch/powerpc/kexec/core.c
-@@ -134,11 +134,18 @@ void __init reserve_crashkernel(void)
- 	if (!crashk_res.start) {
- #ifdef CONFIG_PPC64
- 		/*
--		 * On 64bit we split the RMO in half but cap it at half of
--		 * a small SLB (128MB) since the crash kernel needs to place
--		 * itself and some stacks to be in the first segment.
-+		 * On the LPAR platform place the crash kernel to mid of
-+		 * RMA size (512MB or more) to ensure the crash kernel
-+		 * gets enough space to place itself and some stack to be
-+		 * in the first segment. At the same time normal kernel
-+		 * also get enough space to allocate memory for essential
-+		 * system resource in the first segment. Keep the crash
-+		 * kernel starts at 128MB offset on other platforms.
- 		 */
--		crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
-+		if (firmware_has_feature(FW_FEATURE_LPAR))
-+			crashk_res.start = ppc64_rma_size / 2;
-+		else
-+			crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
- #else
- 		crashk_res.start = KDUMP_KERNELBASE;
- #endif
--- 
-2.35.1
+Does this need to be if (!READ_ONCE(dev->ok)) ?
 
 
+
+> I'm not understanding what you folks are trying to "fix" here. If any
+> driver does this in the wrong order, then the driver is broken.
+> 
+> Sure, you can do the same with:
+> 
+>     dev->ok = false;
+>     request_irq();
+>     moar_setup();
+>     smp_wmb();
+>     dev->ok = true;
+> 
+> for the price of a smp_rmb() in the interrupt handler:
+> 
+> handler()
+>     if (!dev->ok)
+>     	return;
+>     smp_rmb();
+> 
+> but that's only working for the setup case correctly and not for
+> teardown.
+> 
+> Thanks,
+> 
+>         tglx
 
