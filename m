@@ -2,120 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 700CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4745CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237414AbiDLLmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        id S1352222AbiDLLme (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356155AbiDLLjt (ORCPT
+        with ESMTP id S1352425AbiDLLhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:39:49 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EAB5AA5F;
-        Tue, 12 Apr 2022 03:20:37 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 0FFED3201F82;
-        Tue, 12 Apr 2022 06:20:33 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 12 Apr 2022 06:20:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=undef.tools; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1649758833; x=
-        1649845233; bh=aRTApUSPxPOLZop5S/TZELqtxAg3W/UHUjXVwD/lHLM=; b=R
-        R5rYINfZ0nps4BJkw16j8qEW+Mrpac5C0AcE8g6ztszRuzlpkf6xRrKhuNXdCr9l
-        dX+cGVE4H+Dz6kWo68cr8+qWx01qjMI0j/VldYYQTKaN6WnHNLqel7VFf27FPVyX
-        AGJY2ipZYg7OJF5UkLWjqUBlDRDq6oo7MfOx0SUzIrPKhGaUAE3Wfo4GaWIF/SWZ
-        sTHhBFR5c4zhyaoXwAXvZpp6Odkj6zw7YDeBWGRxLER8xmATblZdsJsbYfhkRKSF
-        Ou5J8sVVd8Al9xAC2CFJt9aJeyGV0L/HyKmHDqE/9+pS0OSRQq+cA+1WJQpJ1Q19
-        9PPbsjbuKKt+F1j2Oi/WQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1649758833; x=1649845233; bh=aRTApUSPxPOLZ
-        op5S/TZELqtxAg3W/UHUjXVwD/lHLM=; b=afgmwmEBa0E/skokOknejBLFq8PoO
-        u7YabiKT6Ox7ixA/5ot9FX7wsZ1+oS4wYTSiGGg5TitU0SR9ZFg6ZVdL0Ipq5nV1
-        DknfCz/WUcpytUgh4SFb8kBjDGeqr+F0LFLsYhEiTEJRx7pw7LrnqSGxB/s3na5w
-        o3pn9ufAC/s83FdMlkWgxGYnIUVTu5QR+QNnPCCcbJlraV7vFOJDQi4IbO21yZUS
-        itd5F3kYF3PFYf09pvOMCePoQ/ZVZ7QDg/KyZSjuE7B+GV1U1OMzz7wGU3tB6lod
-        jcATYcA7NSo5pKYhI4FeFpI8KkKB7/zUproAdjq7nBGaqDKkv89wGrgEw==
-X-ME-Sender: <xms:cVJVYupzJMMiA3faFLhYlnJR_t1leCJIq_AOZpRG7N0E3xBw2qyC9g>
-    <xme:cVJVYsqyV-Z4dA6qdPtkg7zlVOUW534n8ihL71q_CAOqDpHwAW1m_xZnI4ORO8iJf
-    _ElQEhhlTBnbjqSgrs>
-X-ME-Received: <xmr:cVJVYjP0kNNdpGuwVUwEkHpIMjkD8WoIeaJe8eOXT67ZXQ8mkRUmSUYmrpqHaioQrHynFH0AZMpDDFKNlc0XqXSzvSRuhxvnRmGGxohUzVe_YhY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekkedgvdehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkfffgggfuffvfhfhjggtgfesthejredttdefjeenucfhrhhomheplfgrrhhr
-    rghhuceokhgvrhhnvghlsehunhguvghfrdhtohholhhsqeenucggtffrrghtthgvrhhnpe
-    dvveekhffgtdduveekgeefiefguedujefhudfhvdfhffehffdtgfdutdetjeevffenucev
-    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehkvghrnhgvlh
-    esuhhnuggvfhdrthhoohhlsh
-X-ME-Proxy: <xmx:cVJVYt43Be7rH6aUbV0JQnV13IKMRy9jplvPs5cL_44JmhxaxowhvQ>
-    <xmx:cVJVYt4BVklTM8Gig5ZTrb2FeuOsfIcHimoCzGqgDDCrhMpw-vZ-7A>
-    <xmx:cVJVYtjb2jxOFwIdJTNYomAEXFtTTAzVhGNS3xxQ8AEI6mxrh_53lQ>
-    <xmx:cVJVYoaDm-GIuSMK_oZUVAH0UPKM2HD4ZsNt23WzO-NKvcB0rlpyQw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Apr 2022 06:20:29 -0400 (EDT)
-Message-ID: <bde4ae40-98b6-7a77-2059-33c34442b604@undef.tools>
-Date:   Tue, 12 Apr 2022 20:20:24 +1000
+        Tue, 12 Apr 2022 07:37:48 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF851B0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:17:17 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id r133-20020a1c448b000000b0038ccb70e239so1419371wma.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:17:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FgjY7H1ZyME0qwy3R/u6paw0pnftya7ZX2HN8cgGzfA=;
+        b=ne3w86K753pIjNk60LVZmDgZk8VZDfs/glLnxVo4/VjTxiJ6UUTFrdIqsVmpW2sL/o
+         MTagu3acV1bPiyXknAH6hYt7apWs2Yrguz5IEXOA1kjzVU2QYLmyyGrdO+zWkcb5WwyA
+         TmgzpPSGfITPJtjuphY0J81bzhOdlhsOQ6dfHZ/iFjoeidISUZdair1sW3IVK8BghOW0
+         jB2b2hRCF9JtEKU6vX1NspPynkxij9wXhxT01iP/NcRT5Si1var8squBmK+g0BY1cemh
+         jEK8dRqXHKWFFF9Pv7qTmXE0tqTPo3VsiGGgo6pgzHDtaQX4FjEG8VL0ukEeGFSuX7T9
+         4PTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FgjY7H1ZyME0qwy3R/u6paw0pnftya7ZX2HN8cgGzfA=;
+        b=m6hOAejj/GNaMxCI2tr4IiDxqLjjY4E9KkebMt3qyl9NIMVKkRehWNbC2LOUzdKPZk
+         qkl5lPtYSm7E28X4SvC3KzI8iF6dOSg+moG2Wa90IJKtRm59z64rSV1JBa+XCbLU+vj6
+         TsJ+AhoCHf9ZELQ3F0UoJzbSKgxb/Z/J2ER/AlFrdaovAMTTyN5RcKIAN+alBPZEUHgN
+         yNE9mQtPN5bjlzY6RUAomLHR8mpaB6jCozYgE2ibFoHjLJGgeoRSGz2gFJQum6B1lVBO
+         u2ShSBw69ORqbkTmDx2+Pt0iMva+Z6l008jRjna+XRngZ1E9sOJsUxQ44zNfUXjh2QZk
+         ociw==
+X-Gm-Message-State: AOAM532L1zvb+wiWcqbTrOHqiyC65xIyMWPT6vQIGvUDpsSm6S4aBlY4
+        Vb08ahVKKV8Saiu6KSvZznxN9p72eGh5gCBxTNjFRg==
+X-Google-Smtp-Source: ABdhPJxFEQ5ap88OFgjsOLJn9UFZkYYgmfWEoc8ZKgSxPxYiQjW5JyNj/W++bqErekphko+y61J+q4WmOuKQF2iY9nY=
+X-Received: by 2002:a05:600c:1c9c:b0:38e:3270:373d with SMTP id
+ k28-20020a05600c1c9c00b0038e3270373dmr3340130wms.199.1649758635934; Tue, 12
+ Apr 2022 03:17:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/5] Input: pinephone-keyboard - Build in the default
- keymap
-Content-Language: en-US
-To:     Samuel Holland <samuel@sholland.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, Ondrej Jirman <x@xff.cz>
-References: <20220129230043.12422-1-samuel@sholland.org>
- <20220129230043.12422-4-samuel@sholland.org>
-From:   Jarrah <kernel@undef.tools>
-In-Reply-To: <20220129230043.12422-4-samuel@sholland.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220304171913.2292458-1-james.clark@arm.com> <20220304171913.2292458-11-james.clark@arm.com>
+In-Reply-To: <20220304171913.2292458-11-james.clark@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Tue, 12 Apr 2022 11:17:04 +0100
+Message-ID: <CAJ9a7VgHFcdqHyKX4R3Uv-pCNzQ=q1Zj7-798K+-FOgHMskyiQ@mail.gmail.com>
+Subject: Re: [PATCH v3 10/15] coresight: etm3x: Cleanup ETMTECR1 register accesses
+To:     James Clark <James.Clark@arm.com>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        Anshuman.Khandual@arm.com, mathieu.poirier@linaro.org,
+        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 4 Mar 2022 at 17:19, James Clark <james.clark@arm.com> wrote:
+>
+> This is a no-op change for style and consistency and has no effect on
+> the binary output by the compiler. These fields already have macros
+> to define them so use them instead of magic numbers.
+>
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm3x-core.c  | 2 +-
+>  drivers/hwtracing/coresight/coresight-etm3x-sysfs.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-etm3x-core.c b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+> index 7d413ba8b823..d0ab9933472b 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm3x-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm3x-core.c
+> @@ -204,7 +204,7 @@ void etm_set_default(struct etm_config *config)
+>          *  set all bits in register 0x007, the ETMTECR2, to 0
+>          *  set register 0x008, the ETMTEEVR, to 0x6F (TRUE).
+>          */
+> -       config->enable_ctrl1 = BIT(24);
+> +       config->enable_ctrl1 = ETMTECR1_INC_EXC;
+>         config->enable_ctrl2 = 0x0;
+>         config->enable_event = ETM_HARD_WIRE_RES_A;
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+> index e8c7649f123e..68fcbf4ce7a8 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+> @@ -474,7 +474,7 @@ static ssize_t addr_start_store(struct device *dev,
+>         config->addr_val[idx] = val;
+>         config->addr_type[idx] = ETM_ADDR_TYPE_START;
+>         config->startstop_ctrl |= (1 << idx);
+> -       config->enable_ctrl1 |= BIT(25);
+> +       config->enable_ctrl1 |= ETMTECR1_START_STOP;
+>         spin_unlock(&drvdata->spinlock);
+>
+>         return size;
+> --
+> 2.28.0
+>
 
-On 1/30/22 10:00, Samuel Holland wrote:
-> +
-> +static const uint32_t ppkb_default_fn_keymap[] = {
-> +	KEY(0,  0, KEY_FN_ESC),
-> +	KEY(0,  1, KEY_F1),
-> +	KEY(0,  2, KEY_F2),
-> +	KEY(0,  3, KEY_F3),
-> +	KEY(0,  4, KEY_F4),
-> +	KEY(0,  5, KEY_F5),
-> +	KEY(0,  6, KEY_F6),
-> +	KEY(0,  7, KEY_F7),
-> +	KEY(0,  8, KEY_F8),
-> +	KEY(0,  9, KEY_F9),
-> +	KEY(0, 10, KEY_F10),
-> +	KEY(0, 11, KEY_DELETE),
-> +
-> +	KEY(2,  0, KEY_SYSRQ),
-> +	KEY(2, 10, KEY_INSERT),
-> +
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
 
-
-The driver currently being patched into most distros supporting the 
-keyboard exposes the symbols printed on the keyboard rather than the F* 
-keys on the function layer. While I agree than exposing function keys on 
-the Fn layer is more logical, in practice running this patch for a day 
-I've found it's far more useful to have quick access to the standard set 
-of symbols (such as | and -) than to have the function keys.
-
-Would it be possible to either set the default back to symbols or expose 
-another layer (potentially under the "pine" key)? An alternative 
-solution proposed on the Mobian issue for this was to add a module 
-option, allowing these to be switched at runtime rather than compile time.
-
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
