@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E866CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380093AbiDLIVT (ORCPT
+        id S1380156AbiDLIV1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
+        Tue, 12 Apr 2022 04:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353960AbiDLHZ6 (ORCPT
+        with ESMTP id S1353933AbiDLHZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968E312AE3;
-        Tue, 12 Apr 2022 00:05:16 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9C91263E;
+        Tue, 12 Apr 2022 00:05:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 489A2B81B4E;
-        Tue, 12 Apr 2022 07:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BD0C385A6;
-        Tue, 12 Apr 2022 07:05:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AA78B81A8F;
+        Tue, 12 Apr 2022 07:05:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09BB9C385A6;
+        Tue, 12 Apr 2022 07:05:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747114;
-        bh=FBesncHoP0Ov3S83wnwhUVjLgMn3giE2KDvtaHZAkXc=;
+        s=korg; t=1649747111;
+        bh=4kHxTx+nZTZet0xhrBn9ebOlglwAHA+XhrKvmS0m9VA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v0PHlsK5yZJdJNbumCurIr8+3gBEFWImVh5VJ0rj38uT7rjStRT6CtmWlxsVlktza
-         OlNpZG5zbV1AEQIwZ3n9pCBDZVZzccWV/wjeL3uAZ1C5FWKGKphwbXDCFHP4l87Y6W
-         nrxqc8MJwGF6QoD8RM3haH+8lxzLErmEKhBFoE54=
+        b=xUovsqyXJP3uyjWzgBdDLYVbZP2asZRpih4yMIIHavrNsb+IJUg6ukbJCMGT0tl9b
+         p0mbKGYNI8s3AxQnB/bEaMZAPnw4CYrbjr8Idbce6/YRjUl8upJQ6Uapkgfn7mXlA3
+         mD94iwoAz2xNp5zrRYrx91OyaKieqX2ERrfBGxr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Suman Anna <s-anna@ti.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Tony Lindgren <tony@atomide.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 208/285] iommu/omap: Fix regression in probe for NULL pointer dereference
-Date:   Tue, 12 Apr 2022 08:31:05 +0200
-Message-Id: <20220412062949.662554328@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 207/285] SUNRPC: svc_tcp_sendmsg() should handle errors from xdr_alloc_bvec()
+Date:   Tue, 12 Apr 2022 08:31:04 +0200
+Message-Id: <20220412062949.633716901@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -53,56 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 71ff461c3f41f6465434b9e980c01782763e7ad8 ]
+[ Upstream commit b056fa070814897be32d83b079dbc311375588e7 ]
 
-Commit 3f6634d997db ("iommu: Use right way to retrieve iommu_ops") started
-triggering a NULL pointer dereference for some omap variants:
+The allocation is done with GFP_KERNEL, but it could still fail in a low
+memory situation.
 
-__iommu_probe_device from probe_iommu_group+0x2c/0x38
-probe_iommu_group from bus_for_each_dev+0x74/0xbc
-bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
-bus_iommu_probe from bus_set_iommu+0x80/0xc8
-bus_set_iommu from omap_iommu_init+0x88/0xcc
-omap_iommu_init from do_one_initcall+0x44/0x24
-
-This is caused by omap iommu probe returning 0 instead of ERR_PTR(-ENODEV)
-as noted by Jason Gunthorpe <jgg@ziepe.ca>.
-
-Looks like the regression already happened with an earlier commit
-6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
-that changed the function return type and missed converting one place.
-
-Cc: Drew Fustini <dfustini@baylibre.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Suman Anna <s-anna@ti.com>
-Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-Fixes: 6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
-Fixes: 3f6634d997db ("iommu: Use right way to retrieve iommu_ops")
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Tested-by: Drew Fustini <dfustini@baylibre.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/20220331062301.24269-1-tony@atomide.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: 4a85a6a3320b ("SUNRPC: Handle TCP socket sends with kernel_sendpage() again")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/omap-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/svcsock.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 91749654fd49..be60f6f3a265 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1661,7 +1661,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
- 	num_iommus = of_property_count_elems_of_size(dev->of_node, "iommus",
- 						     sizeof(phandle));
- 	if (num_iommus < 0)
--		return 0;
-+		return ERR_PTR(-ENODEV);
+diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+index 478f857cdaed..6ea3d87e1147 100644
+--- a/net/sunrpc/svcsock.c
++++ b/net/sunrpc/svcsock.c
+@@ -1096,7 +1096,9 @@ static int svc_tcp_sendmsg(struct socket *sock, struct xdr_buf *xdr,
+ 	int ret;
  
- 	arch_data = kcalloc(num_iommus + 1, sizeof(*arch_data), GFP_KERNEL);
- 	if (!arch_data)
+ 	*sentp = 0;
+-	xdr_alloc_bvec(xdr, GFP_KERNEL);
++	ret = xdr_alloc_bvec(xdr, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
+ 
+ 	ret = kernel_sendmsg(sock, &msg, &rm, 1, rm.iov_len);
+ 	if (ret < 0)
 -- 
 2.35.1
 
