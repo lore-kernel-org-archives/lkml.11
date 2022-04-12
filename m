@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E98C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6479AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241055AbiDLAzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
+        id S245607AbiDLAzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343985AbiDLAxY (ORCPT
+        with ESMTP id S1343975AbiDLAxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Apr 2022 20:53:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E49340C4;
-        Mon, 11 Apr 2022 17:48:16 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E70433EB6;
+        Mon, 11 Apr 2022 17:48:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACF7A617E9;
-        Tue, 12 Apr 2022 00:48:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D805C385A4;
-        Tue, 12 Apr 2022 00:48:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5EEEB819C4;
+        Tue, 12 Apr 2022 00:48:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A7CC385AC;
+        Tue, 12 Apr 2022 00:48:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724495;
-        bh=eT3XsyhJrW/hV7OjSBlOwD8UrNHf86QPPrWbSdZ2ZsY=;
+        s=k20201202; t=1649724492;
+        bh=v6yuNXdoFIyZYpzpbSX09Y32GwEic8VWpyIkKO0cXjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hn+4MS7QuU5EC2gMkWMpCHlOfjOceV80KyfKGFIk/FtlPqpmzZ5bxmPl1E7AYrdLk
-         4nXo6sV+K3SDFaKt82lm+BHV2Au8ynvFgYHxH6a7dgGr4ayA9Km6r6IJqys24GANH9
-         O1PD66Hp+pbT3rc1+MFRU4SwlH6jjdapjvYumiDcwg+Q3xL78H5aH/XctsqzzKaSOA
-         2euFLSwlWaPma0MmEoxgnwTcvFDG9NH+b35eejaqqtYpuwKLYLMOrNRt8nvGp+903n
-         mhSYWiYrhUm6d8YT1E24KjlUua4McKuJFFOH3k9l7hiXnsanQNr/fJpd3Io9TZp/OK
-         Pigd2dzzl5xGw==
+        b=GIMjmEUb/0BEpQPJPNfqjPvWgXzFxPOcWRm/sL4ucM8Cjm+X/MF2K8CjiTLxLSfoE
+         9oXHbouHG4lKOjne2HZZJK5/oFXReWQDDqoM0erV5qQDodThDyziPRWD7R2/RyzPYx
+         DCJUYp6ZHQ2knujJlDyF6RLUm8rYZ5fItlkeGK1qIYwh1sR+NmARvOgp/ri2e26YIY
+         OK3vKjy7Hp/EB7BjRLk1EbQoiTsaSmmZKXwz05p8iJoxo3WcOzGh2rwKhW5+w8yZIq
+         aGO7p/8j/qRq9TcGxzDardNRGmmhirb2X3y1l7q1/allC/iN5Hynixp7JMzupA6d1+
+         KiD2AH0wENkFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 28/41] spi: cadence-quadspi: fix protocol setup for non-1-1-X operations
-Date:   Mon, 11 Apr 2022 20:46:40 -0400
-Message-Id: <20220412004656.350101-28-sashal@kernel.org>
+Cc:     Marcin Kozlowski <marcinguy@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 26/41] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
+Date:   Mon, 11 Apr 2022 20:46:38 -0400
+Message-Id: <20220412004656.350101-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004656.350101-1-sashal@kernel.org>
 References: <20220412004656.350101-1-sashal@kernel.org>
@@ -51,129 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Marcin Kozlowski <marcinguy@gmail.com>
 
-[ Upstream commit 97e4827d775faa9a32b5e1a97959c69dd77d17a3 ]
+[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
 
-cqspi_set_protocol() only set the data width, but ignored the command
-and address width (except for 8-8-8 DTR ops), leading to corruption of
-all transfers using 1-X-X or X-X-X ops. Fix by setting the other two
-widths as well.
+aqc111_rx_fixup() contains several out-of-bounds accesses that can be
+triggered by a malicious (or defective) USB device, in particular:
 
-While we're at it, simplify the code a bit by replacing the
-CQSPI_INST_TYPE_* constants with ilog2().
+ - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
+   causing OOB reads and (on big-endian systems) OOB endianness flips.
+ - A packet can overlap the metadata array, causing a later OOB
+   endianness flip to corrupt data used by a cloned SKB that has already
+   been handed off into the network stack.
+ - A packet SKB can be constructed whose tail is far beyond its end,
+   causing out-of-bounds heap data to be considered part of the SKB's
+   data.
 
-Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash with 1-4-4
-read and write operations.
+Found doing variant analysis. Tested it with another driver (ax88179_178a), since
+I don't have a aqc111 device to test it, but the code looks very similar.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Link: https://lore.kernel.org/r/20220331110819.133392-1-matthias.schiffer@ew.tq-group.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence-quadspi.c | 46 ++++++++-----------------------
- 1 file changed, 12 insertions(+), 34 deletions(-)
+ drivers/net/usb/aqc111.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 101cc71bffa7..1a6294a06e72 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -18,6 +18,7 @@
- #include <linux/iopoll.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
-+#include <linux/log2.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of.h>
-@@ -93,12 +94,6 @@ struct cqspi_driver_platdata {
- #define CQSPI_TIMEOUT_MS			500
- #define CQSPI_READ_TIMEOUT_MS			10
+diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
+index 73b97f4cc1ec..e8d49886d695 100644
+--- a/drivers/net/usb/aqc111.c
++++ b/drivers/net/usb/aqc111.c
+@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 	if (start_of_descs != desc_offset)
+ 		goto err;
  
--/* Instruction type */
--#define CQSPI_INST_TYPE_SINGLE			0
--#define CQSPI_INST_TYPE_DUAL			1
--#define CQSPI_INST_TYPE_QUAD			2
--#define CQSPI_INST_TYPE_OCTAL			3
--
- #define CQSPI_DUMMY_CLKS_PER_BYTE		8
- #define CQSPI_DUMMY_BYTES_MAX			4
- #define CQSPI_DUMMY_CLKS_MAX			31
-@@ -322,10 +317,6 @@ static unsigned int cqspi_calc_dummy(const struct spi_mem_op *op, bool dtr)
- static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 			      const struct spi_mem_op *op)
- {
--	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--
- 	/*
- 	 * For an op to be DTR, cmd phase along with every other non-empty
- 	 * phase should have dtr field set to 1. If an op phase has zero
-@@ -335,32 +326,23 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 		       (!op->addr.nbytes || op->addr.dtr) &&
- 		       (!op->data.nbytes || op->data.dtr);
+-	/* self check desc_offset from header*/
+-	if (desc_offset >= skb_len)
++	/* self check desc_offset from header and make sure that the
++	 * bounds of the metadata array are inside the SKB
++	 */
++	if (pkt_count * 2 + desc_offset >= skb_len)
+ 		goto err;
  
--	switch (op->data.buswidth) {
--	case 0:
--		break;
--	case 1:
--		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--		break;
--	case 2:
--		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
--		break;
--	case 4:
--		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
--		break;
--	case 8:
--		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
--		break;
--	default:
--		return -EINVAL;
--	}
-+	f_pdata->inst_width = 0;
-+	if (op->cmd.buswidth)
-+		f_pdata->inst_width = ilog2(op->cmd.buswidth);
++	/* Packets must not overlap the metadata array */
++	skb_trim(skb, desc_offset);
 +
-+	f_pdata->addr_width = 0;
-+	if (op->addr.buswidth)
-+		f_pdata->addr_width = ilog2(op->addr.buswidth);
-+
-+	f_pdata->data_width = 0;
-+	if (op->data.buswidth)
-+		f_pdata->data_width = ilog2(op->data.buswidth);
+ 	if (pkt_count == 0)
+ 		goto err;
  
- 	/* Right now we only support 8-8-8 DTR mode. */
- 	if (f_pdata->dtr) {
- 		switch (op->cmd.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->inst_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -368,9 +350,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->addr.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->addr_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -378,9 +358,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->data.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
 -- 
 2.35.1
 
