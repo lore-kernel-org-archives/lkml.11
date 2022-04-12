@@ -2,110 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA59C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231758AbiDLU6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 16:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43476 "EHLO
+        id S230395AbiDLU6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 16:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231665AbiDLU5i (ORCPT
+        with ESMTP id S231419AbiDLU6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 16:57:38 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9252414FFE9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:53:39 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649795661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9PaeO1yoTw7dvGZZ0PRc0hGx0cBmvj6WVa7+40BVJ4E=;
-        b=XlUVorIwjmIFMIc+DkdX5cA6QBXTWo/HOZTZegAyPCsN4FoHEzNXFRgqyzFz4nmuuhAveg
-        jBdiBiTvHh4SNEySyFonWBCS20QMIgOaFr9SSleFaguouFXjTzSuU2Kh2GGKF2pmX2AG1o
-        HqgQrb8JuPW2/JHcEV2il0q7ZalIY4YFBT35ROA/hl6ZGJxJSbMd3OJ7MITqH4R56HiwA3
-        MeOp/2K1Ak8OmAPlH9k1Ne9eqCKcNwj2VqbN12SqvSMc8v3h2cQnuz2W1voxL6V4IfYy+j
-        Hd+82VUzQb3sRakCTT/55y6FCCLmQZL5DnmmVyO1f6pVuimwKx++38efDe11mw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649795661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9PaeO1yoTw7dvGZZ0PRc0hGx0cBmvj6WVa7+40BVJ4E=;
-        b=5rToMQK6B0RWVR9lVSmCh/M6NtlPCg382vXe6QDeihkgUjU1hmslw5DRZ3yrFPNS36L/+h
-        og2C/vIlWKT6UDBQ==
-To:     Daniel Vacek <neelx@redhat.com>
-Cc:     "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] x86/apic: Clarify i82489DX bit overlap in APIC_LVT0
-In-Reply-To: <CACjP9X_A7aLmvypyOz1UrXM571gx_X5q7=w-1j+G+MSbCteiEw@mail.gmail.com>
-References: <20220202140244.1681140-1-neelx@redhat.com>
- <874k361liu.ffs@tglx>
- <CACjP9X_A7aLmvypyOz1UrXM571gx_X5q7=w-1j+G+MSbCteiEw@mail.gmail.com>
-Date:   Tue, 12 Apr 2022 22:34:21 +0200
-Message-ID: <87ee22f3ci.ffs@tglx>
+        Tue, 12 Apr 2022 16:58:08 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F084A158558
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:54:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k6wyNe9QYtMfezTDVvAkMc4gE/gQLNKIaVOfb3zvLPoivyZ7TXj32YgGPq4VQoeIdZWexY5+YdHA03S4wBJNda/QwrJhb+296QSHXG1kCP7Zqs3vVH7CoEBiDuZdMWsJa9pYPRo2Z9yOTheCUa6tGjg6/sSeI7bPEAM3sBuBE+bM0N2NXSR8ixyntIvHjJ4E3Z3aUQsOPTr2nnGVbgX6SW2xHsG+gJ4MnlDX4I4Ii2RHQctbKE8Il0pyS5YJ4ygMMRXn8ZNhduIEndbMllteUMsguecM87IG7MLFFylkssEwiTnTJlPNq9jx50nZ9QKmqIK3n8HgTfB9ulghy8GS0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=O+J2xv7+6p6wm2YtUCCq2Nz/ey85hCieIZGMvmBIuoU=;
+ b=B1CxWDzhWG0O5AgABCiYwyzzDAF/zvscTZGSTrmdvUsmdWyVDedX7JLWH0H0ZTKq9/m7BxzGIFeyfyVE9xdiNZ9DM7x3rLBiz7sdGNJgKKtM+KqiebPtWX3b3fF/K9LM/xpVL+BxkZJ/BBQPXOLNHediAGMPIgY5afWZ87MNG3lNw2jYK9lYWtYDWVPecnsUqcvWlFs0MCb/RtAh6tujhurYdUehd4ieKWlnT8ohpis4kQi0SwmkK1VyNeA+oklANx8QEFiRgVu7gkBBlX49tGZozMgQWYRoUwbF8BagHE9xYttez+4JhsJsnIFKkke693xzOc7rLkMhCO2C5SavUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O+J2xv7+6p6wm2YtUCCq2Nz/ey85hCieIZGMvmBIuoU=;
+ b=sREbLK59xXnZDMNqs3VPQHtZ1Of7YEelgNo6WPyNiW0h30MWV7Taea0sh79eK2i/8ZePBKG4yXzL+hP114JKpgneowExdniMIq8Bmood6k5wUrLcgrgcZC/By0LZuhpJpzYGgZEZp01T+u/Raa6XAmkVjBuMVmpCpxbCki6AUpTllGu5m/iS44h75vUPXZ8zcuPrtx3cVbm46R4+kRJoUPCEednIs4UHSEP49EbNaYsw+dw/pQ79czuAOS04KMP9Oa0Zdkz1XizJtRy4aYEqHkFDRbFe6qFZ4uINZYZfNYzvaApmWFQWVIN5YDvHR888W027Y2vtF6j81C8J/u4h3A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4206.namprd12.prod.outlook.com (2603:10b6:208:1d5::18)
+ by MWHPR12MB1679.namprd12.prod.outlook.com (2603:10b6:301:f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 20:52:13 +0000
+Received: from MN2PR12MB4206.namprd12.prod.outlook.com
+ ([fe80::211e:d78f:c944:6665]) by MN2PR12MB4206.namprd12.prod.outlook.com
+ ([fe80::211e:d78f:c944:6665%7]) with mapi id 15.20.5144.030; Tue, 12 Apr 2022
+ 20:52:13 +0000
+Message-ID: <48be3b1e-1707-8867-07ed-7ec7ed18314e@nvidia.com>
+Date:   Wed, 13 Apr 2022 02:21:59 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH 32/34] vfio/mdev: Remove mdev_parent_ops
+Content-Language: en-US
+To:     Christoph Hellwig <hch@lst.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220411141403.86980-1-hch@lst.de>
+ <20220411141403.86980-33-hch@lst.de>
+X-Nvconfidentiality: public
+From:   Kirti Wankhede <kwankhede@nvidia.com>
+In-Reply-To: <20220411141403.86980-33-hch@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA1PR0101CA0053.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a00:20::15) To MN2PR12MB4206.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::18)
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 877639ab-d3f0-4fae-3fdf-08da1cc651dc
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1679:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR12MB1679F582D36C8D1AC27B9323DCED9@MWHPR12MB1679.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XGDb9mGnf09QBdtxxCwsHuFPi4h3S7ps07orFCjXYQHyhFbYNj+zDWYT/xPRQA7q3yNQw13mkHnQz6kfdW5L8QCBMRFP9+8K4yirtOSpEUxZ1anucCs5awdp3lQVZFGDCpmfEuDNObP33vgZlwBldjcUUnj+l26Uw/436NA/xFQBS0obBf0YRok/UwGJH9r5OTA+Ac2QT3NvR/TJGLMkSSmjS6Y/JBvgtI2wacaV7jCnYGmu4e18PH73kxLHZ8gIppkPTIxnF82FpRF1sITnK8NmKdAeLqtvhM1+tUWOk/58PE+XY/VgOGQK2kiJ0jqd5KJVZ2LGOroUMheUtzdBhqUHjx0Pd66cnIdeiJBhLk2chhe5Na9AopuOj0CNWzrXU1RR6P3P0UPgB/9IqAdsYQOGGOAO/yr9u7reqSTbIVKRXix2sVYa5/Uk+h7NYak3HzEa6Uw6YBcgNIKpShWo/4rXzvvXQA5bUNZHsFmFPtbLPxsrQwK5crppltwgZ4IuWu5D68AqmfTYXbKzoLaabQeDSqulHnVWdvofT/58azHmyZkrCREoWgEuNIaTBk4uuFU9SSmCdtMp14+BmPI+c+tzFEWgUXl74Xr2Y3X9YKPtC4rli54bTJhy2LROgXpWcJ6213CSAw7cwUJAU6KxsMoYYt171rX2MRjfSFaGk6+P7zUDvKuY3yuBUxMh+RbxQZZtzuvsBU37EIN+HJDBC9aPcZ14gXJyw4PXgw8Lv4c=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4206.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(2906002)(6512007)(31686004)(66946007)(31696002)(8676002)(186003)(26005)(4326008)(7416002)(53546011)(8936002)(5660300002)(6666004)(86362001)(66556008)(55236004)(2616005)(6506007)(508600001)(83380400001)(66476007)(36756003)(316002)(110136005)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dDBaQnNPaXNqYXBiM0pBL1BMMVFDc3JJT2tCdHRTUEZtbzdrdWpjZlYzbzZ1?=
+ =?utf-8?B?NXdnS283b0pnL1NOclBlc2x5cnppd05paVV1cVRHSXdZcUJNdzF6Y3hJa250?=
+ =?utf-8?B?ZVQxZWNHRHA0YkhqSkRtK0N4eW81UTlFYmNpU1RFTVM4aE5QdnFGSXlVaEg1?=
+ =?utf-8?B?SkFXTmh3UTBBNkNQMG1ycmNmM3RHTk44M2tFaHR5QWxBMFYvMWNTbDVweGt5?=
+ =?utf-8?B?c1dKdEJNd2RwcnU5WU5FcExTQzZQSk9ZcjdLa21WMkQwNVl0dXd5bHI5M2da?=
+ =?utf-8?B?KzdMcFJWSFdneHRsZmgvOUo2MmdPZXBmLzZSZWo4a2xRWTA1a1YxaXRQWjgr?=
+ =?utf-8?B?R0dsWUs5UXByaU0xV0thQTFVNTVweGR5RFFCZkt2c0VFdGl5OEI3RnNoVS9x?=
+ =?utf-8?B?RlIvLzNlamRKNC9obVVHNkZvZjRyRlAvSzRXak9nM2c1emkwU2oxRjdoMmx3?=
+ =?utf-8?B?cDFtdHZhOVU5ZlZ4MlNuSkphQVdFNXExS29LOG5YcXpRY0NIK3hLYVFiRTRx?=
+ =?utf-8?B?SHQ0YS8xVzFXcVN5dVJUZkJsUEJwRHZtbVZTRnFjTGJxQ3BCTVNCOWJoSmJl?=
+ =?utf-8?B?YTF4d0N1bTBFWXJDbWdxNmFkYUthVnV0cC9pbEoyWVBUMFBhTk8zNnU5NUpv?=
+ =?utf-8?B?cVhQcHRia2MzYTY2Y1hoa0NZTXRFenlUSzkrZ2lDK2YrQitmUFZuT0hhdjA3?=
+ =?utf-8?B?S0NYZzVJaU5rT3dxeEZoYmU4dTRHeHhoNVY3UG5RYjkzb3dOcFc4SFlhcDFa?=
+ =?utf-8?B?M25INGZoamRza3FMMXRCNS9QQ1FRWVczZUtEZWFHTlp4NjRycVhYNm1RZjN6?=
+ =?utf-8?B?M29WZHh3bktNTTJXaW5PNDczOUh3aG14S2hOaWpqVjhFSGl1aGxWTWhHd3FI?=
+ =?utf-8?B?TDd1L3NCRk14K1ZpYUtCRUNOOE9PeUVPdXBnM3pVRVpQMitsQjJJWUZQYUlP?=
+ =?utf-8?B?Zlpvc1hhVGxYT2tYRFJ4N25xVFBjdDRwalp3amRiMnpMak9VN0dUVDMxTHRz?=
+ =?utf-8?B?Ulh6WmpnK3doMmFjMFVobllsMnBNN0V0TUdJMDVtUGc2aWlScTlUNmFHaGNX?=
+ =?utf-8?B?dDJXaW5ucEdmQVBOWFhYM1FtN3NtakVnTXhXQXVhK3pDeHNnek5vdi9qRmk4?=
+ =?utf-8?B?TTJRZS9GVmFVTE9iRzV6TzVrWUxuL3ZBcjkvUzliUUdrSjl6ZlJySXNtQ3NV?=
+ =?utf-8?B?ZE5mb0h6MjhJalAvUENUUXNYdXRQSWpwU2JYeldDSEQ3dUowRUhnZHFTY2dQ?=
+ =?utf-8?B?STZvaGhLRC9EbmROUWtER0FzZ3RqZWFHL0lZUDZEVkJ2M2Vja0N3d3RydExY?=
+ =?utf-8?B?cWV2YTMxSmxEL2hmSEJJZGlXVklNSHlIQUJ4eG9qQU0vdjVUMElnN3hrKzVp?=
+ =?utf-8?B?bXlWSDJaUXRDMlM2TzhwWXczNitDNmFKeHczdHFmNVhzdFlNc3NYL0MwcXlp?=
+ =?utf-8?B?NTFsVkUxUkJqdW1wdWJPZDREOHM3T2hnbjlNUXNtQWZpSDQwTEY3YmhsTkl4?=
+ =?utf-8?B?eVhpbFNsRVJWY0tGWG4rTUZwK2VpZ3lBdHBQU2N2c3kwYUxTZ3hVU2V0Z3oy?=
+ =?utf-8?B?djNUUXA3WTliVWtVQi9HUmp4SmJYMjJXNTVFalRtc0RhWS9VdktGeWdwbHJ2?=
+ =?utf-8?B?QlJqVUhXSFlDUm93MjlmNUF0MHBCZWhMTE9rL29wYXRxZTF2enlHdHIrM1BD?=
+ =?utf-8?B?cjVJZHJTbGRTNXdGR1RaSVQyVEhJQkNUWGdjSytkRjBrVXNXdHJ3OGl3S2F5?=
+ =?utf-8?B?UXdBZ2VMY3BKazZPMzZPRmxQSkMzOXc0aWpMekgxdkdROHdHUEMvME52WHY5?=
+ =?utf-8?B?YnR6TkNOMmNCSElBVDFZaEhEcWU5NmpZejNiQzJEL1lqMjVwU0Flb21RRUtO?=
+ =?utf-8?B?Y2xraUxHdExHVERqdXUzbk4vVkZuMnZPVnR3SHVrd0NibW04ZnFTRzNDMlZX?=
+ =?utf-8?B?bmp4dnhFczlrSEluVEhOeUxqY3F0SzB3VEp1TnBwdHFPYThRYS9rbW5KZFZw?=
+ =?utf-8?B?SUpYK25zNXN5ZzkySjVDOWN1RVN1VE9FOWlManBpc0pKTVc5RkRPSWM4ci85?=
+ =?utf-8?B?bUdwdTZWZjROc3dJbHhQYzQ4dXJaNDdqb2hPWkFwWEIrdTV5b1ZPNWowaFFz?=
+ =?utf-8?B?M2Ziak1BQzJMMmR6LzVoSUpyTkJsd3cwZlBnY2puc3hUTVlWcHd4SklVRkdR?=
+ =?utf-8?B?UUo1dkZuNHdDRWYzcGI1QUt3eUlBUzhNSHFqTCtOKzMxbFdHdUt1RW1FZWJR?=
+ =?utf-8?B?V0N2MUJDT20vSllIMnZJYytaTERINXRYbjFMdE44Y25MNnFBZ0NrcGkxV3pv?=
+ =?utf-8?B?azd0R2l3MmdFTitRUjhSRjM0U1hoYXY0SXd4NW03bGovSUI2MU5CQT09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 877639ab-d3f0-4fae-3fdf-08da1cc651dc
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4206.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 20:52:13.2742
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RYsAKMDNvXNdCSbVcTsZ8fw5QWT7UKlmz3grYfezyDevNyzB0a+pRn41/lwmS7KX0YruRitHj1w5NIM9zc7lYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1679
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Daniel stumbled over the undocumented bit overlap of the i82498DX external
-APIC and the TSC deadline timer configuration bit in modern APICs.
 
-Remove the i82489DX macro maze, use a i82489DX specific define in the apic
-code and document the overlap in a comment.
 
-Reported-by: Daniel Vacek <neelx@redhat.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
- arch/x86/include/asm/apicdef.h |    6 ------
- arch/x86/kernel/apic/apic.c    |   11 ++++++++++-
- 2 files changed, 10 insertions(+), 7 deletions(-)
+On 4/11/2022 7:44 PM, Christoph Hellwig wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> 
+> The last useful member in this struct is the supported_type_groups, move
+> it to the mdev_driver and delete mdev_parent_ops.
+> 
+> Replace it with mdev_driver as an argument to mdev_register_device()
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   .../driver-api/vfio-mediated-device.rst       | 24 ++++--------------
+>   drivers/gpu/drm/i915/gvt/kvmgt.c              |  7 +-----
+>   drivers/s390/cio/vfio_ccw_ops.c               |  7 +-----
+>   drivers/s390/crypto/vfio_ap_ops.c             |  9 ++-----
+>   drivers/vfio/mdev/mdev_core.c                 | 13 ++++------
+>   drivers/vfio/mdev/mdev_private.h              |  2 +-
+>   drivers/vfio/mdev/mdev_sysfs.c                |  6 ++---
+>   include/linux/mdev.h                          | 25 +++----------------
+>   samples/vfio-mdev/mbochs.c                    |  9 ++-----
+>   samples/vfio-mdev/mdpy.c                      |  9 ++-----
+>   samples/vfio-mdev/mtty.c                      |  9 ++-----
+>   11 files changed, 28 insertions(+), 92 deletions(-)
+> 
 
---- a/arch/x86/include/asm/apicdef.h
-+++ b/arch/x86/include/asm/apicdef.h
-@@ -95,12 +95,6 @@
- #define	APIC_LVTTHMR	0x330
- #define	APIC_LVTPC	0x340
- #define	APIC_LVT0	0x350
--#define		APIC_LVT_TIMER_BASE_MASK	(0x3 << 18)
--#define		GET_APIC_TIMER_BASE(x)		(((x) >> 18) & 0x3)
--#define		SET_APIC_TIMER_BASE(x)		(((x) << 18))
--#define		APIC_TIMER_BASE_CLKIN		0x0
--#define		APIC_TIMER_BASE_TMBASE		0x1
--#define		APIC_TIMER_BASE_DIV		0x2
- #define		APIC_LVT_TIMER_ONESHOT		(0 << 17)
- #define		APIC_LVT_TIMER_PERIODIC		(1 << 17)
- #define		APIC_LVT_TIMER_TSCDEADLINE	(2 << 17)
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -320,6 +320,9 @@ int lapic_get_maxlvt(void)
- #define APIC_DIVISOR 16
- #define TSC_DIVISOR  8
- 
-+/* i82489DX specific */
-+#define		I82489DX_BASE_DIVIDER		(((0x2) << 18))
-+
- /*
-  * This function sets up the local APIC timer, with a timeout of
-  * 'clocks' APIC bus clock. During calibration we actually call
-@@ -340,8 +343,14 @@ static void __setup_APIC_LVTT(unsigned i
- 	else if (boot_cpu_has(X86_FEATURE_TSC_DEADLINE_TIMER))
- 		lvtt_value |= APIC_LVT_TIMER_TSCDEADLINE;
- 
-+	/*
-+	 * The i82489DX APIC uses bit 18 and 19 for the base divider.  This
-+	 * overlaps with bit 18 on integrated APICs, but is not documented
-+	 * in the SDM. No problem though. i82489DX equipped systems do not
-+	 * have TSC deadline timer.
-+	 */
- 	if (!lapic_is_integrated())
--		lvtt_value |= SET_APIC_TIMER_BASE(APIC_TIMER_BASE_DIV);
-+		lvtt_value |= I82489DX_BASE_DIVIDER;
- 
- 	if (!irqen)
- 		lvtt_value |= APIC_LVT_MASKED;
+Reviewed-by: Kirti Wankhede <kwankhede@nvidia.com>
