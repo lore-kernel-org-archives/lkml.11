@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 544C3C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65428C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355077AbiDLH1H (ORCPT
+        id S1355157AbiDLH1M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
+        Tue, 12 Apr 2022 03:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351688AbiDLHMv (ORCPT
+        with ESMTP id S1351576AbiDLHMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0F515A1F;
-        Mon, 11 Apr 2022 23:51:43 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AED4B1C3;
+        Mon, 11 Apr 2022 23:50:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2016DB81B35;
-        Tue, 12 Apr 2022 06:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7908BC385A6;
-        Tue, 12 Apr 2022 06:51:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85C1061464;
+        Tue, 12 Apr 2022 06:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D3F5C385A6;
+        Tue, 12 Apr 2022 06:50:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746300;
-        bh=J+TnkjUnUJTPTjWdY0vnCLiIu4RAOPI2eSIf3Ml9EyI=;
+        s=korg; t=1649746216;
+        bh=FBesncHoP0Ov3S83wnwhUVjLgMn3giE2KDvtaHZAkXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hx97yE6oo9qPF3A4bGQhGP1fppcEFSnO97pl175FDv8WhGlz16hBvr/Ecal1PeQFX
-         sl9LK7pSmDwL8mVzJ6JYzG3dxWBY2qx27yGm0j98F10C4YXjUKHFDg+lV29T7SRLv+
-         Hl/jJkwZrYXEPUlZrUOtBq3qpxX5ty1HDToiCFPM=
+        b=uBCCEuAtZqKqVPG46Gh4Lsmmsal43aMwZ/hD+gYco2sZeQ42+ELjjFtJHiYRJa5cp
+         K0DbHYaTyRMsk4rfGNY5FKg4nv+Yh92lK9HKILKur/5yCDf4GiiSLpO+WpbMGTEbGF
+         t6vhR4zWeHBiUr03HkxGCCpyk2pm8EFRoMoWWFdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        stable@kernel.org
-Subject: [PATCH 5.15 234/277] ata: sata_dwc_460ex: Fix crash due to OOB write
-Date:   Tue, 12 Apr 2022 08:30:37 +0200
-Message-Id: <20220412062948.815687349@linuxfoundation.org>
+        stable@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Suman Anna <s-anna@ti.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Tony Lindgren <tony@atomide.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 202/277] iommu/omap: Fix regression in probe for NULL pointer dereference
+Date:   Tue, 12 Apr 2022 08:30:05 +0200
+Message-Id: <20220412062947.885574545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,83 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lamparter <chunkeey@gmail.com>
+From: Tony Lindgren <tony@atomide.com>
 
-commit 7aa8104a554713b685db729e66511b93d989dd6a upstream.
+[ Upstream commit 71ff461c3f41f6465434b9e980c01782763e7ad8 ]
 
-the driver uses libata's "tag" values from in various arrays.
-Since the mentioned patch bumped the ATA_TAG_INTERNAL to 32,
-the value of the SATA_DWC_QCMD_MAX needs to account for that.
+Commit 3f6634d997db ("iommu: Use right way to retrieve iommu_ops") started
+triggering a NULL pointer dereference for some omap variants:
 
-Otherwise ATA_TAG_INTERNAL usage cause similar crashes like
-this as reported by Tice Rex on the OpenWrt Forum and
-reproduced (with symbols) here:
+__iommu_probe_device from probe_iommu_group+0x2c/0x38
+probe_iommu_group from bus_for_each_dev+0x74/0xbc
+bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
+bus_iommu_probe from bus_set_iommu+0x80/0xc8
+bus_set_iommu from omap_iommu_init+0x88/0xcc
+omap_iommu_init from do_one_initcall+0x44/0x24
 
-| BUG: Kernel NULL pointer dereference at 0x00000000
-| Faulting instruction address: 0xc03ed4b8
-| Oops: Kernel access of bad area, sig: 11 [#1]
-| BE PAGE_SIZE=4K PowerPC 44x Platform
-| CPU: 0 PID: 362 Comm: scsi_eh_1 Not tainted 5.4.163 #0
-| NIP:  c03ed4b8 LR: c03d27e8 CTR: c03ed36c
-| REGS: cfa59950 TRAP: 0300   Not tainted  (5.4.163)
-| MSR:  00021000 <CE,ME>  CR: 42000222  XER: 00000000
-| DEAR: 00000000 ESR: 00000000
-| GPR00: c03d27e8 cfa59a08 cfa55fe0 00000000 0fa46bc0 [...]
-| [..]
-| NIP [c03ed4b8] sata_dwc_qc_issue+0x14c/0x254
-| LR [c03d27e8] ata_qc_issue+0x1c8/0x2dc
-| Call Trace:
-| [cfa59a08] [c003f4e0] __cancel_work_timer+0x124/0x194 (unreliable)
-| [cfa59a78] [c03d27e8] ata_qc_issue+0x1c8/0x2dc
-| [cfa59a98] [c03d2b3c] ata_exec_internal_sg+0x240/0x524
-| [cfa59b08] [c03d2e98] ata_exec_internal+0x78/0xe0
-| [cfa59b58] [c03d30fc] ata_read_log_page.part.38+0x1dc/0x204
-| [cfa59bc8] [c03d324c] ata_identify_page_supported+0x68/0x130
-| [...]
+This is caused by omap iommu probe returning 0 instead of ERR_PTR(-ENODEV)
+as noted by Jason Gunthorpe <jgg@ziepe.ca>.
 
-This is because sata_dwc_dma_xfer_complete() NULLs the
-dma_pending's next neighbour "chan" (a *dma_chan struct) in
-this '32' case right here (line ~735):
-> hsdevp->dma_pending[tag] = SATA_DWC_DMA_PENDING_NONE;
+Looks like the regression already happened with an earlier commit
+6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
+that changed the function return type and missed converting one place.
 
-Then the next time, a dma gets issued; dma_dwc_xfer_setup() passes
-the NULL'd hsdevp->chan to the dmaengine_slave_config() which then
-causes the crash.
-
-With this patch, SATA_DWC_QCMD_MAX is now set to ATA_MAX_QUEUE + 1.
-This avoids the OOB. But please note, there was a worthwhile discussion
-on what ATA_TAG_INTERNAL and ATA_MAX_QUEUE is. And why there should not
-be a "fake" 33 command-long queue size.
-
-Ideally, the dw driver should account for the ATA_TAG_INTERNAL.
-In Damien Le Moal's words: "... having looked at the driver, it
-is a bigger change than just faking a 33rd "tag" that is in fact
-not a command tag at all."
-
-Fixes: 28361c403683c ("libata: add extra internal command")
-Cc: stable@kernel.org # 4.18+
-BugLink: https://github.com/openwrt/openwrt/issues/9505
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Drew Fustini <dfustini@baylibre.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Suman Anna <s-anna@ti.com>
+Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+Fixes: 6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
+Fixes: 3f6634d997db ("iommu: Use right way to retrieve iommu_ops")
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Tested-by: Drew Fustini <dfustini@baylibre.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/20220331062301.24269-1-tony@atomide.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/sata_dwc_460ex.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/omap-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/ata/sata_dwc_460ex.c
-+++ b/drivers/ata/sata_dwc_460ex.c
-@@ -145,7 +145,11 @@ struct sata_dwc_device {
- #endif
- };
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 91749654fd49..be60f6f3a265 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1661,7 +1661,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	num_iommus = of_property_count_elems_of_size(dev->of_node, "iommus",
+ 						     sizeof(phandle));
+ 	if (num_iommus < 0)
+-		return 0;
++		return ERR_PTR(-ENODEV);
  
--#define SATA_DWC_QCMD_MAX	32
-+/*
-+ * Allow one extra special slot for commands and DMA management
-+ * to account for libata internal commands.
-+ */
-+#define SATA_DWC_QCMD_MAX	(ATA_MAX_QUEUE + 1)
- 
- struct sata_dwc_device_port {
- 	struct sata_dwc_device	*hsdev;
+ 	arch_data = kcalloc(num_iommus + 1, sizeof(*arch_data), GFP_KERNEL);
+ 	if (!arch_data)
+-- 
+2.35.1
+
 
 
