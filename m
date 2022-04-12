@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CB6C47090
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E15C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378109AbiDLILX (ORCPT
+        id S1378594AbiDLILx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
+        Tue, 12 Apr 2022 04:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353833AbiDLHZz (ORCPT
+        with ESMTP id S1354112AbiDLH0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:55 -0400
+        Tue, 12 Apr 2022 03:26:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3773ABC3A;
-        Tue, 12 Apr 2022 00:04:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D4337BE1;
+        Tue, 12 Apr 2022 00:05:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E811AB81A8F;
-        Tue, 12 Apr 2022 07:04:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 416C3C385A1;
-        Tue, 12 Apr 2022 07:04:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94505B81B4F;
+        Tue, 12 Apr 2022 07:05:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3F89C385A1;
+        Tue, 12 Apr 2022 07:05:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747088;
-        bh=3RUt2KxfRxSsYsWSSjP4U2KH/Rhc8qyzgbW8l/zg94U=;
+        s=korg; t=1649747147;
+        bh=BGcNS4Cofk807Fee/aS4MB+5zhhGooOiqwxPm0+CL6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zXmfWzAuFelpLC+tFp7XMEycSHpN9QiOgfAg8mpu9op3Z0/rNMSM0SqF+Xs31wm75
-         NKxJbcWcV+kvoG6jUg4JAxfEXlmXpNViCoYW43wEUGPzXgp2vZkKWUF+hXo+KO1cnA
-         91z7d+BinHuH+ZhJl/1AXN51cVrO9CjFuPiQF0mM=
+        b=ZN6INRJnGfs0yK7Qya4ACTlImg+IfVFxoJXW1han3M5qYMic0ahpHGGTbRwL1GsR5
+         HQ7M0B8XqcQJUFYuOLTJ3kk1KZZAGTofGVykPmDEEjfJheW9wGT1zYlNIPPY8xCLDU
+         3zOT6NiOv1CehVc2jR2AdHYSKv1s7I4qe610/sQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Guo Ren <guoren@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 5.16 238/285] arm64: patch_text: Fixup last cpu should be master
-Date:   Tue, 12 Apr 2022 08:31:35 +0200
-Message-Id: <20220412062950.532233422@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Philip Yang <Philip.Yang@amd.com>,
+        Harish Kasiviswanathan <Harish.Kasiviswanathan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 261/285] drm/amdkfd: Fix variable set but not used warning
+Date:   Tue, 12 Apr 2022 08:31:58 +0200
+Message-Id: <20220412062951.194185302@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,42 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-commit 31a099dbd91e69fcab55eef4be15ed7a8c984918 upstream.
+commit 90c44207cdd18091ac9aa7cab8a3e7b0ef00e847 upstream.
 
-These patch_text implementations are using stop_machine_cpuslocked
-infrastructure with atomic cpu_count. The original idea: When the
-master CPU patch_text, the others should wait for it. But current
-implementation is using the first CPU as master, which couldn't
-guarantee the remaining CPUs are waiting. This patch changes the
-last CPU as the master to solve the potential risk.
+All warnings (new ones prefixed by >>):
 
-Fixes: ae16480785de ("arm64: introduce interfaces to hotpatch kernel and module code")
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220407073323.743224-2-guoren@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_svm.c: In function
+'svm_range_deferred_list_work':
+>> drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_svm.c:2067:22: warning:
+variable 'p' set but not used [-Wunused-but-set-variable]
+    2067 |  struct kfd_process *p;
+         |
+
+Fixes: 367c9b0f1b8750 ("drm/amdkfd: Ensure mm remain valid in svm deferred_list work")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-By: Harish Kasiviswanathan <Harish.Kasiviswanathan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/patching.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/arch/arm64/kernel/patching.c
-+++ b/arch/arm64/kernel/patching.c
-@@ -117,8 +117,8 @@ static int __kprobes aarch64_insn_patch_
- 	int i, ret = 0;
- 	struct aarch64_insn_patch *pp = arg;
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -2008,13 +2008,10 @@ static void svm_range_deferred_list_work
+ 	struct svm_range_list *svms;
+ 	struct svm_range *prange;
+ 	struct mm_struct *mm;
+-	struct kfd_process *p;
  
--	/* The first CPU becomes master */
--	if (atomic_inc_return(&pp->cpu_count) == 1) {
-+	/* The last CPU becomes master */
-+	if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
- 		for (i = 0; ret == 0 && i < pp->insn_cnt; i++)
- 			ret = aarch64_insn_patch_text_nosync(pp->text_addrs[i],
- 							     pp->new_insns[i]);
+ 	svms = container_of(work, struct svm_range_list, deferred_list_work);
+ 	pr_debug("enter svms 0x%p\n", svms);
+ 
+-	p = container_of(svms, struct kfd_process, svms);
+-
+ 	spin_lock(&svms->deferred_list_lock);
+ 	while (!list_empty(&svms->deferred_range_list)) {
+ 		prange = list_first_entry(&svms->deferred_range_list,
 
 
