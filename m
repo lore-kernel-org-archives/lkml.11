@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8464BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0175DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348951AbiDLGfm (ORCPT
+        id S1349174AbiDLGfr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
+        Tue, 12 Apr 2022 02:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349004AbiDLGfg (ORCPT
+        with ESMTP id S1348978AbiDLGfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:35:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C561C35A8E;
-        Mon, 11 Apr 2022 23:33:18 -0700 (PDT)
+        Tue, 12 Apr 2022 02:35:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6166335858;
+        Mon, 11 Apr 2022 23:33:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34652618CF;
-        Tue, 12 Apr 2022 06:33:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A40C385B8;
-        Tue, 12 Apr 2022 06:33:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CC79B81B3B;
+        Tue, 12 Apr 2022 06:33:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E1D4C385A6;
+        Tue, 12 Apr 2022 06:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745197;
-        bh=bG4DTXOWo6LfORv66Dccg9LS74KIVLzlhelsob7fX9w=;
+        s=korg; t=1649745191;
+        bh=qFmFGf9o9bbW/AnGcZ49lkynddSyvevlYfY1mkVnTio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nG2jxNDZY01LnfTDz/+QTsIs3h0BKt8XRtHnc770suIrhqorUWcQRU6dwTDteToxa
-         qq0AZ7JMa9JEw+egyC1ysxFUuwuzC98Wxx6ovzKAu6oHifkRnUrFjf7YZ0aq3G/2ep
-         8KnoFsioZMVdhFj4IKnDMchvtninBF+bbmwUwUI8=
+        b=LVql+ot5tsWD1OqG/hCEBVJXQPv2ApqcxVH4ehCxKuQe8F87fe6bf+7BE0T432BHz
+         eN5xk0mQdKhML6GKl2Duovk7AjIHGqwGXI3SmlicB98HEAFpD/fck8m/t3yPlfOXMA
+         g/nW9Vo72szrswrxhL3yjpDnxglawY7FPIDu0/iM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wayne Chang <waynec@nvidia.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 013/171] usb: gadget: tegra-xudc: Fix control endpoints definitions
-Date:   Tue, 12 Apr 2022 08:28:24 +0200
-Message-Id: <20220412062928.267849352@linuxfoundation.org>
+Subject: [PATCH 5.10 011/171] drm/amd/amdgpu/amdgpu_cs: fix refcount leak of a dma_fence obj
+Date:   Tue, 12 Apr 2022 08:28:22 +0200
+Message-Id: <20220412062928.209847133@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -49,62 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wayne Chang <waynec@nvidia.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
+[ Upstream commit dfced44f122c500004a48ecc8db516bb6a295a1b ]
 
-According to the Tegra Technical Reference Manual, the seq_num
-field of control endpoint is not [31:24] but [31:27]. Bit 24
-is reserved and bit 26 is splitxstate.
+This issue takes place in an error path in
+amdgpu_cs_fence_to_handle_ioctl(). When `info->in.what` falls into
+default case, the function simply returns -EINVAL, forgetting to
+decrement the reference count of a dma_fence obj, which is bumped
+earlier by amdgpu_cs_get_fence(). This may result in reference count
+leaks.
 
-The change fixes the wrong control endpoint's definitions.
+Fix it by decreasing the refcount of specific object before returning
+the error code.
 
-Signed-off-by: Wayne Chang <waynec@nvidia.com>
-Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
-index 1dd0d50c6b56..de178bf264c2 100644
---- a/drivers/usb/gadget/udc/tegra-xudc.c
-+++ b/drivers/usb/gadget/udc/tegra-xudc.c
-@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
- BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
- BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
- BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
--BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
-+BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
- BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
-+BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
-+BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
- BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
- BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
- BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
-@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
- 		ep_reload(xudc, ep->index);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+index 12598a4b5c78..867fcee6b0d3 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -1484,6 +1484,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
+ 		return 0;
  
- 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
-+		ep_ctx_write_rsvd(ep->context, 0);
-+		ep_ctx_write_partial_td(ep->context, 0);
-+		ep_ctx_write_splitxstate(ep->context, 0);
- 		ep_ctx_write_seq_num(ep->context, 0);
- 
- 		ep_reload(xudc, ep->index);
-@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
- 	xudc->setup_seq_num = 0;
- 	xudc->queued_setup_packet = false;
- 
--	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
-+	ep_ctx_write_rsvd(ep0->context, 0);
-+	ep_ctx_write_partial_td(ep0->context, 0);
-+	ep_ctx_write_splitxstate(ep0->context, 0);
-+	ep_ctx_write_seq_num(ep0->context, 0);
- 
- 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
- 
+ 	default:
++		dma_fence_put(fence);
+ 		return -EINVAL;
+ 	}
+ }
 -- 
 2.35.1
 
