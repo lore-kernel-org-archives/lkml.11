@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC26BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67965C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241096AbiDLMzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42234 "EHLO
+        id S1353950AbiDLMzg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355280AbiDLMsJ (ORCPT
+        with ESMTP id S1355277AbiDLMsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 08:48:09 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F371226E1;
-        Tue, 12 Apr 2022 05:16:33 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id z99so13494631ede.5;
-        Tue, 12 Apr 2022 05:16:33 -0700 (PDT)
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFBA1122;
+        Tue, 12 Apr 2022 05:16:30 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id d10so22173728edj.0;
+        Tue, 12 Apr 2022 05:16:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lwv0OP8MEFPtBT1zINZmdonMBn1rL8mDzX3cu0httRY=;
-        b=Nrx9PppmSSTaBksft/090SSleOxLNQ168KaZqdPde5zNNfnOffkWaVzLw6BMxacwbR
-         UAjGFEhao5GDH+VGb8yYgE4lNujVITlt7DTYSjj3eV+fO6PK3uewLodumM8NSppQDVUc
-         /OMz+Ndyg/JrNrymjRUj2fFE7XHmGj/xHdcQWi0Il9jHquCtkY9fxrpR3af35rOiFnlZ
-         5rH6MDhHkXKgviLz10C9htS5M5Z2rRSNE+ej1J8UvcwG8f5+8xM9rrsWJKlIlYWZRxgD
-         LE1E3FWCn7bLljRsUimHqjvI0RKAaKiz6iHw0LRoifpwzxwreEYLobLHKiR/cRS9ydGl
-         4KZg==
+        bh=3KCYsQY/y5IS+uLLSbczPyROpjTi5JnKwjdboy6JQyM=;
+        b=Ijr9vklL6LjkEtOCaT7sYYYQ1JtbZJC3Vy+rq3yG6nRRVMc9KwA9fVYAQM2QFTx3te
+         fA1fdxQAVJvrSYrECndrbRE75qFl+qYh4CO9rfv6QEvMfAf7QnFmHXNnBigOrqmZJFOj
+         4YFuDyMa9pgKJlDwAQkTL5NHD33vXD2ad8/cyrUHQlsd5F4ff9rtdkpiSkpcKzyPAOSF
+         sRw6w9Klo7XF16I3sOPabF2X5GAPATD0n1zRQUytlwLqAGtEd6JESH2eQYsGbcMN9PhZ
+         UHZQf2fjN7DU1F9cL1t6h/PD8w2/WDFIIMq7ZuEcgxcoRWfNY7eMnrF1MAxkvIJVI6/y
+         eYkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lwv0OP8MEFPtBT1zINZmdonMBn1rL8mDzX3cu0httRY=;
-        b=plWT1lpVeOlgQF0fNnKTZ/2UnedN5hMjk3eSDprU6bvvVnpPsHLbIKVMAZ+NyNWjz+
-         +X0ZF4h1S09c3DwWgozz0VTgBaYsxpuQLrOQtaPnAxrPaS56QHSwT6IgN8TQ5jnUYXIq
-         stuM7ddClW7BE4HVTJpAcOG+zg+HfOH7Ee0BNvju+U+loH+sciib56jWQ/5sEETuVC+U
-         c51HI76Vg1uwNTEqKMdWPwI9hF6OwiT5PIypgFJ2hJkHK+trPM57XjdYKqwUOK5/fOWR
-         id4/3tHLGv0qiboyAgmmxuSDzUM7gxBWAjP5DtXnSkjYraSNmU27NjDI2fcrLaboE4eh
-         8Bnw==
-X-Gm-Message-State: AOAM533pWmCdcAGFZEA1TXG5KST4Jl4EQvA8U7jKGXKAFiSC1vhow00+
-        6Lv98+4aO75/oZO/DF8k05k=
-X-Google-Smtp-Source: ABdhPJzY2ezbuKR/noX2ghuCmN5SBYP3Gx6pBGYKXHCtWqGnOQkVdyu/LlA9QKxQZv/DPvFNVlz3zA==
-X-Received: by 2002:a05:6402:2682:b0:41d:2f74:7269 with SMTP id w2-20020a056402268200b0041d2f747269mr21742861edd.255.1649765792395;
-        Tue, 12 Apr 2022 05:16:32 -0700 (PDT)
+        bh=3KCYsQY/y5IS+uLLSbczPyROpjTi5JnKwjdboy6JQyM=;
+        b=700te9s/6r9q5D7yTfPNtGLQ90uzas9wbPCUAJA0oEgqQ1fyRTtJN3uROyBKP5PR00
+         mlwWGbFpsWd/XGOvKXq+x3saRuxqhyYpxh4dJr6JptIXkVLbBN7TbKvj2Fsh47hpy9yW
+         Am+fAlQGpFIwykULqj0gBzQSzRQEl0MLBg4mkANyO/d54rUUsw3tT8+TdIUGEMtO5HSY
+         gyKTjKKzrBjl1HtIQrus06fYvGrII0iPL2PRg4Ajx9dssghFUSSNpjIA5DW9oI6BdiSf
+         4qfwEfQl1Uwbne44JZWjLjCuSBFkdu3oZM0SHFyjP5EuXKey0oGhRoh/hjNkUa10SYx6
+         CQiw==
+X-Gm-Message-State: AOAM532k5U7xd3hzr1bn0SVR20WJvhOD5Byiqss6ZRGS+tep2DmnoOTh
+        41kBhxcMCBir5gT4hc4npAc=
+X-Google-Smtp-Source: ABdhPJyO6d0xiIlTTteAtNGMnPmGJvkkKfwwAvDDwF+Cb+4gNJBr9YV5I3Djws/hxiMNELH/5QJCbQ==
+X-Received: by 2002:aa7:cd18:0:b0:41d:8df8:86e5 with SMTP id b24-20020aa7cd18000000b0041d8df886e5mr3998410edw.248.1649765788895;
+        Tue, 12 Apr 2022 05:16:28 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.30
+        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:16:32 -0700 (PDT)
+        Tue, 12 Apr 2022 05:16:28 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -88,10 +89,11 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v3 07/18] net: dsa: Replace usage of found with dedicated list iterator variable
-Date:   Tue, 12 Apr 2022 14:15:46 +0200
-Message-Id: <20220412121557.3553555-8-jakobkoschel@gmail.com>
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next v3 05/18] net: dsa: mv88e6xxx: remove redundant check in mv88e6xxx_port_vlan()
+Date:   Tue, 12 Apr 2022 14:15:44 +0200
+Message-Id: <20220412121557.3553555-6-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412121557.3553555-1-jakobkoschel@gmail.com>
 References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
@@ -101,55 +103,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+We know that "dev > dst->last_switch" in the "else" block.
+In other words, that "dev - dst->last_switch" is > 0.
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+dsa_port_bridge_num_get(dp) can be 0, but the check
+"if (bridge_num + dst->last_switch != dev) continue", rewritten as
+"if (bridge_num != dev - dst->last_switch) continue", aka
+"if (bridge_num != something which cannot be 0) continue",
+makes it redundant to have the extra "if (!bridge_num) continue" logic,
+since a bridge_num of zero would have been skipped anyway.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- net/dsa/dsa.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 89c6c86e746f..645522c4dd4a 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -112,22 +112,21 @@ const struct dsa_device_ops *dsa_find_tagger_by_name(const char *buf)
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 64f4fdd02902..b3aa0e5bc842 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1404,9 +1404,6 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 		list_for_each_entry(dp, &dst->ports, list) {
+ 			unsigned int bridge_num = dsa_port_bridge_num_get(dp);
  
- const struct dsa_device_ops *dsa_tag_driver_get(int tag_protocol)
- {
--	struct dsa_tag_driver *dsa_tag_driver;
-+	struct dsa_tag_driver *dsa_tag_driver = NULL, *iter;
- 	const struct dsa_device_ops *ops;
--	bool found = false;
+-			if (!bridge_num)
+-				continue;
+-
+ 			if (bridge_num + dst->last_switch != dev)
+ 				continue;
  
- 	request_module("%s%d", DSA_TAG_DRIVER_ALIAS, tag_protocol);
- 
- 	mutex_lock(&dsa_tag_drivers_lock);
--	list_for_each_entry(dsa_tag_driver, &dsa_tag_drivers_list, list) {
--		ops = dsa_tag_driver->ops;
-+	list_for_each_entry(iter, &dsa_tag_drivers_list, list) {
-+		ops = iter->ops;
- 		if (ops->proto == tag_protocol) {
--			found = true;
-+			dsa_tag_driver = iter;
- 			break;
- 		}
- 	}
- 
--	if (found) {
-+	if (dsa_tag_driver) {
- 		if (!try_module_get(dsa_tag_driver->owner))
- 			ops = ERR_PTR(-ENOPROTOOPT);
- 	} else {
 -- 
 2.25.1
 
