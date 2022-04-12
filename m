@@ -2,83 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 722EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA35C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239285AbiDLLaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
+        id S232135AbiDLLdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352894AbiDLLZn (ORCPT
+        with ESMTP id S1352789AbiDLLb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:25:43 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0557C2C64C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:08:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=D2RC4bAd0rEJWE1+T1i5AP8ZE6FR3hliXmVOSOJ2LTc=; b=CD0i7wH+RnmCly9CxoPdlqSwSz
-        iSO9n/kio46c9MbyVHMBOOAl1ZCPfgdM30zh5PaBe7JRDGEK05h1wwrBZKfIvfJUkWeTX2dsMzpd3
-        iEuiSg1pKi/lSWZ/Kp1RAzzPBwqNOwXVRuy1NuuV2FarxrDAXQRdxJjjG7vSSjnW5zWYdCjZsV4In
-        b6qChRPRkvUmNJ+dEL8Uc41ZnIPkJlWAME/+HrqFG9Nos+OU9Rw3awQH9cPXtgbQ9KaAO58IrIhb5
-        0P/E1rrb23udl7jr2h4QdR6DaP3SzPLrKyZBnVC32NQygiAt05vk+20BeLGikv9jRQzZjyDuu5/CM
-        ae6F/arQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neDRt-004I1z-Nc; Tue, 12 Apr 2022 10:08:38 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 56A67300212;
-        Tue, 12 Apr 2022 12:08:37 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 377C02DB89DEA; Tue, 12 Apr 2022 12:08:37 +0200 (CEST)
-Date:   Tue, 12 Apr 2022 12:08:37 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org, mingo@redhat.com,
-        kim.phillips@amd.com, Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH 1/2] x86/unwind/orc: recheck address range after stack
- info was updated
-Message-ID: <YlVPpVC8chepOdzJ@hirez.programming.kicks-ass.net>
-References: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
+        Tue, 12 Apr 2022 07:31:57 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F356870F49
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:10:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649758256; x=1681294256;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5884kivJHQifT79otR8QDeDfSo9JqnHQwJVBugIosm0=;
+  b=PTLBcECerO6AD9DuK05k1X5M8jAOBoPkoaPykxx76fsuuG15izyKKEi2
+   ZOD1ZiHzLk1YCEzbAzTeMECT195FmM/uKrMkEvsJoKfg6TrwhOB/O/Yo1
+   dAs42crRDEQ5MTHKrD1hWZFLpk/ZQApdax4IBdQQ7c9lbj3cAQQYFpX1J
+   wMVEAJ32WR891yyO+u2AVBPNtx+YzxK/DJ0+G5Y4fJgx3OM5zmy1bjEjs
+   IjoFPPZPL+CJ5w4vuFH0blIrgnk2+tTNHsFriNUbr/KJVQdxJNpmf+7sI
+   4W5BKurj4cI00/Nz924LUq5b0MAufDvsNSpAl2egZawh2COwdzPRKaCup
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242924524"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="242924524"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:10:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="559269917"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by fmsmga007.fm.intel.com with ESMTP; 12 Apr 2022 03:10:55 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neDU7-0002jq-0X;
+        Tue, 12 Apr 2022 10:10:55 +0000
+Date:   Tue, 12 Apr 2022 18:10:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/cleanups] BUILD SUCCESS
+ c7bda0dca98cca351a9bc852b3df8b9b99ffd400
+Message-ID: <62555011.cAgNlbiQ86vTNQrF%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:40:03AM +0300, Dmitry Monakhov wrote:
-> get_stack_info() detects stack type only by begin address, so we must
-> check that address range in question is fully covered by detected stack
-> 
-> Otherwise following crash is possible:
-> -> unwind_next_frame
->    case ORC_TYPE_REGS:
->      if (!deref_stack_regs(state, sp, &state->ip, &state->sp))
->      -> deref_stack_regs
->        -> stack_access_ok  <- here addr is inside stack range, but addr+len-1 is not, but we still exit with success
->      *ip = READ_ONCE_NOCHECK(regs->ip); <- Here we hit stack guard fault
-> OOPS LOG:
-> <0>[ 1941.845743] BUG: stack guard page was hit at 000000000dd984a2 (stack is 00000000d1caafca..00000000613712f0)
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cleanups
+branch HEAD: c7bda0dca98cca351a9bc852b3df8b9b99ffd400  x86: Remove a.out support
 
+elapsed time: 736m
 
-> <4>[ 1941.845751]  get_perf_callchain+0x10d/0x280
-> <4>[ 1941.845751]  perf_callchain+0x6e/0x80
-> <4>[ 1941.845752]  perf_prepare_sample+0x87/0x540
-> <4>[ 1941.845752]  perf_event_output_forward+0x31/0x90
-> <4>[ 1941.845753]  __perf_event_overflow+0x5a/0xf0
-> <4>[ 1941.845754]  perf_ibs_handle_irq+0x340/0x5b0
-> <4>[ 1941.845757]  perf_ibs_nmi_handler+0x34/0x60
-> <4>[ 1941.845757]  nmi_handle+0x79/0x190
+configs tested: 121
+configs skipped: 4
 
-Urgh, this is another instance of trying to unwind an IP that no longer
-matches the stack.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Fixing the unwinder bug is good, but arguable we should also fix this
-IBS stuff, see 6cbc304f2f36 ("perf/x86/intel: Fix unwind errors from PEBS entries (mk-II)")
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                 randconfig-c001-20220411
+arm                     eseries_pxa_defconfig
+powerpc                      mgcoge_defconfig
+mips                  decstation_64_defconfig
+arm                       imx_v6_v7_defconfig
+arm                          pxa3xx_defconfig
+m68k                       m5475evb_defconfig
+sh                 kfr2r09-romimage_defconfig
+xtensa                          iss_defconfig
+powerpc                     ep8248e_defconfig
+arm                        realview_defconfig
+sh                          sdk7780_defconfig
+parisc64                         alldefconfig
+powerpc                      ppc40x_defconfig
+powerpc                      bamboo_defconfig
+powerpc                     stx_gp3_defconfig
+powerpc                     mpc83xx_defconfig
+ia64                      gensparse_defconfig
+powerpc                 mpc837x_rdb_defconfig
+sh                               j2_defconfig
+m68k                       m5249evb_defconfig
+riscv                               defconfig
+openrisc                         alldefconfig
+arm                      jornada720_defconfig
+arm                  randconfig-c002-20220411
+x86_64               randconfig-c001-20220411
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64               randconfig-a016-20220411
+x86_64               randconfig-a012-20220411
+x86_64               randconfig-a013-20220411
+x86_64               randconfig-a014-20220411
+x86_64               randconfig-a015-20220411
+x86_64               randconfig-a011-20220411
+i386                 randconfig-a015-20220411
+i386                 randconfig-a011-20220411
+i386                 randconfig-a016-20220411
+i386                 randconfig-a012-20220411
+i386                 randconfig-a013-20220411
+i386                 randconfig-a014-20220411
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220411
+riscv                randconfig-r042-20220411
+s390                 randconfig-r044-20220411
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+x86_64                              defconfig
+
+clang tested configs:
+powerpc              randconfig-c003-20220411
+arm                  randconfig-c002-20220411
+riscv                randconfig-c006-20220411
+x86_64               randconfig-c007-20220411
+mips                 randconfig-c004-20220411
+i386                 randconfig-c001-20220411
+arm                        multi_v5_defconfig
+powerpc                 mpc8315_rdb_defconfig
+powerpc                     mpc512x_defconfig
+powerpc                     ppa8548_defconfig
+x86_64                           allyesconfig
+powerpc                 mpc837x_rdb_defconfig
+arm                           sama7_defconfig
+arm                          pxa168_defconfig
+x86_64               randconfig-a003-20220411
+x86_64               randconfig-a004-20220411
+x86_64               randconfig-a006-20220411
+x86_64               randconfig-a001-20220411
+x86_64               randconfig-a002-20220411
+x86_64               randconfig-a005-20220411
+i386                 randconfig-a003-20220411
+i386                 randconfig-a001-20220411
+i386                 randconfig-a002-20220411
+i386                 randconfig-a005-20220411
+i386                 randconfig-a006-20220411
+i386                 randconfig-a004-20220411
+hexagon              randconfig-r041-20220411
+hexagon              randconfig-r045-20220411
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
