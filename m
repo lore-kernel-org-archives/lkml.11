@@ -2,109 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85ECBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81511C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357611AbiDLQah (ORCPT
+        id S1357628AbiDLQal (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
+        Tue, 12 Apr 2022 12:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357576AbiDLQaV (ORCPT
+        with ESMTP id S1357318AbiDLQaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 12:30:21 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47675D5EA
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:57 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id k23so38369085ejd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NDMWPs4S7zilupRHZRh1G0PStgWMtqHNX86waZCmVE8=;
-        b=dLqmb6kJL5mNPwhuzfsZIOYf5d4DggnddiZ5T1YazUghckPybZmqFE+PE1EBKvLGoI
-         WJLC9SFdCWvTV3ielnSpXSBbtdLZxodidqSypOgcBqEQyxnzI8Y8N+t6+F8VJrV7mGLu
-         ufIm5LiSViEmjJR7el+bjssJ218/plCuY61Q8hsfp1C9xEZpJnx5Jengqphk/6btlNHx
-         nFAEYhMCaySp7kk/buf0tZYPTsPmitigjeJTNE6mNi9fjNezM7a4SYW+P41QzbpE9ZD6
-         yNI81MAGKHX7EmhPxVGLcyH5OyKtY0IiP7BQFQapa12TpyyXteQdmdOvhyGpHhA2Ls2o
-         VQqQ==
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4A855D5F2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649780874;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mo5J49WlO6IQDZ+qlm/WdbORrfFgaHGgkwawEPzuzxE=;
+        b=FGW/tSP91WZhMTmZBM39rSA0BFvvq4f3WsWaZTYQ1om9jQzY+l5XX9Eb6S+WsIuZ2jrPw7
+        Ul1kpz42XYnLZZOYtXu+IEqDUWpjGwQLuCwdIKxN2HfP71cUlFL05Q+27NVib9FBHvBn6X
+        SEEU9MAaw017VSjRD/1eC4A0Ojao9W4=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-2-RghSxd3GMcCATcLNtZm_kw-1; Tue, 12 Apr 2022 12:27:52 -0400
+X-MC-Unique: RghSxd3GMcCATcLNtZm_kw-1
+Received: by mail-wr1-f70.google.com with SMTP id f2-20020a056000036200b00207a14a1f96so1705531wrf.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NDMWPs4S7zilupRHZRh1G0PStgWMtqHNX86waZCmVE8=;
-        b=uoai0AYe1gvJDH/4kYWCpGt0xtPX8e7qJbkvbEpCaybxH5xTwlYfTuSo61/UtNuLoN
-         Kqm6+9F4NLoU+5EQtBSgxZ8tP0exRpUm9NkCiYLRcL9lvcBYvF8l073QM5Res3fCRZyU
-         2wAJ0JAJOQhCUZI/jRAgCfe1dAOq+wVMo1TQRApHPLANAOSTbv+QJWAzJogAf/AHotsr
-         c+Qz10gDUmzpNEq2KJe2dEAj+pdgqYWdtIqbVUocSwEIpFPdWZjWRlg2SIHeeqgcsEh9
-         iSj+a8QRH3N7hGXpSMSVsC5uBgbFPjHgECPiPwSVdsk3WNFYnqRLQJ+uhMS/dtDC8ZaD
-         zBKQ==
-X-Gm-Message-State: AOAM5304hNYg1kQ2w5tcmiK865y4fR0IqXULZy4Engl+icIAbxGcrApG
-        zmzkDMPU/xT1PxxpKJm8giz+Mw==
-X-Google-Smtp-Source: ABdhPJxOgxov+X+zXtcd2ayLa52f1FP4vBidDROaYaMLhZJo1c4KNN1Dn13j9jc1Pkv6HT2SJxILKA==
-X-Received: by 2002:a17:907:e87:b0:6e8:42ef:86d9 with SMTP id ho7-20020a1709070e8700b006e842ef86d9mr22736713ejc.59.1649780876063;
-        Tue, 12 Apr 2022 09:27:56 -0700 (PDT)
-Received: from [192.168.0.197] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id r29-20020a50c01d000000b00415fb0dc793sm17267681edb.47.2022.04.12.09.27.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 09:27:55 -0700 (PDT)
-Message-ID: <60a9a401-7d1f-5100-7c3d-45452ebfa2ae@linaro.org>
-Date:   Tue, 12 Apr 2022 18:27:54 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mo5J49WlO6IQDZ+qlm/WdbORrfFgaHGgkwawEPzuzxE=;
+        b=LUIJ2S+oAUcrHReTmwK8aVrhqruLKJhHwg1tXKR0qWEtJLLMsEKaqZZRM5ftonvYm5
+         y5ArhNzcLFKJmGTUb4oXmVh489HKHYis1x2ttmOWrT4RVdJ1MwrjysSFdENI48hiMnfq
+         YB8+n+/eROC2XI5i2fYLW+qYcbaUIV8+HK0m2eEkrJJ4AIj6dMkXDHn/LsQslmLnd4J5
+         oGg5AK1RvJoFAnT1vr2W2GPDCceFYUWDVj5IZ7BbG3JCbwV3pp4tKTJcB1fos3DFHPuk
+         zdgzL/dB46i9YJWS/l5kR4M+sEEC4y/0K7T1/h7goN4B0fJ8/EBCxOnLvZx0FjRWmn1X
+         s9BA==
+X-Gm-Message-State: AOAM530M970PUV3dBtgq8V1ButOZ7MRbSQOtB2JNePPJdSs6OOzT35ZN
+        9SIONQ1g5OD1OVWWp9jvBZNQgYGKnJb1Jn/Fi1vTgL7WYmhrK7xGNXx2/+WwgrwMK6LLSV2P3gK
+        15T3nh1lLfVYpfYTekRO1fNCxCC98fFyCyIwIRdGawwSK4CiwPxEAYa/RpYxtcCB9X0w5iIoHsh
+        Q=
+X-Received: by 2002:a05:600c:4f15:b0:38c:b729:4838 with SMTP id l21-20020a05600c4f1500b0038cb7294838mr4905867wmq.132.1649780871564;
+        Tue, 12 Apr 2022 09:27:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyxFwQJtMdTDB/u8o8piRC+wUS5qF5b+LUpWOn//PSBN3fYXg6a2kN8KjW30Vy8Ka6FUFNzvg==
+X-Received: by 2002:a05:600c:4f15:b0:38c:b729:4838 with SMTP id l21-20020a05600c4f1500b0038cb7294838mr4905834wmq.132.1649780871306;
+        Tue, 12 Apr 2022 09:27:51 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id g8-20020a5d4888000000b00207a49fa6a1sm7700358wrq.81.2022.04.12.09.27.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 09:27:51 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Rob Herring <robh@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: [PATCH v3 3/5] drm/solomon: Add ssd130x new compatible strings and deprecate old ones.
+Date:   Tue, 12 Apr 2022 18:27:27 +0200
+Message-Id: <20220412162729.184783-4-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412162729.184783-1-javierm@redhat.com>
+References: <20220412162729.184783-1-javierm@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/5] ARM: dts: add dts files for bcmbca soc 47622
-Content-Language: en-US
-To:     William Zhang <william.zhang@broadcom.com>,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>
-Cc:     Samyon Furman <samyon.furman@broadcom.com>,
-        Joel Peshkin <joel.peshkin@broadcom.com>,
-        Florian Fainelli <florian.fainelli@broadcom.com>,
-        Dan Beygelman <dan.beygelman@broadcom.com>,
-        Tomer Yacoby <tomer.yacoby@broadcom.com>,
-        Anand Gore <anand.gore@broadcom.com>,
-        Kursad Oney <kursad.oney@broadcom.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        soc@kernel.org
-References: <20220411172815.20916-1-william.zhang@broadcom.com>
- <20220411172815.20916-4-william.zhang@broadcom.com>
- <ed806d35-3613-4f9c-54ba-b31fc5ed91c8@linaro.org>
- <147e23b6-c5a3-a9fa-c0e1-defe906e42a9@broadcom.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <147e23b6-c5a3-a9fa-c0e1-defe906e42a9@broadcom.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/04/2022 17:37, William Zhang wrote:
->>> +/ {
->>> +	compatible = "brcm,bcm47622";
->>
->> This does not match your bindings. Even if it is not used.
-> Did I miss anything? But it matches one of the compatible strings in 
-> brcm,bcmbca.yaml.
+The current compatible strings for SSD130x I2C controllers contain an "fb"
+and "-i2c" suffixes. These have been deprecated and more correct ones were
+added, that don't encode a subsystem or bus used to interface the devices.
 
-Your bindings expect that this compatible is followed with "brcm,bcmbca".
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
 
-(...)
+Changes in v3:
+- Drop the "sinowealth,sh1106-i2c", wasn't in a released version (Chen-Yu Tsai)
 
->>> +	periph-bus@ff800000 {
->>
->> just "bus" to be generic?
-> This node represents the peripheral bus in the soc. Would prefer to use 
-> the specific name unless it is not allowed by the linux dts.
+Changes in v2:
+- Use the compatible strings that don't have "fb-i2c" (Geert Uytterhoeven).
 
-It is allowed but the Devicetree spec explicitly asks for generic names
-and gives example: bus ("2.2.2 Generic Names Recommendation"). Specific
-names are discouraged.
+ drivers/gpu/drm/solomon/ssd130x-i2c.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+index d099b241dd3f..45867ef2bc8b 100644
+--- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
++++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+@@ -88,9 +88,26 @@ static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
+ 
+ static const struct of_device_id ssd130x_of_match[] = {
+ 	{
+-		.compatible = "sinowealth,sh1106-i2c",
++		.compatible = "sinowealth,sh1106",
+ 		.data = &ssd130x_sh1106_deviceinfo,
+ 	},
++	{
++		.compatible = "solomon,ssd1305",
++		.data = &ssd130x_ssd1305_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1306",
++		.data = &ssd130x_ssd1306_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1307",
++		.data = &ssd130x_ssd1307_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1309",
++		.data = &ssd130x_ssd1309_deviceinfo,
++	},
++	/* Deprecated but kept for backward compatibility */
+ 	{
+ 		.compatible = "solomon,ssd1305fb-i2c",
+ 		.data = &ssd130x_ssd1305_deviceinfo,
+-- 
+2.35.1
+
