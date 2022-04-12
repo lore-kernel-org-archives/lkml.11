@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A763EC48BCB
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C701AC48BD2
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351061AbiDLG67 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
+        id S233536AbiDLG7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351449AbiDLGxh (ORCPT
+        with ESMTP id S1351446AbiDLGxh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:53:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0AD3E5EC;
-        Mon, 11 Apr 2022 23:40:48 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EA53DA48;
+        Mon, 11 Apr 2022 23:40:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA8736066C;
-        Tue, 12 Apr 2022 06:40:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4222C385A6;
-        Tue, 12 Apr 2022 06:40:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F3EBB81B29;
+        Tue, 12 Apr 2022 06:40:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80B43C385A6;
+        Tue, 12 Apr 2022 06:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745647;
-        bh=hKdxZwU0ltT5TrhzWdok61+z8veuHgq/0KsNSfr1RXo=;
+        s=korg; t=1649745641;
+        bh=oDImVcA9cfPt7E/z+vtoCCvZwDU3/Nit5GS/d6jmwkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZG1LfOa5oBZlVXYX35CH0XA0fip1yIvPOrT4ThbFQWpUAD/41VjjyMGFWuo7fI7+
-         6jRIlsyoq+8lbTX5gddzwL60vV7Mqf9dRwKI1EgywVA/F+euLIi8RfuJTjaGKsuV4B
-         rI1DNglD/7H0GckFndiaAjDIFR2iJMSLjmBnjFzM=
+        b=c+o/iUxBf/zyiA1NSu7553Z+g9BEM58UBnEyI1I5EVGNwD7e3LKsaTmal7Yx7fbYZ
+         Jb9gDHgkOVcA3wPmlTYagxTr0eWIX2GCvtw1dwH0JqDrWA+hsurWSnHLVjitVSK6yk
+         GbtX9ciUVV7rzmbqCi5ULJ8BnxJ6YqLIfikUS/tk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Justin Forbes <jforbes@redhat.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Rafael Aquini <aquini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 170/171] mm/sparsemem: fix mem_section will never be NULL gcc 12 warning
-Date:   Tue, 12 Apr 2022 08:31:01 +0200
-Message-Id: <20220412062932.820079107@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Wei Liu <wei.liu@kernel.org>
+Subject: [PATCH 5.10 168/171] Drivers: hv: vmbus: Replace smp_store_mb() with virt_store_mb()
+Date:   Tue, 12 Apr 2022 08:30:59 +0200
+Message-Id: <20220412062932.761365844@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -54,77 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 
-commit a431dbbc540532b7465eae4fc8b56a85a9fc7d17 upstream.
+commit eaa03d34535872d29004cb5cf77dc9dec1ba9a25 upstream.
 
-The gcc 12 compiler reports a "'mem_section' will never be NULL" warning
-on the following code:
+Following the recommendation in Documentation/memory-barriers.txt for
+virtual machine guests.
 
-    static inline struct mem_section *__nr_to_section(unsigned long nr)
-    {
-    #ifdef CONFIG_SPARSEMEM_EXTREME
-        if (!mem_section)
-                return NULL;
-    #endif
-        if (!mem_section[SECTION_NR_TO_ROOT(nr)])
-                return NULL;
-       :
-
-It happens with CONFIG_SPARSEMEM_EXTREME off.  The mem_section definition
-is
-
-    #ifdef CONFIG_SPARSEMEM_EXTREME
-    extern struct mem_section **mem_section;
-    #else
-    extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
-    #endif
-
-In the !CONFIG_SPARSEMEM_EXTREME case, mem_section is a static
-2-dimensional array and so the check "!mem_section[SECTION_NR_TO_ROOT(nr)]"
-doesn't make sense.
-
-Fix this warning by moving the "!mem_section[SECTION_NR_TO_ROOT(nr)]"
-check up inside the CONFIG_SPARSEMEM_EXTREME block and adding an
-explicit NR_SECTION_ROOTS check to make sure that there is no
-out-of-bound array access.
-
-Link: https://lkml.kernel.org/r/20220331180246.2746210-1-longman@redhat.com
-Fixes: 3e347261a80b ("sparsemem extreme implementation")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Reported-by: Justin Forbes <jforbes@redhat.com>
-Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Rafael Aquini <aquini@redhat.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 8b6a877c060ed ("Drivers: hv: vmbus: Replace the per-CPU channel lists with a global array of channels")
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Link: https://lore.kernel.org/r/20220328154457.100872-1-parri.andrea@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/mmzone.h |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/hv/channel_mgmt.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1252,13 +1252,16 @@ static inline unsigned long *section_to_
- 
- static inline struct mem_section *__nr_to_section(unsigned long nr)
- {
-+	unsigned long root = SECTION_NR_TO_ROOT(nr);
-+
-+	if (unlikely(root >= NR_SECTION_ROOTS))
-+		return NULL;
-+
- #ifdef CONFIG_SPARSEMEM_EXTREME
--	if (!mem_section)
-+	if (!mem_section || !mem_section[root])
- 		return NULL;
- #endif
--	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
--		return NULL;
--	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
-+	return &mem_section[root][nr & SECTION_ROOT_MASK];
+--- a/drivers/hv/channel_mgmt.c
++++ b/drivers/hv/channel_mgmt.c
+@@ -350,7 +350,7 @@ void vmbus_channel_map_relid(struct vmbu
+ 	 * execute:
+ 	 *
+ 	 *  (a) In the "normal (i.e., not resuming from hibernation)" path,
+-	 *      the full barrier in smp_store_mb() guarantees that the store
++	 *      the full barrier in virt_store_mb() guarantees that the store
+ 	 *      is propagated to all CPUs before the add_channel_work work
+ 	 *      is queued.  In turn, add_channel_work is queued before the
+ 	 *      channel's ring buffer is allocated/initialized and the
+@@ -362,14 +362,14 @@ void vmbus_channel_map_relid(struct vmbu
+ 	 *      recv_int_page before retrieving the channel pointer from the
+ 	 *      array of channels.
+ 	 *
+-	 *  (b) In the "resuming from hibernation" path, the smp_store_mb()
++	 *  (b) In the "resuming from hibernation" path, the virt_store_mb()
+ 	 *      guarantees that the store is propagated to all CPUs before
+ 	 *      the VMBus connection is marked as ready for the resume event
+ 	 *      (cf. check_ready_for_resume_event()).  The interrupt handler
+ 	 *      of the VMBus driver and vmbus_chan_sched() can not run before
+ 	 *      vmbus_bus_resume() has completed execution (cf. resume_noirq).
+ 	 */
+-	smp_store_mb(
++	virt_store_mb(
+ 		vmbus_connection.channels[channel->offermsg.child_relid],
+ 		channel);
  }
- extern unsigned long __section_nr(struct mem_section *ms);
- extern size_t mem_section_usage_size(void);
 
 
