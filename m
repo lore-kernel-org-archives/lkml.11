@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A946C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F63C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355920AbiDLJAw (ORCPT
+        id S1345940AbiDLJA0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        Tue, 12 Apr 2022 05:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357133AbiDLHjs (ORCPT
+        with ESMTP id S1357134AbiDLHjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E606E0ED;
-        Tue, 12 Apr 2022 00:12:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901E611A0B;
+        Tue, 12 Apr 2022 00:12:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF3FC61701;
-        Tue, 12 Apr 2022 07:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD63FC385A8;
-        Tue, 12 Apr 2022 07:12:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CCE46171D;
+        Tue, 12 Apr 2022 07:12:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CADFC385A5;
+        Tue, 12 Apr 2022 07:12:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747554;
-        bh=uI2XgojJVRs/M3pnMPo98r1Z61W5OShYvXRzR0APpwY=;
+        s=korg; t=1649747559;
+        bh=+kEf3DBHo2kVE4kTgh3KWbV87GbTuKgz+6MwloITBMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cp7rxEM4xb3iEOJNMu7B7r0Y0p4BWvVGRcNvmPDcxTzoGR6T1LrL93b4gbGYbIxyK
-         1pc445j9KrbCPOafqAVsGoWa1AogEjIeOzF3RtgsaciaiKE+sZ2vBLz0DF/XIq6uzD
-         EbcjW0NIO21aZ083fxjVrpvTV6BkwqzpNbBlhd6I=
+        b=QZ9rVYxpILP8w5YVdMYifGs8w4iJHRvE2vpuTgvJYCx1u2ckORkGjHS/Y9yjMf2/N
+         hVqCSHYnSW1167ZiKlOa1LU2iVPFNIySZwmRTBgK3S8NtyOpOyAXb3SNb+HmSnwigk
+         dOBFCtV6ymxwnSIxrttbzu2Yw22npRMOSoalImkw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
         Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 122/343] Bluetooth: mediatek: fix the conflict between mtk and msft vendor event
-Date:   Tue, 12 Apr 2022 08:29:00 +0200
-Message-Id: <20220412062954.907253389@linuxfoundation.org>
+Subject: [PATCH 5.17 124/343] Bluetooth: use memset avoid memory leaks
+Date:   Tue, 12 Apr 2022 08:29:02 +0200
+Message-Id: <20220412062954.964230937@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,96 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 
-[ Upstream commit e4412654e260842e1a94ffe0d4026e8a6fd34246 ]
+[ Upstream commit d3715b2333e9a21692ba16ef8645eda584a9515d ]
 
-There is a conflict between MediaTek wmt event and msft vendor extension
-logic in the core layer since 145373cb1b1f ("Bluetooth: Add framework for
-Microsoft vendor extension") was introduced because we changed the type of
-mediatek wmt event to the type of msft vendor event in the driver.
+Use memset to initialize structs to prevent memory leaks
+in l2cap_ecred_connect
 
-But the purpose we reported mediatek event to the core layer is for the
-diagnostic purpose with that we are able to see the full packet trace via
-monitoring socket with btmon. Thus, it is harmless we keep the original
-type of mediatek vendor event here to avoid breaking the msft extension
-function especially they can be supported by Mediatek chipset like MT7921
-, MT7922 devices and future devices.
-
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btmtk.h     | 1 +
- drivers/bluetooth/btmtksdio.c | 9 +--------
- drivers/bluetooth/btusb.c     | 8 --------
- 3 files changed, 2 insertions(+), 16 deletions(-)
+ net/bluetooth/l2cap_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bluetooth/btmtk.h b/drivers/bluetooth/btmtk.h
-index 6e7b0c7567c0..0defa68bc2ce 100644
---- a/drivers/bluetooth/btmtk.h
-+++ b/drivers/bluetooth/btmtk.h
-@@ -5,6 +5,7 @@
- #define FIRMWARE_MT7668		"mediatek/mt7668pr2h.bin"
- #define FIRMWARE_MT7961		"mediatek/BT_RAM_CODE_MT7961_1_2_hdr.bin"
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index e817ff0607a0..8df99c07f272 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1436,6 +1436,7 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
  
-+#define HCI_EV_WMT 0xe4
- #define HCI_WMT_MAX_EVENT_SIZE		64
+ 	l2cap_ecred_init(chan, 0);
  
- #define BTMTK_WMT_REG_READ 0x2
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index 9b868f187316..ecf29cfa7d79 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -370,13 +370,6 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
- 	struct hci_event_hdr *hdr = (void *)skb->data;
- 	int err;
- 
--	/* Fix up the vendor event id with 0xff for vendor specific instead
--	 * of 0xe4 so that event send via monitoring socket can be parsed
--	 * properly.
--	 */
--	if (hdr->evt == 0xe4)
--		hdr->evt = HCI_EV_VENDOR;
--
- 	/* When someone waits for the WMT event, the skb is being cloned
- 	 * and being processed the events from there then.
- 	 */
-@@ -392,7 +385,7 @@ static int btmtksdio_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
- 	if (err < 0)
- 		goto err_free_skb;
- 
--	if (hdr->evt == HCI_EV_VENDOR) {
-+	if (hdr->evt == HCI_EV_WMT) {
- 		if (test_and_clear_bit(BTMTKSDIO_TX_WAIT_VND_EVT,
- 				       &bdev->tx_state)) {
- 			/* Barrier to sync with other CPUs */
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 2afbd87d77c9..42234d5f602d 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -2254,7 +2254,6 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
- {
- 	struct hci_dev *hdev = urb->context;
- 	struct btusb_data *data = hci_get_drvdata(hdev);
--	struct hci_event_hdr *hdr;
- 	struct sk_buff *skb;
- 	int err;
- 
-@@ -2274,13 +2273,6 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
- 		hci_skb_pkt_type(skb) = HCI_EVENT_PKT;
- 		skb_put_data(skb, urb->transfer_buffer, urb->actual_length);
- 
--		hdr = (void *)skb->data;
--		/* Fix up the vendor event id with 0xff for vendor specific
--		 * instead of 0xe4 so that event send via monitoring socket can
--		 * be parsed properly.
--		 */
--		hdr->evt = 0xff;
--
- 		/* When someone waits for the WMT event, the skb is being cloned
- 		 * and being processed the events from there then.
- 		 */
++	memset(&data, 0, sizeof(data));
+ 	data.pdu.req.psm     = chan->psm;
+ 	data.pdu.req.mtu     = cpu_to_le16(chan->imtu);
+ 	data.pdu.req.mps     = cpu_to_le16(chan->mps);
 -- 
 2.35.1
 
