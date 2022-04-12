@@ -2,92 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F207DC47091
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC3DC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390305AbiDLJYn (ORCPT
+        id S1390339AbiDLJYr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45402 "EHLO
+        Tue, 12 Apr 2022 05:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356171AbiDLIJI (ORCPT
+        with ESMTP id S1353785AbiDLIKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:09:08 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EF7DEEA
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:39:39 -0700 (PDT)
-X-UUID: 476df98acc14430c9712202fa00f6542-20220412
-X-UUID: 476df98acc14430c9712202fa00f6542-20220412
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1947215072; Tue, 12 Apr 2022 15:39:31 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 12 Apr 2022 15:39:30 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 15:39:30 +0800
-Message-ID: <152363cfcfe240f9249fb08f06442d2ab9286900.camel@mediatek.com>
-Subject: Re: [PATCH v4,4/4] drm/mediatek: Add pull-down MIPI operation in
- mtk_dsi_poweroff function
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <jitao.shi@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 12 Apr 2022 15:39:30 +0800
-In-Reply-To: <1649644308-8455-5-git-send-email-xinlei.lee@mediatek.com>
-References: <1649644308-8455-1-git-send-email-xinlei.lee@mediatek.com>
-         <1649644308-8455-5-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 12 Apr 2022 04:10:04 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50513E9B
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:18 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB8A-0007gQ-Ln; Tue, 12 Apr 2022 09:40:06 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB89-00AQb5-Sh; Tue, 12 Apr 2022 09:40:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>
+Subject: [PATCH v1 17/17] arm: dts: imx6qdl-vicut1.dtsi: add thermal zone and attach tmp103 to it.
+Date:   Tue, 12 Apr 2022 09:40:04 +0200
+Message-Id: <20220412074004.2485264-18-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-11 at 10:31 +0800, xinlei.lee@mediatek.com wrote:
-> From: Xinlei Lee <xinlei.lee@mediatek.com>
-> 
-> In the dsi_enable function, mtk_dsi_rxtx_control is to
-> pull up the MIPI signal operation. Before dsi_disable,
-> MIPI should also be pulled down by writing a register 
-> instead of disabling dsi.
-> 
-> If disable dsi without pulling the mipi signal low, the value of
-> the register will still maintain the setting of the mipi signal being
-> pulled high.
-> After resume, even if the mipi signal is not pulled high, it will
-> still
-> be in the high state.
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index 9ad6f08c8bfe..e35343357f90 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -676,6 +676,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
->  	mtk_dsi_reset_engine(dsi);
->  	mtk_dsi_lane0_ulp_mode_enter(dsi);
->  	mtk_dsi_clk_ulp_mode_enter(dsi);
-> +	/* set the lane number as 0 to pull down mipi */
-> +	writel(0, dsi->regs + DSI_TXRX_CTRL);
->  
->  	mtk_dsi_disable(dsi);
->  
+Latest version of ti,tmp103 driver supports thermal zone. So make use of
+it.
 
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index c928bd854e92..a1676b5d2980 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -153,6 +153,14 @@ simple-audio-card,codec {
+ 			frame-master;
+ 		};
+ 	};
++
++	thermal-zones {
++		chassis-thermal {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&tsens0>;
++		};
++	};
+ };
+ 
+ &audmux {
+@@ -323,9 +331,10 @@ rtc@51 {
+ 		reg = <0x51>;
+ 	};
+ 
+-	temperature-sensor@70 {
++	tsens0: temperature-sensor@70 {
+ 		compatible = "ti,tmp103";
+ 		reg = <0x70>;
++		#thermal-sensor-cells = <0>;
+ 	};
+ };
+ 
+-- 
+2.30.2
 
