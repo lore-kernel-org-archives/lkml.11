@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FEAC3525B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1305C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241508AbiDLHv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
+        id S1377419AbiDLHuC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353059AbiDLHZM (ORCPT
+        with ESMTP id S1354581AbiDLHS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADC84D638;
-        Tue, 12 Apr 2022 00:00:07 -0700 (PDT)
+        Tue, 12 Apr 2022 03:18:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41D31EEE6;
+        Mon, 11 Apr 2022 23:59:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B4E3615B4;
-        Tue, 12 Apr 2022 07:00:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A3EC385AA;
-        Tue, 12 Apr 2022 07:00:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1552AB81B50;
+        Tue, 12 Apr 2022 06:59:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 635E9C385A6;
+        Tue, 12 Apr 2022 06:59:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746806;
-        bh=qT4rRxjdgHvgFLUUTFXORG38wBgzvPAGzYgrVrQ2Wyk=;
+        s=korg; t=1649746767;
+        bh=BJU3SoYaAQU5PGAAdKA5dXjOco3AbVhPcyDIW5TSjrA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jcveiLWjT1mWudMNksZFPKHY90jUtRRcyHc1bz8L1WaZNDzPkK3XkM8UmGxBwzrVr
-         EGzsrpxSgeP1gnd4+Q8h6cHveaDFZJLLywJGR+aMSs+FQ/smOiHt6BEB5BjjqhXiQh
-         r5TrfxEXBg1WNqbL3srf/GG9Igov5Wt1p8vl/hcY=
+        b=yABkLnH4ASM+OhcoDh5JYaK0nW8523v/nr7cXM/10I46aAaSkRTQZX23XzQ6PGxu5
+         rVUsdHBk41TGNhUVXh5oYuRCdIJhhdT7gPG4lcpOgRz8jiiyfaaqQot7NnuPVTi03K
+         QPb6tZEGgb3u9t+WOW5NI4cvvXWBV5L/DT1Ko5nY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xiaoke Wang <xkernel.wang@foxmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 137/285] x86: Annotate call_on_stack()
-Date:   Tue, 12 Apr 2022 08:29:54 +0200
-Message-Id: <20220412062947.621591678@linuxfoundation.org>
+Subject: [PATCH 5.16 124/285] staging: wfx: fix an error handling in wfx_init_common()
+Date:   Tue, 12 Apr 2022 08:29:41 +0200
+Message-Id: <20220412062947.245210572@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,61 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit be0075951fde739f14ee2b659e2fd6e2499c46c0 ]
+[ Upstream commit 60f1d3c92dc1ef1026e5b917a329a7fa947da036 ]
 
-vmlinux.o: warning: objtool: page_fault_oops()+0x13c: unreachable instruction
+One error handler of wfx_init_common() return without calling
+ieee80211_free_hw(hw), which may result in memory leak. And I add
+one err label to unify the error handler, which is useful for the
+subsequent changes.
 
-0000 000000000005b460 <page_fault_oops>:
-...
-0128    5b588:  49 89 23                mov    %rsp,(%r11)
-012b    5b58b:  4c 89 dc                mov    %r11,%rsp
-012e    5b58e:  4c 89 f2                mov    %r14,%rdx
-0131    5b591:  48 89 ee                mov    %rbp,%rsi
-0134    5b594:  4c 89 e7                mov    %r12,%rdi
-0137    5b597:  e8 00 00 00 00          call   5b59c <page_fault_oops+0x13c>    5b598: R_X86_64_PLT32   handle_stack_overflow-0x4
-013c    5b59c:  5c                      pop    %rsp
-
-vmlinux.o: warning: objtool: sysvec_reboot()+0x6d: unreachable instruction
-
-0000 00000000000033f0 <sysvec_reboot>:
-...
-005d     344d:  4c 89 dc                mov    %r11,%rsp
-0060     3450:  e8 00 00 00 00          call   3455 <sysvec_reboot+0x65>        3451: R_X86_64_PLT32    irq_enter_rcu-0x4
-0065     3455:  48 89 ef                mov    %rbp,%rdi
-0068     3458:  e8 00 00 00 00          call   345d <sysvec_reboot+0x6d>        3459: R_X86_64_PC32     .text+0x47d0c
-006d     345d:  e8 00 00 00 00          call   3462 <sysvec_reboot+0x72>        345e: R_X86_64_PLT32    irq_exit_rcu-0x4
-0072     3462:  5c                      pop    %rsp
-
-Both cases are due to a call_on_stack() calling a __noreturn function.
-Since that's an inline asm, GCC can't do anything about the
-instructions after the CALL. Therefore put in an explicit
-ASM_REACHABLE annotation to make sure objtool and gcc are consistently
-confused about control flow.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154319.468805622@infradead.org
+Suggested-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_24A24A3EFF61206ECCC4B94B1C5C1454E108@qq.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/irq_stack.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/staging/wfx/main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/irq_stack.h b/arch/x86/include/asm/irq_stack.h
-index ae9d40f6c706..05af249d6bec 100644
---- a/arch/x86/include/asm/irq_stack.h
-+++ b/arch/x86/include/asm/irq_stack.h
-@@ -99,7 +99,8 @@
+diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
+index 858d778cc589..e3999e95ce85 100644
+--- a/drivers/staging/wfx/main.c
++++ b/drivers/staging/wfx/main.c
+@@ -322,7 +322,8 @@ struct wfx_dev *wfx_init_common(struct device *dev,
+ 	wdev->pdata.gpio_wakeup = devm_gpiod_get_optional(dev, "wakeup",
+ 							  GPIOD_OUT_LOW);
+ 	if (IS_ERR(wdev->pdata.gpio_wakeup))
+-		return NULL;
++		goto err;
++
+ 	if (wdev->pdata.gpio_wakeup)
+ 		gpiod_set_consumer_name(wdev->pdata.gpio_wakeup, "wfx wakeup");
+ 
+@@ -341,6 +342,10 @@ struct wfx_dev *wfx_init_common(struct device *dev,
+ 		return NULL;
+ 
+ 	return wdev;
++
++err:
++	ieee80211_free_hw(hw);
++	return NULL;
  }
  
- #define ASM_CALL_ARG0							\
--	"call %P[__func]				\n"
-+	"call %P[__func]				\n"		\
-+	ASM_REACHABLE
- 
- #define ASM_CALL_ARG1							\
- 	"movq	%[arg1], %%rdi				\n"		\
+ int wfx_probe(struct wfx_dev *wdev)
 -- 
 2.35.1
 
