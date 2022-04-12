@@ -2,80 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA60C4708C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E062FC3525B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390523AbiDLJZC (ORCPT
+        id S1388920AbiDLJXA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
+        Tue, 12 Apr 2022 05:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354958AbiDLIKX (ORCPT
+        with ESMTP id S1357337AbiDLHkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:10:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55177A196
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:19 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB8A-0007gH-Lm; Tue, 12 Apr 2022 09:40:06 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB89-00AQZl-EK; Tue, 12 Apr 2022 09:40:05 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
-Cc:     David Jander <david@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v1 08/17] arm: dts: imx6qdl-vicut1.dtsi: Remove conflicting pinctrl entry
-Date:   Tue, 12 Apr 2022 09:39:55 +0200
-Message-Id: <20220412074004.2485264-9-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
-References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+        Tue, 12 Apr 2022 03:40:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1181F24BFA;
+        Tue, 12 Apr 2022 00:15:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A13E56171C;
+        Tue, 12 Apr 2022 07:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA7DDC385A1;
+        Tue, 12 Apr 2022 07:15:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747725;
+        bh=HsE/ibDeI0T3UDOURtuLfeNn+tg1uUa+iGPFTtNKkN4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PC25ZEiQrzPhZsjCkAGAt19ZIYSDe+jvuWqNoH1UloN+uCBdwkvuqvG1NLbQBCBTF
+         Q+N0UsgC81EYFGhTJPETWZ1IFaBOV6Skw7nf66dD0onn64MizNezSXv4hahSO64PEw
+         nVMxZJcEmBWkKGGXVYBCcTCWTqILzligcPZwiZa0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 182/343] x86/Kconfig: Do not allow CONFIG_X86_X32_ABI=y with llvm-objcopy
+Date:   Tue, 12 Apr 2022 08:30:00 +0200
+Message-Id: <20220412062956.615484188@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Jander <david@protonic.nl>
+From: Nathan Chancellor <nathan@kernel.org>
 
-The function of DISP0_DAT9 is dependent on hardware revision of two
-particular variants. This setting should be done by the bootloader anyway,
-and is not needed in the kernel, so remove it from the DT.
+[ Upstream commit aaeed6ecc1253ce1463fa1aca0b70a4ccbc9fa75 ]
 
-Signed-off-by: David Jander <david@protonic.nl>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+There are two outstanding issues with CONFIG_X86_X32_ABI and
+llvm-objcopy, with similar root causes:
+
+1. llvm-objcopy does not properly convert .note.gnu.property when going
+   from x86_64 to x86_x32, resulting in a corrupted section when
+   linking:
+
+   https://github.com/ClangBuiltLinux/linux/issues/1141
+
+2. llvm-objcopy produces corrupted compressed debug sections when going
+   from x86_64 to x86_x32, also resulting in an error when linking:
+
+   https://github.com/ClangBuiltLinux/linux/issues/514
+
+After commit 41c5ef31ad71 ("x86/ibt: Base IBT bits"), the
+.note.gnu.property section is always generated when
+CONFIG_X86_KERNEL_IBT is enabled, which causes the first issue to become
+visible with an allmodconfig build:
+
+  ld.lld: error: arch/x86/entry/vdso/vclock_gettime-x32.o:(.note.gnu.property+0x1c): program property is too short
+
+To avoid this error, do not allow CONFIG_X86_X32_ABI to be selected when
+using llvm-objcopy. If the two issues ever get fixed in llvm-objcopy,
+this can be turned into a feature check.
+
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220314194842.3452-3-nathan@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/x86/Kconfig | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-index a93e7f8302aa..6c943ca950f4 100644
---- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-@@ -655,10 +655,6 @@ MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20		0x1b0b0
- 			MX6QDL_PAD_EIM_D20__GPIO3_IO20			0x100b0
- 			/* DIP1_FB */
- 			MX6QDL_PAD_DI0_PIN2__GPIO4_IO18			0x1b0b0
--
--			/* New in UT2: FIXME: ISB PWM should start off, PD */
--			/* ISB_LED_PWM */
--			MX6QDL_PAD_DISP0_DAT9__GPIO4_IO30		0x130b0
- 		>;
- 	};
- 
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9f5bd41bf660..d0ecc4005df3 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2837,6 +2837,11 @@ config IA32_AOUT
+ config X86_X32
+ 	bool "x32 ABI for 64-bit mode"
+ 	depends on X86_64
++	# llvm-objcopy does not convert x86_64 .note.gnu.property or
++	# compressed debug sections to x86_x32 properly:
++	# https://github.com/ClangBuiltLinux/linux/issues/514
++	# https://github.com/ClangBuiltLinux/linux/issues/1141
++	depends on $(success,$(OBJCOPY) --version | head -n1 | grep -qv llvm)
+ 	help
+ 	  Include code to run binaries for the x32 native 32-bit ABI
+ 	  for 64-bit processors.  An x32 process gets access to the
 -- 
-2.30.2
+2.35.1
+
+
 
