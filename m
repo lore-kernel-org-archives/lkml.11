@@ -2,109 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773F7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC32EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352367AbiDLO4P (ORCPT
+        id S1356783AbiDLO4g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 10:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
+        Tue, 12 Apr 2022 10:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbiDLO4K (ORCPT
+        with ESMTP id S1352437AbiDLO4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 10:56:10 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0B44EA08;
-        Tue, 12 Apr 2022 07:53:52 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kd7wK6Km6z685Z9;
-        Tue, 12 Apr 2022 22:51:45 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 16:53:50 +0200
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Apr
- 2022 15:53:49 +0100
-Date:   Tue, 12 Apr 2022 15:53:46 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Gabriel Krisman Bertazi <krisman@collabora.com>
-CC:     Shreeya Patel <shreeya.patel@collabora.com>,
-        Jonathan Cameron <jic23@kernel.org>, <krzk@kernel.org>,
-        <lars@metafoo.de>, <robh+dt@kernel.org>, <Zhigang.Shi@liteon.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel@collabora.com>,
-        <alvaro.soliverez@collabora.com>
-Subject: Re: [PATCH 3/3] iio: light: Add support for ltrf216a sensor
-Message-ID: <20220412155346.00005d25@Huawei.com>
-In-Reply-To: <875ynexup1.fsf@collabora.com>
-References: <20220325103014.6597-1-shreeya.patel@collabora.com>
-        <20220325103014.6597-4-shreeya.patel@collabora.com>
-        <20220327153049.10e525e9@jic23-huawei>
-        <d5de6b56-ad90-feec-c65a-53699c8ddbe9@collabora.com>
-        <875ynexup1.fsf@collabora.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Tue, 12 Apr 2022 10:56:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AF16397;
+        Tue, 12 Apr 2022 07:54:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56DBEB81B79;
+        Tue, 12 Apr 2022 14:54:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F850C385A9;
+        Tue, 12 Apr 2022 14:54:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649775249;
+        bh=jn+HPq0xNAFgDzP8V3hRx5PLN2FH+2mWWa4YP6ifmQY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uYqWByj1LGRWd62VvgVb06IMVNi8O8thYWoCvZ0da27JkCm19VykUoT9sWoSuQ6Vu
+         wo+aNoJffdwEjC5hNOUSVAIUSASxptGVk9VTzNqmh/QvSXCUlLich339ISRK1YuwgH
+         YGSe1e84Np5ZgdwfBJ01dZNwQzWH1ZehsGsrngFyaXThpCyPl18W0kF5XGOjfqb81/
+         Cm9KEBAMtwToNEi/et1gd41BWlQom/If85rOttrBaOf0pjeJ6Lzob+zY8quiPmXY1H
+         Zogvcn21MeSoussmKdnhe2gubm2Y2kWun5w9xfKe+8rsaKkHKCXOz5gG3fc+O3gzVl
+         stdlieOa4WmeQ==
+Date:   Tue, 12 Apr 2022 15:54:01 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Lucas Tanure <tanureal@opensource.cirrus.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        patches@opensource.cirrus.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Subject: Re: [PATCH v6 16/16] ASoC: cs35l41: Support external boost
+Message-ID: <YlWSife2zTxAXY2u@sirena.org.uk>
+References: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
+ <20220409091315.1663410-17-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml719-chm.china.huawei.com (10.201.108.70) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="VIQAQDLg4VJbto2M"
+Content-Disposition: inline
+In-Reply-To: <20220409091315.1663410-17-tanureal@opensource.cirrus.com>
+X-Cookie: Approved for veterans.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 10:06:18 -0400
-Gabriel Krisman Bertazi <krisman@collabora.com> wrote:
 
-> Shreeya Patel <shreeya.patel@collabora.com> writes:
-> 
-> >>> +	val_1 = i2c_smbus_read_byte_data(data->client, addr + 1);
-> >>> +	val_2 = i2c_smbus_read_byte_data(data->client, addr + 2);
-> >>> +	ret = (val_2 << 16) + (val_1 << 8) + val_0;  
-> >> This is a le24_to_cpu() conversion.
-> >> Preferred choice would be to use something like
-> >> 	u8 buf[3];
-> >> 	int i;
-> >>
-> >> 	for (i = 0; i < 3; i++) {
-> >> 		ret = i2c_smbus_read_byte_data(data->client, addr);
-> >> 		if (ret < 0)
-> >> 			return ret;
-> >> 		buf[i] = ret;
-> >> 	}
-> >> 	return le24_to_cpu(buf);
-> >>  
-> >
-> > We do not have any le24_to_cpu() function in current kernel source code.
-> > I was thinking to use le32_to_cpu() instead but it requires an argument of
-> > type __le32 and our case we storing the values in u8 buf[3] so I'm not
-> > really sure if it's possible to use le32_to_cpu() or any other function.  
-> 
-> I guess you could make it a 32-bit buffer, keep the most
-> significant byte zeroed and return le32_to_cpu:
-> 
->   u8 buf[4];
-> 
->   memset(buf, 0x0, sizeof(buf));
-> 
->   for (i = 0; i < 3; i++) {
->  	ret = i2c_smbus_read_byte_data(data->client, addr);
->  	if (ret < 0)
->  		return ret;
-> 	buf[i] = ret;
->   }
->   return le32_to_cpu(buf);
+--VIQAQDLg4VJbto2M
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
-I was being silly.  It's not aligned for obvious reasons that we don't do
-24bit alignment, so you need
-get_unaligned_le24()
+On Sat, Apr 09, 2022 at 10:13:15AM +0100, Lucas Tanure wrote:
+> Add support for external boost voltage, where GPIO1 must control a
+> switch to isolate CS35L41 from the external Boost Voltage
 
-Jonathan
+Acked-by: Mark Brown <broonie@kernel.org>
 
+--VIQAQDLg4VJbto2M
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJVkokACgkQJNaLcl1U
+h9CeiAf+MUH9JwPfSJSPk+FELVgYltt6oeP0bUojWxoTfsXCB7Alv6dSt8iGR98p
+YG5d1451qcl+cPeJEER1IFpY6MyHOGa69eFWUJ+n/8wMXk9M1oFSEuL8M3ttQMuK
+ivYRnYwut283M6kBom3W7m+Tqc6lYO8X0PXuvAstQWf6kMWijnhfzMn2wE/QO4OL
+Cjj9vjXEQbtFPfOokaug3I5OaiZ8Y3+5y6S74ja7HQ3vh6bk4o8E9ivOJ3Mi9fHg
+ilKPmX9n1/OggwkIIreU7fr4SBTIQ5C9ZR4ATDLFulqtSz07D1bed5SEeZQhVisr
+0V4PR55aQD2Tp/lp1W4ngcBUTKMW1w==
+=D+Z6
+-----END PGP SIGNATURE-----
+
+--VIQAQDLg4VJbto2M--
