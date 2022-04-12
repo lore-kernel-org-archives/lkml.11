@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1300DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347091AbiDLHAm (ORCPT
+        id S1347583AbiDLHAs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        Tue, 12 Apr 2022 03:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351475AbiDLGxm (ORCPT
+        with ESMTP id S1351479AbiDLGxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:53:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B6B37A0A;
-        Mon, 11 Apr 2022 23:41:13 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA08B18344;
+        Mon, 11 Apr 2022 23:41:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25B4D60A77;
-        Tue, 12 Apr 2022 06:41:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326CEC385A8;
-        Tue, 12 Apr 2022 06:41:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98378B818C8;
+        Tue, 12 Apr 2022 06:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B74A6C385A8;
+        Tue, 12 Apr 2022 06:41:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745672;
-        bh=OhkQB/YB9JwzoHdchmhfRn/xWsDTrD2yFnyvdWKmG7M=;
+        s=korg; t=1649745675;
+        bh=zfD7YjenlyUPbPHuXN1cKuXgTMmzI3+KRTFSfXHPC28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ihvA4x71AnsViWOO9KHRVPWJEOCAPYl9J6Vee4R7Lw2dDmj5ppw6jrcB/xxU+c13f
-         BInNzqcPOQAu9ioelS3iLyjiSPqVOmtuQZv0+OGzvMqG0uT1JG/n91mMFkJKZZm2E/
-         ypoc/eUpIhLi79VBLbXpqJk7SkYozLAdbc/pbMcw=
+        b=DhJd1gmHBGZAc1BpOOSh0DiWLa6cCTHwf4/thUHJoGaDyhUbZ0Pdw9CqwpjrN0Ec5
+         9UgCf/q8GVXvPqIQAMIeclBjM+43eHcAoMrKNF7F93oIFheWPMQqp83u4FehEuOk84
+         q/QrPAF9v5Vm8xleGuly8uz5V1GD1KuURidoRILs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.10 165/171] selftests: cgroup: Test open-time credential usage for migration checks
-Date:   Tue, 12 Apr 2022 08:30:56 +0200
-Message-Id: <20220412062932.675634011@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 156/171] perf python: Fix probing for some clang command line options
+Date:   Tue, 12 Apr 2022 08:30:47 +0200
+Message-Id: <20220412062932.410019420@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,104 +58,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 613e040e4dc285367bff0f8f75ea59839bc10947 upstream.
+commit dd6e1fe91cdd52774ca642d1da75b58a86356b56 upstream.
 
-When a task is writing to an fd opened by a different task, the perm check
-should use the credentials of the latter task. Add a test for it.
+The clang compiler complains about some options even without a source
+file being available, while others require one, so use the simple
+tools/build/feature/test-hello.c file.
 
-Tested-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Then check for the "is not supported" string in its output, in addition
+to the "unknown argument" already being looked for.
+
+This was noticed when building with clang-13 where -ffat-lto-objects
+isn't supported and since we were looking just for "unknown argument"
+and not providing a source code to clang, was mistakenly assumed as
+being available and not being filtered to set of command line options
+provided to clang, leading to a build failure.
+
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Sedat Dilek <sedat.dilek@gmail.com>
+Link: http://lore.kernel.org/lkml/
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/cgroup/test_core.c |   68 +++++++++++++++++++++++++++++
- 1 file changed, 68 insertions(+)
+ tools/perf/util/setup.py |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/tools/testing/selftests/cgroup/test_core.c
-+++ b/tools/testing/selftests/cgroup/test_core.c
-@@ -674,6 +674,73 @@ cleanup:
- 	return ret;
- }
+--- a/tools/perf/util/setup.py
++++ b/tools/perf/util/setup.py
+@@ -1,12 +1,14 @@
+-from os import getenv
++from os import getenv, path
+ from subprocess import Popen, PIPE
+ from re import sub
  
-+/*
-+ * cgroup migration permission check should be performed based on the
-+ * credentials at the time of open instead of write.
-+ */
-+static int test_cgcore_lesser_euid_open(const char *root)
-+{
-+	const uid_t test_euid = 65534;	/* usually nobody, any !root is fine */
-+	int ret = KSFT_FAIL;
-+	char *cg_test_a = NULL, *cg_test_b = NULL;
-+	char *cg_test_a_procs = NULL, *cg_test_b_procs = NULL;
-+	int cg_test_b_procs_fd = -1;
-+	uid_t saved_uid;
-+
-+	cg_test_a = cg_name(root, "cg_test_a");
-+	cg_test_b = cg_name(root, "cg_test_b");
-+
-+	if (!cg_test_a || !cg_test_b)
-+		goto cleanup;
-+
-+	cg_test_a_procs = cg_name(cg_test_a, "cgroup.procs");
-+	cg_test_b_procs = cg_name(cg_test_b, "cgroup.procs");
-+
-+	if (!cg_test_a_procs || !cg_test_b_procs)
-+		goto cleanup;
-+
-+	if (cg_create(cg_test_a) || cg_create(cg_test_b))
-+		goto cleanup;
-+
-+	if (cg_enter_current(cg_test_a))
-+		goto cleanup;
-+
-+	if (chown(cg_test_a_procs, test_euid, -1) ||
-+	    chown(cg_test_b_procs, test_euid, -1))
-+		goto cleanup;
-+
-+	saved_uid = geteuid();
-+	if (seteuid(test_euid))
-+		goto cleanup;
-+
-+	cg_test_b_procs_fd = open(cg_test_b_procs, O_RDWR);
-+
-+	if (seteuid(saved_uid))
-+		goto cleanup;
-+
-+	if (cg_test_b_procs_fd < 0)
-+		goto cleanup;
-+
-+	if (write(cg_test_b_procs_fd, "0", 1) >= 0 || errno != EACCES)
-+		goto cleanup;
-+
-+	ret = KSFT_PASS;
-+
-+cleanup:
-+	cg_enter_current(root);
-+	if (cg_test_b_procs_fd >= 0)
-+		close(cg_test_b_procs_fd);
-+	if (cg_test_b)
-+		cg_destroy(cg_test_b);
-+	if (cg_test_a)
-+		cg_destroy(cg_test_a);
-+	free(cg_test_b_procs);
-+	free(cg_test_a_procs);
-+	free(cg_test_b);
-+	free(cg_test_a);
-+	return ret;
-+}
-+
- #define T(x) { x, #x }
- struct corecg_test {
- 	int (*fn)(const char *root);
-@@ -689,6 +756,7 @@ struct corecg_test {
- 	T(test_cgcore_proc_migration),
- 	T(test_cgcore_thread_migration),
- 	T(test_cgcore_destroy),
-+	T(test_cgcore_lesser_euid_open),
- };
- #undef T
+ cc = getenv("CC")
+ cc_is_clang = b"clang version" in Popen([cc.split()[0], "-v"], stderr=PIPE).stderr.readline()
++src_feature_tests  = getenv('srctree') + '/tools/build/feature'
  
+ def clang_has_option(option):
+-    return [o for o in Popen([cc, option], stderr=PIPE).stderr.readlines() if b"unknown argument" in o] == [ ]
++    cc_output = Popen([cc, option, path.join(src_feature_tests, "test-hello.c") ], stderr=PIPE).stderr.readlines()
++    return [o for o in cc_output if ((b"unknown argument" in o) or (b"is not supported" in o))] == [ ]
+ 
+ if cc_is_clang:
+     from distutils.sysconfig import get_config_vars
 
 
