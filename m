@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FB1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C397C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384927AbiDLIme (ORCPT
+        id S1384886AbiDLImb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        Tue, 12 Apr 2022 04:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357268AbiDLHjz (ORCPT
+        with ESMTP id S1357271AbiDLHjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C288DDF35;
-        Tue, 12 Apr 2022 00:14:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F2CDFFB;
+        Tue, 12 Apr 2022 00:14:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81856B81A8F;
-        Tue, 12 Apr 2022 07:14:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9731C385A1;
-        Tue, 12 Apr 2022 07:14:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8522561045;
+        Tue, 12 Apr 2022 07:14:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEDFC385A1;
+        Tue, 12 Apr 2022 07:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747672;
-        bh=kUn2qAPqnhLi5OlFTb3kcm5yBG9tINbEWnBPKsnb0Rs=;
+        s=korg; t=1649747675;
+        bh=vAiDl1GwVbQ82UKpOaMdXzGgdpkyRkO6Fv8harzJaY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1VYX004eLTAyU8kQJfG9T2fM6sjagt8zXQDB/kfLoTbNblSMzmP5oddrqSy9dxi7/
-         B+1m45fjIIkpN4ManvTBZw6Z0r7Z66lWTQqXPslqkUvul6cOEdV4z+tYWwxLrWujMS
-         rswVrrVMJ8QVdJEZqhVEUEE62aL0egwVscaty7z8=
+        b=kJEPD98mgdrCaH7jXoTlUJrCY6SMP2Fxvpz2G+6X0891E5/JYE7ZiskqJ69qlpv3d
+         p27R8hsz0iVvvdOKso+mgVtAJzlkEDdVCk3B8ITGjEGQKAoXuz5fEjCg70UgYxOz0d
+         JqxB2kontUorx/9oihrImgD5P6OWuuirbHK9l8gg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 165/343] opp: Expose of-nodes name in debugfs
-Date:   Tue, 12 Apr 2022 08:29:43 +0200
-Message-Id: <20220412062956.134808515@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 166/343] staging: wfx: apply the necessary SDIO quirks for the Silabs WF200
+Date:   Tue, 12 Apr 2022 08:29:44 +0200
+Message-Id: <20220412062956.162857858@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,65 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Jérôme Pouiller <jerome.pouiller@silabs.com>
 
-[ Upstream commit 021dbecabc93b1610b5db989d52a94e0c6671136 ]
+[ Upstream commit 96e0cbca1cb96e9d3deac3051aa816e13082f3fd ]
 
-It is difficult to find which OPPs are active at the moment, specially
-if there are multiple OPPs with same frequency available in the device
-tree (controlled by supported hardware feature).
+Until now, the SDIO quirks are applied directly from the driver.
+However, it is better to apply the quirks before driver probing. So,
+this patch relocate the quirks in the MMC framework.
 
-Expose name of the DT node to find out the exact OPP.
+Note that the WF200 has no valid SDIO VID/PID. Therefore, we match DT
+rather than on the SDIO VID/PID.
 
-While at it, also expose level field.
-
-Reported-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Reviewed-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
+Link: https://lore.kernel.org/r/20220216093112.92469-3-Jerome.Pouiller@silabs.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/opp/debugfs.c | 5 +++++
- drivers/opp/opp.h     | 1 +
- 2 files changed, 6 insertions(+)
+ drivers/mmc/core/quirks.h      | 5 +++++
+ drivers/staging/wfx/bus_sdio.c | 3 ---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
-index 596c185b5dda..b5f2f9f39392 100644
---- a/drivers/opp/debugfs.c
-+++ b/drivers/opp/debugfs.c
-@@ -10,6 +10,7 @@
- #include <linux/debugfs.h>
- #include <linux/device.h>
- #include <linux/err.h>
-+#include <linux/of.h>
- #include <linux/init.h>
- #include <linux/limits.h>
- #include <linux/slab.h>
-@@ -131,9 +132,13 @@ void opp_debug_create_one(struct dev_pm_opp *opp, struct opp_table *opp_table)
- 	debugfs_create_bool("suspend", S_IRUGO, d, &opp->suspend);
- 	debugfs_create_u32("performance_state", S_IRUGO, d, &opp->pstate);
- 	debugfs_create_ulong("rate_hz", S_IRUGO, d, &opp->rate);
-+	debugfs_create_u32("level", S_IRUGO, d, &opp->level);
- 	debugfs_create_ulong("clock_latency_ns", S_IRUGO, d,
- 			     &opp->clock_latency_ns);
+diff --git a/drivers/mmc/core/quirks.h b/drivers/mmc/core/quirks.h
+index 20f568727277..f879dc63d936 100644
+--- a/drivers/mmc/core/quirks.h
++++ b/drivers/mmc/core/quirks.h
+@@ -149,6 +149,11 @@ static const struct mmc_fixup __maybe_unused sdio_fixup_methods[] = {
+ static const struct mmc_fixup __maybe_unused sdio_card_init_methods[] = {
+ 	SDIO_FIXUP_COMPATIBLE("ti,wl1251", wl1251_quirk, 0),
  
-+	opp->of_name = of_node_full_name(opp->np);
-+	debugfs_create_str("of_name", S_IRUGO, d, (char **)&opp->of_name);
++	SDIO_FIXUP_COMPATIBLE("silabs,wf200", add_quirk,
++			      MMC_QUIRK_BROKEN_BYTE_MODE_512 |
++			      MMC_QUIRK_LENIENT_FN0 |
++			      MMC_QUIRK_BLKSZ_FOR_BYTE_MODE),
 +
- 	opp_debug_create_supplies(opp, opp_table, d);
- 	opp_debug_create_bw(opp, opp_table, d);
- 
-diff --git a/drivers/opp/opp.h b/drivers/opp/opp.h
-index 407c3bfe51d9..45e3a55239a1 100644
---- a/drivers/opp/opp.h
-+++ b/drivers/opp/opp.h
-@@ -96,6 +96,7 @@ struct dev_pm_opp {
- 
- #ifdef CONFIG_DEBUG_FS
- 	struct dentry *dentry;
-+	const char *of_name;
- #endif
+ 	END_FIXUP
  };
  
+diff --git a/drivers/staging/wfx/bus_sdio.c b/drivers/staging/wfx/bus_sdio.c
+index a670176ba06f..0612f8a7c085 100644
+--- a/drivers/staging/wfx/bus_sdio.c
++++ b/drivers/staging/wfx/bus_sdio.c
+@@ -207,9 +207,6 @@ static int wfx_sdio_probe(struct sdio_func *func,
+ 
+ 	bus->func = func;
+ 	sdio_set_drvdata(func, bus);
+-	func->card->quirks |= MMC_QUIRK_LENIENT_FN0 |
+-			      MMC_QUIRK_BLKSZ_FOR_BYTE_MODE |
+-			      MMC_QUIRK_BROKEN_BYTE_MODE_512;
+ 
+ 	sdio_claim_host(func);
+ 	ret = sdio_enable_func(func);
 -- 
 2.35.1
 
