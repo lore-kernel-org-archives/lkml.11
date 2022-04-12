@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340A8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E49C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352864AbiDLHOd (ORCPT
+        id S1352920AbiDLHOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
+        Tue, 12 Apr 2022 03:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352601AbiDLG4E (ORCPT
+        with ESMTP id S1352603AbiDLG4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:56:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8AE24962;
-        Mon, 11 Apr 2022 23:46:13 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BA324BC7;
+        Mon, 11 Apr 2022 23:46:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AF0A9CE1ACD;
-        Tue, 12 Apr 2022 06:46:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5969C385A6;
-        Tue, 12 Apr 2022 06:46:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83CFF60A21;
+        Tue, 12 Apr 2022 06:46:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969CAC385A6;
+        Tue, 12 Apr 2022 06:46:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745970;
-        bh=XfMjc/mEojywwv+HmJCaUPY9r9cNx70P9ORURw+i7N0=;
+        s=korg; t=1649745973;
+        bh=bAPP0KeYlE4Rw4hQig6h+AE3aP+2SVdMxEk/gwMuZbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yAsykAbFe95gNNgf0VNAuUuNY6abjGxpoKkdDZGevB00kYKAfIeeQIbbovll2R7iw
-         RF1LGMVeqcCYRh7HnGcv8J4M8K5GtpkWRfSMz4UjOgadpmNxqDu8hnsqBqwOHkcwH0
-         7VBB6T2gax+oir10hmtvya1xFAeiW4PUmiNvhGLY=
+        b=g3DqxdJj9mB32ya4DGJj1oak7duRJg8oNRFPbWUhrsS4slnNADWsrdCtLPrdIR+lD
+         ZssgJfqgJkzIKHR1mAx1eq9Sw/wz2U2/rUjdv7WBUu67SCTSDFm2InSROP0/M9ozqb
+         MBR43LMXrl2iNdZZOvBdJQ3jlPWJ8wPWeosKchwc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Amjad Ouled-Ameur <aouledameur@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 113/277] phy: amlogic: phy-meson-gxl-usb2: fix shared reset controller use
-Date:   Tue, 12 Apr 2022 08:28:36 +0200
-Message-Id: <20220412062945.309655569@linuxfoundation.org>
+Subject: [PATCH 5.15 114/277] phy: amlogic: meson8b-usb2: Use dev_err_probe()
+Date:   Tue, 12 Apr 2022 08:28:37 +0200
+Message-Id: <20220412062945.339283299@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -56,53 +54,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
 
-[ Upstream commit 2f87727130ce17ffefecd0895eeebf22d5a36f6f ]
+[ Upstream commit 6466ba1898d415b527e1013bd8551a6fdfece94c ]
 
-Use reset_control_rearm() call if an error occurs in case
-phy_meson_gxl_usb2_init() fails after reset() has been called ; or in case
-phy_meson_gxl_usb2_exit() is called i.e the resource is no longer used
-and the reset line may be triggered again by other devices.
-
-reset_control_rearm() keeps use of triggered_count sane in the reset
-framework. Therefore, use of reset_control_reset() on shared reset line
-should be balanced with reset_control_rearm().
+Use the existing dev_err_probe() helper instead of open-coding the same
+operation.
 
 Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Reported-by: Jerome Brunet <jbrunet@baylibre.com>
+Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220111095255.176141-2-aouledameur@baylibre.com
+Link: https://lore.kernel.org/r/20220111095255.176141-3-aouledameur@baylibre.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/amlogic/phy-meson-gxl-usb2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/phy/amlogic/phy-meson8b-usb2.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/phy/amlogic/phy-meson-gxl-usb2.c b/drivers/phy/amlogic/phy-meson-gxl-usb2.c
-index 2b3c0d730f20..db17c3448bfe 100644
---- a/drivers/phy/amlogic/phy-meson-gxl-usb2.c
-+++ b/drivers/phy/amlogic/phy-meson-gxl-usb2.c
-@@ -114,8 +114,10 @@ static int phy_meson_gxl_usb2_init(struct phy *phy)
- 		return ret;
+diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
+index cf10bed40528..77e7e9b1428c 100644
+--- a/drivers/phy/amlogic/phy-meson8b-usb2.c
++++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
+@@ -265,8 +265,9 @@ static int phy_meson8b_usb2_probe(struct platform_device *pdev)
+ 		return PTR_ERR(priv->clk_usb);
  
- 	ret = clk_prepare_enable(priv->clk);
--	if (ret)
-+	if (ret) {
-+		reset_control_rearm(priv->reset);
- 		return ret;
-+	}
+ 	priv->reset = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
+-	if (PTR_ERR(priv->reset) == -EPROBE_DEFER)
+-		return PTR_ERR(priv->reset);
++	if (IS_ERR(priv->reset))
++		return dev_err_probe(&pdev->dev, PTR_ERR(priv->reset),
++				     "Failed to get the reset line");
  
- 	return 0;
- }
-@@ -125,6 +127,7 @@ static int phy_meson_gxl_usb2_exit(struct phy *phy)
- 	struct phy_meson_gxl_usb2_priv *priv = phy_get_drvdata(phy);
- 
- 	clk_disable_unprepare(priv->clk);
-+	reset_control_rearm(priv->reset);
- 
- 	return 0;
- }
+ 	priv->dr_mode = of_usb_get_dr_mode_by_phy(pdev->dev.of_node, -1);
+ 	if (priv->dr_mode == USB_DR_MODE_UNKNOWN) {
 -- 
 2.35.1
 
