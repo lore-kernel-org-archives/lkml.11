@@ -2,55 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 588DAC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244575AbiDLAxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
+        id S245226AbiDLAyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244191AbiDLAvg (ORCPT
+        with ESMTP id S244301AbiDLAvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:51:36 -0400
+        Mon, 11 Apr 2022 20:51:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFDE32EF7;
-        Mon, 11 Apr 2022 17:47:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C2931228;
+        Mon, 11 Apr 2022 17:47:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4ECC9B819BC;
-        Tue, 12 Apr 2022 00:47:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86207C385A4;
-        Tue, 12 Apr 2022 00:47:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC05BB819B5;
+        Tue, 12 Apr 2022 00:47:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E02EDC385A3;
+        Tue, 12 Apr 2022 00:47:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724450;
-        bh=DDpiuvyZPMOVx2gNhL7oXsN4aLctbYZMvh6l2bO/8k4=;
+        s=k20201202; t=1649724458;
+        bh=osRN3+ADqKQlpe6qbFAuGw2CwNJSKPCowMMNc9vMih4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h40daArEAgC2iJMn/9HXmJo6XnyogNGrUgPRzansfoVPW9WqNR0xFQ/87rR8vB77x
-         8tVDjHQ318BV1WEfVBE//Fr/Us02DeGmp/iESokpRRxPZE7xAbGQ1zaYXK2WaqLTN0
-         7i/wivY4RcBilltk9cxFal8JbMmWzVa6Nsfe+mW1pNUGdV629gsjS5/JGWj7AHL7Kg
-         DtReIMHEwf5ItGCvEC8/xcMowuEe8GNQUP9Oupf4QmGcdZ2BytgCgN7VzmRVYALNNU
-         U/RmtJAwAz3e0iog3gLdurdeyUFLTnOKhOU/r/LE3CD1eF4vxmsc6SGwWA9OWCAVTK
-         B0oYyTWGs8Utg==
+        b=NntjNdqSoL4vPgNVE+gli8dnfRQG19qydr9SdpbsvmZNfjtObTOTCyuOQnervaWtH
+         7wd7VmKYeBLLZmqsVshZrBI4jmN2wbxteZG5Z5cGJpm2RN+eHXFPIs+aAClb14r6I7
+         EsFM1PEmS8cea3i0+KUWAPwHpai7Rn8Xt/a7F9ymThtWCyfXqT6wlShmpjYAjrKEDh
+         Dhn6Lg42dilcpxlfijDOtN2cgASGRW42UAtnh5PoNobsRBu5FJHx5Uh3t0ChFpLHWJ
+         ovdlFRkCmohEgpLaIZQavMyVThYQjzJe4juIXOn0m4aFuYQzqhg4ae++esrrMLp6iZ
+         8pLelKMyFlBWQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chiawen Huang <chiawen.huang@amd.com>,
-        Anthony Koo <Anthony.Koo@amd.com>,
-        Alex Hung <alex.hung@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
+Cc:     Tushar Patel <tushar.patel@amd.com>,
+        Felix Kuehling <felix.kuehling@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, nicholas.kazlauskas@amd.com, Wayne.Lin@amd.com,
-        aric.cyr@amd.com, meenakshikumar.somasundaram@amd.com,
-        michael.strauss@amd.com, Martin.Leung@amd.com,
-        Jimmy.Kizito@amd.com, Eric.Yang2@amd.com, lee.jones@linaro.org,
-        wenjing.liu@amd.com, roy.chan@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 07/41] drm/amd/display: FEC check in timing validation
-Date:   Mon, 11 Apr 2022 20:46:19 -0400
-Message-Id: <20220412004656.350101-7-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Felix.Kuehling@amd.com, evan.quan@amd.com,
+        andrey.grodzovsky@amd.com, mario.limonciello@amd.com,
+        solomon.chiu@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 09/41] drm/amdkfd: Fix Incorrect VMIDs passed to HWS
+Date:   Mon, 11 Apr 2022 20:46:21 -0400
+Message-Id: <20220412004656.350101-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004656.350101-1-sashal@kernel.org>
 References: <20220412004656.350101-1-sashal@kernel.org>
@@ -62,41 +57,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chiawen Huang <chiawen.huang@amd.com>
+From: Tushar Patel <tushar.patel@amd.com>
 
-[ Upstream commit 7d56a154e22ffb3613fdebf83ec34d5225a22993 ]
+[ Upstream commit b7dfbd2e601f3fee545bc158feceba4f340fe7cf ]
 
-[Why]
-disable/enable leads FEC mismatch between hw/sw FEC state.
+Compute-only GPUs have more than 8 VMIDs allocated to KFD. Fix
+this by passing correct number of VMIDs to HWS
 
-[How]
-check FEC status to fastboot on/off.
+v2: squash in warning fix (Alex)
 
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Chiawen Huang <chiawen.huang@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Tushar Patel <tushar.patel@amd.com>
+Reviewed-by: Felix Kuehling <felix.kuehling@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |  2 +-
+ drivers/gpu/drm/amd/amdkfd/kfd_device.c | 11 +++--------
+ 2 files changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
-index b37c4d2e7a1e..35a27fe48f66 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -1377,6 +1377,10 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
- 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
- 		return false;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index 5a7fef324c82..b517b76e96a1 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -680,7 +680,7 @@ MODULE_PARM_DESC(sched_policy,
+  * Maximum number of processes that HWS can schedule concurrently. The maximum is the
+  * number of VMIDs assigned to the HWS, which is also the default.
+  */
+-int hws_max_conc_proc = 8;
++int hws_max_conc_proc = -1;
+ module_param(hws_max_conc_proc, int, 0444);
+ MODULE_PARM_DESC(hws_max_conc_proc,
+ 	"Max # processes HWS can execute concurrently when sched_policy=0 (0 = no concurrency, #VMIDs for KFD = Maximum(default))");
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device.c b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
+index 88c483f69989..660eb7097cfc 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
+@@ -834,15 +834,10 @@ bool kgd2kfd_device_init(struct kfd_dev *kfd,
+ 	}
  
-+	/* Check for FEC status*/
-+	if (link->link_enc->funcs->fec_is_active(link->link_enc))
-+		return false;
-+
- 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
+ 	/* Verify module parameters regarding mapped process number*/
+-	if ((hws_max_conc_proc < 0)
+-			|| (hws_max_conc_proc > kfd->vm_info.vmid_num_kfd)) {
+-		dev_err(kfd_device,
+-			"hws_max_conc_proc %d must be between 0 and %d, use %d instead\n",
+-			hws_max_conc_proc, kfd->vm_info.vmid_num_kfd,
+-			kfd->vm_info.vmid_num_kfd);
++	if (hws_max_conc_proc >= 0)
++		kfd->max_proc_per_quantum = min((u32)hws_max_conc_proc, kfd->vm_info.vmid_num_kfd);
++	else
+ 		kfd->max_proc_per_quantum = kfd->vm_info.vmid_num_kfd;
+-	} else
+-		kfd->max_proc_per_quantum = hws_max_conc_proc;
  
- 	if (enc_inst == ENGINE_ID_UNKNOWN)
+ 	/* calculate max size of mqds needed for queues */
+ 	size = max_num_of_queues_per_device *
 -- 
 2.35.1
 
