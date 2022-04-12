@@ -2,77 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E77A2C47087
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6051C4708B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388443AbiDLJWM (ORCPT
+        id S1388971AbiDLJXF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
+        Tue, 12 Apr 2022 05:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377966AbiDLHyv (ORCPT
+        with ESMTP id S1357336AbiDLHkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:54:51 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB039F8;
-        Tue, 12 Apr 2022 00:33:32 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C7XI09092329;
-        Tue, 12 Apr 2022 02:33:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649748798;
-        bh=VdCs/Pjh+iURxxt1j4N/dr32rlnP02nAMXE1v7NZKvs=;
-        h=From:To:CC:Subject:Date;
-        b=uzXEO5wn9Hu2ga7934M8A5BhJGO5x9fecsbpw54zw/DpGcfKp+mxw8cVaNFLtd3A0
-         DgVTI/QZIUBM7pWIci4weKaSCfAhP2wXGqffpWi1ApRjMiDlX0NycQdByjtAONmUd3
-         p5TaqJrZ0msS9f9xjR3q/uX1mzHqNfcTg7YdAWZk=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C7XIrR126912
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 Apr 2022 02:33:18 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
- Apr 2022 02:30:17 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 12 Apr 2022 02:30:17 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C7UHL0026687;
-        Tue, 12 Apr 2022 02:30:17 -0500
-From:   Jayesh Choudhary <j-choudhary@ti.com>
-To:     <linux-crypto@vger.kernel.org>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <krzysztof.kozlowski+dt@linaro.org>, <j-choudhary@ti.com>,
-        <robh+dt@kernel.org>
-Subject: [PATCH 0/2] New compatible for sa3ul for AM62x
-Date:   Tue, 12 Apr 2022 13:00:14 +0530
-Message-ID: <20220412073016.6014-1-j-choudhary@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 12 Apr 2022 03:40:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA2924BF0;
+        Tue, 12 Apr 2022 00:15:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD406171C;
+        Tue, 12 Apr 2022 07:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB194C385A5;
+        Tue, 12 Apr 2022 07:15:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747722;
+        bh=qT4rRxjdgHvgFLUUTFXORG38wBgzvPAGzYgrVrQ2Wyk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hrfjhwQzA6okcF8z3XuWj23M/JJlN9idMKWkPSepyFVzLKjSyMRwSTny/qdwr6CRc
+         zLVWGR84cn/WyWz3/0GRwuy0YuHEfTB/I6gfAUeZUip1l5MIYvWihxfU0VKLUEUZgL
+         cz5GpYyyGbpzQqICVMWA+pA9EuDjy3/J2/th8buU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 181/343] x86: Annotate call_on_stack()
+Date:   Tue, 12 Apr 2022 08:29:59 +0200
+Message-Id: <20220412062956.587738563@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series add the new compatible for sa3ul in the bindings and
-driver file which will be used further in device tree nodes to
-enable crypto support in TI SoC AM62x.
+From: Peter Zijlstra <peterz@infradead.org>
 
-I will post the patch to enable crypto accelerator once this series
-is merged.
+[ Upstream commit be0075951fde739f14ee2b659e2fd6e2499c46c0 ]
 
-Jayesh Choudhary (2):
-  dt-bindings: crypto: ti,sa2ul: Add a new compatible for AM62
-  crypto: sa2ul: Add the new compatible for AM62
+vmlinux.o: warning: objtool: page_fault_oops()+0x13c: unreachable instruction
 
- Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml | 1 +
- drivers/crypto/sa2ul.c                                 | 1 +
- 2 files changed, 2 insertions(+)
+0000 000000000005b460 <page_fault_oops>:
+...
+0128    5b588:  49 89 23                mov    %rsp,(%r11)
+012b    5b58b:  4c 89 dc                mov    %r11,%rsp
+012e    5b58e:  4c 89 f2                mov    %r14,%rdx
+0131    5b591:  48 89 ee                mov    %rbp,%rsi
+0134    5b594:  4c 89 e7                mov    %r12,%rdi
+0137    5b597:  e8 00 00 00 00          call   5b59c <page_fault_oops+0x13c>    5b598: R_X86_64_PLT32   handle_stack_overflow-0x4
+013c    5b59c:  5c                      pop    %rsp
 
+vmlinux.o: warning: objtool: sysvec_reboot()+0x6d: unreachable instruction
+
+0000 00000000000033f0 <sysvec_reboot>:
+...
+005d     344d:  4c 89 dc                mov    %r11,%rsp
+0060     3450:  e8 00 00 00 00          call   3455 <sysvec_reboot+0x65>        3451: R_X86_64_PLT32    irq_enter_rcu-0x4
+0065     3455:  48 89 ef                mov    %rbp,%rdi
+0068     3458:  e8 00 00 00 00          call   345d <sysvec_reboot+0x6d>        3459: R_X86_64_PC32     .text+0x47d0c
+006d     345d:  e8 00 00 00 00          call   3462 <sysvec_reboot+0x72>        345e: R_X86_64_PLT32    irq_exit_rcu-0x4
+0072     3462:  5c                      pop    %rsp
+
+Both cases are due to a call_on_stack() calling a __noreturn function.
+Since that's an inline asm, GCC can't do anything about the
+instructions after the CALL. Therefore put in an explicit
+ASM_REACHABLE annotation to make sure objtool and gcc are consistently
+confused about control flow.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220308154319.468805622@infradead.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/include/asm/irq_stack.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/irq_stack.h b/arch/x86/include/asm/irq_stack.h
+index ae9d40f6c706..05af249d6bec 100644
+--- a/arch/x86/include/asm/irq_stack.h
++++ b/arch/x86/include/asm/irq_stack.h
+@@ -99,7 +99,8 @@
+ }
+ 
+ #define ASM_CALL_ARG0							\
+-	"call %P[__func]				\n"
++	"call %P[__func]				\n"		\
++	ASM_REACHABLE
+ 
+ #define ASM_CALL_ARG1							\
+ 	"movq	%[arg1], %%rdi				\n"		\
 -- 
-2.17.1
+2.35.1
+
+
 
