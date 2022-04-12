@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91162C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350986AbiDLGwK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
+        id S233982AbiDLGwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350708AbiDLGrl (ORCPT
+        with ESMTP id S1350724AbiDLGrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:47:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BE0237F9;
-        Mon, 11 Apr 2022 23:39:15 -0700 (PDT)
+        Tue, 12 Apr 2022 02:47:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7A324F04;
+        Mon, 11 Apr 2022 23:39:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD513B81B43;
-        Tue, 12 Apr 2022 06:39:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD90C385A6;
-        Tue, 12 Apr 2022 06:39:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC26C61910;
+        Tue, 12 Apr 2022 06:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E254FC385A1;
+        Tue, 12 Apr 2022 06:39:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745552;
-        bh=ED29oVwmGILc3qdqHpfbnrBwyK1VacqLAme/FXeIgdg=;
+        s=korg; t=1649745558;
+        bh=O4Q7iMYhGztqlp5ynInoHyNCuJYnTxVojEBSYkbHwHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BuX20wWvPWC3iLXN2ICgngK05z/fgmY6I+RL2u/ym/h5sqz7dFxe7ZfF3Mzet0JIs
-         pzvd4lxBiQKZ7RF9Ze21Oq2ip+hRlH8sTmmb5ZtWqIGSqJFExzo8BmcAIEcoqVMftX
-         3Pk7cVCfSmFXkujhl3MAnRd8QlN98KL31ELNb2Jg=
+        b=1HeOhxkKffERb05/+JyVDrZgjE3Ohy/Y3fxpn4t3HrqLMQSDWjk9v4W3fiod13AEu
+         m5TzMFl2pKZI24jjqVVYFXYwhIhacEIBipemQwK9XL8t/FIamyNfUtK1/kNtVgeBC5
+         eiGZBmQul69s/6n/5SG/503UmxQwLVx1dRGui6S0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Marcin Wojtas <mw@semihalf.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.10 135/171] Revert "mmc: sdhci-xenon: fix annoying 1.8V regulator warning"
-Date:   Tue, 12 Apr 2022 08:30:26 +0200
-Message-Id: <20220412062931.792036281@linuxfoundation.org>
+Subject: [PATCH 5.10 137/171] mmc: renesas_sdhi: dont overwrite TAP settings when HS400 tuning is complete
+Date:   Tue, 12 Apr 2022 08:30:28 +0200
+Message-Id: <20220412062931.850991912@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -52,46 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-commit 7e2646ed47542123168d43916b84b954532e5386 upstream.
+commit 03e59b1e2f56245163b14c69e0a830c24b1a3a47 upstream.
 
-This reverts commit bb32e1987bc55ce1db400faf47d85891da3c9b9f.
+When HS400 tuning is complete and HS400 is going to be activated, we
+have to keep the current number of TAPs and should not overwrite them
+with a hardcoded value. This was probably a copy&paste mistake when
+upporting HS400 support from the BSP.
 
-Commit 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
-contains proper fix for the issue described in commit bb32e1987bc5 ("mmc:
-sdhci-xenon: fix annoying 1.8V regulator warning").
-
-Fixes: 8d876bf472db ("mmc: sdhci-xenon: wait 5ms after set 1.8V signal enable")
-Cc: stable@vger.kernel.org # 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Marcin Wojtas <mw@semihalf.com>
-Link: https://lore.kernel.org/r/20220318141441.32329-1-pali@kernel.org
+Fixes: 26eb2607fa28 ("mmc: renesas_sdhi: add eMMC HS400 mode support")
+Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220404114902.12175-1-wsa+renesas@sang-engineering.com
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/sdhci-xenon.c |   10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/mmc/host/renesas_sdhi_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/sdhci-xenon.c
-+++ b/drivers/mmc/host/sdhci-xenon.c
-@@ -240,16 +240,6 @@ static void xenon_voltage_switch(struct
- {
- 	/* Wait for 5ms after set 1.8V signal enable bit */
- 	usleep_range(5000, 5500);
--
--	/*
--	 * For some reason the controller's Host Control2 register reports
--	 * the bit representing 1.8V signaling as 0 when read after it was
--	 * written as 1. Subsequent read reports 1.
--	 *
--	 * Since this may cause some issues, do an empty read of the Host
--	 * Control2 register here to circumvent this.
--	 */
--	sdhci_readw(host, SDHCI_HOST_CONTROL2);
- }
+--- a/drivers/mmc/host/renesas_sdhi_core.c
++++ b/drivers/mmc/host/renesas_sdhi_core.c
+@@ -390,10 +390,10 @@ static void renesas_sdhi_hs400_complete(
+ 			SH_MOBILE_SDHI_SCC_TMPPORT2_HS400OSEL) |
+ 			sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT2));
  
- static const struct sdhci_ops sdhci_xenon_ops = {
+-	/* Set the sampling clock selection range of HS400 mode */
+ 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_DTCNTL,
+ 		       SH_MOBILE_SDHI_SCC_DTCNTL_TAPEN |
+-		       0x4 << SH_MOBILE_SDHI_SCC_DTCNTL_TAPNUM_SHIFT);
++		       sd_scc_read32(host, priv,
++				     SH_MOBILE_SDHI_SCC_DTCNTL));
+ 
+ 	/* Avoid bad TAP */
+ 	if (bad_taps & BIT(priv->tap_set)) {
 
 
