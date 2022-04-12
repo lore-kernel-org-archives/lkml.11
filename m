@@ -2,158 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D93AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234566AbiDLKhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
+        id S242431AbiDLKh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381419AbiDLKfJ (ORCPT
+        with ESMTP id S1354197AbiDLKdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:35:09 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D755E159
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:37:20 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id q129so18453979oif.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
-         :subject:to:cc;
-        bh=evIZsLOQJjFi37tCwIrJkfpZ9gIHXQ0UW8l5PUtfRtM=;
-        b=4QAERHFJ8BTZGtY7E+DkrtJGJSnzxgQgHwbOYAwlxzZXnKMY9dp3NVgOGA1Cbx3AW0
-         FxY2zgabemqQKkM8yYWIKTkzeKaFcP40xAgE+1dbimqQ4CldI7+o8TQ8dE1kodW+jrQU
-         gYXrQIuo73uA51I8IaOWcFPhvw+t8g/pF4/eUcwWtHBUvZuNigXM/QZvceMRt4bz7R/Q
-         iRCQbyMV95o4pipHij2S0MaVqvssVGHgSj8Xz769fQj6HFHoNaTjIpDoiR+7ZrOU9ACV
-         kY13mSlQ12q7mCyqJQTWIMCVaZV8qk0mntRPEqqEkgTpq9DAW883/q4t7wQjC3Wogopk
-         7VLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:user-agent:references:in-reply-to
-         :mime-version:date:message-id:subject:to:cc;
-        bh=evIZsLOQJjFi37tCwIrJkfpZ9gIHXQ0UW8l5PUtfRtM=;
-        b=fqEiFsLFWfflgySzZh75XJPN4ezJnUPxRTEOPWLuirJem79VX807QAJ6CQ9puTg8ii
-         IlwK4Tuw4sJyHvGpU8WO18yNwSNciB7sp11lW23xLjr10a9hetsplE8IicDO1BBz9poj
-         Wo1iFVmszqoPWLat8Cg6iy61xolaUXtCr8gmUPx/pOZxOaNF77pXkAKop98knkxGUBIO
-         eKs9MsW5crQI141efilV/otxACiywNUpyRsovrOr9ZeacAOw0DuydVTmsK52sCrlHdTM
-         d6JkIy9R3lbAyPkp9IdNzBRSSLQlP1okNTDAyVym8Md90R49IbXvORNknJ5pEpFh3Azd
-         Ybvw==
-X-Gm-Message-State: AOAM530o0wDOJP76BRtNIRxuKzdIjVEjqy12kut+F+5pWkvZoYzDjsdn
-        waza/0Mc3wQ8wE/kU8srQvHCISvWpRSSwvvl8805Yg==
-X-Google-Smtp-Source: ABdhPJw50fakNZZtGphBh/3iA9VZT9nYrxLt56LrY9rUXQ7AMr4P93Xi3Vwjdes2KLA+ubvrsqu9MdqkL/hZl7jIqcA=
-X-Received: by 2002:a05:6808:1804:b0:2f9:65eb:c40b with SMTP id
- bh4-20020a056808180400b002f965ebc40bmr1343724oib.78.1649756239335; Tue, 12
- Apr 2022 02:37:19 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 12 Apr 2022 02:37:18 -0700
-From:   Guillaume Ranquet <granquet@baylibre.com>
-User-Agent: meli 0.7.2
-References: <20220327223927.20848-1-granquet@baylibre.com> <20220327223927.20848-17-granquet@baylibre.com>
- <736a7f6710f1ea31eff4abcc3d9c3ff79a1f0ddb.camel@mediatek.com>
-In-Reply-To: <736a7f6710f1ea31eff4abcc3d9c3ff79a1f0ddb.camel@mediatek.com>
+        Tue, 12 Apr 2022 06:33:37 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A038953A42;
+        Tue, 12 Apr 2022 02:33:25 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23C7gt62028744;
+        Tue, 12 Apr 2022 11:32:58 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=UICnyf3oPsQTzRC0I9H7zVlnLQiOcv6ykqLEagOPP+A=;
+ b=IZiYzbQebMHtNJebYRpmBh7Lqy92kJ9sBKCGLq14bPG5DvZMzlvjveRPSsU/fG8nFkZc
+ d7L+1c5QT0rmaKfaygh6U3kvSXCAm2v8IxvHHnXgIMxkt+03qgjPomdHlCyq9vhxHMUQ
+ TYbBnYgDgnja+vR7iGrAVCMwaYCKnEC0b0/S2uP76yfzcYWdeNlsCkO7v7PhVPbQEVSP
+ cnVRGjd3hOfOyY59a3X7inTOlAz/lsdR0LRsbEPxvnKKjmYZO0JCg8oVGdj0RIapw7Tx
+ u8uJpNiaBIOLA8CMZzlU3E58cl+T1Yl98ZwOJgrGZK6M0b5KOj23WKUy8wUz2VU/XQ+J qw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fb74y6cgq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 11:32:58 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D4773100038;
+        Tue, 12 Apr 2022 11:32:55 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CC121216833;
+        Tue, 12 Apr 2022 11:32:55 +0200 (CEST)
+Received: from [10.201.21.201] (10.75.127.49) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 12 Apr
+ 2022 11:32:54 +0200
+Message-ID: <8daae353-911c-3102-756f-1f0448704355@foss.st.com>
+Date:   Tue, 12 Apr 2022 11:32:53 +0200
 MIME-Version: 1.0
-Date:   Tue, 12 Apr 2022 02:37:18 -0700
-Message-ID: <CABnWg9vfMJTbOTK-khgaj7RReLVSKJ3DCmJbDvgKMf+tUBwoSA@mail.gmail.com>
-Subject: Re: [PATCH v9 16/22] drm/meditek: dpi: Add matrix_sel helper
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, vkoul@kernel.org,
-        airlied@linux.ie, angelogioacchino.delregno@collabora.com,
-        chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
-        ck.hu@mediatek.com, daniel@ffwll.ch, deller@gmx.de,
-        jitao.shi@mediatek.com, kishon@ti.com, krzk+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, matthias.bgg@gmail.com,
-        mripard@kernel.org, p.zabel@pengutronix.de, robh+dt@kernel.org,
-        tzimmermann@suse.de
-Cc:     devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-phy@lists.infradead.org, markyacoub@google.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Linux-stm32] [PATCH] spi: spi-stm32-qspi: using
+ pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Content-Language: en-US
+To:     <cgel.zte@gmail.com>, <broonie@kernel.org>
+CC:     Zeal Robot <zealci@zte.com.cn>, <linux-kernel@vger.kernel.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        <mcoquelin.stm32@gmail.com>, <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220412070906.2532091-1-chi.minghao@zte.com.cn>
+From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
+In-Reply-To: <20220412070906.2532091-1-chi.minghao@zte.com.cn>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-12_03,2022-04-11_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 10:49, Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
->On Mon, 2022-03-28 at 00:39 +0200, Guillaume Ranquet wrote:
->> Add a mtk_dpi_matrix_sel() helper to update the DPI_MATRIX_SET
->> register depending on the color format.
->>
->> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
->> ---
->>  drivers/gpu/drm/mediatek/mtk_dpi.c | 21 +++++++++++++++++++++
->>  1 file changed, 21 insertions(+)
->>
->> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
->> b/drivers/gpu/drm/mediatek/mtk_dpi.c
->> index 8198d3cf23ac..82f97c687652 100644
->> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
->> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
->> @@ -385,6 +385,25 @@ static void mtk_dpi_config_disable_edge(struct
->> mtk_dpi *dpi)
->>  		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0,
->> EDGE_SEL_EN);
->>  }
->>
->> +static void mtk_dpi_matrix_sel(struct mtk_dpi *dpi, enum
->> mtk_dpi_out_color_format format)
->> +{
->> +	u32 matrix_sel = 0;
->> +
->> +	switch (format) {
->> +	case MTK_DPI_COLOR_FORMAT_YCBCR_422:
->> +	case MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL:
->> +	case MTK_DPI_COLOR_FORMAT_YCBCR_444:
->> +	case MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL:
->> +	case MTK_DPI_COLOR_FORMAT_XV_YCC:
->> +		if (dpi->mode.hdisplay <= 720)
->> +			matrix_sel = 0x2;
->> +		break;
->> +	default:
->> +		break;
->> +	}
->> +	mtk_dpi_mask(dpi, DPI_MATRIX_SET, matrix_sel,
->> INT_MATRIX_SEL_MASK);
->> +}
->> +
->>  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
->>  					enum mtk_dpi_out_color_format
->> format)
->>  {
->> @@ -392,6 +411,7 @@ static void mtk_dpi_config_color_format(struct
->> mtk_dpi *dpi,
->>  	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
->>  		mtk_dpi_config_yuv422_enable(dpi, false);
->>  		mtk_dpi_config_csc_enable(dpi, true);
->> +		mtk_dpi_matrix_sel(dpi, format);
->>  		if (dpi->conf->swap_input_support)
->>  			mtk_dpi_config_swap_input(dpi, false);
->>  		mtk_dpi_config_channel_swap(dpi,
->> MTK_DPI_OUT_CHANNEL_SWAP_BGR);
->> @@ -399,6 +419,7 @@ static void mtk_dpi_config_color_format(struct
->> mtk_dpi *dpi,
->>  		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
->>  		mtk_dpi_config_yuv422_enable(dpi, true);
->>  		mtk_dpi_config_csc_enable(dpi, true);
->> +		mtk_dpi_matrix_sel(dpi, format);
->>  		if (dpi->conf->swap_input_support)
->>  			mtk_dpi_config_swap_input(dpi, true);
->>  		mtk_dpi_config_channel_swap(dpi,
->> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
->
->Hello Guillaume,
->
->Thanks for your patch.
->I have one question:
->Do this setting affect the dpi for previous SoCs?
->(8183, 8192, or 8186)
->If we can confirm the original register setting for this offset in
->8183/8192/8186, I think we can clarify this question.
->
+Hi 
 
-I've checked in the datasheet I have (8365/8385) that this register
-and setting exists.
-So yes, it will affect other platforms.
+On 4/12/22 09:09, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>  drivers/spi/spi-stm32-qspi.c | 30 ++++++++++--------------------
+>  1 file changed, 10 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
+> index ffdc55f87e82..b3586521d08e 100644
+> --- a/drivers/spi/spi-stm32-qspi.c
+> +++ b/drivers/spi/spi-stm32-qspi.c
+> @@ -463,11 +463,9 @@ static int stm32_qspi_poll_status(struct spi_mem *mem, const struct spi_mem_op *
+>  	if (!spi_mem_supports_op(mem, op))
+>  		return -EOPNOTSUPP;
+>  
+> -	ret = pm_runtime_get_sync(qspi->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(qspi->dev);
+> +	ret = pm_runtime_resume_and_get(qspi->dev);
+> +	if (ret < 0)
+>  		return ret;
+> -	}
+>  
+>  	mutex_lock(&qspi->lock);
+>  
+> @@ -490,11 +488,9 @@ static int stm32_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
+>  	struct stm32_qspi *qspi = spi_controller_get_devdata(mem->spi->master);
+>  	int ret;
+>  
+> -	ret = pm_runtime_get_sync(qspi->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(qspi->dev);
+> +	ret = pm_runtime_resume_and_get(qspi->dev);
+> +	if (ret < 0)
+>  		return ret;
+> -	}
+>  
+>  	mutex_lock(&qspi->lock);
+>  	if (op->data.dir == SPI_MEM_DATA_IN && op->data.nbytes)
+> @@ -536,11 +532,9 @@ static ssize_t stm32_qspi_dirmap_read(struct spi_mem_dirmap_desc *desc,
+>  	u32 addr_max;
+>  	int ret;
+>  
+> -	ret = pm_runtime_get_sync(qspi->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(qspi->dev);
+> +	ret = pm_runtime_resume_and_get(qspi->dev);
+> +	if (ret < 0)
+>  		return ret;
+> -	}
+>  
+>  	mutex_lock(&qspi->lock);
+>  	/* make a local copy of desc op_tmpl and complete dirmap rdesc
+> @@ -583,11 +577,9 @@ static int stm32_qspi_setup(struct spi_device *spi)
+>  	if (!spi->max_speed_hz)
+>  		return -EINVAL;
+>  
+> -	ret = pm_runtime_get_sync(qspi->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(qspi->dev);
+> +	ret = pm_runtime_resume_and_get(qspi->dev);
+> +	if (ret < 0)
+>  		return ret;
+> -	}
+>  
+>  	presc = DIV_ROUND_UP(qspi->clk_rate, spi->max_speed_hz) - 1;
+>  
+> @@ -851,11 +843,9 @@ static int __maybe_unused stm32_qspi_resume(struct device *dev)
+>  
+>  	pinctrl_pm_select_default_state(dev);
+>  
+> -	ret = pm_runtime_get_sync(dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(dev);
+> +	ret = pm_runtime_resume_and_get(dev);
+> +	if (ret < 0)
+>  		return ret;
+> -	}
+>  
+>  	writel_relaxed(qspi->cr_reg, qspi->io_base + QSPI_CR);
+>  	writel_relaxed(qspi->dcr_reg, qspi->io_base + QSPI_DCR);
 
->BRs,
->Rex
->
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+
+Thanks
+Patrice
+
