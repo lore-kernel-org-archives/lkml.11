@@ -2,51 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A298C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC4BC4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355092AbiDLIHA (ORCPT
+        id S1355165AbiDLIHU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43044 "EHLO
+        Tue, 12 Apr 2022 04:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354316AbiDLH0S (ORCPT
+        with ESMTP id S1354659AbiDLH0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:18 -0400
+        Tue, 12 Apr 2022 03:26:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11E54504F;
-        Tue, 12 Apr 2022 00:06:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FDD4665C;
+        Tue, 12 Apr 2022 00:06:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A6F7B81B54;
-        Tue, 12 Apr 2022 07:06:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 683FBC385A1;
-        Tue, 12 Apr 2022 07:06:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9F1EB81B5D;
+        Tue, 12 Apr 2022 07:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B390C385AE;
+        Tue, 12 Apr 2022 07:06:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747166;
-        bh=SoCb/hdLcNc5aCFlOmgnS1sQDkhgqCLKwaaJREOg48A=;
+        s=korg; t=1649747183;
+        bh=MIJOt/rCjVZ1I/G8JnoYtBGZqGnfCfzujr8/xisSegw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YgOMewrIPpGZVEMcOV5xYgH4uT/SmtI05wAyLgq3JJW4kN1yPBvKtvBDiGcpOEWoQ
-         kxkzEhD9hhV3jOS3gbxo8Rt/qBzsc3u9XGjnnfCCysH4uTVnDseEI/qjibUILSod3J
-         f6PY+X4xynZA8gb6JEeFfRfO40zHW0azhJb6sytE=
+        b=SPGqSLAfSorR1ulggq87bjrk22Vm21k+K2/vc927DfRSukaqCcAK4dVoWBZ+vsPnD
+         moFJt3y/aihcd4uimzgRr/iczuxE5N1Wxb8vxU0d9eej1JHEqSZf/WrHHI/zd9axD9
+         lY8PIqlKEpJGrOWHvqUTif4aMSmWOtWWW3AUPSJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.16 267/285] perf build: Dont use -ffat-lto-objects in the python feature test when building with clang-13
-Date:   Tue, 12 Apr 2022 08:32:04 +0200
-Message-Id: <20220412062951.364025365@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.16 246/285] perf: qcom_l2_pmu: fix an incorrect NULL check on list iterator
+Date:   Tue, 12 Apr 2022 08:31:43 +0200
+Message-Id: <20220412062950.759803377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -58,61 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 3a8a0475861a443f02e3a9b57d044fe2a0a99291 upstream.
+commit 2012a9e279013933885983cbe0a5fe828052563b upstream.
 
-Using -ffat-lto-objects in the python feature test when building with
-clang-13 results in:
+The bug is here:
+	return cluster;
 
-  clang-13: error: optimization flag '-ffat-lto-objects' is not supported [-Werror,-Wignored-optimization-argument]
-  error: command '/usr/sbin/clang' failed with exit code 1
-  cp: cannot stat '/tmp/build/perf/python_ext_build/lib/perf*.so': No such file or directory
-  make[2]: *** [Makefile.perf:639: /tmp/build/perf/python/perf.so] Error 1
+The list iterator value 'cluster' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-Noticed when building on a docker.io/library/archlinux:base container.
+To fix the bug, return 'cluster' when found, otherwise return NULL.
 
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Sedat Dilek <sedat.dilek@gmail.com>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 21bdbb7102ed ("perf: add qcom l2 cache perf events driver")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327055733.4070-1-xiam0nd.tong@gmail.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/Makefile.config |    3 +++
- tools/perf/util/setup.py   |    2 ++
- 2 files changed, 5 insertions(+)
+ drivers/perf/qcom_l2_pmu.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -270,6 +270,9 @@ ifdef PYTHON_CONFIG
-   PYTHON_EMBED_LIBADD := $(call grep-libs,$(PYTHON_EMBED_LDOPTS)) -lutil
-   PYTHON_EMBED_CCOPTS := $(shell $(PYTHON_CONFIG_SQ) --includes 2>/dev/null)
-   FLAGS_PYTHON_EMBED := $(PYTHON_EMBED_CCOPTS) $(PYTHON_EMBED_LDOPTS)
-+  ifeq ($(CC_NO_CLANG), 0)
-+    PYTHON_EMBED_CCOPTS := $(filter-out -ffat-lto-objects, $(PYTHON_EMBED_CCOPTS))
-+  endif
- endif
+--- a/drivers/perf/qcom_l2_pmu.c
++++ b/drivers/perf/qcom_l2_pmu.c
+@@ -736,7 +736,7 @@ static struct cluster_pmu *l2_cache_asso
+ {
+ 	u64 mpidr;
+ 	int cpu_cluster_id;
+-	struct cluster_pmu *cluster = NULL;
++	struct cluster_pmu *cluster;
  
- FEATURE_CHECK_CFLAGS-libpython := $(PYTHON_EMBED_CCOPTS)
---- a/tools/perf/util/setup.py
-+++ b/tools/perf/util/setup.py
-@@ -23,6 +23,8 @@ if cc_is_clang:
-             vars[var] = sub("-fstack-protector-strong", "", vars[var])
-         if not clang_has_option("-fno-semantic-interposition"):
-             vars[var] = sub("-fno-semantic-interposition", "", vars[var])
-+        if not clang_has_option("-ffat-lto-objects"):
-+            vars[var] = sub("-ffat-lto-objects", "", vars[var])
+ 	/*
+ 	 * This assumes that the cluster_id is in MPIDR[aff1] for
+@@ -758,10 +758,10 @@ static struct cluster_pmu *l2_cache_asso
+ 			 cluster->cluster_id);
+ 		cpumask_set_cpu(cpu, &cluster->cluster_cpus);
+ 		*per_cpu_ptr(l2cache_pmu->pmu_cluster, cpu) = cluster;
+-		break;
++		return cluster;
+ 	}
  
- from distutils.core import setup, Extension
+-	return cluster;
++	return NULL;
+ }
  
+ static int l2cache_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 
 
