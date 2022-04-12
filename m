@@ -2,145 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35866C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E460DC35280
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358930AbiDLHmV (ORCPT
+        id S1358863AbiDLHmR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
+        Tue, 12 Apr 2022 03:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353781AbiDLHQG (ORCPT
+        with ESMTP id S1353747AbiDLHQC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:16:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB933AA6F;
-        Mon, 11 Apr 2022 23:57:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A55A3B81B44;
-        Tue, 12 Apr 2022 06:57:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D37C385A6;
-        Tue, 12 Apr 2022 06:57:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746644;
-        bh=UB/tJv4/q5zkVk/rlbowu6zqsWnia8C3Gg5X6fFnLH8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WrZ2y9b/To5DTUnjC2TxunR1zE7Ie4mjh0UazNruScjK53wWic3WAJoCD9pOpSN3q
-         Mt/NVoSE5W6iC2CX2cT42Qh4BctY5k21gnayw2P+4YCfxHwgammRnC2HEgeu7LdV2J
-         LiA9ctKeGN8HUvRcr96qeLNqz/0k8NgKwjqg/XAc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiang Chen <chenxiang66@hisilicon.com>,
-        Qi Liu <liuqi115@huawei.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 080/285] scsi: hisi_sas: Limit users changing debugfs BIST count value
-Date:   Tue, 12 Apr 2022 08:28:57 +0200
-Message-Id: <20220412062945.973138703@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 12 Apr 2022 03:16:02 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAB140E40;
+        Mon, 11 Apr 2022 23:57:26 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id s2so16691101pfh.6;
+        Mon, 11 Apr 2022 23:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=bNjBEe/YPe6Z4q3I9FKAbfmaWyUfpZN/Nwef8zNH/KU=;
+        b=HXDUZRx+zwaxgI7xlkULMXh5Y+QtBcnOXlT16mLRmI7TL2jnSxkSQEC675xjS/jG1t
+         pqoGTyAUJLsUK2BKmyFQeizPhltMgs/iMcSsIuyzJQvl3t/89GJUJUHDqNfi5vgAuZq9
+         ey7EKWRtPPdXHh011jhNutwRey/N7slZjc0hfqnR0x8ZqfZGwe1f6zjAhOEyIBkL89tp
+         L4VBSqoI3nLb2PGX6K8zHJrWifQgJ2uU/NHsMQG+Kn6c2iHE+LLrhxQhhKNHANPPUXQr
+         BP9MOrxNNRGSDQQwk7CmYe8lLy32WsX/0G8OL31HCSqVxECsxpaQxprBLcK2MkZZ52hY
+         OZag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bNjBEe/YPe6Z4q3I9FKAbfmaWyUfpZN/Nwef8zNH/KU=;
+        b=xZ9CflJoZQD0WD1L5Y/VGnvl8qLLXPK8wBnNL8X3lcRDH6LFaI9Wz/Dn/ZCfqzsBqY
+         Ty13N0l1hGYjSj1cz3Uyb8yVlT15Ao0M2bo23NV82iULpzm6jKa9J2dFal+sRbKJG3r+
+         6vRZL1Anc5uXQ+zmuPym2YFElBRUNwCxz6/4ypy/Pj0xfx6zyBnxV6TSha7SFEBkUCNy
+         OXCTdBJL98QMjNki5OmF/n9dbL9N7WOmqA0bRHmPI9Yhns5EnZQasB+FFYqE/66xLZe3
+         BadQYVkrt0nFq2DvNN5TrCqwSz8WHRf2wwTcosONh2RRN7SI2ZzSNWZsQA1JOT9C5kuA
+         3nKA==
+X-Gm-Message-State: AOAM531kcBpB4p5rUpcnWH2ygY1pbNNn7v3M2e/GQlGWeuft+zt+9fv/
+        Nlxvsm09rOpH4EJr3wR8q6Y=
+X-Google-Smtp-Source: ABdhPJwEOsSUBhuxpQW12wQ4nw3SgeA7lRPZ/kq+Y7rTFTCDN6m6jj7rBzvOGQ/DxADd6iG97ABukg==
+X-Received: by 2002:a05:6a00:238f:b0:4f7:78b1:2f6b with SMTP id f15-20020a056a00238f00b004f778b12f6bmr36673622pfc.17.1649746645568;
+        Mon, 11 Apr 2022 23:57:25 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id s16-20020a056a001c5000b00505688553e1sm16442805pfw.57.2022.04.11.23.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 23:57:25 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Abel Vesa <abel.vesa@nxp.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Dong Aisheng <aisheng.dong@nxp.com>, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] clk: imx: scu: Fix pm_runtime_get_sync() error checking
+Date:   Tue, 12 Apr 2022 06:57:18 +0000
+Message-Id: <20220412065719.17735-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-[ Upstream commit 286ce4c65fbdf5eb9d4d5f4e4997c4e32bf1b073 ]
-
-Add a file operation for "cnt" file under bist directory, so users can only
-read "cnt" or clear "cnt" to zero, but cannot randomly modify.
-
-Link: https://lore.kernel.org/r/1645703489-87194-6-git-send-email-john.garry@huawei.com
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 78edeb080330 ("clk: imx: scu: add runtime pm support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 52 +++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 2 deletions(-)
+ drivers/clk/imx/clk-scu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 8392463d57de..20763f187886 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -3968,6 +3968,54 @@ static const struct file_operations debugfs_bist_phy_v3_hw_fops = {
- 	.owner = THIS_MODULE,
- };
+diff --git a/drivers/clk/imx/clk-scu.c b/drivers/clk/imx/clk-scu.c
+index 083da31dc3ea..18c6190eeffd 100644
+--- a/drivers/clk/imx/clk-scu.c
++++ b/drivers/clk/imx/clk-scu.c
+@@ -529,7 +529,7 @@ static int imx_clk_scu_probe(struct platform_device *pdev)
+ 		pm_runtime_enable(dev);
  
-+static ssize_t debugfs_bist_cnt_v3_hw_write(struct file *filp,
-+					const char __user *buf,
-+					size_t count, loff_t *ppos)
-+{
-+	struct seq_file *m = filp->private_data;
-+	struct hisi_hba *hisi_hba = m->private;
-+	unsigned int cnt;
-+	int val;
-+
-+	if (hisi_hba->debugfs_bist_enable)
-+		return -EPERM;
-+
-+	val = kstrtouint_from_user(buf, count, 0, &cnt);
-+	if (val)
-+		return val;
-+
-+	if (cnt)
-+		return -EINVAL;
-+
-+	hisi_hba->debugfs_bist_cnt = 0;
-+	return count;
-+}
-+
-+static int debugfs_bist_cnt_v3_hw_show(struct seq_file *s, void *p)
-+{
-+	struct hisi_hba *hisi_hba = s->private;
-+
-+	seq_printf(s, "%u\n", hisi_hba->debugfs_bist_cnt);
-+
-+	return 0;
-+}
-+
-+static int debugfs_bist_cnt_v3_hw_open(struct inode *inode,
-+					  struct file *filp)
-+{
-+	return single_open(filp, debugfs_bist_cnt_v3_hw_show,
-+			   inode->i_private);
-+}
-+
-+static const struct file_operations debugfs_bist_cnt_v3_hw_ops = {
-+	.open = debugfs_bist_cnt_v3_hw_open,
-+	.read = seq_read,
-+	.write = debugfs_bist_cnt_v3_hw_write,
-+	.llseek = seq_lseek,
-+	.release = single_release,
-+	.owner = THIS_MODULE,
-+};
-+
- static const struct {
- 	int		value;
- 	char		*name;
-@@ -4605,8 +4653,8 @@ static void debugfs_bist_init_v3_hw(struct hisi_hba *hisi_hba)
- 	debugfs_create_file("phy_id", 0600, hisi_hba->debugfs_bist_dentry,
- 			    hisi_hba, &debugfs_bist_phy_v3_hw_fops);
- 
--	debugfs_create_u32("cnt", 0600, hisi_hba->debugfs_bist_dentry,
--			   &hisi_hba->debugfs_bist_cnt);
-+	debugfs_create_file("cnt", 0600, hisi_hba->debugfs_bist_dentry,
-+			    hisi_hba, &debugfs_bist_cnt_v3_hw_ops);
- 
- 	debugfs_create_file("loopback_mode", 0600,
- 			    hisi_hba->debugfs_bist_dentry,
+ 		ret = pm_runtime_get_sync(dev);
+-		if (ret) {
++		if (ret < 0) {
+ 			pm_genpd_remove_device(dev);
+ 			pm_runtime_disable(dev);
+ 			return ret;
 -- 
-2.35.1
-
-
+2.17.1
 
