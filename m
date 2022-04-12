@@ -2,90 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F5DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6DDC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383752AbiDLIiM (ORCPT
+        id S1383768AbiDLIiO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
+        Tue, 12 Apr 2022 04:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357053AbiDLHjp (ORCPT
+        with ESMTP id S1357057AbiDLHjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2A0532D6;
-        Tue, 12 Apr 2022 00:11:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 241C9B81A8F;
-        Tue, 12 Apr 2022 07:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A73AC385A5;
-        Tue, 12 Apr 2022 07:11:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747460;
-        bh=bcdUogpj52SUG8nQQS8SqrwbgPj2XDWbLfXBv7xXEhg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SRMwFzJlSpdkjqHx0WWcMBFDjv9mTY5Or4LepehLSRvLrGTHv7ZSce8swMKeOlRkt
-         76GWHQjA0HiVcTszOECk1OSqD1Wq95dp4GO4MCFCKAbwe2rxcHjFA9l5v2In+Z7tdJ
-         G8Frs6BZKBsX4Q4S8mELhDz3albQGaPnlwXtouB4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 087/343] iwlwifi: mvm: Correctly set fragmented EBS
-Date:   Tue, 12 Apr 2022 08:28:25 +0200
-Message-Id: <20220412062953.617437038@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:39:44 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A949BE2D;
+        Tue, 12 Apr 2022 00:11:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=vPcJ0Jyf7TJXhPIUKaJIMiRr+nnNAGQ8o4ZIzMyfJYY=; b=JfeLXhwuu380orBQHL6JRm1SVF
+        ECgAYHr9tIUbUxfb+zKByQ6M5m+UdFOUQ3oWMUgfARd8XUeBIcoZKH4jMTF0OLs1YmEiCyYE8hkGF
+        XeAvGXsdinDYUCjJZxz8av+f1EguCiwG6ujUBcMZk64iEp/JwJs2onTAAlsbh9dlFgQyuTN/rfqH1
+        CXc/7TG6vwZodEaUB48AU2zdyv0KpVtqtNVkG1Etqm5djS39M0C2LM1Q4BHXQmYYinaJ2TknXylvG
+        79BlEtn404BwdqU+lAF3zdqB1ZAjc0YYEabv0Pb9CRim3qTlsCFdSU9sav2J9o8doCeMah26Wz5SW
+        foWlpEMA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1neAfS-004F93-S8; Tue, 12 Apr 2022 07:10:27 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 2AA8D98619A; Tue, 12 Apr 2022 09:10:26 +0200 (CEST)
+Date:   Tue, 12 Apr 2022 09:10:26 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Yu Zhao <yuzhao@google.com>, Stephen Rothwell <sfr@rothwell.id.au>,
+        linux-mm@kvack.org, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, page-reclaim@google.com,
+        x86@kernel.org, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Subject: Re: [PATCH v10 08/14] mm: multi-gen LRU: support page table walks
+Message-ID: <20220412071026.GU2731@worktop.programming.kicks-ass.net>
+References: <20220407031525.2368067-1-yuzhao@google.com>
+ <20220407031525.2368067-9-yuzhao@google.com>
+ <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+On Mon, Apr 11, 2022 at 07:16:21PM -0700, Andrew Morton wrote:
+> On Wed,  6 Apr 2022 21:15:20 -0600 Yu Zhao <yuzhao@google.com> wrote:
 
-[ Upstream commit d8d4dd26b9e0469baf5017f0544d852fd4e3fb6d ]
+> > +#ifdef CONFIG_LRU_GEN
+> > +static void mem_cgroup_attach(struct cgroup_taskset *tset)
+> > +{
+> > +	struct cgroup_subsys_state *css;
+> > +	struct task_struct *task = NULL;
+> > +
+> > +	cgroup_taskset_for_each_leader(task, css, tset)
+> > +		break;
+> 
+> Does this actually do anything?
 
-Currently, fragmented EBS was set for a channel only if the 'hb_type'
-was set to fragmented or balanced scan. However, 'hb_type' is set only
-in case of CDB, and thus fragmented EBS is never set for a channel for
-non-CDB devices. Fix it.
-
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.a6165ac9b9d5.I654eafa62fd647030ae6d4f07f32c96c3171decb@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 5f92a09db374..4cd507cb412d 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1893,7 +1893,10 @@ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
- 			IWL_SCAN_CHANNEL_FLAG_CACHE_ADD;
- 
- 	/* set fragmented ebs for fragmented scan on HB channels */
--	if (iwl_mvm_is_scan_fragmented(params->hb_type))
-+	if ((!iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->type)) ||
-+	    (iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->hb_type)))
- 		flags |= IWL_SCAN_CHANNEL_FLAG_EBS_FRAG;
- 
- 	return flags;
--- 
-2.35.1
-
-
-
+Yeah, it finds the first leader if there is any, but this is indeed
+quite terrible coding style.
