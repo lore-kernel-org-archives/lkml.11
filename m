@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 732CCC38A04
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5575C38A06
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384608AbiDLImJ (ORCPT
+        id S1384831AbiDLImY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        Tue, 12 Apr 2022 04:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357241AbiDLHjx (ORCPT
+        with ESMTP id S1357269AbiDLHjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:53 -0400
+        Tue, 12 Apr 2022 03:39:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74978DB1;
-        Tue, 12 Apr 2022 00:14:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41997BF4A;
+        Tue, 12 Apr 2022 00:14:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D937B81B4F;
-        Tue, 12 Apr 2022 07:14:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92C64C385A1;
-        Tue, 12 Apr 2022 07:14:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC7C3B81B4F;
+        Tue, 12 Apr 2022 07:14:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45A1BC385A5;
+        Tue, 12 Apr 2022 07:14:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747650;
-        bh=qTmYQrOjWDd3Zahu3bZmLVJ06wcEPA21y1qIWN7atiA=;
+        s=korg; t=1649747669;
+        bh=0+xvbaE1I0/8b+wbY9uFiN56VFJGLSH7zHl8KdntBK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lKvfQ/Fs/BiNRpDgJPMA5u8a77nTTB/e9EViRGtdZERjVaU9K6C+CX2tCfSir/WwO
-         PO7yW9Sp2bc5yapK7BN8j7JtXYC4+rsSzK9TDc01cl9GAS2HfdMUIwxmB1FS7oGwec
-         BKeP88ltEe5fADP04UzGbPs6TzOjkORDNU02Hzs4=
+        b=j1pO9rxpUkCVSGocdvD8iNqENW8opFsh9sJZlegdoGzmVo0pWzlMccccKOcGXghLy
+         fUJ2Et4fmFajUABKFRsTUqRcO55Nw1Zidh//3QmBoIgoikx505qAIGvfF2mdCZTC6B
+         m3yen8C6bJpT3EafCVyGEQz36qkW1YkE5ZPaV2Jk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Karel Rericha <karel@maxtel.cz>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Lukasz Luba <lukasz.luba@arm.com>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Pierre Gondois <Pierre.Gondois@arm.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 149/343] netfilter: conntrack: revisit gc autotuning
-Date:   Tue, 12 Apr 2022 08:29:27 +0200
-Message-Id: <20220412062955.680707128@linuxfoundation.org>
+Subject: [PATCH 5.17 164/343] cpufreq: CPPC: Fix performance/frequency conversion
+Date:   Tue, 12 Apr 2022 08:29:42 +0200
+Message-Id: <20220412062956.106488224@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,206 +52,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Pierre Gondois <Pierre.Gondois@arm.com>
 
-[ Upstream commit 2cfadb761d3d0219412fd8150faea60c7e863833 ]
+[ Upstream commit ec1c7ad47664f964c1101fe555b6fde0cb124b38 ]
 
-as of commit 4608fdfc07e1
-("netfilter: conntrack: collect all entries in one cycle")
-conntrack gc was changed to run every 2 minutes.
+CPUfreq governors request CPU frequencies using information
+on current CPU usage. The CPPC driver converts them to
+performance requests. Frequency targets are computed as:
+	target_freq = (util / cpu_capacity) * max_freq
+target_freq is then clamped between [policy->min, policy->max].
 
-On systems where conntrack hash table is set to large value, most evictions
-happen from gc worker rather than the packet path due to hash table
-distribution.
+The CPPC driver converts performance values to frequencies
+(and vice-versa) using cppc_cpufreq_perf_to_khz() and
+cppc_cpufreq_khz_to_perf(). These functions both use two different
+factors depending on the range of the input value. For
+cppc_cpufreq_khz_to_perf():
+- (NOMINAL_PERF / NOMINAL_FREQ) or
+- (LOWEST_PERF / LOWEST_FREQ)
+and for cppc_cpufreq_perf_to_khz():
+- (NOMINAL_FREQ / NOMINAL_PERF) or
+- ((NOMINAL_PERF - LOWEST_FREQ) / (NOMINAL_PERF - LOWEST_PERF))
 
-This causes netlink event overflows when events are collected.
+This means:
+1- the functions are not inverse for some values:
+   (perf_to_khz(khz_to_perf(x)) != x)
+2- cppc_cpufreq_perf_to_khz(LOWEST_PERF) can sometimes give
+   a different value from LOWEST_FREQ due to integer approximation
+3- it is implied that performance and frequency are proportional
+   (NOMINAL_FREQ / NOMINAL_PERF) == (LOWEST_PERF / LOWEST_FREQ)
 
-This change collects average expiry of scanned entries and
-reschedules to the average remaining value, within 1 to 60 second interval.
+This patch changes the conversion functions to an affine function.
+This fixes the 3 points above.
 
-To avoid event overflows, reschedule after each bucket and add a
-limit for both run time and number of evictions per run.
-
-If more entries have to be evicted, reschedule and restart 1 jiffy
-into the future.
-
-Reported-by: Karel Rericha <karel@maxtel.cz>
-Cc: Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Cc: Eyal Birger <eyal.birger@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Suggested-by: Lukasz Luba <lukasz.luba@arm.com>
+Suggested-by: Morten Rasmussen <morten.rasmussen@arm.com>
+Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_core.c | 85 ++++++++++++++++++++++++-------
- 1 file changed, 68 insertions(+), 17 deletions(-)
+ drivers/cpufreq/cppc_cpufreq.c | 43 +++++++++++++++++-----------------
+ 1 file changed, 21 insertions(+), 22 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index bf1e17c678f1..7552e1e9fd62 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -67,6 +67,8 @@ EXPORT_SYMBOL_GPL(nf_conntrack_hash);
- struct conntrack_gc_work {
- 	struct delayed_work	dwork;
- 	u32			next_bucket;
-+	u32			avg_timeout;
-+	u32			start_time;
- 	bool			exiting;
- 	bool			early_drop;
- };
-@@ -78,8 +80,19 @@ static __read_mostly bool nf_conntrack_locks_all;
- /* serialize hash resizes and nf_ct_iterate_cleanup */
- static DEFINE_MUTEX(nf_conntrack_mutex);
+diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+index db17196266e4..82d370ae6a4a 100644
+--- a/drivers/cpufreq/cppc_cpufreq.c
++++ b/drivers/cpufreq/cppc_cpufreq.c
+@@ -303,52 +303,48 @@ static u64 cppc_get_dmi_max_khz(void)
  
--#define GC_SCAN_INTERVAL	(120u * HZ)
-+#define GC_SCAN_INTERVAL_MAX	(60ul * HZ)
-+#define GC_SCAN_INTERVAL_MIN	(1ul * HZ)
-+
-+/* clamp timeouts to this value (TCP unacked) */
-+#define GC_SCAN_INTERVAL_CLAMP	(300ul * HZ)
-+
-+/* large initial bias so that we don't scan often just because we have
-+ * three entries with a 1s timeout.
-+ */
-+#define GC_SCAN_INTERVAL_INIT	INT_MAX
-+
- #define GC_SCAN_MAX_DURATION	msecs_to_jiffies(10)
-+#define GC_SCAN_EXPIRED_MAX	(64000u / HZ)
- 
- #define MIN_CHAINLEN	8u
- #define MAX_CHAINLEN	(32u - MIN_CHAINLEN)
-@@ -1421,16 +1434,28 @@ static bool gc_worker_can_early_drop(const struct nf_conn *ct)
- 
- static void gc_worker(struct work_struct *work)
+ /*
+  * If CPPC lowest_freq and nominal_freq registers are exposed then we can
+- * use them to convert perf to freq and vice versa
+- *
+- * If the perf/freq point lies between Nominal and Lowest, we can treat
+- * (Low perf, Low freq) and (Nom Perf, Nom freq) as 2D co-ordinates of a line
+- * and extrapolate the rest
+- * For perf/freq > Nominal, we use the ratio perf:freq at Nominal for conversion
++ * use them to convert perf to freq and vice versa. The conversion is
++ * extrapolated as an affine function passing by the 2 points:
++ *  - (Low perf, Low freq)
++ *  - (Nominal perf, Nominal perf)
+  */
+ static unsigned int cppc_cpufreq_perf_to_khz(struct cppc_cpudata *cpu_data,
+ 					     unsigned int perf)
  {
--	unsigned long end_time = jiffies + GC_SCAN_MAX_DURATION;
- 	unsigned int i, hashsz, nf_conntrack_max95 = 0;
--	unsigned long next_run = GC_SCAN_INTERVAL;
-+	u32 end_time, start_time = nfct_time_stamp;
- 	struct conntrack_gc_work *gc_work;
-+	unsigned int expired_count = 0;
-+	unsigned long next_run;
-+	s32 delta_time;
-+
- 	gc_work = container_of(work, struct conntrack_gc_work, dwork.work);
+ 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
++	s64 retval, offset = 0;
+ 	static u64 max_khz;
+ 	u64 mul, div;
  
- 	i = gc_work->next_bucket;
- 	if (gc_work->early_drop)
- 		nf_conntrack_max95 = nf_conntrack_max / 100u * 95u;
- 
-+	if (i == 0) {
-+		gc_work->avg_timeout = GC_SCAN_INTERVAL_INIT;
-+		gc_work->start_time = start_time;
-+	}
+ 	if (caps->lowest_freq && caps->nominal_freq) {
+-		if (perf >= caps->nominal_perf) {
+-			mul = caps->nominal_freq;
+-			div = caps->nominal_perf;
+-		} else {
+-			mul = caps->nominal_freq - caps->lowest_freq;
+-			div = caps->nominal_perf - caps->lowest_perf;
+-		}
++		mul = caps->nominal_freq - caps->lowest_freq;
++		div = caps->nominal_perf - caps->lowest_perf;
++		offset = caps->nominal_freq - div64_u64(caps->nominal_perf * mul, div);
+ 	} else {
+ 		if (!max_khz)
+ 			max_khz = cppc_get_dmi_max_khz();
+ 		mul = max_khz;
+ 		div = caps->highest_perf;
+ 	}
+-	return (u64)perf * mul / div;
 +
-+	next_run = gc_work->avg_timeout;
-+
-+	end_time = start_time + GC_SCAN_MAX_DURATION;
-+
- 	do {
- 		struct nf_conntrack_tuple_hash *h;
- 		struct hlist_nulls_head *ct_hash;
-@@ -1447,6 +1472,7 @@ static void gc_worker(struct work_struct *work)
- 
- 		hlist_nulls_for_each_entry_rcu(h, n, &ct_hash[i], hnnode) {
- 			struct nf_conntrack_net *cnet;
-+			unsigned long expires;
- 			struct net *net;
- 
- 			tmp = nf_ct_tuplehash_to_ctrack(h);
-@@ -1456,11 +1482,29 @@ static void gc_worker(struct work_struct *work)
- 				continue;
- 			}
- 
-+			if (expired_count > GC_SCAN_EXPIRED_MAX) {
-+				rcu_read_unlock();
-+
-+				gc_work->next_bucket = i;
-+				gc_work->avg_timeout = next_run;
-+
-+				delta_time = nfct_time_stamp - gc_work->start_time;
-+
-+				/* re-sched immediately if total cycle time is exceeded */
-+				next_run = delta_time < (s32)GC_SCAN_INTERVAL_MAX;
-+				goto early_exit;
-+			}
-+
- 			if (nf_ct_is_expired(tmp)) {
- 				nf_ct_gc_expired(tmp);
-+				expired_count++;
- 				continue;
- 			}
- 
-+			expires = clamp(nf_ct_expires(tmp), GC_SCAN_INTERVAL_MIN, GC_SCAN_INTERVAL_CLAMP);
-+			next_run += expires;
-+			next_run /= 2u;
-+
- 			if (nf_conntrack_max95 == 0 || gc_worker_skip_ct(tmp))
- 				continue;
- 
-@@ -1478,8 +1522,10 @@ static void gc_worker(struct work_struct *work)
- 				continue;
- 			}
- 
--			if (gc_worker_can_early_drop(tmp))
-+			if (gc_worker_can_early_drop(tmp)) {
- 				nf_ct_kill(tmp);
-+				expired_count++;
-+			}
- 
- 			nf_ct_put(tmp);
- 		}
-@@ -1492,33 +1538,38 @@ static void gc_worker(struct work_struct *work)
- 		cond_resched();
- 		i++;
- 
--		if (time_after(jiffies, end_time) && i < hashsz) {
-+		delta_time = nfct_time_stamp - end_time;
-+		if (delta_time > 0 && i < hashsz) {
-+			gc_work->avg_timeout = next_run;
- 			gc_work->next_bucket = i;
- 			next_run = 0;
--			break;
-+			goto early_exit;
- 		}
- 	} while (i < hashsz);
- 
-+	gc_work->next_bucket = 0;
-+
-+	next_run = clamp(next_run, GC_SCAN_INTERVAL_MIN, GC_SCAN_INTERVAL_MAX);
-+
-+	delta_time = max_t(s32, nfct_time_stamp - gc_work->start_time, 1);
-+	if (next_run > (unsigned long)delta_time)
-+		next_run -= delta_time;
-+	else
-+		next_run = 1;
-+
-+early_exit:
- 	if (gc_work->exiting)
- 		return;
- 
--	/*
--	 * Eviction will normally happen from the packet path, and not
--	 * from this gc worker.
--	 *
--	 * This worker is only here to reap expired entries when system went
--	 * idle after a busy period.
--	 */
--	if (next_run) {
-+	if (next_run)
- 		gc_work->early_drop = false;
--		gc_work->next_bucket = 0;
--	}
-+
- 	queue_delayed_work(system_power_efficient_wq, &gc_work->dwork, next_run);
++	retval = offset + div64_u64(perf * mul, div);
++	if (retval >= 0)
++		return retval;
++	return 0;
  }
  
- static void conntrack_gc_work_init(struct conntrack_gc_work *gc_work)
+ static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
+ 					     unsigned int freq)
  {
--	INIT_DEFERRABLE_WORK(&gc_work->dwork, gc_worker);
-+	INIT_DELAYED_WORK(&gc_work->dwork, gc_worker);
- 	gc_work->exiting = false;
+ 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
++	s64 retval, offset = 0;
+ 	static u64 max_khz;
+ 	u64  mul, div;
+ 
+ 	if (caps->lowest_freq && caps->nominal_freq) {
+-		if (freq >= caps->nominal_freq) {
+-			mul = caps->nominal_perf;
+-			div = caps->nominal_freq;
+-		} else {
+-			mul = caps->lowest_perf;
+-			div = caps->lowest_freq;
+-		}
++		mul = caps->nominal_perf - caps->lowest_perf;
++		div = caps->nominal_freq - caps->lowest_freq;
++		offset = caps->nominal_perf - div64_u64(caps->nominal_freq * mul, div);
+ 	} else {
+ 		if (!max_khz)
+ 			max_khz = cppc_get_dmi_max_khz();
+@@ -356,7 +352,10 @@ static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
+ 		div = max_khz;
+ 	}
+ 
+-	return (u64)freq * mul / div;
++	retval = offset + div64_u64(freq * mul, div);
++	if (retval >= 0)
++		return retval;
++	return 0;
  }
  
+ static int cppc_cpufreq_set_target(struct cpufreq_policy *policy,
 -- 
 2.35.1
 
