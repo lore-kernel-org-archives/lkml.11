@@ -2,126 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB04C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA64AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351607AbiDLOjA (ORCPT
+        id S1353415AbiDLOk5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 10:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51446 "EHLO
+        Tue, 12 Apr 2022 10:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245315AbiDLOi4 (ORCPT
+        with ESMTP id S232530AbiDLOky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 10:38:56 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588BF5F257
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:36:38 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id bk12so13840145qkb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:36:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=evNj2CNMoMsw5e7L6RfPQYGJFzo3TZYC7FsieHWZ5Ls=;
-        b=P4KDTA4ChNl8eFo5TaRAl/5FnI/hVHjJzJBo1xbfO6E6tcQCaqBfnBN1z5fv3DfE1u
-         iQILgHtSz7DDusNSlvJP3Z1yMP4+yKAQ2Eyz628hQVcLvQ+BxsdlwhsUbE6fvWB/Q2is
-         KJFMZcpNQuQ1kXRm/7dZww/aXDBDg6Qg87XJBXqMNal9QHP5YcfHOuo4039oAPwifclm
-         Ni6jxAqEXJAsTg1vDWd5O4322/PPXZOhWqI7cTTZAicevA8+5AkWYEBaFSAdm27ELa3S
-         niv0qlWzCgCFeZ31VkUUBPNxRCHtURSjk4RK/eF6eqwh/psh+4pwILguC3l2W1BosUlI
-         tCIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=evNj2CNMoMsw5e7L6RfPQYGJFzo3TZYC7FsieHWZ5Ls=;
-        b=NbQCFCnHK3Hoj7DOAFwXxrXaWCHAnclgJcOSeiFbQSPbNX7/N8jMSSakq/8d9Zo+Pm
-         +U6LKWbAnFVffWo5AMfpaYvAz2RM5lCCDFTPXSNN6r8GTsaP+IDBmZoDpY83dHJmFkGV
-         WjPqgYThpcg1Iz9Q4gi06K1PF4kz0958mL187zY2M1r0h8L+j68kHCKFnN1oNK42qOdk
-         ZIh5yEpCoTgGXiqrqiXHVSNL+VBiQ0A1f1UcD6ygrNdWE6ZmMayHpkyJCRoUstOiNtZV
-         Xbyx97rluUKz68O3hy4ITNbV4rV8Ocg5X1VugW7inbgcXZpArTz1PvbudZ+H+ggun3Gk
-         Hg/g==
-X-Gm-Message-State: AOAM531VqGYdg06qIu3hRxKSK+P3/ucu37VI26E4M/yYkVvURFfgvUoG
-        dRZrHu/wtNfrCDWOmFY0Ypt+bg==
-X-Google-Smtp-Source: ABdhPJySHPHmQqifS2wea+F5V8gixdYIV//Jv7wOTevmOQGVNlVLMxWAFhJpJjukoZ7Xd9/fbgNIYA==
-X-Received: by 2002:a37:990:0:b0:69a:976:be4e with SMTP id 138-20020a370990000000b0069a0976be4emr3264529qkj.321.1649774197434;
-        Tue, 12 Apr 2022 07:36:37 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id n7-20020ac85a07000000b002f1421dac8csm324215qta.80.2022.04.12.07.36.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 07:36:36 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1neHdE-000uGn-C6; Tue, 12 Apr 2022 11:36:36 -0300
-Date:   Tue, 12 Apr 2022 11:36:36 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        kvm list <kvm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
- against RLIMIT_MEMLOCK
-Message-ID: <20220412143636.GG64706@ziepe.ca>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-5-chao.p.peng@linux.intel.com>
- <Yk8L0CwKpTrv3Rg3@google.com>
- <02e18c90-196e-409e-b2ac-822aceea8891@www.fastmail.com>
- <YlB3Z8fqJ+67a2Ck@google.com>
- <7ab689e7-e04d-5693-f899-d2d785b09892@redhat.com>
+        Tue, 12 Apr 2022 10:40:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5C25F266;
+        Tue, 12 Apr 2022 07:38:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A28660EC1;
+        Tue, 12 Apr 2022 14:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83018C385A1;
+        Tue, 12 Apr 2022 14:38:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649774316;
+        bh=lcIKnqX7ND/P1RbiqjkdmPWf/TRA+1K8M7N7NXSFRw0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RsBwi3/WtJtFYWnmy7meXcP0++2CjGti6kYk2bXS0e2jXcizaYzuZMdxn7HFJVnA5
+         R61xgErVwVl+UZkbuvdB2yOsDVIoVF/bqu1chYHRJXE+mcGTCQ8id1bBvSy5HaRmbE
+         7aL1gzWpl57xnz0CFtzDr7ii88W+RFuLOXgtj99g=
+Date:   Tue, 12 Apr 2022 16:38:33 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Benson Leung <bleung@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Jameson Thies <jthies@google.com>,
+        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Won Chung <wonchung@google.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] usb: typec: Separate sysfs directory for all USB
+ PD objects
+Message-ID: <YlWO6UbZ8zM4f6b6@kroah.com>
+References: <20220412130023.83927-1-heikki.krogerus@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7ab689e7-e04d-5693-f899-d2d785b09892@redhat.com>
+In-Reply-To: <20220412130023.83927-1-heikki.krogerus@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 08:54:02PM +0200, David Hildenbrand wrote:
+On Tue, Apr 12, 2022 at 04:00:20PM +0300, Heikki Krogerus wrote:
+> Hi,
+> 
+> In this version the USB Power Delivery support is now completely
+> separated into its own little subsystem. The USB Power Delivery
+> objects are not devices, but they are also no longer tied to any
+> device by default. This change makes it possible to share the USB PD
+> objects between multiple devices on top of being able to select the
+> objects that we want the device to use.
+> 
+> The USB Power Delivery objects are now placed under
+> /sys/kernel/usb_power_delivery directory. As an example:
+> 
+> 	/sys/kernel/usb_power_delivery/pd0
 
-> RLIMIT_MEMLOCK was the obvious candidate, but as we discovered int he
-> past already with secretmem, it's not 100% that good of a fit (unmovable
-> is worth than mlocked). But it gets the job done for now at least.
+No, sorry, this is a device, it does NOT belong in /sys/kernel/
 
-No, it doesn't. There are too many different interpretations how
-MELOCK is supposed to work
+And this really should be a real device, as I mentioned before, not a
+kobject.
 
-eg VFIO accounts per-process so hostile users can just fork to go past
-it.
+> So now that pd0 can be linked to a device, or devices, that want (or
+> can) use it to negotiate the USB PD contract with. An example where
+> two devices share the PD:
+> 
+> 	/sys/class/typec/port0/usb_power_delivery -> ../../../../../../../kernel/usb_power_delivery/pd0
+> 	/sys/class/typec/port1/usb_power_delivery -> ../../../../../../../kernel/usb_power_delivery/pd0
 
-RDMA is per-process but uses a different counter, so you can double up
+Point to the pd device, not the kobject.
 
-iouring is per-user and users a 3rd counter, so it can triple up on
-the above two
+> I did not change the directory hierarchy at all, because I'm assuming
+> that it is not a problem anymore:
+> 
+> 	pd0/<message>/<object>/<field>
 
-> So I'm open for alternative to limit the amount of unmovable memory we
-> might allocate for user space, and then we could convert seretmem as well.
+Let's get back to devices first, worry about crazy depth second.
 
-I think it has to be cgroup based considering where we are now :\
+thanks,
 
-Jason
+greg k-h
