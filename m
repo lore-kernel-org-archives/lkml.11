@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2940C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50421C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244844AbiDLA4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
+        id S1343600AbiDLA4I (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245461AbiDLAxJ (ORCPT
+        with ESMTP id S245208AbiDLAxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:53:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F007338B3;
-        Mon, 11 Apr 2022 17:48:00 -0700 (PDT)
+        Mon, 11 Apr 2022 20:53:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A103150F;
+        Mon, 11 Apr 2022 17:47:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 875DDCE185D;
-        Tue, 12 Apr 2022 00:47:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E2AC385AB;
-        Tue, 12 Apr 2022 00:47:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD3C2617E7;
+        Tue, 12 Apr 2022 00:47:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28588C385A3;
+        Tue, 12 Apr 2022 00:47:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724477;
-        bh=/SrTrWU+LeV3TKzN5aOB97yjjBF+58xluB+OKVYBegw=;
+        s=k20201202; t=1649724472;
+        bh=g9xA4Z958SwzJiov5Xvy3braVNOc8Gmzi+GDvD2yjeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VK6Ftt+xrEMjffHeImCB+aHQhzX1It1vjsg1MhWrkYEeDsYk/tYWWj1HznDjB1xO/
-         ooAnrn3oobQaqr0APMCuub8dou15wSFnlzAUbSV7lryDgNBhJbcK6Zd51Jg6Nv5EeY
-         VeEbVhGjn3xLUxg9xUWZB1EfJ5mLoGUJ40oZ4JNKFbI7v1ke3GfZBRFshven5nLo6+
-         Z21vQPq62djjPkhoubS2V0AVqiFGLkapq4NIxBjLT2LiKPRgggUodN4e3FAWgixMY1
-         cPCl1QsPwcwTwIiuOrmjm92BD/2f4TywqfsiZBTu9S6QTCJuYgSWZIDlleHJ5xC8yY
-         f0zQFRbCCCtbw==
+        b=asPZD6SxK23zTZIHdH3OCBPw2/UZjZ5ZPLDMv62lwGCJASno/7ybC8iVkBTJLQ/tZ
+         f7v9m8g7X0W8UydSyujrodQK96ywKBiJ2CN2fHxHC4qQewMErcPH53I9xiBHpsq9Xh
+         Z5WQ11Y+IbEdgX7iiR927QPW7bExU1SztelS1cn6PSCXa6WeGz+R9artnoev4pqwBV
+         EI+vUsbFxzbCAX9tU0pgWUNZPcSgh8Dmt23pLb9hXaQU2hg9IgmkoZQ72devgbcTrj
+         HYFPw4SNomC3I1YiFMxtsQPECBm/8Isn5Whq5ONnsIPjx+5+OV3dkYUYCH60CsDCU6
+         KF+MAWkofGsjQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, horatiu.vultur@microchip.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 18/41] net: micrel: fix KS8851_MLL Kconfig
-Date:   Mon, 11 Apr 2022 20:46:30 -0400
-Message-Id: <20220412004656.350101-18-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 16/41] scsi: lpfc: Fix queue failures when recovering from PCI parity error
+Date:   Mon, 11 Apr 2022 20:46:28 -0400
+Message-Id: <20220412004656.350101-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004656.350101-1-sashal@kernel.org>
 References: <20220412004656.350101-1-sashal@kernel.org>
@@ -54,48 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
+[ Upstream commit df0101197c4d9596682901631f3ee193ed354873 ]
 
-KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
-so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
-'select' does not follow any dependency chains.
+When recovering from a pci-parity error the driver is failing to re-create
+queues, causing recovery to fail. Looking deeper, it was found that the
+interrupt vector count allocated on the recovery was fewer than the vectors
+originally allocated. This disparity resulted in CPU map entries with stale
+information. When the driver tries to re-create the queues, it attempts to
+use the stale information which indicates an eq/interrupt vector that was
+no longer created.
 
-Fixes kconfig warning and build errors:
+Fix by clearng the cpup map array before enabling and requesting the IRQs
+in the lpfc_sli_reset_slot_s4 routine().
 
-WARNING: unmet direct dependencies detected for MICREL_PHY
-  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
-  Selected by [y]:
-  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
-
-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
-micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
-micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220317032737.45308-4-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/micrel/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/lpfc/lpfc_init.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
-index 93df3049cdc0..1b632cdd7630 100644
---- a/drivers/net/ethernet/micrel/Kconfig
-+++ b/drivers/net/ethernet/micrel/Kconfig
-@@ -39,6 +39,7 @@ config KS8851
- config KS8851_MLL
- 	tristate "Micrel KS8851 MLL"
- 	depends on HAS_IOMEM
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	select MII
- 	select CRC32
- 	select EEPROM_93CX6
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 3eebcae52784..16246526e4c1 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -15105,6 +15105,8 @@ lpfc_io_slot_reset_s4(struct pci_dev *pdev)
+ 	psli->sli_flag &= ~LPFC_SLI_ACTIVE;
+ 	spin_unlock_irq(&phba->hbalock);
+ 
++	/* Init cpu_map array */
++	lpfc_cpu_map_array_init(phba);
+ 	/* Configure and enable interrupt */
+ 	intr_mode = lpfc_sli4_enable_intr(phba, phba->intr_mode);
+ 	if (intr_mode == LPFC_INTR_ERROR) {
 -- 
 2.35.1
 
