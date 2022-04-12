@@ -2,129 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0509FC47094
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B075FC46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356078AbiDLHeM (ORCPT
+        id S1356121AbiDLHe1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56784 "EHLO
+        Tue, 12 Apr 2022 03:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351883AbiDLHND (ORCPT
+        with ESMTP id S1351804AbiDLHM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F9CBF6F;
-        Mon, 11 Apr 2022 23:54:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6781961503;
-        Tue, 12 Apr 2022 06:54:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B065C385B8;
-        Tue, 12 Apr 2022 06:54:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746441;
-        bh=42u/pDDD5W6qZDyG2VLmSvZ/Jk5mxg4NG6mIl4SpPR8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2dD75hdOJDws3e+M2vVA1Mk4z/VJo7shjD+buJfRCk3TGs/ra55n0ozo8nq0GpfGN
-         eY3pxqfoaY9XX+a7pUyQk8QTOVEiHVU28/V1/44rttF5YUoi31pEcZjqrUgItjV5mZ
-         gd/y/KPZfJhMy/zBAlINHbFsfB4yB0Q8lupVYlyI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Justin Forbes <jforbes@redhat.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Rafael Aquini <aquini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 275/277] mm/sparsemem: fix mem_section will never be NULL gcc 12 warning
-Date:   Tue, 12 Apr 2022 08:31:18 +0200
-Message-Id: <20220412062949.998968569@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:12:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DBA526E5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:52:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649746374;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=U/dPMWGmVa2VGitxhMaMArDoPD5HmxhcdwxUBvot0a4=;
+        b=AG2FJ98LGgdmcuhQ1L4obAmn4ZxrhENYIKisiqGZs8pdd8pG2+ksiwZDFRE9bktF8mDOL7
+        au5oVg7749k26VLxbT2n3Ru6z7WySodOClK1f539jRf2r122CxIi/XoPeMQMictABqFiE+
+        XFTOlcUsKKD+ZK32R1XJLn53yXwyvDo=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-607-IKXqwtzfNL-98Sef6oiujg-1; Tue, 12 Apr 2022 02:52:52 -0400
+X-MC-Unique: IKXqwtzfNL-98Sef6oiujg-1
+Received: by mail-wm1-f72.google.com with SMTP id y11-20020a7bc18b000000b0038eac019fc0so832251wmi.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:52:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=U/dPMWGmVa2VGitxhMaMArDoPD5HmxhcdwxUBvot0a4=;
+        b=TR9+NzH0MSSE1HA/yD6uamWyLIH3z/genjRhaIGIY2HC/DYGN5L3dcTzn0Zwn/2gsf
+         pNDxprSLVg4EYXHEQaXbgFXOa+9rHiMmkFpSQk4MXJ9qpqtLGmnZvUEOISSauE8jHJr4
+         eWIpl1+FDiZKTFMVZmZpE/Kxl5rD3zM7AUJX/Heta0dLiu7yQShiwz3stglPqkmfkyMe
+         cMbQ4MXiSZPdqtDM2hVklm0ZMNjhjdNaF15CbpozDRe7nTc8AgQjOy8YbSp43b0Ta+8B
+         DI/6S9v8XifGSxA/r3KjxwCXx38HJghs4lporw9DaX7kLFlfWmfpEFc/LS1vFH3Sq/25
+         CtRw==
+X-Gm-Message-State: AOAM532TT6+KWOxEe3Zilxoa3N5rnDYhtSrldSKL54FirTmWR7z9PCt0
+        zdXWXYZoEevyZ+K6q/AuVtXNRmlddGjOOXvinR4kDd8E+2K2OdMYZ8oDS4XH2Qvluvhchpc309v
+        gaSW2hM/A5byqPMYOsXoH3loO
+X-Received: by 2002:a05:6000:1a85:b0:205:a4f1:dba4 with SMTP id f5-20020a0560001a8500b00205a4f1dba4mr28667631wry.381.1649746371704;
+        Mon, 11 Apr 2022 23:52:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxRdqWq4OunBlCF9pVcZ+V2AKilo/61MElc17XigOtbeWrzHJ6eV9gHe9ilgUGp8E5TVegvoQ==
+X-Received: by 2002:a05:6000:1a85:b0:205:a4f1:dba4 with SMTP id f5-20020a0560001a8500b00205a4f1dba4mr28667618wry.381.1649746371513;
+        Mon, 11 Apr 2022 23:52:51 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id r17-20020a0560001b9100b00207afaa8987sm786520wru.27.2022.04.11.23.52.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 23:52:50 -0700 (PDT)
+Message-ID: <6e0fd8ac-5f17-44d9-97b7-285d4cbe6bcf@redhat.com>
+Date:   Tue, 12 Apr 2022 08:52:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 102/104] KVM: TDX: Add methods to ignore accesses
+ to CPU state
+Content-Language: en-US
+To:     Xiaoyao Li <xiaoyao.li@intel.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <3a278829a8617b86b36c32b68a82bc727013ace8.1646422845.git.isaku.yamahata@intel.com>
+ <ec60ba8e-3ed9-1d06-d8c2-4db9529daf93@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <ec60ba8e-3ed9-1d06-d8c2-4db9529daf93@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+On 4/12/22 08:49, Xiaoyao Li wrote:
+> 
+>> +void tdx_cache_reg(struct kvm_vcpu *vcpu, enum kvm_reg reg)
+>> +{
+>> +    kvm_register_mark_available(vcpu, reg);
+>> +    switch (reg) {
+>> +    case VCPU_REGS_RSP:
+>> +    case VCPU_REGS_RIP:
+>> +    case VCPU_EXREG_PDPTR:
+>> +    case VCPU_EXREG_CR0:
+>> +    case VCPU_EXREG_CR3:
+>> +    case VCPU_EXREG_CR4:
+>> +        break;
+>> +    default:
+>> +        KVM_BUG_ON(1, vcpu->kvm);
+>> +        break;
+>> +    }
+>> +}
+> 
+> Isaku,
+> 
+> We missed one case that some GPRs are accessible by KVM/userspace for 
+> TDVMCALL exit.
 
-commit a431dbbc540532b7465eae4fc8b56a85a9fc7d17 upstream.
+If a register is not in the VMX_REGS_LAZY_LOAD_SET it will never be 
+passed to tdx_cache_reg.  As far as I understand those TDVMCALL 
+registers do not include either RSP or RIP.
 
-The gcc 12 compiler reports a "'mem_section' will never be NULL" warning
-on the following code:
-
-    static inline struct mem_section *__nr_to_section(unsigned long nr)
-    {
-    #ifdef CONFIG_SPARSEMEM_EXTREME
-        if (!mem_section)
-                return NULL;
-    #endif
-        if (!mem_section[SECTION_NR_TO_ROOT(nr)])
-                return NULL;
-       :
-
-It happens with CONFIG_SPARSEMEM_EXTREME off.  The mem_section definition
-is
-
-    #ifdef CONFIG_SPARSEMEM_EXTREME
-    extern struct mem_section **mem_section;
-    #else
-    extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
-    #endif
-
-In the !CONFIG_SPARSEMEM_EXTREME case, mem_section is a static
-2-dimensional array and so the check "!mem_section[SECTION_NR_TO_ROOT(nr)]"
-doesn't make sense.
-
-Fix this warning by moving the "!mem_section[SECTION_NR_TO_ROOT(nr)]"
-check up inside the CONFIG_SPARSEMEM_EXTREME block and adding an
-explicit NR_SECTION_ROOTS check to make sure that there is no
-out-of-bound array access.
-
-Link: https://lkml.kernel.org/r/20220331180246.2746210-1-longman@redhat.com
-Fixes: 3e347261a80b ("sparsemem extreme implementation")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Reported-by: Justin Forbes <jforbes@redhat.com>
-Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Rafael Aquini <aquini@redhat.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/linux/mmzone.h |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1351,13 +1351,16 @@ static inline unsigned long *section_to_
- 
- static inline struct mem_section *__nr_to_section(unsigned long nr)
- {
-+	unsigned long root = SECTION_NR_TO_ROOT(nr);
-+
-+	if (unlikely(root >= NR_SECTION_ROOTS))
-+		return NULL;
-+
- #ifdef CONFIG_SPARSEMEM_EXTREME
--	if (!mem_section)
-+	if (!mem_section || !mem_section[root])
- 		return NULL;
- #endif
--	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
--		return NULL;
--	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
-+	return &mem_section[root][nr & SECTION_ROOT_MASK];
- }
- extern size_t mem_section_usage_size(void);
- 
-
+Paolo
 
