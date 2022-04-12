@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1551C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97881C3525B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386552AbiDLI6d (ORCPT
+        id S1386511AbiDLI6Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
+        Tue, 12 Apr 2022 04:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359257AbiDLHmw (ORCPT
+        with ESMTP id S1359243AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9072AC66;
-        Tue, 12 Apr 2022 00:21:10 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D3F55767;
+        Tue, 12 Apr 2022 00:20:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA8B861045;
-        Tue, 12 Apr 2022 07:21:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1FDCC385A5;
-        Tue, 12 Apr 2022 07:21:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92B56B81B4F;
+        Tue, 12 Apr 2022 07:20:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1028FC385A5;
+        Tue, 12 Apr 2022 07:20:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748069;
-        bh=KXy/IacbeYaGiCa4DIP5MYCW5TZXiRuOhqsi9RysQGE=;
+        s=korg; t=1649748041;
+        bh=qcBC7Iq+XgCMXLfN9mia0xFHlV/zufTYp/o7RMd+NvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e0TifdPgZ8AHsS6hhxzj+yGVVTtcX5IeFWWNnLebvXjDViZmcWeAhw8rX7+kjkUHm
-         mV7Xi9G4Utcj5im3gxsquNKz48Dj7csrjKCmsK/AvMhB7DkroL3vW19UIBYGp8n8sg
-         GOiZg9RrrtTMawZGrcX1hVC2RdgPXlB4Lwuz2MXE=
+        b=HUBBCn9vVOv6PF6XttnjuGuXN4KDrXSkABpJQUZwVTCXHesAXJQYHx1HrdvFjgmTO
+         qPQMYdom0TQQpYHYNQrcY72TyxAZEY+k2cM6+EuGJbB1FgpTnoMAcvkoX74TC6DdI5
+         /y3t1mXNc+24mqxGXAeJARsqDEsrjR5Rqnxr77AI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Neelima Krishnan <neelima.krishnan@intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 281/343] x86/speculation: Restore speculation related MSRs during S3 resume
-Date:   Tue, 12 Apr 2022 08:31:39 +0200
-Message-Id: <20220412062959.433777240@linuxfoundation.org>
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@kernel.org
+Subject: [PATCH 5.17 298/343] ata: sata_dwc_460ex: Fix crash due to OOB write
+Date:   Tue, 12 Apr 2022 08:31:56 +0200
+Message-Id: <20220412062959.925837292@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,60 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-commit e2a1256b17b16f9b9adf1b6fea56819e7b68e463 upstream.
+commit 7aa8104a554713b685db729e66511b93d989dd6a upstream.
 
-After resuming from suspend-to-RAM, the MSRs that control CPU's
-speculative execution behavior are not being restored on the boot CPU.
+the driver uses libata's "tag" values from in various arrays.
+Since the mentioned patch bumped the ATA_TAG_INTERNAL to 32,
+the value of the SATA_DWC_QCMD_MAX needs to account for that.
 
-These MSRs are used to mitigate speculative execution vulnerabilities.
-Not restoring them correctly may leave the CPU vulnerable.  Secondary
-CPU's MSRs are correctly being restored at S3 resume by
-identify_secondary_cpu().
+Otherwise ATA_TAG_INTERNAL usage cause similar crashes like
+this as reported by Tice Rex on the OpenWrt Forum and
+reproduced (with symbols) here:
 
-During S3 resume, restore these MSRs for boot CPU when restoring its
-processor state.
+| BUG: Kernel NULL pointer dereference at 0x00000000
+| Faulting instruction address: 0xc03ed4b8
+| Oops: Kernel access of bad area, sig: 11 [#1]
+| BE PAGE_SIZE=4K PowerPC 44x Platform
+| CPU: 0 PID: 362 Comm: scsi_eh_1 Not tainted 5.4.163 #0
+| NIP:  c03ed4b8 LR: c03d27e8 CTR: c03ed36c
+| REGS: cfa59950 TRAP: 0300   Not tainted  (5.4.163)
+| MSR:  00021000 <CE,ME>  CR: 42000222  XER: 00000000
+| DEAR: 00000000 ESR: 00000000
+| GPR00: c03d27e8 cfa59a08 cfa55fe0 00000000 0fa46bc0 [...]
+| [..]
+| NIP [c03ed4b8] sata_dwc_qc_issue+0x14c/0x254
+| LR [c03d27e8] ata_qc_issue+0x1c8/0x2dc
+| Call Trace:
+| [cfa59a08] [c003f4e0] __cancel_work_timer+0x124/0x194 (unreliable)
+| [cfa59a78] [c03d27e8] ata_qc_issue+0x1c8/0x2dc
+| [cfa59a98] [c03d2b3c] ata_exec_internal_sg+0x240/0x524
+| [cfa59b08] [c03d2e98] ata_exec_internal+0x78/0xe0
+| [cfa59b58] [c03d30fc] ata_read_log_page.part.38+0x1dc/0x204
+| [cfa59bc8] [c03d324c] ata_identify_page_supported+0x68/0x130
+| [...]
 
-Fixes: 772439717dbf ("x86/bugs/intel: Set proper CPU features and setup RDS")
-Reported-by: Neelima Krishnan <neelima.krishnan@intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
-Acked-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+This is because sata_dwc_dma_xfer_complete() NULLs the
+dma_pending's next neighbour "chan" (a *dma_chan struct) in
+this '32' case right here (line ~735):
+> hsdevp->dma_pending[tag] = SATA_DWC_DMA_PENDING_NONE;
+
+Then the next time, a dma gets issued; dma_dwc_xfer_setup() passes
+the NULL'd hsdevp->chan to the dmaengine_slave_config() which then
+causes the crash.
+
+With this patch, SATA_DWC_QCMD_MAX is now set to ATA_MAX_QUEUE + 1.
+This avoids the OOB. But please note, there was a worthwhile discussion
+on what ATA_TAG_INTERNAL and ATA_MAX_QUEUE is. And why there should not
+be a "fake" 33 command-long queue size.
+
+Ideally, the dw driver should account for the ATA_TAG_INTERNAL.
+In Damien Le Moal's words: "... having looked at the driver, it
+is a bigger change than just faking a 33rd "tag" that is in fact
+not a command tag at all."
+
+Fixes: 28361c403683c ("libata: add extra internal command")
+Cc: stable@kernel.org # 4.18+
+BugLink: https://github.com/openwrt/openwrt/issues/9505
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/power/cpu.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/ata/sata_dwc_460ex.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -503,10 +503,24 @@ static int pm_cpu_check(const struct x86
- 	return ret;
- }
+--- a/drivers/ata/sata_dwc_460ex.c
++++ b/drivers/ata/sata_dwc_460ex.c
+@@ -137,7 +137,11 @@ struct sata_dwc_device {
+ #endif
+ };
  
-+static void pm_save_spec_msr(void)
-+{
-+	u32 spec_msr_id[] = {
-+		MSR_IA32_SPEC_CTRL,
-+		MSR_IA32_TSX_CTRL,
-+		MSR_TSX_FORCE_ABORT,
-+		MSR_IA32_MCU_OPT_CTRL,
-+		MSR_AMD64_LS_CFG,
-+	};
-+
-+	msr_build_context(spec_msr_id, ARRAY_SIZE(spec_msr_id));
-+}
-+
- static int pm_check_save_msr(void)
- {
- 	dmi_check_system(msr_save_dmi_table);
- 	pm_cpu_check(msr_save_cpu_table);
-+	pm_save_spec_msr();
+-#define SATA_DWC_QCMD_MAX	32
++/*
++ * Allow one extra special slot for commands and DMA management
++ * to account for libata internal commands.
++ */
++#define SATA_DWC_QCMD_MAX	(ATA_MAX_QUEUE + 1)
  
- 	return 0;
- }
+ struct sata_dwc_device_port {
+ 	struct sata_dwc_device	*hsdev;
 
 
