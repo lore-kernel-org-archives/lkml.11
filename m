@@ -2,148 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 168D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46167C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238280AbiDLMBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
+        id S1347304AbiDLMBd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234337AbiDLL6l (ORCPT
+        with ESMTP id S233036AbiDLMAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:58:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A00EBB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:52:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649760742; x=1681296742;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=eO81RlC9+6xnr2noejR21B5xbenPw6d8rgTgZSyH8zM=;
-  b=NCV4mkdqN6Mp41+p4zOOLvFP0a6BcEZtXunRuSkPd51LZBp4wWy7R/81
-   BdLrrTP6skG6dULOKOp5WN5HkVxPHcoxNRwR5LBucuky1tlx+ngIAd7aV
-   7gSKtarryE4dxLPqsbXWgnBwbuSiL6/xk4J+QleclfoXeQTUy8HYU8V6o
-   yu39nYsMRdLpZ9JyOYo63Nrvop9QTCI7FNsnO3CYauuQWbYvUKH4fwj8X
-   pr0UaYfg2HoEXr3uBTjavezxiS3za4RwA4GwoJktmE4RUHAhRAT1EhItA
-   jpp9mIij1xI1UyqSCbOV/p8C820u2jCas6UykPbAKWer7EPrMCPwey5Ja
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242933220"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="242933220"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:52:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="660441137"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 12 Apr 2022 03:52:20 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neE8C-0002mt-7V;
-        Tue, 12 Apr 2022 10:52:20 +0000
-Date:   Tue, 12 Apr 2022 18:51:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_linecards 79/93]
- drivers/net/netdevsim/dev.c:638:14: error: too many arguments to function
- call, expected 3, have 4
-Message-ID: <202204121850.XJ5zRujX-lkp@intel.com>
+        Tue, 12 Apr 2022 08:00:44 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACCB1F601;
+        Tue, 12 Apr 2022 03:55:42 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id u15so17878789ejf.11;
+        Tue, 12 Apr 2022 03:55:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fn29cqYC0atrXC2HZopuyzaHKcIU2fvMbZuEnf/kPAQ=;
+        b=JRCyF4ex8TlJnTmlTsb3ulZNbME5xBlE5+4wzZYj+RLEjBItexYJpMLbBLDrropR4z
+         trvINKtGO2Car7nMpEZa+vKp9VhZ5UNhxMm/lQK1Ah9+ZbL+bhYy6fxPGEuv3M6/dP1l
+         +kKn2Y60WYmiBNRk6Pj6PStGdCxXYHRUUwVZU+0Sx/6WaIMU8tMlSp2eqXW5e2Po2rPe
+         EqDEJmP4NdvTP+uPgiPLXMzqQI+XE7hNEq82Py3M4RZ10EwZcNFuPV2Es/rcfmTVeOEs
+         wdhNuA5woLJpeNvuPkeNoTkc1PFsc38pp4gqxprNhB7AQTgyT/DfRYj4YCzz2JKz4G6v
+         WQTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fn29cqYC0atrXC2HZopuyzaHKcIU2fvMbZuEnf/kPAQ=;
+        b=g0tASio+t26OhhBO0zUIujOPBH8+vN2Vddwwmbr9Y/MpmAlqXiXFY3EQC0I1kkY2iL
+         SMTsgeDRZR0Kc3Kryk1GBg7kTloDeld0K2wGiJbp1QsJimQCsm/J929csrON81YCwioP
+         +/mr7SpdyNc8SvOjEq03rIr5E0q/zMRkOzhjm58llb3hGEMowGRQK0bgnU0WLPk01l8w
+         E67W6ATm6kSB+y/ecACDvmGwGNrXO81kV36sbZNSu+JTuJ05Otl8Gs7ZQgW/8xVJ3sm9
+         CUEVTLX+wPBFeRZmrQRoWSZsdBGzAjn8ZivsQRoZq2Kvtbe0/p58R4LQ13jhs/3awOAc
+         p4eQ==
+X-Gm-Message-State: AOAM53335ROWo/oxxwM821fVjSojMvHkXznVMdUZFKpol9Z5/WKVd/7G
+        mrgcOttBVUXlcJ9JOMMpUUezEOzGpKs8+XaoIkg=
+X-Google-Smtp-Source: ABdhPJyjzvGqPY+gnwH4sveQoakTbAJ6h+sJUMWvfwHh4zKiONQJ4MlBbgXP8I9dUgSUd9HF5X043HO0zcdct3S0S50=
+X-Received: by 2002:a17:906:2646:b0:6d5:d889:c92b with SMTP id
+ i6-20020a170906264600b006d5d889c92bmr35177396ejc.696.1649760940868; Tue, 12
+ Apr 2022 03:55:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220412105156.17091-1-ming.qian@nxp.com>
+In-Reply-To: <20220412105156.17091-1-ming.qian@nxp.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Tue, 12 Apr 2022 07:55:28 -0300
+Message-ID: <CAOMZO5DWPaSCmc9RivqmCQHu2QaiBs5Kirxjm7WezpnUSKwUag@mail.gmail.com>
+Subject: Re: [PATCH] media: amphion: fix decoder's interlaced filed
+To:     Ming Qian <ming.qian@nxp.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
-head:   e31049bc6a06f24c077e61e74b1bf1f137572726
-commit: 5cfe0dc86bde79b21b5e0097a45355e3a5dbb1cb [79/93] netdevsim: allow port objects to be linked with line cards
-config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220412/202204121850.XJ5zRujX-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/5cfe0dc86bde79b21b5e0097a45355e3a5dbb1cb
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
-        git checkout 5cfe0dc86bde79b21b5e0097a45355e3a5dbb1cb
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+Hi Ming,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+In Subject: s/filed/field
 
-All errors (new ones prefixed by >>):
+On Tue, Apr 12, 2022 at 7:52 AM Ming Qian <ming.qian@nxp.com> wrote:
+>
+> For interlaced frame, the amphion vpu will store the
+> two fileds sequential into one buffer, top-bottom order
 
->> drivers/net/netdevsim/dev.c:638:14: error: too many arguments to function call, expected 3, have 4
-                                             NULL, i);
-                                                   ^
-   drivers/net/netdevsim/dev.c:612:1: note: '__nsim_dev_port_add' declared here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
->> drivers/net/netdevsim/dev.c:651:39: error: too many arguments to function call, expected single argument 'nsim_dev_port', have 3 arguments
-                           __nsim_dev_port_del(nsim_dev_port, NULL, i);
-                           ~~~~~~~~~~~~~~~~~~~                ^~~~~~~
-   include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
-   #define NULL ((void *)0)
-                ^
-   drivers/net/netdevsim/dev.c:614:13: note: '__nsim_dev_port_del' declared here
-   static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port);
-               ^
->> drivers/net/netdevsim/dev.c:1393:12: error: conflicting types for '__nsim_dev_port_add'
-   static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-              ^
-   drivers/net/netdevsim/dev.c:612:1: note: previous declaration is here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
-   drivers/net/netdevsim/dev.c:1503:14: error: too many arguments to function call, expected 3, have 4
-                                             NULL, i);
-                                                   ^
-   drivers/net/netdevsim/dev.c:612:1: note: '__nsim_dev_port_add' declared here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
-   drivers/net/netdevsim/dev.c:1839:27: error: too many arguments to function call, expected 3, have 4
-                                             nsim_dev_linecard, port_index);
-                                                                ^~~~~~~~~~
-   drivers/net/netdevsim/dev.c:612:1: note: '__nsim_dev_port_add' declared here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
-   5 errors generated.
+s/fileds/fields
 
+> so the filed should be set to V4L2_FIELD_SEQ_TB.
 
-vim +638 drivers/net/netdevsim/dev.c
+s/filed/field
 
-   629	
-   630	static int nsim_esw_switchdev_enable(struct nsim_dev *nsim_dev,
-   631					     struct netlink_ext_ack *extack)
-   632	{
-   633		struct nsim_dev_port *nsim_dev_port, *tmp;
-   634		int i, err;
-   635	
-   636		for (i = 0; i < nsim_dev_get_vfs(nsim_dev); i++) {
-   637			err = __nsim_dev_port_add(nsim_dev, NSIM_DEV_PORT_TYPE_VF,
- > 638						  NULL, i);
-   639			if (err) {
-   640				NL_SET_ERR_MSG_MOD(extack, "Failed to initialize VFs' netdevsim ports");
-   641				pr_err("Failed to initialize VF id=%d. %d.\n", i, err);
-   642				goto err_port_add_vfs;
-   643			}
-   644		}
-   645		nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
-   646		return 0;
-   647	
-   648	err_port_add_vfs:
-   649		list_for_each_entry_safe(nsim_dev_port, tmp, &nsim_dev->port_list, list)
-   650			if (nsim_dev_port_is_vf(nsim_dev_port))
- > 651				__nsim_dev_port_del(nsim_dev_port, NULL, i);
-   652		return err;
-   653	}
-   654	
+> fix the previous bug that setting it to V4L2_FIELD_SEQ_BT wrongly.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+s/setting/set
+
+Do you need to pass a Fixes tag too?
