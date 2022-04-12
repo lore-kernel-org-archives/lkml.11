@@ -2,219 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73955C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 863D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349780AbiDLGhL (ORCPT
+        id S1349388AbiDLGhQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        Tue, 12 Apr 2022 02:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349043AbiDLGgJ (ORCPT
+        with ESMTP id S1349379AbiDLGgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:36:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2934935DC4;
-        Mon, 11 Apr 2022 23:33:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1BB40CE1C09;
-        Tue, 12 Apr 2022 06:33:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 176FAC385BC;
-        Tue, 12 Apr 2022 06:33:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745219;
-        bh=flvFAc8M59j1scH/4PE3HVGl03Kprf27IIpTnFk4qSk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aNN54bxF4MzVvaDEsUSpV+bcOjTxlvm1NV6GgZzM2X23gjAtyoBZuVnShXlb5VtP5
-         lhjhZCMpsVzYILuVe2GtdM7VFQIvNivam6ChfkqMo0sUkMT9bvvGfgNqrIduKpv/Jn
-         TyKIDSv+nv+1zRybeJY+w8v7VKHYzjEovHimsdp4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 020/171] scsi: bfa: Replace snprintf() with sysfs_emit()
-Date:   Tue, 12 Apr 2022 08:28:31 +0200
-Message-Id: <20220412062928.468584050@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
-References: <20220412062927.870347203@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF835DF7;
+        Mon, 11 Apr 2022 23:33:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649745225; x=1681281225;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=OV+dhk+nfcCxCEAOVg9hBASWS9td5Fa2U6D9XDixvHc=;
+  b=T0fmpcSkhH8G1lKDOR1KWw7t85reJX9EfuO3wxrGhpPb1G904AtAuOEC
+   Oo8e9jAjjLTMKxZDHao88mGTopEKWGeagoTMxE91LGpplVgOM/wHc6MBv
+   SOJOsOQ5+Tee/r266VgoVLyy0DlXZZRr3nEa5DfAWc9C99DSns/S5sUAS
+   tGfO4OVRu3XyK6igMYYgBouQD8xTn0B71wKdxyTujzoCTUbXR8TioZI9A
+   56Fps9CLsaMev2XdtXG/DXY8pcUx/Dzo+wNlc96IwhAGmFSdYBxzDgAgK
+   55svddJBDC3yJZIcvsgDMk/g48XXeQ8CPGeh6bXjQiyzXjDwo4QBReVxo
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,253,1643698800"; 
+   d="scan'208";a="169301755"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 23:33:44 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 11 Apr 2022 23:33:44 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 23:33:40 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>
+Subject: [Patch net-next 2/3] net: phy: LAN87xx: add ethtool SQI support
+Date:   Tue, 12 Apr 2022 12:03:16 +0530
+Message-ID: <20220412063317.4173-3-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220412063317.4173-1-arun.ramadoss@microchip.com>
+References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+This patch add the support for measuring Signal Quality Index for
+LAN87xx and LAN937x T1 Phy. It uses the SQI Method 5 for obtaining the
+values.
 
-[ Upstream commit 2245ea91fd3a04cafbe2f54911432a8657528c3b ]
-
-coccinelle report:
-./drivers/scsi/bfa/bfad_attr.c:908:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:860:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:888:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:853:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:808:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:728:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:822:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:927:9-17:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:900:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:874:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:714:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:839:8-16:
-WARNING: use scnprintf or sprintf
-
-Use sysfs_emit() instead of scnprintf() or sprintf().
-
-Link: https://lore.kernel.org/r/def83ff75faec64ba592b867a8499b1367bae303.1643181468.git.yang.guang5@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/scsi/bfa/bfad_attr.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/net/phy/microchip_t1.c | 48 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/drivers/scsi/bfa/bfad_attr.c b/drivers/scsi/bfa/bfad_attr.c
-index 5ae1e3f78910..e049cdb3c286 100644
---- a/drivers/scsi/bfa/bfad_attr.c
-+++ b/drivers/scsi/bfa/bfad_attr.c
-@@ -711,7 +711,7 @@ bfad_im_serial_num_show(struct device *dev, struct device_attribute *attr,
- 	char serial_num[BFA_ADAPTER_SERIAL_NUM_LEN];
+diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
+index 363bfbfa182b..509aa78fef85 100644
+--- a/drivers/net/phy/microchip_t1.c
++++ b/drivers/net/phy/microchip_t1.c
+@@ -68,7 +68,12 @@
+ #define T1_POST_LCK_MUFACT_CFG_REG	0x1C
+ #define T1_TX_RX_FIFO_CFG_REG		0x02
+ #define T1_TX_LPF_FIR_CFG_REG		0x55
++#define T1_COEF_CLK_PWR_DN_CFG		0x04
++#define T1_COEF_RW_CTL_CFG		0x0D
+ #define T1_SQI_CONFIG_REG		0x2E
++#define T1_SQI_CONFIG2_REG		0x4A
++#define T1_DCQ_SQI_REG			0xC3
++#define T1_DCQ_SQI_MSK			GENMASK(3, 1)
+ #define T1_MDIO_CONTROL2_REG		0x10
+ #define T1_INTERRUPT_SOURCE_REG		0x18
+ #define T1_INTERRUPT2_SOURCE_REG	0x08
+@@ -82,6 +87,9 @@
+ #define T1_MODE_STAT_REG		0x11
+ #define T1_LINK_UP_MSK			BIT(0)
  
- 	bfa_get_adapter_serial_num(&bfad->bfa, serial_num);
--	return snprintf(buf, PAGE_SIZE, "%s\n", serial_num);
-+	return sysfs_emit(buf, "%s\n", serial_num);
++/* SQI defines */
++#define LAN87XX_MAX_SQI			0x07
++
+ #define DRIVER_AUTHOR	"Nisar Sayed <nisar.sayed@microchip.com>"
+ #define DRIVER_DESC	"Microchip LAN87XX/LAN937x T1 PHY driver"
+ 
+@@ -346,9 +354,20 @@ static int lan87xx_phy_init(struct phy_device *phydev)
+ 		  T1_TX_LPF_FIR_CFG_REG, 0x1011, 0 },
+ 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
+ 		  T1_TX_LPF_FIR_CFG_REG, 0x1000, 0 },
++		/* Setup SQI measurement */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_COEF_CLK_PWR_DN_CFG,	0x16d6, 0 },
+ 		/* SQI enable */
+ 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
+ 		  T1_SQI_CONFIG_REG,		0x9572, 0 },
++		/* SQI select mode 5 */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_SQI_CONFIG2_REG,		0x0001, 0 },
++		/* Throws the first SQI reading */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_COEF_RW_CTL_CFG,		0x0301,	0 },
++		{ PHYACC_ATTR_MODE_READ, PHYACC_ATTR_BANK_DSP,
++		  T1_DCQ_SQI_REG,		0,	0 },
+ 		/* Flag LPS and WUR as idle errors */
+ 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
+ 		  T1_MDIO_CONTROL2_REG,		0x0014, 0 },
+@@ -729,6 +748,31 @@ static int lan87xx_config_aneg(struct phy_device *phydev)
+ 	return rc;
  }
  
- static ssize_t
-@@ -725,7 +725,7 @@ bfad_im_model_show(struct device *dev, struct device_attribute *attr,
- 	char model[BFA_ADAPTER_MODEL_NAME_LEN];
- 
- 	bfa_get_adapter_model(&bfad->bfa, model);
--	return snprintf(buf, PAGE_SIZE, "%s\n", model);
-+	return sysfs_emit(buf, "%s\n", model);
- }
- 
- static ssize_t
-@@ -805,7 +805,7 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
- 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
- 			"Invalid Model");
- 
--	return snprintf(buf, PAGE_SIZE, "%s\n", model_descr);
-+	return sysfs_emit(buf, "%s\n", model_descr);
- }
- 
- static ssize_t
-@@ -819,7 +819,7 @@ bfad_im_node_name_show(struct device *dev, struct device_attribute *attr,
- 	u64        nwwn;
- 
- 	nwwn = bfa_fcs_lport_get_nwwn(port->fcs_port);
--	return snprintf(buf, PAGE_SIZE, "0x%llx\n", cpu_to_be64(nwwn));
-+	return sysfs_emit(buf, "0x%llx\n", cpu_to_be64(nwwn));
- }
- 
- static ssize_t
-@@ -836,7 +836,7 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
- 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
- 	strlcpy(symname, port_attr.port_cfg.sym_name.symname,
- 			BFA_SYMNAME_MAXLEN);
--	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
-+	return sysfs_emit(buf, "%s\n", symname);
- }
- 
- static ssize_t
-@@ -850,14 +850,14 @@ bfad_im_hw_version_show(struct device *dev, struct device_attribute *attr,
- 	char hw_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_pci_chip_rev(&bfad->bfa, hw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", hw_ver);
-+	return sysfs_emit(buf, "%s\n", hw_ver);
- }
- 
- static ssize_t
- bfad_im_drv_version_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_VERSION);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_VERSION);
- }
- 
- static ssize_t
-@@ -871,7 +871,7 @@ bfad_im_optionrom_version_show(struct device *dev,
- 	char optrom_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_adapter_optrom_ver(&bfad->bfa, optrom_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", optrom_ver);
-+	return sysfs_emit(buf, "%s\n", optrom_ver);
- }
- 
- static ssize_t
-@@ -885,7 +885,7 @@ bfad_im_fw_version_show(struct device *dev, struct device_attribute *attr,
- 	char fw_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_adapter_fw_ver(&bfad->bfa, fw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", fw_ver);
-+	return sysfs_emit(buf, "%s\n", fw_ver);
- }
- 
- static ssize_t
-@@ -897,7 +897,7 @@ bfad_im_num_of_ports_show(struct device *dev, struct device_attribute *attr,
- 			(struct bfad_im_port_s *) shost->hostdata[0];
- 	struct bfad_s *bfad = im_port->bfad;
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n",
-+	return sysfs_emit(buf, "%d\n",
- 			bfa_get_nports(&bfad->bfa));
- }
- 
-@@ -905,7 +905,7 @@ static ssize_t
- bfad_im_drv_name_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_NAME);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_NAME);
- }
- 
- static ssize_t
-@@ -924,14 +924,14 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
- 	rports = kcalloc(nrports, sizeof(struct bfa_rport_qualifier_s),
- 			 GFP_ATOMIC);
- 	if (rports == NULL)
--		return snprintf(buf, PAGE_SIZE, "Failed\n");
-+		return sysfs_emit(buf, "Failed\n");
- 
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
- 	bfa_fcs_lport_get_rport_quals(port->fcs_port, rports, &nrports);
- 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
- 	kfree(rports);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", nrports);
-+	return sysfs_emit(buf, "%d\n", nrports);
- }
- 
- static          DEVICE_ATTR(serial_number, S_IRUGO,
++static int lan87xx_get_sqi(struct phy_device *phydev)
++{
++	u8 sqi_value = 0;
++	int rc;
++
++	rc = access_ereg(phydev, PHYACC_ATTR_MODE_WRITE,
++			 PHYACC_ATTR_BANK_DSP, T1_COEF_RW_CTL_CFG, 0x0301);
++	if (rc < 0)
++		return rc;
++
++	rc = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
++			 PHYACC_ATTR_BANK_DSP, T1_DCQ_SQI_REG, 0x0);
++	if (rc < 0)
++		return rc;
++
++	sqi_value = FIELD_GET(T1_DCQ_SQI_MSK, rc);
++
++	return sqi_value;
++}
++
++static int lan87xx_get_sqi_max(struct phy_device *phydev)
++{
++	return LAN87XX_MAX_SQI;
++}
++
+ static struct phy_driver microchip_t1_phy_driver[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_LAN87XX),
+@@ -742,6 +786,8 @@ static struct phy_driver microchip_t1_phy_driver[] = {
+ 		.resume         = genphy_resume,
+ 		.config_aneg    = lan87xx_config_aneg,
+ 		.read_status	= lan87xx_read_status,
++		.get_sqi	= lan87xx_get_sqi,
++		.get_sqi_max	= lan87xx_get_sqi_max,
+ 		.cable_test_start = lan87xx_cable_test_start,
+ 		.cable_test_get_status = lan87xx_cable_test_get_status,
+ 	},
+@@ -755,6 +801,8 @@ static struct phy_driver microchip_t1_phy_driver[] = {
+ 		.resume		= genphy_resume,
+ 		.config_aneg    = lan87xx_config_aneg,
+ 		.read_status	= lan87xx_read_status,
++		.get_sqi	= lan87xx_get_sqi,
++		.get_sqi_max	= lan87xx_get_sqi_max,
+ 		.cable_test_start = lan87xx_cable_test_start,
+ 		.cable_test_get_status = lan87xx_cable_test_get_status,
+ 	}
 -- 
-2.35.1
-
-
+2.33.0
 
