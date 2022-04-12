@@ -2,133 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72680C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9EF5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379195AbiDLIUK (ORCPT
+        id S1358087AbiDLITS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
+        Tue, 12 Apr 2022 04:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355260AbiDLH1W (ORCPT
+        with ESMTP id S1354857AbiDLH0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8A048E5D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:07:23 -0700 (PDT)
-Received: from kwepemi100009.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kcxbp1tdSzdZpy;
-        Tue, 12 Apr 2022 15:06:46 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100009.china.huawei.com (7.221.188.242) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 15:07:20 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 15:07:19 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: [RFC PATCH -next V3 0/6]arm64: add machine check safe support
-Date:   Tue, 12 Apr 2022 07:25:46 +0000
-Message-ID: <20220412072552.2526871-1-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
+        Tue, 12 Apr 2022 03:26:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391FA47384;
+        Tue, 12 Apr 2022 00:06:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9DDD6146F;
+        Tue, 12 Apr 2022 07:06:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1EFC385A6;
+        Tue, 12 Apr 2022 07:06:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747206;
+        bh=9VK7Q9d8kUXkXOYxC5DYC7ucjglVOtJGawK4c7nKiDA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F43f+qRBYxl7s2JwFmOszL1eurK6nXct+5AkDg/zY5ZJIhvXv3Ier9mF0JbPUCVgP
+         f0TALr1TTQHxsUMkYkmbPLOGMAhX2PURKgfab1FUv46i32rS4C4V/P7nGJretUD/Eu
+         BL5zAp1c3Fog8TSYv5BZHzyARGstukvbp8swSRjc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.16 280/285] x86,static_call: Fix __static_call_return0 for i386
+Date:   Tue, 12 Apr 2022 08:32:17 +0200
+Message-Id: <20220412062951.734171923@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the increase of memory capacity and density, the probability of
-memory error increases. The increasing size and density of server RAM
-in the data center and cloud have shown increased uncorrectable memory
-errors.
+From: Peter Zijlstra <peterz@infradead.org>
 
-Currently, the kernel has a mechanism to recover from hardware memory
-errors. This patchset provides an new recovery mechanism.
+commit 1cd5f059d956e6f614ba6666ecdbcf95db05d5f5 upstream.
 
-For arm64, the hardware memory error handling is do_sea() which divided
-into two cases:
- 1. The user state consumed the memory errors, the solution is kill the
-    user process and isolate the error page.
- 2. The kernel state consumed the memory errors, the solution is panic.
+Paolo reported that the instruction sequence that is used to replace:
 
-For case 2, Undifferentiated panic maybe not the optimal choice, it can be
-handled better, in some scenes, we can avoid panic, such as uaccess, if the
-uaccess fails due to memory error, only the user process will be affected,
-kill the user process and isolate the user page with hardware memory errors
-is a better choice.
+    call __static_call_return0
 
-This patchset can be divided into three parts:
- 1. Patch 0/1    - make some minor fixes to the associated code.
- 2. Patch 3      - arm64 add support for machine check safe framework.
- 3. Pathc 4/5/6  - arm64 add uaccess and cow to machine check safe.
+namely:
 
-Since V3:
- 1. According to Mark's suggestion, all uaccess can be recovered due to
-    memory error.
- 2. Scenario pagecache reading is also supported as part of uaccess
-    (copy_to_user()) and duplication code problem is also solved. 
-    Thanks for Robin's suggestion.
- 3. According Mark's suggestion, update commit message of patch 2/5.
- 4. According Borisllav's suggestion, update commit message of patch 1/5.
+    66 66 48 31 c0	data16 data16 xor %rax,%rax
 
-Since V2:
- 1.Consistent with PPC/x86, Using CONFIG_ARCH_HAS_COPY_MC instead of
-   ARM64_UCE_KERNEL_RECOVERY.
- 2.Add two new scenes, cow and pagecache reading.
- 3.Fix two small bug(the first two patch).
+decodes to something else on i386, namely:
 
-V1 in here:
-https://lore.kernel.org/lkml/20220323033705.3966643-1-tongtiangen@huawei.com/
+    66 66 48		data16 dec %ax
+    31 c0		xor    %eax,%eax
 
-Tong Tiangen (6):
-  x86: fix function define in copy_mc_to_user
-  arm64: fix types in copy_highpage()
-  arm64: add support for machine check error safe
-  arm64: add copy_{to, from}_user to machine check safe
-  arm64: add {get, put}_user to machine check safe
-  arm64: add cow to machine check safe
+Which is a nonsensical sequence that happens to have the same outcome.
+*However* an important distinction is that it consists of 2
+instructions which is a problem when the thing needs to be overwriten
+with a regular call instruction again.
 
- arch/arm64/Kconfig                   |  1 +
- arch/arm64/include/asm/asm-extable.h | 30 +++++++++
- arch/arm64/include/asm/asm-uaccess.h | 16 +++++
- arch/arm64/include/asm/extable.h     |  1 +
- arch/arm64/include/asm/page.h        | 10 +++
- arch/arm64/include/asm/uaccess.h     |  4 +-
- arch/arm64/lib/Makefile              |  2 +
- arch/arm64/lib/copy_from_user.S      | 15 +++--
- arch/arm64/lib/copy_page_mc.S        | 99 ++++++++++++++++++++++++++++
- arch/arm64/lib/copy_to_user.S        | 25 ++++---
- arch/arm64/mm/copypage.c             | 36 ++++++++--
- arch/arm64/mm/extable.c              | 22 +++++++
- arch/arm64/mm/fault.c                | 28 ++++++++
- arch/x86/include/asm/uaccess.h       |  1 +
- include/linux/highmem.h              |  8 +++
- include/linux/uaccess.h              |  8 +++
- mm/memory.c                          |  2 +-
- 17 files changed, 286 insertions(+), 22 deletions(-)
- create mode 100644 arch/arm64/lib/copy_page_mc.S
+As such, replace the instruction with something that decodes the same
+on both i386 and x86_64.
 
--- 
-2.18.0.huawei.25
+Fixes: 3f2a8fc4b15d ("static_call/x86: Add __static_call_return0()")
+Reported-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220318204419.GT8939@worktop.programming.kicks-ass.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/static_call.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+--- a/arch/x86/kernel/static_call.c
++++ b/arch/x86/kernel/static_call.c
+@@ -12,10 +12,9 @@ enum insn_type {
+ };
+ 
+ /*
+- * data16 data16 xorq %rax, %rax - a single 5 byte instruction that clears %rax
+- * The REX.W cancels the effect of any data16.
++ * cs cs cs xorl %eax, %eax - a single 5 byte instruction that clears %[er]ax
+  */
+-static const u8 xor5rax[] = { 0x66, 0x66, 0x48, 0x31, 0xc0 };
++static const u8 xor5rax[] = { 0x2e, 0x2e, 0x2e, 0x31, 0xc0 };
+ 
+ static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
+ {
+
 
