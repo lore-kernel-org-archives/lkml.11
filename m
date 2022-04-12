@@ -2,408 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DAEAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA91FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbiDLXgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
+        id S231238AbiDLXg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231691AbiDLXd0 (ORCPT
+        with ESMTP id S231909AbiDLXdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:33:26 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33797D372C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:23:09 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id v77so500318ybi.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:23:09 -0700 (PDT)
+        Tue, 12 Apr 2022 19:33:37 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907988EB41;
+        Tue, 12 Apr 2022 16:15:57 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CK1x2P028053;
+        Tue, 12 Apr 2022 23:15:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-transfer-encoding : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=KOiKhXdDo60N+VHX326PxK5gxYZRPFmJx+a4VbXz6ds=;
+ b=ni2EM3r8NjHRg65PtyJneaPk0t8jpfTkDMiNYp5KFQAtZeQY4ZIydTzttBkeeqEP2hrY
+ Jh1g2OPjj8iQZHMLMJAeF+jUPtbQJDEvoLjvV0hCjziIcIHL7sbEp/yJQlE7t87nqGVX
+ KtmFTpzOYMfbiSI+ZLZgeOSK8UR6DCJy64X1gIauEG/KtGr46Rg3gG+4JtzR5ENP6IlA
+ p2i2suA6jsJlEAY+0fphb2VctraDePrDvAxAV3TSfey6+ehrQa+ycdFOXph6a7x2E6Aa
+ bdFD9MSyB5gaHFBbo2LvhQ+cI0A+Y8kieu6+TGSWi3qcQJ6y9dp6DYeMx7OVHcLGEsUZ uw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3fb21a020f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 23:15:19 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23CMpkqq033146;
+        Tue, 12 Apr 2022 23:15:19 GMT
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2045.outbound.protection.outlook.com [104.47.57.45])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fb0k3js11-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 23:15:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E/J0PHlnjzP9g6ck8nz/EU4mkTq9X7xZO1P0h64runXYUk+BvJpHz+qjwH+RZl9qwggfBeR94iVayLeeQIQvqnMX64NT/rNaVdW47us81xhzX4Y04inCfKiGaK5HJxocMqUxiqUSypnw2UbUbD3GCKfsYVlHSS3A9+nz2pZxn8OCEqMFSyIJSSndEa8H+CKNIQyh/9qUoh1EIyLBQEpPuvp83f0PJJM0qAPYqEHfo8oGYaIbLyS8P4PBeA/EQpL/6+DUexbP/t5x64cEIliMa80nck4iPS3QOXiad+0BHUmffSmm1mMQfpb4h6LmqwVzlHZFbs1wJeEIpmqtXoEf4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KOiKhXdDo60N+VHX326PxK5gxYZRPFmJx+a4VbXz6ds=;
+ b=dKYk5HE15lADZUzI9NXlQGQCr2BdLMWOlu8X8QOTlh/v8SHxBMxXbeyOzztFCk/rmmXwUF9udnPWzcHdY2RBygiW2aP+7WYtX6C4jFb00T85Fcu1Yp4KL6AP4APo3Q9UK276Y3RV19JzW3sK7Wjgz59DFxC2WRBlvbr1/IB1kLQpzVBxEN8+6XGHj/Ss9dIueZprvp3+oK2HAtHc9suym7Gm3kM2tI369r0+b/YuoIUagt5aPwsMOmcUdQObdqwNqaSaz8p7Nqe/pfPJLdPoy+YXOpKwEzrr5482846n1I4dhk/AGBf75Agci//lnNpbXvNIwwgh2qdMB9GBCyJ5Kw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yqso9fcYfRJL1ddBVGIW2wFhVdAFbkU1OBVuEQ7dqIY=;
-        b=aJ074POIFm9F9W4IA2if0+1iujKO8J3JVMhqVSY832OsgoP4skvj9LSb5P+Vd3nlpT
-         UDuFj8sD2b8SPFJ+D6Z06gyqJ45mJ2zNsyRfTQFugDbWML9m42gO6+38Qa3eWeOjDChF
-         xGURGZfQqQYGQTvWLazcktTfyXkyZDbLQ3yvWbF7ZQIgJj3vii37LTS6tAoQry3tNj4+
-         u7REtHg/s23gkf5/9OmtCtXEMKkE/5tKZFEWEHX8bteRTv9WSGP9bVyxyNLUbePaemlH
-         s7NNwjfJ3MHtXKETBipoTL1dPKvSMZMeYCO9RsCEj4UOcfOrjz7JgFuaxge60d4uRLtP
-         rQpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yqso9fcYfRJL1ddBVGIW2wFhVdAFbkU1OBVuEQ7dqIY=;
-        b=bUYA+bTUztgu5B9YH7j597OoItFgY7NDBVoMhzoNa+TPwKmCjauWG/CEa0SP7lCrgL
-         bibcAWN3VZPfn36A/RBEMf9EBNIeg+QAaZYkzuu58ErXqSxvgpwYnp4B/6S6cWo01R3W
-         0Kd0x0h7YGVoyVVnd5aPI3EVn4OwXe987MH/mvZtuAMKjkuudCDg0MIuiRljHTM6Bnlz
-         1ZQ/v+4MbEmrfn1oZT4ts77lVZ8SZzd6zlwsSH8Xdo2ATKzg1qUIZ5U+Vr+i+Pyr48N/
-         Aed7B0KNqsl1drGfAzwBiSb6OWGG+DL+KDQwTfXMC+7iWS0SwnXu4OYtpbi/Xl57fnfQ
-         M8Og==
-X-Gm-Message-State: AOAM532u1OLOVUM8b/ppdSG0uTRIfkNHkNwxyWELGj40iPln2f5W+Ynh
-        b9OHPKvxcHk7GbeOGfJy7zBcr1PbTYWfVR2+DzrPdZtrHRw=
-X-Google-Smtp-Source: ABdhPJxP70m/nVZoKbLXzrNplVdopLdj17GvVszrk+D+PJQ0Bf+IwKcXcxQN7Qu7IroyjW04brHQiv+Pg9mGexZieOU=
-X-Received: by 2002:a81:53c3:0:b0:2eb:ffe9:8adf with SMTP id
- h186-20020a8153c3000000b002ebffe98adfmr13611454ywb.188.1649800279858; Tue, 12
- Apr 2022 14:51:19 -0700 (PDT)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KOiKhXdDo60N+VHX326PxK5gxYZRPFmJx+a4VbXz6ds=;
+ b=N/l+ckr/kku+oA5vzveA53a9JsLQh3fieO2m1oOPul/Ii29Ol6GcFGLGyG/6Awj/CHZM9bIybL41pP2e8kTOLRM8x3bWqhaipv59qBKPVafROsx8k6AGqh2P4z4M0eUKtd0K8bPDMEsbxymCGdXoJ4KxqdGqV0JEUNkzUQg8e0E=
+Received: from SA2PR10MB4569.namprd10.prod.outlook.com (2603:10b6:806:111::11)
+ by BN8PR10MB3588.namprd10.prod.outlook.com (2603:10b6:408:b5::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 23:15:17 +0000
+Received: from SA2PR10MB4569.namprd10.prod.outlook.com
+ ([fe80::5d9c:9b32:8395:1287]) by SA2PR10MB4569.namprd10.prod.outlook.com
+ ([fe80::5d9c:9b32:8395:1287%2]) with mapi id 15.20.5164.018; Tue, 12 Apr 2022
+ 23:15:17 +0000
+From:   Libo Chen <libo.chen@oracle.com>
+To:     gregkh@linuxfoundation.org, masahiroy@kernel.org,
+        tglx@linutronix.de, peterz@infradead.org, mingo@kernel.org,
+        vbabka@suse.cz, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org
+Subject: [PATCH RESEND 0/1] lib/Kconfig: remove DEBUG_PER_CPU_MAPS dependency for CPUMASK_OFFSTACK
+Date:   Tue, 12 Apr 2022 16:15:07 -0700
+Message-Id: <20220412231508.32629-1-libo.chen@oracle.com>
+X-Mailer: git-send-email 2.27.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR08CA0053.namprd08.prod.outlook.com
+ (2603:10b6:a03:117::30) To SA2PR10MB4569.namprd10.prod.outlook.com
+ (2603:10b6:806:111::11)
 MIME-Version: 1.0
-References: <20220411211015.3091615-1-bgardon@google.com> <20220411211015.3091615-6-bgardon@google.com>
- <YlTWn6pEKRMaG4gY@google.com>
-In-Reply-To: <YlTWn6pEKRMaG4gY@google.com>
-From:   Ben Gardon <bgardon@google.com>
-Date:   Tue, 12 Apr 2022 14:51:09 -0700
-Message-ID: <CANgfPd9xxvY3wE7DHAPBnNvRPWuYtXkXC19SB9eK7xvkoB_YGQ@mail.gmail.com>
-Subject: Re: [PATCH v4 05/10] KVM: selftests: Add NX huge pages test
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Peter Shier <pshier@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 31cee91e-dd32-4d37-f3bd-08da1cda4e7d
+X-MS-TrafficTypeDiagnostic: BN8PR10MB3588:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR10MB3588EB2FBAADAAFCC258251885ED9@BN8PR10MB3588.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8C4H05Z4VbOMUl7QHB0PHXoYIOBzyBuU2nOTGU90YP1v/xctVO6Bie827Orn3gxLFU7TYLiF5CPBRNXuYrezjnCnb3Yt8Mo0tv9hKY0ePTxzfNAb/WC16DdbznByX8DgRQnovk73KIqgbipx4hQZa9tASwcg1s+9xzznH7LpRHzGC83Ri1GNnGq/c19f1Moq6RtpNoMOCguw6Xqz3eGlAjo+zhlIGvxkZS3J+DCwlbpFGzugjFmk38VjPrPQt7b9UAPidCUUd8UfE0iFww7DW9XgjlfuhkOLY1CaM9tzwdDUuWkvviSBxkzwmrmNuUw0MZy1pofN312y2AbgYFwU0ID5avkUPJX00m8bpwb35FtUJCnnzN6lkr1NcvcLxsbAV2Eopm3ow8Vc6PM3IFh+OqfXexevlgltSpsZm1jM1obPhkRurGwZqBWTeA1JBnFCg3SXKOQvKNlCTk+l4pkzCspRCGk64b771EXemmzOsJ5rO8auKIan/HfQbswY6oFMe52yCKB5FfKx77+0t2ew32TRDgHnmZaq0Krr/+IE6ImsJiWuIad9WuhmFQAExB8qNKxVtSdKXWyrkP9/2SuTfVjUh/+mJapffQDHCsf2xSfq4xQtlCtPnwxHHgWMSxh+ccRyzu+7ovu5m0Axg44+crDsCW++F0LmGUcp+zIAOttudnQtfl2caoYoL7RUMmxinL6Egu+jGGVxDlQC+YOSxg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR10MB4569.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(1076003)(36756003)(6512007)(316002)(44832011)(508600001)(186003)(38100700002)(38350700002)(26005)(83380400001)(2616005)(6506007)(8936002)(52116002)(4326008)(8676002)(66556008)(66476007)(66946007)(7416002)(5660300002)(6666004)(86362001)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mfDV4OGmyxHwiQ7fAa206QuoI5EO62SB0QUJ2xRZVPdIb1WSfz2IjbkgswZR?=
+ =?us-ascii?Q?sProak+vIOC9sMIW2/AcpLw6x6E+4vA/mv5yo5Yn85d6/Cvwg9xtScYLFac/?=
+ =?us-ascii?Q?OfiIUG9zDfjJpstCEfrh9xIlK8hrkHLZvoL6b+4xJcKf7HV9mvl8uBQWDcEd?=
+ =?us-ascii?Q?TM46gjGx+zYj0kLM6fNQ8I11xbgEytJm/468mGnZ9neHTqcMpJtLfmbFjk4n?=
+ =?us-ascii?Q?sOOqMoXw+cxLf6kKOQ4xerlMnNIZiPHiV0k4QXaUHUwPDFKADhrzJrpAbQEi?=
+ =?us-ascii?Q?f/uxBwlpxVXJ/JM7pdTo/Ktspg4ZcqYvFtqYaz9xmUaumm+6BNe2sfyNSCxx?=
+ =?us-ascii?Q?s0c2fJENluUDBiTqLmsL44QvCb/ZZWwLJvFiiGU4qbglLyMe1hln+eK/09dz?=
+ =?us-ascii?Q?cRZmavz3GDCxomJM9rqfJ2UPZ0bopHrGx5ek2u2qj7LReEaUVwfckvyaQr47?=
+ =?us-ascii?Q?ugdg07nvpAocelcw7zBWMCQo5JajkRjfw91bxt7xQsfkp4pfm7WTNYCYgPJr?=
+ =?us-ascii?Q?oIGmNOO2aX7EwU3+8otm4MJxC3GnR6ryfycaT0YIdtTIhM9ADFkD6aou93oR?=
+ =?us-ascii?Q?SJYGncx3YLPS8kl4m5JmKzoZvRnbrVl/oOb4Z360M6k8ZT924cr3Oxf/A2K4?=
+ =?us-ascii?Q?xQQMo2GJBTi13D/K25sH9BEMqVO2BNDN62U1ncs00/kDoaS6RA+NoNYGR/Ml?=
+ =?us-ascii?Q?l60aIpv2CVG3thUlsAYDUxNNpa2EMaZS3Cq+mT7+9XWQf80usRhfYDPtfaQV?=
+ =?us-ascii?Q?vO1jZ/Qr1O3tL4sVPGn1X+r2OozlJgxVgE5XkTskK0bfiwKuv5HWrNBUvUyy?=
+ =?us-ascii?Q?aM4cHMNNUA80BScpdtYVx0ubnAbCrlc2ZeUknH9Zv+iycHLHrW6l+NFEYzhY?=
+ =?us-ascii?Q?MN0W93NJa5NCmskQaZGpqDCX7WMLRHf5wuaIW31LCke+btOdg4eAxTZi1yBp?=
+ =?us-ascii?Q?gF0szrfucBWoLL6rrmqZaXphN1ZcyPoVLxoeayiPUlY9DYHNgwAfyPIWXgMH?=
+ =?us-ascii?Q?1Xx+a8qN2ek0XHmsRdiRk/yzxdjSWVJ/JXO8SWNJRtfe9J+Hfpyjr5kp0e4n?=
+ =?us-ascii?Q?+YmbWwgqR7YKWJBCpEWpCPEUYS4SOnWQGYo+Kpj0AxJaY4ZPU6B9ZesHEF4g?=
+ =?us-ascii?Q?61gbyjj6x3LDjMbnvlOevWr2DhgxEnZKGXWxvifIV1mfdGMD8W8Cz9uUota6?=
+ =?us-ascii?Q?61CMdQNQbekng21xIQL8ecdiigGDpT8h3JwyAgIoeMNH08cEvAf68dbMiGhO?=
+ =?us-ascii?Q?vK4HP6WEmzV00ZgMPoKnCtoe1+f2ezbFB2k7Q9YFZTAoU3Lyygqu0OICv+BF?=
+ =?us-ascii?Q?vQE/JEFBQen1VKIJLmP075S8pZXunXe0KKpt9uahiTh9wlAYnZrzYCaTBbs5?=
+ =?us-ascii?Q?wPwmbu1esJ46q94ZeXFI2mAW+SDPc985A0GhUi3JemWZpZv+Fjoabnc8Ymfp?=
+ =?us-ascii?Q?vAKoA0RkZQfUWp4O6laPG+dGGwVGHJxvfENixkYge7wGyi4GYdSWd2XdWhIO?=
+ =?us-ascii?Q?nQP0lDdZYnIUPG/q6ENWZP/FUrE6+d0HpLJef/Xg0iRvz9CStHK8V0Y31i2i?=
+ =?us-ascii?Q?jrfQsS5rxwOi5tp4+H41HrW+uRkA/kUlbSudl+lL68Q0MrF8TJEpj8vr0oxL?=
+ =?us-ascii?Q?asLRLzU6jgqItKHFaqc6ubofIm8WpMzIXgqGFSIom1zjcwCBKmG8TbeloIYs?=
+ =?us-ascii?Q?Xs3AazXnKykvBOojKq44Sp8VXTtHrISZzxzw3UC3jAQ+aOHqlVUzO5S0Buz0?=
+ =?us-ascii?Q?9EQMdJwRJA=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31cee91e-dd32-4d37-f3bd-08da1cda4e7d
+X-MS-Exchange-CrossTenant-AuthSource: SA2PR10MB4569.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 23:15:17.3702
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jtygYuE4TFjrJJe3rYW71oTvkF9Ki8OK89VFWS9IrKGmRIJWZKzOOhIxukCgRK31TM8dLyrWzVlokFxeUOmoNQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR10MB3588
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-04-12_06:2022-04-11,2022-04-12 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=981 malwarescore=0
+ mlxscore=0 phishscore=0 suspectscore=0 spamscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204120103
+X-Proofpoint-GUID: jVMKXL1QEvXyvFpkytaZo9TCVTDejuGr
+X-Proofpoint-ORIG-GUID: jVMKXL1QEvXyvFpkytaZo9TCVTDejuGr
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 6:32 PM Mingwei Zhang <mizhang@google.com> wrote:
->
-> On Mon, Apr 11, 2022, Ben Gardon wrote:
-> > There's currently no test coverage of NX hugepages in KVM selftests, so
-> > add a basic test to ensure that the feature works as intended.
-> >
-> > Signed-off-by: Ben Gardon <bgardon@google.com>
-> > ---
-> >  tools/testing/selftests/kvm/Makefile          |  10 ++
-> >  .../selftests/kvm/include/kvm_util_base.h     |   1 +
-> >  tools/testing/selftests/kvm/lib/kvm_util.c    |  48 ++++++
-> >  .../selftests/kvm/x86_64/nx_huge_pages_test.c | 163 ++++++++++++++++++
-> >  .../kvm/x86_64/nx_huge_pages_test.sh          |  25 +++
-> >  5 files changed, 247 insertions(+)
-> >  create mode 100644 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-> >  create mode 100755 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-> >
-> > diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-> > index af582d168621..9bb9bce4df37 100644
-> > --- a/tools/testing/selftests/kvm/Makefile
-> > +++ b/tools/testing/selftests/kvm/Makefile
-> > @@ -43,6 +43,10 @@ LIBKVM_aarch64 = lib/aarch64/processor.c lib/aarch64/ucall.c lib/aarch64/handler
-> >  LIBKVM_s390x = lib/s390x/processor.c lib/s390x/ucall.c lib/s390x/diag318_test_handler.c
-> >  LIBKVM_riscv = lib/riscv/processor.c lib/riscv/ucall.c
-> >
-> > +# Non-compiled test targets
-> > +TEST_PROGS_x86_64 += x86_64/nx_huge_pages_test.sh
-> > +
-> > +# Compiled test targets
-> >  TEST_GEN_PROGS_x86_64 = x86_64/cpuid_test
-> >  TEST_GEN_PROGS_x86_64 += x86_64/cr4_cpuid_sync_test
-> >  TEST_GEN_PROGS_x86_64 += x86_64/get_msr_index_features
-> > @@ -104,6 +108,9 @@ TEST_GEN_PROGS_x86_64 += steal_time
-> >  TEST_GEN_PROGS_x86_64 += kvm_binary_stats_test
-> >  TEST_GEN_PROGS_x86_64 += system_counter_offset_test
-> >
-> > +# Compiled outputs used by test targets
-> > +TEST_GEN_PROGS_EXTENDED_x86_64 += x86_64/nx_huge_pages_test
-> > +
-> >  TEST_GEN_PROGS_aarch64 += aarch64/arch_timer
-> >  TEST_GEN_PROGS_aarch64 += aarch64/debug-exceptions
-> >  TEST_GEN_PROGS_aarch64 += aarch64/get-reg-list
-> > @@ -142,7 +149,9 @@ TEST_GEN_PROGS_riscv += kvm_page_table_test
-> >  TEST_GEN_PROGS_riscv += set_memory_region_test
-> >  TEST_GEN_PROGS_riscv += kvm_binary_stats_test
-> >
-> > +TEST_PROGS += $(TEST_PROGS_$(UNAME_M))
-> >  TEST_GEN_PROGS += $(TEST_GEN_PROGS_$(UNAME_M))
-> > +TEST_GEN_PROGS_EXTENDED += $(TEST_GEN_PROGS_EXTENDED_$(UNAME_M))
-> >  LIBKVM += $(LIBKVM_$(UNAME_M))
-> >
-> >  INSTALL_HDR_PATH = $(top_srcdir)/usr
-> > @@ -193,6 +202,7 @@ $(OUTPUT)/libkvm.a: $(LIBKVM_OBJS)
-> >  x := $(shell mkdir -p $(sort $(dir $(TEST_GEN_PROGS))))
-> >  all: $(STATIC_LIBS)
-> >  $(TEST_GEN_PROGS): $(STATIC_LIBS)
-> > +$(TEST_GEN_PROGS_EXTENDED): $(STATIC_LIBS)
-> >
-> >  cscope: include_paths = $(LINUX_TOOL_INCLUDE) $(LINUX_HDR_PATH) include lib ..
-> >  cscope:
-> > diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> > index b2684cfc2cb1..f9c2ac0a5b97 100644
-> > --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> > +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> > @@ -408,6 +408,7 @@ void read_vm_stats_desc(int stats_fd, struct kvm_stats_header *header,
-> >  int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-> >                  struct kvm_stats_desc *desc, uint64_t *data,
-> >                  ssize_t max_elements);
-> > +uint64_t vm_get_single_stat(struct kvm_vm *vm, const char *stat_name);
-> >
-> >  uint32_t guest_get_vcpuid(void);
-> >
-> > diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> > index 64e2085f1129..833c7e63d62d 100644
-> > --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> > +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> > @@ -2614,3 +2614,51 @@ int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-> >
-> >       return ret;
-> >  }
-> > +
-> > +static int vm_get_stat_data(struct kvm_vm *vm, const char *stat_name,
-> > +                         uint64_t *data, ssize_t max_elements)
-> > +{
-> > +     struct kvm_stats_desc *stats_desc;
-> > +     struct kvm_stats_header header;
-> > +     struct kvm_stats_desc *desc;
-> > +     size_t size_desc;
-> > +     int stats_fd;
-> > +     int ret = -EINVAL;
-> > +     int i;
-> > +
-> > +     stats_fd = vm_get_stats_fd(vm);
-> > +
-> > +     read_vm_stats_header(stats_fd, &header);
-> > +
-> > +     stats_desc = alloc_vm_stats_desc(stats_fd, &header);
-> > +     read_vm_stats_desc(stats_fd, &header, stats_desc);
-> > +
-> > +     size_desc = sizeof(struct kvm_stats_desc) + header.name_size;
-> > +
-> > +     /* Read kvm stats data one by one */
-> > +     for (i = 0; i < header.num_desc; ++i) {
-> > +             desc = (void *)stats_desc + (i * size_desc);
-> > +
-> > +             if (strcmp(desc->name, stat_name))
-> > +                     continue;
-> > +
-> > +             ret = read_stat_data(stats_fd, &header, desc, data,
-> > +                                  max_elements);
-> > +     }
-> > +
-> > +     free(stats_desc);
-> > +     close(stats_fd);
-> > +     return ret;
-> > +}
->
-> I could be wrong, but it seems this function is quite generic. Why not
-> putting it into kvm_util.c?
+We encountered an issue related to NR_CPUMASK_BITS on ARM64. It turned
+out CPUMASK_OFFSTACK was not enabled and NR_CPUS is set to 4096 in our
+aarch64 config, so each cpumask operation is unnecessarily expensive
+esp. on small VMs. There are decent number of cpumask operations in the
+scheduler. Many of them are on the hot paths. The cumulative effect is
+quite siginificant. With CONFIG_CPUMASK_OFFSTACKT set, we saw ~10% gain on
+ApacheBench and a few percentage on redis in a 32-core ARM64 VM with 5.16
+kernel.
+One may argue why not just set NR_CPUS to smaller values, the thing is,
+for example, we support VMs with flexible shapes. The customer can
+specify the number of CPUs ranging from 1 to 160. You cannot just prepare
+160 kernel images for each release with one for each shape. And kernel
+with NR_CPUS=160 doesn't perform well on a 1-CPU VM. It's important that
+we can set CPUMASK_OFFSTACK=y so that the kernel can dynamically allocate
+cpumasks based on the actual number of CPUs in the system.
 
-I agree it should go in kvm_util.c. If you look above, you'll see that
-it's actually already in that file.
+The problem I am trying to address in this patch is currently
+CPUMASK_OFFSTACK depends on DEBUG_PER_CPU_MAPS except for x86 and it
+doesn't even show up in kconfig menu as well as kconfig
+without DEBUG_PER_CPU_MAPS=y. We should remove such outdated,
+unnecessary dependency.
 
-> > +
-> > +uint64_t vm_get_single_stat(struct kvm_vm *vm, const char *stat_name)
-> > +{
-> > +     uint64_t data;
-> > +     int ret;
-> > +
-> > +     ret = vm_get_stat_data(vm, stat_name, &data, 1);
-> > +     TEST_ASSERT(ret == 1,
-> > +                 "Stat %s expected to have 1 element, but %d returned",
-> > +                 stat_name, ret);
-> > +     return data;
-> > +}
-> > diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-> > new file mode 100644
-> > index 000000000000..3f21726b22c7
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-> > @@ -0,0 +1,163 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * tools/testing/selftests/kvm/nx_huge_page_test.c
-> > + *
-> > + * Usage: to be run via nx_huge_page_test.sh, which does the necessary
-> > + * environment setup and teardown
-> > + *
-> > + * Copyright (C) 2022, Google LLC.
-> > + */
-> > +
-> > +#define _GNU_SOURCE
-> > +
-> > +#include <fcntl.h>
-> > +#include <stdint.h>
-> > +#include <time.h>
-> > +
-> > +#include <test_util.h>
-> > +#include "kvm_util.h"
-> > +
-> > +#define HPAGE_SLOT           10
-> > +#define HPAGE_GVA            (23*1024*1024)
-> > +#define HPAGE_GPA            (10*1024*1024)
-> > +#define HPAGE_SLOT_NPAGES    (512 * 3)
-> > +#define PAGE_SIZE            4096
-> > +
-> > +/*
-> > + * When writing to guest memory, write the opcode for the `ret` instruction so
-> > + * that subsequent iteractions can exercise instruction fetch by calling the
-> > + * memory.
-> > + */
-> > +#define RETURN_OPCODE 0xC3
-> > +
-> > +void guest_code(void)
-> > +{
-> > +     uint64_t hpage_1 = HPAGE_GVA;
-> > +     uint64_t hpage_2 = hpage_1 + (PAGE_SIZE * 512);
-> > +     uint64_t hpage_3 = hpage_2 + (PAGE_SIZE * 512);
-> > +
-> > +     READ_ONCE(*(uint64_t *)hpage_1);
-> > +     GUEST_SYNC(1);
-> > +
-> > +     READ_ONCE(*(uint64_t *)hpage_2);
-> > +     GUEST_SYNC(2);
-> > +
-> > +     ((void (*)(void)) hpage_1)();
-> > +     GUEST_SYNC(3);
-> > +
-> > +     ((void (*)(void)) hpage_3)();
-> > +     GUEST_SYNC(4);
-> > +
-> > +     READ_ONCE(*(uint64_t *)hpage_1);
-> > +     GUEST_SYNC(5);
-> > +
-> > +     READ_ONCE(*(uint64_t *)hpage_3);
-> > +     GUEST_SYNC(6);
-> > +}
-> > +
-> > +static void check_2m_page_count(struct kvm_vm *vm, int expected_pages_2m)
-> > +{
-> > +     int actual_pages_2m;
-> > +
-> > +     actual_pages_2m = vm_get_single_stat(vm, "pages_2m");
-> > +
-> > +     TEST_ASSERT(actual_pages_2m == expected_pages_2m,
-> > +                 "Unexpected 2m page count. Expected %d, got %d",
-> > +                 expected_pages_2m, actual_pages_2m);
-> > +}
-> > +
-> > +static void check_split_count(struct kvm_vm *vm, int expected_splits)
-> > +{
-> > +     int actual_splits;
-> > +
-> > +     actual_splits = vm_get_single_stat(vm, "nx_lpage_splits");
-> > +
-> > +     TEST_ASSERT(actual_splits == expected_splits,
-> > +                 "Unexpected nx lpage split count. Expected %d, got %d",
-> > +                 expected_splits, actual_splits);
-> > +}
-> > +
-> > +int main(int argc, char **argv)
-> > +{
-> > +     struct kvm_vm *vm;
-> > +     struct timespec ts;
-> > +     void *hva;
-> > +
-> > +     vm = vm_create_default(0, 0, guest_code);
-> > +
-> > +     vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS_HUGETLB,
-> > +                                 HPAGE_GPA, HPAGE_SLOT,
-> > +                                 HPAGE_SLOT_NPAGES, 0);
-> > +
-> > +     virt_map(vm, HPAGE_GVA, HPAGE_GPA, HPAGE_SLOT_NPAGES);
-> > +
-> > +     hva = addr_gpa2hva(vm, HPAGE_GPA);
-> > +     memset(hva, RETURN_OPCODE, HPAGE_SLOT_NPAGES * PAGE_SIZE);
-> > +
-> > +     check_2m_page_count(vm, 0);
-> > +     check_split_count(vm, 0);
-> > +
-> > +     /*
-> > +      * The guest code will first read from the first hugepage, resulting
-> > +      * in a huge page mapping being created.
-> > +      */
-> > +     vcpu_run(vm, 0);
-> > +     check_2m_page_count(vm, 1);
-> > +     check_split_count(vm, 0);
-> > +
-> > +     /*
-> > +      * Then the guest code will read from the second hugepage, resulting
-> > +      * in another huge page mapping being created.
-> > +      */
-> > +     vcpu_run(vm, 0);
-> > +     check_2m_page_count(vm, 2);
-> > +     check_split_count(vm, 0);
-> > +
-> > +     /*
-> > +      * Next, the guest will execute from the first huge page, causing it
-> > +      * to be remapped at 4k.
-> > +      */
-> > +     vcpu_run(vm, 0);
-> > +     check_2m_page_count(vm, 1);
-> > +     check_split_count(vm, 1);
-> > +
-> > +     /*
-> > +      * Executing from the third huge page (previously unaccessed) will
-> > +      * cause part to be mapped at 4k.
-> > +      */
-> > +     vcpu_run(vm, 0);
-> > +     check_2m_page_count(vm, 1);
-> > +     check_split_count(vm, 2);
-> > +
-> > +     /* Reading from the first huge page again should have no effect. */
-> > +     vcpu_run(vm, 0);
-> > +     check_2m_page_count(vm, 1);
-> > +     check_split_count(vm, 2);
-> > +
-> > +     /*
-> > +      * Give recovery thread time to run. The wrapper script sets
-> > +      * recovery_period_ms to 100, so wait 5x that.
-> > +      */
-> > +     ts.tv_sec = 0;
-> > +     ts.tv_nsec = 500000000;
-> > +     nanosleep(&ts, NULL);
-> > +
-> > +     /*
-> > +      * Now that the reclaimer has run, all the split pages should be gone.
-> > +      */
-> > +     check_2m_page_count(vm, 1);
-> > +     check_split_count(vm, 0);
-> > +
-> > +     /*
-> > +      * The 4k mapping on hpage 3 should have been removed, so check that
-> > +      * reading from it causes a huge page mapping to be installed.
-> > +      */
-> > +     vcpu_run(vm, 0);
-> > +     check_2m_page_count(vm, 2);
-> > +     check_split_count(vm, 0);
-> > +
-> > +     kvm_vm_free(vm);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-> > new file mode 100755
-> > index 000000000000..19fc95723fcb
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-> > @@ -0,0 +1,25 @@
-> > +#!/bin/bash
-> > +# SPDX-License-Identifier: GPL-2.0-only */
-> > +
-> > +# tools/testing/selftests/kvm/nx_huge_page_test.sh
-> > +# Copyright (C) 2022, Google LLC.
-> > +
-> > +NX_HUGE_PAGES=$(cat /sys/module/kvm/parameters/nx_huge_pages)
-> > +NX_HUGE_PAGES_RECOVERY_RATIO=$(cat /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio)
-> > +NX_HUGE_PAGES_RECOVERY_PERIOD=$(cat /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms)
-> > +HUGE_PAGES=$(cat /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages)
-> > +
-> > +echo 1 > /sys/module/kvm/parameters/nx_huge_pages
-> > +echo 1 > /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio
-> > +echo 100 > /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
-> > +echo 200 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-> > +
-> > +./nx_huge_pages_test
-> > +RET=$?
-> > +
-> > +echo $NX_HUGE_PAGES > /sys/module/kvm/parameters/nx_huge_pages
-> > +echo $NX_HUGE_PAGES_RECOVERY_RATIO > /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio
-> > +echo $NX_HUGE_PAGES_RECOVERY_PERIOD > /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
-> > +echo $HUGE_PAGES > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
-> > +
-> > +exit $RET
-> > --
-> > 2.35.1.1178.g4f1659d476-goog
-> >
+Of course, I am open to other ideas. And people who are more familar with
+this matter can shed a light on why this dependency has been kept for so
+long. My goal here is to determine if DEBUG_PER_CPU_MAPS is absoultely
+necessary for CPUMASK_OFFSTACK.
+
+RESEND:
+- Correct the subject line of cover letter
+- Send to more people, esp. gkh for more attention since no one seems to
+  be responsible for this part of code
+
+Libo Chen (1):
+  lib/Kconfig: remove DEBUG_PER_CPU_MAPS dependency for CPUMASK_OFFSTACK
+
+ lib/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+-- 
+2.27.0
+
