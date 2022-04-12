@@ -2,42 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A51F3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B48D6C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354893AbiDLIGM (ORCPT
+        id S1354915AbiDLIGU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60926 "EHLO
+        Tue, 12 Apr 2022 04:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354029AbiDLH0A (ORCPT
+        with ESMTP id S1353988AbiDLH0A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:26:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9707215722;
-        Tue, 12 Apr 2022 00:05:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609FB13E0A;
+        Tue, 12 Apr 2022 00:05:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BBD5B81B4D;
-        Tue, 12 Apr 2022 07:05:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA116C385A6;
-        Tue, 12 Apr 2022 07:05:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FD99B81B4F;
+        Tue, 12 Apr 2022 07:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C77BC385A6;
+        Tue, 12 Apr 2022 07:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747122;
-        bh=yqQ8br7MQ3MrgXQimt529wUVNzkOSYPYS0M367HdvJU=;
+        s=korg; t=1649747116;
+        bh=48IJ3esSaUzBji8rEvxkx01bcGDqcGgwVzYB+0ZPDAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2bcEbQq/S3Wp3sTnywYSEHs4+bBeRcO7hEuHc8pjC21AfEb3l65FAnenLgkST1sNK
-         3FnbjzcvQiW907WjJxSemqtwf5/fSdqVtqdTDsEutAU9E/KxR7tuFHjDivFTJ3K49D
-         teLKHSnM+kIvoP9dGwP/Utn6NlKDnobkGAWM2V4A=
+        b=hsGP4Pr6ftXxisuyN02/4hzwXCq5IisKZqp26X27Dgpt6Mll6CY17x8EEPLg0ermV
+         KjoWaO4MY4YHXtcGVE7bQ7oFVnlmv1Syo+IJD5w37xuLECmkx/x/iQraceGSEedoay
+         kvlLLKNDvb2CLGXLnvhQRREtgtSPWYE7/CjvKt3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.16 244/285] perf/x86/intel: Dont extend the pseudo-encoding to GP counters
-Date:   Tue, 12 Apr 2022 08:31:41 +0200
-Message-Id: <20220412062950.703096996@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        German Gomez <german.gomez@arm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Will Deacon <will@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 209/285] perf: arm-spe: Fix perf report --mem-mode
+Date:   Tue, 12 Apr 2022 08:31:06 +0200
+Message-Id: <20220412062949.691397574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,73 +61,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: James Clark <james.clark@arm.com>
 
-commit 4a263bf331c512849062805ef1b4ac40301a9829 upstream.
+[ Upstream commit ffab487052054162b3b6c9c6005777ec6cfcea05 ]
 
-The INST_RETIRED.PREC_DIST event (0x0100) doesn't count on SPR.
-perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
+Since commit bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem
+info is not available") "perf mem report" and "perf report --mem-mode"
+don't allow opening the file unless one of the events has
+PERF_SAMPLE_DATA_SRC set.
 
- Performance counter stats for 'CPU(s) 0':
+SPE doesn't have this set even though synthetic memory data is generated
+after it is decoded. Fix this issue by setting DATA_SRC on SPE events.
+This has no effect on the data collected because the SPE driver doesn't
+do anything with that flag and doesn't generate samples.
 
-           607,246      cpu/event=0xc0,umask=0x0/
-                 0      cpu/event=0x0,umask=0x1/
-
-The encoding for INST_RETIRED.PREC_DIST is pseudo-encoding, which
-doesn't work on the generic counters. However, current perf extends its
-mask to the generic counters.
-
-The pseudo event-code for a fixed counter must be 0x00. Check and avoid
-extending the mask for the fixed counter event which using the
-pseudo-encoding, e.g., ref-cycles and PREC_DIST event.
-
-With the patch,
-perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
-
- Performance counter stats for 'CPU(s) 0':
-
-           583,184      cpu/event=0xc0,umask=0x0/
-           583,048      cpu/event=0x0,umask=0x1/
-
-Fixes: 2de71ee153ef ("perf/x86/intel: Fix ICL/SPR INST_RETIRED.PREC_DIST encodings")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/1648482543-14923-1-git-send-email-kan.liang@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem info is not available")
+Signed-off-by: James Clark <james.clark@arm.com>
+Tested-by: Leo Yan <leo.yan@linaro.org>
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: German Gomez <german.gomez@arm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220408144056.1955535-1-james.clark@arm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/intel/core.c      |    6 +++++-
- arch/x86/include/asm/perf_event.h |    5 +++++
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ tools/perf/arch/arm64/util/arm-spe.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -5521,7 +5521,11 @@ static void intel_pmu_check_event_constr
- 			/* Disabled fixed counters which are not in CPUID */
- 			c->idxmsk64 &= intel_ctrl;
+diff --git a/tools/perf/arch/arm64/util/arm-spe.c b/tools/perf/arch/arm64/util/arm-spe.c
+index 2100d46ccf5e..bb4ab99afa7f 100644
+--- a/tools/perf/arch/arm64/util/arm-spe.c
++++ b/tools/perf/arch/arm64/util/arm-spe.c
+@@ -239,6 +239,12 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
+ 		arm_spe_set_timestamp(itr, arm_spe_evsel);
+ 	}
  
--			if (c->idxmsk64 != INTEL_PMC_MSK_FIXED_REF_CYCLES)
-+			/*
-+			 * Don't extend the pseudo-encoding to the
-+			 * generic counters
-+			 */
-+			if (!use_fixed_pseudo_encoding(c->code))
- 				c->idxmsk64 |= (1ULL << num_counters) - 1;
- 		}
- 		c->idxmsk64 &=
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -241,6 +241,11 @@ struct x86_pmu_capability {
- #define INTEL_PMC_IDX_FIXED_SLOTS	(INTEL_PMC_IDX_FIXED + 3)
- #define INTEL_PMC_MSK_FIXED_SLOTS	(1ULL << INTEL_PMC_IDX_FIXED_SLOTS)
- 
-+static inline bool use_fixed_pseudo_encoding(u64 code)
-+{
-+	return !(code & 0xff);
-+}
++	/*
++	 * Set this only so that perf report knows that SPE generates memory info. It has no effect
++	 * on the opening of the event or the SPE data produced.
++	 */
++	evsel__set_sample_bit(arm_spe_evsel, DATA_SRC);
 +
- /*
-  * We model BTS tracing as another fixed-mode PMC.
-  *
+ 	/* Add dummy event to keep tracking */
+ 	err = parse_events(evlist, "dummy:u", NULL);
+ 	if (err)
+-- 
+2.35.1
+
 
 
