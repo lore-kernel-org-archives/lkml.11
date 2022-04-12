@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A0EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63881C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352989AbiDLHOn (ORCPT
+        id S1353033AbiDLHOp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
+        Tue, 12 Apr 2022 03:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352594AbiDLG4E (ORCPT
+        with ESMTP id S1352631AbiDLG4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:56:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50241245AC;
-        Mon, 11 Apr 2022 23:46:07 -0700 (PDT)
+        Tue, 12 Apr 2022 02:56:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6233D2558A;
+        Mon, 11 Apr 2022 23:46:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00A5FB818C8;
-        Tue, 12 Apr 2022 06:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49126C385A6;
-        Tue, 12 Apr 2022 06:46:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC948B81B58;
+        Tue, 12 Apr 2022 06:46:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4531BC385A1;
+        Tue, 12 Apr 2022 06:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745964;
-        bh=PkzjqQdqfRCCDxJo6//915f+sa+d6tsZdAMPEWyeZZs=;
+        s=korg; t=1649745975;
+        bh=+YTNds+8z0t2zHdYuIfAV4xXR8U6PjwOkzvV2rN7NGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4aU2V5rNRb5URpGztHK42qcwOcXfiWqMBtZWU9kycydoNJL3yh3rTkssg21gkjhj
-         FL3c9ZkGBTIJa0TRBhrHwJNYVrjXopRZ8EXj+ph63eDKTMteOMrmrT9LOMpBXKhORQ
-         aO7ZHjIK/AcetbD+ogfv1bAMzV4xDAxQqZ0n+geI=
+        b=N/FdW5CVmoPDoZNgxBLEVNTnfbt+ormhKPWVd8b/74W7YHN6h3twDfbGqUZ506T1v
+         vBBoTe3Nmm5j/L31bgeKHMbCHf4gt7Iba3OnGUChgZSjbdaVyfbnQcgsjwc883P1l1
+         xylBAZVDWw/7uONv7fhSp74QdOGYsBD4b+i98C0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 112/277] staging: vchiq_core: handle NULL result of find_service_by_handle
-Date:   Tue, 12 Apr 2022 08:28:35 +0200
-Message-Id: <20220412062945.281147239@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 115/277] phy: amlogic: meson8b-usb2: fix shared reset control use
+Date:   Tue, 12 Apr 2022 08:28:38 +0200
+Message-Id: <20220412062945.368352662@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,46 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
 
-[ Upstream commit ca225857faf237234d2fffe5d1919467dfadd822 ]
+[ Upstream commit 6f1dedf089ab1a4f03ea7aadc3c4a99885b4b4a0 ]
 
-In case of an invalid handle the function find_servive_by_handle
-returns NULL. So take care of this and avoid a NULL pointer dereference.
+Use reset_control_rearm() call if an error occurs in case
+phy_meson8b_usb2_power_on() fails after reset() has been called, or in
+case phy_meson8b_usb2_power_off() is called i.e the resource is no longer
+used and the reset line may be triggered again by other devices.
 
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Link: https://lore.kernel.org/r/1642968143-19281-18-git-send-email-stefan.wahren@i2se.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+reset_control_rearm() keeps use of triggered_count sane in the reset
+framework, use of reset_control_reset() on shared reset line should
+be balanced with reset_control_rearm().
+
+Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Reported-by: Jerome Brunet <jbrunet@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220111095255.176141-4-aouledameur@baylibre.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/vc04_services/interface/vchiq_arm/vchiq_core.c  | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/phy/amlogic/phy-meson8b-usb2.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
-index 9429b8a642fb..630ed0dc24c3 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
-@@ -2421,6 +2421,9 @@ void vchiq_msg_queue_push(unsigned int handle, struct vchiq_header *header)
- 	struct vchiq_service *service = find_service_by_handle(handle);
- 	int pos;
+diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
+index 77e7e9b1428c..dd96763911b8 100644
+--- a/drivers/phy/amlogic/phy-meson8b-usb2.c
++++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
+@@ -154,6 +154,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 	ret = clk_prepare_enable(priv->clk_usb_general);
+ 	if (ret) {
+ 		dev_err(&phy->dev, "Failed to enable USB general clock\n");
++		reset_control_rearm(priv->reset);
+ 		return ret;
+ 	}
  
-+	if (!service)
-+		return;
-+
- 	while (service->msg_queue_write == service->msg_queue_read +
- 		VCHIQ_MAX_SLOTS) {
- 		if (wait_for_completion_interruptible(&service->msg_queue_pop))
-@@ -2441,6 +2444,9 @@ struct vchiq_header *vchiq_msg_hold(unsigned int handle)
- 	struct vchiq_header *header;
- 	int pos;
+@@ -161,6 +162,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 	if (ret) {
+ 		dev_err(&phy->dev, "Failed to enable USB DDR clock\n");
+ 		clk_disable_unprepare(priv->clk_usb_general);
++		reset_control_rearm(priv->reset);
+ 		return ret;
+ 	}
  
-+	if (!service)
-+		return NULL;
-+
- 	if (service->msg_queue_write == service->msg_queue_read)
- 		return NULL;
+@@ -199,6 +201,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 				dev_warn(&phy->dev, "USB ID detect failed!\n");
+ 				clk_disable_unprepare(priv->clk_usb);
+ 				clk_disable_unprepare(priv->clk_usb_general);
++				reset_control_rearm(priv->reset);
+ 				return -EINVAL;
+ 			}
+ 		}
+@@ -218,6 +221,7 @@ static int phy_meson8b_usb2_power_off(struct phy *phy)
  
+ 	clk_disable_unprepare(priv->clk_usb);
+ 	clk_disable_unprepare(priv->clk_usb_general);
++	reset_control_rearm(priv->reset);
+ 
+ 	/* power off the PHY by putting it into reset mode */
+ 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_POWER_ON_RESET,
 -- 
 2.35.1
 
