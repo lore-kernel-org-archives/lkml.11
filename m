@@ -2,82 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EABC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:54:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354664AbiDLM4X (ORCPT
+        id S1354751AbiDLM42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49444 "EHLO
+        Tue, 12 Apr 2022 08:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355259AbiDLMxz (ORCPT
+        with ESMTP id S1355242AbiDLMxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 08:53:55 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579FE182;
-        Tue, 12 Apr 2022 05:27:20 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso1640751wme.5;
-        Tue, 12 Apr 2022 05:27:20 -0700 (PDT)
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4204DF6A;
+        Tue, 12 Apr 2022 05:25:31 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id b15so17371227pfm.5;
+        Tue, 12 Apr 2022 05:25:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sLvVbLpUjvsfKSztwqWxtk+rzLoCKyXGmMrwcG6R1+w=;
-        b=PtWpGo2MP8zsRtwrr2OcbpzydQpqm9MnCeYYuuT7TR/jLj8P2qgHnA7LO+zT/JrMqb
-         TFlBPjuoFabV1C0ujaxUowZmq8dBHc80XQr7HZizm5UewNQRLGiDwgBq/3pwWcDsdNCF
-         txswzsV6FwpNVS7A2QdxrL5cTHQ4lqR7N5V6p2GW/Gqqx6Jum8juD+r59uynz9wiiPAT
-         A9YRMHg5GiJdJltoO941lbAFOqL/qh2wBcZWBkC7ZA+jt3BrSQpBQqzhpYiXRAjjDyDJ
-         MUsz+nUERc+OmXjMllqSbFeqzipSDHxc++lkkoIyTPxA34vMvDjPM3ZxS1eRjb7Gbbol
-         p88g==
+        h=from:to:cc:subject:date:message-id;
+        bh=33bKbKDNXAx3ppOPWZ4HVLiAbWGiHxY2Mxqx6kKUUjc=;
+        b=Uk8ggJ2OS0JkLBPm8p9999h8xf6fanlr6yaF1MHsctGgvCL+nUTWR57jYjdU8W3KLo
+         thpNjNrkq6k3/C2AqoXqGHtdbhL07ntH4o2jspWqz9ctAkoGHLsqz8S6qjYamQMfuE9C
+         C6vuU2r+ZUiew5O5Qah6wwZupIt9NN2Qtiyid1BH5oTZ+sL8YOn199jMxus2Bsjvna1t
+         U8isN3WQ95nAnf4JlxcLkWdCMR5jHns2sqByP5M/QK8tG1g9GzEUCdmuUbtgDjFmWL+m
+         98CmW59ozWwfJD+Mj3gcSPxzaJAz7/hDiNrL7yEIL+VH2HbMomYoEWMOGG+HuSu0UUZJ
+         30fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sLvVbLpUjvsfKSztwqWxtk+rzLoCKyXGmMrwcG6R1+w=;
-        b=F7sH9dMmxpwSUrfqgX0QV17GcQOQ56s3eRehAqmecl3ZgE2MRWV/wPZrVTZqTRqvlc
-         kWvxRW461FbrdZGXyOlVh3qlH9UwqnNp95CV/Pco0dJxw4GE8fhDBjJPyYf6C9NO910D
-         8XrIL2t4jSYxXmJmS6qWT47Kzj1DUbuFGw8UbPmINIS9cr1OSiEz46wcAfhnEy+FTVbt
-         9IuHBafo9cXDVOhCluUG7IM+h7BT+cyXvDvLy45XRiN7Jhf89Lg9zOBKLq0sA7UjjOr1
-         gTMdbcNxRI01fxSd1VLBmxtc9+OYaP4rEhY/PW1ucl85Gt/dkiOXp80jh3EMuOujn5ge
-         iajQ==
-X-Gm-Message-State: AOAM530SZC0/PfnkhfhzQWAufF8xiA2vjWOGOaGGGS+uus7r4wwhMl43
-        pDb3jDnCr9UNsoeVivKVnQ+KvIjzhmA=
-X-Google-Smtp-Source: ABdhPJwty/6hk/+kjAvmRWBC4Ymn+Sv+ZBmECvJhvpCjaY05GnKzIf0wXjuCG071bxGt0dOoGMW/RQ==
-X-Received: by 2002:a1c:f604:0:b0:38c:8ffd:dbb6 with SMTP id w4-20020a1cf604000000b0038c8ffddbb6mr3893960wmc.43.1649766438868;
-        Tue, 12 Apr 2022 05:27:18 -0700 (PDT)
-Received: from localhost (92.40.203.131.threembb.co.uk. [92.40.203.131])
-        by smtp.gmail.com with ESMTPSA id n8-20020a05600c4f8800b0038eb596ab10sm2296064wmq.2.2022.04.12.05.27.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=33bKbKDNXAx3ppOPWZ4HVLiAbWGiHxY2Mxqx6kKUUjc=;
+        b=axqB5YwDcd83Augn9tPxh7M1cLinKjtw4dtrgW4HWNoPMEjUy3FiyVSpGrk7VNkPeo
+         9BYi6WnfuZtcnbsauus+83q99ZzbCGoQGhAdpOB6xd+rW1zeVg16EgKGDaujNxSR0ie/
+         AQ9jHLEN8DFJGzTtF1jt3XxDGGxzAUeLN6igS9pzqyWhiPx1v2o+QmaVnYWfrXw/sxVx
+         ffRdmz2l5MX1UEXIpwUNnx/vrTSp1DAm87NhgkPG2g1E6NK7DD3hJC2AYj/vRETMzFF/
+         hb4S3wOQfSBGbB5bhLJQwJApDezaPNZKF/u3D6HiZZB3pZlb3Wg99nFTzFFatrBUro86
+         7rIA==
+X-Gm-Message-State: AOAM531qdgbjXfutW9pH3yFzAQw0MF4t+xRWWUhZdNrvlHrKCy0Cyl5D
+        lIs/VmVfNBs0bHDqdgsvFF8=
+X-Google-Smtp-Source: ABdhPJycdPSZCbu4EHe5zFWxs7bVf9Z8wj+a4S2NpyQ6vGtHFc/5+yrhOdtwaM19rmz4m1S8g0UlRg==
+X-Received: by 2002:a63:c1b:0:b0:39d:93f7:4b7b with SMTP id b27-20020a630c1b000000b0039d93f74b7bmr2723057pgl.595.1649766331348;
+        Tue, 12 Apr 2022 05:25:31 -0700 (PDT)
+Received: from zeshkernups01.spreadtrum.com ([117.18.48.102])
+        by smtp.gmail.com with ESMTPSA id a16-20020a637050000000b00385f92b13d1sm2788915pgn.43.2022.04.12.05.25.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:27:18 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     paul@crapouillou.net, robh+dt@kernel.org, krzk+dt@kernel.org,
-        tsbogend@alpha.franken.de, mturquette@baylibre.com,
-        sboyd@kernel.org
-Cc:     linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        dan.carpenter@oracle.com
-Subject: [PATCH v5 0/2] Fix missing TCU clock for X1000/X1830 SoCs
-Date:   Tue, 12 Apr 2022 13:27:48 +0100
-Message-Id: <20220412122750.279058-1-aidanmacdonald.0x0@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 12 Apr 2022 05:25:30 -0700 (PDT)
+From:   Surong Pang <surong.pang@gmail.com>
+To:     mathias.nyman@intel.com, gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V1 1/1] usb/host: Let usb phy shutdown later
+Date:   Tue, 12 Apr 2022 20:25:24 +0800
+Message-Id: <20220412122524.26966-1-surong.pang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v5: fix use of uninitialized variable reported by kernel test robot & Dan Carpenter
-v4: resend of v3 with some minor changes
-v3: https://lore.kernel.org/linux-mips/20220224150326.525707-1-aidanmacdonald.0x0@gmail.com/
+From: Surong Pang <surong.pang@unisoc.com>
 
-Aidan MacDonald (2):
-  mips: dts: ingenic: Add TCU clock to x1000/x1830 tcu device node
-  clk: ingenic-tcu: Fix missing TCU clock for X1000 SoCs
+Let usb phy shutdown later in xhci_plat_remove function.
+Some phy driver doesn't divide 3.0/2.0 very clear.
+If calls usb_phy_shutdown earlier than usb_remove_hcd(hcd),
+It will case 10s cmd timeout issue.
 
- arch/mips/boot/dts/ingenic/x1000.dtsi |  5 ++--
- arch/mips/boot/dts/ingenic/x1830.dtsi |  5 ++--
- drivers/clk/ingenic/tcu.c             | 35 +++++++++++++++++++--------
- 3 files changed, 31 insertions(+), 14 deletions(-)
+Call usb phy shutdown later has better compatibility.
 
+Signed-off-by: Surong Pang <surong.pang@unisoc.com>
+---
+ drivers/usb/host/xhci-plat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
+index 649ffd861b44..dc73a81cbe9b 100644
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -390,7 +390,6 @@ static int xhci_plat_remove(struct platform_device *dev)
+ 
+ 	usb_remove_hcd(shared_hcd);
+ 	xhci->shared_hcd = NULL;
+-	usb_phy_shutdown(hcd->usb_phy);
+ 
+ 	usb_remove_hcd(hcd);
+ 	usb_put_hcd(shared_hcd);
+@@ -398,6 +397,7 @@ static int xhci_plat_remove(struct platform_device *dev)
+ 	clk_disable_unprepare(clk);
+ 	clk_disable_unprepare(reg_clk);
+ 	usb_put_hcd(hcd);
++	usb_phy_shutdown(hcd->usb_phy);
+ 
+ 	pm_runtime_disable(&dev->dev);
+ 	pm_runtime_put_noidle(&dev->dev);
 -- 
-2.35.1
+2.17.1
 
