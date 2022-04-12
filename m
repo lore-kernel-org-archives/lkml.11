@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBACCC41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A6BC46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383995AbiDLIiz (ORCPT
+        id S1384112AbiDLIjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        Tue, 12 Apr 2022 04:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357103AbiDLHjr (ORCPT
+        with ESMTP id S1357104AbiDLHjr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E79ABCB6;
-        Tue, 12 Apr 2022 00:11:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989DEDEA4;
+        Tue, 12 Apr 2022 00:12:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD38D61701;
-        Tue, 12 Apr 2022 07:11:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2100C385A5;
-        Tue, 12 Apr 2022 07:11:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34EA56153F;
+        Tue, 12 Apr 2022 07:12:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415B6C385A6;
+        Tue, 12 Apr 2022 07:12:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747518;
-        bh=KyppwBAxf1ZILb2cK4QcPAex7NnhClg9RsYTWWUiftI=;
+        s=korg; t=1649747526;
+        bh=LiN4xAlbtOMQmCAMYa+oEGTr4Vv1YS5mZ2fgoK15uO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Syt/QEs5kqPbfj/4Z/tA6rv75n+BqLTnnUMjd21L9sp3krZCBw5OeVUYG/rY9M1NA
-         XMG28CWJEZWlwlFcowVYXzZsZPtmH2Vih9LfgIW14qhwk9fxDr/zb/pqyYTsPyISB+
-         QYlwyWAAP6bSq09OVZbpZCMoxhz3YvkBjrlw6yW0=
+        b=FD04ZgobCRENG1h0YSZ8DxEEIh42Ch/PugylS6e0nx0q5OQoq1SHDWgVZCGI+sZIO
+         4gvf4GbcoZz8T2bi1qS/GbHY150u5zURoSZKYY2ktW9LK8f4+eMiHZN+h2qT1PIjdx
+         l8+dQT2oss2r8eTkZk1Y/5+D0kjIDHL/j8FIpGQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Neal Liu <neal_liu@aspeedtech.com>,
+        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 067/343] usb: ehci: add pci device support for Aspeed platforms
-Date:   Tue, 12 Apr 2022 08:28:05 +0200
-Message-Id: <20220412062953.037709591@linuxfoundation.org>
+Subject: [PATCH 5.17 070/343] libbpf: Fix accessing the first syscall argument on arm64
+Date:   Tue, 12 Apr 2022 08:28:08 +0200
+Message-Id: <20220412062953.123150338@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,50 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Ilya Leoshkevich <iii@linux.ibm.com>
 
-[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
+[ Upstream commit fbca4a2f649730b67488a8b36140ce4d2cf13c63 ]
 
-Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-handshake CMD_RUN instead of STS_HALT") to support Aspeed
-ehci-pci device.
+On arm64, the first syscall argument should be accessed via orig_x0
+(see arch/arm64/include/asm/syscall.h). Currently regs[0] is used
+instead, leading to bpf_syscall_macro test failure.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+orig_x0 cannot be added to struct user_pt_regs, since its layout is a
+part of the ABI. Therefore provide access to it only through
+PT_REGS_PARM1_CORE_SYSCALL() by using a struct pt_regs flavor.
+
+Reported-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220209021745.2215452-10-iii@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/lib/bpf/bpf_tracing.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-index e87cf3a00fa4..638f03b89739 100644
---- a/drivers/usb/host/ehci-pci.c
-+++ b/drivers/usb/host/ehci-pci.c
-@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
- /* defined here to avoid adding to pci_ids.h for single instance use */
- #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
+diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+index 41f5f3149875..bed07c35b8de 100644
+--- a/tools/lib/bpf/bpf_tracing.h
++++ b/tools/lib/bpf/bpf_tracing.h
+@@ -140,6 +140,10 @@
  
-+#define PCI_VENDOR_ID_ASPEED		0x1a03
-+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
+ #elif defined(bpf_target_arm64)
+ 
++struct pt_regs___arm64 {
++	unsigned long orig_x0;
++};
 +
- /*-------------------------------------------------------------------------*/
- #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
- static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
-@@ -222,6 +225,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
- 			ehci->has_synopsys_hc_bug = 1;
- 		}
- 		break;
-+	case PCI_VENDOR_ID_ASPEED:
-+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-+			ehci_info(ehci, "applying Aspeed HC workaround\n");
-+			ehci->is_aspeed = 1;
-+		}
-+		break;
- 	}
+ /* arm64 provides struct user_pt_regs instead of struct pt_regs to userspace */
+ #define __PT_REGS_CAST(x) ((const struct user_pt_regs *)(x))
+ #define __PT_PARM1_REG regs[0]
+@@ -152,6 +156,8 @@
+ #define __PT_RC_REG regs[0]
+ #define __PT_SP_REG sp
+ #define __PT_IP_REG pc
++#define PT_REGS_PARM1_SYSCALL(x) ({ _Pragma("GCC error \"use PT_REGS_PARM1_CORE_SYSCALL() instead\""); 0l; })
++#define PT_REGS_PARM1_CORE_SYSCALL(x) BPF_CORE_READ((const struct pt_regs___arm64 *)(x), orig_x0)
  
- 	/* optional debug port, normally in the first BAR */
+ #elif defined(bpf_target_mips)
+ 
 -- 
 2.35.1
 
