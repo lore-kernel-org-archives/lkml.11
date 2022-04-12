@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1420C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24791C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357391AbiDLHkM (ORCPT
+        id S1358121AbiDLHlG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45762 "EHLO
+        Tue, 12 Apr 2022 03:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353048AbiDLHOr (ORCPT
+        with ESMTP id S1353118AbiDLHOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57765326F9;
-        Mon, 11 Apr 2022 23:55:54 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4690837A16;
+        Mon, 11 Apr 2022 23:56:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 088B7B81B35;
-        Tue, 12 Apr 2022 06:55:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 530C1C385A1;
-        Tue, 12 Apr 2022 06:55:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB6CD6149D;
+        Tue, 12 Apr 2022 06:56:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA2AC385A1;
+        Tue, 12 Apr 2022 06:56:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746551;
-        bh=vavpxSQ8hCPwaPb0OpeD/TivYZJ03bn70nfTSq33xi4=;
+        s=korg; t=1649746590;
+        bh=1eZQ2mG1B5Ze4BFKltM7j3jjf6Smhu+NEKul0MLnFVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EB/vAX9LGbDyhvr3DX7hlZVq71QLn6n+Tj0QJi1rtw4kx0ywmfVjI5Ixs8KOe9san
-         yWTLqUUtyyQV7dg326p76XExBgvr2/fvTMCITcsR0JYVJtxEVTu4KPcTt7cR2mly5Q
-         cTWsLSYk+t5OcGkT0lgmNBawIeUFzscfQgxm7pk8=
+        b=FawYAFDtumgTk3RdAZh3ouZ3ngIOtshkFAXxQQo2oUmOqCLMWN4Zn9eEPvVQgDUKn
+         6NkqzVKRsVIjCF3GGEASwr9D5dfIrH0ZYvqXE3Qls1LwWQyiDYrSwekBTBfzf/lE3t
+         pSIBt0+Sbe6/e1pOEROqsEIK/gZXIWIYI6VcK698=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 029/285] net/smc: Send directly when TCP_CORK is cleared
-Date:   Tue, 12 Apr 2022 08:28:06 +0200
-Message-Id: <20220412062944.518440021@linuxfoundation.org>
+Subject: [PATCH 5.16 059/285] usb: dwc3: pci: Set the swnode from inside dwc3_pci_quirks()
+Date:   Tue, 12 Apr 2022 08:28:36 +0200
+Message-Id: <20220412062945.373936337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,109 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lu <tonylu@linux.alibaba.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit ea785a1a573b390a150010b3c5b81e1ccd8c98a8 ]
+[ Upstream commit e285cb403994419e997749c9a52b9370884ae0c8 ]
 
-According to the man page of TCP_CORK [1], if set, don't send out
-partial frames. All queued partial frames are sent when option is
-cleared again.
+The quirk handling may need to set some different properties
+which means using a different swnode, move the setting of the swnode
+to inside dwc3_pci_quirks() so that the quirk handling can choose
+a different swnode.
 
-When applications call setsockopt to disable TCP_CORK, this call is
-protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
-to send pending data right now. However, the delayed work smc_tx_work is
-also protected by lock_sock(). There introduces lock contention for
-sending data.
-
-To fix it, send pending data directly which acts like TCP, without
-lock_sock() protected in the context of setsockopt (already lock_sock()ed),
-and cancel unnecessary dealyed work, which is protected by lock.
-
-[1] https://linux.die.net/man/7/tcp
-
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220213130524.18748-4-hdegoede@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c |  4 ++--
- net/smc/smc_tx.c | 25 +++++++++++++++----------
- net/smc/smc_tx.h |  1 +
- 3 files changed, 18 insertions(+), 12 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index a0fb596459a3..0ec721b8059a 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2632,8 +2632,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 		    sk->sk_state != SMC_CLOSED) {
- 			if (!val) {
- 				SMC_STAT_INC(smc, cork_cnt);
--				mod_delayed_work(smc->conn.lgr->tx_wq,
--						 &smc->conn.tx_work, 0);
-+				smc_tx_pending(&smc->conn);
-+				cancel_delayed_work(&smc->conn.tx_work);
- 			}
- 		}
- 		break;
-diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
-index be241d53020f..7b0b6e24582f 100644
---- a/net/smc/smc_tx.c
-+++ b/net/smc/smc_tx.c
-@@ -597,27 +597,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
- 	return rc;
- }
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 06d0e88ec8af..4d9608cc55f7 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -185,7 +185,8 @@ static const struct software_node dwc3_pci_amd_mr_swnode = {
+ 	.properties = dwc3_pci_mr_properties,
+ };
  
--/* Wakeup sndbuf consumers from process context
-- * since there is more data to transmit
-- */
--void smc_tx_work(struct work_struct *work)
-+void smc_tx_pending(struct smc_connection *conn)
+-static int dwc3_pci_quirks(struct dwc3_pci *dwc)
++static int dwc3_pci_quirks(struct dwc3_pci *dwc,
++			   const struct software_node *swnode)
  {
--	struct smc_connection *conn = container_of(to_delayed_work(work),
--						   struct smc_connection,
--						   tx_work);
- 	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
- 	int rc;
+ 	struct pci_dev			*pdev = dwc->pci;
  
--	lock_sock(&smc->sk);
- 	if (smc->sk.sk_err)
--		goto out;
-+		return;
+@@ -242,7 +243,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
+ 		}
+ 	}
  
- 	rc = smc_tx_sndbuf_nonempty(conn);
- 	if (!rc && conn->local_rx_ctrl.prod_flags.write_blocked &&
- 	    !atomic_read(&conn->bytes_to_rcv))
- 		conn->local_rx_ctrl.prod_flags.write_blocked = 0;
-+}
-+
-+/* Wakeup sndbuf consumers from process context
-+ * since there is more data to transmit
-+ */
-+void smc_tx_work(struct work_struct *work)
-+{
-+	struct smc_connection *conn = container_of(to_delayed_work(work),
-+						   struct smc_connection,
-+						   tx_work);
-+	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
- 
--out:
-+	lock_sock(&smc->sk);
-+	smc_tx_pending(conn);
- 	release_sock(&smc->sk);
+-	return 0;
++	return device_add_software_node(&dwc->dwc3->dev, swnode);
  }
  
-diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
-index 07e6ad76224a..a59f370b8b43 100644
---- a/net/smc/smc_tx.h
-+++ b/net/smc/smc_tx.h
-@@ -27,6 +27,7 @@ static inline int smc_tx_prepared_sends(struct smc_connection *conn)
- 	return smc_curs_diff(conn->sndbuf_desc->len, &sent, &prep);
- }
+ #ifdef CONFIG_PM
+@@ -307,11 +308,7 @@ static int dwc3_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	dwc->dwc3->dev.parent = dev;
+ 	ACPI_COMPANION_SET(&dwc->dwc3->dev, ACPI_COMPANION(dev));
  
-+void smc_tx_pending(struct smc_connection *conn);
- void smc_tx_work(struct work_struct *work);
- void smc_tx_init(struct smc_sock *smc);
- int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
+-	ret = device_add_software_node(&dwc->dwc3->dev, (void *)id->driver_data);
+-	if (ret < 0)
+-		goto err;
+-
+-	ret = dwc3_pci_quirks(dwc);
++	ret = dwc3_pci_quirks(dwc, (void *)id->driver_data);
+ 	if (ret)
+ 		goto err;
+ 
 -- 
 2.35.1
 
