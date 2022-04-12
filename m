@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA90EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 067E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243221AbiDLIp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
+        id S1344221AbiDLIpi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357314AbiDLHj6 (ORCPT
+        with ESMTP id S1357346AbiDLHkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0513B1EC50;
-        Tue, 12 Apr 2022 00:14:57 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81AC24F3A;
+        Tue, 12 Apr 2022 00:15:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3DF7B81B62;
-        Tue, 12 Apr 2022 07:14:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DECC385A5;
-        Tue, 12 Apr 2022 07:14:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C1BAB81B4F;
+        Tue, 12 Apr 2022 07:15:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0689C385A1;
+        Tue, 12 Apr 2022 07:15:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747694;
-        bh=hVu1gpPr0uY/FdIH5Ckm7DMmE8MOGJVH0WdABw0+KkI=;
+        s=korg; t=1649747736;
+        bh=s3jXKWdwkdVWvSsHAFTai9wLnPC5wzkPc8r960P/19I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kq/fd40+Roli2ois3ydVmruXjYHZkpD9kj9TSrKVnY3yZZE5g7eNkSLrZ+d25zZuw
-         Tsi0tcq5sY67fLBQ+4C7FF7LFCljmqDub2e/1nMYK1KkcF4r/FTh///946Z9QBwHgw
-         Rcco5AyABcTv0yiTl7Nqe7ou6K3zVXY2HAA96Rjk=
+        b=prW3leIHQlF3jS3lohMucpe233Ub34yZEKsbKtyFOazoUtIFkXpFZUdglK/xozkx6
+         x/IN2C2se8If8FLCHO4sS86TH9YbR05Lkuw0L3OMkHYFPW7tOZKWc8TUhGOYrdgalx
+         uzfZ8+XHEf3JR9LclNcViNldXOqWdwiqIaH+kO98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oded Gabbay <ogabbay@kernel.org>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 172/343] habanalabs: reject host map with mmu disabled
-Date:   Tue, 12 Apr 2022 08:29:50 +0200
-Message-Id: <20220412062956.333257395@linuxfoundation.org>
+Subject: [PATCH 5.17 186/343] SUNRPC: Fix socket waits for write buffer space
+Date:   Tue, 12 Apr 2022 08:30:04 +0200
+Message-Id: <20220412062956.729801171@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -48,88 +50,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oded Gabbay <ogabbay@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 9a79e3e4a3637c07352d9723b825490a1b04391f ]
+[ Upstream commit 7496b59f588dd52886fdbac7633608097543a0a5 ]
 
-This is not something we can do a workaround. It is clearly an error
-and we should notify the user that it is an error.
+The socket layer requires that we use the socket lock to protect changes
+to the sock->sk_write_pending field and others.
 
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+Reported-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/habanalabs/common/memory.c | 30 +++++++++----------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+ net/sunrpc/xprtsock.c | 54 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 39 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
-index c1eefaebacb6..bcc6e547e071 100644
---- a/drivers/misc/habanalabs/common/memory.c
-+++ b/drivers/misc/habanalabs/common/memory.c
-@@ -1967,16 +1967,15 @@ static int export_dmabuf_from_handle(struct hl_ctx *ctx, u64 handle, int flags,
- static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 11eab0f0333b..5eb05c2dd6d6 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -763,12 +763,12 @@ xs_stream_start_connect(struct sock_xprt *transport)
+ /**
+  * xs_nospace - handle transmit was incomplete
+  * @req: pointer to RPC request
++ * @transport: pointer to struct sock_xprt
+  *
+  */
+-static int xs_nospace(struct rpc_rqst *req)
++static int xs_nospace(struct rpc_rqst *req, struct sock_xprt *transport)
  {
- 	struct hl_device *hdev = hpriv->hdev;
--	struct hl_ctx *ctx = hpriv->ctx;
- 	u64 block_handle, device_addr = 0;
-+	struct hl_ctx *ctx = hpriv->ctx;
- 	u32 handle = 0, block_size;
--	int rc, dmabuf_fd = -EBADF;
-+	int rc;
+-	struct rpc_xprt *xprt = req->rq_xprt;
+-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
++	struct rpc_xprt *xprt = &transport->xprt;
+ 	struct sock *sk = transport->inet;
+ 	int ret = -EAGAIN;
  
- 	switch (args->in.op) {
- 	case HL_MEM_OP_ALLOC:
- 		if (args->in.alloc.mem_size == 0) {
--			dev_err(hdev->dev,
--				"alloc size must be larger than 0\n");
-+			dev_err(hdev->dev, "alloc size must be larger than 0\n");
- 			rc = -EINVAL;
- 			goto out;
- 		}
-@@ -1997,15 +1996,14 @@ static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
+@@ -779,25 +779,49 @@ static int xs_nospace(struct rpc_rqst *req)
  
- 	case HL_MEM_OP_MAP:
- 		if (args->in.flags & HL_MEM_USERPTR) {
--			device_addr = args->in.map_host.host_virt_addr;
--			rc = 0;
-+			dev_err(hdev->dev, "Failed to map host memory when MMU is disabled\n");
-+			rc = -EPERM;
- 		} else {
--			rc = get_paddr_from_handle(ctx, &args->in,
--							&device_addr);
-+			rc = get_paddr_from_handle(ctx, &args->in, &device_addr);
-+			memset(args, 0, sizeof(*args));
-+			args->out.device_virt_addr = device_addr;
- 		}
+ 	/* Don't race with disconnect */
+ 	if (xprt_connected(xprt)) {
++		struct socket_wq *wq;
++
++		rcu_read_lock();
++		wq = rcu_dereference(sk->sk_wq);
++		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
++		rcu_read_unlock();
++
+ 		/* wait for more buffer space */
++		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+ 		sk->sk_write_pending++;
+ 		xprt_wait_for_buffer_space(xprt);
+ 	} else
+ 		ret = -ENOTCONN;
  
--		memset(args, 0, sizeof(*args));
--		args->out.device_virt_addr = device_addr;
+ 	spin_unlock(&xprt->transport_lock);
++	return ret;
++}
+ 
+-	/* Race breaker in case memory is freed before above code is called */
+-	if (ret == -EAGAIN) {
+-		struct socket_wq *wq;
++static int xs_sock_nospace(struct rpc_rqst *req)
++{
++	struct sock_xprt *transport =
++		container_of(req->rq_xprt, struct sock_xprt, xprt);
++	struct sock *sk = transport->inet;
++	int ret = -EAGAIN;
+ 
+-		rcu_read_lock();
+-		wq = rcu_dereference(sk->sk_wq);
+-		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
+-		rcu_read_unlock();
++	lock_sock(sk);
++	if (!sock_writeable(sk))
++		ret = xs_nospace(req, transport);
++	release_sock(sk);
++	return ret;
++}
+ 
+-		sk->sk_write_space(sk);
+-	}
++static int xs_stream_nospace(struct rpc_rqst *req)
++{
++	struct sock_xprt *transport =
++		container_of(req->rq_xprt, struct sock_xprt, xprt);
++	struct sock *sk = transport->inet;
++	int ret = -EAGAIN;
++
++	lock_sock(sk);
++	if (!sk_stream_memory_free(sk))
++		ret = xs_nospace(req, transport);
++	release_sock(sk);
+ 	return ret;
+ }
+ 
+@@ -887,7 +911,7 @@ static int xs_local_send_request(struct rpc_rqst *req)
+ 	case -ENOBUFS:
  		break;
- 
- 	case HL_MEM_OP_UNMAP:
-@@ -2013,20 +2011,14 @@ static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_stream_nospace(req);
  		break;
- 
- 	case HL_MEM_OP_MAP_BLOCK:
--		rc = map_block(hdev, args->in.map_block.block_addr,
--				&block_handle, &block_size);
-+		rc = map_block(hdev, args->in.map_block.block_addr, &block_handle, &block_size);
- 		args->out.block_handle = block_handle;
- 		args->out.block_size = block_size;
- 		break;
- 
- 	case HL_MEM_OP_EXPORT_DMABUF_FD:
--		rc = export_dmabuf_from_addr(ctx,
--				args->in.export_dmabuf_fd.handle,
--				args->in.export_dmabuf_fd.mem_size,
--				args->in.flags,
--				&dmabuf_fd);
--		memset(args, 0, sizeof(*args));
--		args->out.fd = dmabuf_fd;
-+		dev_err(hdev->dev, "Failed to export dma-buf object when MMU is disabled\n");
-+		rc = -EPERM;
- 		break;
- 
  	default:
+ 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
+@@ -963,7 +987,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
+ 		/* Should we call xs_close() here? */
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_sock_nospace(req);
+ 		break;
+ 	case -ENETUNREACH:
+ 	case -ENOBUFS:
+@@ -1083,7 +1107,7 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
+ 		/* Should we call xs_close() here? */
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_stream_nospace(req);
+ 		break;
+ 	case -ECONNRESET:
+ 	case -ECONNREFUSED:
 -- 
 2.35.1
 
