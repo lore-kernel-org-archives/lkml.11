@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B435C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA319C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387178AbiDLJF5 (ORCPT
+        id S1387123AbiDLJFk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
+        Tue, 12 Apr 2022 05:05:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359260AbiDLHmw (ORCPT
+        with ESMTP id S1359242AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853462BB09;
-        Tue, 12 Apr 2022 00:21:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4695576E;
+        Tue, 12 Apr 2022 00:20:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23CDC61045;
-        Tue, 12 Apr 2022 07:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A9CC385A1;
-        Tue, 12 Apr 2022 07:21:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 594B261045;
+        Tue, 12 Apr 2022 07:20:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68938C385A5;
+        Tue, 12 Apr 2022 07:20:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748077;
-        bh=bScr1sUFM94SlTUGziiSSo1pd7DcDs5dN8ORKndYxrE=;
+        s=korg; t=1649748038;
+        bh=1fAADtwZr8mUN51KJvbjJw10IrVyo6zwcuvu2c/R9yc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xNCyJqi0D5gni5rYImrx0qVqVK8BWN5upCL7YMJLOGcgkCyZ56DUw7eelHfeDTYWw
-         1jYX7JE1u5WBOIsJm9UiY3CKirEH+b9EZYjfi57nb04Hfsxs6BX7hB/Ef7foeZ0lqU
-         1Q8pJRJMfcHcA48x5FRiyh9dMqa1bm4SzQfj0ZzU=
+        b=B0G8LGzA9vytDRXkP9gkAHQO702qgKRawGcNogQw88zHS9hn1Q7XFh9kMeMLiHjdV
+         nqBmA7zPxoiOe7Fqc67ZJpl2fB2ehKz2bi39oJx2F3UffXra0Zyv5pGq1upJCHQcA1
+         jtJi74Cp0NaIkSddDKCQHlz+yjtpN62nFV4VW1lo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.17 310/343] drm/amdkfd: Create file descriptor after client is added to smi_clients list
-Date:   Tue, 12 Apr 2022 08:32:08 +0200
-Message-Id: <20220412063000.270200900@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 280/343] x86/pm: Save the MSR validity status at context setup
+Date:   Tue, 12 Apr 2022 08:31:38 +0200
+Message-Id: <20220412062959.405582569@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -54,70 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lee Jones <lee.jones@linaro.org>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit e79a2398e1b2d47060474dca291542368183bc0f upstream.
+commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
 
-This ensures userspace cannot prematurely clean-up the client before
-it is fully initialised which has been proven to cause issues in the
-past.
+The mechanism to save/restore MSRs during S3 suspend/resume checks for
+the MSR validity during suspend, and only restores the MSR if its a
+valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
+throw an exception for every suspend cycle.  The more invalid MSRs,
+higher the impact will be.
 
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: amd-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Check and save the MSR validity at setup.  This ensures that only valid
+MSRs that are guaranteed to not throw an exception will be attempted
+during suspend.
+
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
 Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c |   24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ arch/x86/power/cpu.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-@@ -268,15 +268,6 @@ int kfd_smi_event_open(struct kfd_dev *d
- 		return ret;
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -40,7 +40,8 @@ static void msr_save_context(struct save
+ 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
+ 
+ 	while (msr < end) {
+-		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
++		if (msr->valid)
++			rdmsrl(msr->info.msr_no, msr->info.reg.q);
+ 		msr++;
+ 	}
+ }
+@@ -424,8 +425,10 @@ static int msr_build_context(const u32 *
  	}
  
--	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
--			       O_RDWR);
--	if (ret < 0) {
--		kfifo_free(&client->fifo);
--		kfree(client);
--		return ret;
--	}
--	*fd = ret;
--
- 	init_waitqueue_head(&client->wait_queue);
- 	spin_lock_init(&client->lock);
- 	client->events = 0;
-@@ -286,5 +277,20 @@ int kfd_smi_event_open(struct kfd_dev *d
- 	list_add_rcu(&client->list, &dev->smi_clients);
- 	spin_unlock(&dev->smi_lock);
- 
-+	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
-+			       O_RDWR);
-+	if (ret < 0) {
-+		spin_lock(&dev->smi_lock);
-+		list_del_rcu(&client->list);
-+		spin_unlock(&dev->smi_lock);
+ 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
++		u64 dummy;
 +
-+		synchronize_rcu();
-+
-+		kfifo_free(&client->fifo);
-+		kfree(client);
-+		return ret;
-+	}
-+	*fd = ret;
-+
- 	return 0;
- }
+ 		msr_array[i].info.msr_no	= msr_id[j];
+-		msr_array[i].valid		= false;
++		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
+ 		msr_array[i].info.reg.q		= 0;
+ 	}
+ 	saved_msrs->num   = total_num;
 
 
