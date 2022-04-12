@@ -2,222 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF33C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230226AbiDLX3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
+        id S230236AbiDLX31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiDLX0t (ORCPT
+        with ESMTP id S230262AbiDLX1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:26:49 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD045E5E2A;
-        Tue, 12 Apr 2022 15:37:16 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bh17so392487ejb.8;
-        Tue, 12 Apr 2022 15:37:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Fi7MSAw9JJfEvAstthfKaej5RCtbNw/RZ/uRsivb1lk=;
-        b=P0UAHya9e7CASxMUbhq+/+mZprtCmglz9V4rIrQxtp/2QWoEr6dcyh2A77/WSJ9ZQ9
-         MzS3J/xT0o1MaHzzIWjNkb+O3ATx8QEftezuDBugYJJKvaR2wK5xHunebttC/0nHQTd6
-         xQVcX/ye+UobRN4t/8PjkZd9H18AYH7RXVDTD2tUlOPiTO6mXikOzUUB/Kid2+axYFjd
-         xTR5Fku5CdDPgoL7balX19T3uzgItp0GQe1Ij2eWWZKiyWoiIGI6SnMvOu+Iq7Y0+d5G
-         fP9FxGITJMK2Zx/cg7mfn9RhZ4ifYp2D3g08reHUUW6CjUnLn+iz0nJVfEz8ABt0QNej
-         MIaQ==
+        Tue, 12 Apr 2022 19:27:46 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E54D1129;
+        Tue, 12 Apr 2022 15:12:43 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id q129so198151oif.4;
+        Tue, 12 Apr 2022 15:12:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Fi7MSAw9JJfEvAstthfKaej5RCtbNw/RZ/uRsivb1lk=;
-        b=ATOEVXBWRxPWWCAWzOUABYPf9OAfxa/gtez7QfIPn6jvxJJkFbOGk7qL1VHY2X3Bcv
-         C3lpJCQTq7F7sSkXdYy4SUo0ctdJau45mnpjBRalUQ+tYM7UoKbhQgvXhxhqQzYw5Yw0
-         JgzpEDcYAcBusp6uGB/F4g5O3xNc8FcV5ZXQb5nZ7IAxfFbL9NmzZrfBuiWg9p1+tp2Y
-         aR8peEIrrTe9/ees3mKMVu6IwDtMNsfNSM8+vxYJoVwtMYKqtKR7OfXRVJp/hjq7E2Tg
-         006MXx4alk5dZiR0n+s8q15JldenHzoGI7byUmrdGDlLZ8j24tBc8dlRawCro6QrzBg8
-         xC5A==
-X-Gm-Message-State: AOAM531OBFQk1J4dfJj1RcD0Z9YienAj9qkycfIk78quoKiWfEEjyyt3
-        c1sdxR6Jq3m17rUVPuUveXg=
-X-Google-Smtp-Source: ABdhPJyYVVu7QfZdAoEiOX9n+x0N4MK17YbtHf77uSWQez4CJOaLjbCP0v6dWK2uaL8ANUwRNSw+gQ==
-X-Received: by 2002:a17:906:3082:b0:6e0:111f:8986 with SMTP id 2-20020a170906308200b006e0111f8986mr35114749ejv.677.1649803035186;
-        Tue, 12 Apr 2022 15:37:15 -0700 (PDT)
-Received: from Ansuel-xps. (host-80-182-176-248.pool80182.interbusiness.it. [80.182.176.248])
-        by smtp.gmail.com with ESMTPSA id u10-20020a50d94a000000b004131aa2525esm336339edj.49.2022.04.12.15.37.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=47WaZ6kjUZsT9iTQ2UXEwksvZRBMq7QZhouU2/Ai3wA=;
+        b=nn6akzkksEjsEa+Rwnpp2HMTxuAp3mqJeP1ata3p5oLL6UQhqbx1fYcpOjuiA06rXV
+         7a/ohOIYcGO/0U88pNb/2EPA/NyceqrkmSX9XQNY8YibocHcPdlqTJYlCAv7vGAxrxOw
+         /KTzcdPO8BOpSWvaYVvXLC2S0+PpAtXNRKO78SVEFVHe+mxzSXXaSc6rUo1ryCUTgLU6
+         P6XMWUFEowaHzudYvJVmHf3VixN31urF0P84SU2bQKnVO0qDdYbE7GdTTaXIPQJ/Is7h
+         3mKWi3l2La2AJ7Y/CU/lx6sPRxUnCpktdYPIk2JovqyaEd3NLk0n7oxCaa9bGZSWfIc0
+         UniA==
+X-Gm-Message-State: AOAM5326+WAHa28aGa6jdVL1Z1QErbQGuwh6RJWKXJYbXMo1A6mk+I8I
+        eR8PkP40eRK4Yqh8hCBgWe6CNHu7NA==
+X-Google-Smtp-Source: ABdhPJy0+SAQRoWAmj5LECu0tTl+2mffhIhmvVHUT1qzdnR8HC/3zPqvSt1AiEHDsaC+FDvuG0T6Jg==
+X-Received: by 2002:a05:6870:796:b0:da:3d6a:101d with SMTP id en22-20020a056870079600b000da3d6a101dmr2996279oab.20.1649799369047;
+        Tue, 12 Apr 2022 14:36:09 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id p18-20020a056830131200b005ccf8ac6207sm13941666otq.80.2022.04.12.14.36.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 15:37:14 -0700 (PDT)
-Message-ID: <6255ff1a.1c69fb81.bae17.1e86@mx.google.com>
-X-Google-Original-Message-ID: <YlXcpPCmMBPPzuXM@Ansuel-xps.>
-Date:   Tue, 12 Apr 2022 22:10:12 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
-Subject: Re: [PATCH v3 13/18] ARM: dts: qcom: add opp table for cpu and l2
- for ipq8064
-References: <20220309190152.7998-1-ansuelsmth@gmail.com>
- <20220309190152.7998-14-ansuelsmth@gmail.com>
- <YlXcHJminisFjobl@builder.lan>
+        Tue, 12 Apr 2022 14:36:08 -0700 (PDT)
+Received: (nullmailer pid 984530 invoked by uid 1000);
+        Tue, 12 Apr 2022 21:36:08 -0000
+Date:   Tue, 12 Apr 2022 16:36:08 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Camel Guo <camel.guo@axis.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@axis.com
+Subject: Re: [PATCH v2 1/2] dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
+Message-ID: <YlXwyKkkC1VoPpjU@robh.at.kernel.org>
+References: <20220412135232.1943677-1-camel.guo@axis.com>
+ <20220412135232.1943677-2-camel.guo@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YlXcHJminisFjobl@builder.lan>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220412135232.1943677-2-camel.guo@axis.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 03:07:56PM -0500, Bjorn Andersson wrote:
-> On Wed 09 Mar 13:01 CST 2022, Ansuel Smith wrote:
+On Tue, Apr 12, 2022 at 03:52:31PM +0200, Camel Guo wrote:
+> Document the TMP401, TMP411 and TMP43x device devicetree bindings
 > 
-> > Add opp table for cpu and l2 cache. While the current cpufreq is
-> > the generic one that doesn't scale the L2 cache, we add the l2
-> > cache opp anyway for the sake of completeness. This will be handy in the
-> > future when a dedicated cpufreq driver is introduced for krait cores
-> > that will correctly scale l2 cache with the core freq.
-> > 
-> > Opp-level is set based on the logic of
-> > 0: idle level
-> > 1: normal level
-> > 2: turbo level
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > Tested-by: Jonathan McDowell <noodles@earth.li>
-> > ---
-> >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 99 +++++++++++++++++++++++++++++
-> >  1 file changed, 99 insertions(+)
-> > 
-> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > index 7dd0b901cd30..a1079583def9 100644
-> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> > @@ -48,6 +48,105 @@ L2: l2-cache {
-> >  		};
-> >  	};
-> >  
-> > +	opp_table_l2: opp_table_l2 {
+> Signed-off-by: Camel Guo <camel.guo@axis.com>
+> ---
 > 
-> Please don't use '_' in the node names.
+> Notes:
+>  v2:
+>  - Fix format and describe hardware properties instead of programming
+>    models
 > 
-> > +		compatible = "operating-points-v2";
-> > +
-> > +		opp-384000000 {
-> > +			opp-hz = /bits/ 64 <384000000>;
-> > +			opp-microvolt = <1100000>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <0>;
-> > +		};
-> > +
-> > +		opp-1000000000 {
-> > +			opp-hz = /bits/ 64 <1000000000>;
-> > +			opp-microvolt = <1100000>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <1>;
-> > +		};
-> > +
-> > +		opp-1200000000 {
-> > +			opp-hz = /bits/ 64 <1200000000>;
-> > +			opp-microvolt = <1150000>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <2>;
-> > +		};
-> > +	};
-> > +
-> > +	opp_table0: opp_table0 {
+>  .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 112 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 113 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
 > 
-> Perhaps you can name this opp-table-kryo, to make it consistent with
-> opp-table-l2 above?
-> 
-> Regards,
-> Bjorn
->
+> diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> new file mode 100644
+> index 000000000000..dae4df36935e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> @@ -0,0 +1,112 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/hwmon/ti,tmp401.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: TMP401, TPM411 and TMP43x temperature sensor
+> +
+> +maintainers:
+> +  - Guenter Roeck <linux@roeck-us.net>
+> +
+> +description: |
+> +  ±1°C Remote and Local temperature sensor
+> +
+> +  Datasheets:
+> +  https://www.ti.com/lit/ds/symlink/tmp401.pdf
+> +  https://www.ti.com/lit/ds/symlink/tmp411.pdf
+> +  https://www.ti.com/lit/ds/symlink/tmp431.pdf
+> +  https://www.ti.com/lit/ds/symlink/tmp435.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - ti,tmp401
+> +      - ti,tmp411
+> +      - ti,tmp431
+> +      - ti,tmp432
+> +      - ti,tmp435
+> +
+> +  reg:
+> +    maxItems: 1
+> +
 
-Considering this is krait, I think I should use krait. Also about this
-we have from ages the wrong compatible but we had too keep kryo to not
-break compatibility with old dt. Can I fix this for once and just add
-this additional compatible?
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 0
 
-> > +		compatible = "operating-points-v2-kryo-cpu";
-> > +		nvmem-cells = <&speedbin_efuse>;
-> > +
-> > +		/*
-> > +		 * Voltage thresholds are <target min max>
-> > +		 */
-> > +		opp-384000000 {
-> > +			opp-hz = /bits/ 64 <384000000>;
-> > +			opp-microvolt-speed0-pvs0-v0 = <1000000 950000 1050000>;
-> > +			opp-microvolt-speed0-pvs1-v0 = <925000 878750 971250>;
-> > +			opp-microvolt-speed0-pvs2-v0 = <875000 831250 918750>;
-> > +			opp-microvolt-speed0-pvs3-v0 = <800000 760000 840000>;
-> > +			opp-supported-hw = <0x1>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <0>;
-> > +		};
-> > +
-> > +		opp-600000000 {
-> > +			opp-hz = /bits/ 64 <600000000>;
-> > +			opp-microvolt-speed0-pvs0-v0 = <1050000 997500 1102500>;
-> > +			opp-microvolt-speed0-pvs1-v0 = <975000 926250 1023750>;
-> > +			opp-microvolt-speed0-pvs2-v0 = <925000 878750 971250>;
-> > +			opp-microvolt-speed0-pvs3-v0 = <850000 807500 892500>;
-> > +			opp-supported-hw = <0x1>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <1>;
-> > +		};
-> > +
-> > +		opp-800000000 {
-> > +			opp-hz = /bits/ 64 <800000000>;
-> > +			opp-microvolt-speed0-pvs0-v0 = <1100000 1045000 1155000>;
-> > +			opp-microvolt-speed0-pvs1-v0 = <1025000 973750 1076250>;
-> > +			opp-microvolt-speed0-pvs2-v0 = <995000 945250 1044750>;
-> > +			opp-microvolt-speed0-pvs3-v0 = <900000 855000 945000>;
-> > +			opp-supported-hw = <0x1>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <1>;
-> > +		};
-> > +
-> > +		opp-1000000000 {
-> > +			opp-hz = /bits/ 64 <1000000000>;
-> > +			opp-microvolt-speed0-pvs0-v0 = <1150000 1092500 1207500>;
-> > +			opp-microvolt-speed0-pvs1-v0 = <1075000 1021250 1128750>;
-> > +			opp-microvolt-speed0-pvs2-v0 = <1025000 973750 1076250>;
-> > +			opp-microvolt-speed0-pvs3-v0 = <950000 902500 997500>;
-> > +			opp-supported-hw = <0x1>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <1>;
-> > +		};
-> > +
-> > +		opp-1200000000 {
-> > +			opp-hz = /bits/ 64 <1200000000>;
-> > +			opp-microvolt-speed0-pvs0-v0 = <1200000 1140000 1260000>;
-> > +			opp-microvolt-speed0-pvs1-v0 = <1125000 1068750 1181250>;
-> > +			opp-microvolt-speed0-pvs2-v0 = <1075000 1021250 1128750>;
-> > +			opp-microvolt-speed0-pvs3-v0 = <1000000 950000 1050000>;
-> > +			opp-supported-hw = <0x1>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <2>;
-> > +		};
-> > +
-> > +		opp-1400000000 {
-> > +			opp-hz = /bits/ 64 <1400000000>;
-> > +			opp-microvolt-speed0-pvs0-v0 = <1250000 1187500 1312500>;
-> > +			opp-microvolt-speed0-pvs1-v0 = <1175000 1116250 1233750>;
-> > +			opp-microvolt-speed0-pvs2-v0 = <1125000 1068750 1181250>;
-> > +			opp-microvolt-speed0-pvs3-v0 = <1050000 997500 1102500>;
-> > +			opp-supported-hw = <0x1>;
-> > +			clock-latency-ns = <100000>;
-> > +			opp-level = <2>;
-> > +		};
-> > +	};
-> > +
-> >  	thermal-zones {
-> >  		sensor0-thermal {
-> >  			polling-delay-passive = <0>;
-> > -- 
-> > 2.34.1
-> > 
+You don't have any child nodes and these are for child nodes with 'reg'.
 
--- 
-	Ansuel
+> +
+> +  ti,extended-range-enable:
+> +    description:
+> +      When set, this sensor measures over extended temperature range.
+> +    type: boolean
+> +
+> +  ti,n-factor:
+
+Funny, I just ran across this property today for tmp421...
+
+Can the schema be shared?
+
+> +    description:
+> +      value to be used for converting remote channel measurements to
+> +      temperature.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    items:
+> +      minimum: 0
+> +      maximum: 255
+
+Isn't this property signed and should be -128 to -127? The code treats 
+the existing cases as signed. One schema is correct and one is like you 
+have it.
+
+> +
+> +  ti,beta-compensation:
+> +    description:
+> +      value to select beta correction range.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    items:
+> +      minimum: 0
+> +      maximum: 15
+
+Drop 'items'. It is not an array.
+
+> +
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - ti,tmp401
+> +    then:
+> +      properties:
+> +        ti,n-factor: false
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - ti,tmp401
+> +              - ti,tmp411
+> +    then:
+> +      properties:
+> +        ti,beta-compensation: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      sensor@4c {
+> +        compatible = "ti,tmp401";
+> +        reg = <0x4c>;
+> +      };
+> +    };
+> +  - |
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      sensor@4c {
+> +        compatible = "ti,tmp431";
+> +        reg = <0x4c>;
+> +        ti,extended-range-enable;
+> +        ti,n-factor = <0x3b>;
+> +        ti,beta-compensation = <0x7>;
+> +      };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 61d9f114c37f..6b0d8f5cc68e 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -19838,6 +19838,7 @@ TMP401 HARDWARE MONITOR DRIVER
+>  M:	Guenter Roeck <linux@roeck-us.net>
+>  L:	linux-hwmon@vger.kernel.org
+>  S:	Maintained
+> +F:	Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+>  F:	Documentation/hwmon/tmp401.rst
+>  F:	drivers/hwmon/tmp401.c
+>  
+> -- 
+> 2.30.2
+> 
+> 
