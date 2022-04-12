@@ -2,199 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CD3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B206AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379917AbiDLIVE (ORCPT
+        id S1379966AbiDLIVH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
+        Tue, 12 Apr 2022 04:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351194AbiDLHb3 (ORCPT
+        with ESMTP id S1351752AbiDLHdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:31:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E169750452;
-        Tue, 12 Apr 2022 00:08:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E565616C5;
-        Tue, 12 Apr 2022 07:08:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A50AC385A1;
-        Tue, 12 Apr 2022 07:08:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747314;
-        bh=KeggjO9hLyIRfB/b4st72OMc/DjgSW6YL7AfplDtUUo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IYF+gRpVCpwnha8J0yXS1JBCuPr1c7hSiLN4Dxory3c8jtRy1Oxr1+7I+8QxVl8Ed
-         begU3xufJPyTuELkjwEA7tbvvog/HEtvc5lgmGy+T/8GyV570m9NrlyS7LtkIMd5jB
-         12R2bK1arW2USuqj/ODQCAPP+S9L6CqH9a3l5ubw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Aleksei Marov <aleksei.marov@ionos.com>,
-        Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 035/343] RDMA/rtrs-clt: Do stop and failover outside reconnect work.
-Date:   Tue, 12 Apr 2022 08:27:33 +0200
-Message-Id: <20220412062952.119446078@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 12 Apr 2022 03:33:11 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EB15006C;
+        Tue, 12 Apr 2022 00:08:39 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id bo5so16713771pfb.4;
+        Tue, 12 Apr 2022 00:08:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=4fzpyZsSZ8MB/OESakwuykL/h7QjXDh8jwM2tR5aekQ=;
+        b=L8aAup+xdNnWuw249ZD6hgE4GGJ9esOXKuRAdS5MHIf46QB1cv/i9GFgnMEI44oshf
+         78kk0faDuNwDF1mKY2mjrpWztlmGM8Qy+MCDc3T4yREVXIgn365mz5+WNOlaF1HsS7Ls
+         ItDLUIa061z/9azpxGGajCR3HGDsUw03dWM6Phpion1hAh5JW09QQD6BiyUEK8ZTaRrL
+         CXfH7uZ/gFwPHGzBXjp1KpAWASso1plw6K6TKMMLs1e4OGgbjeljWg71dmfbWlXd7xxH
+         bRPQv4xVouA8gVgrjr/mQfcNXjwfelD9vmDPEFICJvL78el5uqWL9zQnJWcTRydmHpAK
+         lv7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4fzpyZsSZ8MB/OESakwuykL/h7QjXDh8jwM2tR5aekQ=;
+        b=c9HwYGWA/ilhMdIDkeqCcP6KNquDt8FiIk0HHDVzqnJ40497+xAtlyCFG9IkoSXFNY
+         zAYvHQ0nYIRDi8DJXoedKshHTopPdtodO/Zw+32cHudPI/jWPU4kRwCuqHHQEvl3LS85
+         8d3MAldr8AwSVCO+O5l58ijZsIo3/ph1vQnXXK6fzalmJskLdbIbvlQf+yRw3LZwv3B8
+         KhvTPkSqwsMhfJLSMRn/CMAPuc2QbtQN5Cd5LYgUXYO9Ks8hWxN0zgMAEANrBkNv3cDl
+         8g2ClfPoMJmlX9tUMGsdUCPkbqQ5/XKTcWSOFjHNgGyWFFAuM+o9QkZnG6sG0y5foRWu
+         R46A==
+X-Gm-Message-State: AOAM5314BWiWe7RRt/euCILim2STfZlID0dZYsT2mympCQ0hAR3S/tLR
+        ME9HpRfIf8SCa5v/RZnVRJM=
+X-Google-Smtp-Source: ABdhPJwwpBGQ1fiwAHZgJjr2E7llUx7x4MIkQUIYOKYPbOYwpYHkouXoGJ70QjdXZI0bjwmmW0OT9w==
+X-Received: by 2002:a05:6a00:1903:b0:4fa:fa9e:42e6 with SMTP id y3-20020a056a00190300b004fafa9e42e6mr36721734pfi.1.1649747318954;
+        Tue, 12 Apr 2022 00:08:38 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id h19-20020a632113000000b0039d9c5be7c8sm763916pgh.21.2022.04.12.00.08.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 00:08:38 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Tero Kristo <t-kristo@ti.com>, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] watchdog: rti-wdt: Fix pm_runtime_get_sync() error checking
+Date:   Tue, 12 Apr 2022 07:08:23 +0000
+Message-Id: <20220412070824.23708-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jack Wang <jinpu.wang@ionos.com>
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-[ Upstream commit c1289d5d8502d62e5bc50ff066c9d6daabfc3264 ]
-
-We can't do instant reconnect, not to DDoS server, but we should stop and
-failover earlier, so there is less service interruption.
-
-To avoid deadlock, as error_recovery is called from different callback
-like rdma event or hb error handler, add a new err recovery_work.
-
-Link: https://lore.kernel.org/r/20220114154753.983568-6-haris.iqbal@ionos.com
-Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
-Reviewed-by: Aleksei Marov <aleksei.marov@ionos.com>
-Reviewed-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2d63908bdbfb ("watchdog: Add K3 RTI watchdog support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-clt.c | 40 ++++++++++++++------------
- drivers/infiniband/ulp/rtrs/rtrs-clt.h |  1 +
- 2 files changed, 23 insertions(+), 18 deletions(-)
+ drivers/watchdog/rti_wdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-index 759b85f03331..df4d06d4d183 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -297,6 +297,7 @@ static bool rtrs_clt_change_state_from_to(struct rtrs_clt_path *clt_path,
- 	return changed;
- }
+diff --git a/drivers/watchdog/rti_wdt.c b/drivers/watchdog/rti_wdt.c
+index db843f825860..00ebeffc674f 100644
+--- a/drivers/watchdog/rti_wdt.c
++++ b/drivers/watchdog/rti_wdt.c
+@@ -226,7 +226,7 @@ static int rti_wdt_probe(struct platform_device *pdev)
  
-+static void rtrs_clt_stop_and_destroy_conns(struct rtrs_clt_path *clt_path);
- static void rtrs_rdma_error_recovery(struct rtrs_clt_con *con)
- {
- 	struct rtrs_clt_path *clt_path = to_clt_path(con->c.path);
-@@ -304,16 +305,7 @@ static void rtrs_rdma_error_recovery(struct rtrs_clt_con *con)
- 	if (rtrs_clt_change_state_from_to(clt_path,
- 					   RTRS_CLT_CONNECTED,
- 					   RTRS_CLT_RECONNECTING)) {
--		struct rtrs_clt_sess *clt = clt_path->clt;
--		unsigned int delay_ms;
--
--		/*
--		 * Normal scenario, reconnect if we were successfully connected
--		 */
--		delay_ms = clt->reconnect_delay_sec * 1000;
--		queue_delayed_work(rtrs_wq, &clt_path->reconnect_dwork,
--				   msecs_to_jiffies(delay_ms +
--						    prandom_u32() % RTRS_RECONNECT_SEED));
-+		queue_work(rtrs_wq, &clt_path->err_recovery_work);
- 	} else {
- 		/*
- 		 * Error can happen just on establishing new connection,
-@@ -1511,6 +1503,22 @@ static void rtrs_clt_init_hb(struct rtrs_clt_path *clt_path)
- static void rtrs_clt_reconnect_work(struct work_struct *work);
- static void rtrs_clt_close_work(struct work_struct *work);
- 
-+static void rtrs_clt_err_recovery_work(struct work_struct *work)
-+{
-+	struct rtrs_clt_path *clt_path;
-+	struct rtrs_clt_sess *clt;
-+	int delay_ms;
-+
-+	clt_path = container_of(work, struct rtrs_clt_path, err_recovery_work);
-+	clt = clt_path->clt;
-+	delay_ms = clt->reconnect_delay_sec * 1000;
-+	rtrs_clt_stop_and_destroy_conns(clt_path);
-+	queue_delayed_work(rtrs_wq, &clt_path->reconnect_dwork,
-+			   msecs_to_jiffies(delay_ms +
-+					    prandom_u32() %
-+					    RTRS_RECONNECT_SEED));
-+}
-+
- static struct rtrs_clt_path *alloc_path(struct rtrs_clt_sess *clt,
- 					const struct rtrs_addr *path,
- 					size_t con_num, u32 nr_poll_queues)
-@@ -1562,6 +1570,7 @@ static struct rtrs_clt_path *alloc_path(struct rtrs_clt_sess *clt,
- 	clt_path->state = RTRS_CLT_CONNECTING;
- 	atomic_set(&clt_path->connected_cnt, 0);
- 	INIT_WORK(&clt_path->close_work, rtrs_clt_close_work);
-+	INIT_WORK(&clt_path->err_recovery_work, rtrs_clt_err_recovery_work);
- 	INIT_DELAYED_WORK(&clt_path->reconnect_dwork, rtrs_clt_reconnect_work);
- 	rtrs_clt_init_hb(clt_path);
- 
-@@ -2326,6 +2335,7 @@ static void rtrs_clt_close_work(struct work_struct *work)
- 
- 	clt_path = container_of(work, struct rtrs_clt_path, close_work);
- 
-+	cancel_work_sync(&clt_path->err_recovery_work);
- 	cancel_delayed_work_sync(&clt_path->reconnect_dwork);
- 	rtrs_clt_stop_and_destroy_conns(clt_path);
- 	rtrs_clt_change_state_get_old(clt_path, RTRS_CLT_CLOSED, NULL);
-@@ -2638,7 +2648,6 @@ static void rtrs_clt_reconnect_work(struct work_struct *work)
- {
- 	struct rtrs_clt_path *clt_path;
- 	struct rtrs_clt_sess *clt;
--	unsigned int delay_ms;
- 	int err;
- 
- 	clt_path = container_of(to_delayed_work(work), struct rtrs_clt_path,
-@@ -2655,8 +2664,6 @@ static void rtrs_clt_reconnect_work(struct work_struct *work)
- 	}
- 	clt_path->reconnect_attempts++;
- 
--	/* Stop everything */
--	rtrs_clt_stop_and_destroy_conns(clt_path);
- 	msleep(RTRS_RECONNECT_BACKOFF);
- 	if (rtrs_clt_change_state_get_old(clt_path, RTRS_CLT_CONNECTING, NULL)) {
- 		err = init_path(clt_path);
-@@ -2669,11 +2676,7 @@ static void rtrs_clt_reconnect_work(struct work_struct *work)
- reconnect_again:
- 	if (rtrs_clt_change_state_get_old(clt_path, RTRS_CLT_RECONNECTING, NULL)) {
- 		clt_path->stats->reconnects.fail_cnt++;
--		delay_ms = clt->reconnect_delay_sec * 1000;
--		queue_delayed_work(rtrs_wq, &clt_path->reconnect_dwork,
--				   msecs_to_jiffies(delay_ms +
--						    prandom_u32() %
--						    RTRS_RECONNECT_SEED));
-+		queue_work(rtrs_wq, &clt_path->err_recovery_work);
- 	}
- }
- 
-@@ -2908,6 +2911,7 @@ int rtrs_clt_reconnect_from_sysfs(struct rtrs_clt_path *clt_path)
- 						 &old_state);
- 	if (changed) {
- 		clt_path->reconnect_attempts = 0;
-+		rtrs_clt_stop_and_destroy_conns(clt_path);
- 		queue_delayed_work(rtrs_wq, &clt_path->reconnect_dwork, 0);
- 	}
- 	if (changed || old_state == RTRS_CLT_RECONNECTING) {
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.h b/drivers/infiniband/ulp/rtrs/rtrs-clt.h
-index d1b18a154ae0..f848c0392d98 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.h
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.h
-@@ -134,6 +134,7 @@ struct rtrs_clt_path {
- 	struct rtrs_clt_io_req	*reqs;
- 	struct delayed_work	reconnect_dwork;
- 	struct work_struct	close_work;
-+	struct work_struct	err_recovery_work;
- 	unsigned int		reconnect_attempts;
- 	bool			established;
- 	struct rtrs_rbuf	*rbufs;
+ 	pm_runtime_enable(dev);
+ 	ret = pm_runtime_get_sync(dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		pm_runtime_put_noidle(dev);
+ 		pm_runtime_disable(&pdev->dev);
+ 		return dev_err_probe(dev, ret, "runtime pm failed\n");
 -- 
-2.35.1
-
-
+2.17.1
 
