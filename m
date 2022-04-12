@@ -2,88 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B206AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E57C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379966AbiDLIVH (ORCPT
+        id S1380023AbiDLIVO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
+        Tue, 12 Apr 2022 04:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351752AbiDLHdL (ORCPT
+        with ESMTP id S1354064AbiDLH0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:33:11 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EB15006C;
-        Tue, 12 Apr 2022 00:08:39 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id bo5so16713771pfb.4;
-        Tue, 12 Apr 2022 00:08:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=4fzpyZsSZ8MB/OESakwuykL/h7QjXDh8jwM2tR5aekQ=;
-        b=L8aAup+xdNnWuw249ZD6hgE4GGJ9esOXKuRAdS5MHIf46QB1cv/i9GFgnMEI44oshf
-         78kk0faDuNwDF1mKY2mjrpWztlmGM8Qy+MCDc3T4yREVXIgn365mz5+WNOlaF1HsS7Ls
-         ItDLUIa061z/9azpxGGajCR3HGDsUw03dWM6Phpion1hAh5JW09QQD6BiyUEK8ZTaRrL
-         CXfH7uZ/gFwPHGzBXjp1KpAWASso1plw6K6TKMMLs1e4OGgbjeljWg71dmfbWlXd7xxH
-         bRPQv4xVouA8gVgrjr/mQfcNXjwfelD9vmDPEFICJvL78el5uqWL9zQnJWcTRydmHpAK
-         lv7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=4fzpyZsSZ8MB/OESakwuykL/h7QjXDh8jwM2tR5aekQ=;
-        b=c9HwYGWA/ilhMdIDkeqCcP6KNquDt8FiIk0HHDVzqnJ40497+xAtlyCFG9IkoSXFNY
-         zAYvHQ0nYIRDi8DJXoedKshHTopPdtodO/Zw+32cHudPI/jWPU4kRwCuqHHQEvl3LS85
-         8d3MAldr8AwSVCO+O5l58ijZsIo3/ph1vQnXXK6fzalmJskLdbIbvlQf+yRw3LZwv3B8
-         KhvTPkSqwsMhfJLSMRn/CMAPuc2QbtQN5Cd5LYgUXYO9Ks8hWxN0zgMAEANrBkNv3cDl
-         8g2ClfPoMJmlX9tUMGsdUCPkbqQ5/XKTcWSOFjHNgGyWFFAuM+o9QkZnG6sG0y5foRWu
-         R46A==
-X-Gm-Message-State: AOAM5314BWiWe7RRt/euCILim2STfZlID0dZYsT2mympCQ0hAR3S/tLR
-        ME9HpRfIf8SCa5v/RZnVRJM=
-X-Google-Smtp-Source: ABdhPJwwpBGQ1fiwAHZgJjr2E7llUx7x4MIkQUIYOKYPbOYwpYHkouXoGJ70QjdXZI0bjwmmW0OT9w==
-X-Received: by 2002:a05:6a00:1903:b0:4fa:fa9e:42e6 with SMTP id y3-20020a056a00190300b004fafa9e42e6mr36721734pfi.1.1649747318954;
-        Tue, 12 Apr 2022 00:08:38 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id h19-20020a632113000000b0039d9c5be7c8sm763916pgh.21.2022.04.12.00.08.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 00:08:38 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Tero Kristo <t-kristo@ti.com>, linux-watchdog@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] watchdog: rti-wdt: Fix pm_runtime_get_sync() error checking
-Date:   Tue, 12 Apr 2022 07:08:23 +0000
-Message-Id: <20220412070824.23708-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 12 Apr 2022 03:26:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D35D17A9F;
+        Tue, 12 Apr 2022 00:05:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50EB3B81A8F;
+        Tue, 12 Apr 2022 07:05:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18ADC385A6;
+        Tue, 12 Apr 2022 07:05:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747128;
+        bh=McsC9ZufxaUuzydXB9cDgdwI6fwZUeI+va5tpXteTiA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KMavsTZW0iom5ZjIrKNSaI19zZ7PZ9fre7+zCeXnl9thxqjJ6/IskZ0E0gthxdotW
+         Y6b3uFi2SImAtr23PQvqwBjTk+XunwHzHKBymN53xnDJUewG97SynyDmAq9UolFsMS
+         mRRN8XwYJJz5ot8ToVPvNdgAkXwMihx1pXzE8svk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 254/285] drm/amdgpu/smu10: fix SoC/fclk units in auto mode
+Date:   Tue, 12 Apr 2022 08:31:51 +0200
+Message-Id: <20220412062950.991069461@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+From: Alex Deucher <alexander.deucher@amd.com>
 
-Fixes: 2d63908bdbfb ("watchdog: Add K3 RTI watchdog support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+commit 2f25d8ce09b7ba5d769c132ba3d4eb84a941d2cb upstream.
+
+SMU takes clock limits in Mhz units.  socclk and fclk were
+using 10 khz units in some cases.  Switch to Mhz units.
+Fixes higher than required SoC clocks.
+
+Fixes: 97cf32996c46d9 ("drm/amd/pm: Removed fixed clock in auto mode DPM")
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/watchdog/rti_wdt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/watchdog/rti_wdt.c b/drivers/watchdog/rti_wdt.c
-index db843f825860..00ebeffc674f 100644
---- a/drivers/watchdog/rti_wdt.c
-+++ b/drivers/watchdog/rti_wdt.c
-@@ -226,7 +226,7 @@ static int rti_wdt_probe(struct platform_device *pdev)
+--- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
+@@ -773,13 +773,13 @@ static int smu10_dpm_force_dpm_level(str
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetHardMinFclkByFreq,
+ 						hwmgr->display_config->num_display > 3 ?
+-						data->clock_vol_info.vdd_dep_on_fclk->entries[0].clk :
++						(data->clock_vol_info.vdd_dep_on_fclk->entries[0].clk / 100) :
+ 						min_mclk,
+ 						NULL);
  
- 	pm_runtime_enable(dev);
- 	ret = pm_runtime_get_sync(dev);
--	if (ret) {
-+	if (ret < 0) {
- 		pm_runtime_put_noidle(dev);
- 		pm_runtime_disable(&pdev->dev);
- 		return dev_err_probe(dev, ret, "runtime pm failed\n");
--- 
-2.17.1
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetHardMinSocclkByFreq,
+-						data->clock_vol_info.vdd_dep_on_socclk->entries[0].clk,
++						data->clock_vol_info.vdd_dep_on_socclk->entries[0].clk / 100,
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetHardMinVcn,
+@@ -792,11 +792,11 @@ static int smu10_dpm_force_dpm_level(str
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetSoftMaxFclkByFreq,
+-						data->clock_vol_info.vdd_dep_on_fclk->entries[index_fclk].clk,
++						data->clock_vol_info.vdd_dep_on_fclk->entries[index_fclk].clk / 100,
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetSoftMaxSocclkByFreq,
+-						data->clock_vol_info.vdd_dep_on_socclk->entries[index_socclk].clk,
++						data->clock_vol_info.vdd_dep_on_socclk->entries[index_socclk].clk / 100,
+ 						NULL);
+ 		smum_send_msg_to_smc_with_parameter(hwmgr,
+ 						PPSMC_MSG_SetSoftMaxVcn,
+
 
