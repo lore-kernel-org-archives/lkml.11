@@ -2,117 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C26FCC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E8EC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376767AbiDLKTa (ORCPT
+        id S1379223AbiDLKTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
+        Tue, 12 Apr 2022 06:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356296AbiDLJzI (ORCPT
+        with ESMTP id S1378009AbiDLJ7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:55:08 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183456A033
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:57:55 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id r8so18361037oib.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:57:55 -0700 (PDT)
+        Tue, 12 Apr 2022 05:59:32 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B268205D4;
+        Tue, 12 Apr 2022 02:05:21 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id b15so21563186edn.4;
+        Tue, 12 Apr 2022 02:05:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
-         :subject:to:cc;
-        bh=4FpzyyLj/OdDU3ZmpUpstG+y8CAFSWZd/AR4b2PM65Y=;
-        b=O4uumP51JcV7qBCLnK0EA1pkMY6sGD/pTvzvNjou2PgcdwHOFuibGIptBgZ3zJNPCO
-         HNcpOraxajhSfH6FKpX+oohFsR9+cAmNzr3raUAIRjIXsDz70WJRGRPe0sBzCtIorZSn
-         jwU9hlWq8nhRQgCL+0BDauOseU08SQ6kHBE39slH9gyCacBPIRunwbgJFwT4MEAkgB4u
-         XOLgBEcCs1r6ODorwmX7IF0ZhAGaeOSeAxRCXAcIUN8mXCyKnW+FU3R/7MlScEWkf0VY
-         ZvjB33mZDqS56xB5bdfVu9Bjy/qdU0l0vvxbk6G4z6AorUZE6E2dkUcfig1wxL70aOEU
-         PS7A==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JvUzj4eJQSW6VlbLUjMSITUiq97FPtxDr7ncwYmoRZw=;
+        b=PQN4pGhpOlIZoayWPrUBzGowazBqMXrd4jRr1snIyitef4NjsLhheTAe0qQ4xxS53b
+         3Bt6MF+gTSAJvT6Dr3An/eqtqMwA/5zAkSdx9c7loYNVNFh9WM+LFbECAWMLVRdG5mYk
+         EHaD8+YmvSfCswWysoOwVBSMt1FW0TYI80ssVuaKlsX40TIA1HRDORT8I2xQLJg1MiMs
+         Yx/pt7YehaJjEiMKaTBxBkXZNXuWm38BnB890ruRydAj6g6KeFCaBmrdhEULfmwVXtvW
+         JuXDdKRrxlc7wpyYmrYqigcamJk84SaFG6J8AQDlYbDZrY894fzLN+jF/gyZI2J22cJA
+         G+3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:user-agent:references:in-reply-to
-         :mime-version:date:message-id:subject:to:cc;
-        bh=4FpzyyLj/OdDU3ZmpUpstG+y8CAFSWZd/AR4b2PM65Y=;
-        b=beUcIHLmV+S6LpykoMLcD9SESvBrBxyuGTaae6FQwDCqQLtL0mFueHGEpkLUK8m28x
-         d5WiIJLM6dghBjRQg+q1CfVZ/m3Xcg+XdHxLy/8h9GvV1jMF+ZbClTWuFIto73osHR3K
-         7zXxxv1YCwDGWMctpe0HxnHTt0xTU5MhP5xjtNAcFaV9vzqURJ75JBl6YpcJQg3t4jmF
-         OcK7zmfN/0XJJ7PG6VcG1ozzvPrsFLrNhpcQRPlA5JlD2zNCXcwtN2Y769GvEkVWiCdC
-         dkQDWZqCMozFiWTVye00CxXF+hZ5/WvZBXlUEZr+IBH8kKpb0njJD1ZypJXLVwFUAPJe
-         wRTQ==
-X-Gm-Message-State: AOAM530AnHFToCkDLMjDsGwEhEQZl2+TdRAQiWHiq2jZoJtOpn4dVrMI
-        VXfvkViHSVtvRi78svd3gMIQ/V6AUDrjGG4x5HqGrQ==
-X-Google-Smtp-Source: ABdhPJyGsXSnBb0OrYJzuxK+lplYEUvtBMZUA3XN/6JoCjC1Dfht5xOEuqQ6v8izMrWtfTdYVEwhffLY26AWeFbXjVU=
-X-Received: by 2002:a05:6808:159d:b0:2da:3946:ab3d with SMTP id
- t29-20020a056808159d00b002da3946ab3dmr1258843oiw.248.1649753874382; Tue, 12
- Apr 2022 01:57:54 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 12 Apr 2022 01:57:53 -0700
-From:   Guillaume Ranquet <granquet@baylibre.com>
-User-Agent: meli 0.7.2
-References: <20220327223927.20848-1-granquet@baylibre.com> <20220327223927.20848-5-granquet@baylibre.com>
- <0c523ad5-6a71-5c71-17b8-1f15c1860d89@collabora.com>
-In-Reply-To: <0c523ad5-6a71-5c71-17b8-1f15c1860d89@collabora.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JvUzj4eJQSW6VlbLUjMSITUiq97FPtxDr7ncwYmoRZw=;
+        b=apipqC5iq8qGmSdZFgX7WK8tmdHuIHRk8IzpIu6qFqkTKLsHzlVxoo5Fq7f6oq7upL
+         qqlFFiABi33laX9LmL4Bg5AwNT/OKMyyJ8G2HUjNFhEX2+AiObGv7z5UutbIB/ap0GOD
+         4daMLZMq8VIjWXUs+gYvFEIGwX7ABy/ezDHDJzXKbHidlhe7w3aZwezfVZrAsl7eUN3S
+         F86jKysoOT5+E41CWIMzQpBFCSp4mXOZjEpPIPn33mkuoYwciyuhtUVMYgHL1e+iYSMB
+         f3TZ8efmMxMR8lOdgHhiAIVgsXfneL3Dlbm1zXidw9zbJ6FMEM1n2uURWBbY7KI1yVe3
+         corg==
+X-Gm-Message-State: AOAM531lq5w84URxPGf8nDBU4uHxBAwcEVwri+wNPlh3JMus3uQjVExT
+        27BURn0Kk0AB8oAu0rs5pFs=
+X-Google-Smtp-Source: ABdhPJy7UIlkAw90AvWa8CNYC9UtMZpU5M8mz2CPjgf62C2T/CEb2v4+GAYAJGpj0vByS1chiMtK+A==
+X-Received: by 2002:a05:6402:27d1:b0:419:1b02:4a04 with SMTP id c17-20020a05640227d100b004191b024a04mr37474442ede.218.1649754319553;
+        Tue, 12 Apr 2022 02:05:19 -0700 (PDT)
+Received: from orome (pd9e518f7.dip0.t-ipconnect.de. [217.229.24.247])
+        by smtp.gmail.com with ESMTPSA id d26-20020a1709064c5a00b006e89debe3f4sm1595260ejw.9.2022.04.12.02.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 02:05:18 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 11:05:15 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-stm32@st-md-mailman.stormreply.com, soc@kernel.org,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH] arm64: dts: tegra: Fix boolean properties with
+ values
+Message-ID: <YlVAy95eF/9b1nmu@orome>
+References: <Yk3nShkFzNJaI3/Z@robh.at.kernel.org>
 MIME-Version: 1.0
-Date:   Tue, 12 Apr 2022 01:57:53 -0700
-Message-ID: <CABnWg9vxnLqAsoLOSHekwa9q3v=atLJEXpXADMc-bj+z1mkQHA@mail.gmail.com>
-Subject: Re: [PATCH v9 04/22] drm/edid: Convert cea_sad helper struct to kernelDoc
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, vkoul@kernel.org,
-        airlied@linux.ie, chunfeng.yun@mediatek.com,
-        chunkuang.hu@kernel.org, ck.hu@mediatek.com, daniel@ffwll.ch,
-        deller@gmx.de, jitao.shi@mediatek.com, kishon@ti.com,
-        krzk+dt@kernel.org, maarten.lankhorst@linux.intel.com,
-        matthias.bgg@gmail.com, mripard@kernel.org, p.zabel@pengutronix.de,
-        robh+dt@kernel.org, tzimmermann@suse.de
-Cc:     devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-phy@lists.infradead.org, markyacoub@google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="NBsBIpgqCfiMExLJ"
+Content-Disposition: inline
+In-Reply-To: <Yk3nShkFzNJaI3/Z@robh.at.kernel.org>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 10:04, AngeloGioacchino Del Regno
-<angelogioacchino.delregno@collabora.com> wrote:
->Il 28/03/22 00:39, Guillaume Ranquet ha scritto:
->> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
->> ---
->>   include/drm/drm_edid.h | 11 ++++++++---
->>   1 file changed, 8 insertions(+), 3 deletions(-)
->>
->> diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
->> index 144c495b99c4..5d4d840b9904 100644
->> --- a/include/drm/drm_edid.h
->> +++ b/include/drm/drm_edid.h
->> @@ -359,12 +359,17 @@ struct edid {
->>
->>   #define EDID_PRODUCT_ID(e) ((e)->prod_code[0] | ((e)->prod_code[1] << 8))
->>
->> -/* Short Audio Descriptor */
->
->Hello Guillaume,
->
->> +/* struct cea_sad - Short Audio Descriptor.
->> +	@format: See HDMI_AUDIO_CODING_TYPE_*.
->> +	@channels: max number of channels - 1.
->> +	@freq: See CEA_SAD_FREQ_*.
->> +	@byte2: meaning depends on format.
->> +*/
->
->I appreciate the effort, but this is not valid kerneldoc.
->
->Please refer to https://docs.kernel.org/doc-guide/kernel-doc.html
->
->Regards,
->Angelo
 
-Hello Angelo,
+--NBsBIpgqCfiMExLJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thx for your review.
-I'm sorry I posted this v9 in a bit of a rush...
-but I promise we will get there... eventually :D
+On Wed, Apr 06, 2022 at 02:17:30PM -0500, Rob Herring wrote:
+> Boolean properties in DT are present or not present and don't take a valu=
+e.
+> A property such as 'foo =3D <0>;' evaluated to true. IOW, the value doesn=
+'t
+> matter.
+>=20
+> It may have been intended that 0 values are false, but there is no change
+> in behavior with this patch.
+>=20
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Can someone apply this for 5.18.
+>=20
+>  arch/arm64/boot/dts/nvidia/tegra186-p3310.dtsi            | 8 ++++----
+>  .../boot/dts/nvidia/tegra186-p3509-0000+p3636-0001.dts    | 8 ++++----
+>  arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi            | 6 +++---
+>  arch/arm64/boot/dts/nvidia/tegra194-p3668.dtsi            | 6 +++---
+>  arch/arm64/boot/dts/nvidia/tegra210-p2180.dtsi            | 6 +++---
+>  arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi            | 8 ++++----
+>  arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts        | 8 ++++----
+>  arch/arm64/boot/dts/nvidia/tegra210-smaug.dts             | 4 ++--
+>  8 files changed, 27 insertions(+), 27 deletions(-)
 
-Thx,
-Guillaume.
+This causes multiple regressions on Tegra boards. The reason for this is
+that these properties are not in fact boolean, despite what the DT
+bindings say. If you look at the code that handles these, you'll notice
+that they are single-cell properties, typically with <0> and <1> values.
+What may have led to the conclusion that these are boolean is that there
+is also a special case where these can be left out, but the meaning of
+that is not the "false" (<0>) value. Instead, leaving these out means
+that the values should be left at whatever is currently in the register.
+
+See pinconf_generic_parse_dt_config() and parse_dt_cfg() specifically in
+drivers/pinctrl/pinconf-generic.c.
+
+Arnd, can you please revert this so that these boards can be unbroken?
+
+It's a bit unfortunate because there seem to be other platforms that
+also employ these in the boolean form that Rob mentioned, but I think it
+is those that probably need fixing instead. Not sure what the intentions
+were for those.
+
+Adding Bjorn for MSM, the Nuvoton and STM32 folks.
+
+Thierry
+
+--NBsBIpgqCfiMExLJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJVQMgACgkQ3SOs138+
+s6FAcQ//f9+PoHjpquYwfy+qc69MSz549E+MT1SBelK6GGDpNc7CWrtmujpeiTP/
+bgA1e0TzCagra2528fAUyOtyAaVKPHS8BVt6OxptgyEgvwP2fygn83+2BIQsVar1
+Ls092mvWt1GeHYri19DRt3L43JH1RlcYxaPsUbgWU2tucetEtEDndOVUki87oclX
+se/tsVqGRA5B1FMFHPiVgJyTaFzJtiwkCZnH31BN3DRXSsOnkJr33fV5bQM4Ylg5
+vxWmwURr1T7+vTgUSCxi2RNzYGAuveI/IGFs1QD/jddo8MEHqF/EHmGmPWHF5fta
+iP3T6u7bSb0y433imp3GDtLFch/cJ4BZ9sIWfLqPXP06sVVMfbLq2joo0p26XEZ1
+q7hxFhNrpWBpmEna+RtNQWLCbcW7BBI+v0f4VYml+xNVpYehqUfHwrOqLdURucPO
+WbriU9+nODw81tLTJbSr2EGGvYi4uiGBZw302ZuApk2pOhF+Az9WnlxUHiM3Q64D
+WFubEG7Ezq1lEFO4hD4zZs9bMhSycTi6LMIJRTz7HHH/qPubJ8DWRi/Npn7WjN5S
+uzQyjmD9ei7E/jLb28Sa0TCk4zAKiZiSVWZF/ONXhJ4aGzkgLhebFgMlGOihj4Gj
+4J3cLi4fOm2o4qU7axaSMb8yd6hAD93kKRIylehK0Lfdmt9pM4I=
+=kKPk
+-----END PGP SIGNATURE-----
+
+--NBsBIpgqCfiMExLJ--
