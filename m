@@ -2,90 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353285AbiDLMkm (ORCPT
+        id S1353392AbiDLMlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33390 "EHLO
+        Tue, 12 Apr 2022 08:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353623AbiDLMhs (ORCPT
+        with ESMTP id S1354892AbiDLMip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:37:48 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783D95F264;
-        Tue, 12 Apr 2022 04:57:54 -0700 (PDT)
-X-UUID: 3356554d987d481ab432f18080731070-20220412
-X-UUID: 3356554d987d481ab432f18080731070-20220412
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1305055188; Tue, 12 Apr 2022 19:57:46 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 12 Apr 2022 19:57:44 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 19:57:44 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Ikjoon Jang <ikjn@chromium.org>
-CC:     <linux-spi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH] spi: spi-mtk-nor: initialize spi controller after resume
-Date:   Tue, 12 Apr 2022 19:57:43 +0800
-Message-ID: <20220412115743.22641-1-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Tue, 12 Apr 2022 08:38:45 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6E963527
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:59:02 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id lc2so16263594ejb.12
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WaJAMSrJDoo9/Hssj5JitI09tEE075kukXq21wu/5L0=;
+        b=nhcJ8zGYc/klHu9Y8GsxATSJikwbOFEWekXMlCmX5sxb9li4oSg9PGeeUbXZGFy8Nc
+         IXF5LFi7P0i3sbGcyqTvlFaWkyCfUMMmV/v91H3n5Hu+RZY7L5gwySHmiar1TezMG0dA
+         PNMJMjqsuVe9EzVY1D7+Oboem+blu2muLkNlfajeYd5kD1SMJnhKX/RsWGsQq+wGma65
+         X/shOW3/nET3zNJ2Rg1QlOEeSAe6DcHQyQStm4D0XuYkN6yN7vot6ngbuLu99m6XKXbk
+         Pz26pbFrolE9LlRnkGAHyePGw6JGBezdYLs0FYzZaEI5H+6ffUb7F4PP8Y0YUwstuYwL
+         P5yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WaJAMSrJDoo9/Hssj5JitI09tEE075kukXq21wu/5L0=;
+        b=d9hvxCcU6g4R/t9QXmY2pdu2DEzhKI1PiNXBH7imRur9ockFp1PMzi4djPk+ui6dYs
+         y7DXUSIbnR3nshbAR3xvgL5HyYU3gliKhXRuikMYgnC6kcP+7125BB3mmpl7YEQ143c/
+         OM/Y4AQM8qm+YG6xHKnQLE44hJkDGUoYu2M/neKIo8//e0juY0jnZTKMla4JYbcJhs+z
+         336ulut9it/qzSr7SFt1RVWc83pVhCtYTObc3ZA0NllzAKbKI1u9NPsLUhG+TzSdP+cu
+         w2KzNUViy15LOz9Xt87x+BVakLefdiXOthBF7Oka78iTV8AzKLQQjr1B40ulz2XiG5Zp
+         gH+w==
+X-Gm-Message-State: AOAM533vfsctMFhMkquC907FcB/MrA3qGED8EXeb8KeHAMoDMA4TAcLJ
+        2UvHz8TZlv3qo5Mwib7AHyOBLw==
+X-Google-Smtp-Source: ABdhPJziQxoyCTOQu+uWYcATEWIVf2W413EKsvJ+OhevBIrRejTHf3dVPmpga24MDq56YcGwUd2kmA==
+X-Received: by 2002:a17:906:af7b:b0:6e8:8123:78ab with SMTP id os27-20020a170906af7b00b006e8812378abmr10912595ejb.434.1649764741569;
+        Tue, 12 Apr 2022 04:59:01 -0700 (PDT)
+Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id w6-20020a170906d20600b006ca00cb99e0sm12989864ejz.34.2022.04.12.04.59.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 04:59:01 -0700 (PDT)
+Message-ID: <e278c563-d333-5b79-04b8-406d845ae165@linaro.org>
+Date:   Tue, 12 Apr 2022 13:59:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V4 1/2] dt-bindings: mmc: sdhci-msm: Add gcc resets
+ strings
+Content-Language: en-US
+To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org
+Cc:     quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
+        quic_sartgarg@quicinc.com, quic_nitirawa@quicinc.com,
+        quic_sayalil@quicinc.com
+References: <1649759528-15125-1-git-send-email-quic_c_sbhanu@quicinc.com>
+ <1649759528-15125-2-git-send-email-quic_c_sbhanu@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1649759528-15125-2-git-send-email-quic_c_sbhanu@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After system resumes, the registers of nor controller are
-initialized with default values. The nor controller will
-not function properly.
+On 12/04/2022 12:32, Shaik Sajida Bhanu wrote:
+> Add gcc hardware reset supported strings for qcom-sdhci controller.
+> 
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
 
-To handle both issues above, we add mtk_nor_init() in
-mtk_nor_resume after pm_runtime_force_resume().
 
-Fixes: 3bfd9103c7af ("spi: spi-mtk-nor: Add power management support")
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- drivers/spi/spi-mtk-nor.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
-index 94fb09696677..d167699a1a96 100644
---- a/drivers/spi/spi-mtk-nor.c
-+++ b/drivers/spi/spi-mtk-nor.c
-@@ -960,7 +960,17 @@ static int __maybe_unused mtk_nor_suspend(struct device *dev)
- 
- static int __maybe_unused mtk_nor_resume(struct device *dev)
- {
--	return pm_runtime_force_resume(dev);
-+	struct spi_controller *ctlr = dev_get_drvdata(dev);
-+	struct mtk_nor *sp = spi_controller_get_devdata(ctlr);
-+	int ret;
-+
-+	ret = pm_runtime_force_resume(dev);
-+	if (ret)
-+		return ret;
-+
-+	mtk_nor_init(sp);
-+
-+	return 0;
- }
- 
- static const struct dev_pm_ops mtk_nor_pm_ops = {
--- 
-2.18.0
-
+Best regards,
+Krzysztof
