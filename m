@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCF9CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E7AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243038AbiDLGlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
+        id S1347566AbiDLGlL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:41:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350558AbiDLGiL (ORCPT
+        with ESMTP id S1350582AbiDLGiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:38:11 -0400
+        Tue, 12 Apr 2022 02:38:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1960817E33;
-        Mon, 11 Apr 2022 23:34:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BA41836B;
+        Mon, 11 Apr 2022 23:34:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B95EDB81B3B;
-        Tue, 12 Apr 2022 06:34:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A2BC385A6;
-        Tue, 12 Apr 2022 06:34:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC01EB81B41;
+        Tue, 12 Apr 2022 06:34:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03891C385A1;
+        Tue, 12 Apr 2022 06:34:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745293;
-        bh=ClpIoo0LS0P+ll1ENChkG3eZ30WX9Q8orKrp5KGiIeM=;
+        s=korg; t=1649745296;
+        bh=NJQPa6WORvRhi53H2Yazqk+lgSDgzN/2JrqmkmJFJ5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MoDJPDtP9SBUBpy2Tu0YugyDA//JxDKNEL5o4zXFfPQXdRnT23xbSqAeHziodCNEl
-         mCBSinW3Dir2fdrjLie5h509daKKG0QLBFELE3d0CpcFxXgfeHq4kAd6K/Qkj1hHCJ
-         a8p34knnrzNGsgiPNsLX6ElfJOUN4ES564iSmm68=
+        b=XGbMY1dmsAOarM7a/GcBjDP0uUMZVzyDiJf9LpwbZuPxqQsF/YTmJFvxQISMPuuKw
+         D6p+rdR3FS/4o0xVaMBojcZwA4MCP8PX/aEBAdLfasjQ48W2Yh8j7RCeqe2UyAzgO7
+         McP6FE5vR/LhDkUASBDPZCvcnIxjOUp9SDG3BWJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Guanghui <zhouguanghui1@huawei.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 029/171] iommu/arm-smmu-v3: fix event handling soft lockup
-Date:   Tue, 12 Apr 2022 08:28:40 +0200
-Message-Id: <20220412062928.728963213@linuxfoundation.org>
+        stable@vger.kernel.org, Qi Liu <liuqi115@huawei.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 047/171] scsi: hisi_sas: Free irq vectors in order for v3 HW
+Date:   Tue, 12 Apr 2022 08:28:58 +0200
+Message-Id: <20220412062929.249065746@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -48,53 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Guanghui <zhouguanghui1@huawei.com>
+From: Qi Liu <liuqi115@huawei.com>
 
-[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
+[ Upstream commit 554fb72ee34f4732c7f694f56c3c6e67790352a0 ]
 
-During event processing, events are read from the event queue one
-by one until the queue is empty.If the master device continuously
-requests address access at the same time and the SMMU generates
-events, the cyclic processing of the event takes a long time and
-softlockup warnings may be reported.
+If the driver probe fails to request the channel IRQ or fatal IRQ, the
+driver will free the IRQ vectors before freeing the IRQs in free_irq(),
+and this will cause a kernel BUG like this:
 
-arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
+------------[ cut here ]------------
+kernel BUG at drivers/pci/msi.c:369!
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
 Call trace:
- _dev_info+0x7c/0xa0
- arm_smmu_evtq_thread+0x1c0/0x230
- irq_thread_fn+0x30/0x80
- irq_thread+0x128/0x210
- kthread+0x134/0x138
- ret_from_fork+0x10/0x1c
-Kernel panic - not syncing: softlockup: hung tasks
+   free_msi_irqs+0x118/0x13c
+   pci_disable_msi+0xfc/0x120
+   pci_free_irq_vectors+0x24/0x3c
+   hisi_sas_v3_probe+0x360/0x9d0 [hisi_sas_v3_hw]
+   local_pci_probe+0x44/0xb0
+   work_for_cpu_fn+0x20/0x34
+   process_one_work+0x1d0/0x340
+   worker_thread+0x2e0/0x460
+   kthread+0x180/0x190
+   ret_from_fork+0x10/0x20
+---[ end trace b88990335b610c11 ]---
 
-Fix this by calling cond_resched() after the event information is
-printed.
+So we use devm_add_action() to control the order in which we free the
+vectors.
 
-Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/1645703489-87194-4-git-send-email-john.garry@huawei.com
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7067b7c11626..483c1362cc4a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1368,6 +1368,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
- 					 (unsigned long long)evt[i]);
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index a8998b016b86..cd41dc061d87 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -2372,17 +2372,25 @@ static irqreturn_t cq_interrupt_v3_hw(int irq_no, void *p)
+ 	return IRQ_WAKE_THREAD;
+ }
  
-+			cond_resched();
- 		}
++static void hisi_sas_v3_free_vectors(void *data)
++{
++	struct pci_dev *pdev = data;
++
++	pci_free_irq_vectors(pdev);
++}
++
+ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
+ {
+ 	int vectors;
+ 	int max_msi = HISI_SAS_MSI_COUNT_V3_HW, min_msi;
+ 	struct Scsi_Host *shost = hisi_hba->shost;
++	struct pci_dev *pdev = hisi_hba->pci_dev;
+ 	struct irq_affinity desc = {
+ 		.pre_vectors = BASE_VECTORS_V3_HW,
+ 	};
  
- 		/*
+ 	min_msi = MIN_AFFINE_VECTORS_V3_HW;
+-	vectors = pci_alloc_irq_vectors_affinity(hisi_hba->pci_dev,
++	vectors = pci_alloc_irq_vectors_affinity(pdev,
+ 						 min_msi, max_msi,
+ 						 PCI_IRQ_MSI |
+ 						 PCI_IRQ_AFFINITY,
+@@ -2394,6 +2402,7 @@ static int interrupt_preinit_v3_hw(struct hisi_hba *hisi_hba)
+ 	hisi_hba->cq_nvecs = vectors - BASE_VECTORS_V3_HW;
+ 	shost->nr_hw_queues = hisi_hba->cq_nvecs;
+ 
++	devm_add_action(&pdev->dev, hisi_sas_v3_free_vectors, pdev);
+ 	return 0;
+ }
+ 
+@@ -3313,7 +3322,7 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	dev_err(dev, "%d hw queues\n", shost->nr_hw_queues);
+ 	rc = scsi_add_host(shost, dev);
+ 	if (rc)
+-		goto err_out_free_irq_vectors;
++		goto err_out_debugfs;
+ 
+ 	rc = sas_register_ha(sha);
+ 	if (rc)
+@@ -3340,8 +3349,6 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ err_out_register_ha:
+ 	scsi_remove_host(shost);
+-err_out_free_irq_vectors:
+-	pci_free_irq_vectors(pdev);
+ err_out_debugfs:
+ 	hisi_sas_debugfs_exit(hisi_hba);
+ err_out_ha:
+@@ -3369,7 +3376,6 @@ hisi_sas_v3_destroy_irqs(struct pci_dev *pdev, struct hisi_hba *hisi_hba)
+ 
+ 		devm_free_irq(&pdev->dev, pci_irq_vector(pdev, nr), cq);
+ 	}
+-	pci_free_irq_vectors(pdev);
+ }
+ 
+ static void hisi_sas_v3_remove(struct pci_dev *pdev)
 -- 
 2.35.1
 
