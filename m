@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD33C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C416DC47082
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384330AbiDLIlP (ORCPT
+        id S1357162AbiDLIlB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        Tue, 12 Apr 2022 04:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357218AbiDLHjx (ORCPT
+        with ESMTP id S1357221AbiDLHjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E33015724;
-        Tue, 12 Apr 2022 00:13:51 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4901D1582D;
+        Tue, 12 Apr 2022 00:13:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2868D61701;
-        Tue, 12 Apr 2022 07:13:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36A2CC385A5;
-        Tue, 12 Apr 2022 07:13:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D766461045;
+        Tue, 12 Apr 2022 07:13:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E335CC385A1;
+        Tue, 12 Apr 2022 07:13:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747630;
-        bh=dZarbFzJ2SmFz2NpPCeU+jku5aUbzpxIrwl8F+N21Ik=;
+        s=korg; t=1649747636;
+        bh=Hh8TQDDukf6SBZKFe+GfLCSWmvkOIWW41tky6bIOHxg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lDbNBKLqPqgNe2TKsG0Q1p5wi83fAvfFfr5QKlmmOVRgevvYnfr5/9KoFjx3971Hu
-         vpnUPcuAIa91MLvQP5scDVyBH1EFoewz2Z0VkWsKxr2yX1G41eq22ut+H2ELofYL/D
-         z5ymB0UP4F/cp0fvXDI2e1jPrgbwg7uAa3YQ4YeM=
+        b=w5f4NSYM0fJ/iefeF4bI70uYnrHRpzSAwVZt4bIPShIxrDPkgQtiWbRryoI7hFmna
+         XDTDgEKjyXWnBYrarGnRpmPAGKaKCtgqzD9z2Y52xHbvQUTMioQfL3X56JqXvINexl
+         pdbXKBIwCd31m3eQMtRMUAtyH/1j3z3PFrtqfQak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 147/343] MIPS: ingenic: correct unit node address
-Date:   Tue, 12 Apr 2022 08:29:25 +0200
-Message-Id: <20220412062955.624518273@linuxfoundation.org>
+Subject: [PATCH 5.17 111/343] power: supply: axp288_charger: Use acpi_quirk_skip_acpi_ac_and_battery()
+Date:   Tue, 12 Apr 2022 08:28:49 +0200
+Message-Id: <20220412062954.597367971@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,35 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 8931ddd8d6a55fcefb20f44a38ba42bb746f0b62 ]
+[ Upstream commit 00d0566614b7bb7b226cb5a6895b0180ffe6915a ]
 
-Unit node addresses should not have leading 0x:
+Normally the native AXP288 fg/charger drivers are preferred but one some
+devices the ACPI drivers should be used instead.
 
-  Warning (unit_address_format): /nemc@13410000/efuse@d0/eth-mac-addr@0x22: unit name should not have leading "0x"
+The ACPI battery/ac drivers use the acpi_quirk_skip_acpi_ac_and_battery()
+helper to determine if they should skip loading because native fuel-gauge/
+charger drivers like the AXP288 drivers will be used.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+The new acpi_quirk_skip_acpi_ac_and_battery() helper includes a list of
+exceptions for boards where the ACPI drivers should be used instead.
+
+Use this new helper to avoid loading on such boards. Note this requires
+adding a Kconfig dependency on ACPI, this is not a problem because ACPI
+should be enabled on all boards with an AXP288 PMIC anyways.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/power/supply/Kconfig          | 2 +-
+ drivers/power/supply/axp288_charger.c | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index 3f9ea47a10cd..b998301f179c 100644
---- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
-+++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -510,7 +510,7 @@
- 			#address-cells = <1>;
- 			#size-cells = <1>;
+diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
+index b366e2fd8e97..d7534f12e9ef 100644
+--- a/drivers/power/supply/Kconfig
++++ b/drivers/power/supply/Kconfig
+@@ -351,7 +351,7 @@ config AXP20X_POWER
  
--			eth0_addr: eth-mac-addr@0x22 {
-+			eth0_addr: eth-mac-addr@22 {
- 				reg = <0x22 0x6>;
- 			};
- 		};
+ config AXP288_CHARGER
+ 	tristate "X-Powers AXP288 Charger"
+-	depends on MFD_AXP20X && EXTCON_AXP288 && IOSF_MBI
++	depends on MFD_AXP20X && EXTCON_AXP288 && IOSF_MBI && ACPI
+ 	help
+ 	  Say yes here to have support X-Power AXP288 power management IC (PMIC)
+ 	  integrated charger.
+diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
+index c498e62ab4e2..19746e658a6a 100644
+--- a/drivers/power/supply/axp288_charger.c
++++ b/drivers/power/supply/axp288_charger.c
+@@ -838,6 +838,13 @@ static int axp288_charger_probe(struct platform_device *pdev)
+ 	struct power_supply_config charger_cfg = {};
+ 	unsigned int val;
+ 
++	/*
++	 * Normally the native AXP288 fg/charger drivers are preferred but
++	 * on some devices the ACPI drivers should be used instead.
++	 */
++	if (!acpi_quirk_skip_acpi_ac_and_battery())
++		return -ENODEV;
++
+ 	/*
+ 	 * On some devices the fuelgauge and charger parts of the axp288 are
+ 	 * not used, check that the fuelgauge is enabled (CC_CTRL != 0).
 -- 
 2.35.1
 
