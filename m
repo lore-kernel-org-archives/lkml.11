@@ -2,106 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51030C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5536C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243735AbiDLBME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
+        id S229689AbiDLBMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348404AbiDLA7V (ORCPT
+        with ESMTP id S1348455AbiDLA7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Apr 2022 20:59:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD99D34BAD;
-        Mon, 11 Apr 2022 17:52:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F90A6066C;
-        Tue, 12 Apr 2022 00:52:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E2EC385AC;
-        Tue, 12 Apr 2022 00:52:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724749;
-        bh=x0vO82PgmsO84hJdKK64ihCc5vTDwaWia8Yej7d8jas=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W6cMSEYfp59/9eP9oQd2YVYrXIguEUx9xXPfA9AFc1OtDQSfE5f2A9ojii0eV7YcE
-         D0518MLj9G8Lfpcb0/fnTEvs0+y/kHLfIQM8pUflfGVsfbbk3dUUBXnIPSnP2h97JM
-         LhNk/khpgTp9JevR3Dci2w73ecAWVcZsWqYUppFIjGnDcS5fICoybNUyyAYKD9Hmqc
-         UZkvqjS9gTAp+OZUJaqUY6/dZcFGgcF2WKrC/yPRKXerhVA8eoV3Nwhvfd0hmXX9e/
-         NCwjxm2mD4tAT+dTm4Ye88wHja3QTt49FMiHh5+FjwHS/F1J5ogylXhJQxjAanlhBX
-         MgOWwiX2NAPMw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        Bodo Stroesser <bostroesser@gmail.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 04/11] scsi: target: tcmu: Fix possible page UAF
-Date:   Mon, 11 Apr 2022 20:52:13 -0400
-Message-Id: <20220412005222.351554-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412005222.351554-1-sashal@kernel.org>
-References: <20220412005222.351554-1-sashal@kernel.org>
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121DA36E21
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649724758; x=1681260758;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xfxJtTXIuRttIzRBDb+X6akqcsjXQHvcov6CBWoB9aU=;
+  b=kbElOvLGHE9ltBd9uZIwrwjpmlYmtezXbsHsBrKidgQI7HhS6VgVFgr7
+   NXwcevHM4Ck8vhPRt9yHWAvljgxL0N6W7dR3bOWptbtwPGZ9KlSVYs4yL
+   x7URbeGk4zTjcV+db3hq6Wn1rbjp66aEhHG649oE9hjT5o5TYpMpntvbL
+   y7z1FhnYUSlpHjMMZe68yXwVtaxBUxqvrHaU2ZBrsK5QEyeDGRKtExjtP
+   th1Wd1AARj40ByWk0np13SyKaCq8NP7h36ozCvZ9F8czwGkZif9qdY5QM
+   2Hr4S0AIX2/l9OYZgyPxrSzalacGh8vfRcphSZcCnxx7HmgvRd4TpCHVs
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="287260789"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="287260789"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:52:35 -0700
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="572492458"
+Received: from joliu-mobl2.ccr.corp.intel.com ([10.254.214.243])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:52:33 -0700
+Message-ID: <8a4a0426c81f13d70d2c82b7adbc957e3e953bf3.camel@intel.com>
+Subject: Re: [PATCH v2 2/9] mm/vmscan: remove unneeded can_split_huge_page
+ check
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     songmuchun@bytedance.com, hch@infradead.org, willy@infradead.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Date:   Tue, 12 Apr 2022 08:52:30 +0800
+In-Reply-To: <20220409093500.10329-3-linmiaohe@huawei.com>
+References: <20220409093500.10329-1-linmiaohe@huawei.com>
+         <20220409093500.10329-3-linmiaohe@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+On Sat, 2022-04-09 at 17:34 +0800, Miaohe Lin wrote:
+> We don't need to check can_split_folio() because folio_maybe_dma_pinned()
+> is checked before. It will avoid the long term pinned pages to be swapped
+> out. And we can live with short term pinned pages. Without can_split_folio
+> checking we can simplify the code. Also activate_locked can be changed to
+> keep_locked as it's just short term pinning.
+> 
+> Suggested-by: Huang, Ying <ying.huang@intel.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit a6968f7a367f128d120447360734344d5a3d5336 ]
+Look good to me.  Thanks!
 
-tcmu_try_get_data_page() looks up pages under cmdr_lock, but it does not
-take refcount properly and just returns page pointer. When
-tcmu_try_get_data_page() returns, the returned page may have been freed by
-tcmu_blocks_release().
+Reviewed-by: Huang, Ying <ying.huang@intel.com>
 
-We need to get_page() under cmdr_lock to avoid concurrent
-tcmu_blocks_release().
+Best Regards,
+Huang, Ying
 
-Link: https://lore.kernel.org/r/20220311132206.24515-1-xiaoguang.wang@linux.alibaba.com
-Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
-Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/target/target_core_user.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> ---
+>  mm/vmscan.c | 22 ++++++++--------------
+>  1 file changed, 8 insertions(+), 14 deletions(-)
+> 
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index 4a76be47bed1..01f5db75a507 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -1711,20 +1711,14 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+>  					goto keep_locked;
+>  				if (folio_maybe_dma_pinned(folio))
+>  					goto keep_locked;
+> -				if (PageTransHuge(page)) {
+> -					/* cannot split THP, skip it */
+> -					if (!can_split_folio(folio, NULL))
+> -						goto activate_locked;
+> -					/*
+> -					 * Split pages without a PMD map right
+> -					 * away. Chances are some or all of the
+> -					 * tail pages can be freed without IO.
+> -					 */
+> -					if (!folio_entire_mapcount(folio) &&
+> -					    split_folio_to_list(folio,
+> -								page_list))
+> -						goto activate_locked;
+> -				}
+> +				/*
+> +				 * Split pages without a PMD map right
+> +				 * away. Chances are some or all of the
+> +				 * tail pages can be freed without IO.
+> +				 */
+> +				if (PageTransHuge(page) && !folio_entire_mapcount(folio) &&
+> +				    split_folio_to_list(folio, page_list))
+> +					goto keep_locked;
+>  				if (!add_to_swap(page)) {
+>  					if (!PageTransHuge(page))
+>  						goto activate_locked_split;
 
-diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-index 96601fda47b1..f687481ccfdc 100644
---- a/drivers/target/target_core_user.c
-+++ b/drivers/target/target_core_user.c
-@@ -1165,6 +1165,7 @@ static struct page *tcmu_try_get_block_page(struct tcmu_dev *udev, uint32_t dbi)
- 	mutex_lock(&udev->cmdr_lock);
- 	page = tcmu_get_block_page(udev, dbi);
- 	if (likely(page)) {
-+		get_page(page);
- 		mutex_unlock(&udev->cmdr_lock);
- 		return page;
- 	}
-@@ -1233,6 +1234,7 @@ static int tcmu_vma_fault(struct vm_fault *vmf)
- 		/* For the vmalloc()ed cmd area pages */
- 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
- 		page = vmalloc_to_page(addr);
-+		get_page(page);
- 	} else {
- 		uint32_t dbi;
- 
-@@ -1243,7 +1245,6 @@ static int tcmu_vma_fault(struct vm_fault *vmf)
- 			return VM_FAULT_NOPAGE;
- 	}
- 
--	get_page(page);
- 	vmf->page = page;
- 	return 0;
- }
--- 
-2.35.1
 
