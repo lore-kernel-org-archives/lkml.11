@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07EDFC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA1CC3525B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354398AbiDLJTC (ORCPT
+        id S1382283AbiDLJVQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        Tue, 12 Apr 2022 05:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357594AbiDLHkb (ORCPT
+        with ESMTP id S1356664AbiDLHjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EDF2F3B8;
-        Tue, 12 Apr 2022 00:16:09 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918A9527D6;
+        Tue, 12 Apr 2022 00:09:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26EFBB81B62;
-        Tue, 12 Apr 2022 07:16:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CBCAC385A5;
-        Tue, 12 Apr 2022 07:16:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15BAAB81B5E;
+        Tue, 12 Apr 2022 07:09:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E520C385B8;
+        Tue, 12 Apr 2022 07:09:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747767;
-        bh=9knYtZs4cQxxwU+rTTGT8DPToBcIrwxkKouo22iwZ0c=;
+        s=korg; t=1649747396;
+        bh=CWMqiwxtlvgKbd+NivmB/OV5GOd11UOQAsCVPwOiIpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQd04LzbtbwJCxRrQcvWWa8wdaOdMMXakPh3GB1rFd23rPDVs096hvcGxxXpk/ne8
-         36quy3AkEhfg/FW67TLim9UEaEojoBjKW+aGGeh0NkPjSfNDQYwbLME39lIH6LS3uA
-         ipsS2UkMFKKb7Cr0yQ0ro33slu4yGBdotSk3rywE=
+        b=fBkE0I0Mfgs7EsLoBXx9+XgopXKusHMedbEWzw3Et2p7Zyn5mprdwPlj7Nmx4Hr7I
+         MUUx47IgD0vIEgpA2DaQXHL82+4Yo1LXBgb/+WGSrfPcPqSHnVtYqoSgZnb/pkBrTU
+         UdZAg/07axexTsQF+1hnH3IsoCZr5W4WGMmwlwwo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Wayne Chang <waynec@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 157/343] clk: mediatek: Fix memory leaks on probe
-Date:   Tue, 12 Apr 2022 08:29:35 +0200
-Message-Id: <20220412062955.906954562@linuxfoundation.org>
+Subject: [PATCH 5.17 024/343] usb: gadget: tegra-xudc: Fix control endpoints definitions
+Date:   Tue, 12 Apr 2022 08:27:22 +0200
+Message-Id: <20220412062951.801989962@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,86 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Wayne Chang <waynec@nvidia.com>
 
-[ Upstream commit 7a688c91d3fd54c53e7a9edd6052cdae98dd99d8 ]
+[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
 
-Handle the error branches to free memory where required.
+According to the Tegra Technical Reference Manual, the seq_num
+field of control endpoint is not [31:24] but [31:27]. Bit 24
+is reserved and bit 26 is splitxstate.
 
-Addresses-Coverity-ID: 1491825 ("Resource leak")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Link: https://lore.kernel.org/r/20220115183059.GA10809@elementary
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+The change fixes the wrong control endpoint's definitions.
+
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/mediatek/clk-mt8192.c | 36 +++++++++++++++++++++++++------
- 1 file changed, 30 insertions(+), 6 deletions(-)
+ drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/mediatek/clk-mt8192.c b/drivers/clk/mediatek/clk-mt8192.c
-index cbc7c6dbe0f4..79ddb3cc0b98 100644
---- a/drivers/clk/mediatek/clk-mt8192.c
-+++ b/drivers/clk/mediatek/clk-mt8192.c
-@@ -1236,9 +1236,17 @@ static int clk_mt8192_infra_probe(struct platform_device *pdev)
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 716d9ab2d2ff..be76f891b9c5 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
+ BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
+ BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
+ BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
+-BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
++BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
+ BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
++BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
++BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
+ BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
+ BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
+ BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
+@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
+ 		ep_reload(xudc, ep->index);
  
- 	r = mtk_clk_register_gates(node, infra_clks, ARRAY_SIZE(infra_clks), clk_data);
- 	if (r)
--		return r;
-+		goto free_clk_data;
-+
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	if (r)
-+		goto free_clk_data;
-+
-+	return r;
+ 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
++		ep_ctx_write_rsvd(ep->context, 0);
++		ep_ctx_write_partial_td(ep->context, 0);
++		ep_ctx_write_splitxstate(ep->context, 0);
+ 		ep_ctx_write_seq_num(ep->context, 0);
  
--	return of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+free_clk_data:
-+	mtk_free_clk_data(clk_data);
-+	return r;
- }
+ 		ep_reload(xudc, ep->index);
+@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
+ 	xudc->setup_seq_num = 0;
+ 	xudc->queued_setup_packet = false;
  
- static int clk_mt8192_peri_probe(struct platform_device *pdev)
-@@ -1253,9 +1261,17 @@ static int clk_mt8192_peri_probe(struct platform_device *pdev)
+-	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
++	ep_ctx_write_rsvd(ep0->context, 0);
++	ep_ctx_write_partial_td(ep0->context, 0);
++	ep_ctx_write_splitxstate(ep0->context, 0);
++	ep_ctx_write_seq_num(ep0->context, 0);
  
- 	r = mtk_clk_register_gates(node, peri_clks, ARRAY_SIZE(peri_clks), clk_data);
- 	if (r)
--		return r;
-+		goto free_clk_data;
-+
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	if (r)
-+		goto free_clk_data;
+ 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
  
--	return of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	return r;
-+
-+free_clk_data:
-+	mtk_free_clk_data(clk_data);
-+	return r;
- }
- 
- static int clk_mt8192_apmixed_probe(struct platform_device *pdev)
-@@ -1271,9 +1287,17 @@ static int clk_mt8192_apmixed_probe(struct platform_device *pdev)
- 	mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
- 	r = mtk_clk_register_gates(node, apmixed_clks, ARRAY_SIZE(apmixed_clks), clk_data);
- 	if (r)
--		return r;
-+		goto free_clk_data;
- 
--	return of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	if (r)
-+		goto free_clk_data;
-+
-+	return r;
-+
-+free_clk_data:
-+	mtk_free_clk_data(clk_data);
-+	return r;
- }
- 
- static const struct of_device_id of_match_clk_mt8192[] = {
 -- 
 2.35.1
 
