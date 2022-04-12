@@ -2,137 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E8EC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355347AbiDLNHu (ORCPT
+        id S1356058AbiDLNIY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
+        Tue, 12 Apr 2022 09:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356401AbiDLND2 (ORCPT
+        with ESMTP id S1356702AbiDLND7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A21DF42;
-        Tue, 12 Apr 2022 05:45:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30C09B81CCD;
-        Tue, 12 Apr 2022 12:45:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18DDFC385A1;
-        Tue, 12 Apr 2022 12:45:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649767530;
-        bh=XYiwRfijmpElQc3kiUm2Ka2BQBWKE6kkKwKlog3l6Fw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=ol2DO33P1N8tMqZh4X8Yj4ItBwtVOONDeChhJGN4LnJD4gIccJc4cv84waAZ2jGoM
-         u6PVkiJfdOP8A29p1K4eO5dnEbiTo3ayyk7R8ZLGnd/AqtAIAF1Sbcq/6xSxvk5pAf
-         kJB/cusL+nAw+O1lZlrgiLCGTv9McBJLaHRngWBLcxmmLHlkWrsrRk4MU6hNSP5mx6
-         jSRGFxOOq7UyP6wOu5/ejhr9Wi3/eT7CQbXrW+WC0jLziii0gyvfK0Es9EzmILy668
-         6Z2L9z55ae0y1Ehkud7V63F/q9HEylhRu9trydlYgCL1Lx1jPvghLiyk3pYojFAxm2
-         Txq7fsNfrZrEQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Philippe Schenker <dev@pschenker.ch>
-Cc:     Deren Wu <deren.wu@mediatek.com>, linux-wireless@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>, linux@leemhuis.info,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        YN Chen <YN.Chen@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
-References: <20220412090415.17541-1-dev@pschenker.ch>
-        <87y20aod5d.fsf@kernel.org>
-        <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
-        <420241bdd4fdbd1379f59e38571ec04c580eba41.camel@pschenker.ch>
-Date:   Tue, 12 Apr 2022 15:45:24 +0300
-In-Reply-To: <420241bdd4fdbd1379f59e38571ec04c580eba41.camel@pschenker.ch>
-        (Philippe Schenker's message of "Tue, 12 Apr 2022 14:30:34 +0200")
-Message-ID: <87bkx6o4gr.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Tue, 12 Apr 2022 09:03:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A28A113F2C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:47:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649767673;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FMp2oMMI19CzMX6iZstGkcYLomzwrXcccsJxHhfXPhs=;
+        b=Vv0RjNhXo/LGNqdDqpjSpu4e7WoEv57/I6JlpspI3GHhU/VIRsgOHAkhigJxCvxOWPQNCu
+        zL4K+ZE+ET76Aq0bFR4IDeViZU7+m3sQlTFIdJQJ02B2uJuvqTvPE0xE01CP3QU+XlRtdc
+        vVAU1ol/5hYvSDeik44AumjtgDPiYUM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-274-Rx3jMNbWN_KBdxNC2wfOWQ-1; Tue, 12 Apr 2022 08:47:52 -0400
+X-MC-Unique: Rx3jMNbWN_KBdxNC2wfOWQ-1
+Received: by mail-wm1-f70.google.com with SMTP id f12-20020a05600c154c00b0038ea9ed0a4aso1240409wmg.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:47:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FMp2oMMI19CzMX6iZstGkcYLomzwrXcccsJxHhfXPhs=;
+        b=GJJP/VoFYvLq2hyNF74XOn6ADjeo5iZa4fnAAvKqeSBE/Re5kBKpOANOwIC+QYY+56
+         xMYh38r+CYLApHRyajiC5DqtLbVwcYt4X7cSo7Tl8qeH5mC8TRA1DKnkwtOjoXefqnsI
+         rPIv8navPfWwbwTmf9arFbAfWtr0aQefZqFZrjbGkNW2tESsHvlIyxKdnptqt8VVwhoG
+         ybgIccRX0ZIEDW8CLBmzjNSLHz2KDhZC/9uR++uTg7G7y2OcC0rsfYhz7+dw7Jg+ae6H
+         BnXAj9UZ3a+8t0anG7I3RCDfnZUArAl2MuEgtEaN49N/zFR2vB9Rilods6OpfFhVzhQ6
+         tzKQ==
+X-Gm-Message-State: AOAM530xHH6zIsmF1zN+jiyne8zqnsEZi6Zpw+RqZc1UaZXaybE9pKlS
+        qs/e0xCMdnE3/sff4uHkBqbZbzNtS4HilRCBv1LptApQUybyGMzMxkvTeJV5Om8acmi6kBum+8C
+        xmGkvJpgJDv4LGe/D/wyGYiSj
+X-Received: by 2002:a05:600c:1e11:b0:38c:b316:e6f5 with SMTP id ay17-20020a05600c1e1100b0038cb316e6f5mr3957218wmb.93.1649767671357;
+        Tue, 12 Apr 2022 05:47:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxSkWhDIignmxXyAnDO0ScbN/QuD6EP6hkvM1u+QuSX0qwvbJHTPBW68CS/aavtXCIxO1Rnvw==
+X-Received: by 2002:a05:600c:1e11:b0:38c:b316:e6f5 with SMTP id ay17-20020a05600c1e1100b0038cb316e6f5mr3957202wmb.93.1649767671079;
+        Tue, 12 Apr 2022 05:47:51 -0700 (PDT)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id g7-20020a5d64e7000000b00204a13925dcsm31349422wri.11.2022.04.12.05.47.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 05:47:50 -0700 (PDT)
+Message-ID: <dd918de6-aaf3-a9d1-0504-4b6a3f3d4e9c@redhat.com>
+Date:   Tue, 12 Apr 2022 14:47:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 4/5] drm/solomon: Move device info from ssd130x-i2c to
+ the core driver
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Mark Brown <broonie@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Chen-Yu Tsai <wens@kernel.org>
+References: <20220411211243.11121-1-javierm@redhat.com>
+ <20220411211243.11121-5-javierm@redhat.com>
+ <CAMuHMdVSsAtRLob5fLoBMNu-DRXJOaBrEHYEwG5iCA03XR5JSw@mail.gmail.com>
+ <4128b288-2b9a-f9cd-01f3-a1d50d3e10bb@redhat.com>
+ <YlVgpHqqqFy43L37@smile.fi.intel.com> <YlVg8PE6SBzhmqjI@smile.fi.intel.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YlVg8PE6SBzhmqjI@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Philippe Schenker <dev@pschenker.ch> writes:
-
-> On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
->> On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
->> > Philippe Schenker <dev@pschenker.ch> writes:
->> >=20
->> > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
->> > >=20
->> > > This commit introduces a regression on some systems where the
->> > > kernel is
->> > > crashing in different locations after a reboot was issued.
->> > >=20
->> > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest
->> > > firmware.
->> > >=20
->> > > Link:=20
->> > > https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5=
-077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0=
-ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
->> > > =C2=A0
->> > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
->> >=20
->> > Can I take this to wireless tree? Felix, ack?
->> >=20
->> > I'll also add:
->> >=20
->> > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
->> >=20
->>=20
->> Hi Kalle,
->>=20
->> We have a patch for a similar problem. Can you wait for the
->> verification by Philippe?
->> Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
->> after
->> reboot")
->> Link:=20
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commi=
-t/drivers/net/wireless/mediatek/mt76?id=3D602cc0c9618a819ab00ea3c9400742a0c=
-a318380
->>=20
->> I can reproduce the problem in my v5.16-rc5 desktop. And the issue can
->> be fixed when the patch applied.
->>=20
->>=20
->> Hi Philippe,
->>=20
->> Can you please help to check the patch in your platform?
+On 4/12/22 13:22, Andy Shevchenko wrote:
+> On Tue, Apr 12, 2022 at 02:21:08PM +0300, Andy Shevchenko wrote:
+>> On Tue, Apr 12, 2022 at 10:07:02AM +0200, Javier Martinez Canillas wrote:
+>>> On 4/12/22 09:23, Geert Uytterhoeven wrote:
+>>>> On Mon, Apr 11, 2022 at 11:12 PM Javier Martinez Canillas
+>>>> <javierm@redhat.com> wrote:
+> 
+> ...
+> 
+>>>>> -       ssd130x->device_info = device_get_match_data(dev);
+>>>>> +
+>>>>> +       variant = (enum ssd130x_variants)device_get_match_data(dev);
+>>>>
+>>>> (uintptr_t), to avoid a cast from pointer to integer of different
+>>>> size warning.
+>>>>
+>>>
+>>> Indeed. The kernel test robot reported the same.
+>>
+>> Not only because of this, but also with the non-NULL pointers I prefer the old
+>> style without ugly castings.
+>>
+>> Instead, you may export the array (in the driver's namespace) and use
+>> &info[ID] pointer for the specific device info.
+> 
+> Note that device_get_match_data() has no clue if the data is absent or
+> data == (void *)0.
 >
-> Aah, so I have been a bit late with my painful bisecting. Should have
-> checked -next before...=20
 
-Actually commit 602cc0c9618a is already in Linus' tree and it was
-included in v5.18-rc1 release.
+Yep, we could make the enum start at 1 and check for !variant but that's
+something that will also be prevented by your suggestion to just use the
+&info[ID] instead.
 
-> Whatever, your patch works just fine. I cherry picked your patch on
-> top mainline v5.17 and it works just fine with that one.
->
-> Thank you very much Deren!
+-- 
+Best regards,
 
-And thank you Philippe for quickly testing this!
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
-> Sorry Kalle for the overlapping revert, please do not apply it.
-
-Ok, I'll drop your revert.
-
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
