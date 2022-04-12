@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB59EC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7ABC47084
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376620AbiDLHoO (ORCPT
+        id S1376359AbiDLHn6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
+        Tue, 12 Apr 2022 03:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354210AbiDLHRO (ORCPT
+        with ESMTP id S1354167AbiDLHRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:17:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745CF26557;
-        Mon, 11 Apr 2022 23:58:31 -0700 (PDT)
+        Tue, 12 Apr 2022 03:17:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23D72657C;
+        Mon, 11 Apr 2022 23:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3A3DB81B49;
-        Tue, 12 Apr 2022 06:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F10BC385A1;
-        Tue, 12 Apr 2022 06:58:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54CC8B81B4D;
+        Tue, 12 Apr 2022 06:58:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0211C385A1;
+        Tue, 12 Apr 2022 06:58:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746708;
-        bh=Ueb/n5/degKcP/u90rkPTK409N1+OCvbJpRbir3mBN4=;
+        s=korg; t=1649746703;
+        bh=dbfN4MEQl7EMuA/KI3E6hN5qoKSn64HMeIb6QjfALpY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vhWrERdp8K7NfHvCiVgOi74u6i02y8xRyBxiQZ90I0JH/7PiKhR1i2tKaye0onAnc
-         QSbjj9aqju6gWN2SpWkrBZ2LNeq4LjGQ4fBDal7H205Pr0CRrMSQHwvkp6kfRbl/xk
-         HHnAyabiKVzdNTd/0cnQhpN/Huxg7VAR+iqOl+10=
+        b=sydSciLzQrplMzYww0uZLKQLf/0+BfTYvKVunh0e0ib3LPi9EQcdem5K6LXoFdxDp
+         SP3g5SZBgPJCCz+or247TsprdxhfT4LpicWEYvdi8rmRVEMkDMo/cMbA6NKj2p93Kf
+         XigUbuQni1uFP33YJDVC8u1818kulCew40VqWbcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 101/285] net: sfp: add 2500base-X quirk for Lantech SFP module
-Date:   Tue, 12 Apr 2022 08:29:18 +0200
-Message-Id: <20220412062946.580743373@linuxfoundation.org>
+Subject: [PATCH 5.16 073/285] scsi: pm8001: Fix tag leaks on error
+Date:   Tue, 12 Apr 2022 08:28:50 +0200
+Message-Id: <20220412062945.773836771@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,51 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
+[ Upstream commit 4c8f04b1905cd4b776d0b720463c091545478ef7 ]
 
-The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
-nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
-module.
+In pm8001_chip_set_dev_state_req(), pm8001_chip_fw_flash_update_req(),
+pm80xx_chip_phy_ctl_req() and pm8001_chip_reg_dev_req() add missing calls
+to pm8001_tag_free() to free the allocated tag when pm8001_mpi_build_cmd()
+fails.
 
-The following in an EEPROM dump of such a SFP with the serial number
-redacted:
+Similarly, in pm8001_exec_internal_task_abort(), if the chip ->task_abort
+method fails, the tag allocated for the abort request task must be
+freed. Add the missing call to pm8001_tag_free().
 
-00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
-10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
-20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
-30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
-40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
-50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
-60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
-70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
-
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-22-damien.lemoal@opensource.wdc.com
+Reviewed-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp-bus.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/scsi/pm8001/pm8001_hwi.c | 9 +++++++++
+ drivers/scsi/pm8001/pm8001_sas.c | 2 +-
+ drivers/scsi/pm8001/pm80xx_hwi.c | 9 +++++++--
+ 3 files changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index c1512c9925a6..15aa5ac1ff49 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		// Lantech 8330-262D-E can operate at 2500base-X, but
-+		// incorrectly report 2500MBd NRZ in their EEPROM
-+		.vendor = "Lantech",
-+		.part = "8330-262D-E",
-+		.modes = sfp_quirk_2500basex,
- 	}, {
- 		.vendor = "UBNT",
- 		.part = "UF-INSTANT",
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 7351e767b68d..e447b714df2b 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -4492,6 +4492,9 @@ static int pm8001_chip_reg_dev_req(struct pm8001_hba_info *pm8001_ha,
+ 		SAS_ADDR_SIZE);
+ 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
+ 			sizeof(payload), 0);
++	if (rc)
++		pm8001_tag_free(pm8001_ha, tag);
++
+ 	return rc;
+ }
+ 
+@@ -4904,6 +4907,9 @@ pm8001_chip_fw_flash_update_req(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->ccb_tag = tag;
+ 	rc = pm8001_chip_fw_flash_update_build(pm8001_ha, &flash_update_info,
+ 		tag);
++	if (rc)
++		pm8001_tag_free(pm8001_ha, tag);
++
+ 	return rc;
+ }
+ 
+@@ -5008,6 +5014,9 @@ pm8001_chip_set_dev_state_req(struct pm8001_hba_info *pm8001_ha,
+ 	payload.nds = cpu_to_le32(state);
+ 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
+ 			sizeof(payload), 0);
++	if (rc)
++		pm8001_tag_free(pm8001_ha, tag);
++
+ 	return rc;
+ 
+ }
+diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
+index c0b45b8a513d..2a9ea08c7fe6 100644
+--- a/drivers/scsi/pm8001/pm8001_sas.c
++++ b/drivers/scsi/pm8001/pm8001_sas.c
+@@ -831,10 +831,10 @@ pm8001_exec_internal_task_abort(struct pm8001_hba_info *pm8001_ha,
+ 
+ 		res = PM8001_CHIP_DISP->task_abort(pm8001_ha,
+ 			pm8001_dev, flag, task_tag, ccb_tag);
+-
+ 		if (res) {
+ 			del_timer(&task->slow_task->timer);
+ 			pm8001_dbg(pm8001_ha, FAIL, "Executing internal task failed\n");
++			pm8001_tag_free(pm8001_ha, ccb_tag);
+ 			goto ex_err;
+ 		}
+ 		wait_for_completion(&task->slow_task->completion);
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 00498e3660e1..d7c88d0f1899 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -4928,8 +4928,13 @@ static int pm80xx_chip_phy_ctl_req(struct pm8001_hba_info *pm8001_ha,
+ 	payload.tag = cpu_to_le32(tag);
+ 	payload.phyop_phyid =
+ 		cpu_to_le32(((phy_op & 0xFF) << 8) | (phyId & 0xFF));
+-	return pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
+-			sizeof(payload), 0);
++
++	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
++				  sizeof(payload), 0);
++	if (rc)
++		pm8001_tag_free(pm8001_ha, tag);
++
++	return rc;
+ }
+ 
+ static u32 pm80xx_chip_is_our_interrupt(struct pm8001_hba_info *pm8001_ha)
 -- 
 2.35.1
 
