@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21895C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0083C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351603AbiDLHDk (ORCPT
+        id S1351879AbiDLHEX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
+        Tue, 12 Apr 2022 03:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351517AbiDLGxy (ORCPT
+        with ESMTP id S1351548AbiDLGx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:54 -0400
+        Tue, 12 Apr 2022 02:53:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A32137A8C;
-        Mon, 11 Apr 2022 23:41:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2EDDFC0;
+        Mon, 11 Apr 2022 23:42:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFE61B818C8;
-        Tue, 12 Apr 2022 06:41:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D73CC385AD;
-        Tue, 12 Apr 2022 06:41:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85DF7B81B40;
+        Tue, 12 Apr 2022 06:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E219BC385A6;
+        Tue, 12 Apr 2022 06:42:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745697;
-        bh=x1XlqSf6Lmtee3YQ6jZ3wFvK9KhITNobT1uPo4v1guY=;
+        s=korg; t=1649745747;
+        bh=Thuk7Bai6Yo1zdNeRAk2VU15/LhdKGE0MK7Vm2sewe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PG9moHRYdiXAtqCC+Yhdsv3HD1dsgXMa7wJafM8DPjNcgVwpiNFGeBXWd3iGimnjI
-         apra+qgGvnpYWDcVnhL4UTwTNUv3O2BnC78UFg1WhRjRTe803IH5NVRTKpOXRsq1yT
-         gw3u/Ywdchrcna2DAcMVL8DzuMUd+Td9Gt1/HBKs=
+        b=urwrGadVm/S+rYB087bDy6YxRHI/BS1AcgxIoaSyJO8TTsjg28G3W95BZQTU8yy62
+         EdgTTQxk4gllbIVihx3yGUidZ/123yNPCgvlXJWKDIyr/CK3i/XlPUYoNoH2IzqGHZ
+         oivFxCaLAEPnYQwmi0ObLlqHGzT1+Rd1G7QMjrhs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jann Horn <jannh@google.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 008/277] kfence: count unexpectedly skipped allocations
-Date:   Tue, 12 Apr 2022 08:26:51 +0200
-Message-Id: <20220412062942.273989199@linuxfoundation.org>
+Subject: [PATCH 5.15 033/277] bpf: Make dst_port field in struct bpf_sock 16-bit wide
+Date:   Tue, 12 Apr 2022 08:27:16 +0200
+Message-Id: <20220412062943.002757383@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -56,88 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Elver <elver@google.com>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-[ Upstream commit 9a19aeb5665068c3e2727230588684aae2cab7ef ]
+[ Upstream commit 4421a582718ab81608d8486734c18083b822390d ]
 
-Maintain a counter to count allocations that are skipped due to being
-incompatible (oversized, incompatible gfp flags) or no capacity.
+Menglong Dong reports that the documentation for the dst_port field in
+struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
+field is a zero-padded 16-bit integer in network byte order. The value
+appears to the BPF user as if laid out in memory as so:
 
-This is to compute the fraction of allocations that could not be
-serviced by KFENCE, which we expect to be rare.
+  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
+                                      + 8  <port LSB>
+                                      +16  0x00
+                                      +24  0x00
 
-Link: https://lkml.kernel.org/r/20210923104803.2620285-2-elver@google.com
-Signed-off-by: Marco Elver <elver@google.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Acked-by: Alexander Potapenko <glider@google.com>
-Cc: Aleksandr Nogikh <nogikh@google.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: Taras Madan <tarasmadan@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
+the offset into the field is 0.
+
+32-bit wide loads from dst_port are especially confusing. The loaded value,
+after converting to host byte order with bpf_ntohl(dst_port), contains the
+port number in the upper 16-bits.
+
+Remove the confusion by splitting the field into two 16-bit fields. For
+backward compatibility, allow 32-bit wide loads from offsetof(struct
+bpf_sock, dst_port).
+
+While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
+
+Reported-by: Menglong Dong <imagedong@tencent.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Link: https://lore.kernel.org/r/20220130115518.213259-2-jakub@cloudflare.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kfence/core.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ include/uapi/linux/bpf.h |  3 ++-
+ net/core/filter.c        | 10 +++++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-index 84555b8233ef..f26f55850ad7 100644
---- a/mm/kfence/core.c
-+++ b/mm/kfence/core.c
-@@ -113,6 +113,8 @@ enum kfence_counter_id {
- 	KFENCE_COUNTER_FREES,
- 	KFENCE_COUNTER_ZOMBIES,
- 	KFENCE_COUNTER_BUGS,
-+	KFENCE_COUNTER_SKIP_INCOMPAT,
-+	KFENCE_COUNTER_SKIP_CAPACITY,
- 	KFENCE_COUNTER_COUNT,
- };
- static atomic_long_t counters[KFENCE_COUNTER_COUNT];
-@@ -122,6 +124,8 @@ static const char *const counter_names[] = {
- 	[KFENCE_COUNTER_FREES]		= "total frees",
- 	[KFENCE_COUNTER_ZOMBIES]	= "zombie allocations",
- 	[KFENCE_COUNTER_BUGS]		= "total bugs",
-+	[KFENCE_COUNTER_SKIP_INCOMPAT]	= "skipped allocations (incompatible)",
-+	[KFENCE_COUNTER_SKIP_CAPACITY]	= "skipped allocations (capacity)",
- };
- static_assert(ARRAY_SIZE(counter_names) == KFENCE_COUNTER_COUNT);
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index e3fb5e520511..2136e45656ab 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5347,7 +5347,8 @@ struct bpf_sock {
+ 	__u32 src_ip4;
+ 	__u32 src_ip6[4];
+ 	__u32 src_port;		/* host byte order */
+-	__u32 dst_port;		/* network byte order */
++	__be16 dst_port;	/* network byte order */
++	__u16 :16;		/* zero padding */
+ 	__u32 dst_ip4;
+ 	__u32 dst_ip6[4];
+ 	__u32 state;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 76e406965b6f..a65de7ac60aa 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7966,6 +7966,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 			      struct bpf_insn_access_aux *info)
+ {
+ 	const int size_default = sizeof(__u32);
++	int field_size;
  
-@@ -272,8 +276,10 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
- 		list_del_init(&meta->list);
+ 	if (off < 0 || off >= sizeof(struct bpf_sock))
+ 		return false;
+@@ -7977,7 +7978,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 	case offsetof(struct bpf_sock, family):
+ 	case offsetof(struct bpf_sock, type):
+ 	case offsetof(struct bpf_sock, protocol):
+-	case offsetof(struct bpf_sock, dst_port):
+ 	case offsetof(struct bpf_sock, src_port):
+ 	case offsetof(struct bpf_sock, rx_queue_mapping):
+ 	case bpf_ctx_range(struct bpf_sock, src_ip4):
+@@ -7986,6 +7986,14 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
+ 		bpf_ctx_record_field_size(info, size_default);
+ 		return bpf_ctx_narrow_access_ok(off, size, size_default);
++	case bpf_ctx_range(struct bpf_sock, dst_port):
++		field_size = size == size_default ?
++			size_default : sizeof_field(struct bpf_sock, dst_port);
++		bpf_ctx_record_field_size(info, field_size);
++		return bpf_ctx_narrow_access_ok(off, size, field_size);
++	case offsetofend(struct bpf_sock, dst_port) ...
++	     offsetof(struct bpf_sock, dst_ip4) - 1:
++		return false;
  	}
- 	raw_spin_unlock_irqrestore(&kfence_freelist_lock, flags);
--	if (!meta)
-+	if (!meta) {
-+		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_CAPACITY]);
- 		return NULL;
-+	}
  
- 	if (unlikely(!raw_spin_trylock_irqsave(&meta->lock, flags))) {
- 		/*
-@@ -744,8 +750,10 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
- 	 * Perform size check before switching kfence_allocation_gate, so that
- 	 * we don't disable KFENCE without making an allocation.
- 	 */
--	if (size > PAGE_SIZE)
-+	if (size > PAGE_SIZE) {
-+		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_INCOMPAT]);
- 		return NULL;
-+	}
- 
- 	/*
- 	 * Skip allocations from non-default zones, including DMA. We cannot
-@@ -753,8 +761,10 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
- 	 * properties (e.g. reside in DMAable memory).
- 	 */
- 	if ((flags & GFP_ZONEMASK) ||
--	    (s->flags & (SLAB_CACHE_DMA | SLAB_CACHE_DMA32)))
-+	    (s->flags & (SLAB_CACHE_DMA | SLAB_CACHE_DMA32))) {
-+		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_INCOMPAT]);
- 		return NULL;
-+	}
- 
- 	if (atomic_inc_return(&kfence_allocation_gate) > 1)
- 		return NULL;
+ 	return size == size_default;
 -- 
 2.35.1
 
