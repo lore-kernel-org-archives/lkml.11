@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F98FC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21895C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351760AbiDLHEO (ORCPT
+        id S1351603AbiDLHDk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
+        Tue, 12 Apr 2022 03:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351545AbiDLGx5 (ORCPT
+        with ESMTP id S1351517AbiDLGxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880AB186F0;
-        Mon, 11 Apr 2022 23:42:25 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A32137A8C;
+        Mon, 11 Apr 2022 23:41:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 240D160A21;
-        Tue, 12 Apr 2022 06:42:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F7BC385A8;
-        Tue, 12 Apr 2022 06:42:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFE61B818C8;
+        Tue, 12 Apr 2022 06:41:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D73CC385AD;
+        Tue, 12 Apr 2022 06:41:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745744;
-        bh=nFWpWCPbOaoMAwUpLix+4mXkQpbORA6GkI7rlenqrL8=;
+        s=korg; t=1649745697;
+        bh=x1XlqSf6Lmtee3YQ6jZ3wFvK9KhITNobT1uPo4v1guY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S5UmFbm+OXsyyEGo0ZLEn2LtD433wiariqfTzAfEm0RaPWWnPr9Fj5Y8kqfWn7cgl
-         uFUoNSr8fnFjJYYB8BxNu18m7VpQhJNWV5fevj1t7fx1zC4RG9fQXAVnhhD0jxn1T1
-         AFZpQogUPXmuxTLKc/LdzmoljZYCsPyDGFgZP+Hw=
+        b=PG9moHRYdiXAtqCC+Yhdsv3HD1dsgXMa7wJafM8DPjNcgVwpiNFGeBXWd3iGimnjI
+         apra+qgGvnpYWDcVnhL4UTwTNUv3O2BnC78UFg1WhRjRTe803IH5NVRTKpOXRsq1yT
+         gw3u/Ywdchrcna2DAcMVL8DzuMUd+Td9Gt1/HBKs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jann Horn <jannh@google.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 032/277] drm/bridge: Add missing pm_runtime_put_sync
-Date:   Tue, 12 Apr 2022 08:27:15 +0200
-Message-Id: <20220412062942.973424530@linuxfoundation.org>
+Subject: [PATCH 5.15 008/277] kfence: count unexpectedly skipped allocations
+Date:   Tue, 12 Apr 2022 08:26:51 +0200
+Message-Id: <20220412062942.273989199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,75 +56,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Marco Elver <elver@google.com>
 
-[ Upstream commit 46f47807738441e354873546dde0b000106c068a ]
+[ Upstream commit 9a19aeb5665068c3e2727230588684aae2cab7ef ]
 
-pm_runtime_get_sync() will increase the rumtime PM counter
-even when it returns an error. Thus a pairing decrement is needed
-to prevent refcount leak. Fix this by replacing this API with
-pm_runtime_resume_and_get(), which will not change the runtime
-PM counter on error. Besides, a matching decrement is needed
-on the error handling path to keep the counter balanced.
+Maintain a counter to count allocations that are skipped due to being
+incompatible (oversized, incompatible gfp flags) or no capacity.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/1643008835-73961-1-git-send-email-lyz_cs@pku.edu.cn
+This is to compute the fraction of allocations that could not be
+serviced by KFENCE, which we expect to be rare.
+
+Link: https://lkml.kernel.org/r/20210923104803.2620285-2-elver@google.com
+Signed-off-by: Marco Elver <elver@google.com>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Acked-by: Alexander Potapenko <glider@google.com>
+Cc: Aleksandr Nogikh <nogikh@google.com>
+Cc: Jann Horn <jannh@google.com>
+Cc: Taras Madan <tarasmadan@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/nwl-dsi.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ mm/kfence/core.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
-index 6e484d836cfe..691039aba87f 100644
---- a/drivers/gpu/drm/bridge/nwl-dsi.c
-+++ b/drivers/gpu/drm/bridge/nwl-dsi.c
-@@ -861,18 +861,19 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	memcpy(&dsi->mode, adjusted_mode, sizeof(dsi->mode));
- 	drm_mode_debug_printmodeline(adjusted_mode);
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index 84555b8233ef..f26f55850ad7 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -113,6 +113,8 @@ enum kfence_counter_id {
+ 	KFENCE_COUNTER_FREES,
+ 	KFENCE_COUNTER_ZOMBIES,
+ 	KFENCE_COUNTER_BUGS,
++	KFENCE_COUNTER_SKIP_INCOMPAT,
++	KFENCE_COUNTER_SKIP_CAPACITY,
+ 	KFENCE_COUNTER_COUNT,
+ };
+ static atomic_long_t counters[KFENCE_COUNTER_COUNT];
+@@ -122,6 +124,8 @@ static const char *const counter_names[] = {
+ 	[KFENCE_COUNTER_FREES]		= "total frees",
+ 	[KFENCE_COUNTER_ZOMBIES]	= "zombie allocations",
+ 	[KFENCE_COUNTER_BUGS]		= "total bugs",
++	[KFENCE_COUNTER_SKIP_INCOMPAT]	= "skipped allocations (incompatible)",
++	[KFENCE_COUNTER_SKIP_CAPACITY]	= "skipped allocations (capacity)",
+ };
+ static_assert(ARRAY_SIZE(counter_names) == KFENCE_COUNTER_COUNT);
  
--	pm_runtime_get_sync(dev);
-+	if (pm_runtime_resume_and_get(dev) < 0)
-+		return;
- 
- 	if (clk_prepare_enable(dsi->lcdif_clk) < 0)
--		return;
-+		goto runtime_put;
- 	if (clk_prepare_enable(dsi->core_clk) < 0)
--		return;
-+		goto runtime_put;
- 
- 	/* Step 1 from DSI reset-out instructions */
- 	ret = reset_control_deassert(dsi->rst_pclk);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert PCLK: %d\n", ret);
--		return;
-+		goto runtime_put;
+@@ -272,8 +276,10 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
+ 		list_del_init(&meta->list);
  	}
+ 	raw_spin_unlock_irqrestore(&kfence_freelist_lock, flags);
+-	if (!meta)
++	if (!meta) {
++		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_CAPACITY]);
+ 		return NULL;
++	}
  
- 	/* Step 2 from DSI reset-out instructions */
-@@ -882,13 +883,18 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	ret = reset_control_deassert(dsi->rst_esc);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert ESC: %d\n", ret);
--		return;
-+		goto runtime_put;
- 	}
- 	ret = reset_control_deassert(dsi->rst_byte);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert BYTE: %d\n", ret);
--		return;
-+		goto runtime_put;
- 	}
-+
-+	return;
-+
-+runtime_put:
-+	pm_runtime_put_sync(dev);
- }
+ 	if (unlikely(!raw_spin_trylock_irqsave(&meta->lock, flags))) {
+ 		/*
+@@ -744,8 +750,10 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
+ 	 * Perform size check before switching kfence_allocation_gate, so that
+ 	 * we don't disable KFENCE without making an allocation.
+ 	 */
+-	if (size > PAGE_SIZE)
++	if (size > PAGE_SIZE) {
++		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_INCOMPAT]);
+ 		return NULL;
++	}
  
- static void
+ 	/*
+ 	 * Skip allocations from non-default zones, including DMA. We cannot
+@@ -753,8 +761,10 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
+ 	 * properties (e.g. reside in DMAable memory).
+ 	 */
+ 	if ((flags & GFP_ZONEMASK) ||
+-	    (s->flags & (SLAB_CACHE_DMA | SLAB_CACHE_DMA32)))
++	    (s->flags & (SLAB_CACHE_DMA | SLAB_CACHE_DMA32))) {
++		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_INCOMPAT]);
+ 		return NULL;
++	}
+ 
+ 	if (atomic_inc_return(&kfence_allocation_gate) > 1)
+ 		return NULL;
 -- 
 2.35.1
 
