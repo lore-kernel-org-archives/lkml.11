@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47209C4708A
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1604FC4708B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358184AbiDLHlK (ORCPT
+        id S1346082AbiDLHpd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
+        Tue, 12 Apr 2022 03:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353142AbiDLHOw (ORCPT
+        with ESMTP id S1354374AbiDLHRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59F637A3D;
-        Mon, 11 Apr 2022 23:56:35 -0700 (PDT)
+        Tue, 12 Apr 2022 03:17:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28234AE04;
+        Mon, 11 Apr 2022 23:59:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D59CB81B35;
-        Tue, 12 Apr 2022 06:56:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 890CEC385AC;
-        Tue, 12 Apr 2022 06:56:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E0B5B81B4F;
+        Tue, 12 Apr 2022 06:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B60BDC385A8;
+        Tue, 12 Apr 2022 06:59:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746592;
-        bh=MwWoa/QdxHvhEnP3SgwTjOX9SK3o2DSjsWpdzkPYRzc=;
+        s=korg; t=1649746742;
+        bh=0o03kzCxA2FzdbHm9jf0Ja7nQwzJQdUEsHNBzdG6oH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TDZ8gGnniWQcKgFx1ap92QkRbZw5fSMwNM9kesklLhBOHLm4ENN7i14fuMsb2SqIU
-         9oFdhHQ5F+BccO3uT+bfb72go6SSbyllc90DMRHUWnabq3M+PNm9fGgeWaJOtI0mm1
-         PUTPXQc0p2/LCjXkYRJLsCon2JyHfA9dMP05ebc8=
+        b=IKQxo9GIifWr8qU6363DHHVUnWGELQJHxOiD5TwS5vsTfxCwSRceMlR8Bb01+4Edf
+         7Pm8dW7Oke+sB49cBadN0lfuVu6Qr01idKP45fP1gcMO+ajyp8Nk6BXqbvE+khS/ML
+         ZwzVIKtEoZMjhEAAp9PuT1KujAYuZ9mNWj8Wln1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 060/285] iwlwifi: mvm: Correctly set fragmented EBS
-Date:   Tue, 12 Apr 2022 08:28:37 +0200
-Message-Id: <20220412062945.402216978@linuxfoundation.org>
+Subject: [PATCH 5.16 112/285] init/main.c: return 1 from handled __setup() functions
+Date:   Tue, 12 Apr 2022 08:29:29 +0200
+Message-Id: <20220412062946.898927011@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,40 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit d8d4dd26b9e0469baf5017f0544d852fd4e3fb6d ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-Currently, fragmented EBS was set for a channel only if the 'hb_type'
-was set to fragmented or balanced scan. However, 'hb_type' is set only
-in case of CDB, and thus fragmented EBS is never set for a channel for
-non-CDB devices. Fix it.
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.a6165ac9b9d5.I654eafa62fd647030ae6d4f07f32c96c3171decb@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
+
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
+
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 960b21719b80..e3eefc55beaf 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1890,7 +1890,10 @@ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
- 			IWL_SCAN_CHANNEL_FLAG_CACHE_ADD;
+diff --git a/init/main.c b/init/main.c
+index cb68bc48a682..792a8d9cc560 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1189,7 +1189,7 @@ static int __init initcall_blacklist(char *str)
+ 		}
+ 	} while (str_entry);
  
- 	/* set fragmented ebs for fragmented scan on HB channels */
--	if (iwl_mvm_is_scan_fragmented(params->hb_type))
-+	if ((!iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->type)) ||
-+	    (iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->hb_type)))
- 		flags |= IWL_SCAN_CHANNEL_FLAG_EBS_FRAG;
+-	return 0;
++	return 1;
+ }
  
- 	return flags;
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -1451,7 +1451,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
+ {
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
+ }
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.35.1
 
