@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 350E2C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15168C35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385863AbiDLIxW (ORCPT
+        id S1385834AbiDLIxK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        Tue, 12 Apr 2022 04:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359267AbiDLHmx (ORCPT
+        with ESMTP id S1359204AbiDLHmm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:53 -0400
+        Tue, 12 Apr 2022 03:42:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E602CCAA;
-        Tue, 12 Apr 2022 00:21:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9837D5574D;
+        Tue, 12 Apr 2022 00:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE9C1B81B4F;
-        Tue, 12 Apr 2022 07:21:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07CE1C385A1;
-        Tue, 12 Apr 2022 07:21:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40C97B81A8F;
+        Tue, 12 Apr 2022 07:20:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F4B6C385A1;
+        Tue, 12 Apr 2022 07:20:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748088;
-        bh=9VZAPCzEDAxExx6/TXtYqfHjelitcTwOZOGjOs8mLFg=;
+        s=korg; t=1649748024;
+        bh=0KBfoJlCtolLpf0Fk7NcSiF38H54hGS9IKx9aYfxdsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D+MYuLagRtWZULzRG19K5+TuhDdI37FWVCsZVN7idANXflCy5ICIPwRw/D/yJzRbq
-         Okynhx4iEuoBKpkcTjuPe6Sl6DJvxItbuRRVZb0AwR6/71dRy9ivPTAA4+q/jGLgsA
-         ftYMEBJnCV8+kO338sJj7ZqZfdD0nCKdrZabVLFw=
+        b=T9WwfkUcCanSpUaOh6SUD51q795TAKDw8rzk2KCKmUSfN3c6O9KM/OJFkfJsPYJ7z
+         nq15yo224ZqXUbFy9MwIzQ0NJLRdxwvIDu1jt1fTCcTpFk8TtESw2RxTjEbyQQ2+OD
+         NBl71289lQqv2CY4vVeL0laFWC61qjjkTZun6diw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Philip Yang <Philip.Yang@amd.com>,
-        Harish Kasiviswanathan <Harish.Kasiviswanathan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 314/343] drm/amdkfd: Fix variable set but not used warning
-Date:   Tue, 12 Apr 2022 08:32:12 +0200
-Message-Id: <20220412063000.386044332@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 293/343] drbd: fix an invalid memory access caused by incorrect use of list iterator
+Date:   Tue, 12 Apr 2022 08:31:51 +0200
+Message-Id: <20220412062959.784490497@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,44 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 90c44207cdd18091ac9aa7cab8a3e7b0ef00e847 upstream.
+commit ae4d37b5df749926891583d42a6801b5da11e3c1 upstream.
 
-All warnings (new ones prefixed by >>):
+The bug is here:
+	idr_remove(&connection->peer_devices, vnr);
 
-   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_svm.c: In function
-'svm_range_deferred_list_work':
->> drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_svm.c:2067:22: warning:
-variable 'p' set but not used [-Wunused-but-set-variable]
-    2067 |  struct kfd_process *p;
-         |
+If the previous for_each_connection() don't exit early (no goto hit
+inside the loop), the iterator 'connection' after the loop will be a
+bogus pointer to an invalid structure object containing the HEAD
+(&resource->connections). As a result, the use of 'connection' above
+will lead to a invalid memory access (including a possible invalid free
+as idr_remove could call free_layer).
 
-Fixes: 367c9b0f1b8750 ("drm/amdkfd: Ensure mm remain valid in svm deferred_list work")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reviewed-By: Harish Kasiviswanathan <Harish.Kasiviswanathan@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The original intention should have been to remove all peer_devices,
+but the following lines have already done the work. So just remove
+this line and the unneeded label, to fix this bug.
+
+Cc: stable@vger.kernel.org
+Fixes: c06ece6ba6f1b ("drbd: Turn connection->volumes into connection->peer_devices")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Reviewed-by: Lars Ellenberg <lars.ellenberg@linbit.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_svm.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/block/drbd/drbd_main.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-@@ -2066,13 +2066,10 @@ static void svm_range_deferred_list_work
- 	struct svm_range_list *svms;
- 	struct svm_range *prange;
- 	struct mm_struct *mm;
--	struct kfd_process *p;
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -2793,12 +2793,12 @@ enum drbd_ret_code drbd_create_device(st
  
- 	svms = container_of(work, struct svm_range_list, deferred_list_work);
- 	pr_debug("enter svms 0x%p\n", svms);
+ 	if (init_submitter(device)) {
+ 		err = ERR_NOMEM;
+-		goto out_idr_remove_vol;
++		goto out_idr_remove_from_resource;
+ 	}
  
--	p = container_of(svms, struct kfd_process, svms);
--
- 	spin_lock(&svms->deferred_list_lock);
- 	while (!list_empty(&svms->deferred_range_list)) {
- 		prange = list_first_entry(&svms->deferred_range_list,
+ 	err = add_disk(disk);
+ 	if (err)
+-		goto out_idr_remove_vol;
++		goto out_idr_remove_from_resource;
+ 
+ 	/* inherit the connection state */
+ 	device->state.conn = first_connection(resource)->cstate;
+@@ -2812,8 +2812,6 @@ enum drbd_ret_code drbd_create_device(st
+ 	drbd_debugfs_device_add(device);
+ 	return NO_ERROR;
+ 
+-out_idr_remove_vol:
+-	idr_remove(&connection->peer_devices, vnr);
+ out_idr_remove_from_resource:
+ 	for_each_connection(connection, resource) {
+ 		peer_device = idr_remove(&connection->peer_devices, vnr);
 
 
