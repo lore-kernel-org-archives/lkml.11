@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84423C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D484BC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354370AbiDLHin (ORCPT
+        id S1356522AbiDLHis (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
+        Tue, 12 Apr 2022 03:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352646AbiDLHOM (ORCPT
+        with ESMTP id S1352665AbiDLHOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232472E9F5;
-        Mon, 11 Apr 2022 23:54:56 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12CE2F03A;
+        Mon, 11 Apr 2022 23:55:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F68AB81B49;
-        Tue, 12 Apr 2022 06:54:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA7DAC385A1;
-        Tue, 12 Apr 2022 06:54:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F094861531;
+        Tue, 12 Apr 2022 06:54:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE85C385A6;
+        Tue, 12 Apr 2022 06:54:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746494;
-        bh=Y4PFYmdYR2WjNP0fkjHUgXF9wtFrae+g7GdxMfughyY=;
+        s=korg; t=1649746499;
+        bh=t0g3o+vjO6oyTmJLg+UH2gahFuYs6k7jNgBfmjGR/W4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hQ41pCGuhmjBuOlrrdm/Mccs6m5nJKTVytrnfxteM1QWgFnrP0fwGMSXy6acsiirL
-         TslsyUzR9nFeMfU0ZvvWdbz0PqgZNuv//utn3ZxcDDSd0GO1/7z/9MCr9uyZRD7Pdx
-         hJicw6qUTHjz8kWSC3T+YNwk9QiF0alept7i2OdM=
+        b=iHzZSKYNTTBEjkCC9mNgiyPuA1NOcTcztk0E5cHhb0NKxxLWviBDRD6ErCqVBH1js
+         gTOMCsik/rdTMC62fwfIXijY5TA2I8FHKJUvzPB3V4WrU465+4xJJgYBQMtHQq0S+P
+         V+dWmOhpg5HiniPOuWSRNaFbAxaNmr1UXevauAlk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 025/285] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
-Date:   Tue, 12 Apr 2022 08:28:02 +0200
-Message-Id: <20220412062944.405177939@linuxfoundation.org>
+Subject: [PATCH 5.16 003/285] rtc: wm8350: Handle error for wm8350_register_irq
+Date:   Tue, 12 Apr 2022 08:27:40 +0200
+Message-Id: <20220412062943.773641655@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,45 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Kiselev <bigunclemax@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
+[ Upstream commit 43f0269b6b89c1eec4ef83c48035608f4dcdd886 ]
 
-T1040RDB has two RTL8211E-VB phys which requires setting
-of internal delays for correct work.
+As the potential failure of the wm8350_register_irq(),
+it should be better to check it and return error if fails.
+Also, it need not free 'wm_rtc->rtc' since it will be freed
+automatically.
 
-Changing the phy-connection-type property to `rgmii-id`
-will fix this issue.
-
-Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
-Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
+Fixes: 077eaf5b40ec ("rtc: rtc-wm8350: add support for WM8350 RTC")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220303085030.291793-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/rtc/rtc-wm8350.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-index 099a598c74c0..bfe1ed5be337 100644
---- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-@@ -139,12 +139,12 @@
- 		fman@400000 {
- 			ethernet@e6000 {
- 				phy-handle = <&phy_rgmii_0>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
+diff --git a/drivers/rtc/rtc-wm8350.c b/drivers/rtc/rtc-wm8350.c
+index 2018614f258f..6eaa9321c074 100644
+--- a/drivers/rtc/rtc-wm8350.c
++++ b/drivers/rtc/rtc-wm8350.c
+@@ -432,14 +432,21 @@ static int wm8350_rtc_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
- 			ethernet@e8000 {
- 				phy-handle = <&phy_rgmii_1>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
+-	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
+ 			    wm8350_rtc_update_handler, 0,
+ 			    "RTC Seconds", wm8350);
++	if (ret)
++		return ret;
++
+ 	wm8350_mask_irq(wm8350, WM8350_IRQ_RTC_SEC);
  
- 			mdio0: mdio@fc000 {
+-	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
+ 			    wm8350_rtc_alarm_handler, 0,
+ 			    "RTC Alarm", wm8350);
++	if (ret) {
++		wm8350_free_irq(wm8350, WM8350_IRQ_RTC_SEC, wm8350);
++		return ret;
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
