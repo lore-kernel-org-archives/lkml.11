@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B92EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A75C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354701AbiDLH0i (ORCPT
+        id S1354748AbiDLH0l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56784 "EHLO
+        Tue, 12 Apr 2022 03:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351672AbiDLHMv (ORCPT
+        with ESMTP id S1351673AbiDLHMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C914011A1F;
-        Mon, 11 Apr 2022 23:51:21 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F80329C90;
+        Mon, 11 Apr 2022 23:51:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AB9DB81B43;
-        Tue, 12 Apr 2022 06:51:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056F3C385A6;
-        Tue, 12 Apr 2022 06:51:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE7D061045;
+        Tue, 12 Apr 2022 06:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5107C385A1;
+        Tue, 12 Apr 2022 06:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746279;
-        bh=qMOKGD6z+PDfrv1uKDk30yiY5E9vSQk8qXTh8G+G1sU=;
+        s=korg; t=1649746271;
+        bh=kgyAKN1m9aJMO4JVySu9TeFT+7kmppQSS+h4qIqGn3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eYFJSb0uJucrb6l0tTLiLJAG9kWddUr4IL1s+IdemRlfwi/KgYykJ6AP0i+ZtZ41V
-         EuVuPU+KSa0oFaK7Jn0+cbaj+44LXrpzuuRKXPYCJhgUjp7ovWn1ETiR/ZXXNgo3dS
-         qy+rm1/w+bRctKh7IZIuCBekPZ+aj75ZjZne8LSI=
+        b=aL+DBi4na18C5cKUYTE2euaBa41AFZXMa5mupWKmRy+Q7nZTMK9OrLQ68HA5Rv1Yn
+         jz5TGf2VElmgBxGwcWlRIk/oN4ZFhYDGN7r6Chtpt0BkB4WZoCZAek6aEvn2kxek6Y
+         tFZAD45kRPua5eGlxwZjS86ikXQ+lEnCIic8DAcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Shwetha Nagaraju <shwetha.nagaraju@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 185/277] ice: xsk: fix VSI state check in ice_xsk_wakeup()
-Date:   Tue, 12 Apr 2022 08:29:48 +0200
-Message-Id: <20220412062947.390068416@linuxfoundation.org>
+        stable@vger.kernel.org, Eugene Syromiatnikov <esyr@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 220/277] io_uring: implement compat handling for IORING_REGISTER_IOWQ_AFF
+Date:   Tue, 12 Apr 2022 08:30:23 +0200
+Message-Id: <20220412062948.409395715@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,37 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Eugene Syromiatnikov <esyr@redhat.com>
 
-[ Upstream commit 72b915a2b444e9247c9d424a840e94263db07c27 ]
+commit 0f5e4b83b37a96e3643951588ed7176b9b187c0a upstream.
 
-ICE_DOWN is dedicated for pf->state. Check for ICE_VSI_DOWN being set on
-vsi->state in ice_xsk_wakeup().
+Similarly to the way it is done im mbind syscall.
 
-Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Shwetha Nagaraju <shwetha.nagaraju@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org # 5.14
+Fixes: fe76421d1da1dcdb ("io_uring: allow user configurable IO thread CPU affinity")
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/io_uring.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 03ba08fdcee8..2b1873061912 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -761,7 +761,7 @@ ice_xsk_wakeup(struct net_device *netdev, u32 queue_id,
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_ring *ring;
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -10683,7 +10683,15 @@ static int io_register_iowq_aff(struct i
+ 	if (len > cpumask_size())
+ 		len = cpumask_size();
  
--	if (test_bit(ICE_DOWN, vsi->state))
-+	if (test_bit(ICE_VSI_DOWN, vsi->state))
- 		return -ENETDOWN;
- 
- 	if (!ice_is_xdp_ena_vsi(vsi))
--- 
-2.35.1
-
+-	if (copy_from_user(new_mask, arg, len)) {
++	if (in_compat_syscall()) {
++		ret = compat_get_bitmap(cpumask_bits(new_mask),
++					(const compat_ulong_t __user *)arg,
++					len * 8 /* CHAR_BIT */);
++	} else {
++		ret = copy_from_user(new_mask, arg, len);
++	}
++
++	if (ret) {
+ 		free_cpumask_var(new_mask);
+ 		return -EFAULT;
+ 	}
 
 
