@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAADC352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACD8C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387250AbiDLJGW (ORCPT
+        id S1387209AbiDLJGH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59710 "EHLO
+        Tue, 12 Apr 2022 05:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359219AbiDLHmw (ORCPT
+        with ESMTP id S1359232AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC1155750;
-        Tue, 12 Apr 2022 00:20:33 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A4055775;
+        Tue, 12 Apr 2022 00:20:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6359B81B58;
-        Tue, 12 Apr 2022 07:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30FFAC385A1;
-        Tue, 12 Apr 2022 07:20:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 408E96153F;
+        Tue, 12 Apr 2022 07:20:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57FC8C385A1;
+        Tue, 12 Apr 2022 07:20:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748030;
-        bh=X/kxAdyy8ubxvC4P7+q/VVC5pIvWgQr+bpFFx6PiJI0=;
+        s=korg; t=1649748049;
+        bh=Jh0HxlaHDCPkrzXaR6A0TjXlWJhTiro1dmjnLAkCRbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wXLOo8VTtBvD1ya6JytozOb4tASwdEh3mEJjsEZYXvvL0fwY/oIpgao1tQ6L7mc0K
-         ggQfE+74wN1aEWWmaOUK0PDcn46qtZpcba60Kl9K0EHwf7qLzuZWuZHEbpA5nzX/oR
-         MmAS/bLXHwLnujYm8cS5WdTuDdvk5ecPDnlRkvGM=
+        b=tWIROBpHZbSO+lNDwRvJOnMnTjHgWvwEs0B3PPiZnhs1k6nU1EZ2TtUQ3/Ieh71E0
+         sNAaB/ofpKN4RyQVEdM7M+DXqAGPWDaKJmOASXP9Txnz2oOaK5lUPNxdlvtPWF8SQN
+         eLcsNmW3wAT3FYOxX6B7u3pOX/Zh4+RmZehZSsKc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian-Ken Rueegsegger <ken@codelabs.ch>,
-        Reto Buerki <reet@codelabs.ch>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.17 295/343] x86/msi: Fix msi message data shadow struct
-Date:   Tue, 12 Apr 2022 08:31:53 +0200
-Message-Id: <20220412062959.841038610@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.17 301/343] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
+Date:   Tue, 12 Apr 2022 08:31:59 +0200
+Message-Id: <20220412063000.011949903@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,53 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reto Buerki <reet@codelabs.ch>
+From: Marc Zyngier <maz@kernel.org>
 
-commit 59b18a1e65b7a2134814106d0860010e10babe18 upstream.
+commit 0df6664531a12cdd8fc873f0cac0dcb40243d3e9 upstream.
 
-The x86 MSI message data is 32 bits in total and is either in
-compatibility or remappable format, see Intel Virtualization Technology
-for Directed I/O, section 5.1.2.
+It turns out that our polling of RWP is totally wrong when checking
+for it in the redistributors, as we test the *distributor* bit index,
+whereas it is a different bit number in the RDs... Oopsie boo.
 
-Fixes: 6285aa50736 ("x86/msi: Provide msi message shadow structs")
-Co-developed-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
-Signed-off-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
-Signed-off-by: Reto Buerki <reet@codelabs.ch>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+This is embarassing. Not only because it is wrong, but also because
+it took *8 years* to notice the blunder...
+
+Just fix the damn thing.
+
+Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
+Signed-off-by: Marc Zyngier <maz@kernel.org>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220407110647.67372-1-reet@codelabs.ch
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/msi.h |   19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/irqchip/irq-gic-v3.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/x86/include/asm/msi.h
-+++ b/arch/x86/include/asm/msi.h
-@@ -12,14 +12,17 @@ int pci_msi_prepare(struct irq_domain *d
- /* Structs and defines for the X86 specific MSI message format */
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -206,11 +206,11 @@ static inline void __iomem *gic_dist_bas
+ 	}
+ }
  
- typedef struct x86_msi_data {
--	u32	vector			:  8,
--		delivery_mode		:  3,
--		dest_mode_logical	:  1,
--		reserved		:  2,
--		active_low		:  1,
--		is_level		:  1;
--
--	u32	dmar_subhandle;
-+	union {
-+		struct {
-+			u32	vector			:  8,
-+				delivery_mode		:  3,
-+				dest_mode_logical	:  1,
-+				reserved		:  2,
-+				active_low		:  1,
-+				is_level		:  1;
-+		};
-+		u32	dmar_subhandle;
-+	};
- } __attribute__ ((packed)) arch_msi_msg_data_t;
- #define arch_msi_msg_data	x86_msi_data
+-static void gic_do_wait_for_rwp(void __iomem *base)
++static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
+ {
+ 	u32 count = 1000000;	/* 1s! */
  
+-	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
++	while (readl_relaxed(base + GICD_CTLR) & bit) {
+ 		count--;
+ 		if (!count) {
+ 			pr_err_ratelimited("RWP timeout, gone fishing\n");
+@@ -224,13 +224,13 @@ static void gic_do_wait_for_rwp(void __i
+ /* Wait for completion of a distributor change */
+ static void gic_dist_wait_for_rwp(void)
+ {
+-	gic_do_wait_for_rwp(gic_data.dist_base);
++	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
+ }
+ 
+ /* Wait for completion of a redistributor change */
+ static void gic_redist_wait_for_rwp(void)
+ {
+-	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
++	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
+ }
+ 
+ #ifdef CONFIG_ARM64
 
 
