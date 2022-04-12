@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C3EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43948C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358663AbiDLIbb (ORCPT
+        id S1358510AbiDLIbP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
+        Tue, 12 Apr 2022 04:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353555AbiDLHZq (ORCPT
+        with ESMTP id S1353580AbiDLHZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D5B43AE0;
-        Tue, 12 Apr 2022 00:01:11 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C413F43AE4;
+        Tue, 12 Apr 2022 00:01:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4F18B81A8F;
-        Tue, 12 Apr 2022 07:01:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3ABC385A6;
-        Tue, 12 Apr 2022 07:01:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ED0460B2E;
+        Tue, 12 Apr 2022 07:01:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69C05C385A6;
+        Tue, 12 Apr 2022 07:01:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746868;
-        bh=bAPP0KeYlE4Rw4hQig6h+AE3aP+2SVdMxEk/gwMuZbk=;
+        s=korg; t=1649746907;
+        bh=YiaJDBbTcuhQHMi1q1uJq5SwFO2vcgROG+bHHXW7V2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ob2X0hmi8dnX74+hNnb0Efn9dlto1xfxTpcroCBT5V3fh4RPhm4rkU+wlHNr6IKQh
-         LIgYSww8wSrWjDGjPEkOLiRkCE6AJhy3BPy7e7HkwzHl5ajvu43oxDclvXYKNZ0UiI
-         icYYtTgD+tlesuum/hNZ1odSlRFGor0LdtmYc+MY=
+        b=vOaR6hY8Bc/z49kFiI34yVD2ajrvI1bMOFP2Euqu9jCap5cnEH763JsPtgfHZVh3A
+         jmK9INguS4RS9kePAID5BFi4zZT9r5FDYESFz8TP7xSjDW8ziDogLitxCltWwlNLtN
+         jvPCgXGzU3g8kzPipAzxTcOb3bk/ZPwrw1jL0nPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 119/285] phy: amlogic: meson8b-usb2: Use dev_err_probe()
-Date:   Tue, 12 Apr 2022 08:29:36 +0200
-Message-Id: <20220412062947.101224050@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 174/285] arch/arm64: Fix topology initialization for core scheduling
+Date:   Tue, 12 Apr 2022 08:30:31 +0200
+Message-Id: <20220412062948.690247666@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,40 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+From: Phil Auld <pauld@redhat.com>
 
-[ Upstream commit 6466ba1898d415b527e1013bd8551a6fdfece94c ]
+[ Upstream commit 5524cbb1bfcdff0cad0aaa9f94e6092002a07259 ]
 
-Use the existing dev_err_probe() helper instead of open-coding the same
-operation.
+Arm64 systems rely on store_cpu_topology() to call update_siblings_masks()
+to transfer the toplogy to the various cpu masks. This needs to be done
+before the call to notify_cpu_starting() which tells the scheduler about
+each cpu found, otherwise the core scheduling data structures are setup
+in a way that does not match the actual topology.
 
-Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220111095255.176141-3-aouledameur@baylibre.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+With smt_mask not setup correctly we bail on `cpumask_weight(smt_mask) == 1`
+for !leaders in:
+
+ notify_cpu_starting()
+   cpuhp_invoke_callback_range()
+     sched_cpu_starting()
+       sched_core_cpu_starting()
+
+which leads to rq->core not being correctly set for !leader-rq's.
+
+Without this change stress-ng (which enables core scheduling in its prctl
+tests in newer versions -- i.e. with PR_SCHED_CORE support) causes a warning
+and then a crash (trimmed for legibility):
+
+[ 1853.805168] ------------[ cut here ]------------
+[ 1853.809784] task_rq(b)->core != rq->core
+[ 1853.809792] WARNING: CPU: 117 PID: 0 at kernel/sched/fair.c:11102 cfs_prio_less+0x1b4/0x1c4
+...
+[ 1854.015210] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+...
+[ 1854.231256] Call trace:
+[ 1854.233689]  pick_next_task+0x3dc/0x81c
+[ 1854.237512]  __schedule+0x10c/0x4cc
+[ 1854.240988]  schedule_idle+0x34/0x54
+
+Fixes: 9edeaea1bc45 ("sched: Core-wide rq->lock")
+Signed-off-by: Phil Auld <pauld@redhat.com>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Link: https://lore.kernel.org/r/20220331153926.25742-1-pauld@redhat.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/amlogic/phy-meson8b-usb2.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm64/kernel/smp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
-index cf10bed40528..77e7e9b1428c 100644
---- a/drivers/phy/amlogic/phy-meson8b-usb2.c
-+++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
-@@ -265,8 +265,9 @@ static int phy_meson8b_usb2_probe(struct platform_device *pdev)
- 		return PTR_ERR(priv->clk_usb);
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 27df5c1e6baa..3b46041f2b97 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -234,6 +234,7 @@ asmlinkage notrace void secondary_start_kernel(void)
+ 	 * Log the CPU info before it is marked online and might get read.
+ 	 */
+ 	cpuinfo_store_cpu();
++	store_cpu_topology(cpu);
  
- 	priv->reset = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
--	if (PTR_ERR(priv->reset) == -EPROBE_DEFER)
--		return PTR_ERR(priv->reset);
-+	if (IS_ERR(priv->reset))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(priv->reset),
-+				     "Failed to get the reset line");
+ 	/*
+ 	 * Enable GIC and timers.
+@@ -242,7 +243,6 @@ asmlinkage notrace void secondary_start_kernel(void)
  
- 	priv->dr_mode = of_usb_get_dr_mode_by_phy(pdev->dev.of_node, -1);
- 	if (priv->dr_mode == USB_DR_MODE_UNKNOWN) {
+ 	ipi_setup(cpu);
+ 
+-	store_cpu_topology(cpu);
+ 	numa_add_cpu(cpu);
+ 
+ 	/*
 -- 
 2.35.1
 
