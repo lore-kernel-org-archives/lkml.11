@@ -2,216 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32756C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75699C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343762AbiDLMAx (ORCPT
+        id S1347905AbiDLMBA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
+        Tue, 12 Apr 2022 08:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353132AbiDLL6j (ORCPT
+        with ESMTP id S234838AbiDLL6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:58:39 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1720A322
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:50:17 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id g18so11553587ejc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:50:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C9g2XKcCurSLwM4uxXLpKaNmYdxIC5rYc/R1Ovh/C4Q=;
-        b=MsPcFp8g2+jxEPISknC4oBIMRw92gZ1Xnw+417qeh5KUaMBfVUGAgJF5FP1Q5mnCPG
-         XPrG9zZefwghYVkFGBB9q9bX5GutUCK94LvkO+zGwXt6UzqhplKW23iasme/htv19qFe
-         67Eou6d839vksWAptEuQnnxUh5aTg/vrZh33kyBJgaA5Ms4eaBulo+JSuaEkB6EB7aGx
-         m7I57nukrqmzMlvBQ/ZMhFexxUKvt7dHppR7nf4CBjH4MfnLHqG5e7S3UTw9Y964OTMI
-         GyvRxK9LiSWypXqx8UOY7kfopQF8cbyHjVcM+YBbgi7hVOKre2oQVEv5N7KnRl4DqQmo
-         ylnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C9g2XKcCurSLwM4uxXLpKaNmYdxIC5rYc/R1Ovh/C4Q=;
-        b=0oQAu9xFrouZIQfOt1W+isnkIKTeJQmwTuQEYAQ8H2p3bZOXAnqqyskfs2Wpe9t+5l
-         17mSf100lKEL9JZYNEkbQ54zUdiUhNApgKJAzM9yCSDJlN98xPoKRser/9LFRfVNZ6D4
-         OtD8n4+txpxfuBa4q04QIQ22C9e9SaH/UufSVH4KAP3QRe/z4k08DbqiSjhHhCkJjhdu
-         D+QHFLVIIEzSNBE9bSsEvRAKwEmVzjdoBlbad+Anr7+U+2Lz5mnIvmthcxOajyFr6MOO
-         C5Fkn1J3Ec2ti89Prop5DnI9wWJvw/T5l13EjYAUbao9pEr4QMUFojfnklzf74qcsWrl
-         SMHA==
-X-Gm-Message-State: AOAM533YL1at/QSJTxZbDQbwydA3jkhCTC+sBn14SU62pOyQvs63TFjz
-        1sjF1gauByUgJQbJCpdyg6h/nQ==
-X-Google-Smtp-Source: ABdhPJwrYWIRKK/csZ8RLqJCE/zZWpAOR78ZTsbdZtud66k9OMMLPP5dQ7vp3iXsLtLcQcneAJzJJA==
-X-Received: by 2002:a17:907:9958:b0:6e7:f67a:a1e7 with SMTP id kl24-20020a170907995800b006e7f67aa1e7mr32973500ejc.400.1649760615678;
-        Tue, 12 Apr 2022 03:50:15 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id v21-20020a1709064e9500b006e8973a14d0sm2099511eju.174.2022.04.12.03.50.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:50:15 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH] ARM: dts: at91: use generic node name for dataflash
-Date:   Tue, 12 Apr 2022 12:50:13 +0200
-Message-Id: <20220412105013.249793-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
+        Tue, 12 Apr 2022 07:58:41 -0400
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150053.outbound.protection.outlook.com [40.107.15.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A772E96;
+        Tue, 12 Apr 2022 03:52:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W9Kgv90U5bKOeRVhhq57tPG27mxTZss5FVespC84E1kjrrnvjlrSXgzjdpAFtWavvkBtlWmF+8uFfKGSKh58822a8f6rTOpt/Xkt9bYbKQMS8MQ8kmXavH/LUA8HYa7b75V5wuO1n16Mf13ZO5iX1xvq2VdvYUlvz/G21Cb+N9Dm6BAc6kh/HNFZrzD15h7A+0Bc5lCiPNLWW2q180saGFaXjQMhm969lgVs5n6KlaPBRGQgAMmv1YbL2AQZCR0hyb1yoDJ1vEjIWYfgHETtHGsoUnrcPUu/ujbfRWkhNJNqg9hGa3MtDYFoWnbI0AyB74z+BgbyABkOSqzKbQe1bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q9i9vK3j5n7CRaydbIQFvde0+sm/bQ1s4MbCbF6P36c=;
+ b=F33Na0KOmQ9CyvrB5e8Z1e2cE5mr2+D4nW+zhlMVHrNTyDR/bizbBfbXzwHSxdbhza9EXMwZohmaExqosXJ4YnziMKHFuGgb1zDMQ4ubMIZBlk2E5QDn+P6/5wjEnPqKd3wyFuk1U4XTmvQd5yv+XmyYVEtmVsuJbnRT6rN9bRu/tCuEBWCGTkg4WQFerpdibsQOmUUr0Mt7dT6LeJ6CfmVf39m3oIX5IzFfW0cOiyaorr/fLORT2jdgQZ4vlFjxHs6OemSAKjvoQYmP7tNPYgxS35vd09GYN3z2sP95ir9rSxr1slKWJdRtZq4pcjnDvXGE/WHTWd1kGgkKdfJ/xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q9i9vK3j5n7CRaydbIQFvde0+sm/bQ1s4MbCbF6P36c=;
+ b=HrEoF2lDyj0PDNkGfv/foCGimcgiJadTvrj5Dvw9AyO3C35c6GtN8KCnbYo/ermPwogaKTzt8mfJp6r9+SlfgsRrPeM5amo4G4j6BcyQ4l1cIt7zH1c9mG6ar5zDXgszH6WF4wfn1BhbhOQ7pEe/G/LeOFo0JCoaKlsR7EwaEl8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by HE1PR0401MB2394.eurprd04.prod.outlook.com (2603:10a6:3:25::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Tue, 12 Apr
+ 2022 10:52:15 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::d8b5:5914:5189:ffa5]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::d8b5:5914:5189:ffa5%6]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
+ 10:52:15 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, shawnguo@kernel.org
+Cc:     hverkuil-cisco@xs4all.nl, robh+dt@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, aisheng.dong@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] media: amphion: fix decoder's interlaced filed
+Date:   Tue, 12 Apr 2022 18:51:56 +0800
+Message-Id: <20220412105156.17091-1-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.35.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0200.apcprd06.prod.outlook.com (2603:1096:4:1::32)
+ To AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4e1b6e2e-6096-4a9e-c9ff-08da1c72817d
+X-MS-TrafficTypeDiagnostic: HE1PR0401MB2394:EE_
+X-Microsoft-Antispam-PRVS: <HE1PR0401MB23940FB62C1352B14B16FC0BE7ED9@HE1PR0401MB2394.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BxOACPzHWIwH/ExE/3vb56RC4uRRnIdZ81XONikaPEuzuTs5zsQUqt18E4U3wihk2Y6yJJPc7o5crI2pLznhelsN8aYI+kwijytJa/X7NGxl9nhkJGDue0VWOMBpha0UEayjAqi+2pkgOcjkemcylnx5tMnyxsA1cI6t0FXWAH2UYbSf0D6j44+LQo1GEGpVyFATes+kVmQO3QgbBinUrAVrBcsMt5O/TAt17T/8b56APNIKtobyUS7jxN9vzqNS/Y7PYWhv63+fw0NRwPSIIYgIiGFKszK6BUWNRFl469RoAqZNNLSoYwWV24hEREtdVFccvFKBtu6mtQL+CLurm/PhB+KVaGOcLKhzg5M3W5T2E2mxYxO3TJ1dQjUQ0Q+lVJk4pC9Lyhk09F6JVFTy/UvGqBvnKNVvFzkrwPYzclcSqjaiHp2+vKFYXlwRtC59LV3b9eFZgTiTxV8iVwzcWqw+TZYmfqDwvRdYWtY3PPQX7NrJiHrGv45EsCocuPCmh4ZuVeKqaSuJTIB98UyNuIHCKguaHCNOujFdHxOhJFhKQ8WI8wfVpqz3lZg614mC8O01e0KYLXgDQiIFszewyHL4+dEcDdpnnaYbpncKJ2q9ENCqgx6uwRl9dQXCYc9OuglinlBTtJeBf/QtFkRdAgp47PmfDV9IPuvqJjNiinHkOHVZ9WOntuK7qA5C23MATzEZWmDL/Y8aR8KcTSLOWg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(2616005)(6666004)(6512007)(6506007)(52116002)(186003)(26005)(2906002)(83380400001)(44832011)(7416002)(8936002)(5660300002)(508600001)(6486002)(4326008)(316002)(66946007)(8676002)(66476007)(66556008)(38350700002)(38100700002)(36756003)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UvgDqPQPLa94ZU/HvkamXBX5/a6y2vEtJGeb1urXCk+gxQsUjjJ9ULGD+Dhd?=
+ =?us-ascii?Q?6vTdCu0kxy78fplapytncdHtZgYB+DkpzfAtAqe/8T4bsMUuhuGjL9v0ihX0?=
+ =?us-ascii?Q?9aAJhhRxOiBVzTd0e3Q3EQQrk6us232//OAcd7V57XfTKmi1wuL1/9PZuNgN?=
+ =?us-ascii?Q?n6llavZE+184wBHEt9YhDs0nWQMh5p8j0wt1YVIm87pcd9QgiYDwt8KiDNae?=
+ =?us-ascii?Q?0IfmwIG8EB3IjuRnEAerWN7wQ0Et/6E4mFCse2LVuyFW5OtC2llEdbrwBU9m?=
+ =?us-ascii?Q?W2Ptm++IQ4CH+aXVV1iw56ss3ePRRawm5dPDHMNXllAsLTqDn7cSt6P0ye+i?=
+ =?us-ascii?Q?8oYLjPtWcQhv0KWbrAcDsSaculBUIxJjTEaG2UWE3cG6T1MHPtElptW5TwF+?=
+ =?us-ascii?Q?cUmpoAXUxrKmFE05tLeeL45Mg0efRab9Jhq0RBqYuy3TE6xTbaJAm58s8vC4?=
+ =?us-ascii?Q?kwfBURcte0JZo6BqSLF+xWfn/5OAVkX/a434JyUQwlSSGPUU0hu5aHBzwa9M?=
+ =?us-ascii?Q?3JvV+ML6qAsPj9cpER3IUEfh/mTb4V6Sm4GcPK3nqWYkIdFUDRKv709k41Rn?=
+ =?us-ascii?Q?X+x5FiXfLAJ/fdn5w4iBV03692FcsMrkWHH4sJvxjCavTSMGljlYBxiV+Co5?=
+ =?us-ascii?Q?HCR6sfp6jDgvM9V2htVuvIW4DnKC9WURhWRULfjxnAsvqAJ5ZntCiSirw1c5?=
+ =?us-ascii?Q?743dA/d5uERBnCHQhjgs3io2Qtas1kA7Vzbqc9gCdx7BAAVWxgAIdUjMJdZB?=
+ =?us-ascii?Q?E2XFvQRdX64lZRJXcojowdC9961nTHw40AZ9YW/rm6mjaOrroe/2InNyUXMv?=
+ =?us-ascii?Q?BcLghdWg4ITJHa+D39KS6uJvk7UgPrPeJjCU7oJRt3XUkK5lIZXm51z9ReNj?=
+ =?us-ascii?Q?P0n04qTSbPp/t3W3Puc9lEbyxnJTxMD1yVu/zobQ4lEja3rgYpHsGlbLa9ig?=
+ =?us-ascii?Q?ZYLX7qHhGap2D9OM2t9yXeF1QBmrP/xrCGDxjEYlXu+O44F88al1b23+7evR?=
+ =?us-ascii?Q?518yu9BDgE0f0qsQyOspsA6qStff5RMXikatGAQdy+L2wp7mvylatSIMdv1p?=
+ =?us-ascii?Q?R84/Rx+sDN+w4RnhM3cD2uHnL2Nld1grn///WUpt5fq9sPbQAOqIprDKTNM1?=
+ =?us-ascii?Q?cRSoVgbBRfClFlvKsoYqmN86B4tW7uj2Z3Tl5ZTikjz8CRLPRfkDjUwltniK?=
+ =?us-ascii?Q?jtkSvsDgjyZYQRS8K6D+hEEGq2Z/DgosvhoqZeIYqfd/zbpEM321dPM/x0U0?=
+ =?us-ascii?Q?gmXTl6h35SVJxiDsboy332ovN8oszK5aQiKrZHpJX0xvWJx3tc+e5lMbE5G7?=
+ =?us-ascii?Q?J9AQxzJLmtWVJA7U1h0PDFg0saHp9Ct/d7zOmwTf1Lc9hVov0/Hh8dipztqy?=
+ =?us-ascii?Q?/iNH3nVvpJwRSHp6Ft55OmQRNHmvcLGfVxHTaIfCgG1Wo5V0XFwD/QNYR9/V?=
+ =?us-ascii?Q?5zA8av8Th2RG6eEgA352inY2uV2/haj/+AWFLZMbdM6NvWgmu81tzWpK/Plk?=
+ =?us-ascii?Q?CdbOUCDUMkDtbO/zxkIlXrLT2Mi5aHPnQ99Cl6q1XYg0pu53/websBHWgZ2W?=
+ =?us-ascii?Q?hGraw9uQtfy/gpRluHpd4daWUl7eUSi3xoYk8eXlu8ZihIkaA0A+gm6pooBb?=
+ =?us-ascii?Q?9ic8/KcHDrzcE2UDzbq/zXnYWiPXeD1wbugnHBnx2rwSI2hrlLI9wyxayQ/3?=
+ =?us-ascii?Q?RsOmcuDwvLl74WN5Qg8V3X/+h4J9N0etRFZj+SHetLHQvBQTc2quOFiSfiqo?=
+ =?us-ascii?Q?BtDtJFqLLQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e1b6e2e-6096-4a9e-c9ff-08da1c72817d
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 10:52:15.3512
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cgafVrFUfAsj53J8udtM8A+Vry8Wqn6G8FGtM/NnuPga00GtayDTHlQkOBS6mDfkVs9guTm6YxTH2e1aA6A5Bw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0401MB2394
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node names should be generic, so use "flash" for dataflash nodes and
-for cfi-flash.
+For interlaced frame, the amphion vpu will store the
+two fileds sequential into one buffer, top-bottom order
+so the filed should be set to V4L2_FIELD_SEQ_TB.
+fix the previous bug that setting it to V4L2_FIELD_SEQ_BT wrongly.
 
-Suggested-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
 ---
- Documentation/devicetree/bindings/mfd/atmel-flexcom.txt | 2 +-
- arch/arm/boot/dts/at91rm9200ek.dts                      | 4 ++--
- arch/arm/boot/dts/at91sam9260ek.dts                     | 2 +-
- arch/arm/boot/dts/at91sam9261ek.dts                     | 2 +-
- arch/arm/boot/dts/at91sam9263ek.dts                     | 2 +-
- arch/arm/boot/dts/at91sam9g20ek_common.dtsi             | 2 +-
- arch/arm/boot/dts/at91sam9m10g45ek.dts                  | 2 +-
- arch/arm/boot/dts/at91sam9rlek.dts                      | 2 +-
- arch/arm/boot/dts/usb_a9263.dts                         | 2 +-
- 9 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/media/platform/amphion/vdec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt b/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
-index 692300117c64..9d837535637b 100644
---- a/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
-+++ b/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
-@@ -54,7 +54,7 @@ flexcom@f8034000 {
- 		clock-names = "spi_clk";
- 		atmel,fifo-size = <32>;
- 
--		mtd_dataflash@0 {
-+		flash@0 {
- 			compatible = "atmel,at25f512b";
- 			reg = <0>;
- 			spi-max-frequency = <20000000>;
-diff --git a/arch/arm/boot/dts/at91rm9200ek.dts b/arch/arm/boot/dts/at91rm9200ek.dts
-index e1ef4e44e663..4624a6f076f8 100644
---- a/arch/arm/boot/dts/at91rm9200ek.dts
-+++ b/arch/arm/boot/dts/at91rm9200ek.dts
-@@ -73,7 +73,7 @@ &pinctrl_uart1_dcd
- 			spi0: spi@fffe0000 {
- 				status = "okay";
- 				cs-gpios = <&pioA 3 0>, <0>, <0>, <0>;
--				mtd_dataflash@0 {
-+				flash@0 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					spi-max-frequency = <15000000>;
- 					reg = <0>;
-@@ -94,7 +94,7 @@ usb0: ohci@300000 {
- 			status = "okay";
- 		};
- 
--		nor_flash@10000000 {
-+		flash@10000000 {
- 			compatible = "cfi-flash";
- 			reg = <0x10000000 0x800000>;
- 			linux,mtd-name = "physmap-flash.0";
-diff --git a/arch/arm/boot/dts/at91sam9260ek.dts b/arch/arm/boot/dts/at91sam9260ek.dts
-index ce96345d28a3..6381088ba24f 100644
---- a/arch/arm/boot/dts/at91sam9260ek.dts
-+++ b/arch/arm/boot/dts/at91sam9260ek.dts
-@@ -92,7 +92,7 @@ macb0: ethernet@fffc4000 {
- 
- 			spi0: spi@fffc8000 {
- 				cs-gpios = <0>, <&pioC 11 0>, <0>, <0>;
--				mtd_dataflash@1 {
-+				flash@1 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					spi-max-frequency = <50000000>;
- 					reg = <1>;
-diff --git a/arch/arm/boot/dts/at91sam9261ek.dts b/arch/arm/boot/dts/at91sam9261ek.dts
-index beed819609e8..8f11c0b7d76d 100644
---- a/arch/arm/boot/dts/at91sam9261ek.dts
-+++ b/arch/arm/boot/dts/at91sam9261ek.dts
-@@ -145,7 +145,7 @@ spi0: spi@fffc8000 {
- 				cs-gpios = <&pioA 3 0>, <0>, <&pioA 28 0>, <0>;
- 				status = "okay";
- 
--				mtd_dataflash@0 {
-+				flash@0 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					reg = <0>;
- 					spi-max-frequency = <15000000>;
-diff --git a/arch/arm/boot/dts/at91sam9263ek.dts b/arch/arm/boot/dts/at91sam9263ek.dts
-index 71f60576761a..42e734020235 100644
---- a/arch/arm/boot/dts/at91sam9263ek.dts
-+++ b/arch/arm/boot/dts/at91sam9263ek.dts
-@@ -95,7 +95,7 @@ pinctrl_board_mmc0: mmc0-board {
- 			spi0: spi@fffa4000 {
- 				status = "okay";
- 				cs-gpios = <&pioA 5 0>, <0>, <0>, <0>;
--				mtd_dataflash@0 {
-+				flash@0 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					spi-max-frequency = <50000000>;
- 					reg = <0>;
-diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-index 87bb39060e8b..74b90dc58cbf 100644
---- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-+++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
-@@ -110,7 +110,7 @@ ssc0: ssc@fffbc000 {
- 
- 			spi0: spi@fffc8000 {
- 				cs-gpios = <0>, <&pioC 11 0>, <0>, <0>;
--				mtd_dataflash@1 {
-+				flash@1 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					spi-max-frequency = <50000000>;
- 					reg = <1>;
-diff --git a/arch/arm/boot/dts/at91sam9m10g45ek.dts b/arch/arm/boot/dts/at91sam9m10g45ek.dts
-index b6256a20fbc7..e5db198a87a8 100644
---- a/arch/arm/boot/dts/at91sam9m10g45ek.dts
-+++ b/arch/arm/boot/dts/at91sam9m10g45ek.dts
-@@ -167,7 +167,7 @@ pinctrl_pwm_leds: pwm-led {
- 			spi0: spi@fffa4000{
- 				status = "okay";
- 				cs-gpios = <&pioB 3 0>, <0>, <0>, <0>;
--				mtd_dataflash@0 {
-+				flash@0 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					spi-max-frequency = <13000000>;
- 					reg = <0>;
-diff --git a/arch/arm/boot/dts/at91sam9rlek.dts b/arch/arm/boot/dts/at91sam9rlek.dts
-index 62981b39c815..d74b8d9d84aa 100644
---- a/arch/arm/boot/dts/at91sam9rlek.dts
-+++ b/arch/arm/boot/dts/at91sam9rlek.dts
-@@ -180,7 +180,7 @@ usb0: gadget@fffd4000 {
- 			spi0: spi@fffcc000 {
- 				status = "okay";
- 				cs-gpios = <&pioA 28 0>, <0>, <0>, <0>;
--				mtd_dataflash@0 {
-+				flash@0 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					spi-max-frequency = <15000000>;
- 					reg = <0>;
-diff --git a/arch/arm/boot/dts/usb_a9263.dts b/arch/arm/boot/dts/usb_a9263.dts
-index 8a0cfbfd0c45..b6cb9cdf8197 100644
---- a/arch/arm/boot/dts/usb_a9263.dts
-+++ b/arch/arm/boot/dts/usb_a9263.dts
-@@ -60,7 +60,7 @@ usb1: gadget@fff78000 {
- 			spi0: spi@fffa4000 {
- 				cs-gpios = <&pioB 15 GPIO_ACTIVE_HIGH>;
- 				status = "okay";
--				mtd_dataflash@0 {
-+				flash@0 {
- 					compatible = "atmel,at45", "atmel,dataflash";
- 					reg = <0>;
- 					spi-max-frequency = <15000000>;
+diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
+index 09628dd0c855..0a1976852b0d 100644
+--- a/drivers/media/platform/amphion/vdec.c
++++ b/drivers/media/platform/amphion/vdec.c
+@@ -804,7 +804,7 @@ static void vdec_init_fmt(struct vpu_inst *inst)
+ 	if (vdec->codec_info.progressive)
+ 		inst->cap_format.field = V4L2_FIELD_NONE;
+ 	else
+-		inst->cap_format.field = V4L2_FIELD_SEQ_BT;
++		inst->cap_format.field = V4L2_FIELD_SEQ_TB;
+ 	if (vdec->codec_info.color_primaries == V4L2_COLORSPACE_DEFAULT)
+ 		vdec->codec_info.color_primaries = V4L2_COLORSPACE_REC709;
+ 	if (vdec->codec_info.transfer_chars == V4L2_XFER_FUNC_DEFAULT)
 -- 
-2.32.0
+2.35.1
 
