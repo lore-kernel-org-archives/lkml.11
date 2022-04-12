@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D410AC35295
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD51EC352AA
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385922AbiDLIxd (ORCPT
+        id S1386192AbiDLIyf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57668 "EHLO
+        Tue, 12 Apr 2022 04:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359258AbiDLHmw (ORCPT
+        with ESMTP id S1359416AbiDLHnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DE62AE10;
-        Tue, 12 Apr 2022 00:21:12 -0700 (PDT)
+        Tue, 12 Apr 2022 03:43:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEFB2CE1A;
+        Tue, 12 Apr 2022 00:23:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F22B6153F;
-        Tue, 12 Apr 2022 07:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90486C385A1;
-        Tue, 12 Apr 2022 07:21:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0845B81B33;
+        Tue, 12 Apr 2022 07:23:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58D29C385A1;
+        Tue, 12 Apr 2022 07:23:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748071;
-        bh=98APagSa0U42erfRQUeR32abN7Mgn6/L5uXCLR4wu94=;
+        s=korg; t=1649748185;
+        bh=puVvcVR9URWdyntTsSnOVTEqo3uaLGnngVEYbR821qc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LBJEwfNN0rNGm+SKM0vfL/e0qgHYOE+b6x0ZIi1bKUSST7ETbQTgiJYhwizzWRbj5
-         ZcdfGo18XbpaZIYOX4G/zTZTu4Gyfe14+b4rDE8/fRx54BYXy7StA1uWPpgKO30pSZ
-         CwU3FI0xEg/aZAyhCJJosjfphwnyH4rGZXsL1CHE=
+        b=ypCvaqY1qsWsMqIQo4I+11L2K9UtNB0RenZSz4m+f86gDIPmmlI+3QhP8zrcEFP5w
+         Bi56pyKdXFjIzeaiXL4ht5gSgfTtLXektvN57ADh/SrQGHY3C+Cl8wgsH517/Uc9PO
+         muxqzinrJ1PpZlhbWCiGqtT2jc0Zya1zvsDIeDnc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Emily Deng <Emily.Deng@amd.com>,
-        James Zhu <James.Zhu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 308/343] drm/amdgpu/vcn: Fix the register setting for vcn1
-Date:   Tue, 12 Apr 2022 08:32:06 +0200
-Message-Id: <20220412063000.212011482@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.17 330/343] objtool: Fix SLS validation for kcov tail-call replacement
+Date:   Tue, 12 Apr 2022 08:32:28 +0200
+Message-Id: <20220412063000.843902940@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,34 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emily Deng <Emily.Deng@amd.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 02fc996d5098f4c3f65bdf6cdb6b28e3f29ba789 upstream.
+commit 7a53f408902d913cd541b4f8ad7dbcd4961f5b82 upstream.
 
-Correct the code error for setting register UVD_GFX10_ADDR_CONFIG.
-Need to use inst_idx, or it only will set VCN0.
+Since not all compilers have a function attribute to disable KCOV
+instrumentation, objtool can rewrite KCOV instrumentation in noinstr
+functions as per commit:
 
-Signed-off-by: Emily Deng <Emily.Deng@amd.com>
-Reviewed-by: James Zhu <James.Zhu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+  f56dae88a81f ("objtool: Handle __sanitize_cov*() tail calls")
+
+However, this has subtle interaction with the SLS validation from
+commit:
+
+  1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
+
+In that when a tail-call instrucion is replaced with a RET an
+additional INT3 instruction is also written, but is not represented in
+the decoded instruction stream.
+
+This then leads to false positive missing INT3 objtool warnings in
+noinstr code.
+
+Instead of adding additional struct instruction objects, mark the RET
+instruction with retpoline_safe to suppress the warning (since we know
+there really is an INT3).
+
+Fixes: 1cc1e4c8aab4 ("objtool: Add straight-line-speculation validation")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220323230712.GA8939@worktop.programming.kicks-ass.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/objtool/check.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-@@ -569,8 +569,8 @@ static void vcn_v3_0_mc_resume_dpg_mode(
- 			AMDGPU_GPU_PAGE_ALIGN(sizeof(struct amdgpu_fw_shared)), 0, indirect);
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1090,6 +1090,17 @@ static void annotate_call_site(struct ob
+ 			               : arch_nop_insn(insn->len));
  
- 	/* VCN global tiling registers */
--	WREG32_SOC15_DPG_MODE(0, SOC15_DPG_MODE_OFFSET(
--		UVD, 0, mmUVD_GFX10_ADDR_CONFIG), adev->gfx.config.gb_addr_config, 0, indirect);
-+	WREG32_SOC15_DPG_MODE(inst_idx, SOC15_DPG_MODE_OFFSET(
-+		UVD, inst_idx, mmUVD_GFX10_ADDR_CONFIG), adev->gfx.config.gb_addr_config, 0, indirect);
- }
+ 		insn->type = sibling ? INSN_RETURN : INSN_NOP;
++
++		if (sibling) {
++			/*
++			 * We've replaced the tail-call JMP insn by two new
++			 * insn: RET; INT3, except we only have a single struct
++			 * insn here. Mark it retpoline_safe to avoid the SLS
++			 * warning, instead of adding another insn.
++			 */
++			insn->retpoline_safe = true;
++		}
++
+ 		return;
+ 	}
  
- static void vcn_v3_0_disable_static_power_gating(struct amdgpu_device *adev, int inst)
 
 
