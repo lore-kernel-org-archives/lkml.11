@@ -2,227 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EB88C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F9EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiDLBOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        id S1345739AbiDLBMu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:12:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348869AbiDLBJ2 (ORCPT
+        with ESMTP id S1344943AbiDLA6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 21:09:28 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98CD2FE7E;
-        Mon, 11 Apr 2022 18:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649725354; x=1681261354;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/4o3oYMU5gSgB8qPiDc43LBv7jh3k9t17S7xbMxAzzM=;
-  b=Y8Sev/7kauPXEKNzD34vZVF8/1a9JaerQRAeLIHldRlfmB6gDLz/zpHu
-   D/P/7Mcy4QwQxpfJYnfe92d1HlOpIt5o/H0octQr7tCbFP+ko18gC7Prr
-   PrLUX3yxKW9FRak3MiLwPwnK6bW+FI5W7puuRSr4cFgkYBzgSBOH9ymQp
-   k4keDTaS1jaJoogpaHxrZb0CJ5pSSma3fKnFZE9KPKc/5jJBDSiP9h4J8
-   gCm7an3jRozNQdkkPux+4TLgzTHTg/wQrlWPM3tktX5RlGbdTrHwYI78E
-   Dyqkm8PPmQkEfdnK5QbMbPap4NzbeoKJmpotwL9a38Rt+mJiVA+tEeHLg
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="244133237"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="244133237"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 18:02:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="854144452"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 11 Apr 2022 18:02:30 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ne4vN-0002OA-LO;
-        Tue, 12 Apr 2022 01:02:29 +0000
-Date:   Tue, 12 Apr 2022 09:01:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Priyanka Singh <priyanka.singh@nxp.com>, york.sun@nxp.com,
-        bp@alien8.de, mchehab@kernel.org, tony.luck@intel.com,
-        james.morse@arm.com, rric@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        priyanka.jain@nxp.com, jaiprakash.singh@nxp.com,
-        rajan.gupta@nxp.com, rajesh.bhagat@nxp.com,
-        Priyanka Singh <priyanka.singh@nxp.com>
-Subject: Re: [PATCH 1/1] drivers: edac: Fix bad bit shift operations
-Message-ID: <202204120845.og2FaL10-lkp@intel.com>
-References: <20220411105159.10746-1-priyanka.singh@nxp.com>
+        Mon, 11 Apr 2022 20:58:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C08D2B269;
+        Mon, 11 Apr 2022 17:50:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF5660A77;
+        Tue, 12 Apr 2022 00:50:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 707ACC385A3;
+        Tue, 12 Apr 2022 00:50:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649724622;
+        bh=Q1HQeDFU9x7Fs+XYhAq+f0rh0AAVChmCSP3pcSdxFy8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MR0ko3PAovryWzKQNtFcW2bR0H7dva6iR7lHxQl2P55mGKBlw/9mme9Yb5B2UQVXW
+         lTUe4nKjRrIaH7PzItvs62VEH5Hybur+tKdMFzl41gUgyfXdRjhI19YVoTyGOZpC98
+         FnwB5BmzkD+7UlPBvK9yAcYi95zgHMPPXTL5dLs0DE0T2tczMYPb4SQwRPKJj29OBN
+         lUonCYLoBL8K6tz1dxbCtLrGCwy2Ypu/JMuqM5dNzfJnaqO+bcdK1AptkUFIJII4yX
+         obpZBRB/t+30bRqzJtnhR0i8MG3xdIW+VC2XhsAMdoc+iD1eNR3DLZxbITv6YCZqvt
+         FfslHo7FW3d0Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.10 25/30] powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit
+Date:   Mon, 11 Apr 2022 20:48:59 -0400
+Message-Id: <20220412004906.350678-25-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
+References: <20220412004906.350678-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411105159.10746-1-priyanka.singh@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Priyanka,
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-Thank you for the patch! Perhaps something to improve:
+[ Upstream commit ffa0b64e3be58519ae472ea29a1a1ad681e32f48 ]
 
-[auto build test WARNING on ras/edac-for-next]
-[also build test WARNING on next-20220411]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+mpe: On 64-bit Book3E vmalloc space starts at 0x8000000000000000.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Priyanka-Singh/drivers-edac-Fix-bad-bit-shift-operations/20220411-190157
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/ras/ras.git edac-for-next
-config: arm64-buildonly-randconfig-r001-20220411 (https://download.01.org/0day-ci/archive/20220412/202204120845.og2FaL10-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c6e83f560f06cdfe8aa47b248d8bdc58f947274b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/c686e26cdea24d78450aaaff268558ea6842cd31
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Priyanka-Singh/drivers-edac-Fix-bad-bit-shift-operations/20220411-190157
-        git checkout c686e26cdea24d78450aaaff268558ea6842cd31
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/edac/
+Because of the way __pa() works we have:
+  __pa(0x8000000000000000) == 0, and therefore
+  virt_to_pfn(0x8000000000000000) == 0, and therefore
+  virt_addr_valid(0x8000000000000000) == true
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Which is wrong, virt_addr_valid() should be false for vmalloc space.
+In fact all vmalloc addresses that alias with a valid PFN will return
+true from virt_addr_valid(). That can cause bugs with hardened usercopy
+as described below by Kefeng Wang:
 
-All warnings (new ones prefixed by >>):
+  When running ethtool eth0 on 64-bit Book3E, a BUG occurred:
 
->> drivers/edac/fsl_ddr_edac.c:353:14: warning: data argument not used by format string [-Wformat-extra-args]
-                                   cap_low, syndrome ^ (1 << bad_ecc_bit));
-                                   ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/edac/fsl_ddr_edac.h:20:55: note: expanded from macro 'fsl_mc_printk'
-           edac_mc_chipset_printk(mci, level, "FSL_DDR", fmt, ##arg)
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
-   drivers/edac/edac_mc.h:55:60: note: expanded from macro 'edac_mc_chipset_printk'
-           printk(level "EDAC " prefix " MC%d: " fmt, mci->mc_idx, ##arg)
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^
-   1 warning generated.
+    usercopy: Kernel memory exposure attempt detected from SLUB object not in SLUB page?! (offset 0, size 1048)!
+    kernel BUG at mm/usercopy.c:99
+    ...
+    usercopy_abort+0x64/0xa0 (unreliable)
+    __check_heap_object+0x168/0x190
+    __check_object_size+0x1a0/0x200
+    dev_ethtool+0x2494/0x2b20
+    dev_ioctl+0x5d0/0x770
+    sock_do_ioctl+0xf0/0x1d0
+    sock_ioctl+0x3ec/0x5a0
+    __se_sys_ioctl+0xf0/0x160
+    system_call_exception+0xfc/0x1f0
+    system_call_common+0xf8/0x200
 
+  The code shows below,
 
-vim +353 drivers/edac/fsl_ddr_edac.c
+    data = vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
+    copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
 
-   276	
-   277	static void fsl_mc_check(struct mem_ctl_info *mci)
-   278	{
-   279		struct fsl_mc_pdata *pdata = mci->pvt_info;
-   280		struct csrow_info *csrow;
-   281		u32 bus_width;
-   282		u32 err_detect;
-   283		u32 syndrome;
-   284		u64 err_addr;
-   285		u32 pfn;
-   286		int row_index;
-   287		u32 cap_high;
-   288		u32 cap_low;
-   289		int bad_data_bit;
-   290		int bad_ecc_bit;
-   291	
-   292		err_detect = ddr_in32(pdata->mc_vbase + FSL_MC_ERR_DETECT);
-   293		if (!err_detect)
-   294			return;
-   295	
-   296		fsl_mc_printk(mci, KERN_ERR, "Err Detect Register: %#8.8x\n",
-   297			      err_detect);
-   298	
-   299		/* no more processing if not ECC bit errors */
-   300		if (!(err_detect & (DDR_EDE_SBE | DDR_EDE_MBE))) {
-   301			ddr_out32(pdata->mc_vbase + FSL_MC_ERR_DETECT, err_detect);
-   302			return;
-   303		}
-   304	
-   305		syndrome = ddr_in32(pdata->mc_vbase + FSL_MC_CAPTURE_ECC);
-   306	
-   307		/* Mask off appropriate bits of syndrome based on bus width */
-   308		bus_width = (ddr_in32(pdata->mc_vbase + FSL_MC_DDR_SDRAM_CFG) &
-   309			     DSC_DBW_MASK) ? 32 : 64;
-   310		if (bus_width == 64)
-   311			syndrome &= 0xff;
-   312		else
-   313			syndrome &= 0xffff;
-   314	
-   315		err_addr = make64(
-   316			ddr_in32(pdata->mc_vbase + FSL_MC_CAPTURE_EXT_ADDRESS),
-   317			ddr_in32(pdata->mc_vbase + FSL_MC_CAPTURE_ADDRESS));
-   318		pfn = err_addr >> PAGE_SHIFT;
-   319	
-   320		for (row_index = 0; row_index < mci->nr_csrows; row_index++) {
-   321			csrow = mci->csrows[row_index];
-   322			if ((pfn >= csrow->first_page) && (pfn <= csrow->last_page))
-   323				break;
-   324		}
-   325	
-   326		cap_high = ddr_in32(pdata->mc_vbase + FSL_MC_CAPTURE_DATA_HI);
-   327		cap_low = ddr_in32(pdata->mc_vbase + FSL_MC_CAPTURE_DATA_LO);
-   328	
-   329		/*
-   330		 * Analyze single-bit errors on 64-bit wide buses
-   331		 * TODO: Add support for 32-bit wide buses
-   332		 */
-   333		if ((err_detect & DDR_EDE_SBE) && (bus_width == 64)) {
-   334			sbe_ecc_decode(cap_high, cap_low, syndrome,
-   335					&bad_data_bit, &bad_ecc_bit);
-   336	
-   337			if (bad_data_bit >= 0)
-   338				fsl_mc_printk(mci, KERN_ERR,
-   339					"Faulty Data bit: %d\n", bad_data_bit);
-   340			if (bad_ecc_bit >= 0)
-   341				fsl_mc_printk(mci, KERN_ERR,
-   342						"Faulty ECC bit: %d\n", bad_ecc_bit);
-   343			if ((bad_data_bit > 0 && bad_data_bit < 32) && bad_ecc_bit > 0) {
-   344				fsl_mc_printk(mci, KERN_ERR,
-   345					"Expected Data / ECC:\t%#8.8x_%08x / %#2.2x\n",
-   346					cap_high, cap_low ^ (1 << bad_data_bit),
-   347					syndrome ^ (1 << bad_ecc_bit));
-   348			}
-   349			if (bad_data_bit >= 32 && bad_ecc_bit > 0) {
-   350				fsl_mc_printk(mci, KERN_ERR,
-   351					"Expected Data / ECC:\t%#8.8x / %#2.2x\n",
-   352					cap_high ^ (1 << (bad_data_bit - 32)),
- > 353					cap_low, syndrome ^ (1 << bad_ecc_bit));
-   354			}
-   355		}
-   356	
-   357		fsl_mc_printk(mci, KERN_ERR,
-   358				"Captured Data / ECC:\t%#8.8x_%08x / %#2.2x\n",
-   359				cap_high, cap_low, syndrome);
-   360		fsl_mc_printk(mci, KERN_ERR, "Err addr: %#8.8llx\n", err_addr);
-   361		fsl_mc_printk(mci, KERN_ERR, "PFN: %#8.8x\n", pfn);
-   362	
-   363		/* we are out of range */
-   364		if (row_index == mci->nr_csrows)
-   365			fsl_mc_printk(mci, KERN_ERR, "PFN out of range!\n");
-   366	
-   367		if (err_detect & DDR_EDE_SBE)
-   368			edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
-   369					     pfn, err_addr & ~PAGE_MASK, syndrome,
-   370					     row_index, 0, -1,
-   371					     mci->ctl_name, "");
-   372	
-   373		if (err_detect & DDR_EDE_MBE)
-   374			edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
-   375					     pfn, err_addr & ~PAGE_MASK, syndrome,
-   376					     row_index, 0, -1,
-   377					     mci->ctl_name, "");
-   378	
-   379		ddr_out32(pdata->mc_vbase + FSL_MC_ERR_DETECT, err_detect);
-   380	}
-   381	
+  The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
+  on 64-bit Book3E, which leads to the panic.
 
+  As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
+  and __pa addresses") does, make sure the virt addr above PAGE_OFFSET in
+  the virt_addr_valid() for 64-bit, also add upper limit check to make
+  sure the virt is below high_memory.
+
+  Meanwhile, for 32-bit PAGE_OFFSET is the virtual address of the start
+  of lowmem, high_memory is the upper low virtual address, the check is
+  suitable for 32-bit, this will fix the issue mentioned in commit
+  602946ec2f90 ("powerpc: Set max_mapnr correctly") too.
+
+On 32-bit there is a similar problem with high memory, that was fixed in
+commit 602946ec2f90 ("powerpc: Set max_mapnr correctly"), but that
+commit breaks highmem and needs to be reverted.
+
+We can't easily fix __pa(), we have code that relies on its current
+behaviour. So for now add extra checks to virt_addr_valid().
+
+For 64-bit Book3S the extra checks are not necessary, the combination of
+virt_to_pfn() and pfn_valid() should yield the correct result, but they
+are harmless.
+
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[mpe: Add additional change log detail]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220406145802.538416-1-mpe@ellerman.id.au
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/include/asm/page.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
+index 254687258f42..f2c5c26869f1 100644
+--- a/arch/powerpc/include/asm/page.h
++++ b/arch/powerpc/include/asm/page.h
+@@ -132,7 +132,11 @@ static inline bool pfn_valid(unsigned long pfn)
+ #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+ #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
+ 
+-#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
++#define virt_addr_valid(vaddr)	({					\
++	unsigned long _addr = (unsigned long)vaddr;			\
++	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
++	pfn_valid(virt_to_pfn(_addr));					\
++})
+ 
+ /*
+  * On Book-E parts we need __va to parse the device tree and we can't
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
