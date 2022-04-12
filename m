@@ -2,320 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C25C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB28C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352641AbiDLLnE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
+        id S239165AbiDLLoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348633AbiDLLhP (ORCPT
+        with ESMTP id S1351038AbiDLLli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:37:15 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8204FC7B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:15:28 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id r64so11627468wmr.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:15:28 -0700 (PDT)
+        Tue, 12 Apr 2022 07:41:38 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E22E50454
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:23:24 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id i20so13900813wrb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:23:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dKPc4qBZi4pdUfSRonz3L/b4uTwJc1SeteK9jH2uVSk=;
-        b=JGiKf4ORl7yVgnpZ9l9cwsimNqpdTpTzGDlA7j+D8zGhnOsmURhhp/RpzCLTBkRRVr
-         Je1ECv1hiQp/zrc4DRSpdF9hkH/RZUsUBvkAhG2yIi1IA6cn8G/1H6D2SnVyN2k0+40/
-         lCEIp7eIO3DaV7jg9oabgEd4fGIvJ9rDLTsHpfPv+ks54C6c5KcCAdyv8TAT0PwtFVkw
-         SQR+LZmnauKQDztTiy01SVQ3DwEZfHPlm/VzE+SQlqWChSmmUG9if3qo4xkW8dbvZ0qq
-         /an2ZBIKO6ry0gGT+DGlgktD7mmSx+JN9f/oU5Sy78GrlbV7nmdrBw6WNbspX6qrEkRe
-         HfaQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=PWMqY36PdhLmPkOzVF3q3fwHeKiOtTKe2AjxmCLE4AM=;
+        b=rxPkFbXFz9aCNjSPQJCPwsRgNusOv6QOeU6kHeI7J2jLUpfCOO7NPqnM6zMHlWJPlf
+         c1flepjryToeCDaC4JFADEtJTlrVPVeJkLG4Un7QDQFozlTM4ojPUd7Qy7AV7Nnmg7VR
+         o6aMqa6PuHkNAywHEzkjenaw5mFQCqftxZVV7QphwAB4tIuB7lE+D/8nVP1xT8t/c2gE
+         S+UWahfMmnDhXFy8IAYIU+k/SBFRn8N1iRznqKcBa3s/5mKo4812cUFjYTQdXHQWZpks
+         t5jejttpdawk3BTjhZouX1n+M8NeHYQ2aaGiBC/i0pijXEDRINDJ3stJYWMU9svnI6xy
+         mNEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dKPc4qBZi4pdUfSRonz3L/b4uTwJc1SeteK9jH2uVSk=;
-        b=7PVXxeL7a+Q7GG+AteuQQU+6AIPBtryDV1TMeps3dTDPI3UVKhnNN1ph0ObXHjQTXB
-         qXPkHBfyanCd6sP7opbWQfPjNwnJJ4GpaqPyd2NOO4ra88MBwgQCKwyWa+mmA40xwys+
-         5omOt9POA3P6i5vuUzuweHRyLQC559ID1QDqOVbnMRZxgUTYlE9OmH4RMO7GQheEm+Vd
-         bHreFMJ3zKM9JYtrY546I5ZHDbPtCjX8PCybDSXNuiifSMcVgXW1h/dxsHHAO/eSW9cz
-         EcBP2qavK0dD2aAmaJawzyNoNOvSNXe3vpfgqPYWnDj+8KsTzM0wufC7/gHM+oXYzoiu
-         l+kw==
-X-Gm-Message-State: AOAM531TgxhI0s+wRW3hki5i/+pvlb2Ax/VLxfzHbbi0QxLXEIhkq/RJ
-        g1kQt+hGaXC+TF2qi193Dppw8nAV4/M6IW66gNrbgw==
-X-Google-Smtp-Source: ABdhPJwM5BGsM4sMKcxmUqWSNCPCZUlV6mXrMwyYvbIWsG5XScviXm4kQMKYFDE4YKGB7WWwO8dkb73/sJbpwx0BEtQ=
-X-Received: by 2002:a05:600c:1c9c:b0:38e:3270:373d with SMTP id
- k28-20020a05600c1c9c00b0038e3270373dmr3332778wms.199.1649758527096; Tue, 12
- Apr 2022 03:15:27 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=PWMqY36PdhLmPkOzVF3q3fwHeKiOtTKe2AjxmCLE4AM=;
+        b=xPf8yj4BUDRR8c7AnRqFf7YGAKjXJanylmtxNbcF/NqJFIeK4TdirS5sldefgeP0jI
+         al119jWzH6Ijxsi1vchtG0Yfy/f1Jxn0rM2B5Uec8oPNp5mjquc9Ih88TSeWVozy9aAy
+         wcZgJUOHQ1lWRMNDvDljZ713WBft7uxjTng6DrRY3PixPHSeiCg76/nBfVm2yzHkea70
+         jkF7NJ+rIgnD8kZMzv5AObELdslaDoa33vpvP0O5IUbMKLXAy0vxWWNfcVIXlcIJ2c9u
+         6ONbLmFih7eAq4b5x/IOJfsrRgUETd+lzxWJciVXqM1i1QoULAANFj5oYP/ipELlLyDP
+         V7bA==
+X-Gm-Message-State: AOAM532sykhH2B4gmMyzna3Okc5nLS+1yC9JuODYWuwU75OF6iQ4mc/j
+        +lgD1TwK2HmLcWZrJfk/JAKt6Q==
+X-Google-Smtp-Source: ABdhPJyU87YmXxLZxW7oXhFtjM8IEwsiPrNqUd6sNpFKh9QYGd776pDXXzthW10OfB72M9oSz7/6cw==
+X-Received: by 2002:adf:ff86:0:b0:207:a89b:f532 with SMTP id j6-20020adfff86000000b00207a89bf532mr6176553wrr.558.1649759002672;
+        Tue, 12 Apr 2022 03:23:22 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id b1-20020a05600018a100b00207ab2305d5sm3803038wri.16.2022.04.12.03.23.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 03:23:22 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 11:23:20 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        0day robot <lkp@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        stable@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [nl80211]  584f2e43bb: hwsim.ap_country.fail
+Message-ID: <YlVTGIhTvzCsZhmO@google.com>
+References: <20220401105046.1952815-1-lee.jones@linaro.org>
+ <20220405091420.GD17553@xsang-OptiPlex-9020>
+ <YlP0A+PurZl39sUG@google.com>
+ <eb5873b4afeee8a7e183a9b1f2e6af461bf7f69f.camel@sipsolutions.net>
 MIME-Version: 1.0
-References: <20220304171913.2292458-1-james.clark@arm.com> <20220304171913.2292458-10-james.clark@arm.com>
- <20220323155913.GA3248686@p14s> <ea14e44d-658d-882e-f400-3017a7969de7@arm.com>
-In-Reply-To: <ea14e44d-658d-882e-f400-3017a7969de7@arm.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Tue, 12 Apr 2022 11:15:15 +0100
-Message-ID: <CAJ9a7VhTtzCHh=8TtNQ0L=rgbEohLVghTwTzH7E9GZmF2w9M9g@mail.gmail.com>
-Subject: Re: [PATCH v3 09/15] coresight: etm4x: Cleanup TRCVICTLR register accesses
-To:     James Clark <James.Clark@arm.com>
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        Anshuman.Khandual@arm.com, leo.yan@linaro.com,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <eb5873b4afeee8a7e183a9b1f2e6af461bf7f69f.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 at 11:41, James Clark <james.clark@arm.com> wrote:
->
->
->
-> On 23/03/2022 15:59, Mathieu Poirier wrote:
-> > Hi James,
-> >
-> > On Fri, Mar 04, 2022 at 05:19:06PM +0000, James Clark wrote:
-> >> This is a no-op change for style and consistency and has no effect on
-> >> the binary output by the compiler. In sysreg.h fields are defined as
-> >> the register name followed by the field name and then _MASK. This
-> >> allows for grepping for fields by name rather than using magic numbers.
-> >>
-> >> Signed-off-by: James Clark <james.clark@arm.com>
-> >> ---
-> >>  .../coresight/coresight-etm4x-core.c          | 10 +++---
-> >>  .../coresight/coresight-etm4x-sysfs.c         | 36 +++++++++----------
-> >>  drivers/hwtracing/coresight/coresight-etm4x.h | 22 +++++-------
-> >>  3 files changed, 31 insertions(+), 37 deletions(-)
-> >>
-> >> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> >> index 445e2057d5ed..88353f8ba414 100644
-> >> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> >> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> >> @@ -1206,7 +1206,7 @@ static void etm4_init_arch_data(void *info)
-> >>
-> >>  static inline u32 etm4_get_victlr_access_type(struct etmv4_config *config)
-> >>  {
-> >> -    return etm4_get_access_type(config) << TRCVICTLR_EXLEVEL_SHIFT;
-> >> +    return etm4_get_access_type(config) << __bf_shf(TRCVICTLR_EXLEVEL_MASK);
-> >>  }
-> >>
-> >>  /* Set ELx trace filter access in the TRCVICTLR register */
-> >> @@ -1232,7 +1232,7 @@ static void etm4_set_default_config(struct etmv4_config *config)
-> >>      config->ts_ctrl = 0x0;
-> >>
-> >>      /* TRCVICTLR::EVENT = 0x01, select the always on logic */
-> >> -    config->vinst_ctrl = BIT(0);
-> >> +    config->vinst_ctrl = FIELD_PREP(TRCVICTLR_EVENT_MASK, 0x01);
-> >>
-> >>      /* TRCVICTLR::EXLEVEL_NS:EXLEVELS: Set kernel / user filtering */
-> >>      etm4_set_victlr_access(config);
-> >> @@ -1341,7 +1341,7 @@ static void etm4_set_default_filter(struct etmv4_config *config)
-> >>       * TRCVICTLR::SSSTATUS == 1, the start-stop logic is
-> >>       * in the started state
-> >>       */
-> >> -    config->vinst_ctrl |= BIT(9);
-> >> +    config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
-> >>      config->mode |= ETM_MODE_VIEWINST_STARTSTOP;
-> >>
-> >>      /* No start-stop filtering for ViewInst */
-> >> @@ -1445,7 +1445,7 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
-> >>                       * TRCVICTLR::SSSTATUS == 1, the start-stop logic is
-> >>                       * in the started state
-> >>                       */
-> >> -                    config->vinst_ctrl |= BIT(9);
-> >> +                    config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
-> >>
-> >>                      /* No start-stop filtering for ViewInst */
-> >>                      config->vissctlr = 0x0;
-> >> @@ -1473,7 +1473,7 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
-> >>                       * etm4_disable_perf().
-> >>                       */
-> >>                      if (filters->ssstatus)
-> >> -                            config->vinst_ctrl |= BIT(9);
-> >> +                            config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
-> >>
-> >>                      /* No include/exclude filtering for ViewInst */
-> >>                      config->viiectlr = 0x0;
-> >> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-> >> index cd24590ea38a..b3b1b92909cc 100644
-> >> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-> >> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
-> >> @@ -206,11 +206,11 @@ static ssize_t reset_store(struct device *dev,
-> >>       * started state. ARM recommends start-stop logic is set before
-> >>       * each trace run.
-> >>       */
-> >> -    config->vinst_ctrl = BIT(0);
-> >> +    config->vinst_ctrl = FIELD_PREP(TRCVICTLR_EVENT_MASK, 0x01);
-> >>      if (drvdata->nr_addr_cmp > 0) {
-> >>              config->mode |= ETM_MODE_VIEWINST_STARTSTOP;
-> >>              /* SSSTATUS, bit[9] */
-> >> -            config->vinst_ctrl |= BIT(9);
-> >> +            config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
-> >>      }
-> >>
-> >>      /* No address range filtering for ViewInst */
-> >> @@ -416,22 +416,22 @@ static ssize_t mode_store(struct device *dev,
-> >>
-> >>      /* bit[9] Start/stop logic control bit */
-> >>      if (config->mode & ETM_MODE_VIEWINST_STARTSTOP)
-> >> -            config->vinst_ctrl |= BIT(9);
-> >> +            config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
-> >>      else
-> >> -            config->vinst_ctrl &= ~BIT(9);
-> >> +            config->vinst_ctrl &= ~TRCVICTLR_SSSTATUS;
-> >>
-> >>      /* bit[10], Whether a trace unit must trace a Reset exception */
-> >>      if (config->mode & ETM_MODE_TRACE_RESET)
-> >> -            config->vinst_ctrl |= BIT(10);
-> >> +            config->vinst_ctrl |= TRCVICTLR_TRCRESET;
-> >>      else
-> >> -            config->vinst_ctrl &= ~BIT(10);
-> >> +            config->vinst_ctrl &= ~TRCVICTLR_TRCRESET;
-> >>
-> >>      /* bit[11], Whether a trace unit must trace a system error exception */
-> >>      if ((config->mode & ETM_MODE_TRACE_ERR) &&
-> >>              (drvdata->trc_error == true))
-> >> -            config->vinst_ctrl |= BIT(11);
-> >> +            config->vinst_ctrl |= TRCVICTLR_TRCERR;
-> >>      else
-> >> -            config->vinst_ctrl &= ~BIT(11);
-> >> +            config->vinst_ctrl &= ~TRCVICTLR_TRCERR;
-> >>
-> >>      if (config->mode & (ETM_MODE_EXCL_KERN | ETM_MODE_EXCL_USER))
-> >>              etm4_config_trace_mode(config);
-> >> @@ -723,7 +723,7 @@ static ssize_t event_vinst_show(struct device *dev,
-> >>      struct etmv4_drvdata *drvdata = dev_get_drvdata(dev->parent);
-> >>      struct etmv4_config *config = &drvdata->config;
-> >>
-> >> -    val = config->vinst_ctrl & ETMv4_EVENT_MASK;
-> >> +    val = FIELD_GET(TRCVICTLR_EVENT_MASK, config->vinst_ctrl);
-> >>      return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
-> >>  }
-> >>
-> >> @@ -739,9 +739,9 @@ static ssize_t event_vinst_store(struct device *dev,
-> >>              return -EINVAL;
-> >>
-> >>      spin_lock(&drvdata->spinlock);
-> >> -    val &= ETMv4_EVENT_MASK;
-> >> -    config->vinst_ctrl &= ~ETMv4_EVENT_MASK;
-> >> -    config->vinst_ctrl |= val;
-> >> +    val &= TRCVICTLR_EVENT_MASK >> __bf_shf(TRCVICTLR_EVENT_MASK);
-> >
-> > Not sure why the right-shifting operation is needed since the mask starts at bit
-> > 0.  Please consider fixing _if_ you end up respinning this.
->
-> Yes you're right it doesn't need shifting. I suppose I did it that way so that when
-> reading the code it's obvious that 'val' is a value starting at bit 0, rather than
-> the original state of the register shifted to some arbitrary position.
->
-> Someone reading the code wouldn't know that TRCVICTLR_EVENT_MASK starts at 0,
-> so without the explicit shift they might think excluding it was a mistake. It also
-> makes it consistent with other uses of masks that don't start at 0.
->
-> James
->
-> >
-> > Thanks,
-> > Mathieu
-> >
-> >> +    config->vinst_ctrl &= ~TRCVICTLR_EVENT_MASK;
-> >> +    config->vinst_ctrl |= FIELD_PREP(TRCVICTLR_EVENT_MASK, val);
-> >>      spin_unlock(&drvdata->spinlock);
-> >>      return size;
-> >>  }
-> >> @@ -755,7 +755,7 @@ static ssize_t s_exlevel_vinst_show(struct device *dev,
-> >>      struct etmv4_drvdata *drvdata = dev_get_drvdata(dev->parent);
-> >>      struct etmv4_config *config = &drvdata->config;
-> >>
-> >> -    val = (config->vinst_ctrl & TRCVICTLR_EXLEVEL_S_MASK) >> TRCVICTLR_EXLEVEL_S_SHIFT;
-> >> +    val = FIELD_GET(TRCVICTLR_EXLEVEL_S_MASK, config->vinst_ctrl);
-> >>      return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
-> >>  }
-> >>
-> >> @@ -772,10 +772,10 @@ static ssize_t s_exlevel_vinst_store(struct device *dev,
-> >>
-> >>      spin_lock(&drvdata->spinlock);
-> >>      /* clear all EXLEVEL_S bits  */
-> >> -    config->vinst_ctrl &= ~(TRCVICTLR_EXLEVEL_S_MASK);
-> >> +    config->vinst_ctrl &= ~TRCVICTLR_EXLEVEL_S_MASK;
-> >>      /* enable instruction tracing for corresponding exception level */
-> >>      val &= drvdata->s_ex_level;
-> >> -    config->vinst_ctrl |= (val << TRCVICTLR_EXLEVEL_S_SHIFT);
-> >> +    config->vinst_ctrl |= val << __bf_shf(TRCVICTLR_EXLEVEL_S_MASK);
-> >>      spin_unlock(&drvdata->spinlock);
-> >>      return size;
-> >>  }
-> >> @@ -790,7 +790,7 @@ static ssize_t ns_exlevel_vinst_show(struct device *dev,
-> >>      struct etmv4_config *config = &drvdata->config;
-> >>
-> >>      /* EXLEVEL_NS, bits[23:20] */
-> >> -    val = (config->vinst_ctrl & TRCVICTLR_EXLEVEL_NS_MASK) >> TRCVICTLR_EXLEVEL_NS_SHIFT;
-> >> +    val = FIELD_GET(TRCVICTLR_EXLEVEL_NS_MASK, config->vinst_ctrl);
-> >>      return scnprintf(buf, PAGE_SIZE, "%#lx\n", val);
-> >>  }
-> >>
-> >> @@ -807,10 +807,10 @@ static ssize_t ns_exlevel_vinst_store(struct device *dev,
-> >>
-> >>      spin_lock(&drvdata->spinlock);
-> >>      /* clear EXLEVEL_NS bits  */
-> >> -    config->vinst_ctrl &= ~(TRCVICTLR_EXLEVEL_NS_MASK);
-> >> +    config->vinst_ctrl &= ~TRCVICTLR_EXLEVEL_NS_MASK;
-> >>      /* enable instruction tracing for corresponding exception level */
-> >>      val &= drvdata->ns_ex_level;
-> >> -    config->vinst_ctrl |= (val << TRCVICTLR_EXLEVEL_NS_SHIFT);
-> >> +    config->vinst_ctrl |= val << __bf_shf(TRCVICTLR_EXLEVEL_NS_MASK);
-> >>      spin_unlock(&drvdata->spinlock);
-> >>      return size;
-> >>  }
-> >> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-> >> index 36934056a5dc..9cacc38b1890 100644
-> >> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
-> >> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-> >> @@ -200,6 +200,14 @@
-> >>  #define TRCSTALLCTLR_INSTPRIORITY           BIT(10)
-> >>  #define TRCSTALLCTLR_NOOVERFLOW                     BIT(13)
-> >>
-> >> +#define TRCVICTLR_EVENT_MASK                        GENMASK(7, 0)
-> >> +#define TRCVICTLR_SSSTATUS                  BIT(9)
-> >> +#define TRCVICTLR_TRCRESET                  BIT(10)
-> >> +#define TRCVICTLR_TRCERR                    BIT(11)
-> >> +#define TRCVICTLR_EXLEVEL_MASK                      GENMASK(22, 16)
-> >> +#define TRCVICTLR_EXLEVEL_S_MASK            GENMASK(19, 16)
-> >> +#define TRCVICTLR_EXLEVEL_NS_MASK           GENMASK(22, 20)
-> >> +
-> >>  /*
-> >>   * System instructions to access ETM registers.
-> >>   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
-> >> @@ -700,23 +708,9 @@
-> >>  #define ETM_EXLEVEL_NS_OS           BIT(5)  /* NonSecure EL1        */
-> >>  #define ETM_EXLEVEL_NS_HYP          BIT(6)  /* NonSecure EL2        */
-> >>
-> >> -#define ETM_EXLEVEL_MASK            (GENMASK(6, 0))
-> >> -#define ETM_EXLEVEL_S_MASK          (GENMASK(3, 0))
-> >> -#define ETM_EXLEVEL_NS_MASK         (GENMASK(6, 4))
-> >> -
-> >>  /* access level controls in TRCACATRn */
-> >>  #define TRCACATR_EXLEVEL_SHIFT              8
-> >>
-> >> -/* access level control in TRCVICTLR */
-> >> -#define TRCVICTLR_EXLEVEL_SHIFT             16
-> >> -#define TRCVICTLR_EXLEVEL_S_SHIFT   16
-> >> -#define TRCVICTLR_EXLEVEL_NS_SHIFT  20
-> >> -
-> >> -/* secure / non secure masks - TRCVICTLR, IDR3 */
-> >> -#define TRCVICTLR_EXLEVEL_MASK              (ETM_EXLEVEL_MASK << TRCVICTLR_EXLEVEL_SHIFT)
-> >> -#define TRCVICTLR_EXLEVEL_S_MASK    (ETM_EXLEVEL_S_MASK << TRCVICTLR_EXLEVEL_SHIFT)
-> >> -#define TRCVICTLR_EXLEVEL_NS_MASK   (ETM_EXLEVEL_NS_MASK << TRCVICTLR_EXLEVEL_SHIFT)
-> >> -
-> >>  #define ETM_TRCIDR1_ARCH_MAJOR_SHIFT        8
-> >>  #define ETM_TRCIDR1_ARCH_MAJOR_MASK (0xfU << ETM_TRCIDR1_ARCH_MAJOR_SHIFT)
-> >>  #define ETM_TRCIDR1_ARCH_MAJOR(x)   \
-> >> --
-> >> 2.28.0
-> >>
+On Mon, 11 Apr 2022, Johannes Berg wrote:
 
+> On Mon, 2022-04-11 at 10:25 +0100, Lee Jones wrote:
+> > So what exactly happened here?  What does this failure tell us?
+> 
+> Probably nothing.
+> 
+> > Is the LKP test broken or did I overlook something in the kernel
+> > patch?
+> 
+> I think the test is just randomly fluking out.
+> 
+> > How does LKP make use of NL80211_ATTR_REG_ALPHA2?
+> > 
+> > I'm struggling to find any mention of 'hostapd.py' or 'ap_country' in
+> > LKP [0].  Are these benchmarks bespoke add-ons? 
+> > 
+> 
+> it's running the tests from hostap:
+> https://w1.fi/cgit/hostap/tree/tests/hwsim
+> 
+> Anyway, I think we'd better fix the issue like this:
+> 
+> -       [NL80211_ATTR_REG_ALPHA2] = { .type = NLA_STRING, .len = 2 },
+> +       /* allow 3 for NUL-termination, we used to declare this NLA_STRING */
+> +       [NL80211_ATTR_REG_ALPHA2] = NLA_POLICY_RANGE(NLA_BINARY, 2, 3),
+> 
+> 
+> What do you think?
 
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
+I'm not entirely sure of the semantics, but so long as it ensures the
+user declares enough space to hold both Bytes of data, I'd be happy.
 
 -- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
