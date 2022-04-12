@@ -2,94 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B5EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345291AbiDLMgn (ORCPT
+        id S1343922AbiDLMhE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37246 "EHLO
+        Tue, 12 Apr 2022 08:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352037AbiDLMgB (ORCPT
+        with ESMTP id S1345646AbiDLMgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:36:01 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8075E767
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bh17so36796991ejb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QHCIwf7uKojCa/2Ev85bnweKYQuMU3PscULOv/3SfH0=;
-        b=DD4J/SiIfk70HC7aXDM4XEePvBUKdzzefIcgqBNThjAReDiodJEUxv0NPXpUdN4Kvw
-         5GK38QtWhkafFiYN5PdU1rjp9aro7+WtQivpUph3krYiRej9dnybekWAPqZ7OAw9F8xL
-         wNK5tQg9jnGDORnDvGQ8VgkSLX5FYQOqHwx3FAh9Ov0huiJqoLlT2vuI0KfWGVYBqxCW
-         2IWQ1R+ATurd2bGH5iYdmSLgRVFDArfFNifG/UnU14tH8thrH521ohSzxTH0Mb70XYmd
-         T8f7UVwyAEgO4OGSy7qDzscYWwIkGggVShOv5zJcBZ/+SU6h/uZEvJujeGPcbML/6rfT
-         H1qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QHCIwf7uKojCa/2Ev85bnweKYQuMU3PscULOv/3SfH0=;
-        b=M5b3mVki9lyxu2FK/ngJEfVGDVeKGZWPuyySFDF/1xju2+YbUAHCyXlKXEyR/sRVwv
-         ThwNk9/S8zeq8N/VgYUN11snObYdA2cM+XI3pvCM5fV7L/ngQNBCCWssZPJObN9H3GtN
-         xUJ+RpxCGtmo8LsQ+ZrWhABLaaDnU2trEm8aWfm9nH8VaLE2d7itkdtZxqK41VQh7OQW
-         XTMY/IOyjiHTKZZHv47Pw+z6BwEFbg/iq1x7yinCbeTmt+Sy0WQBVj1nxhJPiJRvqQyB
-         NRlrmGmZf+1p4OmJSQ9ZYWckgLEyLivF9AGfmiU3TfoNoGrXwBZlMCV7v9sDIqLIhFO5
-         A0eA==
-X-Gm-Message-State: AOAM531H6IfuH3bCOjmZk9azFg3WW6BURURyqNmJQ0AdwCIbGKMQD6XS
-        9b4DuR36eeGn75ZxVV39NhpyEw==
-X-Google-Smtp-Source: ABdhPJx9FE2flpben9B2OZUqjC1Vqv352+dinvZFdVtXqGLSmXzCHwsuwcdIhzcf0QGCra4M1rTYbQ==
-X-Received: by 2002:a17:906:e87:b0:6df:8602:5801 with SMTP id p7-20020a1709060e8700b006df86025801mr34857117ejf.140.1649764494490;
-        Tue, 12 Apr 2022 04:54:54 -0700 (PDT)
-Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id g4-20020a17090613c400b006e843330364sm5568236ejc.122.2022.04.12.04.54.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 04:54:54 -0700 (PDT)
-Message-ID: <2f0ecdb6-97f0-213a-7ee7-d1fe0a7406a8@linaro.org>
-Date:   Tue, 12 Apr 2022 13:54:53 +0200
+        Tue, 12 Apr 2022 08:36:03 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 807A45F76;
+        Tue, 12 Apr 2022 04:55:05 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4DC9B1424;
+        Tue, 12 Apr 2022 04:55:05 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.38.213])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3E68C3F70D;
+        Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        linux-perf-users@vger.kernel.org
+Subject: [RFC V2 3/8] arm64/perf: Update struct arm_pmu for BRBE
+Date:   Tue, 12 Apr 2022 17:24:50 +0530
+Message-Id: <20220412115455.293119-4-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220412115455.293119-1-anshuman.khandual@arm.com>
+References: <20220412115455.293119-1-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/7] dt-bindings: mmc: sdhci-msm: Document the SDX65
- compatible
-Content-Language: en-US
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, will@kernel.org,
-        robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, ulf.hansson@linaro.org, agross@kernel.org,
-        bjorn.andersson@linaro.org
-Cc:     manivannan.sadhasivam@linaro.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-References: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
- <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/04/2022 11:50, Rohit Agarwal wrote:
-> The SDHCI controller on SDX65 is based on MSM SDHCI v5 IP. Hence,
-> document the compatible with "qcom,sdhci-msm-v5" as the fallback.
-> 
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
-> ---
->  Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Although BRBE is an armv8 speciifc HW feature, abstracting out its various
+function callbacks at the struct arm_pmu level is preferred, as it cleaner
+, easier to follow and maintain.
 
+Besides some helpers i.e brbe_supported(), brbe_probe() and brbe_reset()
+might not fit seamlessly, when tried to be embedded via existing arm_pmu
+helpers in the armv8 implementation.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Update the struct arm_pmu to include all required helpers that will drive
+BRBE functionality for a given PMU implementation. These are the following.
 
+- brbe_filter	: Convert perf event filters into BRBE HW filters
+- brbe_probe	: Probe BRBE HW and capture its attributes
+- brbe_enable	: Enable BRBE HW with a given config
+- brbe_disable	: Disable BRBE HW
+- brbe_read	: Read BRBE buffer for captured branch records
+- brbe_reset	: Reset BRBE buffer
+- brbe_supported: Whether BRBE is supported or not
 
-Best regards,
-Krzysztof
+A BRBE driver implementation needs to provide these functionalities.
+
+Cc: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-perf-users@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ arch/arm64/kernel/perf_event.c | 36 ++++++++++++++++++++++++++++++++++
+ include/linux/perf/arm_pmu.h   | 21 ++++++++++++++++++++
+ 2 files changed, 57 insertions(+)
+
+diff --git a/arch/arm64/kernel/perf_event.c b/arch/arm64/kernel/perf_event.c
+index cb69ff1e6138..e7013699171f 100644
+--- a/arch/arm64/kernel/perf_event.c
++++ b/arch/arm64/kernel/perf_event.c
+@@ -1025,6 +1025,35 @@ static int armv8pmu_filter_match(struct perf_event *event)
+ 	return evtype != ARMV8_PMUV3_PERFCTR_CHAIN;
+ }
+ 
++static void armv8pmu_brbe_filter(struct pmu_hw_events *hw_event, struct perf_event *event)
++{
++}
++
++static void armv8pmu_brbe_enable(struct pmu_hw_events *hw_event)
++{
++}
++
++static void armv8pmu_brbe_disable(struct pmu_hw_events *hw_event)
++{
++}
++
++static void armv8pmu_brbe_read(struct pmu_hw_events *hw_event, struct perf_event *event)
++{
++}
++
++static void armv8pmu_brbe_probe(struct pmu_hw_events *hw_event)
++{
++}
++
++static void armv8pmu_brbe_reset(struct pmu_hw_events *hw_event)
++{
++}
++
++static bool armv8pmu_brbe_supported(struct perf_event *event)
++{
++	return false;
++}
++
+ static void armv8pmu_reset(void *info)
+ {
+ 	struct arm_pmu *cpu_pmu = (struct arm_pmu *)info;
+@@ -1257,6 +1286,13 @@ static int armv8_pmu_init(struct arm_pmu *cpu_pmu, char *name,
+ 
+ 	cpu_pmu->pmu.event_idx		= armv8pmu_user_event_idx;
+ 
++	cpu_pmu->brbe_filter		= armv8pmu_brbe_filter;
++	cpu_pmu->brbe_enable		= armv8pmu_brbe_enable;
++	cpu_pmu->brbe_disable		= armv8pmu_brbe_disable;
++	cpu_pmu->brbe_read		= armv8pmu_brbe_read;
++	cpu_pmu->brbe_probe		= armv8pmu_brbe_probe;
++	cpu_pmu->brbe_reset		= armv8pmu_brbe_reset;
++	cpu_pmu->brbe_supported		= armv8pmu_brbe_supported;
+ 	cpu_pmu->name			= name;
+ 	cpu_pmu->map_event		= map_event;
+ 	cpu_pmu->attr_groups[ARMPMU_ATTR_GROUP_EVENTS] = events ?
+diff --git a/include/linux/perf/arm_pmu.h b/include/linux/perf/arm_pmu.h
+index 0407a38b470a..3d427ac0ca45 100644
+--- a/include/linux/perf/arm_pmu.h
++++ b/include/linux/perf/arm_pmu.h
+@@ -100,6 +100,27 @@ struct arm_pmu {
+ 	void		(*reset)(void *);
+ 	int		(*map_event)(struct perf_event *event);
+ 	int		(*filter_match)(struct perf_event *event);
++
++	/* Convert perf event filters into BRBE HW filters */
++	void		(*brbe_filter)(struct pmu_hw_events *hw_events, struct perf_event *event);
++
++	/* Probe BRBE HW and capture its attributes */
++	void		(*brbe_probe)(struct pmu_hw_events *hw_events);
++
++	/* Enable BRBE HW with a given config */
++	void		(*brbe_enable)(struct pmu_hw_events *hw_events);
++
++	/* Disable BRBE HW */
++	void		(*brbe_disable)(struct pmu_hw_events *hw_events);
++
++	/* Process BRBE buffer for captured branch records */
++	void		(*brbe_read)(struct pmu_hw_events *hw_events, struct perf_event *event);
++
++	/* Reset BRBE buffer */
++	void		(*brbe_reset)(struct pmu_hw_events *hw_events);
++
++	/* Check whether BRBE is supported */
++	bool		(*brbe_supported)(struct perf_event *event);
+ 	int		num_events;
+ 	bool		secure_access; /* 32-bit ARM only */
+ #define ARMV8_PMUV3_MAX_COMMON_EVENTS		0x40
+-- 
+2.25.1
+
