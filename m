@@ -2,79 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 702A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238530AbiDLK6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
+        id S239920AbiDLK6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355786AbiDLKyE (ORCPT
+        with ESMTP id S245287AbiDLKwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:54:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6EB4830B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:49:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1152B81BBF
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:49:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E2CC385A5;
-        Tue, 12 Apr 2022 09:49:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649756962;
-        bh=gYR2YBHwwyx9GaI6f6MK1uifVDe1QgQzsrtQ7laIKeU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=OD5yENxhrqinRZ28NRL3z3M2cXMflFjo7rdvdCtxSCxp424qOJ4xZBCXY7G3h7jan
-         gFAvOtajyghA11u56CcEIv0q8QqJ+sukQWtvPmf4/5LJJFEv/d9j7s6d12Ol7j47FA
-         bxc3w6gRwbsOI4teqsdV5BgoVZErwUPu5JEnsRVDJPo+fjAtKOdYqJWTv4b0lkLKt8
-         Kx/X43PP/NTMuNR/1iO2Xrmkx/vO+waCU6oeNucMOsDa8OMvV3v1l1gupRnFCNqS9K
-         UlWSjoljm81z5ZemS8x2D9hsf+6S+sevNUTgv1TFLMgP5SXchUa9fiQYh5ZrwwZfcG
-         AN+RmMmYdZXow==
-Message-ID: <8b62a788-d5ba-b244-d9f1-2edecba9769f@kernel.org>
-Date:   Tue, 12 Apr 2022 17:49:17 +0800
+        Tue, 12 Apr 2022 06:52:34 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6757A22BC7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:49:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=Fj8VO6yUX/TG+ZwJZmOwkh7zNQnO
+        gn90D0zMWyzIvnU=; b=lKHbOYSHXrHXzoAU0xuLD4BzV2ze1u63QPuRIEgJhIFL
+        X9sTyU4Jv8qE7LzoB5wW7DmVxTNj/YMhzpZPyjjxhmEvSH8SsSa1hEFGO0hui6E4
+        muRRWsVrk2hjNF6YzGn6AJdgDFATY/OvX2Y6/FXb1q4LJNtUyVS9zpT0lJBDmjU=
+Received: (qmail 987440 invoked from network); 12 Apr 2022 11:49:07 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 12 Apr 2022 11:49:07 +0200
+X-UD-Smtp-Session: l3s3148p1@WEzI+HHcDucgAQnoAGZ4AFi7qjeMIP6q
+Date:   Tue, 12 Apr 2022 11:49:06 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Duc Nguyen <duc.nguyen.ub@renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] memory: renesas-rpc-if: Simplify single/double data
+ register access
+Message-ID: <YlVLEnRaARVmWZnZ@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Duc Nguyen <duc.nguyen.ub@renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <19358863deae03b1b26f473e878305a1c6e40d19.1649681638.git.geert+renesas@glider.be>
+ <YlVJc3z1xXT2emIc@ninjato>
+ <CAMuHMdUGkba3hiRJPEw26oBdc6_MK_eBO==Z9QeinaoeZv8Qbw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] f2fs: fix dereference of stale list iterator after loop
- body
-Content-Language: en-US
-To:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     Yunlei He <heyunlei@huawei.com>,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-References: <20220331223414.901960-1-jakobkoschel@gmail.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220331223414.901960-1-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="S735XdVRzV/i3nen"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUGkba3hiRJPEw26oBdc6_MK_eBO==Z9QeinaoeZv8Qbw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/1 6:34, Jakob Koschel wrote:
-> The list iterator variable will be a bogus pointer if no break was hit.
-> Dereferencing it (cur->page in this case) could load an out-of-bounds/undefined
-> value making it unsafe to use that in the comparision to determine if the
-> specific element was found.
-> 
-> Since 'cur->page' *can* be out-ouf-bounds it cannot be guaranteed that
-> by chance (or intention of an attacker) it matches the value of 'page'
-> even though the correct element was not found.
-> 
-> This is fixed by using a separate list iterator variable for the loop
-> and only setting the original variable if a suitable element was found.
-> Then determing if the element was found is simply checking if the
-> variable is set.
-> 
-> Fixes: 8c242db9b8c0 ("f2fs: fix stale ATOMIC_WRITTEN_PAGE private pointer")
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+--S735XdVRzV/i3nen
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
+
+> > > +                     regmap_write(rpc->regmap, RPCIF_SMWDR0, *p++);
+> >
+> > Last '++' can be omitted?
+>=20
+> I know. But I think it looks nicer this way ;-)
+
+I have to admit it looks a little like "I copy&pasted without thinking"
+to me :)
+
+
+--S735XdVRzV/i3nen
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJVSxIACgkQFA3kzBSg
+KbYQCw//Tg4IDheuIWgzV7n9xNtp7Dk17Iz4LggQVlK/eKuuSJbsCwoapbtTVzGi
+tM+BG5tigk87t1bjkhUzbjK9vxclhEcLmi80UquzPswl4frW4nM/1SBFCuIlXmV9
+YqZnJlyM2e7RXjiftKfvmZO85x2eyvjv4nqEtj8b4tzog6HaPACQdQJYuxMxBz+Q
+635MoH0kP20jKL/7u+2lyAq97IkuR0sSXngakNiAB92T2WGJUTUcmBJaVGV7qQNG
+Zh0FH96JrX2RIq1Yl+s6Tfipsfgivw+l2gsgxQOKwuvcTyUZcuvWkZtL1A1tf0d4
+crws5bMBIxXJV1oKU/gU/azoy3xoGDOoz2TFn9dulprQSogW+/5sx2mA/usdU2j/
+IpbjZ4wiS6piDlXzplqXQDZjfVMSfnncfGjqmWRAmBVV0KV6BdSzEFBNsDqnx31D
+PkcY8ezxBL34YzKRJ2N+CwdozzAAxisA6DtuvK5nLdNbjz0P6tQsYYZjJUSsE587
+4g5cUbCpV72ZFYCuqNbcQFvuYA9/+fJQDdf/IrF4kvYP6LudwXRsIp0Nb79Xo4Z9
+9QQ/TmDDv6wQ4cEhDobBY/DcVhbvB+SOZ5dbPMJhIKooi0YWhNw7MikbVMmmDzRD
+jBXKkFQRfM8aShBo+dTG+Fs1MmZWiKoNLhYGpG3+9If+aZBcd/0=
+=C8Jw
+-----END PGP SIGNATURE-----
+
+--S735XdVRzV/i3nen--
