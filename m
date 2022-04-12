@@ -2,103 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC68C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358179AbiDLRfg (ORCPT
+        id S1358236AbiDLRfq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
+        Tue, 12 Apr 2022 13:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358142AbiDLRfe (ORCPT
+        with ESMTP id S1358186AbiDLRfh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:35:34 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139425C34A
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:33:15 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id bv19so15727868ejb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w97rX506l0IZkP+JZIYJlQ8t2kG9o3WJCY91DufueFk=;
-        b=ORC1aokz3Akmjy39tO0RY2jzikbJzlVNlrJZb+6WACySbrtF6E+MNNtD7yGr1ALcME
-         99TOioRefbrdi/g42nB6ZY9BxJZ7iNwer55DdjXCqeZr3gAihwdN9Z0rrqkAAAUgXdjJ
-         QjE+mE4/eal7w8QmOY38mR4NOTj4YYlOOiON0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w97rX506l0IZkP+JZIYJlQ8t2kG9o3WJCY91DufueFk=;
-        b=Y3hq/6uPecm8Uo7YslLa0Z4be9pXQxiv1dJvuGQcE0u1Wmxz6s7zRIvAxhc0oYHNq9
-         pK8Fd97nJpc9HbLb7CsWQqrDTmAh1aj53s9lQwSH0ngHHhFPemYvH6/Rqlpwx0Sfwmcm
-         J4T/sfOTbrnn7iYLcQEmxhUYIsmWCiO1tOGrb/i0gr/JsFtQaOSxetZQo/6p9aSzWOaj
-         iWVl4rvQctJeHpBwAupLtnP1EA4Mu/oK3OUAHkRf3sU+8I2X5HyQL9bOTjLteBI3H10j
-         UKTx+fPkgksR+FHebBCJL212nYb66Yx+YlCmSvrP4ywAJzw1JgD6HZU7mi5I/3gk4RrJ
-         arUQ==
-X-Gm-Message-State: AOAM531iNMQ0WxF5Pg4J2lRj2kWHKEHrRmoZc/aDgNeeXIhjWqYEcPcC
-        YpCRcHSEZMJ9BAGCDMnJckwU9Q==
-X-Google-Smtp-Source: ABdhPJy/Ds7apVGrE02M2cDXTimaPZi1syJE7lufyddpu55XI0GsM3dEf3LKDwyhS3Hs95uW5/m86A==
-X-Received: by 2002:a17:906:7316:b0:6d7:16be:b584 with SMTP id di22-20020a170906731600b006d716beb584mr34948158ejc.759.1649784793578;
-        Tue, 12 Apr 2022 10:33:13 -0700 (PDT)
-Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id o3-20020aa7dd43000000b00419db53ae65sm56142edw.7.2022.04.12.10.33.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 10:33:12 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Rasmussen <mir@bang-olufsen.dk>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH stable 5.16+ 0/3] backported Realtek DSA driver fixes for 5.16 and 5.17
-Date:   Tue, 12 Apr 2022 19:32:49 +0200
-Message-Id: <20220412173253.2247196-1-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.35.1
+        Tue, 12 Apr 2022 13:35:37 -0400
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C610860A8F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:33:16 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 6A364419B4;
+        Tue, 12 Apr 2022 17:33:12 +0000 (UTC)
+Message-ID: <e5e7ae3d-8b4e-b177-6b26-37ae12b4e440@marcan.st>
+Date:   Wed, 13 Apr 2022 02:33:09 +0900
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] MAINTAINERS: merge DART into ARM/APPLE MACHINE
+Content-Language: es-ES
+To:     Sven Peter <sven@svenpeter.dev>, Joerg Roedel <joro@8bytes.org>
+Cc:     Will Deacon <will@kernel.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220412161211.23162-1-sven@svenpeter.dev>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <20220412161211.23162-1-sven@svenpeter.dev>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+On 13/04/2022 01.12, Sven Peter wrote:
+> It's the same people anyway.
+> 
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> ---
+>  MAINTAINERS | 10 ++--------
+>  1 file changed, 2 insertions(+), 8 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index fd768d43e048..5af879de869c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1375,14 +1375,6 @@ L:	linux-input@vger.kernel.org
+>  S:	Odd fixes
+>  F:	drivers/input/mouse/bcm5974.c
+>  
+> -APPLE DART IOMMU DRIVER
+> -M:	Sven Peter <sven@svenpeter.dev>
+> -R:	Alyssa Rosenzweig <alyssa@rosenzweig.io>
+> -L:	iommu@lists.linux-foundation.org
+> -S:	Maintained
+> -F:	Documentation/devicetree/bindings/iommu/apple,dart.yaml
+> -F:	drivers/iommu/apple-dart.c
+> -
+>  APPLE PCIE CONTROLLER DRIVER
+>  M:	Alyssa Rosenzweig <alyssa@rosenzweig.io>
+>  M:	Marc Zyngier <maz@kernel.org>
+> @@ -1836,6 +1828,7 @@ F:	Documentation/devicetree/bindings/arm/apple/*
+>  F:	Documentation/devicetree/bindings/clock/apple,nco.yaml
+>  F:	Documentation/devicetree/bindings/i2c/apple,i2c.yaml
+>  F:	Documentation/devicetree/bindings/interrupt-controller/apple,*
+> +F:	Documentation/devicetree/bindings/iommu/apple,dart.yaml
+>  F:	Documentation/devicetree/bindings/mailbox/apple,mailbox.yaml
+>  F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
+>  F:	Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
+> @@ -1845,6 +1838,7 @@ F:	arch/arm64/boot/dts/apple/
+>  F:	drivers/clk/clk-apple-nco.c
+>  F:	drivers/i2c/busses/i2c-pasemi-core.c
+>  F:	drivers/i2c/busses/i2c-pasemi-platform.c
+> +F:	drivers/iommu/apple-dart.c
+>  F:	drivers/irqchip/irq-apple-aic.c
+>  F:	drivers/mailbox/apple-mailbox.c
+>  F:	drivers/pinctrl/pinctrl-apple-gpio.c
 
-These fixes can be applied to both 5.16 and 5.17 - the subtree of
-drivers/net/dsa/realtek is identical save for a few unrelated places.
-
-The main backporting effort was to remove some parts of the patches
-which touched the newly introduced MDIO interface, which was introduced
-in the 5.18 development cycle, and to work around a mass-rename of a
-single variable (smi -> priv). Regrettably this rename will make future
-stable backports equally tedious and hard to automate.
-
-Please let me know if you would like me to send the series again for
-5.17.
-
-Thanks!
-
-
-Alvin Šipraga (3):
-  net: dsa: realtek: allow subdrivers to externally lock regmap
-  net: dsa: realtek: rtl8365mb: serialize indirect PHY register access
-  net: dsa: realtek: make interface drivers depend on OF
-
- drivers/net/dsa/realtek/Kconfig            |  1 +
- drivers/net/dsa/realtek/realtek-smi-core.c | 48 +++++++++++++++++--
- drivers/net/dsa/realtek/realtek-smi-core.h |  2 +
- drivers/net/dsa/realtek/rtl8365mb.c        | 54 +++++++++++++---------
- 4 files changed, 81 insertions(+), 24 deletions(-)
+Acked-by: Hector Martin <marcan@marcan.st>
 
 -- 
-2.35.1
-
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
