@@ -2,264 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF1BC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01EF7C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356767AbiDLIPn (ORCPT
+        id S1379130AbiDLIUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        Tue, 12 Apr 2022 04:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355309AbiDLH1Z (ORCPT
+        with ESMTP id S1355510AbiDLH1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA624924E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:07:27 -0700 (PDT)
-Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kcxbv1gXmzdZLM;
-        Tue, 12 Apr 2022 15:06:51 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 15:07:25 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 15:07:24 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: [RFC PATCH -next V3 4/6] arm64: add copy_{to, from}_user to machine check safe
-Date:   Tue, 12 Apr 2022 07:25:50 +0000
-Message-ID: <20220412072552.2526871-5-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-In-Reply-To: <20220412072552.2526871-1-tongtiangen@huawei.com>
-References: <20220412072552.2526871-1-tongtiangen@huawei.com>
+        Tue, 12 Apr 2022 03:27:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BB74EA2A;
+        Tue, 12 Apr 2022 00:07:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E780B81B51;
+        Tue, 12 Apr 2022 07:07:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B0EC385A6;
+        Tue, 12 Apr 2022 07:07:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747261;
+        bh=89MrKhqbU4iUBu1mBVmX/Pf+qMpToYtQOMbN23scytw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=X0ZmSGPE7Zv0/nt/N2gSgcEQGBJbK9dlpbdDaIiMBXsC9c55hwZnd4epHNUEXstB7
+         5mPGkulCAiQdbbnJwTTHddlyxHyjIv6qCdjf3Y8eSeUbWHK1HoBlaEgeaWwTCzxtHm
+         kvIZWxGCQ17fUnVuKgGYglFNzr/Iz7lR9lIzdLB4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Huang <jinhuieric.huang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 016/343] drm/amdkfd: enable heavy-weight TLB flush on Arcturus
+Date:   Tue, 12 Apr 2022 08:27:14 +0200
+Message-Id: <20220412062951.573763904@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add copy_{to, from}_user() to machine check safe.
+From: Eric Huang <jinhuieric.huang@amd.com>
 
-If copy fail due to hardware memory error, only the relevant processes are
-affected, so killing the user process and isolate the user page with
-hardware memory errors is a more reasonable choice than kernel panic.
+[ Upstream commit f61c40c0757a79bcf744314df606c2bc8ae6a729 ]
 
-Add new extable type EX_TYPE_UACCESS_MC which can be used for uaccess that
-can be recovered from hardware memory errors.
+SDMA FW fixes the hang issue for adding heavy-weight TLB
+flush on Arcturus, so we can enable it.
 
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+Signed-off-by: Eric Huang <jinhuieric.huang@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/asm-extable.h | 11 +++++++++++
- arch/arm64/include/asm/asm-uaccess.h | 16 ++++++++++++++++
- arch/arm64/lib/copy_from_user.S      | 15 ++++++++++-----
- arch/arm64/lib/copy_to_user.S        | 25 +++++++++++++++++--------
- 4 files changed, 54 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c |  6 ------
+ drivers/gpu/drm/amd/amdkfd/kfd_chardev.c         | 10 ++++++++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
-index c39f2437e08e..8af4e7cc9578 100644
---- a/arch/arm64/include/asm/asm-extable.h
-+++ b/arch/arm64/include/asm/asm-extable.h
-@@ -8,6 +8,9 @@
- #define EX_TYPE_UACCESS_ERR_ZERO	3
- #define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	4
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+index f9bab963a948..5df387c4d7fb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+@@ -1813,12 +1813,6 @@ int amdgpu_amdkfd_gpuvm_map_memory_to_gpu(
+ 				true);
+ 	ret = unreserve_bo_and_vms(&ctx, false, false);
  
-+/* _MC indicates that can fixup from machine check errors */
-+#define EX_TYPE_UACCESS_MC		5
+-	/* Only apply no TLB flush on Aldebaran to
+-	 * workaround regressions on other Asics.
+-	 */
+-	if (table_freed && (adev->asic_type != CHIP_ALDEBARAN))
+-		*table_freed = true;
+-
+ 	goto out;
+ 
+ out_unreserve:
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+index 4bfc0c8ab764..337953af7c2f 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+@@ -1416,6 +1416,12 @@ static int kfd_ioctl_free_memory_of_gpu(struct file *filep,
+ 	return ret;
+ }
+ 
++static bool kfd_flush_tlb_after_unmap(struct kfd_dev *dev) {
++	return KFD_GC_VERSION(dev) == IP_VERSION(9, 4, 2) ||
++	       (KFD_GC_VERSION(dev) == IP_VERSION(9, 4, 1) &&
++	        dev->adev->sdma.instance[0].fw_version >= 18);
++}
 +
- #ifdef __ASSEMBLY__
+ static int kfd_ioctl_map_memory_to_gpu(struct file *filep,
+ 					struct kfd_process *p, void *data)
+ {
+@@ -1503,7 +1509,7 @@ static int kfd_ioctl_map_memory_to_gpu(struct file *filep,
+ 	}
  
- #define __ASM_EXTABLE_RAW(insn, fixup, type, data)	\
-@@ -27,6 +30,14 @@
- 	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
- 	.endm
+ 	/* Flush TLBs after waiting for the page table updates to complete */
+-	if (table_freed) {
++	if (table_freed || !kfd_flush_tlb_after_unmap(dev)) {
+ 		for (i = 0; i < args->n_devices; i++) {
+ 			peer = kfd_device_by_id(devices_arr[i]);
+ 			if (WARN_ON_ONCE(!peer))
+@@ -1603,7 +1609,7 @@ static int kfd_ioctl_unmap_memory_from_gpu(struct file *filep,
+ 	}
+ 	mutex_unlock(&p->mutex);
  
-+/*
-+ * Create an exception table entry for `insn`, which will branch to `fixup`
-+ * when an unhandled fault(include sea fault) is taken.
-+ */
-+	.macro          _asm_extable_uaccess_mc, insn, fixup
-+	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_UACCESS_MC, 0)
-+	.endm
-+
- /*
-  * Create an exception table entry for `insn` if `fixup` is provided. Otherwise
-  * do nothing.
-diff --git a/arch/arm64/include/asm/asm-uaccess.h b/arch/arm64/include/asm/asm-uaccess.h
-index 0557af834e03..bb17f0829042 100644
---- a/arch/arm64/include/asm/asm-uaccess.h
-+++ b/arch/arm64/include/asm/asm-uaccess.h
-@@ -92,4 +92,20 @@ alternative_else_nop_endif
- 
- 		_asm_extable	8888b,\l;
- 	.endm
-+
-+	.macro user_ldp_mc l, reg1, reg2, addr, post_inc
-+8888:		ldtr	\reg1, [\addr];
-+8889:		ldtr	\reg2, [\addr, #8];
-+		add	\addr, \addr, \post_inc;
-+
-+		_asm_extable_uaccess_mc	8888b, \l;
-+		_asm_extable_uaccess_mc	8889b, \l;
-+	.endm
-+
-+	.macro user_ldst_mc l, inst, reg, addr, post_inc
-+8888:		\inst		\reg, [\addr];
-+		add		\addr, \addr, \post_inc;
-+
-+		_asm_extable_uaccess_mc	8888b, \l;
-+	.endm
- #endif
-diff --git a/arch/arm64/lib/copy_from_user.S b/arch/arm64/lib/copy_from_user.S
-index 34e317907524..e32c0747a5f1 100644
---- a/arch/arm64/lib/copy_from_user.S
-+++ b/arch/arm64/lib/copy_from_user.S
-@@ -21,7 +21,7 @@
-  */
- 
- 	.macro ldrb1 reg, ptr, val
--	user_ldst 9998f, ldtrb, \reg, \ptr, \val
-+	user_ldst_mc 9998f, ldtrb, \reg, \ptr, \val
- 	.endm
- 
- 	.macro strb1 reg, ptr, val
-@@ -29,7 +29,7 @@
- 	.endm
- 
- 	.macro ldrh1 reg, ptr, val
--	user_ldst 9997f, ldtrh, \reg, \ptr, \val
-+	user_ldst_mc 9997f, ldtrh, \reg, \ptr, \val
- 	.endm
- 
- 	.macro strh1 reg, ptr, val
-@@ -37,7 +37,7 @@
- 	.endm
- 
- 	.macro ldr1 reg, ptr, val
--	user_ldst 9997f, ldtr, \reg, \ptr, \val
-+	user_ldst_mc 9997f, ldtr, \reg, \ptr, \val
- 	.endm
- 
- 	.macro str1 reg, ptr, val
-@@ -45,7 +45,7 @@
- 	.endm
- 
- 	.macro ldp1 reg1, reg2, ptr, val
--	user_ldp 9997f, \reg1, \reg2, \ptr, \val
-+	user_ldp_mc 9997f, \reg1, \reg2, \ptr, \val
- 	.endm
- 
- 	.macro stp1 reg1, reg2, ptr, val
-@@ -54,6 +54,7 @@
- 
- end	.req	x5
- srcin	.req	x15
-+esr	.req	x16
- SYM_FUNC_START(__arch_copy_from_user)
- 	add	end, x0, x2
- 	mov	srcin, x1
-@@ -62,7 +63,11 @@ SYM_FUNC_START(__arch_copy_from_user)
- 	ret
- 
- 	// Exception fixups
--9997:	cmp	dst, dstin
-+9997:	mrs esr, esr_el1			// Check exception first
-+	and esr, esr, #ESR_ELx_FSC
-+	cmp esr, #ESR_ELx_FSC_EXTABT
-+	b.eq 9998f
-+	cmp	dst, dstin
- 	b.ne	9998f
- 	// Before being absolutely sure we couldn't copy anything, try harder
- USER(9998f, ldtrb tmp1w, [srcin])
-diff --git a/arch/arm64/lib/copy_to_user.S b/arch/arm64/lib/copy_to_user.S
-index 802231772608..afb53e45a21f 100644
---- a/arch/arm64/lib/copy_to_user.S
-+++ b/arch/arm64/lib/copy_to_user.S
-@@ -20,31 +20,35 @@
-  *	x0 - bytes not copied
-  */
- 	.macro ldrb1 reg, ptr, val
--	ldrb  \reg, [\ptr], \val
-+	1000:	ldrb  \reg, [\ptr], \val
-+	_asm_extable_uaccess_mc 1000b, 9998f;
- 	.endm
- 
- 	.macro strb1 reg, ptr, val
--	user_ldst 9998f, sttrb, \reg, \ptr, \val
-+	user_ldst_mc 9998f, sttrb, \reg, \ptr, \val
- 	.endm
- 
- 	.macro ldrh1 reg, ptr, val
--	ldrh  \reg, [\ptr], \val
-+	1001:	ldrh  \reg, [\ptr], \val
-+	_asm_extable_uaccess_mc 1001b, 9998f;
- 	.endm
- 
- 	.macro strh1 reg, ptr, val
--	user_ldst 9997f, sttrh, \reg, \ptr, \val
-+	user_ldst_mc 9997f, sttrh, \reg, \ptr, \val
- 	.endm
- 
- 	.macro ldr1 reg, ptr, val
--	ldr \reg, [\ptr], \val
-+	1002:	ldr \reg, [\ptr], \val
-+	_asm_extable_uaccess_mc 1002b, 9998f;
- 	.endm
- 
- 	.macro str1 reg, ptr, val
--	user_ldst 9997f, sttr, \reg, \ptr, \val
-+	user_ldst_mc 9997f, sttr, \reg, \ptr, \val
- 	.endm
- 
- 	.macro ldp1 reg1, reg2, ptr, val
--	ldp \reg1, \reg2, [\ptr], \val
-+	1003:	ldp \reg1, \reg2, [\ptr], \val
-+	_asm_extable_uaccess_mc 1003b, 9998f;
- 	.endm
- 
- 	.macro stp1 reg1, reg2, ptr, val
-@@ -53,6 +57,7 @@
- 
- end	.req	x5
- srcin	.req	x15
-+esr	.req	x16
- SYM_FUNC_START(__arch_copy_to_user)
- 	add	end, x0, x2
- 	mov	srcin, x1
-@@ -61,7 +66,11 @@ SYM_FUNC_START(__arch_copy_to_user)
- 	ret
- 
- 	// Exception fixups
--9997:	cmp	dst, dstin
-+9997:	mrs esr, esr_el1			// Check exception first
-+	and esr, esr, #ESR_ELx_FSC
-+	cmp esr, #ESR_ELx_FSC_EXTABT
-+	b.eq 9998f
-+	cmp	dst, dstin
- 	b.ne	9998f
- 	// Before being absolutely sure we couldn't copy anything, try harder
- 	ldrb	tmp1w, [srcin]
+-	if (KFD_GC_VERSION(dev) == IP_VERSION(9, 4, 2)) {
++	if (kfd_flush_tlb_after_unmap(dev)) {
+ 		err = amdgpu_amdkfd_gpuvm_sync_memory(dev->adev,
+ 				(struct kgd_mem *) mem, true);
+ 		if (err) {
 -- 
-2.18.0.huawei.25
+2.35.1
+
+
 
