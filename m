@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1919EC352A8
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAA1C47086
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382970AbiDLIfB (ORCPT
+        id S1384716AbiDLImQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        Tue, 12 Apr 2022 04:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353839AbiDLHZz (ORCPT
+        with ESMTP id S1357253AbiDLHjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:55 -0400
+        Tue, 12 Apr 2022 03:39:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6A0DF00;
-        Tue, 12 Apr 2022 00:04:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE335F67;
+        Tue, 12 Apr 2022 00:14:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17BE060B65;
-        Tue, 12 Apr 2022 07:04:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F5CBC385A1;
-        Tue, 12 Apr 2022 07:04:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C082661708;
+        Tue, 12 Apr 2022 07:14:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF4E7C385A1;
+        Tue, 12 Apr 2022 07:14:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747092;
-        bh=U2/FILndl4co+BlYvc00C3mSRpRj6SmZahSvs4PQbsE=;
+        s=korg; t=1649747661;
+        bh=bAPP0KeYlE4Rw4hQig6h+AE3aP+2SVdMxEk/gwMuZbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/E5R/U1r0oIyybkED+RzMUjYAl3WpautWoX/MqSL5Ua2tnM4HFl/iNRPxpqbB7px
-         7cxYNTdSk4FIF/u9VvfFQJr+6H3Mv40qXBErT0IhbtM+SMINguueUfqHFEROMESOh5
-         R36FQGIZcJenUN+p94lWYVArGbINek1nBPn2H7cE=
+        b=cA2GC7/uj4coysw4y5OK7WK41CPcTzwIug32K2rqi5zeibHDCr7xBhSsdXNZ5aVVr
+         WIQzWvaWZPI6ZOIiPt4Xbzz7gG398zOWK2bXsVDsqHdYGh7CZrK6b5J0bL5HtTuwUS
+         Sdr/tIXDX4qD8zLEoW4C3HxRHIVi6tB7peUxw854=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.16 239/285] RDMA/hfi1: Fix use-after-free bug for mm struct
-Date:   Tue, 12 Apr 2022 08:31:36 +0200
-Message-Id: <20220412062950.560954610@linuxfoundation.org>
+        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 161/343] phy: amlogic: meson8b-usb2: Use dev_err_probe()
+Date:   Tue, 12 Apr 2022 08:29:39 +0200
+Message-Id: <20220412062956.021318385@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
 
-commit 2bbac98d0930e8161b1957dc0ec99de39ade1b3c upstream.
+[ Upstream commit 6466ba1898d415b527e1013bd8551a6fdfece94c ]
 
-Under certain conditions, such as MPI_Abort, the hfi1 cleanup code may
-represent the last reference held on the task mm.
-hfi1_mmu_rb_unregister() then drops the last reference and the mm is freed
-before the final use in hfi1_release_user_pages().  A new task may
-allocate the mm structure while it is still being used, resulting in
-problems. One manifestation is corruption of the mmap_sem counter leading
-to a hang in down_write().  Another is corruption of an mm struct that is
-in use by another task.
+Use the existing dev_err_probe() helper instead of open-coding the same
+operation.
 
-Fixes: 3d2a9d642512 ("IB/hfi1: Ensure correct mm is used at all times")
-Link: https://lore.kernel.org/r/20220408133523.122165.72975.stgit@awfm-01.cornelisnetworks.com
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220111095255.176141-3-aouledameur@baylibre.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/mmu_rb.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/phy/amlogic/phy-meson8b-usb2.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/infiniband/hw/hfi1/mmu_rb.c
-+++ b/drivers/infiniband/hw/hfi1/mmu_rb.c
-@@ -80,6 +80,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
- 	unsigned long flags;
- 	struct list_head del_list;
+diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
+index cf10bed40528..77e7e9b1428c 100644
+--- a/drivers/phy/amlogic/phy-meson8b-usb2.c
++++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
+@@ -265,8 +265,9 @@ static int phy_meson8b_usb2_probe(struct platform_device *pdev)
+ 		return PTR_ERR(priv->clk_usb);
  
-+	/* Prevent freeing of mm until we are completely finished. */
-+	mmgrab(handler->mn.mm);
-+
- 	/* Unregister first so we don't get any more notifications. */
- 	mmu_notifier_unregister(&handler->mn, handler->mn.mm);
+ 	priv->reset = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
+-	if (PTR_ERR(priv->reset) == -EPROBE_DEFER)
+-		return PTR_ERR(priv->reset);
++	if (IS_ERR(priv->reset))
++		return dev_err_probe(&pdev->dev, PTR_ERR(priv->reset),
++				     "Failed to get the reset line");
  
-@@ -102,6 +105,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
- 
- 	do_remove(handler, &del_list);
- 
-+	/* Now the mm may be freed. */
-+	mmdrop(handler->mn.mm);
-+
- 	kfree(handler);
- }
- 
+ 	priv->dr_mode = of_usb_get_dr_mode_by_phy(pdev->dev.of_node, -1);
+ 	if (priv->dr_mode == USB_DR_MODE_UNKNOWN) {
+-- 
+2.35.1
+
 
 
