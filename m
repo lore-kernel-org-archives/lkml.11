@@ -2,99 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6DDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72693C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383768AbiDLIiO (ORCPT
+        id S1383812AbiDLIiV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        Tue, 12 Apr 2022 04:38:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357057AbiDLHjo (ORCPT
+        with ESMTP id S1357056AbiDLHjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:44 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A949BE2D;
-        Tue, 12 Apr 2022 00:11:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vPcJ0Jyf7TJXhPIUKaJIMiRr+nnNAGQ8o4ZIzMyfJYY=; b=JfeLXhwuu380orBQHL6JRm1SVF
-        ECgAYHr9tIUbUxfb+zKByQ6M5m+UdFOUQ3oWMUgfARd8XUeBIcoZKH4jMTF0OLs1YmEiCyYE8hkGF
-        XeAvGXsdinDYUCjJZxz8av+f1EguCiwG6ujUBcMZk64iEp/JwJs2onTAAlsbh9dlFgQyuTN/rfqH1
-        CXc/7TG6vwZodEaUB48AU2zdyv0KpVtqtNVkG1Etqm5djS39M0C2LM1Q4BHXQmYYinaJ2TknXylvG
-        79BlEtn404BwdqU+lAF3zdqB1ZAjc0YYEabv0Pb9CRim3qTlsCFdSU9sav2J9o8doCeMah26Wz5SW
-        foWlpEMA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neAfS-004F93-S8; Tue, 12 Apr 2022 07:10:27 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 2AA8D98619A; Tue, 12 Apr 2022 09:10:26 +0200 (CEST)
-Date:   Tue, 12 Apr 2022 09:10:26 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Yu Zhao <yuzhao@google.com>, Stephen Rothwell <sfr@rothwell.id.au>,
-        linux-mm@kvack.org, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, page-reclaim@google.com,
-        x86@kernel.org, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Subject: Re: [PATCH v10 08/14] mm: multi-gen LRU: support page table walks
-Message-ID: <20220412071026.GU2731@worktop.programming.kicks-ass.net>
-References: <20220407031525.2368067-1-yuzhao@google.com>
- <20220407031525.2368067-9-yuzhao@google.com>
- <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4FCEAF;
+        Tue, 12 Apr 2022 00:11:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F20D6B81895;
+        Tue, 12 Apr 2022 07:11:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D528C385A1;
+        Tue, 12 Apr 2022 07:11:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747463;
+        bh=CaOPJcfL/tfWoek1acG/0Z4Scs1IcTmTfZliCCSDYak=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Y84vntcpJsi6NFwZWy4cbzNLfA/5RQ1d+jj+bjcfTb/Qlr/aF57ze9slWdWTB5Xnq
+         QhTQ00GzAhHLq1QYJbk0DPPWBePwYZvXyg3h7og0HVetvqYmuCmsgXq0MPTBIdaMUH
+         TqShqABlywI1o6WPG++bI2mIJbrC8MbICwXBloxY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 088/343] iwlwifi: fix small doc mistake for iwl_fw_ini_addr_val
+Date:   Tue, 12 Apr 2022 08:28:26 +0200
+Message-Id: <20220412062953.646591622@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 07:16:21PM -0700, Andrew Morton wrote:
-> On Wed,  6 Apr 2022 21:15:20 -0600 Yu Zhao <yuzhao@google.com> wrote:
+From: Luca Coelho <luciano.coelho@intel.com>
 
-> > +#ifdef CONFIG_LRU_GEN
-> > +static void mem_cgroup_attach(struct cgroup_taskset *tset)
-> > +{
-> > +	struct cgroup_subsys_state *css;
-> > +	struct task_struct *task = NULL;
-> > +
-> > +	cgroup_taskset_for_each_leader(task, css, tset)
-> > +		break;
-> 
-> Does this actually do anything?
+[ Upstream commit 3009c797c4b3840495e8f48d8d07f48d2ddfed80 ]
 
-Yeah, it finds the first leader if there is any, but this is indeed
-quite terrible coding style.
+There was a small copy and paste mistake in the doc declaration of
+iwl_fw_ini_addr_val.  Fix it.
+
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220205112029.aeec71c397b3.I0ba3234419eb8c8c7512a2ca531a6dbb55046cf7@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
+index 456b7eaac570..061fe6cc6cf5 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ /*
+- * Copyright (C) 2018-2021 Intel Corporation
++ * Copyright (C) 2018-2022 Intel Corporation
+  */
+ #ifndef __iwl_fw_dbg_tlv_h__
+ #define __iwl_fw_dbg_tlv_h__
+@@ -249,11 +249,10 @@ struct iwl_fw_ini_hcmd_tlv {
+ } __packed; /* FW_TLV_DEBUG_HCMD_API_S_VER_1 */
+ 
+ /**
+-* struct iwl_fw_ini_conf_tlv - preset configuration TLV
++* struct iwl_fw_ini_addr_val - Address and value to set it to
+ *
+ * @address: the base address
+ * @value: value to set at address
+-
+ */
+ struct iwl_fw_ini_addr_val {
+ 	__le32 address;
+-- 
+2.35.1
+
+
+
