@@ -2,173 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BADC352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7009DC352A8
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359633AbiDLJ1u (ORCPT
+        id S1359130AbiDLJ1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47866 "EHLO
+        Tue, 12 Apr 2022 05:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356532AbiDLIKh (ORCPT
+        with ESMTP id S1356549AbiDLIKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:10:37 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E753D6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:42:07 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id mp16-20020a17090b191000b001cb5efbcab6so1891042pjb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:42:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9p/MmKuuxvIv4B30UAt79Rd7Dhf0WljkYqYqqKzZidw=;
-        b=Mwww8UeE3bRZDqRGxTl0tpXi7zSB8wG+cPSjJsKwX72aR2VUttTenmlhDSj0HVpIKr
-         mvsMwcJFNkqdGZbYaHPM5uzeZoeFpecwrcIK8OEYAnVaW5o5TeYyRLpTeXRfqCv69bf5
-         n6J1cRU66cR2BMH3H9aqYDV3lLKZB9Rw6np4bbofSkci3SRy9+KcFeuP7hYHjbffHk63
-         yEyNWZv2HadoZOXZ5aqoTEwgNrSz1Kemr7BHJzOsiYlJnLQ3ZpbAfZ4OtzbnR9J3CYB0
-         iunlNqCohohbg9zA4n+Q+FQUs1tScceI9uXcgFtChyUw7kqDfNck1YPB1bJ83RbsAI/6
-         vKSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9p/MmKuuxvIv4B30UAt79Rd7Dhf0WljkYqYqqKzZidw=;
-        b=k50j/R4BwKvtwAxhXyiLc8Ul5vvWyx4ljPyQaBDDy09tn5h6AskxLSwEpc4X5acRJV
-         RelT5FVwJfr9wDpMy1XBc2R2Rw98Tg8COCeOy4WUFERA+9V/fAWmhvYrF0wvXXejpQgi
-         bGSjWnMGX10xDb+3nV0Ylmb67nkUAkDXLSlM3So/YFXXKwBaUh95nCsiQOqgLdGOyUds
-         v7eWMYkCVytyNWPVn6QrXQmM6ZwTY/w8LP9dDzmh6QfJMqVlPGbp7QyhygozY8yf51S3
-         1xkwuOjfJjtXi4cAMoV4ITEvH4isOb0lYigwT3fWLUp97dPc5JupPsL7rCG6Wu7XoQoK
-         18vg==
-X-Gm-Message-State: AOAM530hWq+RYyOuS2wJdZe0re/8W8/NJb66xsWRbNQZoqU44IHMlf7E
-        FaE2omiVK08movHAx64W2d2FYxhxShVu/p3z1h8=
-X-Google-Smtp-Source: ABdhPJzlcXA1KUAmGSh2MiKL0M75Av4U3+iAaRIGSYomSHDnFzsTSnDmh+ZVyjBGda/uRe8WPUECiQ==
-X-Received: by 2002:a17:90a:6402:b0:1c9:9377:dd0e with SMTP id g2-20020a17090a640200b001c99377dd0emr3433787pjj.211.1649749327100;
-        Tue, 12 Apr 2022 00:42:07 -0700 (PDT)
-Received: from [192.168.1.101] ([159.226.95.33])
-        by smtp.gmail.com with ESMTPSA id j6-20020a63b606000000b003808b0ea96fsm1814254pgf.66.2022.04.12.00.42.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 00:42:06 -0700 (PDT)
-Message-ID: <61783400-4df2-47af-78a7-7acb715c3a71@gmail.com>
-Date:   Tue, 12 Apr 2022 15:42:02 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] mtd: rawnand: Fix return value check of
- wait_for_completion_timeout
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Bastian Hecht <hechtb@googlemail.com>,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
-        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <202204121253.NcZifMQi-lkp@intel.com>
- <20220412063703.8537-1-linmq006@gmail.com> <20220412090649.33bb3f8b@xps13>
-From:   Miaoqian Lin <linmq006@gmail.com>
-In-Reply-To: <20220412090649.33bb3f8b@xps13>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 12 Apr 2022 04:10:42 -0400
+X-Greylist: delayed 95 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 00:41:52 PDT
+Received: from outback3o.mail.yandex.net (outback3o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::503])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90381F3F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:41:52 -0700 (PDT)
+Received: from sas1-ad1836f4152f.qloud-c.yandex.net (sas1-ad1836f4152f.qloud-c.yandex.net [IPv6:2a02:6b8:c08:793:0:640:ad18:36f4])
+        by outback3o.mail.yandex.net (Yandex) with ESMTP id 8A5E51D1693E;
+        Tue, 12 Apr 2022 10:40:16 +0300 (MSK)
+Received: from kernel1.search.yandex.net (kernel1.search.yandex.net [2a02:6b8:c02:550:0:604:9094:6282])
+        by sas1-ad1836f4152f.qloud-c.yandex.net (yaback/Yandex) with ESMTP id YxpBSLFY7v-eFOGpDVi;
+        Tue, 12 Apr 2022 10:40:15 +0300
+X-Yandex-Fwd: 1
+Authentication-Results: sas1-ad1836f4152f.qloud-c.yandex.net; dkim=pass
+Received: by kernel1.search.yandex.net (Postfix, from userid 55271)
+        id 6C6035068E2; Tue, 12 Apr 2022 10:40:15 +0300 (MSK)
+From:   Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+To:     linux-kernel@vger.kernel.org
+Cc:     x86@kernel.org, mingo@redhat.com,
+        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+Subject: [PATCH 2/2] x86/unwind/orc: Fix address check size for deref_stack_iret_regs
+Date:   Tue, 12 Apr 2022 10:40:04 +0300
+Message-Id: <1649749204-186363-2-git-send-email-dmtrmonakhov@yandex-team.ru>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
+References: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+For historical reasons we check only IRET_FRAME_OFFSET, but this check
+is no longer valid because  we also access regs->sp field which is
+located beyond IRET_FRAME, so it is reasonable to validate full structure.
 
-Hi Miquel,
+Signed-off-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+---
+ arch/x86/kernel/unwind_orc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for your reply.
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 80b878772b86..a249ecabe689 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -379,7 +379,7 @@ static bool deref_stack_iret_regs(struct unwind_state *state, unsigned long addr
+ {
+ 	struct pt_regs *regs = (void *)addr - IRET_FRAME_OFFSET;
+ 
+-	if (!stack_access_ok(state, addr, IRET_FRAME_SIZE))
++	if (!stack_access_ok(state, addr, sizeof(struct pt_regs)))
+ 		return false;
+ 
+ 	*ip = READ_ONCE_NOCHECK(regs->ip);
+-- 
+2.7.4
 
-On 2022/4/12 15:06, Miquel Raynal wrote:
-> Hi Miaoqian,
->
-> linmq006@gmail.com wrote on Tue, 12 Apr 2022 06:36:52 +0000:
->
->> wait_for_completion_timeout() returns unsigned long not int.
->> It returns 0 if timed out, and positive if completed.
->> The check for <= 0 is ambiguous and should be == 0 here
->> indicating timeout which is the only error case.
->>
->> Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
->> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->> ---
->> change in v2:
->> - initialize ret to 1.
->> ---
->>  drivers/mtd/nand/raw/sh_flctl.c | 8 +++++---
->>  1 file changed, 5 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh_flctl.c
->> index b85b9c6fcc42..2373251f585b 100644
->> --- a/drivers/mtd/nand/raw/sh_flctl.c
->> +++ b/drivers/mtd/nand/raw/sh_flctl.c
->> @@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
->>  	dma_addr_t dma_addr;
->>  	dma_cookie_t cookie;
->>  	uint32_t reg;
->> -	int ret;
->> +	int ret = 1;
-> Does not look right. I know this function returns > 0 on positive
-> outcomes but this does not make any sense in the first place.
-
-Yes, I made a mistake, Now I realize that in v2, it will return 1 in error path
-
-when DMA submit failed.
-
-And for patch v1, it will return 0  if calls wait_for_completion_timeout succeeds.
-
-> This function is static and only called twice, please turn it into
-> something like:
->
-> if (dma_fifo_transfer())
-> 	error
-> else
-> 	ok
-
-So I want to keep ret>0 means success.
-
-Or could I set ret > 0 after in wait_for_completion_timeout() success path?
-
-like:
-
-    if(time_left == 0)
-
-            ret = -ETIMEDOUT;
-
-    else
-
-            ret = 1;
-
-What do you think?
-
-
-Thanks,
-
->> +	unsigned long time_left;
->>  
->>  	if (dir == DMA_FROM_DEVICE) {
->>  		chan = flctl->chan_fifo0_rx;
->> @@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
->>  		goto out;
->>  	}
->>  
->> -	ret =
->> +	time_left =
->>  	wait_for_completion_timeout(&flctl->dma_complete,
->>  				msecs_to_jiffies(3000));
->>  
->> -	if (ret <= 0) {
->> +	if (time_left == 0) {
->>  		dmaengine_terminate_all(chan);
->>  		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
->> +		ret = -ETIMEDOUT;
->>  	}
->>  
->>  out:
->
-> Thanks,
-> Miquèl
