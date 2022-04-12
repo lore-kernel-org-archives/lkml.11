@@ -2,100 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DCEC3E8A8
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A109C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353632AbiDLHeC (ORCPT
+        id S1354793AbiDLHeH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
+        Tue, 12 Apr 2022 03:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351884AbiDLHND (ORCPT
+        with ESMTP id S1351810AbiDLHM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:03 -0400
-Received: from m228-62.mailgun.net (m228-62.mailgun.net [159.135.228.62])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 4A2B51039
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:53:56 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1649746436; h=Content-Type: MIME-Version: Message-ID:
- Subject: Subject: Cc: To: To: From: From: Date: Sender: Sender;
- bh=CrnCIOfBYIadE7ysir0roGXoerEsn51pLccKc9in+ho=; b=B84pj8byG97/6sREz8dXyQmXfxoTyVEb4TUhkye9oN7xDHe4y6Io8XSMi7ck4WkLnm06pz1C
- +zgA7A5bGiPNUCx4i7Zp3cJAAuUKxRDF/jo/bdOgMvzpBZRPuvcDhvymKUmDFyJgIzAOhIWh
- gMojPk3ySj9G+fOiUznM+cdtMkduke3smoAwwtfD5w2FiQegpxmIKfOhZz3ZjljtyA2f31wI
- 5IQ+FbeHKsOsZ3Tj6YWgD9+3PBRZNWVU52hd7IfhuOrfLEaz3TAOwULfMumVcTzh6ihEEB2o
- VEsC2b01n/uAJqfFrLQFuJLFNreAcJoA4JD39biq+vLYX8EpUjf18Q==
-X-Mailgun-Sending-Ip: 159.135.228.62
-X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
-Received: from AN5Bruno (186-250-90-1.mhnet.com.br [186.250.90.1]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 62552202225c469082002d64 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Tue, 12 Apr 2022 06:53:54 GMT
-Sender: codeagain@codeagain.dev
-Date:   Tue, 12 Apr 2022 03:53:46 -0300
-From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Cc:     Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: [PATCH v2 0/3] staging: vme: Restructuring menuconfig and tree
-Message-ID: <cover.1649721450.git.codeagain@codeagain.dev>
+        Tue, 12 Apr 2022 03:12:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C8F6596;
+        Mon, 11 Apr 2022 23:53:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 047706149D;
+        Tue, 12 Apr 2022 06:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C79AC385A1;
+        Tue, 12 Apr 2022 06:53:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746386;
+        bh=NnPyFX9ESh47Qq4ZcmAI1zcai2GgoRQxZAL1tOSFISA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pJMVmmHZOuMWUmrQugtYigfd+d/IOFUCese63HHC901r9+4gmEYvh5A6NxGuu5bvK
+         UBm3mwP8zevp1L1rbi1FF1SyjMUFonISX0reaFWXISnFcAo91+hAQXSsxJDz61RjzT
+         GprWUvO0d2eiesM2AMipsaHVcluORLWgMRuinbAs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 227/277] spi: core: add dma_map_dev for __spi_unmap_msg()
+Date:   Tue, 12 Apr 2022 08:30:30 +0200
+Message-Id: <20220412062948.614028684@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
+References: <20220412062942.022903016@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mnzhopgrmzo5kgdj"
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Vinod Koul <vkoul@kernel.org>
 
---mnzhopgrmzo5kgdj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 409543cec01a84610029d6440c480c3fdd7214fb upstream.
 
-This patch series modify the vme_user driver's place in
-menuconfig (1/3), fixes a missing `depends on` line in a Kconfig file
-(2/3), and rearrages the directory tree for the driver allowing a more
-straightforward comprehension of its contents (3/3).
+Commit b470e10eb43f ("spi: core: add dma_map_dev for dma device") added
+dma_map_dev for _spi_map_msg() but missed to add for unmap routine,
+__spi_unmap_msg(), so add it now.
 
-Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+Fixes: b470e10eb43f ("spi: core: add dma_map_dev for dma device")
+Cc: stable@vger.kernel.org # v5.14+
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Link: https://lore.kernel.org/r/20220406132238.1029249-1-vkoul@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/spi/spi.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-Bruno Moreira-Guedes (3):
-  staging: vme: Adjusted VME_USER in Kconfig
-  staging: vme: Fix missing `depends on` at KConfig
-  staging: vme: "drivers/staging/vme" tree cleanup
-
- MAINTAINERS                                          | 2 +-
- drivers/staging/Kconfig                              | 2 ++
- drivers/staging/Makefile                             | 2 +-
- drivers/staging/vme/Makefile                         | 2 --
- drivers/staging/{vme/devices =3D> vme_user}/Kconfig    | 2 +-
- drivers/staging/{vme/devices =3D> vme_user}/Makefile   | 0
- drivers/staging/{vme/devices =3D> vme_user}/vme_user.c | 0
- drivers/staging/{vme/devices =3D> vme_user}/vme_user.h | 0
- drivers/vme/Kconfig                                  | 2 --
- 9 files changed, 5 insertions(+), 7 deletions(-)
- delete mode 100644 drivers/staging/vme/Makefile
- rename drivers/staging/{vme/devices =3D> vme_user}/Kconfig (93%)
- rename drivers/staging/{vme/devices =3D> vme_user}/Makefile (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.c (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.h (100%)
-
---=20
-2.35.1
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -1072,11 +1072,15 @@ static int __spi_unmap_msg(struct spi_co
+ 
+ 	if (ctlr->dma_tx)
+ 		tx_dev = ctlr->dma_tx->device->dev;
++	else if (ctlr->dma_map_dev)
++		tx_dev = ctlr->dma_map_dev;
+ 	else
+ 		tx_dev = ctlr->dev.parent;
+ 
+ 	if (ctlr->dma_rx)
+ 		rx_dev = ctlr->dma_rx->device->dev;
++	else if (ctlr->dma_map_dev)
++		rx_dev = ctlr->dma_map_dev;
+ 	else
+ 		rx_dev = ctlr->dev.parent;
+ 
 
 
---mnzhopgrmzo5kgdj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYlUh+gAKCRAZtd3tyEY2
-kpMsAP9wfC+zTcnd/S0kjFyUc8rojGzBJsHhIx8Rwq6YXQIMKAD/R7hm08SbS5TE
-/RoiuhqA54lIdJKL4fT/SqEMEvMtpwo=
-=SnJU
------END PGP SIGNATURE-----
-
---mnzhopgrmzo5kgdj--
