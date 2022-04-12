@@ -2,188 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F59CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:22:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34047C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241937AbiDLCY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 22:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
+        id S242917AbiDLCYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 22:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbiDLCYZ (ORCPT
+        with ESMTP id S229921AbiDLCYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 22:24:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C26DC2E6A8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:22:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649730128;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kgaL+lS7AJKt0L5x7qfD+kQMcLLSooLLA8RJRkvK0AM=;
-        b=Oq+qSkOUByxh/msgHZDeSXghT11D7WtLDsRyGtZ41rV9NrkknOu3JPjr+QSryTFdX0egak
-        Of0VAN6LtT4KnqWfjL6qQ6SJDw92Jcjuph60uXDp6CwFyKSTwe8WiF9TrCPpgbVbA9MVgM
-        M81AvoRgSaJFPrji2Kz5mQBzdXbu0/I=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-148-JNH7RR-sMDyNvyM0xqw5tw-1; Mon, 11 Apr 2022 22:22:07 -0400
-X-MC-Unique: JNH7RR-sMDyNvyM0xqw5tw-1
-Received: by mail-lf1-f72.google.com with SMTP id t17-20020a056512069100b0046bb606d8efso670037lfe.12
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:22:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kgaL+lS7AJKt0L5x7qfD+kQMcLLSooLLA8RJRkvK0AM=;
-        b=xi+gMQf2V7KnRYl81cAI0SxWWmHT4nfZrWIQ5f9ozRPhOO4zwo0mTsIS1OQKR5v2bI
-         EsCKiZydE2OoLLCt3w1FjQ5J1BaGfJS/Cuqs1XN4xA4R0Y9VHMGkMDZAAekqclC14KFD
-         h9VBvjzr1QAzVFodnYlsUxInJrATFUi55a30KGhJ17RWZzai9IJEEkwIFWRcT8BfzkzQ
-         c9rD8dyBx66kICUhp8dWcxoCsG2y8phOS89/QMI82qV0saYe5tO17A9QTF8G4FAsBkTJ
-         SZMW0JNDSkV4NQDCFz0Ocx3Tbo59+5V/+0vJYwNI/WeABGzuc7mhjLUfc+bhNlbCqHvU
-         fwjw==
-X-Gm-Message-State: AOAM5300GxLYk4mn8uL857UUuwlfn6nP5rt4EsojKP+qkM9fOGGUE42z
-        wvYV9XYUcAlAxn8PEjUw8tR1HYyDecgQ8lV9zIuwLPjkVoMId9QoXNdGN62h6eq5esxlW2XJ6zZ
-        1xb/3ldcsQNF7zTXFRf2tGryDRnpDwS7C9bqQ7LFt
-X-Received: by 2002:a05:6512:3093:b0:46b:814c:3a69 with SMTP id z19-20020a056512309300b0046b814c3a69mr13913200lfd.376.1649730125669;
-        Mon, 11 Apr 2022 19:22:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyj81bElhbWdbHaCw3liipX3LewYs9Ob5vG1YGcd586nyUHN+apJ6xXyev/cxx4QUdrcqnamFGnFTrKbUAmXBw=
-X-Received: by 2002:a05:6512:3093:b0:46b:814c:3a69 with SMTP id
- z19-20020a056512309300b0046b814c3a69mr13913187lfd.376.1649730125467; Mon, 11
- Apr 2022 19:22:05 -0700 (PDT)
+        Mon, 11 Apr 2022 22:24:48 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97C8F2E9CC;
+        Mon, 11 Apr 2022 19:22:32 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3Ap4k5aK0V+0KdDT+H6fbD5Qpzkn2cJEfYwER7XOP?=
+ =?us-ascii?q?LsXnJ1Dh302ACnDMfC2mDaanbNGf0fYh/PI+w8B4B65/Ry9U2QQE+nZ1PZygU8?=
+ =?us-ascii?q?JKaX7x1DatR0xu6d5SFFAQ+hyknQoGowPscEzmM9n9BDpC79SMmjfvQH+KlYAL?=
+ =?us-ascii?q?5EnsZqTFMGX5JZS1Ly7ZRbr5A2bBVMivV0T/Ai5S31GyNh1aYBlkpB5er83uDi?=
+ =?us-ascii?q?hhdVAQw5TTSbdgT1LPXeuJ84Jg3fcldJFOgKmVY83LTegrN8F251juxExYFAdX?=
+ =?us-ascii?q?jnKv5c1ERX/jZOg3mZnh+AvDk20Yd4HdplPtT2Pk0MC+7jx2NnsJxyddMvJqYR?=
+ =?us-ascii?q?xorP7HXhaIWVBww/yRWZPcdpO+XfSLg2SCU5wicG5f2+N18HUMkLI9Cor4vKW5?=
+ =?us-ascii?q?L/P0cbjsKa3irg+Ow3aL+SeR2gMknBNfkMZlZuXx6yzzdS/E8TvjrR6TM+M8dx?=
+ =?us-ascii?q?js1j+hQEvvEIckUczxiaFLHeRInElUYB7osneqwiz/0elVlRPi9zUYsyzGLilU?=
+ =?us-ascii?q?vj/62a5yIEuFmjP59xi6wzl8qNUylav3CCOGi9A=3D=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AkC50MajHjCrR/nL6ql6SZt9JT3BQXuYji2hC?=
+ =?us-ascii?q?6mlwRA09TyX4rbHLoB1/73LJYVkqNk3I5urrBEDtexLhHP1OkOws1NWZLWrbUQ?=
+ =?us-ascii?q?KTRekM0WKI+UyDJ8SRzI5g/JYlW61/Jfm1NlJikPv9iTPSL/8QhPWB74Ck7N2z?=
+ =?us-ascii?q?80tQ?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="123488427"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 12 Apr 2022 10:22:31 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id 72EE44D16FCF;
+        Tue, 12 Apr 2022 10:22:28 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Tue, 12 Apr 2022 10:22:29 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Tue, 12 Apr 2022 10:22:26 +0800
+From:   Li Zhijian <lizhijian@fujitsu.com>
+To:     <zyjzyj2000@gmail.com>, <jgg@ziepe.ca>,
+        <linux-rdma@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
+Subject: [PATCH 2/3] RDMA/rxe: Update wqe_index for each wqe error completion
+Date:   Tue, 12 Apr 2022 10:29:02 +0800
+Message-ID: <20220412022903.574238-2-lizhijian@fujitsu.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220412022903.574238-1-lizhijian@fujitsu.com>
+References: <20220412022903.574238-1-lizhijian@fujitsu.com>
 MIME-Version: 1.0
-References: <20220406083538.16274-1-jasowang@redhat.com> <20220406083538.16274-5-jasowang@redhat.com>
- <20220406075952-mutt-send-email-mst@kernel.org> <87wng2e527.fsf@redhat.com>
- <20220408150307.24b6b99f.pasic@linux.ibm.com> <20220410034556-mutt-send-email-mst@kernel.org>
- <CACGkMEtarZb6g3ij5=+As17+d9jtdAqNa1EzSuTXc7Pq_som0Q@mail.gmail.com> <20220411045011-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220411045011-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 12 Apr 2022 10:21:54 +0800
-Message-ID: <CACGkMEs6vnE8pcDEn2smvTPNnE015kgzk=+qsopg_Zh2GZMOwA@mail.gmail.com>
-Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 72EE44D16FCF.A0068
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 4:56 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Apr 11, 2022 at 04:22:19PM +0800, Jason Wang wrote:
-> > On Sun, Apr 10, 2022 at 3:51 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Fri, Apr 08, 2022 at 03:03:07PM +0200, Halil Pasic wrote:
-> > > > On Wed, 06 Apr 2022 15:04:32 +0200
-> > > > Cornelia Huck <cohuck@redhat.com> wrote:
-> > > >
-> > > > > On Wed, Apr 06 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > > > >
-> > > > > > On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:
-> > > > > >> This patch implements PCI version of synchronize_vqs().
-> > > > > >>
-> > > > > >> Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > > > >> Cc: Peter Zijlstra <peterz@infradead.org>
-> > > > > >> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> > > > > >> Cc: Marc Zyngier <maz@kernel.org>
-> > > > > >> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > >
-> > > > > > Please add implementations at least for ccw and mmio.
-> > > > >
-> > > > > I'm not sure what (if anything) can/should be done for ccw...
-> > > >
-> > > > If nothing needs to be done I would like to have at least a comment in
-> > > > the code that explains why. So that somebody who reads the code
-> > > > doesn't wonder: why is virtio-ccw not implementing that callback.
-> > >
-> > > Right.
-> > >
-> > > I am currently thinking instead of making this optional in the
-> > > core we should make it mandatory, and have transports which do not
-> > > need to sync have an empty stub with documentation explaining why.
-> > >
-> > > Also, do we want to document this sync is explicitly for irq enable/disable?
-> > > synchronize_irq_enable_disable?
-> >
-> > I would not since the transport is not guaranteed to use an interrupt
-> > for callbacks.
->
-> OK but let's then document this in more detail.
-> More readers will wonder about what is the callback
-> trying to accomplish, and Halil requested that as well.
->
-> For example, let's document why is sync required on enable.
+Previously, if user space keep sending abnormal wqe, qeueu.prod will
+keep increasing while queue.index doesn't. Once
+queue.index==qeueu.prod in next round, req_next_wqe() will treat queue
+is empty. In such case, no new completion would be generated.
 
-Ok.
+Update wqe_index for each wqe completion so that
+req_next_wqe() can get next wqe properly.
 
-Thanks
+Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
+---
+ drivers/infiniband/sw/rxe/rxe_req.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
->
-> > >
-> > >
-> > > > >
-> > > > > >
-> > > > > >> ---
-> > > > > >>  drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
-> > > > > >>  drivers/virtio/virtio_pci_common.h |  2 ++
-> > > > > >>  drivers/virtio/virtio_pci_legacy.c |  1 +
-> > > > > >>  drivers/virtio/virtio_pci_modern.c |  2 ++
-> > > > > >>  4 files changed, 19 insertions(+)
-> > > > > >>
-> > > > > >> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-> > > > > >> index d724f676608b..b78c8bc93a97 100644
-> > > > > >> --- a/drivers/virtio/virtio_pci_common.c
-> > > > > >> +++ b/drivers/virtio/virtio_pci_common.c
-> > > > > >> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_device *vdev)
-> > > > > >>                  synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
-> > > > > >>  }
-> > > > > >>
-> > > > > >> +void vp_synchronize_vqs(struct virtio_device *vdev)
-> > > > > >> +{
-> > > > > >> +        struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> > > > > >> +        int i;
-> > > > > >> +
-> > > > > >> +        if (vp_dev->intx_enabled) {
-> > > > > >> +                synchronize_irq(vp_dev->pci_dev->irq);
-> > > > > >> +                return;
-> > > > > >> +        }
-> > > > > >> +
-> > > > > >> +        for (i = 0; i < vp_dev->msix_vectors; ++i)
-> > > > > >> +                synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
-> > > > > >> +}
-> > > > > >> +
-> > > > >
-> > > > > ...given that this seems to synchronize threaded interrupt handlers?
-> > > > > Halil, do you think ccw needs to do anything? (AFAICS, we only have one
-> > > > > 'irq' for channel devices anyway, and the handler just calls the
-> > > > > relevant callbacks directly.)
-> > > >
-> > > > Sorry I don't understand enough yet. A more verbose documentation on
-> > > > "virtio_synchronize_vqs - synchronize with virtqueue callbacks" would
-> > > > surely benefit me. It may be more than enough for a back-belt but it
-> > > > ain't enough for me to tell what is the callback supposed to accomplish.
-> > > >
-> > > > I will have to study this discussion and the code more thoroughly.
-> > > > Tentatively I side with Jason and Michael in a sense, that I don't
-> > > > believe virtio-ccw is safe against rough interrupts.
-> >
-> > That's my feeling as well.
-> >
-> > Thanks
-> >
-> > > >
-> > > > Sorry for the late response. I intend to revisit this on Monday. If
-> > > > I don't please feel encouraged to ping.
-> > > >
-> > > > Regards,
-> > > > Halil
-> > >
->
+diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
+index bf7493bab9b9..c369bebaf02e 100644
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -760,6 +760,8 @@ int rxe_requester(void *arg)
+ 	if (ah)
+ 		rxe_put(ah);
+ err:
++	/* update wqe_index for each wqe completion */
++	qp->req.wqe_index = queue_next_index(qp->sq.queue, qp->req.wqe_index);
+ 	wqe->state = wqe_state_error;
+ 	__rxe_do_task(&qp->comp.task);
+ 
+-- 
+2.31.1
+
+
 
