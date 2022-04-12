@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73156C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A7BC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353078AbiDLHOt (ORCPT
+        id S1353170AbiDLHO5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        Tue, 12 Apr 2022 03:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352642AbiDLG4L (ORCPT
+        with ESMTP id S1351076AbiDLG5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:56:11 -0400
+        Tue, 12 Apr 2022 02:57:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5744160A;
-        Mon, 11 Apr 2022 23:46:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1990941FA9;
+        Mon, 11 Apr 2022 23:46:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF7F060A21;
-        Tue, 12 Apr 2022 06:46:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00CAAC385A1;
-        Tue, 12 Apr 2022 06:46:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33FA560A21;
+        Tue, 12 Apr 2022 06:46:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BC0BC385AA;
+        Tue, 12 Apr 2022 06:46:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745978;
-        bh=IOovzYC0GjLr5QhhclSKwqs0PgtcJowYk7HNrU5jM5w=;
+        s=korg; t=1649745983;
+        bh=kUn2qAPqnhLi5OlFTb3kcm5yBG9tINbEWnBPKsnb0Rs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oilqc9IgQi8tP8/j8ohlWVaNNT/tfaIr4JdrADEc3fCbB+4oz24TgtlY3bs2Pkrcf
-         5RDO4Ic/zDxJQ+bm3zstiDRTzxT554dMqT3Lrg9EsVUhTA+CC9uqNm4B/JuLePJqbA
-         dI9rIshhhRclAIXptDEwqn3bwFVkFJAqDDSTfc5g=
+        b=iSkghQfFuDZbZCk3SD6S6TU8dg/tMUhidIi5/hyXq2uNa6R9Py/QsWAKOzZZW8nOH
+         WaoHKdHxXpCtOhLKJceob7qR4i/i0vljMkmZaHACEheHCCaLUQRZorJDZhzhn8mKzm
+         Rd0zPyNfdIJeBBYpHPiKWKwdmN9B/t3mu3Xoxa48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 116/277] clk: rockchip: drop CLK_SET_RATE_PARENT from dclk_vop* on rk3568
-Date:   Tue, 12 Apr 2022 08:28:39 +0200
-Message-Id: <20220412062945.397645975@linuxfoundation.org>
+Subject: [PATCH 5.15 118/277] opp: Expose of-nodes name in debugfs
+Date:   Tue, 12 Apr 2022 08:28:41 +0200
+Message-Id: <20220412062945.455813343@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,47 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 
-[ Upstream commit ff3187eabb5ce478d15b6ed62eb286756adefac3 ]
+[ Upstream commit 021dbecabc93b1610b5db989d52a94e0c6671136 ]
 
-The pixel clocks dclk_vop[012] can be clocked from hpll, vpll, gpll or
-cpll. gpll and cpll also drive many other clocks, so changing the
-dclk_vop[012] clocks could change these other clocks as well. Drop
-CLK_SET_RATE_PARENT to fix that. With this change the VOP2 driver can
-only adjust the pixel clocks with the divider between the PLL and the
-dclk_vop[012] which means the user may have to adjust the PLL clock to a
-suitable rate using the assigned-clock-rate device tree property.
+It is difficult to find which OPPs are active at the moment, specially
+if there are multiple OPPs with same frequency available in the device
+tree (controlled by supported hardware feature).
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Link: https://lore.kernel.org/r/20220126145549.617165-25-s.hauer@pengutronix.de
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Expose name of the DT node to find out the exact OPP.
+
+While at it, also expose level field.
+
+Reported-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: Leo Yan <leo.yan@linaro.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/rockchip/clk-rk3568.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/opp/debugfs.c | 5 +++++
+ drivers/opp/opp.h     | 1 +
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/clk/rockchip/clk-rk3568.c b/drivers/clk/rockchip/clk-rk3568.c
-index 75ca855e720d..6e5440841d1e 100644
---- a/drivers/clk/rockchip/clk-rk3568.c
-+++ b/drivers/clk/rockchip/clk-rk3568.c
-@@ -1038,13 +1038,13 @@ static struct rockchip_clk_branch rk3568_clk_branches[] __initdata = {
- 			RK3568_CLKGATE_CON(20), 8, GFLAGS),
- 	GATE(HCLK_VOP, "hclk_vop", "hclk_vo", 0,
- 			RK3568_CLKGATE_CON(20), 9, GFLAGS),
--	COMPOSITE(DCLK_VOP0, "dclk_vop0", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
-+	COMPOSITE(DCLK_VOP0, "dclk_vop0", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_NO_REPARENT,
- 			RK3568_CLKSEL_CON(39), 10, 2, MFLAGS, 0, 8, DFLAGS,
- 			RK3568_CLKGATE_CON(20), 10, GFLAGS),
--	COMPOSITE(DCLK_VOP1, "dclk_vop1", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
-+	COMPOSITE(DCLK_VOP1, "dclk_vop1", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_NO_REPARENT,
- 			RK3568_CLKSEL_CON(40), 10, 2, MFLAGS, 0, 8, DFLAGS,
- 			RK3568_CLKGATE_CON(20), 11, GFLAGS),
--	COMPOSITE(DCLK_VOP2, "dclk_vop2", hpll_vpll_gpll_cpll_p, 0,
-+	COMPOSITE(DCLK_VOP2, "dclk_vop2", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_NO_REPARENT,
- 			RK3568_CLKSEL_CON(41), 10, 2, MFLAGS, 0, 8, DFLAGS,
- 			RK3568_CLKGATE_CON(20), 12, GFLAGS),
- 	GATE(CLK_VOP_PWM, "clk_vop_pwm", "xin24m", 0,
+diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
+index 596c185b5dda..b5f2f9f39392 100644
+--- a/drivers/opp/debugfs.c
++++ b/drivers/opp/debugfs.c
+@@ -10,6 +10,7 @@
+ #include <linux/debugfs.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
++#include <linux/of.h>
+ #include <linux/init.h>
+ #include <linux/limits.h>
+ #include <linux/slab.h>
+@@ -131,9 +132,13 @@ void opp_debug_create_one(struct dev_pm_opp *opp, struct opp_table *opp_table)
+ 	debugfs_create_bool("suspend", S_IRUGO, d, &opp->suspend);
+ 	debugfs_create_u32("performance_state", S_IRUGO, d, &opp->pstate);
+ 	debugfs_create_ulong("rate_hz", S_IRUGO, d, &opp->rate);
++	debugfs_create_u32("level", S_IRUGO, d, &opp->level);
+ 	debugfs_create_ulong("clock_latency_ns", S_IRUGO, d,
+ 			     &opp->clock_latency_ns);
+ 
++	opp->of_name = of_node_full_name(opp->np);
++	debugfs_create_str("of_name", S_IRUGO, d, (char **)&opp->of_name);
++
+ 	opp_debug_create_supplies(opp, opp_table, d);
+ 	opp_debug_create_bw(opp, opp_table, d);
+ 
+diff --git a/drivers/opp/opp.h b/drivers/opp/opp.h
+index 407c3bfe51d9..45e3a55239a1 100644
+--- a/drivers/opp/opp.h
++++ b/drivers/opp/opp.h
+@@ -96,6 +96,7 @@ struct dev_pm_opp {
+ 
+ #ifdef CONFIG_DEBUG_FS
+ 	struct dentry *dentry;
++	const char *of_name;
+ #endif
+ };
+ 
 -- 
 2.35.1
 
