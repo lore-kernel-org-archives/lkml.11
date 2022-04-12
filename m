@@ -2,147 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BDCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF63C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344737AbiDLPpV (ORCPT
+        id S1354626AbiDLPqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
+        Tue, 12 Apr 2022 11:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbiDLPpU (ORCPT
+        with ESMTP id S1349533AbiDLPqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:45:20 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84FD5EBC0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:43:02 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id j83so19425420oih.6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:43:02 -0700 (PDT)
+        Tue, 12 Apr 2022 11:46:24 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858E410E1;
+        Tue, 12 Apr 2022 08:44:05 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id b15so22873599edn.4;
+        Tue, 12 Apr 2022 08:44:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZGZNu9iiX3iSvmXUM8rzXVowDpysbTVW80h1NVMIpd0=;
-        b=cnUXGmM7zHLLJgvWl00m+xYFp1+371WRKCG4/3WQi09uZVR0nnJiO4SCnG8bZjyXa3
-         ur4i8kaIHHT4fvx/ZfYUpEweUQiDT9CDKTLmzERuNi8t9OL+kKqtRHBMMdtaEJr0ag8z
-         wK0LR/X5rmuzQZB4EtuO+eHu7jji5tfqSRrI7zVxKpNZB5S17nrluTOxQPknb2HOC9t1
-         89vC0oZvlU70HG0jub9xt56KRz9Vg4G1pgb90mH5ISd6r02jDWIZf5KtrowO0Sni9jye
-         fZKuVvIA+K88P7mfCMAzjAvLgTzGzsaMxMXxF6YLHaDvlVrQUynNwSCX95BX1bfRlR0q
-         aimA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NXTt21pP00Yb2qQhiXa+16lsp7D3w+nhEqL+5vsS12M=;
+        b=Rqp9TqHC8gBsLVoMXbStnEGzZMTPX95+kpVbKAi0Y2GDZEQWzTKb4lFaep0wk3ED5O
+         X3gRWYeovPEl/3OD48ulzalDPTBMKZh+JjsqJPfsXrs/cZLDyHyzwog7nYUL2TgfM2bj
+         /xi34FyJFLnN4p1QymAmHZfWHtE9NitUul2m55zZbccOFASOc1D0IAFtjleeROWqC91F
+         ejm9ivKThag8DFzEBXEbEaMGFaLI/9dGKZkkjr+igq515gt8HqhZos7gH1e8KjBK5Xqt
+         H5e5E2dhPs5g4HlkTYENoldIJgZzQQcF1cusoi0tdRX41ol7llIzTotKnMiMIAxLncm9
+         zTbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZGZNu9iiX3iSvmXUM8rzXVowDpysbTVW80h1NVMIpd0=;
-        b=a18phHQ/UFtXqGm42lJqc1UEQbk60BQvZmiJSfBEa2CpQjk14OJlUL4r5EaDF3ay68
-         1wKNHPLmk6JoWddzKQ658jUpJh5iSrLlSyZoKROrIGrcBrwr/+soq8pyvH6RajXn4Uex
-         ef9YE9vDkN2aWQCW6gH/SeT0tvu7FfDzXcbLZ4DmZanGqeV8ApajH99LNJHBWZR1iW/n
-         evtlFd567hZgoWrdeypQIBedLr8oGkmPpyPhzVYX1eicI/OuMpNXbqY5rL3wyohuVQYf
-         09J3E/IaZBVm7WT96o7pRbDsZ501ep8ZcuBuunIss0pWbWycGPtNJMzSYrtM5tmCCuH9
-         ywKQ==
-X-Gm-Message-State: AOAM5318ApytaEiVY+MUGrfvaESLno6EyVk+PYhxBvJoFS9b3JEMCUmT
-        LVxIFliD2sRz6MLmPvzynAYVZQKenHoELlyB+Q8=
-X-Google-Smtp-Source: ABdhPJxFB+Il2thTK2QAOb85QGOKwlW91TXm8qlLr1lQzB40w266iztnDdN5QvsGS+1bOw+dYPtWSm/w/73OAm4rWZg=
-X-Received: by 2002:a05:6808:1486:b0:2f9:e821:51d9 with SMTP id
- e6-20020a056808148600b002f9e82151d9mr2140098oiw.253.1649778182265; Tue, 12
- Apr 2022 08:43:02 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NXTt21pP00Yb2qQhiXa+16lsp7D3w+nhEqL+5vsS12M=;
+        b=20fkcKUur4EHaP2rjUBPQEp595Cn+oxmQ0KCqJI5/KcipcYIBbdDlEjOMD9dHCehvp
+         YAwXcSxQ72gPn68IHajF3vtWGzG4Zd9EiELqDOzXJySXgrFD+MjYG2YhVurXprZasrKr
+         qUCeJimyG3+w6PyGjoi0TcjaCa2sFtDkc2eyRnkyiLIxHkn57bIU0ufMUU/cq0ptFEjO
+         7CWnJqoBJ59waU/zA4JJJvyxQZS5L3j1J4zHG4oEHvJVMDchQh6JuWaQFNFOrvwHmI6W
+         0dvYsj40/N8iC3gkf0jzruoqyzcGx4vYuFfxxFBA9FR5DRSEa2as8MilnPdGxkjGRL+E
+         i80w==
+X-Gm-Message-State: AOAM533oc7h89jbM3o2yIU3oD2RyqYIMOpP7u+A3ztzbe1vCbQXqIF+A
+        2aSgvpaFDuzLl9inhcTgcmA=
+X-Google-Smtp-Source: ABdhPJzaldN29rZURT2NOIMe+NKGjjWzDphXskZr9BXgnSyVxiiayAAXHEV/jpKDrNPsg6k3bxXghw==
+X-Received: by 2002:a50:871e:0:b0:41d:77c0:6927 with SMTP id i30-20020a50871e000000b0041d77c06927mr13569863edb.354.1649778243710;
+        Tue, 12 Apr 2022 08:44:03 -0700 (PDT)
+Received: from krava ([83.240.62.142])
+        by smtp.gmail.com with ESMTPSA id z21-20020a1709063a1500b006da6436819dsm13252584eje.173.2022.04.12.08.44.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 08:44:03 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 17:44:00 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-ID: <YlWeQIUaqGnbg4K0@krava>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+ <20220407125224.310255-5-jolsa@kernel.org>
+ <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220412145350.2843514-1-richard.gong@amd.com>
-In-Reply-To: <20220412145350.2843514-1-richard.gong@amd.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 12 Apr 2022 11:42:51 -0400
-Message-ID: <CADnq5_P5dO9eBR1c1bN+S73ABUBuUtZPkOtW0TCeLuBVD+PQwA@mail.gmail.com>
-Subject: Re: [PATCHv3] drm/amdgpu: disable ASPM on Intel Alder Lake based systems
-To:     Richard Gong <richard.gong@amd.com>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <xinhui.pan@amd.com>,
-        Dave Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        kernel test robot <lkp@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        "Limonciello, Mario" <mario.limonciello@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:59 AM Richard Gong <richard.gong@amd.com> wrote:
->
-> Active State Power Management (ASPM) feature is enabled since kernel 5.14.
-> There are some AMD GFX cards (such as WX3200 and RX640) that won't work
-> with ASPM-enabled Intel Alder Lake based systems. Using these GFX cards as
-> video/display output, Intel Alder Lake based systems will hang during
-> suspend/resume.
->
-> The issue was initially reported on one system (Dell Precision 3660 with
-> BIOS version 0.14.81), but was later confirmed to affect at least 4 Alder
-> Lake based systems.
->
-> Add extra check to disable ASPM on Intel Alder Lake based systems.
->
-> Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
-> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Richard Gong <richard.gong@amd.com>
-> ---
-> v3: s/intel_core_asom_chk/aspm_support_quirk_check
->     correct build error with W=1 option
-> v2: correct commit description
->     move the check from chip family to problematic platform
-> ---
->  drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
->  1 file changed, 16 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
-> index 039b90cdc3bc..b0b6353b48b9 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/vi.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/vi.c
-> @@ -81,6 +81,10 @@
->  #include "mxgpu_vi.h"
->  #include "amdgpu_dm.h"
->
-> +#if IS_ENABLED(CONFIG_X86_64)
+On Mon, Apr 11, 2022 at 03:15:40PM -0700, Andrii Nakryiko wrote:
 
-Shouldn't this be X86?  You could theoretically run this on 32 bit.
+SNIP
 
-Alex
+> > +static int get_syms(char ***symsp, size_t *cntp)
+> > +{
+> > +       size_t cap = 0, cnt = 0, i;
+> > +       char *name, **syms = NULL;
+> > +       struct hashmap *map;
+> > +       char buf[256];
+> > +       FILE *f;
+> > +       int err;
+> > +
+> > +       /*
+> > +        * The available_filter_functions contains many duplicates,
+> > +        * but other than that all symbols are usable in kprobe multi
+> > +        * interface.
+> > +        * Filtering out duplicates by using hashmap__add, which won't
+> > +        * add existing entry.
+> > +        */
+> > +       f = fopen(DEBUGFS "available_filter_functions", "r");
+> 
+> I'm really curious how did you manage to attach to everything in
+> available_filter_functions because when I'm trying to do that I fail.
 
-> +#include <asm/intel-family.h>
-> +#endif
-> +
->  #define ixPCIE_LC_L1_PM_SUBSTATE       0x100100C6
->  #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK       0x00000001L
->  #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK   0x00000002L
-> @@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_device *adev)
->                 WREG32_PCIE(ixPCIE_LC_CNTL, data);
->  }
->
-> +static bool aspm_support_quirk_check(void)
-> +{
-> +       if (IS_ENABLED(CONFIG_X86_64)) {
-> +               struct cpuinfo_x86 *c = &cpu_data(0);
-> +
-> +               return (c->x86 == 6 && c->x86_model != INTEL_FAM6_ALDERLAKE);
-> +       }
-> +
-> +       return true;
-> +}
-> +
->  static void vi_program_aspm(struct amdgpu_device *adev)
->  {
->         u32 data, data1, orig;
->         bool bL1SS = false;
->         bool bClkReqSupport = true;
->
-> -       if (!amdgpu_device_should_use_aspm(adev))
-> +       if (!amdgpu_device_should_use_aspm(adev) || !aspm_support_quirk_check())
->                 return;
->
->         if (adev->flags & AMD_IS_APU ||
-> --
-> 2.25.1
->
+the new code makes the differece ;-) so the main problem I could not
+use available_filter_functions functions before were cases like:
+
+  # cat available_filter_functions | grep sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+  sys_ni_syscall
+
+which when you try to resolve you'll find just one address:
+
+  # cat /proc/kallsyms | egrep 'T sys_ni_syscall'
+  ffffffff81170020 T sys_ni_syscall
+
+this is caused by entries like:
+    __SYSCALL(156, sys_ni_syscall)
+
+when generating syscalls for given arch
+
+this is handled by the new code by removing duplicates when
+reading available_filter_functions
+
+
+
+another case is the other way round, like with:
+
+  # cat /proc/kallsyms | grep 't t_next'
+  ffffffff8125c3f0 t t_next
+  ffffffff8126a320 t t_next
+  ffffffff81275de0 t t_next
+  ffffffff8127efd0 t t_next
+  ffffffff814d6660 t t_next
+
+that has just one 'ftrace-able' instance:
+
+  # cat available_filter_functions | grep '^t_next$'
+  t_next
+
+and this is handled by calling ftrace_location on address when
+resolving symbols, to ensure each reasolved symbol lives in ftrace 
+
+> available_filter_functions has a bunch of functions that should not be
+> attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
+> 
+>   void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
+> 
+> So first, curious what I am doing wrong or rather why it succeeds in
+> your case ;)
+> 
+> But second, just wanted to plea to "fix" available_filter_functions to
+> not list stuff that should not be attachable. Can you please take a
+> look and checks what's going on there and why do we have notrace
+> functions (and what else should *NOT* be there)?
+
+yes, seems like a bug ;-) it's in available_filter_functions
+but it does not have 'call __fentry__' at the entry..
+
+I was going to check on that, because you brought that up before,
+but did not get to it yet
+
+> 
+> 
+> > +       if (!f)
+> > +               return -EINVAL;
+> > +
+> > +       map = hashmap__new(symbol_hash, symbol_equal, NULL);
+> > +       err = libbpf_get_error(map);
+> > +       if (err)
+> > +               goto error;
+> > +
+> 
+> [...]
+> 
+> > +
+> > +       attach_delta_ns = (attach_end_ns - attach_start_ns) / 1000000000.0;
+> > +       detach_delta_ns = (detach_end_ns - detach_start_ns) / 1000000000.0;
+> > +
+> > +       fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
+> > +       fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta_ns);
+> > +       fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta_ns);
+> > +
+> > +       if (attach_delta_ns > 2.0)
+> > +               PRINT_FAIL("attach time above 2 seconds\n");
+> > +       if (detach_delta_ns > 2.0)
+> > +               PRINT_FAIL("detach time above 2 seconds\n");
+> 
+> see my reply on the cover letter, any such "2 second" assumption are
+> guaranteed to bite us. We've dealt with a lot of timing issues due to
+> CI being slower and more unpredictable in terms of performance, I'd
+> like to avoid dealing with one more case like that.
+
+right, I'll remove the check
+
+thanks,
+jirka
