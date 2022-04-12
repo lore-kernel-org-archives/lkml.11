@@ -2,116 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E0AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D644BC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231346AbiDLJdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
+        id S1346730AbiDLJdX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387626AbiDLJIe (ORCPT
+        with ESMTP id S1387693AbiDLJI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:08:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8EAABD0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:18:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649751521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HjEpVaoQD5ARkUa//p08UmNnQm2oDsvimQB15pvFtYY=;
-        b=bPOC9kUJNqI2ava9aRRxRCQirYFE5zk4SnrficGS5uhTc+YiZ9YuDFOoorYGorXeJqgjdp
-        S/W0+6XEMHhYeD7xryE97qAfxpNkcdxagoglFLtmHnnueuWRU0L9Dc0MyfSbqYdshpu344
-        v7ZiLEaYyLldDPae6VXd2sQol8Qp7dc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-483-oyCtT1dZP5Wd5OmZ_uKIhg-1; Tue, 12 Apr 2022 04:18:40 -0400
-X-MC-Unique: oyCtT1dZP5Wd5OmZ_uKIhg-1
-Received: by mail-wm1-f69.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so957004wmj.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:18:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=HjEpVaoQD5ARkUa//p08UmNnQm2oDsvimQB15pvFtYY=;
-        b=hsmckq3PqyXXlxy6eUEMt0nOaNGkV+pmhr1SwO7qxSLHhEMrutV+MO22mOsqGFGjoA
-         L259gZKkcBtupEx541fhx9YKDmGTdYDGw3ZNkb9Me4xi6+I0k53s79i2uyanCGHnzrSj
-         GhWLxlmqNR3e4YLT/xSr5nhjM8enIz/lsA3q63lNVK5RykT371HgVmKR0MgiR+RJf21B
-         ns6t//U0G3LJ2MtWevCiQk/gHLJxv0Nj1gQsRwOd+y5yDxD0UaMXUBFeKLXZv4X3uPdo
-         eXJeAGhO2AikQRGaP2VZfWoueMUJSQ0v4gV/HObHS5ScUy3KUjEVLRQGOwm16iThDep4
-         0OQA==
-X-Gm-Message-State: AOAM533e5LFWK89NzKaVSRTEN0TsLud0Bb/DXXGT/5mUt2j+xe0F3EWt
-        d0o6KgK//lVHKXBIQiG2qXgbTgiflpOABDByVo2jAk3vDA6iVqoiCxY5ZLWLwD4f6PvWytXeFWz
-        y4qSoK6lutOOlX76K0sA3G3vQ
-X-Received: by 2002:a5d:47cc:0:b0:204:1c9d:2157 with SMTP id o12-20020a5d47cc000000b002041c9d2157mr27253327wrc.294.1649751519276;
-        Tue, 12 Apr 2022 01:18:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwtAJ2/UNdxCVTBdsyo9WuJJCk5rWPxBJRneEzkaBvsDA/8B/+o2maXYXbvtqtOlUtJh6R1kg==
-X-Received: by 2002:a5d:47cc:0:b0:204:1c9d:2157 with SMTP id o12-20020a5d47cc000000b002041c9d2157mr27253303wrc.294.1649751519001;
-        Tue, 12 Apr 2022 01:18:39 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:1800:7c14:16cc:5291:a9f3? (p200300cbc70718007c1416cc5291a9f3.dip0.t-ipconnect.de. [2003:cb:c707:1800:7c14:16cc:5291:a9f3])
-        by smtp.gmail.com with ESMTPSA id k13-20020a7bc40d000000b0038e9edf5e73sm1959421wmi.3.2022.04.12.01.18.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 01:18:38 -0700 (PDT)
-Message-ID: <b3a221fb-2382-5b19-4fbd-031629d641fd@redhat.com>
-Date:   Tue, 12 Apr 2022 10:18:36 +0200
+        Tue, 12 Apr 2022 05:08:56 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF4095;
+        Tue, 12 Apr 2022 01:20:58 -0700 (PDT)
+X-UUID: 0417fe4805674b78b88b1031294c2cdd-20220412
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:32e3f7db-dd58-43c0-8b2a-a41fc17cd1b7,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:50,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:50
+X-CID-INFO: VERSION:1.1.4,REQID:32e3f7db-dd58-43c0-8b2a-a41fc17cd1b7,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:50,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:50
+X-CID-META: VersionHash:faefae9,CLOUDID:e6ac1c78-0afa-4dca-bdec-ca54c998425a,C
+        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
+        l,QS:0,BEC:nil
+X-UUID: 0417fe4805674b78b88b1031294c2cdd-20220412
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1696802592; Tue, 12 Apr 2022 16:20:53 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 12 Apr 2022 16:20:52 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 12 Apr
+ 2022 16:20:51 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Apr 2022 16:20:51 +0800
+Message-ID: <17f8b17fee57115fb885e86a4b9aab4e7ed2df86.camel@mediatek.com>
+Subject: Re: [PATCH v4,2/2] drm/mediatek: Add mt8186 dpi compatible to
+ mtk_dpi.c
+From:   CK Hu <ck.hu@mediatek.com>
+To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <robh+dt@kernel.org>, <matthias.bgg@gmail.com>
+CC:     <devicetree@vger.kernel.org>, <jitao.shi@mediatek.com>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>, <rex-bc.chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Tue, 12 Apr 2022 16:20:51 +0800
+In-Reply-To: <1649645584-13186-3-git-send-email-xinlei.lee@mediatek.com>
+References: <1649645584-13186-1-git-send-email-xinlei.lee@mediatek.com>
+         <1649645584-13186-3-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCHv4 8/8] mm/vmstat: Add counter for memory accepting
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
- <20220405234343.74045-9-kirill.shutemov@linux.intel.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220405234343.74045-9-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06.04.22 01:43, Kirill A. Shutemov wrote:
-> The counter increased every time kernel accepts a memory region.
+Hi, Xinlei:
+
+On Mon, 2022-04-11 at 10:53 +0800, xinlei.lee@mediatek.com wrote:
+> From: Xinlei Lee <xinlei.lee@mediatek.com>
 > 
-> The counter allows to see if memory acceptation is still ongoing and
-> contributes to memory allocation latency.
+> Add the compatible because use different .data in mt8186.
 > 
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 4554e2de1430..824d7da41c6a 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -815,6 +815,14 @@ static const struct mtk_dpi_conf mt8183_conf = {
+>  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+>  };
+>  
+> +static const struct mtk_dpi_conf mt8186_conf = {
+> +	.cal_factor =  mt8183_calculate_factor,
+> +	.reg_h_fre_con = 0xe0,
+> +	.max_clock_khz = 150000,
+> +	.output_fmts = mt8183_output_fmts,
+> +	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+> +};
+> +
+>  static const struct mtk_dpi_conf mt8192_conf = {
+>  	.cal_factor = mt8183_calculate_factor,
+>  	.reg_h_fre_con = 0xe0,
+> @@ -942,6 +950,9 @@ static const struct of_device_id mtk_dpi_of_ids[]
+> = {
+>  	{ .compatible = "mediatek,mt8183-dpi",
+>  	  .data = &mt8183_conf,
+>  	},
+> +	{ .compatible = "mediatek,mt8186-dpi",
+> +	  .data = &mt8186_conf,
 
-Does it? See my other mail, can't we have the counter essentially not
-changing for a long time but still some unaccepted pages sitting at the
-tail of the freelists that will only get allocated+accepted under real
-memory pressure?
+If Nicolas' patch [1] is correct, this should be
 
--- 
-Thanks,
+.data = &mt8192_conf,
 
-David / dhildenb
+Could you help to comfirm patch [1] is correct or not?
+
+[1] 
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220408013950.674477-1-nfraprado@collabora.com/
+
+Regards,
+CK
+
+> +	},
+>  	{ .compatible = "mediatek,mt8192-dpi",
+>  	  .data = &mt8192_conf,
+>  	},
 
