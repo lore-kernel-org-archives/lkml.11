@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CD3C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242984AbiDLLCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        id S245374AbiDLLCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233157AbiDLLAA (ORCPT
+        with ESMTP id S237083AbiDLLAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:00:00 -0400
-X-Greylist: delayed 1140 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 02:50:58 PDT
-Received: from mxout012.mail.hostpoint.ch (mxout012.mail.hostpoint.ch [IPv6:2a00:d70:0:e::312])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E270165163;
-        Tue, 12 Apr 2022 02:50:56 -0700 (PDT)
-Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
-        by mxout012.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <dev@pschenker.ch>)
-        id 1neCSD-000OOB-IK;
-        Tue, 12 Apr 2022 11:04:53 +0200
-Received: from 31-10-206-124.static.upc.ch ([31.10.206.124] helo=localhost.localdomain)
-        by asmtp014.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <dev@pschenker.ch>)
-        id 1neCSD-000CGw-Ce;
-        Tue, 12 Apr 2022 11:04:53 +0200
-X-Authenticated-Sender-Id: dev@pschenker.ch
-From:   Philippe Schenker <dev@pschenker.ch>
-To:     linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>
-Cc:     linux@leemhuis.info, Philippe Schenker <dev@pschenker.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Deren Wu <deren.wu@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        YN Chen <YN.Chen@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH] Revert "mt76: mt7921: enable aspm by default"
-Date:   Tue, 12 Apr 2022 11:04:14 +0200
-Message-Id: <20220412090415.17541-1-dev@pschenker.ch>
+        Tue, 12 Apr 2022 07:00:08 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAB365406;
+        Tue, 12 Apr 2022 02:50:57 -0700 (PDT)
+Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 75E75CE289;
+        Tue, 12 Apr 2022 09:41:06 +0000 (UTC)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPA id 1001D40005;
+        Tue, 12 Apr 2022 09:40:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649756458;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xc7elETUhx4Ylc8cUvJvfmJyb8bpXLKnBKj1vDU7LOQ=;
+        b=UAqUgyzAD5RDK5aUtx8RhEHu5pV/ZosSkZZ9QbAentA8pU2q0I6B1QxgWtu66bB37VuRmq
+        /ApiySh5muMEsucwjUgknODrJ6ejhlX3POD2nBfRln2Cc7D+zlMHdzTHYtpI1NDRQSGE7y
+        G2iF/wa5LEH4oWmJ6pZ6G7SegecdiJPRrDo1yoOq2pSKcc7yQJcpgJF2GkclPfhKzZxvUA
+        arWxwRTsR1aL7dyvKjhHu8QmPrSZJHLGR4ljkNUd7B1gWvyf/CzCLinzp6V29prOWlWZtj
+        L4Tkmr0QPeOMWp5ZyMMMAZDoE87iXmi8gHzsnsdTGqqopdkMjsxMeiexVu764A==
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>
+Subject: [PATCH 2/6] dt-bindings: PCI: pci-rcar-gen2: Add device tree support for r9a06g032
+Date:   Tue, 12 Apr 2022 11:40:25 +0200
+Message-Id: <20220412094029.287562-3-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412094029.287562-1-herve.codina@bootlin.com>
+References: <20220412094029.287562-1-herve.codina@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+Add internal PCI bridge support for the r9a06g032 SoC. The Renesas
+RZ/N1D (R9A06G032) internal PCI bridge is compatible with the one
+present in the R-Car Gen2 family.
 
-This commit introduces a regression on some systems where the kernel is
-crashing in different locations after a reboot was issued.
-
-This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest firmware.
-
-Link: https://lore.kernel.org/linux-wireless/5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/
-Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 ---
+ Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-index 1a01d025bbe5..59f9ee089389 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-@@ -20,10 +20,6 @@ static const struct pci_device_id mt7921_pci_device_table[] = {
- 	{ },
- };
+diff --git a/Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt b/Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
+index aeba38f0a387..098ea12e6c95 100644
+--- a/Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
++++ b/Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
+@@ -15,7 +15,9 @@ Required properties:
+ 	      "renesas,pci-r8a7793" for the R8A7793 SoC;
+ 	      "renesas,pci-r8a7794" for the R8A7794 SoC;
+ 	      "renesas,pci-rcar-gen2" for a generic R-Car Gen2 or
+-				      RZ/G1 compatible device.
++				      RZ/G1 compatible device;
++	      "renesas,pci-r9a06g032" for the R9A06G032 (RZ/N1D) SoC;
++	      "renesas,pci-rzn1" for a generic RZ/N1 compatible device.
  
--static bool mt7921_disable_aspm;
--module_param_named(disable_aspm, mt7921_disable_aspm, bool, 0644);
--MODULE_PARM_DESC(disable_aspm, "disable PCI ASPM support");
--
- static void
- mt7921_rx_poll_complete(struct mt76_dev *mdev, enum mt76_rxq_id q)
- {
-@@ -280,8 +276,7 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
- 	if (ret)
- 		goto err_free_pci_vec;
  
--	if (mt7921_disable_aspm)
--		mt76_pci_disable_aspm(pdev);
-+	mt76_pci_disable_aspm(pdev);
- 
- 	mdev = mt76_alloc_device(&pdev->dev, sizeof(*dev), &mt7921_ops,
- 				 &drv_ops);
+ 	      When compatible with the generic version, nodes must list the
 -- 
 2.35.1
 
