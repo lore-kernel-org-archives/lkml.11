@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86507C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243898AbiDLAuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
+        id S236359AbiDLAuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242887AbiDLAsG (ORCPT
+        with ESMTP id S242728AbiDLArZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:48:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9860B2ED5C;
-        Mon, 11 Apr 2022 17:45:50 -0700 (PDT)
+        Mon, 11 Apr 2022 20:47:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71CC12ABD;
+        Mon, 11 Apr 2022 17:45:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21B5B617F3;
-        Tue, 12 Apr 2022 00:45:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 686A2C385AD;
-        Tue, 12 Apr 2022 00:45:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0456FB819BC;
+        Tue, 12 Apr 2022 00:45:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40C9C385AB;
+        Tue, 12 Apr 2022 00:45:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724349;
-        bh=Bcm/L4B9jJWb+jV5TvnT5U/PTAjme2W/RGdOOBuZDt8=;
+        s=k20201202; t=1649724305;
+        bh=nTMa2yp/aUzImjBoL4wcFC2Lpe26k/LyXXcKBx8QGJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZOkFu1e6B7vGBK+a0X7vUxMUGLheKeypelhJb+TyGu3TytzMeDB9B8wqBazeZnMJ
-         cvurx3zLXW+AuTvd0q89yT+MEswJbtvg033W/GvQ44AhgBOwLnvtLSv4NlQCn/GUbi
-         WhZCuPFj6pBZ6pclhKJiUlS2JFbHUgMwLHxV//fG1YEm+aO7Syiwz3P0lgezHo9LUd
-         W1aUXbDqZrynzH3LZRLv8DgKFTcmeuOc+e3kvEGbXxIc0tMiRuWok0YupC9wKAEsKN
-         Jg2JY8rBKyOORcV7waPaF20BcrdwrCPYKXPGtTdDVsDPOWHtqg4uBvLk9n7q8F+ZA6
-         UMeWKD1L0BL+Q==
+        b=sv+0KULKx+yiOnq3yER9omLGVLCQHwTABW4VUfPCB1x5Sjf6QjS5kEzOILgwVK3fY
+         a5F6QWMPkk14IT1w2j5NfJeFdSDEyP4lGof0aWt9davG4X1s49nkKgqBOQC4G6y92d
+         RG+D5cLp7WD9y4XNq63waBohD0a2YV/zqvdnuWP16hkhO2hxkvQBVO9utMztNQeuJa
+         W9ZQF2Xfi9RJ0VsgsKj5XW/hm5Pkql6NuTHkRYSrFUJC+xJ0v+5jCYhDEhXJp/u+YZ
+         WMIWlY6x4Q1qMno+hr3nIFavWhe4qTL+srDck6bHSO2JLg1h+FmVFN98lAWHFOhBef
+         yjm0363hJxmUA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marcin Kozlowski <marcinguy@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 32/49] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
-Date:   Mon, 11 Apr 2022 20:43:50 -0400
-Message-Id: <20220412004411.349427-32-sashal@kernel.org>
+Cc:     Tianci Yin <tianci.yin@amd.com>, James Zhu <James.Zhu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        leo.liu@amd.com, andrey.grodzovsky@amd.com, ruijing.dong@amd.com,
+        veerabadhran.gopalakrishnan@amd.com, PengJu.Zhou@amd.com,
+        Bokun.Zhang@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 11/49] drm/amdgpu/vcn: improve vcn dpg stop procedure
+Date:   Mon, 11 Apr 2022 20:43:29 -0400
+Message-Id: <20220412004411.349427-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004411.349427-1-sashal@kernel.org>
 References: <20220412004411.349427-1-sashal@kernel.org>
@@ -53,54 +56,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcin Kozlowski <marcinguy@gmail.com>
+From: Tianci Yin <tianci.yin@amd.com>
 
-[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
+[ Upstream commit 6ea239adc2a712eb318f04f5c29b018ba65ea38a ]
 
-aqc111_rx_fixup() contains several out-of-bounds accesses that can be
-triggered by a malicious (or defective) USB device, in particular:
+Prior to disabling dpg, VCN need unpausing dpg mode, or VCN will hang in
+S3 resuming.
 
- - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
-   causing OOB reads and (on big-endian systems) OOB endianness flips.
- - A packet can overlap the metadata array, causing a later OOB
-   endianness flip to corrupt data used by a cloned SKB that has already
-   been handed off into the network stack.
- - A packet SKB can be constructed whose tail is far beyond its end,
-   causing out-of-bounds heap data to be considered part of the SKB's
-   data.
-
-Found doing variant analysis. Tested it with another driver (ax88179_178a), since
-I don't have a aqc111 device to test it, but the code looks very similar.
-
-Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: James Zhu <James.Zhu@amd.com>
+Signed-off-by: Tianci Yin <tianci.yin@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/aqc111.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-index ea06d10e1c21..ca409d450a29 100644
---- a/drivers/net/usb/aqc111.c
-+++ b/drivers/net/usb/aqc111.c
-@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 	if (start_of_descs != desc_offset)
- 		goto err;
+diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+index da11ceba0698..2ae56b2ed318 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+@@ -1474,8 +1474,11 @@ static int vcn_v3_0_start_sriov(struct amdgpu_device *adev)
  
--	/* self check desc_offset from header*/
--	if (desc_offset >= skb_len)
-+	/* self check desc_offset from header and make sure that the
-+	 * bounds of the metadata array are inside the SKB
-+	 */
-+	if (pkt_count * 2 + desc_offset >= skb_len)
- 		goto err;
+ static int vcn_v3_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
+ {
++	struct dpg_pause_state state = {.fw_based = VCN_DPG_STATE__UNPAUSE};
+ 	uint32_t tmp;
  
-+	/* Packets must not overlap the metadata array */
-+	skb_trim(skb, desc_offset);
++	vcn_v3_0_pause_dpg_mode(adev, 0, &state);
 +
- 	if (pkt_count == 0)
- 		goto err;
- 
+ 	/* Wait for power status to be 1 */
+ 	SOC15_WAIT_ON_RREG(VCN, inst_idx, mmUVD_POWER_STATUS, 1,
+ 		UVD_POWER_STATUS__UVD_POWER_STATUS_MASK);
 -- 
 2.35.1
 
