@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB15C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 085AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380279AbiDLIVh (ORCPT
+        id S1380328AbiDLIVl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
+        Tue, 12 Apr 2022 04:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351981AbiDLHdY (ORCPT
+        with ESMTP id S1352037AbiDLHdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:33:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104A6506C4;
-        Tue, 12 Apr 2022 00:08:42 -0700 (PDT)
+        Tue, 12 Apr 2022 03:33:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58D6506CE;
+        Tue, 12 Apr 2022 00:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42C0FB81B50;
-        Tue, 12 Apr 2022 07:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC346C385A6;
-        Tue, 12 Apr 2022 07:08:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52A89616AB;
+        Tue, 12 Apr 2022 07:08:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FADDC385A8;
+        Tue, 12 Apr 2022 07:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747320;
-        bh=Y4PFYmdYR2WjNP0fkjHUgXF9wtFrae+g7GdxMfughyY=;
+        s=korg; t=1649747322;
+        bh=sudFEqS6dpe/HG8e9ahoivSgy9PiKVCGBgOMtkhdPug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BZq+KfL0wF8eemamMOkiiuToXGYGw+1E6QSrwcFTiNNqwe7K+hn40kXFG8H40Mlym
-         oU7UjSobPJCwjd0AaNbqDnZ7TNPYOxvep0jqNiREru7hEIhE2vw9nme6C8bj1oNZOu
-         nBZCFQDO/lo/FHXGNAep8lgPhIF4Oh3o1zlXHqL4=
+        b=ptchrCJEek9USlvn3fvwPFAXNcg6tnTz3jV1BL/Y+zeSyI8xDGeQ4ztqDVKlPzJ5K
+         6eMiBeaOfehBPJqO/Y+Rceas82SA6ZhEkUfo3PtbQX5AnK10fXK7I6ZgXKOMwKCX/9
+         NlZ+ynK66w6lKFGhhhUyBBPTZ5d0op11MWOSVhro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 037/343] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
-Date:   Tue, 12 Apr 2022 08:27:35 +0200
-Message-Id: <20220412062952.177770405@linuxfoundation.org>
+Subject: [PATCH 5.17 020/343] drm/amd/amdgpu/amdgpu_cs: fix refcount leak of a dma_fence obj
+Date:   Tue, 12 Apr 2022 08:27:18 +0200
+Message-Id: <20220412062951.687668471@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,45 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Kiselev <bigunclemax@gmail.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
+[ Upstream commit dfced44f122c500004a48ecc8db516bb6a295a1b ]
 
-T1040RDB has two RTL8211E-VB phys which requires setting
-of internal delays for correct work.
+This issue takes place in an error path in
+amdgpu_cs_fence_to_handle_ioctl(). When `info->in.what` falls into
+default case, the function simply returns -EINVAL, forgetting to
+decrement the reference count of a dma_fence obj, which is bumped
+earlier by amdgpu_cs_get_fence(). This may result in reference count
+leaks.
 
-Changing the phy-connection-type property to `rgmii-id`
-will fix this issue.
+Fix it by decreasing the refcount of specific object before returning
+the error code.
 
-Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
-Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-index 099a598c74c0..bfe1ed5be337 100644
---- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-@@ -139,12 +139,12 @@
- 		fman@400000 {
- 			ethernet@e6000 {
- 				phy-handle = <&phy_rgmii_0>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+index 06d07502a1f6..a34be65c9eaa 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -1509,6 +1509,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
+ 		return 0;
  
- 			ethernet@e8000 {
- 				phy-handle = <&phy_rgmii_1>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
- 
- 			mdio0: mdio@fc000 {
+ 	default:
++		dma_fence_put(fence);
+ 		return -EINVAL;
+ 	}
+ }
 -- 
 2.35.1
 
