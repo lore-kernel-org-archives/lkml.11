@@ -2,112 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31420C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355697AbiDLRea (ORCPT
+        id S1358179AbiDLRfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
+        Tue, 12 Apr 2022 13:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358236AbiDLRcY (ORCPT
+        with ESMTP id S1358142AbiDLRfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:32:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5E4F46;
-        Tue, 12 Apr 2022 10:29:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE746B81F62;
-        Tue, 12 Apr 2022 17:29:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469EBC385AA;
-        Tue, 12 Apr 2022 17:29:45 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Vof7oTMJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649784584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IHzRJmPvA7OgZjJx+ZTbqcYHIM/uCZIijqXsNo6FZ2U=;
-        b=Vof7oTMJysi9826NZ4wlTUzj07MRSpSZZLRNThVcodnHpNfVYD9AbgGScQ4b9YIr68xe13
-        pllwAUZ1aN8ajP631O+A2iZ/DS5Ii+7ZBpv+IhUqlhiWGaqgjObm2n7g7XVrH8Qvn+P1S5
-        K9LhwsoVl2jT/V71ZNOjmtwbBy150So=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8bae4d27 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 12 Apr 2022 17:29:43 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        tglx@linutronix.de, arnd@arndb.de
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, x86@kernel.org,
-        linux-xtensa@linux-xtensa.org
-Subject: [PATCH v3 04/10] mips: use fallback for random_get_entropy() instead of zero
-Date:   Tue, 12 Apr 2022 19:27:48 +0200
-Message-Id: <20220412172754.149498-5-Jason@zx2c4.com>
-In-Reply-To: <20220412172754.149498-1-Jason@zx2c4.com>
-References: <20220412172754.149498-1-Jason@zx2c4.com>
+        Tue, 12 Apr 2022 13:35:34 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139425C34A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:33:15 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id bv19so15727868ejb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:33:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w97rX506l0IZkP+JZIYJlQ8t2kG9o3WJCY91DufueFk=;
+        b=ORC1aokz3Akmjy39tO0RY2jzikbJzlVNlrJZb+6WACySbrtF6E+MNNtD7yGr1ALcME
+         99TOioRefbrdi/g42nB6ZY9BxJZ7iNwer55DdjXCqeZr3gAihwdN9Z0rrqkAAAUgXdjJ
+         QjE+mE4/eal7w8QmOY38mR4NOTj4YYlOOiON0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w97rX506l0IZkP+JZIYJlQ8t2kG9o3WJCY91DufueFk=;
+        b=Y3hq/6uPecm8Uo7YslLa0Z4be9pXQxiv1dJvuGQcE0u1Wmxz6s7zRIvAxhc0oYHNq9
+         pK8Fd97nJpc9HbLb7CsWQqrDTmAh1aj53s9lQwSH0ngHHhFPemYvH6/Rqlpwx0Sfwmcm
+         J4T/sfOTbrnn7iYLcQEmxhUYIsmWCiO1tOGrb/i0gr/JsFtQaOSxetZQo/6p9aSzWOaj
+         iWVl4rvQctJeHpBwAupLtnP1EA4Mu/oK3OUAHkRf3sU+8I2X5HyQL9bOTjLteBI3H10j
+         UKTx+fPkgksR+FHebBCJL212nYb66Yx+YlCmSvrP4ywAJzw1JgD6HZU7mi5I/3gk4RrJ
+         arUQ==
+X-Gm-Message-State: AOAM531iNMQ0WxF5Pg4J2lRj2kWHKEHrRmoZc/aDgNeeXIhjWqYEcPcC
+        YpCRcHSEZMJ9BAGCDMnJckwU9Q==
+X-Google-Smtp-Source: ABdhPJy/Ds7apVGrE02M2cDXTimaPZi1syJE7lufyddpu55XI0GsM3dEf3LKDwyhS3Hs95uW5/m86A==
+X-Received: by 2002:a17:906:7316:b0:6d7:16be:b584 with SMTP id di22-20020a170906731600b006d716beb584mr34948158ejc.759.1649784793578;
+        Tue, 12 Apr 2022 10:33:13 -0700 (PDT)
+Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id o3-20020aa7dd43000000b00419db53ae65sm56142edw.7.2022.04.12.10.33.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 10:33:12 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Rasmussen <mir@bang-olufsen.dk>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH stable 5.16+ 0/3] backported Realtek DSA driver fixes for 5.16 and 5.17
+Date:   Tue, 12 Apr 2022 19:32:49 +0200
+Message-Id: <20220412173253.2247196-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- arch/mips/include/asm/timex.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+These fixes can be applied to both 5.16 and 5.17 - the subtree of
+drivers/net/dsa/realtek is identical save for a few unrelated places.
 
-diff --git a/arch/mips/include/asm/timex.h b/arch/mips/include/asm/timex.h
-index b05bb70a2e46..abc60a6395e3 100644
---- a/arch/mips/include/asm/timex.h
-+++ b/arch/mips/include/asm/timex.h
-@@ -94,7 +94,7 @@ static inline unsigned long random_get_entropy(void)
- 	else if (likely(imp != PRID_IMP_R6000 && imp != PRID_IMP_R6000A))
- 		return read_c0_random();
- 	else
--		return 0;	/* no usable register */
-+		return random_get_entropy_fallback();	/* no usable register */
- }
- #define random_get_entropy random_get_entropy
- 
+The main backporting effort was to remove some parts of the patches
+which touched the newly introduced MDIO interface, which was introduced
+in the 5.18 development cycle, and to work around a mass-rename of a
+single variable (smi -> priv). Regrettably this rename will make future
+stable backports equally tedious and hard to automate.
+
+Please let me know if you would like me to send the series again for
+5.17.
+
+Thanks!
+
+
+Alvin Šipraga (3):
+  net: dsa: realtek: allow subdrivers to externally lock regmap
+  net: dsa: realtek: rtl8365mb: serialize indirect PHY register access
+  net: dsa: realtek: make interface drivers depend on OF
+
+ drivers/net/dsa/realtek/Kconfig            |  1 +
+ drivers/net/dsa/realtek/realtek-smi-core.c | 48 +++++++++++++++++--
+ drivers/net/dsa/realtek/realtek-smi-core.h |  2 +
+ drivers/net/dsa/realtek/rtl8365mb.c        | 54 +++++++++++++---------
+ 4 files changed, 81 insertions(+), 24 deletions(-)
+
 -- 
 2.35.1
 
