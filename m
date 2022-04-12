@@ -2,106 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D29C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:58:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32756C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347500AbiDLMAo (ORCPT
+        id S1343762AbiDLMAx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
+        Tue, 12 Apr 2022 08:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349365AbiDLL5t (ORCPT
+        with ESMTP id S1353132AbiDLL6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:57:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A6D60DB5;
-        Tue, 12 Apr 2022 03:47:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CD02B81CBB;
-        Tue, 12 Apr 2022 10:47:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C90C5C385A1;
-        Tue, 12 Apr 2022 10:47:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649760424;
-        bh=8nrqqM3IkuVaMYtRsABBZlIcS5QBrVTQAj/P3+5fYYI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=IFJ0f4ZD3Llfeaj09qoCE9fqavR0fqRwZhrOfd+ghn84ggQnDQE8GFnbmO08hqc8c
-         JU2zcJpWxRU9xlS2+iOAJVmdlpFlYPlfjMaZ+TgCK19Tk0XJ4Xehrzzr0XlQGF9/Mm
-         d/U1TWLuYMyucl59ci/bEKB6t+9Zu5cmuypNYgNrNXp/8dTfQd1FYIUgiJ/j5MoDyR
-         D0llTsWIxesJzjKOrQy6NdDLgGXJE8RK2eUESE9sWSpQVCZ9xXaQDO/hyUmOQ8YWjo
-         T/KN8c4LpQexG+qvay1ZBzDW2gRysRhGBVsJjK6plN+gbY/I5FgCgpoxQIt9r01whD
-         mtGRjmuH7zPXg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/2] ath10k: search for default BDF name provided in DT
-References: <20220107200417.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
-        <CAD=FV=W5fHP8K-PcoYWxYHiDWnPUVQQzOzw=REbuJSSqGeVVfg@mail.gmail.com>
-        <87sfrqqfzy.fsf@kernel.org>
-        <CAD=FV=U0Qw-OnKJg8SWk9=e=B0qgqnaTHpuR0cRA0WCmSHSJYQ@mail.gmail.com>
-        <CACTWRwtpYBokTehRE0_zSdSjio6Ga1yqdCfj1TNck7SqOT8o_Q@mail.gmail.com>
-Date:   Tue, 12 Apr 2022 13:46:55 +0300
-In-Reply-To: <CACTWRwtpYBokTehRE0_zSdSjio6Ga1yqdCfj1TNck7SqOT8o_Q@mail.gmail.com>
-        (Abhishek Kumar's message of "Mon, 11 Apr 2022 16:25:10 -0700")
-Message-ID: <87fsmio9y8.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Tue, 12 Apr 2022 07:58:39 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1720A322
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:50:17 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id g18so11553587ejc.10
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C9g2XKcCurSLwM4uxXLpKaNmYdxIC5rYc/R1Ovh/C4Q=;
+        b=MsPcFp8g2+jxEPISknC4oBIMRw92gZ1Xnw+417qeh5KUaMBfVUGAgJF5FP1Q5mnCPG
+         XPrG9zZefwghYVkFGBB9q9bX5GutUCK94LvkO+zGwXt6UzqhplKW23iasme/htv19qFe
+         67Eou6d839vksWAptEuQnnxUh5aTg/vrZh33kyBJgaA5Ms4eaBulo+JSuaEkB6EB7aGx
+         m7I57nukrqmzMlvBQ/ZMhFexxUKvt7dHppR7nf4CBjH4MfnLHqG5e7S3UTw9Y964OTMI
+         GyvRxK9LiSWypXqx8UOY7kfopQF8cbyHjVcM+YBbgi7hVOKre2oQVEv5N7KnRl4DqQmo
+         ylnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C9g2XKcCurSLwM4uxXLpKaNmYdxIC5rYc/R1Ovh/C4Q=;
+        b=0oQAu9xFrouZIQfOt1W+isnkIKTeJQmwTuQEYAQ8H2p3bZOXAnqqyskfs2Wpe9t+5l
+         17mSf100lKEL9JZYNEkbQ54zUdiUhNApgKJAzM9yCSDJlN98xPoKRser/9LFRfVNZ6D4
+         OtD8n4+txpxfuBa4q04QIQ22C9e9SaH/UufSVH4KAP3QRe/z4k08DbqiSjhHhCkJjhdu
+         D+QHFLVIIEzSNBE9bSsEvRAKwEmVzjdoBlbad+Anr7+U+2Lz5mnIvmthcxOajyFr6MOO
+         C5Fkn1J3Ec2ti89Prop5DnI9wWJvw/T5l13EjYAUbao9pEr4QMUFojfnklzf74qcsWrl
+         SMHA==
+X-Gm-Message-State: AOAM533YL1at/QSJTxZbDQbwydA3jkhCTC+sBn14SU62pOyQvs63TFjz
+        1sjF1gauByUgJQbJCpdyg6h/nQ==
+X-Google-Smtp-Source: ABdhPJwrYWIRKK/csZ8RLqJCE/zZWpAOR78ZTsbdZtud66k9OMMLPP5dQ7vp3iXsLtLcQcneAJzJJA==
+X-Received: by 2002:a17:907:9958:b0:6e7:f67a:a1e7 with SMTP id kl24-20020a170907995800b006e7f67aa1e7mr32973500ejc.400.1649760615678;
+        Tue, 12 Apr 2022 03:50:15 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id v21-20020a1709064e9500b006e8973a14d0sm2099511eju.174.2022.04.12.03.50.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 03:50:15 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>
+Subject: [PATCH] ARM: dts: at91: use generic node name for dataflash
+Date:   Tue, 12 Apr 2022 12:50:13 +0200
+Message-Id: <20220412105013.249793-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Abhishek Kumar <kuabhs@chromium.org> writes:
+The node names should be generic, so use "flash" for dataflash nodes and
+for cfi-flash.
 
-> Hi All,
->
-> Apologies for the late reply, too many things at the same time.
+Suggested-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/mfd/atmel-flexcom.txt | 2 +-
+ arch/arm/boot/dts/at91rm9200ek.dts                      | 4 ++--
+ arch/arm/boot/dts/at91sam9260ek.dts                     | 2 +-
+ arch/arm/boot/dts/at91sam9261ek.dts                     | 2 +-
+ arch/arm/boot/dts/at91sam9263ek.dts                     | 2 +-
+ arch/arm/boot/dts/at91sam9g20ek_common.dtsi             | 2 +-
+ arch/arm/boot/dts/at91sam9m10g45ek.dts                  | 2 +-
+ arch/arm/boot/dts/at91sam9rlek.dts                      | 2 +-
+ arch/arm/boot/dts/usb_a9263.dts                         | 2 +-
+ 9 files changed, 10 insertions(+), 10 deletions(-)
 
-Trust me, I know the feeling :)
-
-> Just a quick note, Qcomm provided a new BDF file with support for
-> 'bus=snoc,qmi-board-id=ff' as well, so even without this patch, the
-> non-programmed devices(with board-id=0xff) would work. However, for
-> optimization of the BDF search strategy, the above mentioned strategy
-> would still not work: - The stripping of full Board name would not
-> work if board-id itself is not programmed i.e. =0xff e.g. for
-> 'bus=snoc,qmi-board-id=ff,qmi-chip-id=320,variant=GO_LAZOR' => no
-> match 'bus=snoc,qmi-board-id=ff,qmi-chip-id=320' => no match
-> 'bus=snoc,qmi-board-id=ff' => no match 'bus=snoc' => no match because
-> all the BDFs contains board-id=67
-
-Sorry, not fully following your here. Are you saying that the problem is
-that WCN3990/hw1.0/board-2.bin is missing board file for 'bus=snoc'?
-That's easy to add, each board file within board-2.bin has multiple
-names so we can easily select one board file for which we add
-'bus=snoc'.
-
-> So with this DT patch specifically for case 'bus=snoc,qmi-board-id=ff'
-> => no match, we fallback to default case ( the one provided in DT)
-> i.e. 'bus=snoc,qmi-board-id=67' => match . I do not see how exactly
-> the driver can know that it should check for a board-id of 67.
-
-Sorry, not following you here either. Why would the driver need to use
-board-id 67?
-
-> However, to still remove dependency on the DT, we can make the
-> board-id as no-op if it is not programmed i.e. if the board-id=ff then
-> we would pick any BDF that match 'bus=snoc,qmi-board-id=<XX>' where XX
-> can be any arbitrary number. Thoughts ?
-
-To me using just 'bus=snoc' is more logical than picking up an arbitrary
-number. But I might be missing something here.
-
+diff --git a/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt b/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
+index 692300117c64..9d837535637b 100644
+--- a/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
++++ b/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
+@@ -54,7 +54,7 @@ flexcom@f8034000 {
+ 		clock-names = "spi_clk";
+ 		atmel,fifo-size = <32>;
+ 
+-		mtd_dataflash@0 {
++		flash@0 {
+ 			compatible = "atmel,at25f512b";
+ 			reg = <0>;
+ 			spi-max-frequency = <20000000>;
+diff --git a/arch/arm/boot/dts/at91rm9200ek.dts b/arch/arm/boot/dts/at91rm9200ek.dts
+index e1ef4e44e663..4624a6f076f8 100644
+--- a/arch/arm/boot/dts/at91rm9200ek.dts
++++ b/arch/arm/boot/dts/at91rm9200ek.dts
+@@ -73,7 +73,7 @@ &pinctrl_uart1_dcd
+ 			spi0: spi@fffe0000 {
+ 				status = "okay";
+ 				cs-gpios = <&pioA 3 0>, <0>, <0>, <0>;
+-				mtd_dataflash@0 {
++				flash@0 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					spi-max-frequency = <15000000>;
+ 					reg = <0>;
+@@ -94,7 +94,7 @@ usb0: ohci@300000 {
+ 			status = "okay";
+ 		};
+ 
+-		nor_flash@10000000 {
++		flash@10000000 {
+ 			compatible = "cfi-flash";
+ 			reg = <0x10000000 0x800000>;
+ 			linux,mtd-name = "physmap-flash.0";
+diff --git a/arch/arm/boot/dts/at91sam9260ek.dts b/arch/arm/boot/dts/at91sam9260ek.dts
+index ce96345d28a3..6381088ba24f 100644
+--- a/arch/arm/boot/dts/at91sam9260ek.dts
++++ b/arch/arm/boot/dts/at91sam9260ek.dts
+@@ -92,7 +92,7 @@ macb0: ethernet@fffc4000 {
+ 
+ 			spi0: spi@fffc8000 {
+ 				cs-gpios = <0>, <&pioC 11 0>, <0>, <0>;
+-				mtd_dataflash@1 {
++				flash@1 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					spi-max-frequency = <50000000>;
+ 					reg = <1>;
+diff --git a/arch/arm/boot/dts/at91sam9261ek.dts b/arch/arm/boot/dts/at91sam9261ek.dts
+index beed819609e8..8f11c0b7d76d 100644
+--- a/arch/arm/boot/dts/at91sam9261ek.dts
++++ b/arch/arm/boot/dts/at91sam9261ek.dts
+@@ -145,7 +145,7 @@ spi0: spi@fffc8000 {
+ 				cs-gpios = <&pioA 3 0>, <0>, <&pioA 28 0>, <0>;
+ 				status = "okay";
+ 
+-				mtd_dataflash@0 {
++				flash@0 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					reg = <0>;
+ 					spi-max-frequency = <15000000>;
+diff --git a/arch/arm/boot/dts/at91sam9263ek.dts b/arch/arm/boot/dts/at91sam9263ek.dts
+index 71f60576761a..42e734020235 100644
+--- a/arch/arm/boot/dts/at91sam9263ek.dts
++++ b/arch/arm/boot/dts/at91sam9263ek.dts
+@@ -95,7 +95,7 @@ pinctrl_board_mmc0: mmc0-board {
+ 			spi0: spi@fffa4000 {
+ 				status = "okay";
+ 				cs-gpios = <&pioA 5 0>, <0>, <0>, <0>;
+-				mtd_dataflash@0 {
++				flash@0 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					spi-max-frequency = <50000000>;
+ 					reg = <0>;
+diff --git a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+index 87bb39060e8b..74b90dc58cbf 100644
+--- a/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
++++ b/arch/arm/boot/dts/at91sam9g20ek_common.dtsi
+@@ -110,7 +110,7 @@ ssc0: ssc@fffbc000 {
+ 
+ 			spi0: spi@fffc8000 {
+ 				cs-gpios = <0>, <&pioC 11 0>, <0>, <0>;
+-				mtd_dataflash@1 {
++				flash@1 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					spi-max-frequency = <50000000>;
+ 					reg = <1>;
+diff --git a/arch/arm/boot/dts/at91sam9m10g45ek.dts b/arch/arm/boot/dts/at91sam9m10g45ek.dts
+index b6256a20fbc7..e5db198a87a8 100644
+--- a/arch/arm/boot/dts/at91sam9m10g45ek.dts
++++ b/arch/arm/boot/dts/at91sam9m10g45ek.dts
+@@ -167,7 +167,7 @@ pinctrl_pwm_leds: pwm-led {
+ 			spi0: spi@fffa4000{
+ 				status = "okay";
+ 				cs-gpios = <&pioB 3 0>, <0>, <0>, <0>;
+-				mtd_dataflash@0 {
++				flash@0 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					spi-max-frequency = <13000000>;
+ 					reg = <0>;
+diff --git a/arch/arm/boot/dts/at91sam9rlek.dts b/arch/arm/boot/dts/at91sam9rlek.dts
+index 62981b39c815..d74b8d9d84aa 100644
+--- a/arch/arm/boot/dts/at91sam9rlek.dts
++++ b/arch/arm/boot/dts/at91sam9rlek.dts
+@@ -180,7 +180,7 @@ usb0: gadget@fffd4000 {
+ 			spi0: spi@fffcc000 {
+ 				status = "okay";
+ 				cs-gpios = <&pioA 28 0>, <0>, <0>, <0>;
+-				mtd_dataflash@0 {
++				flash@0 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					spi-max-frequency = <15000000>;
+ 					reg = <0>;
+diff --git a/arch/arm/boot/dts/usb_a9263.dts b/arch/arm/boot/dts/usb_a9263.dts
+index 8a0cfbfd0c45..b6cb9cdf8197 100644
+--- a/arch/arm/boot/dts/usb_a9263.dts
++++ b/arch/arm/boot/dts/usb_a9263.dts
+@@ -60,7 +60,7 @@ usb1: gadget@fff78000 {
+ 			spi0: spi@fffa4000 {
+ 				cs-gpios = <&pioB 15 GPIO_ACTIVE_HIGH>;
+ 				status = "okay";
+-				mtd_dataflash@0 {
++				flash@0 {
+ 					compatible = "atmel,at45", "atmel,dataflash";
+ 					reg = <0>;
+ 					spi-max-frequency = <15000000>;
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.32.0
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
