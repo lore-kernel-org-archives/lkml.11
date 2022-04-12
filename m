@@ -2,157 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF86AC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E09DCC4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383195AbiDLIgL (ORCPT
+        id S1383225AbiDLIgW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
+        Tue, 12 Apr 2022 04:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356335AbiDLHfR (ORCPT
+        with ESMTP id S1356455AbiDLHfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:35:17 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D254A3C5;
-        Tue, 12 Apr 2022 00:09:14 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id a11so18367725qtb.12;
-        Tue, 12 Apr 2022 00:09:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ou8zotsDb6wXIPljnzHu4XUowbgMosM63Cn663rp46M=;
-        b=LVlh/tRvH71ktLfuib9NCViHKA8f0kEJc4AmJMpKEDE5aEjyO+V+Vbm2CUWH07lJad
-         8/9Tj/cMllX/mRTxp3rXVBvjiov+7QAmYwTWqc3COJWNC8H4B/h1XOUidXW+zbkzaZwP
-         oD5jdVXyteqNosnRQJ3vAAHRnHa+MMkuAJzZrtJelhDsHes4oqS8RcOcL9BOxZXRTcxw
-         s1KSsomLF/OjH77XNPs2juRaOEuhRKQ87HrpU+/4SzEO0JJM1jzjbW43lpadSFzTLgXN
-         /J/qdATZY47naHznlo84/HmjjjBnQ5bL38g62skwnmnINWkRKGqzDEAW2O9uViIBz45V
-         DK4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ou8zotsDb6wXIPljnzHu4XUowbgMosM63Cn663rp46M=;
-        b=r8mpVtXroBiV6zLDdXxz0XgGHE2bfOp1AcZGWAPvAj4fTrEa2WGRqKnBebYgJiszfz
-         8Ge81IBoAITg50fXURXWdEeCYOFZjmF+2qJZi2oUg4zmbEIDv+WJmSIXNGUa+VNBD+vq
-         iJ9Z1rtQ1BW5dYCQRZob6tt27ZFsrkNxbSWhbgHYCEaQ5kbyVC1Yd03go2hd/sXesn31
-         YckH1G69pEPeSHsLhZfF3F6fCNOwS8op7iR2AJLIc87GPuubrY1TwLyXIsDfrjfwYdvp
-         6TflLg3YKilsyuSfSlESlQvzkZMCEj2+puXN5mJVoqMjNv3K4YgmsHsbXFbEsU4nKU0z
-         L9OA==
-X-Gm-Message-State: AOAM533jL0EweC4YN7eK60dc9G+POmPgg10XqZX9fr71Uc/9E/ejAs6G
-        DIwiNZFlxVd0egqlgb7Oa9E=
-X-Google-Smtp-Source: ABdhPJx4DR/2lIWNbxf+QPOcGkQ+ZbHPL7PSoRYaKAeefy7mBD1ijw/kEHdShjr7h9+JBy+VPiAijA==
-X-Received: by 2002:ac8:7c55:0:b0:2e1:d535:d881 with SMTP id o21-20020ac87c55000000b002e1d535d881mr2266217qtv.188.1649747353658;
-        Tue, 12 Apr 2022 00:09:13 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id x20-20020ac85f14000000b002e1ee1c56c3sm27634358qta.76.2022.04.12.00.09.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 00:09:12 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     broonie@kernel.org
-Cc:     mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        linux-spi@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] spi: spi-stm32-qspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Tue, 12 Apr 2022 07:09:06 +0000
-Message-Id: <20220412070906.2532091-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Apr 2022 03:35:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2240E5158B;
+        Tue, 12 Apr 2022 00:09:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6BADB81B4E;
+        Tue, 12 Apr 2022 07:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CFDAC385A1;
+        Tue, 12 Apr 2022 07:09:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747366;
+        bh=wDcLxwej26NS4LB06tWq4HGyqInkKqDEgOV0hiCt7+4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tJI7SrZaf3JY9oRraKiogqmVBPD2mGnJfLGxc1d54VqHWzDnwE5j+3wK91g3yOU+o
+         ANMnShUhH4WvyIBMKMoy2W7E2lrt+jADVQuOB/w4RnI2taqn8dKPzakc8TiymURKy9
+         vL0T6R5O/a9aVQse9G5eWu7TfMflejSrIWUuWnqY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Delyan Kratunov <delyank@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 052/343] libbpf: Fix build issue with llvm-readelf
+Date:   Tue, 12 Apr 2022 08:27:50 +0200
+Message-Id: <20220412062952.607814356@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Yonghong Song <yhs@fb.com>
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+[ Upstream commit 0908a66ad1124c1634c33847ac662106f7f2c198 ]
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+There are cases where clang compiler is packaged in a way
+readelf is a symbolic link to llvm-readelf. In such cases,
+llvm-readelf will be used instead of default binutils readelf,
+and the following error will appear during libbpf build:
+
+#  Warning: Num of global symbols in
+#   /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/sharedobjs/libbpf-in.o (367)
+#   does NOT match with num of versioned symbols in
+#   /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf.so libbpf.map (383).
+#   Please make sure all LIBBPF_API symbols are versioned in libbpf.map.
+#  --- /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf_global_syms.tmp ...
+#  +++ /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf_versioned_syms.tmp ...
+#  @@ -324,6 +324,22 @@
+#   btf__str_by_offset
+#   btf__type_by_id
+#   btf__type_cnt
+#  +LIBBPF_0.0.1
+#  +LIBBPF_0.0.2
+#  +LIBBPF_0.0.3
+#  +LIBBPF_0.0.4
+#  +LIBBPF_0.0.5
+#  +LIBBPF_0.0.6
+#  +LIBBPF_0.0.7
+#  +LIBBPF_0.0.8
+#  +LIBBPF_0.0.9
+#  +LIBBPF_0.1.0
+#  +LIBBPF_0.2.0
+#  +LIBBPF_0.3.0
+#  +LIBBPF_0.4.0
+#  +LIBBPF_0.5.0
+#  +LIBBPF_0.6.0
+#  +LIBBPF_0.7.0
+#   libbpf_attach_type_by_name
+#   libbpf_find_kernel_btf
+#   libbpf_find_vmlinux_btf_id
+#  make[2]: *** [Makefile:184: check_abi] Error 1
+#  make[1]: *** [Makefile:140: all] Error 2
+
+The above failure is due to different printouts for some ABS
+versioned symbols. For example, with the same libbpf.so,
+  $ /bin/readelf --dyn-syms --wide tools/lib/bpf/libbpf.so | grep "LIBBPF" | grep ABS
+     134: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.5.0
+     202: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.6.0
+     ...
+  $ /opt/llvm/bin/readelf --dyn-syms --wide tools/lib/bpf/libbpf.so | grep "LIBBPF" | grep ABS
+     134: 0000000000000000     0 OBJECT  GLOBAL DEFAULT   ABS LIBBPF_0.5.0@@LIBBPF_0.5.0
+     202: 0000000000000000     0 OBJECT  GLOBAL DEFAULT   ABS LIBBPF_0.6.0@@LIBBPF_0.6.0
+     ...
+The binutils readelf doesn't print out the symbol LIBBPF_* version and llvm-readelf does.
+Such a difference caused libbpf build failure with llvm-readelf.
+
+The proposed fix filters out all ABS symbols as they are not part of the comparison.
+This works for both binutils readelf and llvm-readelf.
+
+Reported-by: Delyan Kratunov <delyank@fb.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220204214355.502108-1-yhs@fb.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-stm32-qspi.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+ tools/lib/bpf/Makefile |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index ffdc55f87e82..b3586521d08e 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -463,11 +463,9 @@ static int stm32_qspi_poll_status(struct spi_mem *mem, const struct spi_mem_op *
- 	if (!spi_mem_supports_op(mem, op))
- 		return -EOPNOTSUPP;
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -131,7 +131,7 @@ GLOBAL_SYM_COUNT = $(shell readelf -s --
+ 			   sort -u | wc -l)
+ VERSIONED_SYM_COUNT = $(shell readelf --dyn-syms --wide $(OUTPUT)libbpf.so | \
+ 			      sed 's/\[.*\]//' | \
+-			      awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
++			      awk '/GLOBAL/ && /DEFAULT/ && !/UND|ABS/ {print $$NF}' | \
+ 			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
  
--	ret = pm_runtime_get_sync(qspi->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(qspi->dev);
-+	ret = pm_runtime_resume_and_get(qspi->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	mutex_lock(&qspi->lock);
- 
-@@ -490,11 +488,9 @@ static int stm32_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
- 	struct stm32_qspi *qspi = spi_controller_get_devdata(mem->spi->master);
- 	int ret;
- 
--	ret = pm_runtime_get_sync(qspi->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(qspi->dev);
-+	ret = pm_runtime_resume_and_get(qspi->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	mutex_lock(&qspi->lock);
- 	if (op->data.dir == SPI_MEM_DATA_IN && op->data.nbytes)
-@@ -536,11 +532,9 @@ static ssize_t stm32_qspi_dirmap_read(struct spi_mem_dirmap_desc *desc,
- 	u32 addr_max;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(qspi->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(qspi->dev);
-+	ret = pm_runtime_resume_and_get(qspi->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	mutex_lock(&qspi->lock);
- 	/* make a local copy of desc op_tmpl and complete dirmap rdesc
-@@ -583,11 +577,9 @@ static int stm32_qspi_setup(struct spi_device *spi)
- 	if (!spi->max_speed_hz)
- 		return -EINVAL;
- 
--	ret = pm_runtime_get_sync(qspi->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(qspi->dev);
-+	ret = pm_runtime_resume_and_get(qspi->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	presc = DIV_ROUND_UP(qspi->clk_rate, spi->max_speed_hz) - 1;
- 
-@@ -851,11 +843,9 @@ static int __maybe_unused stm32_qspi_resume(struct device *dev)
- 
- 	pinctrl_pm_select_default_state(dev);
- 
--	ret = pm_runtime_get_sync(dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(dev);
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	writel_relaxed(qspi->cr_reg, qspi->io_base + QSPI_CR);
- 	writel_relaxed(qspi->dcr_reg, qspi->io_base + QSPI_DCR);
--- 
-2.25.1
+ CMD_TARGETS = $(LIB_TARGET) $(PC_FILE)
+@@ -194,7 +194,7 @@ check_abi: $(OUTPUT)libbpf.so $(VERSION_
+ 		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
+ 		readelf --dyn-syms --wide $(OUTPUT)libbpf.so |		 \
+ 		    sed 's/\[.*\]//' |					 \
+-		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
++		    awk '/GLOBAL/ && /DEFAULT/ && !/UND|ABS/ {print $$NF}'|  \
+ 		    grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |		 \
+ 		    sort -u > $(OUTPUT)libbpf_versioned_syms.tmp; 	 \
+ 		diff -u $(OUTPUT)libbpf_global_syms.tmp			 \
+
 
