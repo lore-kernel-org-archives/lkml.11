@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC616C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353966AbiDLHiF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
+        id S233346AbiDLHiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352367AbiDLHN5 (ORCPT
+        with ESMTP id S1352431AbiDLHOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A9024F02;
-        Mon, 11 Apr 2022 23:54:43 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26EB82B25D;
+        Mon, 11 Apr 2022 23:54:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D290CB81B49;
-        Tue, 12 Apr 2022 06:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D09CC385A8;
-        Tue, 12 Apr 2022 06:54:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91AB260B2E;
+        Tue, 12 Apr 2022 06:54:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A275CC385A1;
+        Tue, 12 Apr 2022 06:54:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746480;
-        bh=qjaUBTBW20T7UWuTxWW0iMkCQ6k2PxjPtqmtjDEux3E=;
+        s=korg; t=1649746486;
+        bh=itrofdbs716ODIhnXjVEg+ypZaOmRWHXn91zuOKUFUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=02XGFvIti7TCmscmIaBS3nTt/5wdcOWM1XzLnrAXZnvk2vzGXGt0fzZr/qOiwD4z8
-         Tq8M6Dhz1dX3WE7Ql6M7DZm0IKk7oUyZt48G7ffedMiRgblzkNey5WZdihH4UiMid5
-         NFh7Uw9GDU5dp+vRnJfJfSLY07EE2CjgOSLTpNbI=
+        b=sCAGzdNFmhakSpJu0azNQFji2rvz08iOb/khsagOXrARuv34R/IyoM4b54FEPFuAU
+         n06GREAK84WAiDVRBBN9uYUmvvGyCbbXutO0GIJX9fDGZ93EvvqzZYLTHyLb+3rFzr
+         LkOVd8Fn545Q5mjtAdlV5CQ2B/G9++CHNsEhsK2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Philip Yang <Philip.Yang@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 020/285] ptp: replace snprintf with sysfs_emit
-Date:   Tue, 12 Apr 2022 08:27:57 +0200
-Message-Id: <20220412062944.262362779@linuxfoundation.org>
+Subject: [PATCH 5.16 022/285] drm/amdkfd: Dont take process mutex for svm ioctls
+Date:   Tue, 12 Apr 2022 08:27:59 +0200
+Message-Id: <20220412062944.319696634@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -53,50 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Philip Yang <Philip.Yang@amd.com>
 
-[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
+[ Upstream commit ac7c48c0cce00d03b3c95fddcccb0a45257e33e3 ]
 
-coccinelle report:
-./drivers/ptp/ptp_sysfs.c:17:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/ptp/ptp_sysfs.c:390:8-16:
-WARNING: use scnprintf or sprintf
+SVM ioctls take proper svms->lock to handle race conditions, don't need
+take process mutex to serialize ioctls. This also fixes circular locking
+warning:
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+WARNING: possible circular locking dependency detected
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock((work_completion)(&svms->deferred_list_work));
+                                lock(&process->mutex);
+                     lock((work_completion)(&svms->deferred_list_work));
+   lock(&process->mutex);
+
+   *** DEADLOCK ***
+
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_sysfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_chardev.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
-index 41b92dc2f011..9233bfedeb17 100644
---- a/drivers/ptp/ptp_sysfs.c
-+++ b/drivers/ptp/ptp_sysfs.c
-@@ -14,7 +14,7 @@ static ssize_t clock_name_show(struct device *dev,
- 			       struct device_attribute *attr, char *page)
- {
- 	struct ptp_clock *ptp = dev_get_drvdata(dev);
--	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
-+	return sysfs_emit(page, "%s\n", ptp->info->name);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+index 24ebd61395d8..3aaf10c778d7 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c
+@@ -1840,13 +1840,9 @@ static int kfd_ioctl_svm(struct file *filep, struct kfd_process *p, void *data)
+ 	if (!args->start_addr || !args->size)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&p->mutex);
+-
+ 	r = svm_ioctl(p, args->op, args->start_addr, args->size, args->nattr,
+ 		      args->attrs);
+ 
+-	mutex_unlock(&p->mutex);
+-
+ 	return r;
  }
- static DEVICE_ATTR_RO(clock_name);
- 
-@@ -387,7 +387,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
- 
- 	mutex_unlock(&ptp->pincfg_mux);
- 
--	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
-+	return sysfs_emit(page, "%u %u\n", func, chan);
- }
- 
- static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
+ #else
 -- 
 2.35.1
 
