@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C69C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF36C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357088AbiDLPiC (ORCPT
+        id S1357092AbiDLPiP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
+        Tue, 12 Apr 2022 11:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357071AbiDLPh6 (ORCPT
+        with ESMTP id S1357114AbiDLPiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:37:58 -0400
-Received: from out203-205-221-205.mail.qq.com (out203-205-221-205.mail.qq.com [203.205.221.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDFE48323
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:35:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649777738;
-        bh=9qKBnWpv/HykBc2mSWxuA/ivCCuIrw3urPt578T5zeU=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=TNrt8ghF935eSqJNjoUGPKc/9aK+DKGjCwmsDmzlLmthsbq1owGyPl3G9V1lLBe0X
-         CgBh3/W/i9D8k8HbE2GgaxibQnYBnY8uv6qXWWQOHNpekD4rGK62708eeNydXiZG+U
-         7PMdQwmue1WIZdv6VkPEVLs5deg0GzOioj5zeyeA=
-Received: from [192.168.0.110] ([36.57.145.74])
-        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
-        id 8E13BE96; Tue, 12 Apr 2022 23:35:33 +0800
-X-QQ-mid: xmsmtpt1649777733t4h4p45kq
-Message-ID: <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
-X-QQ-XMAILINFO: MMUVWBTDoFy16dpyMHlRDHso9l7Iz/n+9qxGrRvhJv/WrC2+2fQ++wV+p0nmCP
-         K0+Jsk7ZJGlicnLhAOxmUm4idOsA5NOf7FFM68q8XptH7w2dWaZxpulO2XgovXxd0mP20GS5cgfU
-         t9wDTBySp9Q0EraF3K8cSKqitSKNms5uKMm9qmJ/F9B2YUjrhZ/jWgJE+z/l2lBJJCjCu5A+glpf
-         9XZg8srA2Bk/8Q09DKXG1KgSL0P5hBV8AXsq0i3HUfJny/QpAHJ5Zh4AxRzkdG2vrmb+EZE/fBKE
-         UnEs65Dw3nMRrc2y9t9hlC8itvkMLTKUbIitAhLcTeXVUEydb8G33cIDQXnSgX4XWTYki77GNnCw
-         VOSvN78SuwYwhOSRqHoMmgVvTC0b0f5nLVtwN4v4Jh5nmBaiuYgJNKbsi5sNS4gjQpH/VfFiPQaf
-         Uee1957BExhhnJlnFDrv1d2mEcfMzTlECv4qx2W+4ASpHatxL72AeYZiBzOSbEejvPcHpMRgsct+
-         tAQ2tVoeud3VYNOZDCjVH/fyksk9yVkbCdNR/cvQngUOQHWk+FEMBNEj71qT0MRWBTupFRCfYafk
-         jyfQ5T/uZ88Ro5P7aJVVQNKmCD+ga30vf/BtJxYqgDJosD7aEcmfIrUKqOy4qgnMYu5jxMr4wR9Q
-         fyV6kXssxjmwes14uj42cKu8466Hc3aoS+IYaTRWMm7/TssO0vpH6bBtyiYD1AEwlFChJ1w5jRdf
-         kJMMPgBZA9XKl2WBmD7sX5noCNNklDoq8kMpPkvNeHn+I/g31De70DaRI9+UyeFaXI+5JnLLwFiX
-         HsDw+UhWBS7U+JzmOBBo0LKLQf/qNlb2iAr6uZk5XAwNecJmK07V/E01QP5Il2g2fUN/o8AnVDYW
-         /0AryBrcA5Llja60FBxQHDaABBo624wv/BekludJeLp9QFbomh5F9wJT5rdSkQAuOwzgcllQuBb6
-         8n+w1a7hgq6Q4hUaquKKg1UE00fTdB0rBDpKB1ULI=
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-To:     Fenghua Yu <fenghua.yu@intel.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Tue, 12 Apr 2022 11:38:12 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778E1554A1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:35:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649777752; x=1681313752;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=lj9QUXdM5GCMuPvK+BqdMIEkmXMFoN2VtIV9O9lZiCQ=;
+  b=iniVuKkxRvTnQUOsODUFsiEQ0X3IH9yvSxQHt5ppDlaIXHBLxV12D4f0
+   lh3tPHiu740cetLhrI3kunqcdbycN0MPWA2aeReTWcZYJKBAhcQmO/ATe
+   uv+ME/Np6e12UpnxeZRD4e8JrEZ04HOTDlA6rxgFyUayiBp/PX2ngpbQk
+   gvDB2fgYah3/HBcHOcl1+nfJb8dLcFm7n9GHmmGp3UVJaAbFYYSL0inBF
+   46t3lKTDMaEh0AygoBi8esHs92ZLMfLKZ+LjyJzC1odCEn5t7lvgvv4FO
+   m6CE7olpBIQq0Yg0IP3X11YnBj8XbYGx6MFzswio/1C4OqolbKpOxgP19
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="322847209"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="322847209"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 08:35:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="551758622"
+Received: from vtelkarx-mobl.amr.corp.intel.com (HELO [10.209.191.73]) ([10.209.191.73])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 08:35:50 -0700
+Message-ID: <8b1e40c9-b2e8-7b73-d9ad-2c6a5a167370@intel.com>
+Date:   Tue, 12 Apr 2022 08:35:56 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc:     "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>,
         Joerg Roedel <joro@8bytes.org>,
-        jean-philippe <jean-philippe@linaro.org>,
+        Fenghua Yu <fenghua.yu@intel.com>,
         Ravi V Shankar <ravi.v.shankar@intel.com>,
         Tony Luck <tony.luck@intel.com>,
         Ashok Raj <ashok.raj@intel.com>,
@@ -60,8 +60,8 @@ Cc:     Dave Hansen <dave.hansen@intel.com>,
         Andy Lutomirski <luto@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
- <20220207230254.3342514-6-fenghua.yu@intel.com> <Ygt4h0PgYzKOiB38@8bytes.org>
+References: <20220207230254.3342514-6-fenghua.yu@intel.com>
+ <Ygt4h0PgYzKOiB38@8bytes.org>
  <tencent_F6830A1196DB4C6A904D7C691F0D961D1108@qq.com>
  <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
  <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
@@ -69,177 +69,42 @@ References: <20220207230254.3342514-1-fenghua.yu@intel.com>
  <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
  <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
  <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
- <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
-From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-X-OQ-MSGID: <a50f6b69-39dd-7f12-9faf-b48315e5ec22@foxmail.com>
-Date:   Tue, 12 Apr 2022 23:35:32 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+ <41ed3405-66d9-0cde-fc01-b3eacb85a081@intel.com> <YlWWavIDMNpbD3Ye@larix>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+In-Reply-To: <YlWWavIDMNpbD3Ye@larix>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Fenghua
+On 4/12/22 08:10, Jean-Philippe Brucker wrote:
+>> I wonder if the Intel and ARM IOMMU code differ in the way they keep
+>> references to the mm, or if this affects Intel as well, but we just
+>> haven't tested the code enough.
+> The Arm code was written expecting the PASID to be freed on unbind(), not
+> mm exit. I missed the change of behavior, sorry (I thought your plan was
+> to extend PASID lifetime, not shorten it?) but as is it seems very broken.
+> For example in the iommu_sva_unbind_device(), we have
+> arm_smmu_mmu_notifier_put() clearing the PASID table entry for
+> "mm->pasid", which is going to end badly if the PASID has been cleared or
+> reallocated. We can't clear the PASID entry in mm exit because at that
+> point the device may still be issuing DMA for that PASID and we need to
+> quiesce the entry rather than deactivate it.
 
-On 2022/4/12 下午9:41, Fenghua Yu wrote:
-> Hi, Zhangfei,
->
-> On Tue, Apr 12, 2022 at 03:04:09PM +0800, zhangfei.gao@foxmail.com wrote:
->>
->> On 2022/4/11 下午10:52, Dave Hansen wrote:
->>> On 4/11/22 07:44, zhangfei.gao@foxmail.com wrote:
->>>> On 2022/4/11 下午10:36, Dave Hansen wrote:
->>>>> On 4/11/22 07:20, zhangfei.gao@foxmail.com wrote:
->>>>>>> Is there nothing before this call trace?  Usually there will be at least
->>>>>>> some warning text.
->>>>>> I added dump_stack() in ioasid_free.
->>>>> Hold on a sec, though...
->>>>>
->>>>> What's the *problem* here?  Did something break or are you just saying
->>>>> that something looks weird to _you_?
->>>> After this, nginx is not working at all, and hardware reports error.
->>>> Suppose the the master use the ioasid for init, but got freed.
->>>>
->>>> hardware reports:
->>>> [  152.731869] hisi_sec2 0000:76:00.0: qm_acc_do_task_timeout [error status=0x20] found
->>>> [  152.739657] hisi_sec2 0000:76:00.0: qm_acc_wb_not_ready_timeout [error status=0x40] found
->>>> [  152.747877] hisi_sec2 0000:76:00.0: sec_fsm_hbeat_rint [error status=0x20] found
->>>> [  152.755340] hisi_sec2 0000:76:00.0: Controller resetting...
->>>> [  152.762044] hisi_sec2 0000:76:00.0: QM mailbox operation timeout!
->>>> [  152.768198] hisi_sec2 0000:76:00.0: Failed to dump sqc!
->>>> [  152.773490] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
->>>> [  152.781426] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
->>>> [  152.787468] hisi_sec2 0000:76:00.0: Failed to dump sqc!
->>>> [  152.792753] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
->>>> [  152.800685] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
->>>> [  152.806730] hisi_sec2 0000:76:00.0: Failed to dump sqc!
->>>> [  152.812017] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
->>>> [  152.819946] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
->>>> [  152.825992] hisi_sec2 0000:76:00.0: Failed to dump sqc!
->>> That would have been awfully handy information to have in an initial bug report. :)
->>> Is there a chance you could dump out that ioasid alloc *and* free information in ioasid_alloc/free()?  This could be some kind of problem with the allocator, or with copying the ioasid at fork.
->> The issue is nginx master process init resource, start daemon process, then
->> master process quit and free ioasid.
->> The daemon nginx process is not the original master process.
->>
->> master process:  init resource
->> driver -> iommu_sva_bind_device -> ioasid_alloc
-> Which code in the master process/daemon calls driver->iommu_sva_unbind_device?
-Our calling sequence is nginx -> openssl -> openssl engine ->  kernel driver
-The calling entrence should be ngx_ssl_init : OPENSSL_config(NULL);
+I think we ended up flipping some of this around on the Intel side.
+Instead of having to quiesce the device on mm exit, we don't let the mm
+exit until the device is done.
 
-nginx:
-src/event/ngx_event_openssl.c
-ngx_ssl_init
-if (OPENSSL_init_ssl(OPENSSL_INIT_LOAD_CONFIG, NULL) == 0)
+When you program the pasid into the device, it's a lot like when you
+create a thread.  We bump the reference count on the mm when we program
+the page table pointer into a CPU.  We drop the thread's reference to
+the mm when the thread exits and will no longer be using the page tables.
 
-I add some print.
+Same thing with pasids.  We bump the refcount on the mm when the pasid
+is programmed into the device.  Once the device is done with the mm, we
+drop the mm.
 
-/usr/local/nginx$ sudo sbin/nginx
-ngx_ssl_init pid=2361
-bind_fn
-ngx_openssl_create_conf pid=2361
-hisi sec init Kunpeng920!
-ngx_ssl_create pid=2361
-ngx_ssl_certificates pid=2361
-ngx_ssl_certificate pid=2361
-uadk_e_wd_digest_init
-hisi sec init Kunpeng920!
-ngx_ssl_ciphers pid=2361
-ngx_daemon pid=2361 fork daemon
-master pid=2361 will exit                                // here master 
-process is exit
-fork return 0 pid=2364                                       // here 
-daemon process started
-ngx_daemon fork ngx_pid=2364, ngx_parent=2361
-$ ps -aux | grep nginx
-root        2364  0.0  0.0  31324 15380 ?        Ssl  15:21   0:00 
-nginx: master process sbin/nginx
-nobody      2366  0.0  0.0  32304 16448 ?        Sl   15:21   0:00 
-nginx: worker process
-linaro      2371  0.0  0.0   7696  2048 pts/0    S+   15:22   0:00 grep 
---color=auto nginx
-
-nginx
-src/os/unix/ngx_daemon.c
-ngx_daemon(ngx_log_t *log)
-{
-     int  fd;
-
-     switch (fork()) {
-     case -1:
-         ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "fork() failed");
-         return NGX_ERROR;
-
-     case 0:
-        // here fork daemon process
-         break;
-
-     default:
-       // master process directly exit, and release mm as well as ioasid
-         exit(0);
-     }
-
-      // only daemon process
-     ngx_parent = ngx_pid;
-     ngx_pid = ngx_getpid();
-
->
->> nginx : ngx_daemon
->> fork daemon, without add mm's refcount.
->>
->> src/os/unix/ngx_daemon.c
->> ngx_daemon(ngx_log_t *log)
->> {
->>      int  fd;
->>
->>      switch (fork()) {
->>      case -1:
->>          ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "fork() failed");
->>          return NGX_ERROR;
->>
->>      case 0:        // here master process is quit directly and will be
->> released.
->>          break;
->>
->>      default:
->>          exit(0);
->>      }
->> // here daemon process take control.
->>      ngx_parent = ngx_pid;
->>      ngx_pid = ngx_getpid();
->>
->>
->> fork.c
->> copy_mm
->>          if (clone_flags & CLONE_VM) {
->>                  mmget(oldmm);
->>                  mm = oldmm;
->>          } else {
->>                  mm = dup_mm(tsk, current->mm);    // here daemon process
->> handling without mmget.
->>
->> master process quit, mmput ->  mm_pasid_drop->ioasid_free
->> But this ignore driver's iommu_sva_unbind_device function,
->> iommu_sva_bind_device and iommu_sva_unbind_device are not pair,  So driver
->> does not know ioasid is freed.
->>
->> Any suggestion?
-> ioasid is per process or per mm. A daemon process shouldn't share the same
-> ioasid with any other process with even its parent process. Its parent gets
-> an ioasid and frees it on exit. The ioasid is gone and shouldn't be used
-> by its child process.
->
-> Each daemon process should call driver -> iommu_sva_bind_device -> ioasid_alloc
-> to get its own ioasid/PASID. On daemon quit, the ioasid is freed.
->
-> That means nqnix needs to be changed.
-
-Agree with Dave, I think user space should not be broken.
-
-Thanks
+Basically, instead of recounting the pasid itself, we just refcount the mm.
