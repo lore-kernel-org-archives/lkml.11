@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B94C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C92ABC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385757AbiDLIwy (ORCPT
+        id S1385789AbiDLIw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        Tue, 12 Apr 2022 04:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359053AbiDLHm1 (ORCPT
+        with ESMTP id S1359073AbiDLHm3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:27 -0400
+        Tue, 12 Apr 2022 03:42:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472F254FA5;
-        Tue, 12 Apr 2022 00:20:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA35A5521E;
+        Tue, 12 Apr 2022 00:20:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A80A86171C;
-        Tue, 12 Apr 2022 07:20:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD9F4C385A1;
-        Tue, 12 Apr 2022 07:20:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4420361045;
+        Tue, 12 Apr 2022 07:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58DADC385A1;
+        Tue, 12 Apr 2022 07:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748006;
-        bh=et5H9Lo/I7eEZHEtzI0oQ2lysaJnffjyER3MhMUSTHc=;
+        s=korg; t=1649748008;
+        bh=q7WSODLypYIykGAg6QQO4egcUuD69gEgMfjespz19u8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDdc2IoS9SMR5WIONiSqTEqfwmwGUgxGeuWWm4I3qtV/bGKP4z1P3N9a86KZwIsi/
-         cCs+xyBHqdKWicWV3a337fcsl4AdEqu7qjK2SZDphnLfoF4SpXW1DayH7rYXPDV+nN
-         LiZMRUiZlXeh6JxVcTPrFSsNOCxYBxJZZJ+iIqwU=
+        b=HUbyBLQY0LuB+NqoDQmxGHuWoIFX9e1pmknJNclGZi00x9VP1jrq9WwGSYEolB6Qw
+         zbDy+K1nADMeD/YPKVZcZnN7VP6oXU4Mof2rfBVHxpreIb03VZ3be2+IBppWrN2Bp/
+         pMFGGPUjVlBLMzKvsHjYdsw61g2E7b9ZXbMCtc/A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Pudak, Filip" <Filip.Pudak@windriver.com>,
-        "Xiao, Jiguang" <Jiguang.Xiao@windriver.com>,
-        David Ahern <dsahern@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, Pudak@vger.kernel.org,
-        Xiao@vger.kernel.org
-Subject: [PATCH 5.17 235/343] ipv6: Fix stats accounting in ip6_pkt_drop
-Date:   Tue, 12 Apr 2022 08:30:53 +0200
-Message-Id: <20220412062958.118107935@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 279/343] io_uring: fix race between timeout flush and removal
+Date:   Tue, 12 Apr 2022 08:31:37 +0200
+Message-Id: <20220412062959.376033708@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,40 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 1158f79f82d437093aeed87d57df0548bdd68146 ]
+commit e677edbcabee849bfdd43f1602bccbecf736a646 upstream.
 
-VRF devices are the loopbacks for VRFs, and a loopback can not be
-assigned to a VRF. Accordingly, the condition in ip6_pkt_drop should
-be '||' not '&&'.
+io_flush_timeouts() assumes the timeout isn't in progress of triggering
+or being removed/canceled, so it unconditionally removes it from the
+timeout list and attempts to cancel it.
 
-Fixes: 1d3fd8a10bed ("vrf: Use orig netdev to count Ip6InNoRoutes and a fresh route lookup when sending dest unreach")
-Reported-by: Pudak, Filip <Filip.Pudak@windriver.com>
-Reported-by: Xiao, Jiguang <Jiguang.Xiao@windriver.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220404150908.2937-1-dsahern@kernel.org
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Leave it on the list and let the normal timeout cancelation take care
+of it.
+
+Cc: stable@vger.kernel.org # 5.5+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/io_uring.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index ea1cf414a92e..da1bf48e7937 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -4495,7 +4495,7 @@ static int ip6_pkt_drop(struct sk_buff *skb, u8 code, int ipstats_mib_noroutes)
- 	struct inet6_dev *idev;
- 	int type;
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -1644,12 +1644,11 @@ static __cold void io_flush_timeouts(str
+ 	__must_hold(&ctx->completion_lock)
+ {
+ 	u32 seq = ctx->cached_cq_tail - atomic_read(&ctx->cq_timeouts);
++	struct io_kiocb *req, *tmp;
  
--	if (netif_is_l3_master(skb->dev) &&
-+	if (netif_is_l3_master(skb->dev) ||
- 	    dst->dev == net->loopback_dev)
- 		idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
- 	else
--- 
-2.35.1
-
+ 	spin_lock_irq(&ctx->timeout_lock);
+-	while (!list_empty(&ctx->timeout_list)) {
++	list_for_each_entry_safe(req, tmp, &ctx->timeout_list, timeout.list) {
+ 		u32 events_needed, events_got;
+-		struct io_kiocb *req = list_first_entry(&ctx->timeout_list,
+-						struct io_kiocb, timeout.list);
+ 
+ 		if (io_is_timeout_noseq(req))
+ 			break;
+@@ -1666,7 +1665,6 @@ static __cold void io_flush_timeouts(str
+ 		if (events_got < events_needed)
+ 			break;
+ 
+-		list_del_init(&req->timeout.list);
+ 		io_kill_timeout(req, 0);
+ 	}
+ 	ctx->cq_last_tm_flush = seq;
+@@ -6276,6 +6274,7 @@ static int io_timeout_prep(struct io_kio
+ 	if (data->ts.tv_sec < 0 || data->ts.tv_nsec < 0)
+ 		return -EINVAL;
+ 
++	INIT_LIST_HEAD(&req->timeout.list);
+ 	data->mode = io_translate_timeout_mode(flags);
+ 	hrtimer_init(&data->timer, io_timeout_get_clock(data), data->mode);
+ 
 
 
