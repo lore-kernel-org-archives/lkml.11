@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8F5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC578C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242353AbiDLLHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
+        id S244999AbiDLLHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239320AbiDLLAg (ORCPT
+        with ESMTP id S235614AbiDLLAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:00:36 -0400
+        Tue, 12 Apr 2022 07:00:21 -0400
 Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CAA90FCE;
-        Tue, 12 Apr 2022 02:51:02 -0700 (PDT)
-Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 812ADCE59E;
-        Tue, 12 Apr 2022 09:41:28 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD70A90CFE;
+        Tue, 12 Apr 2022 02:50:57 -0700 (PDT)
+Received: from relay2-d.mail.gandi.net (unknown [217.70.183.194])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id A0498CE2A8;
+        Tue, 12 Apr 2022 09:41:07 +0000 (UTC)
 Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id 4102D4000A;
-        Tue, 12 Apr 2022 09:41:04 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPA id 2E7B44001B;
+        Tue, 12 Apr 2022 09:40:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649756465;
+        t=1649756460;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MSoUOv1wgDHI3oFS8YQWwDYPcvakH7oUF/A6hDRmPCQ=;
-        b=fsXFQ3NJwB1gy6uZQXEB0OChIjuKqRUZp5oRLfEzzwNNr1yFQanEPnnDfNxhjBmEfwZ4wg
-        KxGrEzjbA2b8vx+PmkHFsK0w7/hRpzStWRjM9+/q9FBLTfOO3j8QL6yg6VcE5Wf3m5DvAq
-        jpEjI2cbAJ81j3Eu9VoeVIlWZTPBebeF+P/IDdmEffiUiFg7OE7GQk8qcbiQrPuVeNOJYa
-        cFG6PYBRD/85B06xnt1PSIwdnDkaoBs9gsWxrBhJgMB6SMIzEkQoBfmIqgC1iBURWtKq9a
-        sc+X1Gg+X7l2tthZSGPXBp6XtHO+4JEztJWh3Ilq25RHlRpvDvbbC2/5ig4n+Q==
+        bh=72EU7fqyLNwo7dQx4SfOnbogRdsZnfhW6yqgprEWLGg=;
+        b=Q06giUglgqEzDNBY0DNHDOs++180sMNPSvECIwcUmDqN8fpohNonBEyKYr9TPgSDHIoLAt
+        1+kW0ENLCOpGDQ9e+ioDoWnwz0WIM+e1KAbNEd7TupgUddA0fwwbbTyioQe8ugQ03kY2RY
+        TJdj+q+NWinL+SQCWFZyEiIxT8vUnufxePY/SSXEh960KotZEEtD7v/bxKv4FjPf5olLFI
+        T8gX/bM66YzLkCZ0WZa57gnAJ2E8WRssq3uvyzHrnaeGINyqPW3bffzlt80M2CqSa4satC
+        NtYZlBGlZezOyYX5SeT09ZLZDOuVOdS+2rH5eKUbaTUK1FEcKkr4vcgB4/RS+A==
 From:   Herve Codina <herve.codina@bootlin.com>
 To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
         Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
@@ -50,9 +50,9 @@ Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
         Clement Leger <clement.leger@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>
-Subject: [PATCH 5/6] ARM: dts: r9a06g032: Add USB PHY DT support
-Date:   Tue, 12 Apr 2022 11:40:28 +0200
-Message-Id: <20220412094029.287562-6-herve.codina@bootlin.com>
+Subject: [PATCH 3/6] PCI: rcar-gen2: Add R9A06G032 support
+Date:   Tue, 12 Apr 2022 11:40:26 +0200
+Message-Id: <20220412094029.287562-4-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412094029.287562-1-herve.codina@bootlin.com>
 References: <20220412094029.287562-1-herve.codina@bootlin.com>
@@ -62,30 +62,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define the r9a06g032 generic part of the USB PHY device node.
+Add Renesas R9A06G032 SoC support to the Renesas R-Car gen2 PCI
+bridge driver.
+The Renesas RZ/N1D (R9A06G032) internal PCI bridge is compatible
+with the one available in the R-Car Gen2 family.
 
 Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 ---
- arch/arm/boot/dts/r9a06g032.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/pci/controller/pci-rcar-gen2.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index c6a99b2a8fb3..c9336dc4888a 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -59,6 +59,12 @@ ext_rtc_clk: extrtcclk {
- 		clock-frequency = <0>;
- 	};
+diff --git a/drivers/pci/controller/pci-rcar-gen2.c b/drivers/pci/controller/pci-rcar-gen2.c
+index 528bc3780e01..586e4785a57f 100644
+--- a/drivers/pci/controller/pci-rcar-gen2.c
++++ b/drivers/pci/controller/pci-rcar-gen2.c
+@@ -352,6 +352,8 @@ static const struct of_device_id rcar_pci_of_match[] = {
+ 	{ .compatible = "renesas,pci-r8a7791", },
+ 	{ .compatible = "renesas,pci-r8a7794", },
+ 	{ .compatible = "renesas,pci-rcar-gen2", },
++	{ .compatible = "renesas,pci-r9a06g032", },
++	{ .compatible = "renesas,pci-rzn1", },
+ 	{ },
+ };
  
-+	usbphy: usbphy {
-+		#phy-cells = <0>;
-+		compatible = "usb-nop-xceiv";
-+		status = "disabled";
-+	};
-+
- 	soc {
- 		compatible = "simple-bus";
- 		#address-cells = <1>;
 -- 
 2.35.1
 
