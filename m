@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAF7C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1CCC352A8
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383736AbiDLIiH (ORCPT
+        id S1383721AbiDLIiD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
+        Tue, 12 Apr 2022 04:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357060AbiDLHjp (ORCPT
+        with ESMTP id S1357055AbiDLHjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57231BF6F;
-        Tue, 12 Apr 2022 00:11:13 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6923EEBE;
+        Tue, 12 Apr 2022 00:11:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEB9461701;
-        Tue, 12 Apr 2022 07:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB41C385A5;
-        Tue, 12 Apr 2022 07:11:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06D7A616B2;
+        Tue, 12 Apr 2022 07:11:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12171C385A5;
+        Tue, 12 Apr 2022 07:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747472;
-        bh=yLn6bZ4He80CPFSWZpCphVsn2it17qouwBsuhYYoByg=;
+        s=korg; t=1649747469;
+        bh=zgITDaPiAeLIf6/TWaZY2wCzKCFRSQVmMhsZTlPKrso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PACBWbcfw3/BgTXMAXfVG5OqScxsCB1trDZtmvWwm5ThcF1mhYSZquUjwB5gNIxpO
-         b/SwNJX2UPVwCNbpaMnMDhGXTRZE2tW8sjc+bgRMdsWlpsyv4H0bwgcDick8cRTKuG
-         RGyjqKt7Wn/FSHLF9YYkDF/R9fuq33+fvbSPfbO4=
+        b=Zb05itzi60PoJFD3tjcR3EZil7eh3FY960Gw0/PsWTEywOMAvQHRUJIuFAYzTEHY5
+         0kVUar8JkalVWFNpENPJ0ZH4k04FdCG3C+5q05N0gQbgIyPDqAvHhjZ2TGxTANX4hL
+         qRC7TdGP+gBgxpka6lQsctIMeD9GYGfDqZbJOUC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricardo Koller <ricarkol@google.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Andrew Jones <drjones@redhat.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 064/343] kvm: selftests: aarch64: fix some vgic related comments
-Date:   Tue, 12 Apr 2022 08:28:02 +0200
-Message-Id: <20220412062952.952216614@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 090/343] ipv6: annotate some data-races around sk->sk_prot
+Date:   Tue, 12 Apr 2022 08:28:28 +0200
+Message-Id: <20220412062953.705135357@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,119 +51,168 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricardo Koller <ricarkol@google.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit a5cd38fd9c47b23abc6df08d6ee6a71b39038185 ]
+[ Upstream commit 086d49058cd8471046ae9927524708820f5fd1c7 ]
 
-Fix the formatting of some comments and the wording of one of them (in
-gicv3_access_reg).
+IPv6 has this hack changing sk->sk_prot when an IPv6 socket
+is 'converted' to an IPv4 one with IPV6_ADDRFORM option.
 
-Signed-off-by: Ricardo Koller <ricarkol@google.com>
-Reported-by: Reiji Watanabe <reijiw@google.com>
-Cc: Andrew Jones <drjones@redhat.com>
-Reviewed-by: Andrew Jones <drjones@redhat.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220127030858.3269036-5-ricarkol@google.com
+This operation is only performed for TCP and UDP, knowing
+their 'struct proto' for the two network families are populated
+in the same way, and can not disappear while a reader
+might use and dereference sk->sk_prot.
+
+If we think about it all reads of sk->sk_prot while
+either socket lock or RTNL is not acquired should be using READ_ONCE().
+
+Also note that other layers like MPTCP, XFRM, CHELSIO_TLS also
+write over sk->sk_prot.
+
+BUG: KCSAN: data-race in inet6_recvmsg / ipv6_setsockopt
+
+write to 0xffff8881386f7aa8 of 8 bytes by task 26932 on cpu 0:
+ do_ipv6_setsockopt net/ipv6/ipv6_sockglue.c:492 [inline]
+ ipv6_setsockopt+0x3758/0x3910 net/ipv6/ipv6_sockglue.c:1019
+ udpv6_setsockopt+0x85/0x90 net/ipv6/udp.c:1649
+ sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3489
+ __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff8881386f7aa8 of 8 bytes by task 26911 on cpu 1:
+ inet6_recvmsg+0x7a/0x210 net/ipv6/af_inet6.c:659
+ ____sys_recvmsg+0x16c/0x320
+ ___sys_recvmsg net/socket.c:2674 [inline]
+ do_recvmmsg+0x3f5/0xae0 net/socket.c:2768
+ __sys_recvmmsg net/socket.c:2847 [inline]
+ __do_sys_recvmmsg net/socket.c:2870 [inline]
+ __se_sys_recvmmsg net/socket.c:2863 [inline]
+ __x64_sys_recvmmsg+0xde/0x160 net/socket.c:2863
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0xffffffff85e0e980 -> 0xffffffff85e01580
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 26911 Comm: syz-executor.3 Not tainted 5.17.0-rc2-syzkaller-00316-g0457e5153e0e-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/aarch64/vgic_irq.c   | 12 ++++++++----
- tools/testing/selftests/kvm/lib/aarch64/gic_v3.c | 10 ++++++----
- tools/testing/selftests/kvm/lib/aarch64/vgic.c   |  3 ++-
- 3 files changed, 16 insertions(+), 9 deletions(-)
+ net/ipv6/af_inet6.c      | 24 ++++++++++++++++++------
+ net/ipv6/ipv6_sockglue.c |  6 ++++--
+ 2 files changed, 22 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/vgic_irq.c b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-index 48e43e24d240..554ca649d470 100644
---- a/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-+++ b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-@@ -306,7 +306,8 @@ static void guest_restore_active(struct test_args *args,
- 	uint32_t prio, intid, ap1r;
- 	int i;
- 
--	/* Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
-+	/*
-+	 * Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
- 	 * in descending order, so intid+1 can preempt intid.
- 	 */
- 	for (i = 0, prio = (num - 1) * 8; i < num; i++, prio -= 8) {
-@@ -315,7 +316,8 @@ static void guest_restore_active(struct test_args *args,
- 		gic_set_priority(intid, prio);
- 	}
- 
--	/* In a real migration, KVM would restore all GIC state before running
-+	/*
-+	 * In a real migration, KVM would restore all GIC state before running
- 	 * guest code.
- 	 */
- 	for (i = 0; i < num; i++) {
-@@ -503,7 +505,8 @@ static void guest_code(struct test_args *args)
- 		test_injection_failure(args, f);
- 	}
- 
--	/* Restore the active state of IRQs. This would happen when live
-+	/*
-+	 * Restore the active state of IRQs. This would happen when live
- 	 * migrating IRQs in the middle of being handled.
- 	 */
- 	for_each_supported_activate_fn(args, set_active_fns, f)
-@@ -844,7 +847,8 @@ int main(int argc, char **argv)
- 		}
- 	}
- 
--	/* If the user just specified nr_irqs and/or gic_version, then run all
-+	/*
-+	 * If the user just specified nr_irqs and/or gic_version, then run all
- 	 * combinations.
- 	 */
- 	if (default_args) {
-diff --git a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
-index e4945fe66620..263bf3ed8fd5 100644
---- a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
-+++ b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
-@@ -19,7 +19,7 @@ struct gicv3_data {
- 	unsigned int nr_spis;
- };
- 
--#define sgi_base_from_redist(redist_base) 	(redist_base + SZ_64K)
-+#define sgi_base_from_redist(redist_base)	(redist_base + SZ_64K)
- #define DIST_BIT				(1U << 31)
- 
- enum gicv3_intid_range {
-@@ -105,7 +105,8 @@ static void gicv3_set_eoi_split(bool split)
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 8fe7900f1949..7d7b7523d126 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -441,11 +441,14 @@ int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
  {
- 	uint32_t val;
+ 	struct sock *sk = sock->sk;
+ 	u32 flags = BIND_WITH_LOCK;
++	const struct proto *prot;
+ 	int err = 0;
  
--	/* All other fields are read-only, so no need to read CTLR first. In
-+	/*
-+	 * All other fields are read-only, so no need to read CTLR first. In
- 	 * fact, the kernel does the same.
- 	 */
- 	val = split ? (1U << 1) : 0;
-@@ -160,8 +161,9 @@ static void gicv3_access_reg(uint32_t intid, uint64_t offset,
++	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++	prot = READ_ONCE(sk->sk_prot);
+ 	/* If the socket has its own bind function then use it. */
+-	if (sk->sk_prot->bind)
+-		return sk->sk_prot->bind(sk, uaddr, addr_len);
++	if (prot->bind)
++		return prot->bind(sk, uaddr, addr_len);
  
- 	GUEST_ASSERT(bits_per_field <= reg_bits);
- 	GUEST_ASSERT(!write || *val < (1U << bits_per_field));
--	/* Some registers like IROUTER are 64 bit long. Those are currently not
--	 * supported by readl nor writel, so just asserting here until then.
-+	/*
-+	 * This function does not support 64 bit accesses. Just asserting here
-+	 * until we implement readq/writeq.
- 	 */
- 	GUEST_ASSERT(reg_bits == 32);
+ 	if (addr_len < SIN6_LEN_RFC2133)
+ 		return -EINVAL;
+@@ -555,6 +558,7 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+ 	void __user *argp = (void __user *)arg;
+ 	struct sock *sk = sock->sk;
+ 	struct net *net = sock_net(sk);
++	const struct proto *prot;
  
-diff --git a/tools/testing/selftests/kvm/lib/aarch64/vgic.c b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
-index f5cd0c536d85..7c876ccf9294 100644
---- a/tools/testing/selftests/kvm/lib/aarch64/vgic.c
-+++ b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
-@@ -152,7 +152,8 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid,
- 		attr += SZ_64K;
+ 	switch (cmd) {
+ 	case SIOCADDRT:
+@@ -572,9 +576,11 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+ 	case SIOCSIFDSTADDR:
+ 		return addrconf_set_dstaddr(net, argp);
+ 	default:
+-		if (!sk->sk_prot->ioctl)
++		/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++		prot = READ_ONCE(sk->sk_prot);
++		if (!prot->ioctl)
+ 			return -ENOIOCTLCMD;
+-		return sk->sk_prot->ioctl(sk, cmd, arg);
++		return prot->ioctl(sk, cmd, arg);
  	}
+ 	/*NOTREACHED*/
+ 	return 0;
+@@ -636,11 +642,14 @@ INDIRECT_CALLABLE_DECLARE(int udpv6_sendmsg(struct sock *, struct msghdr *,
+ int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ {
+ 	struct sock *sk = sock->sk;
++	const struct proto *prot;
  
--	/* All calls will succeed, even with invalid intid's, as long as the
-+	/*
-+	 * All calls will succeed, even with invalid intid's, as long as the
- 	 * addr part of the attr is within 32 bits (checked above). An invalid
- 	 * intid will just make the read/writes point to above the intended
- 	 * register space (i.e., ICPENDR after ISPENDR).
+ 	if (unlikely(inet_send_prepare(sk)))
+ 		return -EAGAIN;
+ 
+-	return INDIRECT_CALL_2(sk->sk_prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
++	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++	prot = READ_ONCE(sk->sk_prot);
++	return INDIRECT_CALL_2(prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
+ 			       sk, msg, size);
+ }
+ 
+@@ -650,13 +659,16 @@ int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 		  int flags)
+ {
+ 	struct sock *sk = sock->sk;
++	const struct proto *prot;
+ 	int addr_len = 0;
+ 	int err;
+ 
+ 	if (likely(!(flags & MSG_ERRQUEUE)))
+ 		sock_rps_record_flow(sk);
+ 
+-	err = INDIRECT_CALL_2(sk->sk_prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
++	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++	prot = READ_ONCE(sk->sk_prot);
++	err = INDIRECT_CALL_2(prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
+ 			      sk, msg, size, flags & MSG_DONTWAIT,
+ 			      flags & ~MSG_DONTWAIT, &addr_len);
+ 	if (err >= 0)
+diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+index a733803a710c..222f6bf220ba 100644
+--- a/net/ipv6/ipv6_sockglue.c
++++ b/net/ipv6/ipv6_sockglue.c
+@@ -475,7 +475,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 				sock_prot_inuse_add(net, sk->sk_prot, -1);
+ 				sock_prot_inuse_add(net, &tcp_prot, 1);
+ 
+-				sk->sk_prot = &tcp_prot;
++				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
++				WRITE_ONCE(sk->sk_prot, &tcp_prot);
+ 				icsk->icsk_af_ops = &ipv4_specific;
+ 				sk->sk_socket->ops = &inet_stream_ops;
+ 				sk->sk_family = PF_INET;
+@@ -489,7 +490,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 				sock_prot_inuse_add(net, sk->sk_prot, -1);
+ 				sock_prot_inuse_add(net, prot, 1);
+ 
+-				sk->sk_prot = prot;
++				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
++				WRITE_ONCE(sk->sk_prot, prot);
+ 				sk->sk_socket->ops = &inet_dgram_ops;
+ 				sk->sk_family = PF_INET;
+ 			}
 -- 
 2.35.1
 
