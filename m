@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAB6C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8579EC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358554AbiDLHlu (ORCPT
+        id S1358609AbiDLHlz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        Tue, 12 Apr 2022 03:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353548AbiDLHPm (ORCPT
+        with ESMTP id S1353630AbiDLHPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:15:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AF839BBA;
-        Mon, 11 Apr 2022 23:57:05 -0700 (PDT)
+        Tue, 12 Apr 2022 03:15:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B503B3AA6E;
+        Mon, 11 Apr 2022 23:57:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE1BD6149D;
-        Tue, 12 Apr 2022 06:57:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9597C385A6;
-        Tue, 12 Apr 2022 06:57:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54591B81B4E;
+        Tue, 12 Apr 2022 06:57:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B75EFC385A8;
+        Tue, 12 Apr 2022 06:57:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746621;
-        bh=nCTmKaY5tqg5mpxtTmdTE1Ti9amTVIWQFxjrQKhEUwU=;
+        s=korg; t=1649746624;
+        bh=hta54ajdwmJh2NBKG/lZbC1dBvxycmRgwzA6FsJy5NI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QWUGTLrSeVNDMMPGJ7zgrgTgt9yaopmgUOIUk57GPYFcA0bccRc7jXWv3nBZ5hzuN
-         4MOKePyOKSOQJZhQVly/4+orOTf2ezqTC2kIg2xwfxgGHT9z3I+wJiQqZyRnQu5vO9
-         cExM1sWEOSLeg3LVL8WRBoRtwYfJmmi0UlkrW1TA=
+        b=k3TJsIld6gWrMoSuMjyaUBmOGi3LmJxJ2lCiaECNAGw67m+zR2rFRrLGiULZF7VUD
+         8yVTESEidiNz+zZmFJQKW+aCGnY7HQgMLhOgxiJ6dKZuuw4mIGwaPcK7fAJ6dJIg5y
+         02C87ePZnqYX5wUAC0Pk+Sl9hEN/nE4g776gSlKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 069/285] vfio/pci: Stub vfio_pci_vga_rw when !CONFIG_VFIO_PCI_VGA
-Date:   Tue, 12 Apr 2022 08:28:46 +0200
-Message-Id: <20220412062945.659273761@linuxfoundation.org>
+Subject: [PATCH 5.16 032/285] scsi: mvsas: Replace snprintf() with sysfs_emit()
+Date:   Tue, 12 Apr 2022 08:28:09 +0200
+Message-Id: <20220412062944.604408112@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,67 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Williamson <alex.williamson@redhat.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 6e031ec0e5a2dda53e12e0d2a7e9b15b47a3c502 ]
+[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
 
-Resolve build errors reported against UML build for undefined
-ioport_map() and ioport_unmap() functions.  Without this config
-option a device cannot have vfio_pci_core_device.has_vga set,
-so the existing function would always return -EINVAL anyway.
+coccinelle report:
+./drivers/scsi/mvsas/mv_init.c:699:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/mvsas/mv_init.c:747:8-16:
+WARNING: use scnprintf or sprintf
 
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Link: https://lore.kernel.org/r/20220123125737.2658758-1-geert@linux-m68k.org
-Link: https://lore.kernel.org/r/164306582968.3758255.15192949639574660648.stgit@omen
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Use sysfs_emit() instead of scnprintf() or sprintf().
+
+Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/pci/vfio_pci_rdwr.c | 2 ++
- include/linux/vfio_pci_core.h    | 9 +++++++++
- 2 files changed, 11 insertions(+)
+ drivers/scsi/mvsas/mv_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
-index 57d3b2cbbd8e..82ac1569deb0 100644
---- a/drivers/vfio/pci/vfio_pci_rdwr.c
-+++ b/drivers/vfio/pci/vfio_pci_rdwr.c
-@@ -288,6 +288,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 	return done;
- }
- 
-+#ifdef CONFIG_VFIO_PCI_VGA
- ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite)
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index dcae2d4464f9..44df7c03aab8 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -696,7 +696,7 @@ static struct pci_driver mvs_pci_driver = {
+ static ssize_t driver_version_show(struct device *cdev,
+ 				   struct device_attribute *attr, char *buffer)
  {
-@@ -355,6 +356,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 
- 	return done;
+-	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
++	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
  }
-+#endif
  
- static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
- 					bool test_mem)
-diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-index ef9a44b6cf5d..ae6f4838ab75 100644
---- a/include/linux/vfio_pci_core.h
-+++ b/include/linux/vfio_pci_core.h
-@@ -159,8 +159,17 @@ extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
- extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite);
+ static DEVICE_ATTR_RO(driver_version);
+@@ -744,7 +744,7 @@ static ssize_t interrupt_coalescing_store(struct device *cdev,
+ static ssize_t interrupt_coalescing_show(struct device *cdev,
+ 					 struct device_attribute *attr, char *buffer)
+ {
+-	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
++	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
+ }
  
-+#ifdef CONFIG_VFIO_PCI_VGA
- extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite);
-+#else
-+static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
-+				      char __user *buf, size_t count,
-+				      loff_t *ppos, bool iswrite)
-+{
-+	return -EINVAL;
-+}
-+#endif
- 
- extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
- 			       uint64_t data, int count, int fd);
+ static DEVICE_ATTR_RW(interrupt_coalescing);
 -- 
 2.35.1
 
