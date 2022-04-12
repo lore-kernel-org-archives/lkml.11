@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B950C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A29C41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377759AbiDLHxc (ORCPT
+        id S1377714AbiDLHxP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33754 "EHLO
+        Tue, 12 Apr 2022 03:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353547AbiDLHZq (ORCPT
+        with ESMTP id S1353570AbiDLHZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5451225E98;
-        Tue, 12 Apr 2022 00:01:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A8C43AC2;
+        Tue, 12 Apr 2022 00:01:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2B74615B4;
-        Tue, 12 Apr 2022 07:01:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5559C385A1;
-        Tue, 12 Apr 2022 07:01:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D79E60B2B;
+        Tue, 12 Apr 2022 07:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BFD5C385A1;
+        Tue, 12 Apr 2022 07:01:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746874;
-        bh=DxwY6l76XGwbPyQnxRwmwMjVIFRBEV1XjogZrmYIAC8=;
+        s=korg; t=1649746897;
+        bh=gd8iSxgW8PBNOLgAnqpE0vsod2iKWP2nUWete6C1iPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X7m8dMhbi6OeqG+IHdSnmvR1ofHIQE40lN9iYqJOcpSG9eplbC56vyTSKOo+kPoYl
-         DUixRnK1eZL7SVTuBKXwEXp3P6qB/xq5UJPsOUFfkobls4tmW58LdEKU1VoUatJUIu
-         kywVa/IjzKi56XW094uTMDmxlvpiUH9nJ03YauB4=
+        b=qyeIAeNAHd/+nQjJRHrY0siugK0xxFpEoKknyAR7CpJ6CvgGDj8B3JsJn9QOClwug
+         +dog/EqNzgMIN68I6W3sOvGa4g7NOEbMorzb4ajKE1Q0FLtZN5aaft5c6XLE//zdLK
+         Y+qYUoflMRu36nwhnX4HqLdcNLDSTJewusvzI+Pw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 121/285] clk: rockchip: drop CLK_SET_RATE_PARENT from dclk_vop* on rk3568
-Date:   Tue, 12 Apr 2022 08:29:38 +0200
-Message-Id: <20220412062947.158231127@linuxfoundation.org>
+Subject: [PATCH 5.16 170/285] drm/imx: Fix memory leak in imx_pd_connector_get_modes
+Date:   Tue, 12 Apr 2022 08:30:27 +0200
+Message-Id: <20220412062948.575780795@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,47 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit ff3187eabb5ce478d15b6ed62eb286756adefac3 ]
+[ Upstream commit bce81feb03a20fca7bbdd1c4af16b4e9d5c0e1d3 ]
 
-The pixel clocks dclk_vop[012] can be clocked from hpll, vpll, gpll or
-cpll. gpll and cpll also drive many other clocks, so changing the
-dclk_vop[012] clocks could change these other clocks as well. Drop
-CLK_SET_RATE_PARENT to fix that. With this change the VOP2 driver can
-only adjust the pixel clocks with the divider between the PLL and the
-dclk_vop[012] which means the user may have to adjust the PLL clock to a
-suitable rate using the assigned-clock-rate device tree property.
+Avoid leaking the display mode variable if of_get_drm_display_mode
+fails.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Link: https://lore.kernel.org/r/20220126145549.617165-25-s.hauer@pengutronix.de
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Fixes: 76ecd9c9fb24 ("drm/imx: parallel-display: check return code from of_get_drm_display_mode()")
+Addresses-Coverity-ID: 1443943 ("Resource leak")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220108165230.44610-1-jose.exposito89@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/rockchip/clk-rk3568.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/imx/parallel-display.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/rockchip/clk-rk3568.c b/drivers/clk/rockchip/clk-rk3568.c
-index 69a9e8069a48..604a367bc498 100644
---- a/drivers/clk/rockchip/clk-rk3568.c
-+++ b/drivers/clk/rockchip/clk-rk3568.c
-@@ -1038,13 +1038,13 @@ static struct rockchip_clk_branch rk3568_clk_branches[] __initdata = {
- 			RK3568_CLKGATE_CON(20), 8, GFLAGS),
- 	GATE(HCLK_VOP, "hclk_vop", "hclk_vo", 0,
- 			RK3568_CLKGATE_CON(20), 9, GFLAGS),
--	COMPOSITE(DCLK_VOP0, "dclk_vop0", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
-+	COMPOSITE(DCLK_VOP0, "dclk_vop0", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_NO_REPARENT,
- 			RK3568_CLKSEL_CON(39), 10, 2, MFLAGS, 0, 8, DFLAGS,
- 			RK3568_CLKGATE_CON(20), 10, GFLAGS),
--	COMPOSITE(DCLK_VOP1, "dclk_vop1", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
-+	COMPOSITE(DCLK_VOP1, "dclk_vop1", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_NO_REPARENT,
- 			RK3568_CLKSEL_CON(40), 10, 2, MFLAGS, 0, 8, DFLAGS,
- 			RK3568_CLKGATE_CON(20), 11, GFLAGS),
--	COMPOSITE(DCLK_VOP2, "dclk_vop2", hpll_vpll_gpll_cpll_p, 0,
-+	COMPOSITE(DCLK_VOP2, "dclk_vop2", hpll_vpll_gpll_cpll_p, CLK_SET_RATE_NO_REPARENT,
- 			RK3568_CLKSEL_CON(41), 10, 2, MFLAGS, 0, 8, DFLAGS,
- 			RK3568_CLKGATE_CON(20), 12, GFLAGS),
- 	GATE(CLK_VOP_PWM, "clk_vop_pwm", "xin24m", 0,
+diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
+index 06cb1a59b9bc..63ba2ad84679 100644
+--- a/drivers/gpu/drm/imx/parallel-display.c
++++ b/drivers/gpu/drm/imx/parallel-display.c
+@@ -75,8 +75,10 @@ static int imx_pd_connector_get_modes(struct drm_connector *connector)
+ 		ret = of_get_drm_display_mode(np, &imxpd->mode,
+ 					      &imxpd->bus_flags,
+ 					      OF_USE_NATIVE_MODE);
+-		if (ret)
++		if (ret) {
++			drm_mode_destroy(connector->dev, mode);
+ 			return ret;
++		}
+ 
+ 		drm_mode_copy(mode, &imxpd->mode);
+ 		mode->type |= DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
 -- 
 2.35.1
 
