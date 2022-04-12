@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1084AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:38:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358506AbiDLRlD (ORCPT
+        id S1358536AbiDLRlJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:41:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
+        Tue, 12 Apr 2022 13:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356774AbiDLRki (ORCPT
+        with ESMTP id S1358480AbiDLRke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:40:38 -0400
+        Tue, 12 Apr 2022 13:40:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C12A62BCC
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:38:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E5862BE2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:38:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDB71619D7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 17:38:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81F5EC385A1;
-        Tue, 12 Apr 2022 17:38:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA82B61A5C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 17:38:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15DADC385A1;
+        Tue, 12 Apr 2022 17:38:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649785099;
-        bh=VsiW3CuUG+R7QVT9cZrUKPYiW2B49SVijz2OAHaLQF4=;
+        s=k20201202; t=1649785095;
+        bh=KwPW9yKy3O6s/y56BuSot0lytzFBzBqLRaUF9YdWAXs=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=BveF8bkvE+lr22QTXpRwLJ6STY4ghFnr6cz1scbsP+oqFS4cxL0HVhKTwKEgvFY9Y
-         iwU5I9ZrxspDXCMdZpGGzcCpTRXa8FJgYMoYJLPvvQ9kjCw6hcjn7Um00F6YMz50RE
-         JzQzdRX6OHI6MKNS8yMhk2BdYvCcB+BsnxBGCh4lTE3TTJMnc2tv5keysKjTkD4xLS
-         L1vbHdDFnxpfs46Hx6v6DWkf5Lv/CHEBcknYuOxXfUPGhmLh5kfSoKDK/km7KRNbCV
-         D9tWF3Y7P5ySdMo+Rj9CbKUFWGnfdFLfwr5JkqcwKzBHLKMYhu6fmecLxNoO7h0mfG
-         h/0m56u9a37Ig==
+        b=YHN6zySvezGKOHP/bquwZaPKRVqXDwopc/4F9jNjlyTPeO5xSsCa5C7GF16MowhEZ
+         DTi1E/B6ACn44IhpUaC9Nsnft95GAo/r9DcnYo7yFxBobPCmOnY7bteGI3YudtK/KP
+         2FfwPEZcvLITAUiUPqZ5ZaUNyIzc7NJVJRGhb+GEWiMPgKE2trAv38n+GB8W8olSqP
+         TvmK1cUPP/S4GPvXNMSJykVIfKZfyb5JNHZ9OIgcwwJrIKJ6qsFLflVRLUw6BGAMGZ
+         JSFPM1aeKalMWhdu0ksLBNVcVOLo7i9QcxwQfDQnr7F9vqFpUFLCW/L+GaI8DY8Msk
+         KTCkkxtUH/CZA==
 From:   Mark Brown <broonie@kernel.org>
-To:     rf@opensource.cirrus.com
-Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com
-In-Reply-To: <20220411165929.1302333-1-rf@opensource.cirrus.com>
-References: <20220411165929.1302333-1-rf@opensource.cirrus.com>
-Subject: Re: [PATCH] ASoC: cs35l45: Make exports namespaced
-Message-Id: <164978509825.404572.4732190389821838906.b4-ty@kernel.org>
-Date:   Tue, 12 Apr 2022 18:38:18 +0100
+To:     "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
+        <alsa-devel@alsa-project.org>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, mario.limonciello@amd.com
+Cc:     Vijendar.Mukunda@amd.com, open list <linux-kernel@vger.kernel.org>
+In-Reply-To: <20220411134532.13538-1-mario.limonciello@amd.com>
+References: <20220411134532.13538-1-mario.limonciello@amd.com>
+Subject: Re: [PATCH 0/2] Allow detecting ACP6x DMIC via _DSD
+Message-Id: <164978509381.404572.11948454165750728359.b4-ty@kernel.org>
+Date:   Tue, 12 Apr 2022 18:38:13 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,11 +50,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022 17:59:29 +0100, Richard Fitzgerald wrote:
-> Use the new EXPORT_SYMBOL_NS_GPL() for exports from the set of
-> drivers for cs35l45.
+On Mon, 11 Apr 2022 08:45:30 -0500, Mario Limonciello wrote:
+> It's not possible to probe for the presence of a DMIC, so the ACP6x
+> machine driver currently has a hardcoded list of all the systems known
+> to have a DMIC connected to the ACP.
 > 
+> Although this design works it means that the acp6x driver needs to always
+> grow with more systems and worse, if an OEM introduces a new system there
+> will be a mismatch in time that even if the driver (otherwise) works fine
+> it needs their system added to the list to work.
 > 
+> [...]
 
 Applied to
 
@@ -61,8 +68,10 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: cs35l45: Make exports namespaced
-      commit: 31c90dd56ae2945ce46ffa9728d1e1502f5a0c2e
+[1/2] ASoC: amd: Add driver data to acp6x machine driver
+      commit: e521f087780d07731e8c950f2f34d08358c86bc9
+[2/2] ASoC: amd: Add support for enabling DMIC on acp6x via _DSD
+      commit: 5426f506b58424f8ab2cd741bacf4b18b5fe578e
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
