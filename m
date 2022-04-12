@@ -2,286 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E15B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB0EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357239AbiDLPsD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        id S232216AbiDLPtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 11:49:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235507AbiDLPsB (ORCPT
+        with ESMTP id S235507AbiDLPtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:48:01 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5876320BCE;
-        Tue, 12 Apr 2022 08:45:43 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id n18so17129176plg.5;
-        Tue, 12 Apr 2022 08:45:43 -0700 (PDT)
+        Tue, 12 Apr 2022 11:49:12 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142C95FF23;
+        Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bh17so38149044ejb.8;
+        Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3okIYTvZNPFDunpvxgG2iXtNjtosYg6lQPzQ1MGwbJk=;
-        b=X/UPOyLBVYd9TIRyXWlv2m/qBkAxBI3gZcp892x+jLOpWGQjCrY6l21VxfC6OIj2zx
-         y+LNFLSq/2ySZEPpl9NRKL7mVdXtUA6ygKL9jgpGDbOZYiwjU1Vb610Kau3kM9gkp9Vb
-         pxoPd+4QWSBTcPUSacGXjBsZ1U6p1WJdjjzj1RpFHx6tlnqyz7G1VHbgGj/NqCc1OBoZ
-         s7apPROniiyoUB7V+1tf/XE6jONPrZleR1Ms1Hwt7RGFgF2SL8UDaLhwpJpepNe2ZOHX
-         1vbaO0ALE1SXpeS3xeAmff5kPNqCp0FmAlOvGBrg5Q4pOpLmKjxZ6qAgXnVtTr9VxIq3
-         DvRg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gwZ9CHvYhZZ9147CrVLA+yjNadbJUhOCmSfrIzjUHWg=;
+        b=P+vpgkwx8MjQx+ycKCwc6BgaPi7uKHrw/x7OkuGiydyZW8GRegFWgWZSktFmeoBJHl
+         y+XpOHd0TvosGRU4ZnFkTGFcBmh+NoISJ6JkQxso/rBSxn+3A/uBJ6rwxHCD/sS/jcCU
+         V/MOKfTg6mg4jZKkI3fObyPuXVaFZyRRRBEormnhQIJyM6SpwLoktBhfVkPFcwl2kdSQ
+         lVZ16fap4LpHCqNGCzRpLJJ71IBEQWfqdN5T0C+bu1q97QhmnkekHEQzPXcVXzZwoe8s
+         Q6Xm9UGV6eWFo5EXc5fHt7AyvMQ8VpGosW/MIjaFK7Gb5nSyp6Qrx1wzhMsgf8wn3XJk
+         Q/qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3okIYTvZNPFDunpvxgG2iXtNjtosYg6lQPzQ1MGwbJk=;
-        b=aDrJgLzO7LLst3jqniN5B1bbzZIHUxgFJ+bxy3wJs/mYoLONtxdmtTgv+AJBqSJX3W
-         UMjlj3Yk2FkFQQDO4kPwlJm1kLhlKSmf48uLUFE01xprjlR72rEUtJkahXERjeI5o2U8
-         f+TYu9KlHrgdl7RhZfep/bSqvIeR+r0JsY1lbGqmyBlhtMTrOtatVmmKuZmhcybvkyDx
-         AcmdFXJmahkHRvVCOis8fbwP3YSHf3ej1VWEz4ev9dHy6QG6wqtCxm59VVTPF99ThVJG
-         KilXuMXrMIqwVvlsisV+WaYDVf4bLn29iFTp6Hv4geKEe8Hf+lQFQvi6mlJkDQ4qZmVH
-         B9VA==
-X-Gm-Message-State: AOAM532+pqcaalM9mnFGVqU07YTK9nglm52x9P3+K6KUCNZTXgwmMGtB
-        7kP5TpJVcq2tuKT788U9DE8=
-X-Google-Smtp-Source: ABdhPJwfCHUCHLh1AyfvndnhFyCvr6gFxb9RB5wBg1ql/h57JQt+JyCDcfyRnQmR3mPH3+JjWND2EQ==
-X-Received: by 2002:a17:902:eb81:b0:158:937e:adf with SMTP id q1-20020a170902eb8100b00158937e0adfmr1853244plg.123.1649778342872;
-        Tue, 12 Apr 2022 08:45:42 -0700 (PDT)
-Received: from V2.localdomain (M106073234000.v4.enabler.ne.jp. [106.73.234.0])
-        by smtp.gmail.com with ESMTPSA id pg14-20020a17090b1e0e00b001c75634df70sm3285157pjb.31.2022.04.12.08.45.40
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gwZ9CHvYhZZ9147CrVLA+yjNadbJUhOCmSfrIzjUHWg=;
+        b=WkYucC9JGgbHucWxvG93IsLEOMIz3vTrSINBkKis3O+6KmtCNy1hh0lUytuVNzmrtE
+         14dN/JLcJvJd5pQ/bLvf9GAr2K5eOJF7e/hvYuCvfZopQoabuea0k0Z0vI9Wj+rfzEJv
+         hIKUffmQumMu47R3YyJ0P6ppLH6DyJAnV+DU16vLdJwbI2sphP41kMaTYFxVtlLNb/Jq
+         AQazSEP7oyl9FOshdjRoIDxVuMExALMFwcCiryXd4sUhajIF6nQX3FlbxedXuXwNdJGr
+         Ugir7gKl7ZCYMfwdyAI29Mf87g/GxeoQKW773G+6aW6jFZoGXIlSxo4tTwjSHOxea46X
+         GVfQ==
+X-Gm-Message-State: AOAM532Bf/3Va7SkP7V2tfTiecyVuBY7Z7QxK7aejftrc0p6nLzIXUdU
+        cwvsvcXU2/TB0yCct1LypEw=
+X-Google-Smtp-Source: ABdhPJz0ggnoLW3vkCVf9b6N6Oatr4EM1jR37FXRi8Iw3QENChkAGly44hf54w3k/WSzhNIqvsrpaw==
+X-Received: by 2002:a17:907:160b:b0:6e8:58c1:8850 with SMTP id hb11-20020a170907160b00b006e858c18850mr15415064ejc.284.1649778412502;
+        Tue, 12 Apr 2022 08:46:52 -0700 (PDT)
+Received: from krava ([83.240.62.142])
+        by smtp.gmail.com with ESMTPSA id s11-20020a170906284b00b006e108693850sm13214817ejc.28.2022.04.12.08.46.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 08:45:42 -0700 (PDT)
-From:   SHIMAMOTO Takayoshi <takayoshi.shimamoto.360@gmail.com>
-To:     takayoshi.shimamoto.360@gmail.com
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: dts: BCM5301X: Add DT for Buffalo WZR-1166DHP2
-Date:   Wed, 13 Apr 2022 00:44:30 +0900
-Message-Id: <20220412154432.12124-1-takayoshi.shimamoto.360@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 12 Apr 2022 08:46:52 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 17:46:49 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 0/4] bpf: Speed up symbol resolving in kprobe
+ multi link
+Message-ID: <YlWe6U7qSsFA7DYK@krava>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+ <20220408232922.mz2vi2oaxf2fvnvt@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <YlHrdhkfz+IuGbZM@krava>
+ <CAEf4BzYXHeM+m64cV6_5TU0_BjotDVo+iw_wpJEWLkU9gsvfXg@mail.gmail.com>
+ <CAADnVQLQj-ixQo5xEJEZaJavoNpVdhizDmkqFm+pDJq97_Ecpw@mail.gmail.com>
+ <CAEf4BzbV2PObd26scnTfQ8C1508k=z4cc7mvPS5BAc+9sXhVVg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbV2PObd26scnTfQ8C1508k=z4cc7mvPS5BAc+9sXhVVg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Buffalo WZR-1166DHP2  wireless router with
+On Mon, Apr 11, 2022 at 03:21:49PM -0700, Andrii Nakryiko wrote:
+> On Mon, Apr 11, 2022 at 3:18 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Mon, Apr 11, 2022 at 10:15 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Sat, Apr 9, 2022 at 1:24 PM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > >
+> > > > On Fri, Apr 08, 2022 at 04:29:22PM -0700, Alexei Starovoitov wrote:
+> > > > > On Thu, Apr 07, 2022 at 02:52:20PM +0200, Jiri Olsa wrote:
+> > > > > > hi,
+> > > > > > sending additional fix for symbol resolving in kprobe multi link
+> > > > > > requested by Alexei and Andrii [1].
+> > > > > >
+> > > > > > This speeds up bpftrace kprobe attachment, when using pure symbols
+> > > > > > (3344 symbols) to attach:
+> > > > > >
+> > > > > > Before:
+> > > > > >
+> > > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > > > > >   ...
+> > > > > >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> > > > > >
+> > > > > > After:
+> > > > > >
+> > > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > > > > >   ...
+> > > > > >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+> > > > > >
+> > > > > >
+> > > > > > There are 2 reasons I'm sending this as RFC though..
+> > > > > >
+> > > > > >   - I added test that meassures attachment speed on all possible functions
+> > > > > >     from available_filter_functions, which is 48712 functions on my setup.
+> > > > > >     The attach/detach speed for that is under 2 seconds and the test will
+> > > > > >     fail if it's bigger than that.. which might fail on different setups
+> > > > > >     or loaded machine.. I'm not sure what's the best solution yet, separate
+> > > > > >     bench application perhaps?
+> > > > >
+> > > > > are you saying there is a bug in the code that you're still debugging?
+> > > > > or just worried about time?
+> > > >
+> > > > just the time, I can make the test fail (cross the 2 seconds limit)
+> > > > when the machine is loaded, like with running kernel build
+> > > >
+> > > > but I couldn't reproduce this with just paralel test_progs run
+> > > >
+> > > > >
+> > > > > I think it's better for it to be a part of selftest.
+> > > > > CI will take extra 2 seconds to run.
+> > > > > That's fine. It's a good stress test.
+> > >
+> > > I agree it's a good stress test, but I disagree on adding it as a
+> > > selftests. The speed will depend on actual host machine. In VMs it
+> > > will be slower, on busier machines it will be slower, etc. Generally,
+> > > depending on some specific timing just causes unnecessary maintenance
+> > > headaches. We can have this as a benchmark, if someone things it's
+> > > very important. I'm impartial to having this regularly executed as
+> > > it's extremely unlikely that we'll accidentally regress from NlogN
+> > > back to N^2. And if there is some X% slowdown such selftest is
+> > > unlikely to alarm us anyways. Sporadic failures will annoy us way
+> > > before that to the point of blacklisting this selftests in CI at the
+> > > very least.
+> >
+> > Such selftest shouldn't be measuring the speed, of course.
+> > The selftest will be about:
+> > 1. not crashing
+> > 2. succeeding to attach and getting some meaningful data back.
+> 
+> Yeah, that's totally fine with me. My biggest beef is using time as a
+> measure of test success, which will be flaky. Just a slow-ish test
+> doing a lot of work sounds totally fine.
 
- - BCM4708A0
- - 256MiB DDR2 SDRAM
- - 128MiB NAND flash
- - 2T2R 11ac/a/b/g/n Wi-Fi
- - 4x 10/100M ethernet switch
+ok, I'll remove the 2 seconds check
 
-The hardware configuration is very similar to the WZR-1750DHP,
-except for memory size and number of antennas.
-
-Signed-off-by: SHIMAMOTO Takayoshi <takayoshi.shimamoto.360@gmail.com>
----
- .../boot/dts/bcm4708-buffalo-wzr-1166dhp2.dts | 189 ++++++++++++++++++
- 1 file changed, 189 insertions(+)
- create mode 100644 arch/arm/boot/dts/bcm4708-buffalo-wzr-1166dhp2.dts
-
-diff --git a/arch/arm/boot/dts/bcm4708-buffalo-wzr-1166dhp2.dts b/arch/arm/boot/dts/bcm4708-buffalo-wzr-1166dhp2.dts
-new file mode 100644
-index 000000000000..22e54a0a202a
---- /dev/null
-+++ b/arch/arm/boot/dts/bcm4708-buffalo-wzr-1166dhp2.dts
-@@ -0,0 +1,189 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-+/*
-+ * Broadcom BCM470X / BCM5301X ARM platform code.
-+ * DTS for Buffalo WZR-1166DHP2
-+ *
-+ * Copyright (C) 2014 Rafał Miłecki <zajec5@gmail.com>
-+ * Copyright (C) 2022 SHIMAMOTO Takayoshi <takayoshi.shimamoto.360@gmail.com>
-+ */
-+
-+/dts-v1/;
-+
-+#include "bcm4708.dtsi"
-+#include "bcm5301x-nand-cs0-bch8.dtsi"
-+
-+/ {
-+	compatible = "buffalo,wzr-1166dhp2", "brcm,bcm4708";
-+	model = "Buffalo WZR-1166DHP2 (BCM4708)";
-+
-+	chosen {
-+		bootargs = "console=ttyS0,115200";
-+	};
-+
-+	memory@0 {
-+		device_type = "memory";
-+		reg = <0x00000000 0x08000000>,
-+		      <0x88000000 0x08000000>;
-+	};
-+
-+	spi {
-+		compatible = "spi-gpio";
-+		num-chipselects = <1>;
-+		gpio-sck = <&chipcommon 7 0>;
-+		gpio-mosi = <&chipcommon 4 0>;
-+		cs-gpios = <&chipcommon 6 0>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		hc595: gpio_spi@0 {
-+			compatible = "fairchild,74hc595";
-+			reg = <0>;
-+			registers-number = <1>;
-+			spi-max-frequency = <100000>;
-+
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+
-+		};
-+	};
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		usb {
-+			label = "bcm53xx:blue:usb";
-+			gpios = <&hc595 0 GPIO_ACTIVE_HIGH>;
-+			trigger-sources = <&ohci_port1>, <&ehci_port1>,
-+					  <&xhci_port1>, <&ohci_port2>,
-+					  <&ehci_port2>;
-+			linux,default-trigger = "usbport";
-+		};
-+
-+		power0 {
-+			label = "bcm53xx:red:power";
-+			gpios = <&hc595 1 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		power1 {
-+			label = "bcm53xx:white:power";
-+			gpios = <&hc595 2 GPIO_ACTIVE_HIGH>;
-+			linux,default-trigger = "default-on";
-+		};
-+
-+		router0 {
-+			label = "bcm53xx:blue:router";
-+			gpios = <&hc595 3 GPIO_ACTIVE_HIGH>;
-+			linux,default-trigger = "default-on";
-+		};
-+
-+		router1 {
-+			label = "bcm53xx:amber:router";
-+			gpios = <&hc595 4 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		wan {
-+			label = "bcm53xx:blue:wan";
-+			gpios = <&hc595 5 GPIO_ACTIVE_HIGH>;
-+			linux,default-trigger = "default-on";
-+		};
-+
-+		wireless0 {
-+			label = "bcm53xx:blue:wireless";
-+			gpios = <&hc595 6 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		wireless1 {
-+			label = "bcm53xx:amber:wireless";
-+			gpios = <&hc595 7 GPIO_ACTIVE_HIGH>;
-+		};
-+	};
-+
-+	gpio-keys {
-+		compatible = "gpio-keys";
-+
-+		restart {
-+			label = "Reset";
-+			linux,code = <KEY_RESTART>;
-+			gpios = <&chipcommon 11 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		aoss {
-+			label = "AOSS";
-+			linux,code = <KEY_WPS_BUTTON>;
-+			gpios = <&chipcommon 12 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		/* Commit mode set by switch? */
-+		mode {
-+			label = "Mode";
-+			linux,code = <KEY_SETUP>;
-+			gpios = <&chipcommon 13 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		/* Switch: AP mode */
-+		sw_ap {
-+			label = "AP";
-+			linux,code = <BTN_0>;
-+			gpios = <&chipcommon 14 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		eject {
-+			label = "USB eject";
-+			linux,code = <KEY_EJECTCD>;
-+			gpios = <&chipcommon 15 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+};
-+
-+&usb2 {
-+	vcc-gpio = <&chipcommon 9 GPIO_ACTIVE_HIGH>;
-+};
-+
-+&usb3 {
-+	vcc-gpio = <&chipcommon 10 GPIO_ACTIVE_LOW>;
-+};
-+
-+&spi_nor {
-+	status = "okay";
-+};
-+
-+&usb3_phy {
-+	status = "okay";
-+};
-+
-+&srab {
-+	status = "okay";
-+
-+	ports {
-+		port@0 {
-+			reg = <0>;
-+			label = "lan1";
-+		};
-+
-+		port@1 {
-+			reg = <1>;
-+			label = "lan2";
-+		};
-+
-+		port@2 {
-+			reg = <2>;
-+			label = "lan3";
-+		};
-+
-+		port@3 {
-+			reg = <3>;
-+			label = "lan4";
-+		};
-+
-+		port@4 {
-+			reg = <4>;
-+			label = "wan";
-+		};
-+
-+		port@5 {
-+			reg = <5>;
-+			label = "cpu";
-+			ethernet = <&gmac0>;
-+		};
-+	};
-+};
--- 
-2.30.2
-
+thanks,
+jirka
