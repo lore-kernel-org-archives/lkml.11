@@ -2,172 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55280C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF68C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239848AbiDLJvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34114 "EHLO
+        id S1348794AbiDLKPq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359678AbiDLJsD (ORCPT
+        with ESMTP id S1378006AbiDLJ7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:48:03 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AF163503;
-        Tue, 12 Apr 2022 01:53:52 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e8-20020a17090a118800b001cb13402ea2so2231574pja.0;
-        Tue, 12 Apr 2022 01:53:52 -0700 (PDT)
+        Tue, 12 Apr 2022 05:59:32 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586021EEF8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:06:04 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id k29so91864pgm.12
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:06:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jmCpHCMje6DqtUs4yqS5xd4MJHXw5XyWXqbNnJZJI6A=;
-        b=S1S23s85lCZ4pEedIgLJany23GsJwNl+sETb6R8H7W+W3S5VOcSfEGpMnCYfUdhv3m
-         g/ew39g3VpTLSdY2410LO2Fvwt6/+p2K1sQNWXKUWyVs6NXQ3FH3FqhZn5xgUCPLKudS
-         28Z5QrFim4mD5b/TcyE3bo7QqENkek1BZqRc8iovMrIdJEIWln9trhqrxO/6LpMbcMV7
-         WZgoCehtFMafjr9LOmGoM9qTAtzPkzv9bOe4AK68uH/Zrh2hCh5zFOSj1V+BNP55snS8
-         b1Er5WX74yVtj3Qj5yuJfHrA1X6gupJrxsO8erNt0vMzldbfeTxdUTMzW9hPRs1YaD8P
-         br9Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5q0V0iY7dr2lRVb8OvfSaWvww3uLXhqUgjXUdAVt87g=;
+        b=RHIu8/Bnc+30R/gAERf2/UYCIWBSwrHm5GXZKku4GxndzoI2eCqzOTfBGecViIUSNC
+         mJWkcdgMIJEMKvdtbSxtTVtxRk1syy0oWmSAtp37ims2++OrvHLQnPXDSN2x3eCq3ST5
+         fBuPJp83/Ee4mSm3soCfPfy2nU9lhPrcMl8SDVxALArLtpUzmjS9qdbgb3jjsgVeI8dV
+         2vbamPGU922L5AQgemxZlw9/jaJyAggEzKQcVPJTkES3fDSs9cSszKh87fCyfQw3Nb4F
+         VPEWz5+iTztDcFoQPegKz8RKMpnn8FbltAyMnlEqts3ED2UadA1tBPpd76CAsuYmV+R1
+         DO+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jmCpHCMje6DqtUs4yqS5xd4MJHXw5XyWXqbNnJZJI6A=;
-        b=UsYJNc91fMgQjc7xl+zwovb6WcXn/nFIEqO9qYyaZ18jn1OhwPSODiyTIC7hdmBJIv
-         uvUI2vE4apWNevHEM1da+Y0lxTth/Fie45klzwwiOS80RUX1WkxcUWgMmRZ8PliKiGcw
-         igfXMdbp8hCAuxnYjwsrVPwx0mhp5UxVyA4fcaiFiZ7o82tDRX2wBtBCY/JFGIPYQ8pB
-         yWj+0M+FM6HcO7TT5keXaxKyCU6I5BJ0Ej2XV6PDGI6M3WhJftR17bXOnKIF8dAm6mIj
-         2scWHAimFWBrPKH2WAr/NaMhLl2cveneEZnvkkD0HO4RtJ0QaBRqoLuOJFiGoGhlGig6
-         Xb+w==
-X-Gm-Message-State: AOAM531D/64/5LjWdO6ERD8u9GGKWOKTkYnHDGc8uPePhb2rq48E25Pn
-        7IKEyz/9Bwqu+0IZUghVsQA=
-X-Google-Smtp-Source: ABdhPJzeUmMzv/rHk/HRe+pbfq6rGYcycw2WpFMc6HJD/OaTFSmf83XNk1ns+oO4R5agAGqulZcr9w==
-X-Received: by 2002:a17:90b:1803:b0:1c7:24c4:ab52 with SMTP id lw3-20020a17090b180300b001c724c4ab52mr3744795pjb.240.1649753631471;
-        Tue, 12 Apr 2022 01:53:51 -0700 (PDT)
-Received: from [192.168.2.225] (93.179.119.173.16clouds.com. [93.179.119.173])
-        by smtp.gmail.com with ESMTPSA id d21-20020a056a0010d500b004fd9ee64134sm37205794pfu.74.2022.04.12.01.53.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 01:53:50 -0700 (PDT)
-Message-ID: <77119299-efb5-5364-44fe-9f71c7c6a4a4@gmail.com>
-Date:   Tue, 12 Apr 2022 16:53:45 +0800
+        bh=5q0V0iY7dr2lRVb8OvfSaWvww3uLXhqUgjXUdAVt87g=;
+        b=tgnB4rU+8wVLeKlY3+OjEg+YHCvnxpPY2F8A4lmkpzLTo7rPeW5lptgSI/SgR5i5P+
+         wuZTre26NeHdhm+bSXwwAFion5qz87yPgT6vT/By/bRkIxwfkOOj5I3M8kT13H6mL5x0
+         Gr5wYBC/HFSJHYWTSFVvvdtXY7sn2303dYuSrrnJ1dNM223PI2rIUcS8pgNQCpwLygh6
+         JkS/E74AiAuJvMukTQblXvYay4uCdG3rF0Gc+MIqENg1Hm9w5UAwIW1oT0Ew3P5u1+ew
+         eA8bt8tSyv+AhTfHJsrc28Me0sbZXkMu33HGGmnZujE7GZqca+8nyBH4cPMZtWF6HIx1
+         crSQ==
+X-Gm-Message-State: AOAM533U+Gu2XbW0I50kcpAfqj/SAAw3w9PUyEPZ4ZOGQxwhdJNrPLoD
+        Eju57gn6zLuMZte0hQjZntA=
+X-Google-Smtp-Source: ABdhPJz+nAInByt3ZGBpbAZ62WbZwYw/t8OZe4q2LY3JMlTscgFFwVLyADnpGFDDw10xbOKsBbgIAQ==
+X-Received: by 2002:a65:57cc:0:b0:384:3370:e161 with SMTP id q12-20020a6557cc000000b003843370e161mr29584202pgr.364.1649754363701;
+        Tue, 12 Apr 2022 02:06:03 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 204-20020a6302d5000000b00385f29b02b2sm2179835pgc.50.2022.04.12.02.06.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 02:06:03 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     zbr@ioremap.net
+Cc:     linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] w1: omap-hdq: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Tue, 12 Apr 2022 09:06:00 +0000
+Message-Id: <20220412090600.2533461-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] docs/zh_CN: sync with original text
- Documentation/vm/page_owner.rst
-Content-Language: en-US
-To:     Haowen Bai <baihaowen@meizu.com>, Alex Shi <alexs@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        siyanteng@loongson.cn
-References: <1649733951-8827-1-git-send-email-baihaowen@meizu.com>
-From:   Alex Shi <seakeel@gmail.com>
-In-Reply-To: <1649733951-8827-1-git-send-email-baihaowen@meizu.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cc: Yanteng Si <siyanteng@loongson.cn>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-and please remove the warning in git apply:
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-Applying: docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
-.git/rebase-apply/patch:33: trailing whitespace.
-                符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的 
-warning: 1 line adds whitespace errors.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/w1/masters/omap_hdq.c | 38 ++++++++++-------------------------
+ 1 file changed, 11 insertions(+), 27 deletions(-)
 
+diff --git a/drivers/w1/masters/omap_hdq.c b/drivers/w1/masters/omap_hdq.c
+index bf2ec59c1f9d..f325fe35a8f7 100644
+--- a/drivers/w1/masters/omap_hdq.c
++++ b/drivers/w1/masters/omap_hdq.c
+@@ -372,12 +372,9 @@ static u8 omap_w1_triplet(void *_hdq, u8 bdir)
+ 		  OMAP_HDQ_CTRL_STATUS_INTERRUPTMASK;
+ 	u8 mask = ctrl | OMAP_HDQ_CTRL_STATUS_DIR;
+ 
+-	err = pm_runtime_get_sync(hdq_data->dev);
+-	if (err < 0) {
+-		pm_runtime_put_noidle(hdq_data->dev);
+-
++	err = pm_runtime_resume_and_get(hdq_data->dev);
++	if (err < 0)
+ 		return err;
+-	}
+ 
+ 	err = mutex_lock_interruptible(&hdq_data->hdq_mutex);
+ 	if (err < 0) {
+@@ -463,12 +460,9 @@ static u8 omap_w1_reset_bus(void *_hdq)
+ 	struct hdq_data *hdq_data = _hdq;
+ 	int err;
+ 
+-	err = pm_runtime_get_sync(hdq_data->dev);
+-	if (err < 0) {
+-		pm_runtime_put_noidle(hdq_data->dev);
+-
++	err = pm_runtime_resume_and_get(hdq_data->dev);
++	if (err < 0)
+ 		return err;
+-	}
+ 
+ 	omap_hdq_break(hdq_data);
+ 
+@@ -485,12 +479,9 @@ static u8 omap_w1_read_byte(void *_hdq)
+ 	u8 val = 0;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(hdq_data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(hdq_data->dev);
+-
++	ret = pm_runtime_resume_and_get(hdq_data->dev);
++	if (ret < 0)
+ 		return -1;
+-	}
+ 
+ 	ret = hdq_read_byte(hdq_data, &val);
+ 	if (ret)
+@@ -509,12 +500,9 @@ static void omap_w1_write_byte(void *_hdq, u8 byte)
+ 	int ret;
+ 	u8 status;
+ 
+-	ret = pm_runtime_get_sync(hdq_data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(hdq_data->dev);
+-
++	ret = pm_runtime_resume_and_get(hdq_data->dev);
++	if (ret < 0)
+ 		return;
+-	}
+ 
+ 	/*
+ 	 * We need to reset the slave before
+@@ -605,10 +593,9 @@ static int omap_hdq_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_use_autosuspend(&pdev->dev);
+ 	pm_runtime_set_autosuspend_delay(&pdev->dev, 300);
+-	ret = pm_runtime_get_sync(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (ret < 0) {
+-		pm_runtime_put_noidle(&pdev->dev);
+-		dev_dbg(&pdev->dev, "pm_runtime_get_sync failed\n");
++		dev_dbg(&pdev->dev, "pm_runtime_resume_and_get failed\n");
+ 		goto err_w1;
+ 	}
+ 
+@@ -659,10 +646,7 @@ static int omap_hdq_remove(struct platform_device *pdev)
+ {
+ 	int active;
+ 
+-	active = pm_runtime_get_sync(&pdev->dev);
+-	if (active < 0)
+-		pm_runtime_put_noidle(&pdev->dev);
+-
++	active = pm_runtime_resume_and_get(&pdev->dev);
+ 	w1_remove_master_device(&omap_w1_master);
+ 
+ 	pm_runtime_dont_use_autosuspend(&pdev->dev);
+-- 
+2.25.1
 
-
-On 4/12/22 11:25, Haowen Bai wrote:
-> As the tools/vm/page_owner_sort added some feature and original text
-> updated, sync the translation of zh_CN.
->
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
->  Documentation/translations/zh_CN/vm/page_owner.rst | 54 +++++++++++++++++++++-
->  1 file changed, 53 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/translations/zh_CN/vm/page_owner.rst b/Documentation/translations/zh_CN/vm/page_owner.rst
-> index 9e951fabba9d..0d4f94034db6 100644
-> --- a/Documentation/translations/zh_CN/vm/page_owner.rst
-> +++ b/Documentation/translations/zh_CN/vm/page_owner.rst
-> @@ -103,14 +103,66 @@ page owner在默认情况下是禁用的。所以，如果你想使用它，你
->  		-m		按总内存排序
->  		-p		按pid排序。
->  		-P		按tgid排序。
-> +		-n		按任务名称排序。
->  		-r		按内存释放时间排序。
->  		-s		按堆栈跟踪排序。
->  		-t		按时间排序（默认）。
-> +		--sort <order>	指定排序顺序。排序语法是 [+|-]key[,[+|-]key[,...]]. 从
-> +						**标准格式说明符**部分选择一个键。"+" 是可选的，因为默认方向是增加数字或字典顺序。
-> +						允许混合使用缩写键和全称键。
-> +
-> +		Examples:
-> +				./page_owner_sort <input> <output> --sort=n,+pid,-tgid
-> +				./page_owner_sort <input> <output> --sort=at
->  
->     其它函数:
->  
->  	Cull:
-> -		-c		通过比较堆栈跟踪而不是总块来进行剔除。
-> +		--cull <rules>
-> +				指定筛选规则。筛选语法是 key[,key[,...]]。在**标准格式说明符**部分选择一个多字母键
-> +
-> +		<rules> 是逗号分隔列表形式的单个参数，它提供了一种指定单个筛选规则的方法。下面的**标准格式说明
-> +				符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的 
-> +				STANDARD SORT KEYS 部分所述。允许混合使用缩写形式和完整形式的键。
->  
-> +		Examples:
-> +				./page_owner_sort <input> <output> --cull=stacktrace
-> +				./page_owner_sort <input> <output> --cull=st,pid,name
-> +				./page_owner_sort <input> <output> --cull=n,f
->  	Filter:
->  		-f		过滤掉内存已被释放的块的信息。
-> +
-> +	Select:
-> +		--pid <pidlist>		通过 pid 进行选择。这将选择进程 ID 号出现在 <pidlist> 中的块。
-> +		--tgid <tgidlist>	通过 tgid 进行选择。这将选择线程组 ID 号出现在 <tgidlist> 中的块。
-> +		--name <cmdlist>	按任务名称选择。这将选择任务名称出现在 <cmdlist> 中的块。
-> +
-> +		<pidlist>、<tgidlist>、<cmdlist>是逗号分隔列表形式的单参数，它提供了一种指定单个选择规则的方法。
-> +
-> +
-> +		Examples:
-> +				./page_owner_sort <input> <output> --pid=1
-> +				./page_owner_sort <input> <output> --tgid=1,2,3
-> +				./page_owner_sort <input> <output> --name name1,name2
-> +
-> +		标准格式说明符
-> +==========================
-> +--sort 选项:
-> +
-> +	缩写键	全称键		描述
-> +	p		pid			进程 ID
-
-
-Are above lines aligned?
-
-
-Thanks
-
-Alex
-
-> +	tg		tgid		线程组 ID
-> +	n		name		任务名称
-> +	st		stacktrace	页面分配的调用栈
-> +	T		txt			块的全文
-> +	ft		free_ts		页面被释放的时间戳
-> +	at		alloc_ts	页面分配的时间戳
-> +
-> +--curl 选项:
-> +
-> +	缩写键	全称键		描述
-> +	p		pid			进程 ID
-> +	tg		tgid		线程组 ID
-> +	n		name		任务名称
-> +	f		free		该页面是否已被释放
-> +	st		stacktrace	页面分配的调用栈
