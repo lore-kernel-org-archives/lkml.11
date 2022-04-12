@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C77EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 580ECC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353113AbiDLJSC (ORCPT
+        id S1376993AbiDLJVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
+        Tue, 12 Apr 2022 05:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357683AbiDLHki (ORCPT
+        with ESMTP id S1356816AbiDLHjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:38 -0400
+        Tue, 12 Apr 2022 03:39:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC5837A2B;
-        Tue, 12 Apr 2022 00:16:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0FB52E41;
+        Tue, 12 Apr 2022 00:10:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B792F6171C;
-        Tue, 12 Apr 2022 07:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45C1C385A5;
-        Tue, 12 Apr 2022 07:16:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD62061777;
+        Tue, 12 Apr 2022 07:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEF4C385A5;
+        Tue, 12 Apr 2022 07:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747800;
-        bh=5FCLa8SESKUYBJ4ATRRqzp9RiCWwoTSFcXkravvhKjg=;
+        s=korg; t=1649747413;
+        bh=ayE9bQn03oHjrYkBNK20LwGv7y3GHRuAaspjxBcF8hA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zw4olPOLZrsVCcfDOlxexaW/zcADpB3nuXEOOfceycSPi1Ds7tT/XGTDEFSVuigZo
-         MjdVoRAYzanLCV5HHDTaV0WeTRS4afSro7MS75c2pd6Ic6vjBqmHwJlzDHNSb101R3
-         L8OCXe1XCYgWi9DEhWy3GDU15EhYMq1DeiiymQ2s=
+        b=PmT7hwsQdNypdIvkm1KxKSU5QNEiySS8mA2a4Sim+jINyn8MswF3YJvl8dkeSKeur
+         Mj1TX9fz0IoEojcYSvtpElnTJ+otaGDXDz01GN1Dd6H0x4mWaYYvZID/DE3a5zD35V
+         waRzHmkXCQLHJOn7svOXhznJwEPuNd1dpxQZAMLw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 211/343] mctp: Fix check for dev_hard_header() result
-Date:   Tue, 12 Apr 2022 08:30:29 +0200
-Message-Id: <20220412062957.437294374@linuxfoundation.org>
+Subject: [PATCH 5.17 071/343] libbpf: Fix accessing the first syscall argument on s390
+Date:   Tue, 12 Apr 2022 08:28:09 +0200
+Message-Id: <20220412062953.151195049@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,34 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Johnston <matt@codeconstruct.com.au>
+From: Ilya Leoshkevich <iii@linux.ibm.com>
 
-[ Upstream commit 60be976ac45137657b7b505d7e0d44d0e51accb7 ]
+[ Upstream commit 1f22a6f9f9a0f50218a11a0554709fd34a821fa3 ]
 
-dev_hard_header() returns the length of the header, so
-we need to test for negative errors rather than non-zero.
+On s390, the first syscall argument should be accessed via orig_gpr2
+(see arch/s390/include/asm/syscall.h). Currently gpr[2] is used
+instead, leading to bpf_syscall_macro test failure.
 
-Fixes: 889b7da23abf ("mctp: Add initial routing framework")
-Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+orig_gpr2 cannot be added to user_pt_regs, since its layout is a part
+of the ABI. Therefore provide access to it only through
+PT_REGS_PARM1_CORE_SYSCALL() by using a struct pt_regs flavor.
+
+Reported-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220209021745.2215452-11-iii@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mctp/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/lib/bpf/bpf_tracing.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 05fbd318eb98..d47438f5233d 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -507,7 +507,7 @@ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
+diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+index bed07c35b8de..122d79c8f4b4 100644
+--- a/tools/lib/bpf/bpf_tracing.h
++++ b/tools/lib/bpf/bpf_tracing.h
+@@ -112,6 +112,10 @@
  
- 	rc = dev_hard_header(skb, skb->dev, ntohs(skb->protocol),
- 			     daddr, skb->dev->dev_addr, skb->len);
--	if (rc) {
-+	if (rc < 0) {
- 		kfree_skb(skb);
- 		return -EHOSTUNREACH;
- 	}
+ #elif defined(bpf_target_s390)
+ 
++struct pt_regs___s390 {
++	unsigned long orig_gpr2;
++};
++
+ /* s390 provides user_pt_regs instead of struct pt_regs to userspace */
+ #define __PT_REGS_CAST(x) ((const user_pt_regs *)(x))
+ #define __PT_PARM1_REG gprs[2]
+@@ -124,6 +128,8 @@
+ #define __PT_RC_REG gprs[2]
+ #define __PT_SP_REG gprs[15]
+ #define __PT_IP_REG psw.addr
++#define PT_REGS_PARM1_SYSCALL(x) ({ _Pragma("GCC error \"use PT_REGS_PARM1_CORE_SYSCALL() instead\""); 0l; })
++#define PT_REGS_PARM1_CORE_SYSCALL(x) BPF_CORE_READ((const struct pt_regs___s390 *)(x), orig_gpr2)
+ 
+ #elif defined(bpf_target_arm)
+ 
 -- 
 2.35.1
 
