@@ -2,159 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C11C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 847EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356626AbiDLN6i (ORCPT
+        id S1343707AbiDLN6k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        Tue, 12 Apr 2022 09:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356573AbiDLN6J (ORCPT
+        with ESMTP id S1356595AbiDLN6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:58:09 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838A05F95;
-        Tue, 12 Apr 2022 06:55:51 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id q11so22336796iod.6;
-        Tue, 12 Apr 2022 06:55:51 -0700 (PDT)
+        Tue, 12 Apr 2022 09:58:18 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4035F95;
+        Tue, 12 Apr 2022 06:55:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=res6PbBmwf6ry1dEgNl1r8RYqBrRnpwX5BOzecykxas=;
-        b=Ps6za+nMoQaBSvb6viYugVvoRA/60HSnxsK3qMBlFLUnEl6M6gph66pVygyMMzBpCc
-         DMT0EQhS5GoXcCV3H2/h1sgY477lqD+DomBPfRGXoS+1eBAUF3Q1Bvv2sqnPn64Nyzou
-         X1S9zjzXHjT3ycEUX0E5H7abZtvm2HMgED0xpJ6n0r942FemdlsdZpprGYCZRG3+0NGW
-         PqXRHG3T5+VvjrCAa46BeA7TbiFiDYtfl9zeEtqjH0dpg6UcBIiHXBhlLolVc8VdYiE9
-         jpD8PF7yHbgu55nsvEh18/GbCUOQ54pzXDSw11p1Mn6I/NH98n1k9Pdugu1ivmq5LiGW
-         VGhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=res6PbBmwf6ry1dEgNl1r8RYqBrRnpwX5BOzecykxas=;
-        b=RbISeua+zTbJL1nOIlJbwcF8QWOvGsGJHSXWPp7Lq694lvMau5ATLaDZT0WRG816WJ
-         cgigUb58Y1zaNY+QA+b/amOLQsA9k++BAdqwsQmpm6tkgK1ykqLcKfnmaF2JIjI/6y5Q
-         uW3SzaAfg6oLlaij2Jkdkxo4kVxFIKF2vy8C3epq+Bguv8K6ADZsT57vlFmZZi0qmOKI
-         ukWaqicBQQqeyWiuKR8BvlkqXqR3M4F+m3mLtmw7CxRX0Wyz25qxIxwKUF8I0r7X+YKJ
-         2+KWmx63TwOZ40LXsDjmQXoe/3Kf0H+nEy6TsAzIQUpn5KGqBL+TLS2DDCgLtVpRUpoI
-         TnHw==
-X-Gm-Message-State: AOAM530IB5UJ6gmUdNv2+tir/60k+d5zvrQjqnmu1pYwaa3u4qdEfQzx
-        fp0m60KqRvuCi5es4tqe1I8uR8AHz1eb8Q==
-X-Google-Smtp-Source: ABdhPJyvqo3RbUH2Dh/5IQVqyLFzlDj0YKtLF8usD1wyAdbMOH8tGamWYqkS3u4m3htyBtgIyj8r/A==
-X-Received: by 2002:a05:6638:3e92:b0:326:2d62:5197 with SMTP id ch18-20020a0566383e9200b003262d625197mr5381665jab.132.1649771750531;
-        Tue, 12 Apr 2022 06:55:50 -0700 (PDT)
-Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:2611:a7ae:f1c9:5ec2])
-        by smtp.gmail.com with ESMTPSA id n12-20020a92dd0c000000b002cac22690b6sm2280748ilm.0.2022.04.12.06.55.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 06:55:49 -0700 (PDT)
-From:   Adam Ford <aford173@gmail.com>
-To:     linux-media@vger.kernel.org
-Cc:     prabhakar.mahadev-lad.rj@bp.renesas.com, tharvey@gateworks.com,
-        cstevens@beaconembedded.com, aford@beaconembedded.com,
-        laurent.pinchart@ideasonboard.com, Adam Ford <aford173@gmail.com>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] media: i2c: imx219: Create DPHY helper function
-Date:   Tue, 12 Apr 2022 08:55:33 -0500
-Message-Id: <20220412135534.2796158-5-aford173@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220412135534.2796158-1-aford173@gmail.com>
-References: <20220412135534.2796158-1-aford173@gmail.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649771759; x=1681307759;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EYdikBSkBJ4H7A++I5E1/miVOcZwRE1w+sy2tyOFVmQ=;
+  b=OUlSM9s7iag+ItDieoKvTThAuzT4daZjf30ujsEOQmLx1ZqzY9kGPiGm
+   dRxSEhYgY2Cj7VcfRhqlrqKK6xKZBNF6AQ4YAneua3tVFt/cGb58g9rJV
+   a2y0e3MV/o/uqImJtE54H+21cV3U19JtXA9qlfFVbCfiOnrvjDgfsNihc
+   g=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 12 Apr 2022 06:55:59 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:55:59 -0700
+Received: from [10.110.54.13] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Apr
+ 2022 06:55:56 -0700
+Message-ID: <e2bbed61-b818-c391-bf65-824ea2a2ee5a@quicinc.com>
+Date:   Tue, 12 Apr 2022 19:25:50 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 ] remoteproc: Use unbounded workqueue for recovery work
+Content-Language: en-US
+To:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>
+References: <1649694620-10070-1-git-send-email-quic_mojha@quicinc.com>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <1649694620-10070-1-git-send-email-quic_mojha@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the table of modes, each mode sets the DPHY to auto.
-Create a helper function which does the same thing while
-removing the entry for auto DPHY from ever mode entry.
+Hi,
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
----
- drivers/media/i2c/imx219.c | 24 ++++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+Can we consider this ? please suggest.
 
-diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
-index 08e7d0e72430..bb0bc1b8d91c 100644
---- a/drivers/media/i2c/imx219.c
-+++ b/drivers/media/i2c/imx219.c
-@@ -35,6 +35,10 @@
- #define IMX219_MODE_STANDBY		0x00
- #define IMX219_MODE_STREAMING		0x01
- 
-+
-+#define IMX219_REG_DPHY_CTRL		0x0128
-+#define IMX219_DPHY_AUTO		0
-+
- /* Chip ID */
- #define IMX219_REG_CHIP_ID		0x0000
- #define IMX219_CHIP_ID			0x0219
-@@ -183,7 +187,6 @@ static const struct imx219_reg pll_clk_table[] = {
-  * 3280x2464 = mode 2, 1920x1080 = mode 1, 1640x1232 = mode 4, 640x480 = mode 7.
-  */
- static const struct imx219_reg mode_3280x2464_regs[] = {
--	{0x0128, 0x00},
- 	{0x012b, 0x00},
- 	{0x0164, 0x00},
- 	{0x0165, 0x00},
-@@ -222,7 +225,6 @@ static const struct imx219_reg mode_3280x2464_regs[] = {
- };
- 
- static const struct imx219_reg mode_1920_1080_regs[] = {
--	{0x0128, 0x00},
- 	{0x012b, 0x00},
- 	{0x0162, 0x0d},
- 	{0x0163, 0x78},
-@@ -261,7 +263,6 @@ static const struct imx219_reg mode_1920_1080_regs[] = {
- };
- 
- static const struct imx219_reg mode_1640_1232_regs[] = {
--	{0x0128, 0x00},
- 	{0x012b, 0x00},
- 	{0x0164, 0x00},
- 	{0x0165, 0x00},
-@@ -300,7 +301,6 @@ static const struct imx219_reg mode_1640_1232_regs[] = {
- };
- 
- static const struct imx219_reg mode_640_480_regs[] = {
--	{0x0128, 0x00},
- 	{0x012b, 0x00},
- 	{0x0162, 0x0d},
- 	{0x0163, 0x78},
-@@ -999,6 +999,15 @@ static int imx219_get_selection(struct v4l2_subdev *sd,
- 	return -EINVAL;
- }
- 
-+static int imx219_enable_dphy(struct imx219 *imx219, u8 mode)
-+{
-+	int ret;
-+
-+	ret = imx219_write_reg(imx219, IMX219_REG_DPHY_CTRL,
-+			       IMX219_REG_VALUE_08BIT, mode);
-+	return ret;
-+};
-+
- static int imx219_configure_lanes(struct imx219 *imx219)
- {
- 	int ret;
-@@ -1081,6 +1090,13 @@ static int imx219_start_streaming(struct imx219 *imx219)
- 		goto err_rpm_put;
- 	}
- 
-+	/* Setup DPHY */
-+	ret = imx219_enable_dphy(imx219, IMX219_DPHY_AUTO);
-+	if (ret) {
-+		dev_err(&client->dev, "%s failed to configure dphy\n", __func__);
-+		goto err_rpm_put;
-+	}
-+
- 	/* Configure clock based on reference clock frequency */
- 	imx219_set_exck_freq(imx219);
- 
--- 
-2.34.1
+Thanks,
+-Mukesh
 
+On 4/11/2022 10:00 PM, Mukesh Ojha wrote:
+> There could be a scenario where there is too much load on a core
+> (n number of tasks which is affined) or in a case when multiple
+> rproc subsystem is going for a recovery and they queued recovery
+> work to one core so even though subsystem are independent there
+> recovery will be delayed if one of the subsystem recovery work
+> is taking more time in completing.
+>
+> If we make this queue unbounded, the recovery work could be picked
+> on any cpu. This patch try to address this.
+>
+> Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
+> ---
+> Changes in v3:
+>    - Add fallback option to go back to earlier path incase recovery wq
+>      creation fails.
+>
+> Changes in v2:
+>    - Removed WQ_HIGHPRI.
+>    - Updated commit text.
+>
+>   drivers/remoteproc/remoteproc_core.c | 15 +++++++++++++--
+>   1 file changed, 13 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> index c510125..6446c84 100644
+> --- a/drivers/remoteproc/remoteproc_core.c
+> +++ b/drivers/remoteproc/remoteproc_core.c
+> @@ -59,6 +59,7 @@ static int rproc_release_carveout(struct rproc *rproc,
+>   
+>   /* Unique indices for remoteproc devices */
+>   static DEFINE_IDA(rproc_dev_index);
+> +static struct workqueue_struct *rproc_recovery_wq;
+>   
+>   static const char * const rproc_crash_names[] = {
+>   	[RPROC_MMUFAULT]	= "mmufault",
+> @@ -2755,8 +2756,11 @@ void rproc_report_crash(struct rproc *rproc, enum rproc_crash_type type)
+>   	dev_err(&rproc->dev, "crash detected in %s: type %s\n",
+>   		rproc->name, rproc_crash_to_string(type));
+>   
+> -	/* Have a worker handle the error; ensure system is not suspended */
+> -	queue_work(system_freezable_wq, &rproc->crash_handler);
+> +	if (rproc_recovery_wq)
+> +		queue_work(rproc_recovery_wq, &rproc->crash_handler);
+> +	else
+> +		queue_work(system_freezable_wq, &rproc->crash_handler);
+> +
+>   }
+>   EXPORT_SYMBOL(rproc_report_crash);
+>   
+> @@ -2805,6 +2809,11 @@ static void __exit rproc_exit_panic(void)
+>   
+>   static int __init remoteproc_init(void)
+>   {
+> +	rproc_recovery_wq = alloc_workqueue("rproc_recovery_wq",
+> +						WQ_UNBOUND | WQ_FREEZABLE, 0);
+> +	if (!rproc_recovery_wq)
+> +		pr_err("remoteproc: creation of rproc_recovery_wq failed\n");
+> +
+>   	rproc_init_sysfs();
+>   	rproc_init_debugfs();
+>   	rproc_init_cdev();
+> @@ -2821,6 +2830,8 @@ static void __exit remoteproc_exit(void)
+>   	rproc_exit_panic();
+>   	rproc_exit_debugfs();
+>   	rproc_exit_sysfs();
+> +	if (rproc_recovery_wq)
+> +		destroy_workqueue(rproc_recovery_wq);
+>   }
+>   module_exit(remoteproc_exit);
+>   
