@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E6CC41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349516AbiDLG7W (ORCPT
+        id S1350880AbiDLG7b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
+        Tue, 12 Apr 2022 02:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351454AbiDLGxj (ORCPT
+        with ESMTP id S1351450AbiDLGxh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0182D3ED15;
-        Mon, 11 Apr 2022 23:40:53 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D16E3EBB4;
+        Mon, 11 Apr 2022 23:40:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F31A6066C;
-        Tue, 12 Apr 2022 06:40:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7466FC385A8;
-        Tue, 12 Apr 2022 06:40:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB5146066C;
+        Tue, 12 Apr 2022 06:40:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C696DC385A6;
+        Tue, 12 Apr 2022 06:40:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745653;
-        bh=hMrWRxVX67xiwBaRd0vc5IO6ZRUW9/sKJLO5p8O/H08=;
+        s=korg; t=1649745650;
+        bh=yACMg3K5W5/I6pA+flBzd9n3DRtIlF1HetQbnpP/24s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YgiRWK5jwNWFxRiJqco2b4xsEInnwNjVbbc+Tc5DtQqRcsYqA+3mKc3+Bif7km1ME
-         vGg5PChrsaKUdSHlRfmW0lhwWQvRRn40VcrYZ/9RY7ill5kmHk5c7GVCd9Dt0qnPdz
-         eqCCYNNsCEziYWjeEgB99yrY3Ryxfb+K/+HFCwdI=
+        b=QhiylYi4dV4+kXpt3z0sNyHnoBIzerWQOdcFSAKmCjwX7B5VDtc7YWmbzwYELh8Ue
+         j+2At9HGmzfBnrrS9rkjNIkUw6TEOjIeSBZ+DJrYbNlhU1a3PWB0PkjOadX1aSe2T9
+         yck7iFmfRQEnrO98kfsly/l0uW5OCOlviuR4XcCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 5.10 158/171] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
-Date:   Tue, 12 Apr 2022 08:30:49 +0200
-Message-Id: <20220412062932.470045092@linuxfoundation.org>
+        stable@vger.kernel.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 171/171] powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit
+Date:   Tue, 12 Apr 2022 08:31:02 +0200
+Message-Id: <20220412062932.848415078@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -58,48 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
+commit ffa0b64e3be58519ae472ea29a1a1ad681e32f48 upstream.
 
-Just like its done for ldopts and for both in tools/perf/Makefile.config.
+mpe: On 64-bit Book3E vmalloc space starts at 0x8000000000000000.
 
-Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
+Because of the way __pa() works we have:
+  __pa(0x8000000000000000) == 0, and therefore
+  virt_to_pfn(0x8000000000000000) == 0, and therefore
+  virt_addr_valid(0x8000000000000000) == true
 
-  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
+Which is wrong, virt_addr_valid() should be false for vmalloc space.
+In fact all vmalloc addresses that alias with a valid PFN will return
+true from virt_addr_valid(). That can cause bugs with hardened usercopy
+as described below by Kefeng Wang:
 
-And we need to do it to allow for building with versions of clang where
-some gcc options selected by distros are not available.
+  When running ethtool eth0 on 64-bit Book3E, a BUG occurred:
 
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+    usercopy: Kernel memory exposure attempt detected from SLUB object not in SLUB page?! (offset 0, size 1048)!
+    kernel BUG at mm/usercopy.c:99
+    ...
+    usercopy_abort+0x64/0xa0 (unreliable)
+    __check_heap_object+0x168/0x190
+    __check_object_size+0x1a0/0x200
+    dev_ethtool+0x2494/0x2b20
+    dev_ioctl+0x5d0/0x770
+    sock_do_ioctl+0xf0/0x1d0
+    sock_ioctl+0x3ec/0x5a0
+    __se_sys_ioctl+0xf0/0x160
+    system_call_exception+0xfc/0x1f0
+    system_call_common+0xf8/0x200
+
+  The code shows below,
+
+    data = vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
+    copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
+
+  The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
+  on 64-bit Book3E, which leads to the panic.
+
+  As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
+  and __pa addresses") does, make sure the virt addr above PAGE_OFFSET in
+  the virt_addr_valid() for 64-bit, also add upper limit check to make
+  sure the virt is below high_memory.
+
+  Meanwhile, for 32-bit PAGE_OFFSET is the virtual address of the start
+  of lowmem, high_memory is the upper low virtual address, the check is
+  suitable for 32-bit, this will fix the issue mentioned in commit
+  602946ec2f90 ("powerpc: Set max_mapnr correctly") too.
+
+On 32-bit there is a similar problem with high memory, that was fixed in
+commit 602946ec2f90 ("powerpc: Set max_mapnr correctly"), but that
+commit breaks highmem and needs to be reverted.
+
+We can't easily fix __pa(), we have code that relies on its current
+behaviour. So for now add extra checks to virt_addr_valid().
+
+For 64-bit Book3S the extra checks are not necessary, the combination of
+virt_to_pfn() and pfn_valid() should yield the correct result, but they
+are harmless.
+
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[mpe: Add additional change log detail]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220406145802.538416-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/build/feature/Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/include/asm/page.h |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -210,7 +210,7 @@ strip-libs = $(filter-out -l%,$(1))
- PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
- PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
- PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
--PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
-+PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+--- a/arch/powerpc/include/asm/page.h
++++ b/arch/powerpc/include/asm/page.h
+@@ -132,7 +132,11 @@ static inline bool pfn_valid(unsigned lo
+ #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+ #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
  
- ifeq ($(CC_NO_CLANG), 0)
+-#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
++#define virt_addr_valid(vaddr)	({					\
++	unsigned long _addr = (unsigned long)vaddr;			\
++	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
++	pfn_valid(virt_to_pfn(_addr));					\
++})
+ 
+ /*
+  * On Book-E parts we need __va to parse the device tree and we can't
 
 
