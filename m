@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D7E8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 899EBC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380838AbiDLIun (ORCPT
+        id S1385177AbiDLIu4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        Tue, 12 Apr 2022 04:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358392AbiDLHle (ORCPT
+        with ESMTP id S1358424AbiDLHlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61F84B1CC;
-        Tue, 12 Apr 2022 00:17:55 -0700 (PDT)
+        Tue, 12 Apr 2022 03:41:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7B14B41C;
+        Tue, 12 Apr 2022 00:18:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0014D616E7;
-        Tue, 12 Apr 2022 07:17:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DADCC385A5;
-        Tue, 12 Apr 2022 07:17:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E9176153F;
+        Tue, 12 Apr 2022 07:18:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9B05C385A1;
+        Tue, 12 Apr 2022 07:17:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747874;
-        bh=1kvO8kzrocGOeyhH3q7quzIPRU0KgSJ0xpJoB6yzKzY=;
+        s=korg; t=1649747880;
+        bh=n5yPUWkMd95tE3x0rxoJM9innYGchDcsor/IkUmA+mk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=esBlPdLALJWjT52vkc5aH1ml7HLF3JxkGQLt9hcjqQFYNIw3Y+c8CrfmTE/v+Hzmx
-         v1bes7OB0H+3Gl4UkDHEAy6EkhRxyusNwhAaq7V0SAV9EQQgHuA7Pq9jIC8dLQMDN3
-         W//5IcLguFcegjYDAsj/I/z5cMbDeWrboZCf0OSs=
+        b=nrKBVr6nnSDMcl+bCMnvmpE9dxuribOg9sd+D7+RojZjcO4ULYo2Xzj/sSv1qtSnY
+         8zV8ZuIZGm447D41/s2AbsNkrL/8I8PKl2dsTlhoqGRfq0T8IdBptPGbaJ3sOXWmsK
+         89AcW1XBBG8TkJSaJyC1ffYD2XkprscaEIVAepJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
-        ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Changhui Zhong <czhong@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Tomas Henzl <thenzl@redhat.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 197/343] Revert "NFSv4: Handle the special Linux file open access mode"
-Date:   Tue, 12 Apr 2022 08:30:15 +0200
-Message-Id: <20220412062957.042415016@linuxfoundation.org>
+Subject: [PATCH 5.17 199/343] scsi: core: scsi_logging: Fix a BUG
+Date:   Tue, 12 Apr 2022 08:30:17 +0200
+Message-Id: <20220412062957.099091906@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,56 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: Tomas Henzl <thenzl@redhat.com>
 
-[ Upstream commit ab0fc21bc7105b54bafd85bd8b82742f9e68898a ]
+[ Upstream commit f06aa52cb2723ec67e92df463827b800d6c477d1 ]
 
-This reverts commit 44942b4e457beda00981f616402a1a791e8c616e.
+The request_queue may be NULL in a request, for example when it comes from
+scsi_ioctl_reset(). Check it before use.
 
-After secondly opening a file with O_ACCMODE|O_DIRECT flags,
-nfs4_valid_open_stateid() will dereference NULL nfs4_state when lseek().
-
-Reproducer:
-  1. mount -t nfs -o vers=4.2 $server_ip:/ /mnt/
-  2. fd = open("/mnt/file", O_ACCMODE|O_DIRECT|O_CREAT)
-  3. close(fd)
-  4. fd = open("/mnt/file", O_ACCMODE|O_DIRECT)
-  5. lseek(fd)
-
-Reported-by: Lyu Tao <tao.lyu@epfl.ch>
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: f3fa33acca9f ("block: remove the ->rq_disk field in struct request")
+Link: https://lore.kernel.org/r/20220324134603.28463-1-thenzl@redhat.com
+Reported-by: Changhui Zhong <czhong@redhat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Tomas Henzl <thenzl@redhat.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/inode.c    | 1 -
- fs/nfs/nfs4file.c | 2 +-
- 2 files changed, 1 insertion(+), 2 deletions(-)
+ drivers/scsi/scsi_logging.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
-index d96baa4450e3..e4fb939a2904 100644
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -1180,7 +1180,6 @@ int nfs_open(struct inode *inode, struct file *filp)
- 	nfs_fscache_open_file(inode, filp);
- 	return 0;
+diff --git a/drivers/scsi/scsi_logging.c b/drivers/scsi/scsi_logging.c
+index 1f8f80b2dbfc..a9f8de5e9639 100644
+--- a/drivers/scsi/scsi_logging.c
++++ b/drivers/scsi/scsi_logging.c
+@@ -30,7 +30,7 @@ static inline const char *scmd_name(const struct scsi_cmnd *scmd)
+ {
+ 	struct request *rq = scsi_cmd_to_rq((struct scsi_cmnd *)scmd);
+ 
+-	if (!rq->q->disk)
++	if (!rq->q || !rq->q->disk)
+ 		return NULL;
+ 	return rq->q->disk->disk_name;
  }
--EXPORT_SYMBOL_GPL(nfs_open);
- 
- /*
-  * This function is called whenever some part of NFS notices that
-diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
-index e79ae4cbc395..c178db86a6e8 100644
---- a/fs/nfs/nfs4file.c
-+++ b/fs/nfs/nfs4file.c
-@@ -51,7 +51,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
- 		return err;
- 
- 	if ((openflags & O_ACCMODE) == 3)
--		return nfs_open(inode, filp);
-+		openflags--;
- 
- 	/* We can't create new files here */
- 	openflags &= ~(O_CREAT|O_EXCL);
 -- 
 2.35.1
 
