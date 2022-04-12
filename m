@@ -2,118 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF35C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE22C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357009AbiDLPal (ORCPT
+        id S1357027AbiDLPar (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57350 "EHLO
+        Tue, 12 Apr 2022 11:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiDLPai (ORCPT
+        with ESMTP id S238522AbiDLPaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:30:38 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E92FE1D307
+        Tue, 12 Apr 2022 11:30:39 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7C41CFCF
         for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:28:19 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B3B4713D5;
-        Tue, 12 Apr 2022 08:28:19 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 11A413F70D;
-        Tue, 12 Apr 2022 08:28:18 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     maz@kernel.org, tglx@linutronix.de
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] irqchip/gic-v3: Claim iomem resources
-Date:   Tue, 12 Apr 2022 16:28:15 +0100
-Message-Id: <c534c2a458a3bf94ccdae8abc6edc3d45a689c30.1649777295.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649777299; x=1681313299;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=hxmhVU25D3rkudonJ1U48jVC1YzKh8bTlt+6h0NWC6c=;
+  b=CBILQjr26I5pphFvFAfpI+Zu6eL9m0YeAV8y3IEglbgQBSpiNJPaVH1s
+   Q+4DUqASfaFU/Z2GXn+lR6GCO++VPM0vWpX6HuNYCkbGP+zwmFw/7ucfc
+   3QysILFUHpDBfzcsxDLHfLzE14hRZ2uIhkrB8b9pMqMfcazQpf7F0lRE7
+   iqTH83QGJlDbK7Gzf9qndjxTC/jOX1VXbg/M0q4aB5SqhtlnCN9Zybao5
+   Dbx2M1azE5ZlQxbPrV86hmZKOxDJgrRqxj06N37F6JcNx52OiBY7VgfNO
+   xe0E5+N7N9DPFhN21C5SA/LN5ZvSLKvdacUjsPE1l41V3BNVEPDjN7TuC
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,254,1643698800"; 
+   d="scan'208";a="92139755"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Apr 2022 08:28:18 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 12 Apr 2022 08:28:17 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 12 Apr 2022 08:28:16 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v2 1/4] ARM: at91: pm: keep documentation inline with structure members
+Date:   Tue, 12 Apr 2022 18:30:43 +0300
+Message-ID: <20220412153046.50014-2-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220412153046.50014-1-claudiu.beznea@microchip.com>
+References: <20220412153046.50014-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As a simple quality-of-life tweak, claim our MMIO regions when mapping
-them, such that the GIC shows up in /proc/iomem. No effort is spent on
-trying to release them, since frankly if the GIC fails to probe then
-it's never getting a second try anyway.
+Move documentation of bu to keep the same order as in the structure
+itself.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
+ arch/arm/mach-at91/pm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I briefly looked at doing the same for GICv2, but quickly decided that
-GICv2 isn't interesting enough to be worth the (greater) bother...
-
-Lightly tested with ACPI.
----
- drivers/irqchip/irq-gic-v3.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index b252d5534547..9815b692a47a 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1980,10 +1980,10 @@ static int __init gic_of_init(struct device_node *node, struct device_node *pare
- 	u32 nr_redist_regions;
- 	int err, i;
- 
--	dist_base = of_iomap(node, 0);
--	if (!dist_base) {
-+	dist_base = of_io_request_and_map(node, 0, "GICD");
-+	if (IS_ERR(dist_base)) {
- 		pr_err("%pOF: unable to map gic dist registers\n", node);
--		return -ENXIO;
-+		return PTR_ERR(dist_base);
- 	}
- 
- 	err = gic_validate_dist_version(dist_base);
-@@ -2007,8 +2007,8 @@ static int __init gic_of_init(struct device_node *node, struct device_node *pare
- 		int ret;
- 
- 		ret = of_address_to_resource(node, 1 + i, &res);
--		rdist_regs[i].redist_base = of_iomap(node, 1 + i);
--		if (ret || !rdist_regs[i].redist_base) {
-+		rdist_regs[i].redist_base = of_io_request_and_map(node, 1 + i, "GICR");
-+		if (ret || IS_ERR(rdist_regs[i].redist_base)) {
- 			pr_err("%pOF: couldn't map region %d\n", node, i);
- 			err = -ENODEV;
- 			goto out_unmap_rdist;
-@@ -2034,7 +2034,7 @@ static int __init gic_of_init(struct device_node *node, struct device_node *pare
- 
- out_unmap_rdist:
- 	for (i = 0; i < nr_redist_regions; i++)
--		if (rdist_regs[i].redist_base)
-+		if (rdist_regs[i].redist_base && !IS_ERR(rdist_regs[i].redist_base))
- 			iounmap(rdist_regs[i].redist_base);
- 	kfree(rdist_regs);
- out_unmap_dist:
-@@ -2081,6 +2081,7 @@ gic_acpi_parse_madt_redist(union acpi_subtable_headers *header,
- 		pr_err("Couldn't map GICR region @%llx\n", redist->base_address);
- 		return -ENOMEM;
- 	}
-+	request_mem_region(redist->base_address, redist->length, "GICR");
- 
- 	gic_acpi_register_redist(redist->base_address, redist_base);
- 	return 0;
-@@ -2103,6 +2104,7 @@ gic_acpi_parse_madt_gicc(union acpi_subtable_headers *header,
- 	redist_base = ioremap(gicc->gicr_base_address, size);
- 	if (!redist_base)
- 		return -ENOMEM;
-+	request_mem_region(gicc->gicr_base_address, size, "GICR");
- 
- 	gic_acpi_register_redist(gicc->gicr_base_address, redist_base);
- 	return 0;
-@@ -2304,6 +2306,7 @@ gic_acpi_init(union acpi_subtable_headers *header, const unsigned long end)
- 		pr_err("Unable to map GICD registers\n");
- 		return -ENOMEM;
- 	}
-+	request_mem_region(dist->base_address, ACPI_GICV3_DIST_MEM_SIZE, "GICD");
- 
- 	err = gic_validate_dist_version(acpi_data.dist_base);
- 	if (err) {
+diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
+index 0fd609e26615..7ea4c7f13d28 100644
+--- a/arch/arm/mach-at91/pm.c
++++ b/arch/arm/mach-at91/pm.c
+@@ -65,9 +65,9 @@ struct at91_pm_sfrbu_regs {
+  * @config_shdwc_ws: wakeup sources configuration function for SHDWC
+  * @config_pmc_ws: wakeup srouces configuration function for PMC
+  * @ws_ids: wakup sources of_device_id array
++ * @bu: backup unit mapped data (for backup mode)
+  * @data: PM data to be used on last phase of suspend
+  * @sfrbu_regs: SFRBU registers mapping
+- * @bu: backup unit mapped data (for backup mode)
+  * @memcs: memory chip select
+  */
+ struct at91_soc_pm {
 -- 
-2.28.0.dirty
+2.32.0
 
