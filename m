@@ -2,93 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F46C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5631AC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352205AbiDLMIL (ORCPT
+        id S1352095AbiDLMID (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
+        Tue, 12 Apr 2022 08:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352785AbiDLMDd (ORCPT
+        with ESMTP id S1352419AbiDLMC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:03:33 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED348230E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:00:37 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id lc2so15977865ejb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:00:37 -0700 (PDT)
+        Tue, 12 Apr 2022 08:02:58 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7B18023F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:00:09 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ebf3746f87so101896377b3.6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=OtcTMPrlTNXp9PoEitk/L5i1H2nBEkZl9nT/eENrV+k=;
-        b=JP11LSQ8zmmCyddbwbvylUfq6jyldvILsPwHS7McGLy7YDYX1x9vn/jRHL3rf3XWju
-         wPAdtWSFjJeJCTvSfu2LN0xiPGnQu245SCs7W5aC4+5sKeKu4DVj0o6bmNZ5senwX2i9
-         GlyeYcYPnitR4Qpwh74fskxFTnPRBx6C0Pv+mytp2DaixRWajZvGWJOwijTbJTd9Y/cZ
-         lFGzzl2DY7OGkxALK6Xo0PKHUU+1ITCmDkbL3ANYKygN3DlPIKJXlup4TeZmypXTCRMx
-         sdIguhdGNRottJqWbk7hnfEvAWpVArMTtWTQcSIIb2HY+LZRpueOJ5OnuFjmL8WTzrhC
-         Z4xA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v2zi2giavZdO2HMDfrc7yK4A4aR/ngLsqIJD3W77LNs=;
+        b=b4v6GqYxeJjlJ1RbEQauF9GEIWimtem9DfI/ea+58BboREvflEEq0M6jErAnAoE93B
+         tYuy5mJ/r4ba02CczLRQd8TmQ7CK9KY/1RfIbv6VC/vU5FzAIsre+zMd2kHi6JeMfPOF
+         4fBT0F6bq2XsYtIaWNClXMgBpjhBJ9AS7/1/3qS47r77iP3+bY4fHCX9/uoSi8DAvTqG
+         k/jDnzm69qk4dXs/N7H146ttsPkrszUV5cVSdNFLc0OGWTX1yWcUZvfGu8L3L3E878+9
+         LZbWbMEWL706ypWKJhQXFIcNT9lcoZhbr2KfSuGPorip9ZdCMOWb/sRTFpPLw/dEIfsz
+         NCSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=OtcTMPrlTNXp9PoEitk/L5i1H2nBEkZl9nT/eENrV+k=;
-        b=BYeZy1o6DREt9r9MtNUheZ9bybPrII4mdstqzS6dMAb4L1HfY583vF/f/QMYfpUpbP
-         W8A0uXigiYzsX2aGbflNTLRrP28vQ0LzHfRv2/XQBLEDSvhi8RdlRhm20L00IPbgL9Zl
-         qD0MLt8X8DF35RXay/yigA7Uy4ziB8cvuCcvd788XSIeLLDuuzjb1xumH6lNgQSQKZwS
-         HAAcIgcJRqQ2qrM5WwXRW71LS16/eVKYGcFByO29MbYdx9hyN9EKFDi0PWWn7hSfYA33
-         nK/cMa3/2lA/Vbc5fONPO5uOXr+woKZxmq6nQ/1RG9RVh4chNIitA39v/azGfkmLKTGy
-         zaqg==
-X-Gm-Message-State: AOAM530VUVrHWWBC2IAXdIiemsERNPK+kRjgopyJRkCPb5kYZTcaPqqe
-        XAwve6mcNc4a+eHhwkl9nLBZmg==
-X-Google-Smtp-Source: ABdhPJzso1r/MNJ6FRO8mE1JENt7ea2m3TSMGr0XG0JAdS/nUDEI9+uadS9945xfvLwwJfuPRNVRJw==
-X-Received: by 2002:a17:907:6e9e:b0:6e8:5723:bf8f with SMTP id sh30-20020a1709076e9e00b006e85723bf8fmr17926034ejc.563.1649761235531;
-        Tue, 12 Apr 2022 04:00:35 -0700 (PDT)
-Received: from [192.168.0.194] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id j12-20020a056402238c00b0041ce094cf47sm11268939eda.60.2022.04.12.04.00.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 04:00:34 -0700 (PDT)
-Message-ID: <f64eb8c9-c597-70d4-1247-fbd39f593ece@linaro.org>
-Date:   Tue, 12 Apr 2022 13:00:33 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v2zi2giavZdO2HMDfrc7yK4A4aR/ngLsqIJD3W77LNs=;
+        b=giFUnQNUayzIX00N+ht1i8KtG3nhHpfpwHFAapeCM94gDy8nfL7FKJpuT29FfhD9cW
+         AuxHNYRi9wYOo0xC3YM1tHh+Seet3k58l6BSwYemVrKcBQWRMaiwkG2HrMTutA7/PMeC
+         iuxerKLv9Z9r3qIlNyJ6PT1SJRcd8q6NqogOLcnHQN5pjc1sNutRo1TEc4Qr7/5FGrs9
+         Qrjni4SDwdE8JGSgkmuIiEL8ItuIv3hfLJz/WdNJEdhNadFe2LuDatSMVWLAvZZ952IT
+         HtwOFFO6nW5T6LvKIHPpAB1ZdUB2AK+3APA5v4JnJrnSBEKqKygG58Hq7QT+YE6HlSRD
+         qOIw==
+X-Gm-Message-State: AOAM531cp+H5dq4vydWe4zmPSX8uKmXzRDhGSFstf0aP2Jg04soomqNH
+        nrU2yIY+Ttyblvz9M0SOqSGIeL8Mvcla5RCaZhJEKw==
+X-Google-Smtp-Source: ABdhPJwwqPNdGAbIJgV8Tw3Kjk4tMF7wq4HRILrI/52e/kefI6BLXOkH7KMdW6Q3t6UkDG+3QNDDwa3vKedsVrgXFAE=
+X-Received: by 2002:a0d:e743:0:b0:2eb:3106:9b32 with SMTP id
+ q64-20020a0de743000000b002eb31069b32mr30496791ywe.512.1649761208158; Tue, 12
+ Apr 2022 04:00:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] dt-bindings: arm: Add bosch acc board
-Content-Language: en-US
-To:     Philip Oberfichtner <pro@denx.de>, devicetree@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Winker Matthias <Matthias.Winker@de.bosch.com>
-References: <20220412101905.514310-1-pro@denx.de>
- <20220412101905.514310-2-pro@denx.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220412101905.514310-2-pro@denx.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220404111204.935357-1-elver@google.com> <CACT4Y+YiDhmKokuqD3dhtj67HxZpTumiQvvRp35X-sR735qjqQ@mail.gmail.com>
+In-Reply-To: <CACT4Y+YiDhmKokuqD3dhtj67HxZpTumiQvvRp35X-sR735qjqQ@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 12 Apr 2022 13:00:00 +0200
+Message-ID: <CANpmjNPQ9DWzPRx4QWDnZatKGU96xLhb2qN-wgbD84zyZ6_Mig@mail.gmail.com>
+Subject: Re: [PATCH] signal: Deliver SIGTRAP on perf event asynchronously if blocked
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/04/2022 12:19, Philip Oberfichtner wrote:
-> Add device tree binding for the Bosch ACC board, based on i.MX6 Dual.
-> 
-> Signed-off-by: Philip Oberfichtner <pro@denx.de>
-> ---
->  Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+On Tue, 5 Apr 2022 at 15:30, Dmitry Vyukov <dvyukov@google.com> wrote:
+> On Mon, 4 Apr 2022 at 13:12, Marco Elver <elver@google.com> wrote:
+> > With SIGTRAP on perf events, we have encountered termination of
+> > processes due to user space attempting to block delivery of SIGTRAP.
+> > Consider this case:
+> >
+> >     <set up SIGTRAP on a perf event>
+> >     ...
+> >     sigset_t s;
+> >     sigemptyset(&s);
+> >     sigaddset(&s, SIGTRAP | <and others>);
+> >     sigprocmask(SIG_BLOCK, &s, ...);
+> >     ...
+> >     <perf event triggers>
+> >
+> > When the perf event triggers, while SIGTRAP is blocked, force_sig_perf()
+> > will force the signal, but revert back to the default handler, thus
+> > terminating the task.
+> >
+> > This makes sense for error conditions, but not so much for explicitly
+> > requested monitoring. However, the expectation is still that signals
+> > generated by perf events are synchronous, which will no longer be the
+> > case if the signal is blocked and delivered later.
+> >
+> > To give user space the ability to clearly distinguish synchronous from
+> > asynchronous signals, introduce siginfo_t::si_perf_flags and
+> > TRAP_PERF_FLAG_ASYNC (opted for flags in case more binary information is
+> > required in future).
+> >
+> > The resolution to the problem is then to (a) no longer force the signal
+> > (avoiding the terminations), but (b) tell user space via si_perf_flags
+> > if the signal was synchronous or not, so that such signals can be
+> > handled differently (e.g. let user space decide to ignore or consider
+> > the data imprecise).
+> >
+> > The alternative of making the kernel ignore SIGTRAP on perf events if
+> > the signal is blocked may work for some usecases, but likely causes
+> > issues in others that then have to revert back to interception of
+> > sigprocmask() (which we want to avoid). [ A concrete example: when using
+> > breakpoint perf events to track data-flow, in a region of code where
+> > signals are blocked, data-flow can no longer be tracked accurately.
+> > When a relevant asynchronous signal is received after unblocking the
+> > signal, the data-flow tracking logic needs to know its state is
+> > imprecise. ]
+> >
+> > Link: https://lore.kernel.org/all/Yjmn%2FkVblV3TdoAq@elver.google.com/
+> > Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
+> > Reported-by: Dmitry Vyukov <dvyukov@google.com>
+> > Signed-off-by: Marco Elver <elver@google.com>
+>
+> Tested-by: Dmitry Vyukov <dvyukov@google.com>
+>
+> I've tested delivery of SIGTRAPs when it's blocked with sigprocmask,
+> it does not kill the process now.
+>
+> And tested the case where previously I was getting infinite recursion
+> and stack overflow (SIGTRAP handler causes another SIGTRAP recursively
+> before being able to detect recursion and return). With this patch it
+> can be handled by blocking recursive SIGTRAPs (!SA_NODEFER).
+
+Thanks!
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Should there be any further comments, please shout.
 
-
-Best regards,
-Krzysztof
+Thanks,
+-- Marco
