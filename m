@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC2FC47081
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B36C35294
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383111AbiDLIfq (ORCPT
+        id S1384269AbiDLIkA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        Tue, 12 Apr 2022 04:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356333AbiDLHfR (ORCPT
+        with ESMTP id S1357196AbiDLHjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:35:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F11E50E0C;
-        Tue, 12 Apr 2022 00:09:18 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D01140C1;
+        Tue, 12 Apr 2022 00:13:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9133B81B50;
-        Tue, 12 Apr 2022 07:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E65BC385A6;
-        Tue, 12 Apr 2022 07:09:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 914EBB81A8F;
+        Tue, 12 Apr 2022 07:13:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF3A9C385A5;
+        Tue, 12 Apr 2022 07:13:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747355;
-        bh=PavfG5KJ6cWoEDDVC5lfDN5ZmM9XXHm3w/O0k/krWlg=;
+        s=korg; t=1649747614;
+        bh=k6MVIFARZQ6g50RBnCIzx3cvvXS7ccTygWy55DHgzXg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mfNyjZYQp6oopjpH8Uel+YHE4IDXf8Rhphgm0Za6bhC5ZOrshx+i0oyf0dyNl6uxK
-         7RDsG6An401VbtnbPsI5AaHwDU5DHutXb1dn4LgeFrWk429keGI2k0dgECAtRRbVn8
-         /cVVdcVJovbUl1eNXBYjQGSqGMZOsDGgs/vg9fDA=
+        b=SlyhgoKC2m6V1bzVbwSM1Y+FjUHvdpfT/yRjzyivFo3ayO9sk9E7ueFvZseAXQKiM
+         zyLLVwm/5lARd89m/Hfc+nR7zS437HwUA6xwt62jllLy7PkTQFTvHIByxvsJRJ1M1n
+         ODtdNhyQXneg6O1zIRbZjnw6Rflc3YsutAaGSzN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 048/343] mt76: mt7921: fix crash when startup fails.
-Date:   Tue, 12 Apr 2022 08:27:46 +0200
-Message-Id: <20220412062952.493639313@linuxfoundation.org>
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 142/343] usb: dwc3: omap: fix "unbalanced disables for smps10_out1" on omap5evm
+Date:   Tue, 12 Apr 2022 08:29:20 +0200
+Message-Id: <20220412062955.483417266@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,39 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Greear <greearb@candelatech.com>
+From: H. Nikolaus Schaller <hns@goldelico.com>
 
-[ Upstream commit 827e7799c61b978fbc2cc9dac66cb62401b2b3f0 ]
+[ Upstream commit ac01df343e5a6c6bcead2ed421af1fde30f73e7e ]
 
-If the nic fails to start, it is possible that the
-reset_work has already been scheduled.  Ensure the
-work item is canceled so we do not have use-after-free
-crash in case cleanup is called before the work item
-is executed.
+Usually, the vbus_regulator (smps10 on omap5evm) boots up disabled.
 
-This fixes crash on my x86_64 apu2 when mt7921k radio
-fails to work.  Radio still fails, but OS does not
-crash.
+Hence calling regulator_disable() indirectly through dwc3_omap_set_mailbox()
+during probe leads to:
 
-Signed-off-by: Ben Greear <greearb@candelatech.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+[   10.332764] WARNING: CPU: 0 PID: 1628 at drivers/regulator/core.c:2853 _regulator_disable+0x40/0x164
+[   10.351919] unbalanced disables for smps10_out1
+[   10.361298] Modules linked in: dwc3_omap(+) clk_twl6040 at24 gpio_twl6040 palmas_gpadc palmas_pwrbutton
+industrialio snd_soc_omap_mcbsp(+) snd_soc_ti_sdma display_connector ti_tpd12s015 drm leds_gpio
+drm_panel_orientation_quirks ip_tables x_tables ipv6 autofs4
+[   10.387818] CPU: 0 PID: 1628 Comm: systemd-udevd Not tainted 5.17.0-rc1-letux-lpae+ #8139
+[   10.405129] Hardware name: Generic OMAP5 (Flattened Device Tree)
+[   10.411455]  unwind_backtrace from show_stack+0x10/0x14
+[   10.416970]  show_stack from dump_stack_lvl+0x40/0x4c
+[   10.422313]  dump_stack_lvl from __warn+0xb8/0x170
+[   10.427377]  __warn from warn_slowpath_fmt+0x70/0x9c
+[   10.432595]  warn_slowpath_fmt from _regulator_disable+0x40/0x164
+[   10.439037]  _regulator_disable from regulator_disable+0x30/0x64
+[   10.445382]  regulator_disable from dwc3_omap_set_mailbox+0x8c/0xf0 [dwc3_omap]
+[   10.453116]  dwc3_omap_set_mailbox [dwc3_omap] from dwc3_omap_probe+0x2b8/0x394 [dwc3_omap]
+[   10.467021]  dwc3_omap_probe [dwc3_omap] from platform_probe+0x58/0xa8
+[   10.481762]  platform_probe from really_probe+0x168/0x2fc
+[   10.481782]  really_probe from __driver_probe_device+0xc4/0xd8
+[   10.481782]  __driver_probe_device from driver_probe_device+0x24/0xa4
+[   10.503762]  driver_probe_device from __driver_attach+0xc4/0xd8
+[   10.510018]  __driver_attach from bus_for_each_dev+0x64/0xa0
+[   10.516001]  bus_for_each_dev from bus_add_driver+0x148/0x1a4
+[   10.524880]  bus_add_driver from driver_register+0xb4/0xf8
+[   10.530678]  driver_register from do_one_initcall+0x90/0x1c4
+[   10.536661]  do_one_initcall from do_init_module+0x4c/0x200
+[   10.536683]  do_init_module from load_module+0x13dc/0x1910
+[   10.551159]  load_module from sys_finit_module+0xc8/0xd8
+[   10.561319]  sys_finit_module from __sys_trace_return+0x0/0x18
+[   10.561336] Exception stack(0xc344bfa8 to 0xc344bff0)
+[   10.561341] bfa0:                   b6fb5778 b6fab8d8 00000007 b6ecfbb8 00000000 b6ed0398
+[   10.561341] bfc0: b6fb5778 b6fab8d8 855c0500 0000017b 00020000 b6f9a3cc 00000000 b6fb5778
+[   10.595500] bfe0: bede18f8 bede18e8 b6ec9aeb b6dda1c2
+[   10.601345] ---[ end trace 0000000000000000 ]---
+
+Fix this unnecessary warning by checking if the regulator is enabled.
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/af3b750dc2265d875deaabcf5f80098c9645da45.1646744616.git.hns@goldelico.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc3/dwc3-omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-index 7a8d2596c226..4abb7a6e775a 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-@@ -273,6 +273,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
+diff --git a/drivers/usb/dwc3/dwc3-omap.c b/drivers/usb/dwc3/dwc3-omap.c
+index e196673f5c64..efaf0db595f4 100644
+--- a/drivers/usb/dwc3/dwc3-omap.c
++++ b/drivers/usb/dwc3/dwc3-omap.c
+@@ -242,7 +242,7 @@ static void dwc3_omap_set_mailbox(struct dwc3_omap *omap,
+ 		break;
  
- 	cancel_delayed_work_sync(&dev->pm.ps_work);
- 	cancel_work_sync(&dev->pm.wake_work);
-+	cancel_work_sync(&dev->reset_work);
- 	mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
- 
- 	mt7921_mutex_acquire(dev);
+ 	case OMAP_DWC3_ID_FLOAT:
+-		if (omap->vbus_reg)
++		if (omap->vbus_reg && regulator_is_enabled(omap->vbus_reg))
+ 			regulator_disable(omap->vbus_reg);
+ 		val = dwc3_omap_read_utmi_ctrl(omap);
+ 		val |= USBOTGSS_UTMI_OTG_CTRL_IDDIG;
 -- 
 2.35.1
 
