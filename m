@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C21EC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBD5C35294
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355263AbiDLIHm (ORCPT
+        id S1355409AbiDLIIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        Tue, 12 Apr 2022 04:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354889AbiDLH05 (ORCPT
+        with ESMTP id S1355176AbiDLH1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126F4473A7;
-        Tue, 12 Apr 2022 00:06:50 -0700 (PDT)
+        Tue, 12 Apr 2022 03:27:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B48D48883;
+        Tue, 12 Apr 2022 00:07:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80E28616DC;
-        Tue, 12 Apr 2022 07:06:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9029DC385AC;
-        Tue, 12 Apr 2022 07:06:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FB49B81B4E;
+        Tue, 12 Apr 2022 07:07:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7101EC385A1;
+        Tue, 12 Apr 2022 07:07:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747209;
-        bh=ntbeJfFcUf36LtQuxnH6guNMinHbq9Rd/OpBJmA0IJY=;
+        s=korg; t=1649747233;
+        bh=YMs7DdWMitcpwA45VOAPxYqNjZD+cfm5Xmc4BAEvph4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SpSq9+vG6f3NH9SCT8X4kb095Scn8IavoVN54Ug7ggZrax6RlfVMFrVQ3WDVV6uK/
-         TK8DliI8lXubBNrEx8zsLVoL+gXIWDsWC/AYoSkSUD2+zmBkir6lJTYP0CAhfuvzGH
-         g7BEAiYhxpPG+MxL46CdOT1OMF9MyA4oaRq5wsaw=
+        b=roERGJdNK3Hr8hVleYbV4pbMOiBICAd4t5XN6FSjh0vRaOl8Yp6WH6tZxtu0rAHdu
+         x94xf+MH0HP6NLmjJsSWpNfcGylfu1ETFZMMP+aVc0Me1yVKVyQRXweYPh8zHlQcTX
+         I9/0MMTZyMwxilceuJQ4kwIDImFmxUuz/13vgniY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jingyi Wang <wangjingyi11@huawei.com>,
-        Nianyao Tang <tangnianyao@huawei.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.16 281/285] irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to clear before descheduling
-Date:   Tue, 12 Apr 2022 08:32:18 +0200
-Message-Id: <20220412062951.762096947@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Mack <daniel@zonque.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: [PATCH 5.16 251/285] drm/panel: ili9341: fix optional regulator handling
+Date:   Tue, 12 Apr 2022 08:31:48 +0200
+Message-Id: <20220412062950.904732091@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,89 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Daniel Mack <daniel@zonque.org>
 
-commit af27e41612ec7e5b4783f589b753a7c31a37aac8 upstream.
+commit d14eb80e27795b7b20060f7b151cdfe39722a813 upstream.
 
-The way KVM drives GICv4.{0,1} is as follows:
-- vcpu_load() makes the VPE resident, instructing the RD to start
-  scanning for interrupts
-- just before entering the guest, we check that the RD has finished
-  scanning and that we can start running the vcpu
-- on preemption, we deschedule the VPE by making it invalid on
-  the RD
+If the optional regulator lookup fails, reset the pointer to NULL.
+Other functions such as mipi_dbi_poweron_reset_conditional() only do
+a NULL pointer check and will otherwise dereference the error pointer.
 
-However, we are preemptible between the first two steps. If it so
-happens *and* that the RD was still scanning, we nonetheless write
-to the GICR_VPENDBASER register while Dirty is set, and bad things
-happen (we're in UNPRED land).
-
-This affects both the 4.0 and 4.1 implementations.
-
-Make sure Dirty is cleared before performing the deschedule,
-meaning that its_clear_vpend_valid() becomes a sort of full VPE
-residency barrier.
-
-Reported-by: Jingyi Wang <wangjingyi11@huawei.com>
-Tested-by: Nianyao Tang <tangnianyao@huawei.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the GICR_VPENDBASER.Dirty bit")
-Link: https://lore.kernel.org/r/4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com
+Fixes: 5a04227326b04c15 ("drm/panel: Add ilitek ili9341 panel driver")
+Signed-off-by: Daniel Mack <daniel@zonque.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220317225537.826302-1-daniel@zonque.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3-its.c |   28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/panel/panel-ilitek-ili9341.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -3007,18 +3007,12 @@ static int __init allocate_lpi_tables(vo
- 	return 0;
- }
+--- a/drivers/gpu/drm/panel/panel-ilitek-ili9341.c
++++ b/drivers/gpu/drm/panel/panel-ilitek-ili9341.c
+@@ -612,8 +612,10 @@ static int ili9341_dbi_probe(struct spi_
+ 	int ret;
  
--static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
-+static u64 read_vpend_dirty_clear(void __iomem *vlpi_base)
- {
- 	u32 count = 1000000;	/* 1s! */
- 	bool clean;
- 	u64 val;
+ 	vcc = devm_regulator_get_optional(dev, "vcc");
+-	if (IS_ERR(vcc))
++	if (IS_ERR(vcc)) {
+ 		dev_err(dev, "get optional vcc failed\n");
++		vcc = NULL;
++	}
  
--	val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
--	val &= ~GICR_VPENDBASER_Valid;
--	val &= ~clr;
--	val |= set;
--	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
--
- 	do {
- 		val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
- 		clean = !(val & GICR_VPENDBASER_Dirty);
-@@ -3029,10 +3023,26 @@ static u64 its_clear_vpend_valid(void __
- 		}
- 	} while (!clean && count);
- 
--	if (unlikely(val & GICR_VPENDBASER_Dirty)) {
-+	if (unlikely(!clean))
- 		pr_err_ratelimited("ITS virtual pending table not cleaning\n");
-+
-+	return val;
-+}
-+
-+static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
-+{
-+	u64 val;
-+
-+	/* Make sure we wait until the RD is done with the initial scan */
-+	val = read_vpend_dirty_clear(vlpi_base);
-+	val &= ~GICR_VPENDBASER_Valid;
-+	val &= ~clr;
-+	val |= set;
-+	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
-+
-+	val = read_vpend_dirty_clear(vlpi_base);
-+	if (unlikely(val & GICR_VPENDBASER_Dirty))
- 		val |= GICR_VPENDBASER_PendingLast;
--	}
- 
- 	return val;
- }
+ 	dbidev = devm_drm_dev_alloc(dev, &ili9341_dbi_driver,
+ 				    struct mipi_dbi_dev, drm);
 
 
