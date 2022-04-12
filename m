@@ -2,158 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470C0C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9927FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbiDLXTs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        id S229626AbiDLXUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiDLXTa (ORCPT
+        with ESMTP id S229639AbiDLXTF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:19:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E068F9B9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:07:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB16761A55
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:01:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22DBCC385A6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:01:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649800898;
-        bh=ydy77pfGsEmNO9TqK6T8vC6NHRGjR+yzvIsPTZVIUk0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=pTUsq8HYKKgWnruu2r387ZlfiaNYe8bCUA04lKnWF1djMsvX3q7xmjwF97tRqQwKa
-         aPjrWexfHLMGKy4Lxm39ynDkyimCrePiSv+LeSAWsNV9c3Pduj8DHlKQC+pnzrMHzw
-         wUtpz2daFHJS7LfSTF9aCGH/p7BE8iW4hIsuIIFlguo+/vYCUcDsL6aTjvQcNnr0qg
-         tR1Ozk2hWrO/jYzgGpt3LLsZw8ZXyEe8cEb2puJnBlyFuWbGKQMCVzoUl2sAzUrVaZ
-         Nc6pggCkRz0HlyjAmYUGxOv051pl9nsmHJmTX33vqZNpy4ARJtav/vFYci5BO9vebo
-         iNg5OtJiPuXuQ==
-Received: by mail-oi1-f176.google.com with SMTP id w127so142589oig.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:01:38 -0700 (PDT)
-X-Gm-Message-State: AOAM532GFekIcMXEPgJkDHztKjBgRgUkaSOYdY+oQelTHKkeoFRxJIOq
-        iREMEzPk2iaaikGDdjO4o0JmvKScmxoyMW10SDo=
-X-Google-Smtp-Source: ABdhPJwc13ovayq2njvov3t6qnbxbqC/vBF8C0cpvVrQN0L/QGvKCDndhyuRyhaeEnWznZibNtWFDf0lugthvaid4qg=
-X-Received: by 2002:aca:674c:0:b0:2d9:c460:707c with SMTP id
- b12-20020aca674c000000b002d9c460707cmr2813613oiy.126.1649800897252; Tue, 12
- Apr 2022 15:01:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <Yk7EbvYhwnQy+pAf@arm.com> <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
- <Yk8RGvF6ik34C6BO@arm.com> <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
- <Yk/6ts5sVDMDpKj3@arm.com> <Yk/8QExHlggU8KgC@gondor.apana.org.au>
- <YlVHSvkyUBXZPUr2@arm.com> <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
- <YlVOTsaTVkBOxthG@arm.com> <YlVSBuEqMt2S1Gi6@gondor.apana.org.au> <YlVxGAHHD/j6lW3c@arm.com>
-In-Reply-To: <YlVxGAHHD/j6lW3c@arm.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 13 Apr 2022 00:01:25 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
-Message-ID: <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+        Tue, 12 Apr 2022 19:19:05 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F42715A00
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:06:22 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id v12so366950plv.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:06:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=aNzMWQjBJ1umcrqZJuk3YBANA1WoxuEAShIoKqb7qRk=;
+        b=Y+T9dicOe8i/4Z8itl/AAwJHwqXNizrX8SFccWBcJDJV3IfzGGcagOzn1levHA2yjh
+         5PFxwaQRaBkasLT35diQ6ERDh2CQIrwBpiTl/Rukdt/mq5dm37+12DCVPRC5rAzvu5oE
+         9ykzAHM2GSYK1WJX6iGxT1G5EVJWB3zuV6Kt4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=aNzMWQjBJ1umcrqZJuk3YBANA1WoxuEAShIoKqb7qRk=;
+        b=65w9O5oCnP2ZGghS0WCAKyWJxJa66y2c6TY6kseijGDDUK7aOS5JvmiAyWoaJ7vW6f
+         XEwV/iTvTWxuBrYaI9DX8wy/x7iy6/6PUiLgS74LaVUhwVTFGQoxbQMWE3RBosL/EEON
+         YGHYqagDqkbZbJlslCkHEQpDkeqwKozxUcSKHe0OhEbBwl3y0U0xecMJhZ6iS3/77Hn4
+         rAAqVo6otfKXNtPBs5Jwp/Xep3L9qZdw958navH+6RV6Lmb/lTRtiiAmTvGBK408WQab
+         gG1e2Zv7c5buuu5X2/BsUaLt8ilUqwKLvx//4Exf1jD3oDNKTxuEI+hOHmQw8IdlGlPX
+         xi+w==
+X-Gm-Message-State: AOAM533qab5EWN5lmk8NQ2psBmQHZ9kyzaTKqLKcw/MrtqBaaO465cjI
+        Pfj/Y1KYiQHgFSQ8VvAaRiBbwQ==
+X-Google-Smtp-Source: ABdhPJyYYXKNnjWv7woMsfP7YEeP5sZcNr+zkXOvzyOujtAgpWeYyfkFsxMeV2BSJPYhdC2eyceWcw==
+X-Received: by 2002:a17:90b:1a8b:b0:1c7:386b:4811 with SMTP id ng11-20020a17090b1a8b00b001c7386b4811mr7665564pjb.4.1649804781936;
+        Tue, 12 Apr 2022 16:06:21 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e13-20020a63370d000000b003810782e0cdsm3783811pga.56.2022.04.12.16.06.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 16:06:21 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 16:06:20 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v2] lkdtm/bugs: Don't expect thread termination without
+ CONFIG_UBSAN_TRAP
+Message-ID: <202204121440.FEE123D7@keescook>
+References: <363b58690e907c677252467a94fe49444c80ea76.1649704381.git.christophe.leroy@csgroup.eu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <363b58690e907c677252467a94fe49444c80ea76.1649704381.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 at 14:31, Catalin Marinas <catalin.marinas@arm.com> wrote:
->
-> On Tue, Apr 12, 2022 at 06:18:46PM +0800, Herbert Xu wrote:
-> > On Tue, Apr 12, 2022 at 11:02:54AM +0100, Catalin Marinas wrote:
-> > > This series does not penalise any architecture. It doesn't even make
-> > > arm64 any worse than it currently is.
-> >
-> > Right, the patch as it stands doesn't change anything.  However,
-> > it is also broken as it stands.  As I said before, CRYPTO_MINALIGN
-> > is not something that is guaranteed by the Crypto API, it is simply
-> > a statement of whatever kmalloc returns.
->
-> I agree that CRYPTO_MINALIGN is not guaranteed by the Crypto API. What
-> I'm debating is the intended use for CRYPTO_MINALIGN in some (most?) of
-> the drivers. It's not just about kmalloc() but also a build-time offset
-> of buffers within structures to guarantee DMA safety. This can't be
-> fixed by cra_alignmask.
->
-> We could leave CRYPTO_MINALIGN as ARCH_KMALLOC_MINALIGN and that matches
-> it being just a statement of the kmalloc() minimum alignment. But since
-> it is also overloaded with the DMA in-structure offset alignment, we'd
-> need a new CRYPTO_DMA_MINALIGN (and _ATTR) to annotate those structures.
-> I have a suspicion there'll be fewer of the original CRYPTO_MINALIGN
-> uses left, hence my approach to making this bigger from the start.
->
-> There's also Ard's series introducing CRYPTO_REQ_MINALIGN while leaving
-> CRYPT_MINALIGN for DMA-safe offsets (IIUC):
->
-> https://lore.kernel.org/r/20220406142715.2270256-1-ardb@kernel.org
->
-> > So if kmalloc is no longer returning CRYPTO_MINALIGN-aligned
-> > memory, then those drivers that need this alignment for DMA
-> > will break anyway.
->
+On Mon, Apr 11, 2022 at 09:13:39PM +0200, Christophe Leroy wrote:
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-One thing to note here is that minimum DMA *alignment* is not the same
-as the padding to cache writeback granule (CWG) that is needed when
-dealing with non-cache coherent inbound DMA.
+Thanks! I will fetch this in a moment, though I tripped over this:
 
-The former is typically a property of the peripheral IP, and is
-something that the driver needs to deal with, potentially by setting
-cra_alignmask to ensure that the input and output buffers are placed
-such that they can accessed via DMA by the peripheral.
+Checking for newer revisions on https://lore.kernel.org/all/
+Analyzing 1 messages in the thread
+Checking attestation on all messages, may take a moment...
+---
+  [PATCH v2] lkdtm/bugs: Don't expect thread termination without CONFIG_UBSAN_TRAP
+    + Signed-off-by: Kees Cook <keescook@chromium.org>
+    + Link: https://lore.kernel.org/r/363b58690e907c677252467a94fe49444c80ea76.1649704381.git.christophe.leroy@csgroup.eu
+  ---
+  ✗ No key: ed25519/christophe.leroy@csgroup.eu
 
-The latter is a property of the CPU's cache hierarchy, not only the
-size of the CWG, but also whether or not DMA is cache coherent to
-begin with. This is not something the driver should usually have to
-care about if it uses the DMA API correctly.
+Is there some place I can fetch your key from that has a chain of trust?
 
-The reason why CRYPTO_MINALIGN matters for DMA in spite of this is
-that some drivers not only use DMA for processing the bulk of the data
-(typically presented using scatterlists) but sometimes also use DMA to
-map parts of the request and TFM structures, which carry control data
-used by the CPU to manage the crypto requests. Doing a non-coherent
-DMA write into such a structure may blow away 64 or 128 bytes of data,
-even if the write itself is much smaller, due to the fact that we need
-to perform cache invalidation in order for the CPU to be able to
-observe what the device wrote to that memory, and the invalidated
-cache lines may be shared with other data items, and may become dirty
-while the DMA mapping is active.
+Also, Konstantin, I note that
+https://git.kernel.org/pub/scm/docs/kernel/pgpkeys.git/
+does not have a .keyring/ed25519 directory. Should it? I added one
+locally for at least one other developer, as I use this setting:
 
-This is what I am addressing with my patch series, i.e., padding out
-the driver owned parts of the struct to the CWG size so that cache
-invalidation does not affect data owned by other layers in the crypto
-cake, but only at runtime. By doing this consistently for TFM and
-request structures, we should be able to disregard ARCH_DMA_MINALIGN
-entirely when it comes to defining CRYPTO_MINALIGN, as it is highly
-unlikely that any of these peripherals would require more than 8 or 16
-bytes of alignment for the DMA operations themselves.
+[patatt]
+        keyringsrc = ~/korg/pgpkeys/.keyring
 
+Am I holding this thing wrong? :)
 
-
-
-> No. As per one of my previous emails, kmalloc() will preserve the DMA
-> alignment for an SoC even if smaller than CRYPTO_MINALIGN (or a new
-> CRYPTO_DMA_MINALIGN). Since kmalloc() returns DMA-safe pointers and
-> CRYPTO_MINALIGN (or a new CRYPTO_DMA_MINALIGN) is DMA-safe, so would an
-> offset from a pointer returned by kmalloc().
->
-> > If you want the Crypto API to guarantee alignment over and above
-> > that returned by kmalloc, the correct way is to use cra_alignmask.
->
-> For kmalloc(), this would work, but for the current CRYPTO_MINALIGN_ATTR
-> uses it won't.
->
-> Thanks.
->
-> --
-> Catalin
+-- 
+Kees Cook
