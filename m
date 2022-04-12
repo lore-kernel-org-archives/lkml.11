@@ -2,53 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B78A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67BB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:00:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243070AbiDLECy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 00:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
+        id S1344441AbiDLEDE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 00:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237737AbiDLECd (ORCPT
+        with ESMTP id S234145AbiDLECd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 00:02:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815F52DD60;
-        Mon, 11 Apr 2022 21:00:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3C427B03;
+        Mon, 11 Apr 2022 21:00:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F94DB81B13;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72ED66176E;
         Tue, 12 Apr 2022 04:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 07F3AC385A6;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 47111C385B4;
         Tue, 12 Apr 2022 04:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649736015;
-        bh=NpGnYoqN1dqxdcCvJyMG0BfcL+8LYH4s0o/zf+0UoWE=;
+        bh=Og37zLvNTYtINm9dkZ2PhXXYIso0cAOuj31rpYiLeNo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=N/O8lMpFRZdDtWM84hz6S+A841eJnasVfQilRz6sVR0W+Dnv+6jToOH5ihouqk/4d
-         6vBRwwNY1eryxHSLfT6CmmYU0NUlC/W00pz+J9pH/vDioQ6uj7WTOe38CSHNm5rWSh
-         Khn2S1Zv41Bwbphi8zIaeqp/Wl51FPc3TyVeqjSwg/ehquJF1+lZrXrxyvOZQDzntZ
-         lV9FWqYTwY0yIOtn6PytyfchiwrOfQ/3VG2LgmxwO5+MbnSeswOijAiwKnlNvqzsob
-         0xgQgwtFUyer+Mjxt4nA+pw0dcA/3rx0dJ6OqXlMrnS+SQQONKf/AmCBzL7Yw6e1FG
-         opO/VKNlXyd3A==
+        b=TStTsT+p5ok/fCi2B9C0wx2pXd0hkr/BrOmaIo7Fl87n5uSvYpYIF7QtkzC/3byx+
+         hIFnyO9RiWOZ8L7nY4H/TANLW0T1zKw1nYERjSByYODxRCjvoay/9SINX55MmbiNgC
+         m+P4QyolFk6Z2OcR4AjacALHJiPIqK/AJJO81RTbmiUHYtPfLqITN7oUk+Zj2LW3NB
+         H4V1wpr7L+sloXWabZeWYgcbbCWZ0vrHpKf9/b9fZ5Ghcxv78nIqcSERhAF83NVnof
+         4021aixcO1/f4c6V1ayiBwadkGs5rHxnMdunYKt6dK9sxvbPJyvyCjcHVq9D34dZGC
+         pW1kq0FZfBYFg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E3AEFE6D402;
-        Tue, 12 Apr 2022 04:00:14 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2D1BDE8DD63;
+        Tue, 12 Apr 2022 04:00:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] net: ethernet: ti: am65-cpsw: Fix build error without
- PHYLINK
+Subject: Re: [PATCH] net/cadence: using pm_runtime_resume_and_get instead of
+ pm_runtime_get_sync
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164973601492.30868.6935832916847860648.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Apr 2022 04:00:14 +0000
-References: <20220409105931.9080-1-yuehaibing@huawei.com>
-In-Reply-To: <20220409105931.9080-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux@armlinux.org.uk, vladimir.oltean@nxp.com, s-vadapalli@ti.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <164973601517.30868.9155139360828245200.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Apr 2022 04:00:15 +0000
+References: <20220411013812.2517212-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20220411013812.2517212-1-chi.minghao@zte.com.cn>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        chi.minghao@zte.com.cn, zealci@zte.com.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -58,21 +60,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sat, 9 Apr 2022 18:59:31 +0800 you wrote:
-> If PHYLINK is n, build fails:
+On Mon, 11 Apr 2022 01:38:12 +0000 you wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_link_ksettings':
-> am65-cpsw-ethtool.c:(.text+0x118): undefined reference to `phylink_ethtool_ksettings_set'
-> drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_get_link_ksettings':
-> am65-cpsw-ethtool.c:(.text+0x138): undefined reference to `phylink_ethtool_ksettings_get'
-> drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_eee':
-> am65-cpsw-ethtool.c:(.text+0x158): undefined reference to `phylink_ethtool_set_eee'
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 > 
 > [...]
 
 Here is the summary with links:
-  - [-next] net: ethernet: ti: am65-cpsw: Fix build error without PHYLINK
-    https://git.kernel.org/netdev/net-next/c/bfa323c659b1
+  - net/cadence: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+    https://git.kernel.org/netdev/net-next/c/b66bfc131c69
 
 You are awesome, thank you!
 -- 
