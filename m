@@ -2,367 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A04C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355614AbiDLNQu (ORCPT
+        id S1355171AbiDLNQz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
+        Tue, 12 Apr 2022 09:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356568AbiDLNN5 (ORCPT
+        with ESMTP id S1356731AbiDLNOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:13:57 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35933B1FD;
-        Tue, 12 Apr 2022 05:58:51 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23C9vT06014200;
-        Tue, 12 Apr 2022 08:58:38 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3fb7w83rdk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 08:58:37 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 23CCwacB025277
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 Apr 2022 08:58:36 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 12 Apr 2022 08:58:35 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 12 Apr 2022 08:58:35 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 12 Apr 2022 08:58:35 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 23CCw8pb026349;
-        Tue, 12 Apr 2022 08:58:29 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <andrew@lunn.ch>
-CC:     <o.rempel@pengutronix.de>, <alexandru.tachici@analog.com>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v6 5/7] net: phy: adin1100: Add initial support for ADIN1100 industrial PHY
-Date:   Tue, 12 Apr 2022 16:07:04 +0300
-Message-ID: <20220412130706.36767-6-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220412130706.36767-1-alexandru.tachici@analog.com>
-References: <20220412130706.36767-1-alexandru.tachici@analog.com>
+        Tue, 12 Apr 2022 09:14:07 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5FC5599
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:00:24 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id i20so11767239ybj.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gF2cl5RInkAztfUncbBifVXypH97fQxX/qYG05vFGDQ=;
+        b=Lsevu59fPR/V8RV00Pfzmbc2h9Jb1UrgFOdLFtvzhVRR4kBNRYCxzqCVF8AHfAM2zN
+         pcKiQM6I/GuChhwnJuhCCwcumqZYtCOFSD7Zqgv8Yfo7CZtXDcQaWhUhCxCXLJWH+wdf
+         2qRHOSArHtaHUxMl2SFfzcZXQPQhbZxZkNtBYlTSjvXtFY0niqlINMhb7LKAZ/JDwD3P
+         swl4IDu6rw+/moJXoyXwlxLbYuHtlT5jM5PbFEzjvlRjyxGaxFBmyQ3IOs63s13E+owm
+         4gqS++HmHStAftBZZTsu5sFZP+l72BH2lYKgI3OvuldEWFY13n9hsfE7Yc6cRez359es
+         QS5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gF2cl5RInkAztfUncbBifVXypH97fQxX/qYG05vFGDQ=;
+        b=PHuyJHFa7XFI/Jd8Hy1pguWTJNYQRORHqoCLKHbC5IDyij8NhSY2LrtoEZQd9BjD5j
+         1X3qVw+9307x+rDnqwU0aDd5UFWy/jIcDWvKNUvklQPyR+py+cSpBY8ZTa4339+5rJia
+         Nrd7E0MEvWl6CEPt/qVBN9mBQVGX9F8e4RNuetrIURSfe40UtLYWkSDYS1l2FYCrdV06
+         JSesp1q8FDoZQeHXTc/uypeSZGTK/g2/jwNKiP+qX69kt3WWGXak1jP7LOYwgmV3wLU+
+         6IVYDw0bjBu6UjwVHtZ3Xa3Jr8sJW/HuDDhmvXNqGYdYvc7JGtIbE5jsT5TuLTIIpAfp
+         hQ9g==
+X-Gm-Message-State: AOAM5320L+woTj4jDWO9FYNh+Ja9fgUeN9nD2SIp63CQWueg8IIyZpNP
+        hf/O/zRBAMy9N9APsrJgifRA1dxl2+KpvMjdf24=
+X-Google-Smtp-Source: ABdhPJyXkslkUxKLzZHWEk9t//+nZPCUDaPUtfvR5wpAp2mfBLNHVct36eTkBMWeHckvn5jU5LzwPobGd1tmzsDfcsk=
+X-Received: by 2002:a25:d207:0:b0:641:5458:207e with SMTP id
+ j7-20020a25d207000000b006415458207emr7565977ybg.552.1649768423731; Tue, 12
+ Apr 2022 06:00:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: CdtdOQD80MTygmFq46Zq2xxoR-dy3z2O
-X-Proofpoint-ORIG-GUID: CdtdOQD80MTygmFq46Zq2xxoR-dy3z2O
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-12_04,2022-04-12_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 mlxscore=0 priorityscore=1501 adultscore=0 clxscore=1015
- mlxlogscore=893 impostorscore=0 bulkscore=0 spamscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204120062
+References: <20211213042215.3096-1-jiangshanlai@gmail.com> <20211213042215.3096-4-jiangshanlai@gmail.com>
+ <YbkR36Vpb1h5SlMZ@zn.tnic>
+In-Reply-To: <YbkR36Vpb1h5SlMZ@zn.tnic>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Tue, 12 Apr 2022 21:00:12 +0800
+Message-ID: <CAJhGHyAFQLgGM-Lxn_DWeQWYuy+42hC7wtxSG3tFHE0brJJqPw@mail.gmail.com>
+Subject: Re: [PATCH 3/3] x86/sev: The code for returning to user space is also
+ in syscall gap
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
+        Lai Jiangshan <laijs@linux.alibaba.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Oleg Nesterov <oleg@redhat.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+On Wed, Dec 15, 2021 at 5:51 AM Borislav Petkov <bp@alien8.de> wrote:
+>
+> + Tom and leaving the whole mail un-trimmed for him.
+>
+> On Mon, Dec 13, 2021 at 12:22:15PM +0800, Lai Jiangshan wrote:
+> > From: Lai Jiangshan <laijs@linux.alibaba.com>
+> >
+> > When returning to user space, the %rsp is user controlled value.
+>
+> And?
+>
+> I'd expect to see here some text analyzing the couple of instructions
+> between those new labels you've added and whether a #VC can happen
+> there.
 
-The ADIN1100 is a low power single port 10BASE-T1L transceiver designed for
-industrial Ethernet applications and is compliant with the IEEE 802.3cg
-Ethernet standard for long reach 10 Mb/s Single Pair Ethernet.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- drivers/net/phy/Kconfig    |   7 ++
- drivers/net/phy/Makefile   |   1 +
- drivers/net/phy/adin1100.c | 240 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 248 insertions(+)
- create mode 100644 drivers/net/phy/adin1100.c
+Hello, Borislav
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index ea7571a2b39b..bbbf6c07ea53 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -83,6 +83,13 @@ config ADIN_PHY
- 	  - ADIN1300 - Robust,Industrial, Low Latency 10/100/1000 Gigabit
- 	    Ethernet PHY
- 
-+config ADIN1100_PHY
-+	tristate "Analog Devices Industrial Ethernet T1L PHYs"
-+	help
-+	  Adds support for the Analog Devices Industrial T1L Ethernet PHYs.
-+	  Currently supports the:
-+	  - ADIN1100 - Robust,Industrial, Low Power 10BASE-T1L Ethernet PHY
-+
- config AQUANTIA_PHY
- 	tristate "Aquantia PHYs"
- 	help
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index b2728d00fc9a..b82651b57043 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -31,6 +31,7 @@ sfp-obj-$(CONFIG_SFP)		+= sfp-bus.o
- obj-y				+= $(sfp-obj-y) $(sfp-obj-m)
- 
- obj-$(CONFIG_ADIN_PHY)		+= adin.o
-+obj-$(CONFIG_ADIN1100_PHY)	+= adin1100.o
- obj-$(CONFIG_AMD_PHY)		+= amd.o
- aquantia-objs			+= aquantia_main.o
- ifdef CONFIG_HWMON
-diff --git a/drivers/net/phy/adin1100.c b/drivers/net/phy/adin1100.c
-new file mode 100644
-index 000000000000..f20bbef37239
---- /dev/null
-+++ b/drivers/net/phy/adin1100.c
-@@ -0,0 +1,240 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/*
-+ *  Driver for Analog Devices Industrial Ethernet T1L PHYs
-+ *
-+ * Copyright 2020 Analog Devices Inc.
-+ */
-+#include <linux/kernel.h>
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/errno.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/mii.h>
-+#include <linux/phy.h>
-+#include <linux/property.h>
-+
-+#define PHY_ID_ADIN1100				0x0283bc81
-+
-+#define ADIN_FORCED_MODE			0x8000
-+#define   ADIN_FORCED_MODE_EN			BIT(0)
-+
-+#define ADIN_CRSM_SFT_RST			0x8810
-+#define   ADIN_CRSM_SFT_RST_EN			BIT(0)
-+
-+#define ADIN_CRSM_SFT_PD_CNTRL			0x8812
-+#define   ADIN_CRSM_SFT_PD_CNTRL_EN		BIT(0)
-+
-+#define ADIN_AN_PHY_INST_STATUS			0x8030
-+#define   ADIN_IS_CFG_SLV			BIT(2)
-+#define   ADIN_IS_CFG_MST			BIT(3)
-+
-+#define ADIN_CRSM_STAT				0x8818
-+#define   ADIN_CRSM_SFT_PD_RDY			BIT(1)
-+#define   ADIN_CRSM_SYS_RDY			BIT(0)
-+
-+/**
-+ * struct adin_priv - ADIN PHY driver private data
-+ * @tx_level_2v4_able:		set if the PHY supports 2.4V TX levels (10BASE-T1L)
-+ * @tx_level_2v4:		set if the PHY requests 2.4V TX levels (10BASE-T1L)
-+ * @tx_level_prop_present:	set if the TX level is specified in DT
-+ */
-+struct adin_priv {
-+	unsigned int		tx_level_2v4_able:1;
-+	unsigned int		tx_level_2v4:1;
-+	unsigned int		tx_level_prop_present:1;
-+};
-+
-+static int adin_read_status(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = genphy_c45_read_status(phydev);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_AN, ADIN_AN_PHY_INST_STATUS);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & ADIN_IS_CFG_SLV)
-+		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
-+
-+	if (ret & ADIN_IS_CFG_MST)
-+		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
-+
-+	return 0;
-+}
-+
-+static int adin_config_aneg(struct phy_device *phydev)
-+{
-+	struct adin_priv *priv = phydev->priv;
-+	int ret;
-+
-+	if (phydev->autoneg == AUTONEG_DISABLE) {
-+		ret = genphy_c45_pma_setup_forced(phydev);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (priv->tx_level_prop_present && priv->tx_level_2v4)
-+			ret = phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_B10L_PMA_CTRL,
-+					       MDIO_PMA_10T1L_CTRL_2V4_EN);
-+		else
-+			ret = phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_B10L_PMA_CTRL,
-+						 MDIO_PMA_10T1L_CTRL_2V4_EN);
-+		if (ret < 0)
-+			return ret;
-+
-+		/* Force PHY to use above configurations */
-+		return phy_set_bits_mmd(phydev, MDIO_MMD_AN, ADIN_FORCED_MODE, ADIN_FORCED_MODE_EN);
-+	}
-+
-+	ret = phy_clear_bits_mmd(phydev, MDIO_MMD_AN, ADIN_FORCED_MODE, ADIN_FORCED_MODE_EN);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Request increased transmit level from LP. */
-+	if (priv->tx_level_prop_present && priv->tx_level_2v4) {
-+		ret = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_H,
-+				       MDIO_AN_T1_ADV_H_10L_TX_HI |
-+				       MDIO_AN_T1_ADV_H_10L_TX_HI_REQ);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	/* Disable 2.4 Vpp transmit level. */
-+	if ((priv->tx_level_prop_present && !priv->tx_level_2v4) || !priv->tx_level_2v4_able) {
-+		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_H,
-+					 MDIO_AN_T1_ADV_H_10L_TX_HI |
-+					 MDIO_AN_T1_ADV_H_10L_TX_HI_REQ);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return genphy_c45_config_aneg(phydev);
-+}
-+
-+static int adin_set_powerdown_mode(struct phy_device *phydev, bool en)
-+{
-+	int ret;
-+	int val;
-+
-+	val = en ? ADIN_CRSM_SFT_PD_CNTRL_EN : 0;
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
-+			    ADIN_CRSM_SFT_PD_CNTRL, val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1, ADIN_CRSM_STAT, ret,
-+					 (ret & ADIN_CRSM_SFT_PD_RDY) == val,
-+					 1000, 30000, true);
-+}
-+
-+static int adin_suspend(struct phy_device *phydev)
-+{
-+	return adin_set_powerdown_mode(phydev, true);
-+}
-+
-+static int adin_resume(struct phy_device *phydev)
-+{
-+	return adin_set_powerdown_mode(phydev, false);
-+}
-+
-+static int adin_set_loopback(struct phy_device *phydev, bool enable)
-+{
-+	if (enable)
-+		return phy_set_bits_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_10T1L_CTRL,
-+					BMCR_LOOPBACK);
-+
-+	/* PCS loopback (according to 10BASE-T1L spec) */
-+	return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_10T1L_CTRL,
-+				 BMCR_LOOPBACK);
-+}
-+
-+static int adin_soft_reset(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, ADIN_CRSM_SFT_RST, ADIN_CRSM_SFT_RST_EN);
-+	if (ret < 0)
-+		return ret;
-+
-+	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1, ADIN_CRSM_STAT, ret,
-+					 (ret & ADIN_CRSM_SYS_RDY),
-+					 10000, 30000, true);
-+}
-+
-+static int adin_get_features(struct phy_device *phydev)
-+{
-+	struct adin_priv *priv = phydev->priv;
-+	struct device *dev = &phydev->mdio.dev;
-+	int ret;
-+	u8 val;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10T1L_STAT);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* This depends on the voltage level from the power source */
-+	priv->tx_level_2v4_able = !!(ret & MDIO_PMA_10T1L_STAT_2V4_ABLE);
-+
-+	phydev_dbg(phydev, "PHY supports 2.4V TX level: %s\n",
-+		   priv->tx_level_2v4_able ? "yes" : "no");
-+
-+	priv->tx_level_prop_present = device_property_present(dev, "phy-10base-t1l-2.4vpp");
-+	if (priv->tx_level_prop_present) {
-+		ret = device_property_read_u8(dev, "phy-10base-t1l-2.4vpp", &val);
-+		if (ret < 0)
-+			return ret;
-+
-+		priv->tx_level_2v4 = val;
-+		if (!priv->tx_level_2v4 && priv->tx_level_2v4_able)
-+			phydev_info(phydev,
-+				    "PHY supports 2.4V TX level, but disabled via config\n");
-+	}
-+
-+	linkmode_set_bit_array(phy_basic_ports_array, ARRAY_SIZE(phy_basic_ports_array),
-+			       phydev->supported);
-+
-+	return genphy_c45_pma_read_abilities(phydev);
-+}
-+
-+static int adin_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct adin_priv *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	phydev->priv = priv;
-+
-+	return 0;
-+}
-+
-+static struct phy_driver adin_driver[] = {
-+	{
-+		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1100),
-+		.name			= "ADIN1100",
-+		.get_features		= adin_get_features,
-+		.soft_reset		= adin_soft_reset,
-+		.probe			= adin_probe,
-+		.config_aneg		= adin_config_aneg,
-+		.read_status		= adin_read_status,
-+		.set_loopback		= adin_set_loopback,
-+		.suspend		= adin_suspend,
-+		.resume			= adin_resume,
-+	},
-+};
-+
-+module_phy_driver(adin_driver);
-+
-+static struct mdio_device_id __maybe_unused adin_tbl[] = {
-+	{ PHY_ID_MATCH_MODEL(PHY_ID_ADIN1100) },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(mdio, adin_tbl);
-+MODULE_DESCRIPTION("Analog Devices Industrial Ethernet T1L PHY driver");
-+MODULE_LICENSE("Dual BSD/GPL");
--- 
-2.25.1
+I resent the patch with an updated changelog mainly copied from
+Joerg's reply.
 
+https://lore.kernel.org/lkml/20220412124909.10467-1-jiangshanlai@gmail.com/
+
+
+The other two patches in this patchset are omitted since they
+make less sense which only harms only when the system owner
+is deliberately doing stupid things.
+
+thanks
+Lai
