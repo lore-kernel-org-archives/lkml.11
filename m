@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92ABC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26175C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385789AbiDLIw6 (ORCPT
+        id S1385848AbiDLIxQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        Tue, 12 Apr 2022 04:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359073AbiDLHm3 (ORCPT
+        with ESMTP id S1359238AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA35A5521E;
-        Tue, 12 Apr 2022 00:20:09 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A905C55758;
+        Tue, 12 Apr 2022 00:20:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4420361045;
-        Tue, 12 Apr 2022 07:20:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58DADC385A1;
-        Tue, 12 Apr 2022 07:20:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ED96B81B62;
+        Tue, 12 Apr 2022 07:20:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A393BC385A5;
+        Tue, 12 Apr 2022 07:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748008;
-        bh=q7WSODLypYIykGAg6QQO4egcUuD69gEgMfjespz19u8=;
+        s=korg; t=1649748036;
+        bh=XVofjJ5ibd0lC46pPClYFZWxKn/UrgzU/kZncze9kwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HUbyBLQY0LuB+NqoDQmxGHuWoIFX9e1pmknJNclGZi00x9VP1jrq9WwGSYEolB6Qw
-         zbDy+K1nADMeD/YPKVZcZnN7VP6oXU4Mof2rfBVHxpreIb03VZ3be2+IBppWrN2Bp/
-         pMFGGPUjVlBLMzKvsHjYdsw61g2E7b9ZXbMCtc/A=
+        b=EraJXSbBrRcei3OAVbe/KefoqWNMlItPbfUmZ34M7/lTFZ1nDV/qaijlQeaJTaLV/
+         g8l906csSMsY8BGsCaajrypQT0d3Bt74y81HW+k4OAru3q0q7QJm7ejlS9hHKpoUz1
+         PhdaUg/XJ0Dnl5D2PSsgw2DLZnkTja/Ju9L89qZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 279/343] io_uring: fix race between timeout flush and removal
-Date:   Tue, 12 Apr 2022 08:31:37 +0200
-Message-Id: <20220412062959.376033708@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.17 297/343] perf/x86/intel: Dont extend the pseudo-encoding to GP counters
+Date:   Tue, 12 Apr 2022 08:31:55 +0200
+Message-Id: <20220412062959.896992705@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -48,56 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-commit e677edbcabee849bfdd43f1602bccbecf736a646 upstream.
+commit 4a263bf331c512849062805ef1b4ac40301a9829 upstream.
 
-io_flush_timeouts() assumes the timeout isn't in progress of triggering
-or being removed/canceled, so it unconditionally removes it from the
-timeout list and attempts to cancel it.
+The INST_RETIRED.PREC_DIST event (0x0100) doesn't count on SPR.
+perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
 
-Leave it on the list and let the normal timeout cancelation take care
-of it.
+ Performance counter stats for 'CPU(s) 0':
 
-Cc: stable@vger.kernel.org # 5.5+
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+           607,246      cpu/event=0xc0,umask=0x0/
+                 0      cpu/event=0x0,umask=0x1/
+
+The encoding for INST_RETIRED.PREC_DIST is pseudo-encoding, which
+doesn't work on the generic counters. However, current perf extends its
+mask to the generic counters.
+
+The pseudo event-code for a fixed counter must be 0x00. Check and avoid
+extending the mask for the fixed counter event which using the
+pseudo-encoding, e.g., ref-cycles and PREC_DIST event.
+
+With the patch,
+perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
+
+ Performance counter stats for 'CPU(s) 0':
+
+           583,184      cpu/event=0xc0,umask=0x0/
+           583,048      cpu/event=0x0,umask=0x1/
+
+Fixes: 2de71ee153ef ("perf/x86/intel: Fix ICL/SPR INST_RETIRED.PREC_DIST encodings")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/1648482543-14923-1-git-send-email-kan.liang@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ arch/x86/events/intel/core.c      |    6 +++++-
+ arch/x86/include/asm/perf_event.h |    5 +++++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -1644,12 +1644,11 @@ static __cold void io_flush_timeouts(str
- 	__must_hold(&ctx->completion_lock)
- {
- 	u32 seq = ctx->cached_cq_tail - atomic_read(&ctx->cq_timeouts);
-+	struct io_kiocb *req, *tmp;
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -5515,7 +5515,11 @@ static void intel_pmu_check_event_constr
+ 			/* Disabled fixed counters which are not in CPUID */
+ 			c->idxmsk64 &= intel_ctrl;
  
- 	spin_lock_irq(&ctx->timeout_lock);
--	while (!list_empty(&ctx->timeout_list)) {
-+	list_for_each_entry_safe(req, tmp, &ctx->timeout_list, timeout.list) {
- 		u32 events_needed, events_got;
--		struct io_kiocb *req = list_first_entry(&ctx->timeout_list,
--						struct io_kiocb, timeout.list);
+-			if (c->idxmsk64 != INTEL_PMC_MSK_FIXED_REF_CYCLES)
++			/*
++			 * Don't extend the pseudo-encoding to the
++			 * generic counters
++			 */
++			if (!use_fixed_pseudo_encoding(c->code))
+ 				c->idxmsk64 |= (1ULL << num_counters) - 1;
+ 		}
+ 		c->idxmsk64 &=
+--- a/arch/x86/include/asm/perf_event.h
++++ b/arch/x86/include/asm/perf_event.h
+@@ -241,6 +241,11 @@ struct x86_pmu_capability {
+ #define INTEL_PMC_IDX_FIXED_SLOTS	(INTEL_PMC_IDX_FIXED + 3)
+ #define INTEL_PMC_MSK_FIXED_SLOTS	(1ULL << INTEL_PMC_IDX_FIXED_SLOTS)
  
- 		if (io_is_timeout_noseq(req))
- 			break;
-@@ -1666,7 +1665,6 @@ static __cold void io_flush_timeouts(str
- 		if (events_got < events_needed)
- 			break;
- 
--		list_del_init(&req->timeout.list);
- 		io_kill_timeout(req, 0);
- 	}
- 	ctx->cq_last_tm_flush = seq;
-@@ -6276,6 +6274,7 @@ static int io_timeout_prep(struct io_kio
- 	if (data->ts.tv_sec < 0 || data->ts.tv_nsec < 0)
- 		return -EINVAL;
- 
-+	INIT_LIST_HEAD(&req->timeout.list);
- 	data->mode = io_translate_timeout_mode(flags);
- 	hrtimer_init(&data->timer, io_timeout_get_clock(data), data->mode);
- 
++static inline bool use_fixed_pseudo_encoding(u64 code)
++{
++	return !(code & 0xff);
++}
++
+ /*
+  * We model BTS tracing as another fixed-mode PMC.
+  *
 
 
