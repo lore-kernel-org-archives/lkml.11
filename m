@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5579C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:28:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346403AbiDLEa7 (ORCPT
+        id S1346176AbiDLEbD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 00:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        Tue, 12 Apr 2022 00:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346046AbiDLEaj (ORCPT
+        with ESMTP id S1346213AbiDLEas (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 00:30:39 -0400
+        Tue, 12 Apr 2022 00:30:48 -0400
 Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B150A32992;
-        Mon, 11 Apr 2022 21:28:23 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 4D4CB3200E89;
-        Tue, 12 Apr 2022 00:28:22 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1643232EE3;
+        Mon, 11 Apr 2022 21:28:30 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 7C5A03201F24;
+        Tue, 12 Apr 2022 00:28:28 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 12 Apr 2022 00:28:23 -0400
+  by compute4.internal (MEProxy); Tue, 12 Apr 2022 00:28:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649737701; x=1649824101; bh=ge
-        Qfxs48cSAJkRFMna6Z0Fdczf6CgFCi9zuHYoygHMw=; b=GtpDag5RYt9P8bKYyl
-        D14O6dWAhHxdj2V0jskaPMK9Ai9JT6i51/lRI78LsuuMGsS1dy22VXXZC4P2M60A
-        d9s4WfMvFDhnWnuIdJn+IM3cZEHHLzgdBdQbEoX8o5whIlUlr1FVQVoxCntpA0IT
-        ZPHyH961iz2sFwvyPCCQH6EeSOoEWyXTK8QnaBVYOGFFNpzn9GcZPQnCpElr1BDf
-        xPj6AarVIIjoSMPBjog/cNCy4s2fLqtY+y6HdhV3eiQkb9keYkbR3QhGK+YZ/yqF
-        oogn9GZ5j8QXMCwH5Y2EBw4bUMXuwpcZejAenJTgMQaDqIKOsvdRo/y62URIe+DF
-        eOtA==
+        :subject:subject:to:to; s=fm2; t=1649737708; x=1649824108; bh=4n
+        wYaXxDyOycdxQgOz6ehxTPViKo4RhrkjN+WH6iVtY=; b=qvraaC7W7woakTPyuM
+        dDp0M4+H5ECMAk7SP/ZtytJHc38AXNatMR/0f3QYSOnjj969Wz9T1QF8H1mqiaUC
+        tpDMnXAbFTQpVketbx51dJmVj5Vi3QZeAGJ2Ch6eS06ewjkQGU6HgWm9VlxTR4bD
+        8U+yLQ9oDTzt40oJwuI5A4eoZw7ydIwlqB4DTUy/0w7GWk7ifX2un3o2OTdGRl/1
+        TjzJP9Rb09EHWIsoEBgsX3FqCdV7g1U//oZZusR663EtnvK94hv6/VcgNjwPdi3A
+        oJ2LyFm1HSrqzcF05EknqvIyUBCquIHcJxTDl6qjWZpkI0l0haMX/YbgUEBCRpzj
+        KqBw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1649737701; x=1649824101; bh=geQfxs48cSAJkRFMna6Z0Fdczf6CgFCi9zu
-        HYoygHMw=; b=nVJV/tjO6GTR+KsYhsWfwfS4dJnGq/7VRITyb8p7kF4oCuPJvQf
-        IfvswxQjna+D9HBNwMff/6cob8er9o4qGFtsYWEx+JnDaH84JIdRlz71Eg4DfDBy
-        /+t1AjljnNiX2LaafeW5tUyC6xUs28H/8uftdCNZnRBMRG7vhzFedY/0sC76kSYA
-        +mIrJYnLsg/bW5DIAMZG8Y3Ikre/UKv55tfOvoWjRBWJcm4BpiEPjmcpTYneJkN6
-        6L7LaWzAXJRMDzrEbH/N/H4AwqfyPwN/xDVcYLR562uYJBTn5tU4mCUphbpjGT0v
-        PtaU5li2S/vqo8EcKHsp7+t8XkMls4mfGfw==
-X-ME-Sender: <xms:5f9UYhFLR2kC1d6Wn6Ht9vo3utn79iszlo1lNHb-uCI8VlWMX2IcSw>
-    <xme:5f9UYmVYbhoRBCw9BkQiu6BUrlEpqKOFWlXZ5jZkhrjSicKu_PUSUOHgUWYu4kDJA
-    w4IfmWpEPyfqpNrLg>
-X-ME-Received: <xmr:5f9UYjK54m4t5WmoHsLy2rqJKSAPCmLhyU37uyXYPMsqEqWlExwiivUseZPeE9-6NWbGciTT8HxpM0KLIp02-pAbIE4aidBlm1NKZil-e6THHn-7ynLZS-FALp0UcHYmjPxgYg>
+        1649737708; x=1649824108; bh=4nwYaXxDyOycdxQgOz6ehxTPViKo4RhrkjN
+        +WH6iVtY=; b=ZMhxt6q5rqlrseSb5/1nLbuHOKYd2FSnU4QASLlC/43n/H5HFFU
+        pjcUHTTWj5fBmoAY6OiAv3kGpJ9VE9dtuXJ6Xp/Cfh9vUYgiZd0Sxin5FXaBkLyM
+        aERWITzaVcQ3frkNOcjzCy1pkYhuTRSx0GvmcxVvmZCRKOPU7WJEI8zHRebkOORi
+        mPjsRH5onSfoM2qKf/c8jvt97biyLnlZQUKWw2SxCvcmwXsoytvwxP29y2/JHuK5
+        /ECgL9bEgyu37kOAoi9xQqYGB3gGPcogiBYI2GUlDXqFxLmmSFnE4AH1Z9GFPQZY
+        KuHnHakljkMHhOV/810C/YX7jytmOU3nqZA==
+X-ME-Sender: <xms:6_9UYhhOc9T__b-4fn_IL-3zexro7NDz8urmSJMctELMU4FVBNSjEw>
+    <xme:6_9UYmDsVyOsr2evmxdvoDtqr6B0lgrbXBjYbZ9VU9-Yp1QTWkw0_xs0NAw1-g6BM
+    kD4zfvvEQkNBK5xPw>
+X-ME-Received: <xmr:6_9UYhE9rioYz4bufuf-83zrXMwiG6XTZhUXClHcWIZJ6fVHDzHZN1v_SubTRMLOjBKdcNky2CS5EHflO2KZdC6LIkGDGsCy9pXpOJE7ljVdtQqK6QKJT125OHdxvYokOTccuA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekjedgkeduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
@@ -56,12 +56,12 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekjedgkeduucetufdoteggod
     frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
     gfejheeuieenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:5f9UYnEy50MfNtL9FfVzEZYErBJ_6cYreILV3waGVqkarQ0WZz3UBA>
-    <xmx:5f9UYnXEMVsXyJ86C414DsqVXrQ6d2rQxhvlQbbNTm1p_dVlxukNnw>
-    <xmx:5f9UYiNgdJ3elanGlNDDsANRm13tSRY4JOLPqm1prTdaTQ212C-Enw>
-    <xmx:5f9UYgtoP3VUE06Q-munE0CZVAhVlcI3oRNypYROat4YiETKBqUdbg>
+X-ME-Proxy: <xmx:7P9UYmSynAWhJW-9d24rvzsGcSIB5mr4gmKUVcVbSb36Dvt8g2zEmQ>
+    <xmx:7P9UYuyQcZRHKuYL5Su9ED6LCHr1sfswWbYh6hSvLsWEyverZa1-DA>
+    <xmx:7P9UYs5YBf--WHCx_WCndKqtfpZzjWs1jGxa8xn7LnuIdcEJTBpXkg>
+    <xmx:7P9UYg47-4afUBMi-EtU2vzc619369SSnY2-o7wxdqPduXeEf2T8fw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Apr 2022 00:28:21 -0400 (EDT)
+ 12 Apr 2022 00:28:27 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
@@ -73,10 +73,10 @@ Cc:     Samuel Holland <samuel@sholland.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         dri-devel@lists.freedesktop.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 04/14] drm/sun4i: hdmi: Use more portable I/O helpers
-Date:   Mon, 11 Apr 2022 23:27:56 -0500
-Message-Id: <20220412042807.47519-5-samuel@sholland.org>
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH v2 06/14] sun4i/drm: engine: Add mode_set callback
+Date:   Mon, 11 Apr 2022 23:27:58 -0500
+Message-Id: <20220412042807.47519-7-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412042807.47519-1-samuel@sholland.org>
 References: <20220412042807.47519-1-samuel@sholland.org>
@@ -86,36 +86,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-readsb/writesb are unavailable on some architectures. In preparation for
-removing the Kconfig architecture dependency, switch to the equivalent
-but more portable ioread/write8_rep helpers.
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Reported-by: kernel test robot <lkp@intel.com>
+This optional callback is useful for setting properties which depends
+only on current mode. Such properties are width, height and interlaced
+output.
+
+These properties are currently set in update layer callback for primary
+plane which is less than ideal. More about that in follow up patches,
+which will migrate that code to this newly defined callback.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
 Changes in v2:
- - New patch: I/O helper portability
+ - Use Jernej's patches for mixer mode setting.
 
- drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/sun4i/sun4i_crtc.c   |  1 +
+ drivers/gpu/drm/sun4i/sunxi_engine.h | 27 +++++++++++++++++++++++++++
+ 2 files changed, 28 insertions(+)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c b/drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c
-index b66fa27fe6ea..c7d7e9fff91c 100644
---- a/drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c
-@@ -56,9 +56,9 @@ static int fifo_transfer(struct sun4i_hdmi *hdmi, u8 *buf, int len, bool read)
- 		return -EIO;
+diff --git a/drivers/gpu/drm/sun4i/sun4i_crtc.c b/drivers/gpu/drm/sun4i/sun4i_crtc.c
+index 45d9eb552d86..c06d7cd45388 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_crtc.c
++++ b/drivers/gpu/drm/sun4i/sun4i_crtc.c
+@@ -146,6 +146,7 @@ static void sun4i_crtc_mode_set_nofb(struct drm_crtc *crtc)
+ 	struct sun4i_crtc *scrtc = drm_crtc_to_sun4i_crtc(crtc);
  
- 	if (read)
--		readsb(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
-+		ioread8_rep(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
- 	else
--		writesb(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
-+		iowrite8_rep(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
+ 	sun4i_tcon_mode_set(scrtc->tcon, encoder, mode);
++	sunxi_engine_mode_set(scrtc->engine, mode);
+ }
  
- 	/* Clear FIFO request bit by forcing a write to that bit */
- 	regmap_field_force_write(hdmi->field_ddc_int_status,
+ static const struct drm_crtc_helper_funcs sun4i_crtc_helper_funcs = {
+diff --git a/drivers/gpu/drm/sun4i/sunxi_engine.h b/drivers/gpu/drm/sun4i/sunxi_engine.h
+index 548710a936d5..ec8cf9b2bda4 100644
+--- a/drivers/gpu/drm/sun4i/sunxi_engine.h
++++ b/drivers/gpu/drm/sun4i/sunxi_engine.h
+@@ -9,6 +9,7 @@
+ struct drm_plane;
+ struct drm_device;
+ struct drm_crtc_state;
++struct drm_display_mode;
+ 
+ struct sunxi_engine;
+ 
+@@ -108,6 +109,17 @@ struct sunxi_engine_ops {
+ 	 * This function is optional.
+ 	 */
+ 	void (*vblank_quirk)(struct sunxi_engine *engine);
++
++	/**
++	 * @mode_set
++	 *
++	 * This callback is used to set mode related parameters
++	 * like interlacing, screen size, etc. once per mode set.
++	 *
++	 * This function is optional.
++	 */
++	void (*mode_set)(struct sunxi_engine *engine,
++			 const struct drm_display_mode *mode);
+ };
+ 
+ /**
+@@ -181,4 +193,19 @@ sunxi_engine_disable_color_correction(struct sunxi_engine *engine)
+ 	if (engine->ops && engine->ops->disable_color_correction)
+ 		engine->ops->disable_color_correction(engine);
+ }
++
++/**
++ * sunxi_engine_mode_set - Inform engine of a new mode
++ * @engine:	pointer to the engine
++ * @mode:	new mode
++ *
++ * Engine can use this functionality to set specifics once per mode change.
++ */
++static inline void
++sunxi_engine_mode_set(struct sunxi_engine *engine,
++		      const struct drm_display_mode *mode)
++{
++	if (engine->ops && engine->ops->mode_set)
++		engine->ops->mode_set(engine, mode);
++}
+ #endif /* _SUNXI_ENGINE_H_ */
 -- 
 2.35.1
 
