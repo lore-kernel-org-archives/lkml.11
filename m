@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A75C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02279C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354748AbiDLH0l (ORCPT
+        id S1354794AbiDLH0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
+        Tue, 12 Apr 2022 03:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351673AbiDLHMv (ORCPT
+        with ESMTP id S1351668AbiDLHMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F80329C90;
-        Mon, 11 Apr 2022 23:51:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE66E13CF2;
+        Mon, 11 Apr 2022 23:51:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE7D061045;
-        Tue, 12 Apr 2022 06:51:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5107C385A1;
-        Tue, 12 Apr 2022 06:51:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B48F61472;
+        Tue, 12 Apr 2022 06:51:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AACC385A1;
+        Tue, 12 Apr 2022 06:51:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746271;
-        bh=kgyAKN1m9aJMO4JVySu9TeFT+7kmppQSS+h4qIqGn3U=;
+        s=korg; t=1649746276;
+        bh=1fAADtwZr8mUN51KJvbjJw10IrVyo6zwcuvu2c/R9yc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aL+DBi4na18C5cKUYTE2euaBa41AFZXMa5mupWKmRy+Q7nZTMK9OrLQ68HA5Rv1Yn
-         jz5TGf2VElmgBxGwcWlRIk/oN4ZFhYDGN7r6Chtpt0BkB4WZoCZAek6aEvn2kxek6Y
-         tFZAD45kRPua5eGlxwZjS86ikXQ+lEnCIic8DAcM=
+        b=gfhNTI/uW3YNKiMPjVdgZOyB7nNSaZ1oeUce5cUMO7yvTqXPR+uzVzsP+OTUYTJyx
+         IWOAGG8cXaGWQOJZkz5J4wXFMkja9uP+g4uL4cWutMQnIQXw7ttXPVOmSWvvUTyal0
+         8E8RCjSlI8QGifQGBpO72yASuObK2NgMMyafloiQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eugene Syromiatnikov <esyr@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 220/277] io_uring: implement compat handling for IORING_REGISTER_IOWQ_AFF
-Date:   Tue, 12 Apr 2022 08:30:23 +0200
-Message-Id: <20220412062948.409395715@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 222/277] x86/pm: Save the MSR validity status at context setup
+Date:   Tue, 12 Apr 2022 08:30:25 +0200
+Message-Id: <20220412062948.469222309@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,39 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugene Syromiatnikov <esyr@redhat.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit 0f5e4b83b37a96e3643951588ed7176b9b187c0a upstream.
+commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
 
-Similarly to the way it is done im mbind syscall.
+The mechanism to save/restore MSRs during S3 suspend/resume checks for
+the MSR validity during suspend, and only restores the MSR if its a
+valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
+throw an exception for every suspend cycle.  The more invalid MSRs,
+higher the impact will be.
 
-Cc: stable@vger.kernel.org # 5.14
-Fixes: fe76421d1da1dcdb ("io_uring: allow user configurable IO thread CPU affinity")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Check and save the MSR validity at setup.  This ensures that only valid
+MSRs that are guaranteed to not throw an exception will be attempted
+during suspend.
+
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/x86/power/cpu.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -10683,7 +10683,15 @@ static int io_register_iowq_aff(struct i
- 	if (len > cpumask_size())
- 		len = cpumask_size();
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -40,7 +40,8 @@ static void msr_save_context(struct save
+ 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
  
--	if (copy_from_user(new_mask, arg, len)) {
-+	if (in_compat_syscall()) {
-+		ret = compat_get_bitmap(cpumask_bits(new_mask),
-+					(const compat_ulong_t __user *)arg,
-+					len * 8 /* CHAR_BIT */);
-+	} else {
-+		ret = copy_from_user(new_mask, arg, len);
-+	}
-+
-+	if (ret) {
- 		free_cpumask_var(new_mask);
- 		return -EFAULT;
+ 	while (msr < end) {
+-		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
++		if (msr->valid)
++			rdmsrl(msr->info.msr_no, msr->info.reg.q);
+ 		msr++;
  	}
+ }
+@@ -424,8 +425,10 @@ static int msr_build_context(const u32 *
+ 	}
+ 
+ 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
++		u64 dummy;
++
+ 		msr_array[i].info.msr_no	= msr_id[j];
+-		msr_array[i].valid		= false;
++		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
+ 		msr_array[i].info.reg.q		= 0;
+ 	}
+ 	saved_msrs->num   = total_num;
 
 
