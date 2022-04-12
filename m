@@ -2,215 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9471C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8464BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349058AbiDLGfi (ORCPT
+        id S1348951AbiDLGfm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
+        Tue, 12 Apr 2022 02:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348935AbiDLGf1 (ORCPT
+        with ESMTP id S1349004AbiDLGfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:35:27 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F9135857;
-        Mon, 11 Apr 2022 23:33:06 -0700 (PDT)
-X-UUID: 59ca3f62dd774853b46ce00bbf8b60e4-20220412
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:90f094df-27e4-4228-a006-e5dd11ed172f,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:51
-X-CID-INFO: VERSION:1.1.4,REQID:90f094df-27e4-4228-a006-e5dd11ed172f,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:51
-X-CID-META: VersionHash:faefae9,CLOUDID:523bdba8-d103-4e36-82b9-b0e86991b3df,C
-        OID:e37b7fabc8cf,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: 59ca3f62dd774853b46ce00bbf8b60e4-20220412
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2129992685; Tue, 12 Apr 2022 14:33:03 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 12 Apr 2022 14:33:02 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 14:33:02 +0800
-Message-ID: <d08e121848788fee9898e1898ee756b10c99fa08.camel@mediatek.com>
-Subject: Re: [RESEND v17 3/7] soc: mediatek: add mtk-mmsys support for
- mt8195 vdosys0
-From:   CK Hu <ck.hu@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Jason-JH Lin <jason-jh.lin@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     David Airlie <airlied@linux.ie>, <singo.chang@mediatek.com>,
-        "Alexandre Torgue" <alexandre.torgue@foss.st.com>,
-        <postmaster@vger.kernel.org>,
-        "Fabien Parent" <fparent@baylibre.com>,
-        John 'Warthog9' Hawley <warthog9@eaglescrag.net>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <roy-cw.yeh@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        <devicetree@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
-        <nancy.lin@mediatek.com>, <linux-mediatek@lists.infradead.org>,
-        <hsinyi@chromium.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <moudy.ho@mediatek.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Date:   Tue, 12 Apr 2022 14:33:02 +0800
-In-Reply-To: <a48df6bb-6be8-6cb9-51d0-9044e706e834@collabora.com>
-References: <20220407030409.9664-1-jason-jh.lin@mediatek.com>
-         <20220407030409.9664-4-jason-jh.lin@mediatek.com>
-         <67b3e42d6a094108f724ed9b8c73f5cd6b2ce219.camel@mediatek.com>
-         <d8711b8e4d233240eda73db54a625e88b9b3970b.camel@mediatek.com>
-         <1f1692b6d14280fed40e53f464145ed70b67135f.camel@mediatek.com>
-         <a48df6bb-6be8-6cb9-51d0-9044e706e834@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 12 Apr 2022 02:35:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C561C35A8E;
+        Mon, 11 Apr 2022 23:33:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34652618CF;
+        Tue, 12 Apr 2022 06:33:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A40C385B8;
+        Tue, 12 Apr 2022 06:33:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649745197;
+        bh=bG4DTXOWo6LfORv66Dccg9LS74KIVLzlhelsob7fX9w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nG2jxNDZY01LnfTDz/+QTsIs3h0BKt8XRtHnc770suIrhqorUWcQRU6dwTDteToxa
+         qq0AZ7JMa9JEw+egyC1ysxFUuwuzC98Wxx6ovzKAu6oHifkRnUrFjf7YZ0aq3G/2ep
+         8KnoFsioZMVdhFj4IKnDMchvtninBF+bbmwUwUI8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wayne Chang <waynec@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 013/171] usb: gadget: tegra-xudc: Fix control endpoints definitions
+Date:   Tue, 12 Apr 2022 08:28:24 +0200
+Message-Id: <20220412062928.267849352@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
+References: <20220412062927.870347203@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Angelo:
+From: Wayne Chang <waynec@nvidia.com>
 
-On Fri, 2022-04-08 at 10:49 +0200, AngeloGioacchino Del Regno wrote:
-> Il 08/04/22 03:28, CK Hu ha scritto:
-> > Hi, Jason:
-> > 
-> > On Thu, 2022-04-07 at 14:27 +0800, Jason-JH Lin wrote:
-> > > Hi CK,
-> > > 
-> > > Thanks for the reviews.
-> > > 
-> > > On Thu, 2022-04-07 at 13:45 +0800, CK Hu wrote:
-> > > > Hi, Jason:
-> > > > 
-> > > > On Thu, 2022-04-07 at 11:04 +0800, jason-jh.lin wrote:
-> > > > > 1. Add mt8195 mmsys compatible for vdosys0.
-> > > > > 2. Add mt8195 routing table settings and fix build fail.
-> > > > > 3. Add clock name, clock driver name and routing table into
-> > > > > the
-> > > > > driver data
-> > > > >     of mt8195 vdosys0.
-> > > > > 4. Add get match data by clock name function and clock
-> > > > > platform
-> > > > > labels
-> > > > >     to identify which mmsys node is corresponding to vdosys0.
-> > > > > 
-> > > > > Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
-> > > > > ---
-> > > > >   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c |   2 +-
-> > > > >   drivers/gpu/drm/mediatek/mtk_drm_drv.c      |   6 +-
-> > > > >   drivers/soc/mediatek/mt8167-mmsys.h         |   2 +-
-> > > > >   drivers/soc/mediatek/mt8183-mmsys.h         |   2 +-
-> > > > >   drivers/soc/mediatek/mt8186-mmsys.h         |   4 +-
-> > > > >   drivers/soc/mediatek/mt8192-mmsys.h         |   4 +-
-> > > > >   drivers/soc/mediatek/mt8195-mmsys.h         | 370
-> > > > > ++++++++++++++++++++
-> > > > >   drivers/soc/mediatek/mt8365-mmsys.h         |   4 +-
-> > > > >   drivers/soc/mediatek/mtk-mmsys.c            |  62 ++++
-> > > > >   drivers/soc/mediatek/mtk-mmsys.h            |   1 +
-> > > > >   drivers/soc/mediatek/mtk-mutex.c            |   8 +-
-> > > > >   include/linux/soc/mediatek/mtk-mmsys.h      |  13 +-
-> > > > >   12 files changed, 461 insertions(+), 17 deletions(-)
-> > > > >   create mode 100644 drivers/soc/mediatek/mt8195-mmsys.h
-> > > > > 
-> > > > 
-> > > > [snip]
-> > > > 
-> > > > > diff --git a/drivers/soc/mediatek/mtk-mmsys.c
-> > > > > b/drivers/soc/mediatek/mtk-mmsys.c
-> > > > > index 4fc4c2c9ea20..b2fa239c5f5f 100644
-> > > > > --- a/drivers/soc/mediatek/mtk-mmsys.c
-> > > > > +++ b/drivers/soc/mediatek/mtk-mmsys.c
-> > > > > @@ -4,6 +4,8 @@
-> > > > >    * Author: James Liao <jamesjj.liao@mediatek.com>
-> > > > >    */
-> > > > >   
-> 
-> ..snip..
-> 
-> > > 
-> > > I think there might be another chip that needs to get driver data
-> > > by
-> > > clk_name .
-> > > So I use "clk-mt8195" in clk_driver to identify the corresponding
-> > > platform whose clk_name of mmsys is also "cfg_vod0".
-> > 
-> > We usually don't care the future because the future may not happen.
-> > If
-> 
-> Hello CK,
-> 
-> I'm sorry, but I really have to disagree here.
-> Sure, the future may not happen, but from what I can see, MediaTek's
-> commitment
-> on upstreaming their SoCs is continuative and they care about the
-> future.
-> 
-> Let's also not forget that these drivers are not on a downstream
-> tree, where
-> you don't care about the past or the future, but on upstream, where
-> you:
-> - Definitely care about the past
-> - Should care about the future, if you want to avoid commit noise and
->    making big changes to your drivers everytime, which would slow
-> down
->    your upstreaming due to reviewers having to put 3x efforts on each
->    iteration.
-> 
-> And let's also not forget that this being upstream means that these
-> drivers
-> may (or may not) be extended even by passionate community developers,
-> for
-> which, having such mechanisms there for other SoCs that MediaTek
-> didn't try
-> to upstream yet can only be good - and when these are engineered with
-> a
-> certain flexibility, while keeping the codebase solid, that can only
-> be good.
-> 
-> Besides, if I've misunderstood your "don't care the future"
-> statement,
-> pretend that I've never replied.
+[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
 
-OK, let's break this patch into two patches. The first is to support
-mt8195 only with clock name identification. The second patch is to
-identify SoC. In this series, we just need the first patch, so move the
-second patch to the series of another SoC with multiple mmsys device.
-Maybe another SoC with multiple mmsys device has new property which
-could be used to identify SoC, so we have no information about what is
-the better implementation of second patch. I do really care the future,
-but I have no information about the future. Please public any hidden
-information so we could have better decision.
+According to the Tegra Technical Reference Manual, the seq_num
+field of control endpoint is not [31:24] but [31:27]. Bit 24
+is reserved and bit 26 is splitxstate.
 
-Regards,
-CK
+The change fixes the wrong control endpoint's definitions.
 
-> 
-> 
-> > it's sure that would happen, I think clk_driver is not a good
-> > choice.
-> > For now, the clk_driver name is different for each SoC, but it
-> > could be
-> > the same for each SoC because only one clock driver would be
-> > compiled.
-> > I think "compatible" would be different for each SoC.
-> > 
-> 
-> ...but I agree on that one (and I gave my own review and suggestions
-> on
-> how to improve that situation).
-> 
-> Regards,
-> Angelo
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 1dd0d50c6b56..de178bf264c2 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
+ BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
+ BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
+ BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
+-BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
++BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
+ BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
++BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
++BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
+ BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
+ BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
+ BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
+@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
+ 		ep_reload(xudc, ep->index);
+ 
+ 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
++		ep_ctx_write_rsvd(ep->context, 0);
++		ep_ctx_write_partial_td(ep->context, 0);
++		ep_ctx_write_splitxstate(ep->context, 0);
+ 		ep_ctx_write_seq_num(ep->context, 0);
+ 
+ 		ep_reload(xudc, ep->index);
+@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
+ 	xudc->setup_seq_num = 0;
+ 	xudc->queued_setup_packet = false;
+ 
+-	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
++	ep_ctx_write_rsvd(ep0->context, 0);
++	ep_ctx_write_partial_td(ep0->context, 0);
++	ep_ctx_write_splitxstate(ep0->context, 0);
++	ep_ctx_write_seq_num(ep0->context, 0);
+ 
+ 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
+ 
+-- 
+2.35.1
+
+
 
