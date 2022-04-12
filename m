@@ -2,129 +2,397 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 438E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244116AbiDLKRA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53472 "EHLO
+        id S244158AbiDLKRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357785AbiDLJzY (ORCPT
+        with ESMTP id S1348129AbiDLKAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:55:24 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7335E2654B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:59:55 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 15FF4210F4;
-        Tue, 12 Apr 2022 08:59:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649753994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dXcY0HxQD9QkaG2No5hFxre2uSwE5KR0ptaqz9/fqEk=;
-        b=MGW40pK02mzEEDHBwBA/uzxo7HodeYyTTwL8q/BmidqNqZZ/3cZbod6dMpog1L3fq5jsrc
-        dwfl54xzecqe7ItCAH4dWXYOKgxvpP6UhpnQvQS00d9xMw99yF6XUfTUi/R74KVhDhh6EP
-        ic39NqRgonS+QdgDnmnJKQzmAU7cdIk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649753994;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dXcY0HxQD9QkaG2No5hFxre2uSwE5KR0ptaqz9/fqEk=;
-        b=YQdOsW4MALpmgNzrAteIibSpYMZY8u/lNgFKPpFXk0hcM1LSwIcmSBjgiat41EMJ+EGYPO
-        eYwvI6YAIE9nc7DA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7D8B713780;
-        Tue, 12 Apr 2022 08:59:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id uY5JG4k/VWJbIQAAMHmgww
-        (envelope-from <osalvador@suse.de>); Tue, 12 Apr 2022 08:59:53 +0000
-Date:   Tue, 12 Apr 2022 10:59:51 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, ying.huang@intel.com,
-        songmuchun@bytedance.com, hch@infradead.org, willy@infradead.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/9] mm/vmscan: remove unneeded can_split_huge_page
- check
-Message-ID: <YlU/h0fdE1L846Bd@localhost.localdomain>
-References: <20220409093500.10329-1-linmiaohe@huawei.com>
- <20220409093500.10329-3-linmiaohe@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409093500.10329-3-linmiaohe@huawei.com>
+        Tue, 12 Apr 2022 06:00:53 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B7C6D965
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:08:06 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V9twWp8_1649754476;
+Received: from j66d16353.sqa.eu95.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0V9twWp8_1649754476)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 12 Apr 2022 17:08:04 +0800
+From:   Guanghui Feng <guanghuifeng@linux.alibaba.com>
+To:     catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, baolin.wang@linux.alibaba.com
+Subject: [PATCH RFC v1] arm64: mm: change mem_map to use block/section mapping with crashkernel
+Date:   Tue, 12 Apr 2022 17:07:56 +0800
+Message-Id: <1649754476-8713-1-git-send-email-guanghuifeng@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 05:34:53PM +0800, Miaohe Lin wrote:
-> We don't need to check can_split_folio() because folio_maybe_dma_pinned()
-> is checked before. It will avoid the long term pinned pages to be swapped
-> out. And we can live with short term pinned pages. Without can_split_folio
-> checking we can simplify the code. Also activate_locked can be changed to
-> keep_locked as it's just short term pinning.
+There are many changes and discussions:
+commit 031495635b46
+commit 1a8e1cef7603
+commit 8424ecdde7df
+commit 0a30c53573b0
+commit 2687275a5843
 
-What do you mean by "we can live with short term pinned pages"?
-Does it mean that it was not pinned when we check
-folio_maybe_dma_pinned() but now it is?
+When using DMA/DMA32 zone and crashkernel, disable rodata full and kfence,
+mem_map will use non block/section mapping(for crashkernel requires to shrink
+the region in page granularity). But it will degrade performance when doing
+larging continuous mem access in kernel(memcpy/memmove, etc).
 
-To me it looks like the pinning is fluctuating and we rely on
-split_folio_to_list() to see whether we succeed or not, and if not
-we give it another spin in the next round?
+This patch firstly do block/section mapping at mem_map, reserve crashkernel
+memory. And then walking pagetable to split block/section mapping
+to non block/section mapping [only] for crashkernel mem. We will accelerate
+mem access about 10-20% performance improvement, and reduce the cpu dTLB miss
+conspicuously on some platform with this optimization.
 
-> Suggested-by: Huang, Ying <ying.huang@intel.com>
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/vmscan.c | 22 ++++++++--------------
->  1 file changed, 8 insertions(+), 14 deletions(-)
-> 
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index 4a76be47bed1..01f5db75a507 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -1711,20 +1711,14 @@ static unsigned int shrink_page_list(struct list_head *page_list,
->  					goto keep_locked;
->  				if (folio_maybe_dma_pinned(folio))
->  					goto keep_locked;
-> -				if (PageTransHuge(page)) {
-> -					/* cannot split THP, skip it */
-> -					if (!can_split_folio(folio, NULL))
-> -						goto activate_locked;
-> -					/*
-> -					 * Split pages without a PMD map right
-> -					 * away. Chances are some or all of the
-> -					 * tail pages can be freed without IO.
-> -					 */
-> -					if (!folio_entire_mapcount(folio) &&
-> -					    split_folio_to_list(folio,
-> -								page_list))
-> -						goto activate_locked;
-> -				}
-> +				/*
-> +				 * Split pages without a PMD map right
-> +				 * away. Chances are some or all of the
-> +				 * tail pages can be freed without IO.
-> +				 */
-> +				if (PageTransHuge(page) && !folio_entire_mapcount(folio) &&
-> +				    split_folio_to_list(folio, page_list))
-> +					goto keep_locked;
->  				if (!add_to_swap(page)) {
->  					if (!PageTransHuge(page))
->  						goto activate_locked_split;
-> -- 
-> 2.23.0
-> 
-> 
+Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+---
+ arch/arm64/include/asm/mmu.h |   1 +
+ arch/arm64/mm/init.c         |   8 +-
+ arch/arm64/mm/mmu.c          | 274 +++++++++++++++++++++++++++++++++++++++----
+ 3 files changed, 253 insertions(+), 30 deletions(-)
 
+diff --git a/arch/arm64/include/asm/mmu.h b/arch/arm64/include/asm/mmu.h
+index 48f8466..df113cc 100644
+--- a/arch/arm64/include/asm/mmu.h
++++ b/arch/arm64/include/asm/mmu.h
+@@ -63,6 +63,7 @@ static inline bool arm64_kernel_unmapped_at_el0(void)
+ extern void arm64_memblock_init(void);
+ extern void paging_init(void);
+ extern void bootmem_init(void);
++extern void mapping_crashkernel(void);
+ extern void __iomem *early_io_map(phys_addr_t phys, unsigned long virt);
+ extern void init_mem_pgprot(void);
+ extern void create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 8ac25f1..02edd45 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -335,10 +335,6 @@ void __init arm64_memblock_init(void)
+ 	}
+ 
+ 	early_init_fdt_scan_reserved_mem();
+-
+-	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
+-		reserve_crashkernel();
+-
+ 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+ }
+ 
+@@ -385,8 +381,8 @@ void __init bootmem_init(void)
+ 	 * request_standard_resources() depends on crashkernel's memory being
+ 	 * reserved, so do it here.
+ 	 */
+-	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
+-		reserve_crashkernel();
++	reserve_crashkernel();
++	mapping_crashkernel();
+ 
+ 	memblock_dump_all();
+ }
+diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+index 626ec32..0672afd 100644
+--- a/arch/arm64/mm/mmu.c
++++ b/arch/arm64/mm/mmu.c
+@@ -498,6 +498,256 @@ static int __init enable_crash_mem_map(char *arg)
+ }
+ early_param("crashkernel", enable_crash_mem_map);
+ 
++#ifdef CONFIG_KEXEC_CORE
++static phys_addr_t __init early_crashkernel_pgtable_alloc(int shift)
++{
++	phys_addr_t phys;
++	void *ptr;
++
++	phys = memblock_phys_alloc_range(PAGE_SIZE, PAGE_SIZE, 0,
++					 MEMBLOCK_ALLOC_NOLEAKTRACE);
++	if (!phys)
++		panic("Failed to allocate page table page\n");
++
++	ptr = (void *)__phys_to_virt(phys);
++	memset(ptr, 0, PAGE_SIZE);
++	return phys;
++}
++
++static void init_crashkernel_pte(pmd_t *pmdp, unsigned long addr,
++				 unsigned long end,
++				 phys_addr_t phys, pgprot_t prot)
++{
++	pte_t *ptep;
++	ptep = pte_offset_kernel(pmdp, addr);
++	do {
++		set_pte(ptep, pfn_pte(__phys_to_pfn(phys), prot));
++		phys += PAGE_SIZE;
++	} while (ptep++, addr += PAGE_SIZE, addr != end);
++}
++
++static void alloc_crashkernel_cont_pte(pmd_t *pmdp, unsigned long addr,
++				       unsigned long end, phys_addr_t phys,
++				       pgprot_t prot,
++				       phys_addr_t (*pgtable_alloc)(int),
++				       int flags)
++{
++	unsigned long next;
++	pmd_t pmd = READ_ONCE(*pmdp);
++
++	BUG_ON(pmd_sect(pmd));
++	if (pmd_none(pmd)) {
++		pmdval_t pmdval = PMD_TYPE_TABLE | PMD_TABLE_UXN;
++		phys_addr_t pte_phys;
++
++		if (flags & NO_EXEC_MAPPINGS)
++			pmdval |= PMD_TABLE_PXN;
++		BUG_ON(!pgtable_alloc);
++		pte_phys = pgtable_alloc(PAGE_SHIFT);
++		__pmd_populate(pmdp, pte_phys, pmdval);
++		pmd = READ_ONCE(*pmdp);
++	}
++	BUG_ON(pmd_bad(pmd));
++
++	do {
++		pgprot_t __prot = prot;
++		next = pte_cont_addr_end(addr, end);
++		init_crashkernel_pte(pmdp, addr, next, phys, __prot);
++		phys += next - addr;
++	} while (addr = next, addr != end);
++}
++
++static void init_crashkernel_pmd(pud_t *pudp, unsigned long addr,
++				 unsigned long end, phys_addr_t phys,
++				 pgprot_t prot,
++				 phys_addr_t (*pgtable_alloc)(int), int flags)
++{
++	phys_addr_t map_offset;
++	unsigned long next;
++	pmd_t *pmdp;
++	pmdval_t pmdval;
++
++	pmdp = pmd_offset(pudp, addr);
++	do {
++		next = pmd_addr_end(addr, end);
++		if (!pmd_none(*pmdp) && pmd_sect(*pmdp)) {
++			phys_addr_t pte_phys = pgtable_alloc(PAGE_SHIFT);
++			pmd_clear(pmdp);
++			pmdval = PMD_TYPE_TABLE | PMD_TABLE_UXN;
++			if (flags & NO_EXEC_MAPPINGS)
++				pmdval |= PMD_TABLE_PXN;
++			__pmd_populate(pmdp, pte_phys, pmdval);
++			flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
++
++			map_offset = addr - (addr & PMD_MASK);
++			if (map_offset)
++			    alloc_init_cont_pte(pmdp, addr & PMD_MASK, addr,
++						phys - map_offset, prot,
++						pgtable_alloc, flags);
++
++			if (next < (addr & PMD_MASK) + PMD_SIZE)
++			    alloc_init_cont_pte(pmdp, next, (addr & PUD_MASK) +
++						PUD_SIZE, next - addr + phys,
++						prot, pgtable_alloc, flags);
++		}
++		alloc_crashkernel_cont_pte(pmdp, addr, next, phys, prot,
++					   pgtable_alloc, flags);
++		phys += next - addr;
++	} while (pmdp++, addr = next, addr != end);
++}
++
++static void alloc_crashkernel_cont_pmd(pud_t *pudp, unsigned long addr,
++				       unsigned long end, phys_addr_t phys,
++				       pgprot_t prot,
++				       phys_addr_t (*pgtable_alloc)(int),
++				       int flags)
++{
++	unsigned long next;
++	pud_t pud = READ_ONCE(*pudp);
++
++	/*
++	 * Check for initial section mappings in the pgd/pud.
++	 */
++	BUG_ON(pud_sect(pud));
++	if (pud_none(pud)) {
++		pudval_t pudval = PUD_TYPE_TABLE | PUD_TABLE_UXN;
++		phys_addr_t pmd_phys;
++
++		if (flags & NO_EXEC_MAPPINGS)
++			pudval |= PUD_TABLE_PXN;
++		BUG_ON(!pgtable_alloc);
++		pmd_phys = pgtable_alloc(PMD_SHIFT);
++		__pud_populate(pudp, pmd_phys, pudval);
++		pud = READ_ONCE(*pudp);
++	}
++	BUG_ON(pud_bad(pud));
++
++	do {
++		pgprot_t __prot = prot;
++		next = pmd_cont_addr_end(addr, end);
++		init_crashkernel_pmd(pudp, addr, next, phys, __prot,
++				     pgtable_alloc, flags);
++		phys += next - addr;
++	} while (addr = next, addr != end);
++}
++
++static void alloc_crashkernel_pud(pgd_t *pgdp, unsigned long addr,
++				  unsigned long end, phys_addr_t phys,
++				  pgprot_t prot,
++				  phys_addr_t (*pgtable_alloc)(int),
++				  int flags)
++{
++	phys_addr_t map_offset;
++	unsigned long next;
++	pud_t *pudp;
++	p4d_t *p4dp = p4d_offset(pgdp, addr);
++	p4d_t p4d = READ_ONCE(*p4dp);
++	pudval_t pudval;
++
++	if (p4d_none(p4d)) {
++		p4dval_t p4dval = P4D_TYPE_TABLE | P4D_TABLE_UXN;
++		phys_addr_t pud_phys;
++
++		if (flags & NO_EXEC_MAPPINGS)
++			p4dval |= P4D_TABLE_PXN;
++		BUG_ON(!pgtable_alloc);
++		pud_phys = pgtable_alloc(PUD_SHIFT);
++		__p4d_populate(p4dp, pud_phys, p4dval);
++		p4d = READ_ONCE(*p4dp);
++	}
++	BUG_ON(p4d_bad(p4d));
++
++	/*
++	 * No need for locking during early boot. And it doesn't work as
++	 * expected with KASLR enabled.
++	 */
++	if (system_state != SYSTEM_BOOTING)
++		mutex_lock(&fixmap_lock);
++	pudp = pud_offset(p4dp, addr);
++	do {
++		next = pud_addr_end(addr, end);
++		if (!pud_none(*pudp) && pud_sect(*pudp)) {
++			phys_addr_t pmd_phys = pgtable_alloc(PMD_SHIFT);
++			pud_clear(pudp);
++
++			pudval = PUD_TYPE_TABLE | PUD_TABLE_UXN;
++			if (flags & NO_EXEC_MAPPINGS)
++				pudval |= PUD_TABLE_PXN;
++			__pud_populate(pudp, pmd_phys, pudval);
++			flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
++
++			map_offset = addr - (addr & PUD_MASK);
++			if (map_offset)
++			    alloc_init_cont_pmd(pudp, addr & PUD_MASK, addr,
++						phys - map_offset, prot,
++						pgtable_alloc, flags);
++
++			if (next < (addr & PUD_MASK) + PUD_SIZE)
++			    alloc_init_cont_pmd(pudp, next, (addr & PUD_MASK) +
++						PUD_SIZE, next - addr + phys,
++						prot, pgtable_alloc, flags);
++		}
++		alloc_crashkernel_cont_pmd(pudp, addr, next, phys, prot,
++					   pgtable_alloc, flags);
++		phys += next - addr;
++	} while (pudp++, addr = next, addr != end);
++
++	if (system_state != SYSTEM_BOOTING)
++		mutex_unlock(&fixmap_lock);
++}
++
++static void __create_crashkernel_mapping(pgd_t *pgdir, phys_addr_t phys,
++					 unsigned long virt, phys_addr_t size,
++					 pgprot_t prot,
++					 phys_addr_t (*pgtable_alloc)(int),
++					 int flags)
++{
++	unsigned long addr, end, next;
++	pgd_t *pgdp = pgd_offset_pgd(pgdir, virt);
++
++	/*
++	 * If the virtual and physical address don't have the same offset
++	 * within a page, we cannot map the region as the caller expects.
++	 */
++	if (WARN_ON((phys ^ virt) & ~PAGE_MASK))
++		return;
++
++	phys &= PAGE_MASK;
++	addr = virt & PAGE_MASK;
++	end = PAGE_ALIGN(virt + size);
++
++	do {
++		next = pgd_addr_end(addr, end);
++		alloc_crashkernel_pud(pgdp, addr, next, phys, prot,
++				      pgtable_alloc, flags);
++		phys += next - addr;
++	} while (pgdp++, addr = next, addr != end);
++}
++
++static void __init map_crashkernel(pgd_t *pgdp, phys_addr_t start,
++				   phys_addr_t end, pgprot_t prot, int flags)
++{
++	__create_crashkernel_mapping(pgdp, start, __phys_to_virt(start),
++				     end - start, prot,
++				     early_crashkernel_pgtable_alloc, flags);
++}
++
++void __init mapping_crashkernel(void)
++{
++	if (can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE))
++	    return;
++
++	if (!crash_mem_map || !crashk_res.end)
++	    return;
++
++	map_crashkernel(swapper_pg_dir, crashk_res.start,
++			crashk_res.end + 1, PAGE_KERNEL,
++			NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
++}
++#else
++void __init mapping_crashkernel(void) {}
++#endif
++
+ static void __init map_mem(pgd_t *pgdp)
+ {
+ 	static const u64 direct_map_end = _PAGE_END(VA_BITS_MIN);
+@@ -527,17 +777,6 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 */
+ 	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
+ 
+-#ifdef CONFIG_KEXEC_CORE
+-	if (crash_mem_map) {
+-		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
+-		    IS_ENABLED(CONFIG_ZONE_DMA32))
+-			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+-		else if (crashk_res.end)
+-			memblock_mark_nomap(crashk_res.start,
+-			    resource_size(&crashk_res));
+-	}
+-#endif
+-
+ 	/* map all the memory banks */
+ 	for_each_mem_range(i, &start, &end) {
+ 		if (start >= end)
+@@ -570,19 +809,6 @@ static void __init map_mem(pgd_t *pgdp)
+ 	 * in page granularity and put back unused memory to buddy system
+ 	 * through /sys/kernel/kexec_crash_size interface.
+ 	 */
+-#ifdef CONFIG_KEXEC_CORE
+-	if (crash_mem_map &&
+-	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
+-		if (crashk_res.end) {
+-			__map_memblock(pgdp, crashk_res.start,
+-				       crashk_res.end + 1,
+-				       PAGE_KERNEL,
+-				       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
+-			memblock_clear_nomap(crashk_res.start,
+-					     resource_size(&crashk_res));
+-		}
+-	}
+-#endif
+ }
+ 
+ void mark_rodata_ro(void)
 -- 
-Oscar Salvador
-SUSE Labs
+1.8.3.1
+
