@@ -2,102 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC59C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350639AbiDLSNw (ORCPT
+        id S1358653AbiDLSN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 14:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37724 "EHLO
+        Tue, 12 Apr 2022 14:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358646AbiDLSNs (ORCPT
+        with ESMTP id S1358641AbiDLSNx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 14:13:48 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6DF4968E;
-        Tue, 12 Apr 2022 11:11:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649787090; x=1681323090;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=e+v9atRUEsNxr7cIqFOK0n4ysOpxO9O67Ox4EDhcAKY=;
-  b=K6x0jezJZy9FPx5cQ4ZLGr4gynE/sdwhh/Kkasfny9BBzvg+crNcgyKp
-   llHRFDByU1k2dXiFDW1M10FSnBctn9t5vLTmJXjkT4VQ8HfcPTBKCXytP
-   qMpqTLHBf30gXW3l3Tm2oSHjiDKnyfGrjV+QuuqI3SNEdssuh9O2wPSFA
-   NVsANBSYW8nXagxq124jI9VS/MUf0VKxiIxOncHRpog9izl2iEbHVHysi
-   2KBZmUsyWbA7XBJ2A9Gt0nTdU7vGD925SjggpnoacUtDcnVImIC2ewq2h
-   YaBl0yASQnLbH69K6dPnkMrE+3knCqo8xLxwelY6z7gaknF8V8CoYtrT6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="261907604"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="261907604"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:04:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="559438893"
-Received: from lpfafma-mobl.amr.corp.intel.com (HELO guptapa-desk) ([10.209.17.36])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:04:54 -0700
-Date:   Tue, 12 Apr 2022 11:04:52 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Neelima Krishnan <neelima.krishnan@intel.com>,
-        "kvm @ vger . kernel . org" <kvm@vger.kernel.org>
-Subject: Re: [PATCH] x86/tsx: fix KVM guest live migration for tsx=on
-Message-ID: <20220412180452.ityo3o3eoxh3iul7@guptapa-desk>
-References: <20220411180131.5054-1-jon@nutanix.com>
- <41a3ca80-d3e2-47d2-8f1c-9235c55de8d1@intel.com>
- <AE4621FC-0947-4CEF-A1B3-87D4E00C786D@nutanix.com>
- <e800ba74-0ff6-8d98-8978-62c02cf1f8ea@intel.com>
- <1767A554-CC0A-412D-B70C-12DF0AF4C690@nutanix.com>
- <90457491-1ac3-b04a-856a-25c6e04d429a@intel.com>
- <28C45B75-7FE3-4C79-9A29-F929AF9BC5A8@nutanix.com>
+        Tue, 12 Apr 2022 14:13:53 -0400
+X-Greylist: delayed 1806 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 11:11:35 PDT
+Received: from voroolammo.cheapimprinted.com (voroolammo.cheapimprinted.com [194.31.98.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9772C13A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:11:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=cheapimprinted.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=ame.san@cheapimprinted.com;
+ bh=q+cfGcz7m7nCYA3Q2i1Qx4Ft5fs=;
+ b=UM1COVt7eqE8qbAbbhyXpmezT5ktmHz794kgjXDhJstxOihxzRE2Ft+q5hD6KG+31fCEfGJAZRr3
+   6tQZ2Dt9fptD/O5EqP3tJu5GqRXRkj1Xq9sWzV6k5iX2GQNI5H8VTzBlgCsjt3pSZF79B65rxoLZ
+   T6IcdA1QpGPBEKdGZTmdogB88GGNGr7aKzMHjqlaR8aRkCAmIc+z0lLCGZtWKmYNNxw/4XsKFZ8d
+   e/QijkBiBHBUkRY60eKKfGV/KgkAChq9IF7IGAiEEeFyyXu0alK2EnK/6ty32Ov1KL3c5VrK0oqY
+   tBxPJYmIqIUJqmtZ7LuC960yOyYlzsUa3klU7g==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=cheapimprinted.com;
+ b=qSbORlz61WecRhWl8wGCCICxwAe/dpJRjCzmiLDKtiBbx8qPVD7JZm2U+tvqRprYvDP08zdETCsM
+   SyVUrmKKJxoftY2s8FLX6ATNlth2CQR1WMxmq3WDFRLmHC09vh8QzDg9cYMVrjIgwZIhqSpagmIN
+   icxxomJxz1iURHSxfFYYsBahPa/hoyrw/32QwBxZ1Df2+wFLZ1kvG+l3OYM53Nr6bzkRKS4ysdzV
+   gaqZFpnY1UVFXOZrw7ObtDe7C/aaPEcPguQouN4l4m6azibB+rdqDYRotkz2x+pndKJ9S2k1t0Pn
+   ZXrf4/BlGdPfFzCuJ6jo534LPFhG8zo8eVhkRg==;
+Reply-To: <darenjames@darenjjames.com>
+From:   Great Concept LLC <ame.san@cheapimprinted.com>
+To:     linux-kernel@vger.kernel.org
+Subject: LOAN FUNDING
+Date:   12 Apr 2022 19:41:25 +0200
+Message-ID: <20220412194125.F8A792740520C9FE@cheapimprinted.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <28C45B75-7FE3-4C79-9A29-F929AF9BC5A8@nutanix.com>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 04:08:32PM +0000, Jon Kohler wrote:
->
->
->> On Apr 12, 2022, at 11:54 AM, Dave Hansen <dave.hansen@intel.com> wrote:
->>
->> On 4/12/22 06:36, Jon Kohler wrote:
->>> So my theory here is to extend the logical effort of the microcode driven
->>> automatic disablement as well as the tsx=auto automatic disablement and
->>> have tsx=on force abort all transactions on X86_BUG_TAA SKUs, but leave
->>> the CPU features enumerated to maintain live migration.
->>>
->>> This would still leave TSX totally good on Ice Lake / non-buggy systems.
->>>
->>> If it would help, I'm working up an RFC patch, and we could discuss there?
->>
->> Sure.  But, it sounds like you really want a new tdx=something rather
->> than to muck with tsx=on behavior.  Surely someone else will come along
->> and complain that we broke their TDX setup if we change its behavior.
->
->Good point, there will always be a squeaky wheel. I’ll work that into the RFC,
->I’ll do something like tsx=compat and see how it shapes up.
+Good day,
 
-FYI, the original series had tsx=fake, that would have taken care of
-this breakage.
+How are you today? Our company has a loan offer which might be of=20
+best interest to you, If you have a good project plan that=20
+requires funding or looking forward to an expansion of existing
+business, Let me know your business plan for a feasibility study.=20
+We also have Option of broker collaboration with us where you can=20
+get 1% to 2% finder's fee commission, Let me know your thought on=20
+this for more details to be sent to you for your kind perusal.
 
-   https://lore.kernel.org/lkml/de6b97a567e273adff1f5268998692bad548aa10.1623272033.git-series.pawan.kumar.gupta@linux.intel.com/
+Kind regards.
 
-For the lack of real world use-cases at that time, this patch was dropped.
+Darren James
 
-Thanks,
-Pawan
+Great Concept LLC
+Office Address: Al Multaqa St, Al Rawdah
+Abu Dhabi,United Arab Emirates.
+Business Hours: Sunday -Thursday: 8:00 am - 6:00 pm
