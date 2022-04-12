@@ -2,141 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C258C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229870AbiDLGic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
+        id S1349516AbiDLGih (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349595AbiDLGge (ORCPT
+        with ESMTP id S229911AbiDLGgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:36:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D6635A8F;
-        Mon, 11 Apr 2022 23:33:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72BCC618CF;
-        Tue, 12 Apr 2022 06:33:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 863BEC385A1;
-        Tue, 12 Apr 2022 06:33:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745230;
-        bh=4mZg68EaX6st2qOzELCdeSZlE7Q16+vpvbWIb/ob8/0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ougDMakejOUWjedZ1MuFsRPNk0p5ARy7wSf28B7bHLl7sr28lZv/LXsIOdPHdycT+
-         YK9lsg82zLNfr49Vjiiw1FqHeMi0Z///O81jUXf2H2+V6NDFtaIzGsb1WGjF8zcPXS
-         QhihA3iJZd/PaBgSAFJVsYyA1zszrW0Ok6uh6yh8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Delyan Kratunov <delyank@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 024/171] libbpf: Fix build issue with llvm-readelf
-Date:   Tue, 12 Apr 2022 08:28:35 +0200
-Message-Id: <20220412062928.584006122@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
-References: <20220412062927.870347203@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 02:36:37 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119A435864;
+        Mon, 11 Apr 2022 23:33:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649745234; x=1681281234;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1LpWZR+Z2lEZmibS9yfT78g4awIUuvEhpUMadNmEaRQ=;
+  b=cHQY++OJ6gxE4oPtW32/3nH30BgUJkFIyuVhw5i3HYJVr5TF0VF8HKEh
+   OzEsBhX/Itkz4vR+0uLaE4t/l/IrfpLmVDCm/X+ElbD3RL31BOwgTntSS
+   KZ6H2GopIjV198qUlCfLV26iIhNCMgiLakIj7EBntJ87FJ4YzS8fUfo9O
+   PN42VUXRFpZQJCKnJ5gLWRkW0khku7YWdmQ7SgWmwVBUBcC69N/OmhC5U
+   67kZyQ1UcEVMEMOrIV3HFZa4klt6AQXFnRGnkMNHO9WfPzOoRci/aZzfv
+   RZpI+Nz6OXepdm82k8s+PxSnbcddLK0pdV5LNFKdJVcRP7TvKEpihREfu
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,253,1643698800"; 
+   d="scan'208";a="152337016"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 23:33:53 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 11 Apr 2022 23:33:52 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 23:33:49 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>
+Subject: [Patch net-next 3/3] MAINTAINERS: Add maintainers for Microchip T1 Phy driver
+Date:   Tue, 12 Apr 2022 12:03:17 +0530
+Message-ID: <20220412063317.4173-4-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220412063317.4173-1-arun.ramadoss@microchip.com>
+References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
-
-[ Upstream commit 0908a66ad1124c1634c33847ac662106f7f2c198 ]
-
-There are cases where clang compiler is packaged in a way
-readelf is a symbolic link to llvm-readelf. In such cases,
-llvm-readelf will be used instead of default binutils readelf,
-and the following error will appear during libbpf build:
-
-#  Warning: Num of global symbols in
-#   /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/sharedobjs/libbpf-in.o (367)
-#   does NOT match with num of versioned symbols in
-#   /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf.so libbpf.map (383).
-#   Please make sure all LIBBPF_API symbols are versioned in libbpf.map.
-#  --- /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf_global_syms.tmp ...
-#  +++ /home/yhs/work/bpf-next/tools/testing/selftests/bpf/tools/build/libbpf/libbpf_versioned_syms.tmp ...
-#  @@ -324,6 +324,22 @@
-#   btf__str_by_offset
-#   btf__type_by_id
-#   btf__type_cnt
-#  +LIBBPF_0.0.1
-#  +LIBBPF_0.0.2
-#  +LIBBPF_0.0.3
-#  +LIBBPF_0.0.4
-#  +LIBBPF_0.0.5
-#  +LIBBPF_0.0.6
-#  +LIBBPF_0.0.7
-#  +LIBBPF_0.0.8
-#  +LIBBPF_0.0.9
-#  +LIBBPF_0.1.0
-#  +LIBBPF_0.2.0
-#  +LIBBPF_0.3.0
-#  +LIBBPF_0.4.0
-#  +LIBBPF_0.5.0
-#  +LIBBPF_0.6.0
-#  +LIBBPF_0.7.0
-#   libbpf_attach_type_by_name
-#   libbpf_find_kernel_btf
-#   libbpf_find_vmlinux_btf_id
-#  make[2]: *** [Makefile:184: check_abi] Error 1
-#  make[1]: *** [Makefile:140: all] Error 2
-
-The above failure is due to different printouts for some ABS
-versioned symbols. For example, with the same libbpf.so,
-  $ /bin/readelf --dyn-syms --wide tools/lib/bpf/libbpf.so | grep "LIBBPF" | grep ABS
-     134: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.5.0
-     202: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.6.0
-     ...
-  $ /opt/llvm/bin/readelf --dyn-syms --wide tools/lib/bpf/libbpf.so | grep "LIBBPF" | grep ABS
-     134: 0000000000000000     0 OBJECT  GLOBAL DEFAULT   ABS LIBBPF_0.5.0@@LIBBPF_0.5.0
-     202: 0000000000000000     0 OBJECT  GLOBAL DEFAULT   ABS LIBBPF_0.6.0@@LIBBPF_0.6.0
-     ...
-The binutils readelf doesn't print out the symbol LIBBPF_* version and llvm-readelf does.
-Such a difference caused libbpf build failure with llvm-readelf.
-
-The proposed fix filters out all ABS symbols as they are not part of the comparison.
-This works for both binutils readelf and llvm-readelf.
-
-Reported-by: Delyan Kratunov <delyank@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220204214355.502108-1-yhs@fb.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- tools/lib/bpf/Makefile |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -147,7 +147,7 @@ GLOBAL_SYM_COUNT = $(shell readelf -s --
- 			   sort -u | wc -l)
- VERSIONED_SYM_COUNT = $(shell readelf --dyn-syms --wide $(OUTPUT)libbpf.so | \
- 			      sed 's/\[.*\]//' | \
--			      awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
-+			      awk '/GLOBAL/ && /DEFAULT/ && !/UND|ABS/ {print $$NF}' | \
- 			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fd768d43e048..cede8ccf19b2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12903,6 +12903,12 @@ F:	drivers/net/dsa/microchip/*
+ F:	include/linux/platform_data/microchip-ksz.h
+ F:	net/dsa/tag_ksz.c
  
- CMD_TARGETS = $(LIB_TARGET) $(PC_FILE)
-@@ -216,7 +216,7 @@ check_abi: $(OUTPUT)libbpf.so $(VERSION_
- 		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
- 		readelf --dyn-syms --wide $(OUTPUT)libbpf.so |		 \
- 		    sed 's/\[.*\]//' |					 \
--		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
-+		    awk '/GLOBAL/ && /DEFAULT/ && !/UND|ABS/ {print $$NF}'|  \
- 		    grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |		 \
- 		    sort -u > $(OUTPUT)libbpf_versioned_syms.tmp; 	 \
- 		diff -u $(OUTPUT)libbpf_global_syms.tmp			 \
-
++MICROCHIP LAN87xx/LAN937x T1 PHY DRIVER
++M:	UNGLinuxDriver@microchip.com
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	drivers/net/phy/microchip_t1.c
++
+ MICROCHIP LAN743X ETHERNET DRIVER
+ M:	Bryan Whitehead <bryan.whitehead@microchip.com>
+ M:	UNGLinuxDriver@microchip.com
+-- 
+2.33.0
 
