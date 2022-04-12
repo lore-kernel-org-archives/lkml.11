@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C8FC352A1
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F7FC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388063AbiDLJVj (ORCPT
+        id S1389058AbiDLJXV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
+        Tue, 12 Apr 2022 05:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353948AbiDLHiB (ORCPT
+        with ESMTP id S1357318AbiDLHj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:38:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D044A3FA;
-        Tue, 12 Apr 2022 00:09:43 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59587245B7;
+        Tue, 12 Apr 2022 00:15:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65040B81895;
-        Tue, 12 Apr 2022 07:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3023C385A5;
-        Tue, 12 Apr 2022 07:09:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E869C61708;
+        Tue, 12 Apr 2022 07:15:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 049E6C385A1;
+        Tue, 12 Apr 2022 07:15:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747380;
-        bh=7wBqRQkm8iDz7yZUpQFEIepvC8UX5wh7fIbjx6WS1j8=;
+        s=korg; t=1649747705;
+        bh=U5BKBINZqkY8YG7da1WWh8GmjHRsCM7kZc6c8O3P0Vk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K3RedlXJwCFMlVKitQf1Acecbgx/pxoKcDcEMLcM4bJFYD/sL3FlmP1vOSCt9ebgg
-         az/DjBgNvUxcGsssSDOuTjR3mWdV/II8gR42if5ZjcnC1CxumJZJVrSEJSo0rbnsUP
-         zkUHQupl69jnTvIJ9jJHpbz86fy0cHu16+4yAMQ4=
+        b=BscrU6n2COYk9Lf8Omsw3TzV45pUc2iBP9uzBLZlHGbmyfCBwr+HvzwXz4XaWXkcU
+         ZTuD/ux09uJ4LK/fURZoLJX2yvRk55J1bJL13aMNx4sw7jRHdRWCmpW9jS/6RFMseI
+         MsWr6dL0gzWAfFw9WjjshdKxJHCbEWsmMeB3a85w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <Alexander.Deucher@amd.com>,
-        Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 057/343] drm/amdgpu: Fix recursive locking warning
-Date:   Tue, 12 Apr 2022 08:27:55 +0200
-Message-Id: <20220412062952.750524080@linuxfoundation.org>
+Subject: [PATCH 5.17 176/343] clk: Enforce that disjoints limits are invalid
+Date:   Tue, 12 Apr 2022 08:29:54 +0200
+Message-Id: <20220412062956.446464118@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -54,136 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 447c7997b62a5115ba4da846dcdee4fc12298a6a ]
+[ Upstream commit 10c46f2ea914202482d19cf80dcc9c321c9ff59b ]
 
-Noticed the below warning while running a pytorch workload on vega10
-GPUs. Change to trylock to avoid conflicts with already held reservation
-locks.
+If we were to have two users of the same clock, doing something like:
 
-[  +0.000003] WARNING: possible recursive locking detected
-[  +0.000003] 5.13.0-kfd-rajneesh #1030 Not tainted
-[  +0.000004] --------------------------------------------
-[  +0.000002] python/4822 is trying to acquire lock:
-[  +0.000004] ffff932cd9a259f8 (reservation_ww_class_mutex){+.+.}-{3:3},
-at: amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
-[  +0.000203]
-              but task is already holding lock:
-[  +0.000003] ffff932cbb7181f8 (reservation_ww_class_mutex){+.+.}-{3:3},
-at: ttm_eu_reserve_buffers+0x270/0x470 [ttm]
-[  +0.000017]
-              other info that might help us debug this:
-[  +0.000002]  Possible unsafe locking scenario:
+clk_set_rate_range(user1, 1000, 2000);
+clk_set_rate_range(user2, 3000, 4000);
 
-[  +0.000003]        CPU0
-[  +0.000002]        ----
-[  +0.000002]   lock(reservation_ww_class_mutex);
-[  +0.000004]   lock(reservation_ww_class_mutex);
-[  +0.000003]
-               *** DEADLOCK ***
+The second call would fail with -EINVAL, preventing from getting in a
+situation where we end up with impossible limits.
 
-[  +0.000002]  May be due to missing lock nesting notation
+However, this is never explicitly checked against and enforced, and
+works by relying on an undocumented behaviour of clk_set_rate().
 
-[  +0.000003] 7 locks held by python/4822:
-[  +0.000003]  #0: ffff932c4ac028d0 (&process->mutex){+.+.}-{3:3}, at:
-kfd_ioctl_map_memory_to_gpu+0x10b/0x320 [amdgpu]
-[  +0.000232]  #1: ffff932c55e830a8 (&info->lock#2){+.+.}-{3:3}, at:
-amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x64/0xf60 [amdgpu]
-[  +0.000241]  #2: ffff932cc45b5e68 (&(*mem)->lock){+.+.}-{3:3}, at:
-amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0xdf/0xf60 [amdgpu]
-[  +0.000236]  #3: ffffb2b35606fd28
-(reservation_ww_class_acquire){+.+.}-{0:0}, at:
-amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x232/0xf60 [amdgpu]
-[  +0.000235]  #4: ffff932cbb7181f8
-(reservation_ww_class_mutex){+.+.}-{3:3}, at:
-ttm_eu_reserve_buffers+0x270/0x470 [ttm]
-[  +0.000015]  #5: ffffffffc045f700 (*(sspp++)){....}-{0:0}, at:
-drm_dev_enter+0x5/0xa0 [drm]
-[  +0.000038]  #6: ffff932c52da7078 (&vm->eviction_lock){+.+.}-{3:3},
-at: amdgpu_vm_bo_update_mapping+0xd5/0x4f0 [amdgpu]
-[  +0.000195]
-              stack backtrace:
-[  +0.000003] CPU: 11 PID: 4822 Comm: python Not tainted
-5.13.0-kfd-rajneesh #1030
-[  +0.000005] Hardware name: GIGABYTE MZ01-CE0-00/MZ01-CE0-00, BIOS F02
-08/29/2018
-[  +0.000003] Call Trace:
-[  +0.000003]  dump_stack+0x6d/0x89
-[  +0.000010]  __lock_acquire+0xb93/0x1a90
-[  +0.000009]  lock_acquire+0x25d/0x2d0
-[  +0.000005]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
-[  +0.000184]  ? lock_is_held_type+0xa2/0x110
-[  +0.000006]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
-[  +0.000184]  __ww_mutex_lock.constprop.17+0xca/0x1060
-[  +0.000007]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
-[  +0.000183]  ? lock_release+0x13f/0x270
-[  +0.000005]  ? lock_is_held_type+0xa2/0x110
-[  +0.000006]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
-[  +0.000183]  amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
-[  +0.000185]  ttm_bo_release+0x4c6/0x580 [ttm]
-[  +0.000010]  amdgpu_bo_unref+0x1a/0x30 [amdgpu]
-[  +0.000183]  amdgpu_vm_free_table+0x76/0xa0 [amdgpu]
-[  +0.000189]  amdgpu_vm_free_pts+0xb8/0xf0 [amdgpu]
-[  +0.000189]  amdgpu_vm_update_ptes+0x411/0x770 [amdgpu]
-[  +0.000191]  amdgpu_vm_bo_update_mapping+0x324/0x4f0 [amdgpu]
-[  +0.000191]  amdgpu_vm_bo_update+0x251/0x610 [amdgpu]
-[  +0.000191]  update_gpuvm_pte+0xcc/0x290 [amdgpu]
-[  +0.000229]  ? amdgpu_vm_bo_map+0xd7/0x130 [amdgpu]
-[  +0.000190]  amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x912/0xf60
-[amdgpu]
-[  +0.000234]  kfd_ioctl_map_memory_to_gpu+0x182/0x320 [amdgpu]
-[  +0.000218]  kfd_ioctl+0x2b9/0x600 [amdgpu]
-[  +0.000216]  ? kfd_ioctl_unmap_memory_from_gpu+0x270/0x270 [amdgpu]
-[  +0.000216]  ? lock_release+0x13f/0x270
-[  +0.000006]  ? __fget_files+0x107/0x1e0
-[  +0.000007]  __x64_sys_ioctl+0x8b/0xd0
-[  +0.000007]  do_syscall_64+0x36/0x70
-[  +0.000004]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  +0.000007] RIP: 0033:0x7fbff90a7317
-[  +0.000004] Code: b3 66 90 48 8b 05 71 4b 2d 00 64 c7 00 26 00 00 00
-48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f
-05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 41 4b 2d 00 f7 d8 64 89 01 48
-[  +0.000005] RSP: 002b:00007fbe301fe648 EFLAGS: 00000246 ORIG_RAX:
-0000000000000010
-[  +0.000006] RAX: ffffffffffffffda RBX: 00007fbcc402d820 RCX:
-00007fbff90a7317
-[  +0.000003] RDX: 00007fbe301fe690 RSI: 00000000c0184b18 RDI:
-0000000000000004
-[  +0.000003] RBP: 00007fbe301fe690 R08: 0000000000000000 R09:
-00007fbcc402d880
-[  +0.000003] R10: 0000000002001000 R11: 0000000000000246 R12:
-00000000c0184b18
-[  +0.000003] R13: 0000000000000004 R14: 00007fbf689593a0 R15:
-00007fbcc402d820
+Indeed, on the first clk_set_rate_range will make sure the current clock
+rate is within the new range, so it will be between 1000 and 2000Hz. On
+the second clk_set_rate_range(), it will consider (rightfully), that our
+current clock is outside of the 3000-4000Hz range, and will call
+clk_core_set_rate_nolock() to set it to 3000Hz.
 
-Cc: Christian König <christian.koenig@amd.com>
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Cc: Alex Deucher <Alexander.Deucher@amd.com>
+clk_core_set_rate_nolock() will then call clk_calc_new_rates() that will
+eventually check that our rate 3000Hz rate is outside the min 3000Hz max
+2000Hz range, will bail out, the error will propagate and we'll
+eventually return -EINVAL.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+This solely relies on the fact that clk_calc_new_rates(), and in
+particular clk_core_determine_round_nolock(), won't modify the new rate
+allowing the error to be reported. That assumption won't be true for all
+drivers, and most importantly we'll break that assumption in a later
+patch.
+
+It can also be argued that we shouldn't even reach the point where we're
+calling clk_core_set_rate_nolock().
+
+Let's make an explicit check for disjoints range before we're doing
+anything.
+
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220225143534.405820-4-maxime@cerno.tech
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_object.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/clk/clk.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-index 5661b82d84d4..dda53fe30975 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-@@ -1303,7 +1303,8 @@ void amdgpu_bo_release_notify(struct ttm_buffer_object *bo)
- 	    !(abo->flags & AMDGPU_GEM_CREATE_VRAM_WIPE_ON_RELEASE))
- 		return;
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 01b64b962e76..2fdfce116087 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -632,6 +632,24 @@ static void clk_core_get_boundaries(struct clk_core *core,
+ 		*max_rate = min(*max_rate, clk_user->max_rate);
+ }
  
--	dma_resv_lock(bo->base.resv, NULL);
-+	if (WARN_ON_ONCE(!dma_resv_trylock(bo->base.resv)))
-+		return;
++static bool clk_core_check_boundaries(struct clk_core *core,
++				      unsigned long min_rate,
++				      unsigned long max_rate)
++{
++	struct clk *user;
++
++	lockdep_assert_held(&prepare_lock);
++
++	if (min_rate > core->max_rate || max_rate < core->min_rate)
++		return false;
++
++	hlist_for_each_entry(user, &core->clks, clks_node)
++		if (min_rate > user->max_rate || max_rate < user->min_rate)
++			return false;
++
++	return true;
++}
++
+ void clk_hw_set_rate_range(struct clk_hw *hw, unsigned long min_rate,
+ 			   unsigned long max_rate)
+ {
+@@ -2348,6 +2366,11 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
+ 	clk->min_rate = min;
+ 	clk->max_rate = max;
  
- 	r = amdgpu_fill_buffer(abo, AMDGPU_POISON, bo->base.resv, &fence);
- 	if (!WARN_ON(r)) {
++	if (!clk_core_check_boundaries(clk->core, min, max)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	rate = clk_core_get_rate_nolock(clk->core);
+ 	if (rate < min || rate > max) {
+ 		/*
+@@ -2376,6 +2399,7 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
+ 		}
+ 	}
+ 
++out:
+ 	if (clk->exclusive_count)
+ 		clk_core_rate_protect(clk->core);
+ 
 -- 
 2.35.1
 
