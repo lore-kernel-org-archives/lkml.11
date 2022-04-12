@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC02EC4708A
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 743E0C38A2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353988AbiDLIKF (ORCPT
+        id S1353109AbiDLIKM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
+        Tue, 12 Apr 2022 04:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353711AbiDLHZw (ORCPT
+        with ESMTP id S1353705AbiDLHZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1791275F5;
-        Tue, 12 Apr 2022 00:03:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C35F2610F;
+        Tue, 12 Apr 2022 00:03:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B4B6B81B4E;
-        Tue, 12 Apr 2022 07:03:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B60DC385A1;
-        Tue, 12 Apr 2022 07:03:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB2860B2B;
+        Tue, 12 Apr 2022 07:03:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F259EC385A1;
+        Tue, 12 Apr 2022 07:03:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747036;
-        bh=r7zwxBmSBYLoVuMUOCzhurkmYQox+oscdpkyavZfQGg=;
+        s=korg; t=1649747033;
+        bh=d99ktAmACl+jsTaV4QjDI+M78GFyfOHnTePoKIlYgB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXyx+lqSZM7NibE6DSK3FpaEjfYFJV1d/9fBtn1X/Uih7Kduk73YojrlGYZgcVScA
-         x0QxyN/G7txZCC8+1bjTrJJDPYJTUR+cNrEBzH/gq9bkDo/0MqZDu+jcc4iVn3s5Js
-         1CcJknzfK7ZkbQ00kbzI/eXVOnCJy1o2UH+F3hS0=
+        b=QKjfjtsyHBX444m/ki5ioFlubnKoFfaL1O3fMTExUztCKs6kWzY7q1+BD9TZ9q5jP
+         pvavxb5Zx1BPcRULnAw9I/mKV+mAtpC8H6cxtzy2MpbDufPwAQ7Oaccdtlijyij4kx
+         LtJRx/TNLmQTHZ+FpmH0w/lQM0Nt9IFVelQCew8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com,
-        Guo Xuenan <guoxuenan@huawei.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Yann Collet <cyan@fb.com>, Chengyang Fan <cy.fan@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 220/285] lz4: fix LZ4_decompress_safe_partial read out of bound
-Date:   Tue, 12 Apr 2022 08:31:17 +0200
-Message-Id: <20220412062950.006962534@linuxfoundation.org>
+        stable@vger.kernel.org, Daejun Park <daejun7.park@samsung.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 202/285] scsi: ufs: ufshpb: Fix a NULL check on list iterator
+Date:   Tue, 12 Apr 2022 08:30:59 +0200
+Message-Id: <20220412062949.490739902@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -55,57 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Xuenan <guoxuenan@huawei.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit eafc0a02391b7b36617b36c97c4b5d6832cf5e24 upstream.
+[ Upstream commit bfb7789bcbd901caead43861461bc8f334c90d3b ]
 
-When partialDecoding, it is EOF if we've either filled the output buffer
-or can't proceed with reading an offset for following match.
+The list iterator is always non-NULL so the check 'if (!rgn)' is always
+false and the dev_err() is never called. Move the check outside the loop
+and determine if 'victim_rgn' is NULL, to fix this bug.
 
-In some extreme corner cases when compressed data is suitably corrupted,
-UAF will occur.  As reported by KASAN [1], LZ4_decompress_safe_partial
-may lead to read out of bound problem during decoding.  lz4 upstream has
-fixed it [2] and this issue has been disscussed here [3] before.
-
-current decompression routine was ported from lz4 v1.8.3, bumping
-lib/lz4 to v1.9.+ is certainly a huge work to be done later, so, we'd
-better fix it first.
-
-[1] https://lore.kernel.org/all/000000000000830d1205cf7f0477@google.com/
-[2] https://github.com/lz4/lz4/commit/c5d6f8a8be3927c0bec91bcc58667a6cfad244ad#
-[3] https://lore.kernel.org/all/CC666AE8-4CA4-4951-B6FB-A2EFDE3AC03B@fb.com/
-
-Link: https://lkml.kernel.org/r/20211111105048.2006070-1-guoxuenan@huawei.com
-Reported-by: syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com
-Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
-Reviewed-by: Nick Terrell <terrelln@fb.com>
-Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc: Yann Collet <cyan@fb.com>
-Cc: Chengyang Fan <cy.fan@huawei.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220320150733.21824-1-xiam0nd.tong@gmail.com
+Fixes: 4b5f49079c52 ("scsi: ufs: ufshpb: L2P map management for HPB read")
+Reviewed-by: Daejun Park <daejun7.park@samsung.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/lz4/lz4_decompress.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/scsi/ufs/ufshpb.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
---- a/lib/lz4/lz4_decompress.c
-+++ b/lib/lz4/lz4_decompress.c
-@@ -271,8 +271,12 @@ static FORCE_INLINE int LZ4_decompress_g
- 			ip += length;
- 			op += length;
+diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
+index ded5ba9b1466..54c3b8f34c0a 100644
+--- a/drivers/scsi/ufs/ufshpb.c
++++ b/drivers/scsi/ufs/ufshpb.c
+@@ -870,12 +870,6 @@ static struct ufshpb_region *ufshpb_victim_lru_info(struct ufshpb_lu *hpb)
+ 	struct ufshpb_region *rgn, *victim_rgn = NULL;
  
--			/* Necessarily EOF, due to parsing restrictions */
--			if (!partialDecoding || (cpy == oend))
-+			/* Necessarily EOF when !partialDecoding.
-+			 * When partialDecoding, it is EOF if we've either
-+			 * filled the output buffer or
-+			 * can't proceed with reading an offset for following match.
-+			 */
-+			if (!partialDecoding || (cpy == oend) || (ip >= (iend - 2)))
- 				break;
- 		} else {
- 			/* may overwrite up to WILDCOPYLENGTH beyond cpy */
+ 	list_for_each_entry(rgn, &lru_info->lh_lru_rgn, list_lru_rgn) {
+-		if (!rgn) {
+-			dev_err(&hpb->sdev_ufs_lu->sdev_dev,
+-				"%s: no region allocated\n",
+-				__func__);
+-			return NULL;
+-		}
+ 		if (ufshpb_check_srgns_issue_state(hpb, rgn))
+ 			continue;
+ 
+@@ -891,6 +885,11 @@ static struct ufshpb_region *ufshpb_victim_lru_info(struct ufshpb_lu *hpb)
+ 		break;
+ 	}
+ 
++	if (!victim_rgn)
++		dev_err(&hpb->sdev_ufs_lu->sdev_dev,
++			"%s: no region allocated\n",
++			__func__);
++
+ 	return victim_rgn;
+ }
+ 
+-- 
+2.35.1
+
 
 
