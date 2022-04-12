@@ -2,173 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB7CC3527D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86B8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386598AbiDLI6n (ORCPT
+        id S1386630AbiDLI6s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
+        Tue, 12 Apr 2022 04:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359802AbiDLHnm (ORCPT
+        with ESMTP id S1356795AbiDLHjW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:43:42 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACB3434AA
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:26:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649748380; x=1681284380;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=G7L8YOlj6LR17aw3DxvsUkt4nUXPEbDep2GdA0mNRfg=;
-  b=HOd4kcWkq2SmJszXndlin+qzdnLKb7iPN6aU34RV/NxnGXhxE82IXarW
-   +TP/aXf0yQUb1WPGku6tDl9/kcAIFsu6l7I0T8HzDH3rHaR9Ql7Ga0gF8
-   9brabcXqBqTSUCCSn+VOTq6borjtCUDVQ/7Dkl948jBvhMuNfUL8nxXai
-   xGpFQvOD6cHvZnzJCcUCy4b1MctoFolxpeohe6Uu2ZdvQ+g+nunuHaNF0
-   k0NYFm5yzmY0ZiCijIBbaPK/hwqNY/f/HTXOSwI6gHFqeRDSdrCdbUTPe
-   FSUlZ5lyLZbFCC0Vzek3wQQwl9CeOW7GcJD8TapQDkh7R5ZdFz+Phjivb
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="348736565"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="348736565"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:26:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="699706997"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2022 00:26:17 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neAum-0002co-Sc;
-        Tue, 12 Apr 2022 07:26:16 +0000
-Date:   Tue, 12 Apr 2022 15:25:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 4/5] drm/solomon: Move device info from ssd130x-i2c to
- the core driver
-Message-ID: <202204121542.aU2BiYXN-lkp@intel.com>
-References: <20220411211243.11121-5-javierm@redhat.com>
+        Tue, 12 Apr 2022 03:39:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FF44A90F;
+        Tue, 12 Apr 2022 00:10:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9DAFB81895;
+        Tue, 12 Apr 2022 07:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 040E3C385A1;
+        Tue, 12 Apr 2022 07:10:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747402;
+        bh=qjaUBTBW20T7UWuTxWW0iMkCQ6k2PxjPtqmtjDEux3E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rPjY24McQugeI9KabaFlSOFZtmjjlsGoh23RydPkfWvlnveMCVFJ5NNDeUxeLLjqa
+         SFzH7cTxN+COJEnOxGBScC3Q9rQEwhs9ouaUmTaAEoYI9JbdNGaJQIO8/yRYpFj/Cv
+         zPcfCD7DspQMxgZ7dbxWGp13CYIBwnib1A/nI9H0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 026/343] ptp: replace snprintf with sysfs_emit
+Date:   Tue, 12 Apr 2022 08:27:24 +0200
+Message-Id: <20220412062951.859246979@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411211243.11121-5-javierm@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-I love your patch! Perhaps something to improve:
+[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
 
-[auto build test WARNING on drm-tip/drm-tip]
-[also build test WARNING on next-20220411]
-[cannot apply to drm/drm-next drm-exynos/exynos-drm-next drm-intel/for-linux-next tegra-drm/drm/tegra/for-next linus/master linux/master v5.18-rc2]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+coccinelle report:
+./drivers/ptp/ptp_sysfs.c:17:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/ptp/ptp_sysfs.c:390:8-16:
+WARNING: use scnprintf or sprintf
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Javier-Martinez-Canillas/drm-solomon-Add-SSD130x-OLED-displays-SPI-support/20220412-051518
-base:   git://anongit.freedesktop.org/drm/drm-tip drm-tip
-config: x86_64-randconfig-a001-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121542.aU2BiYXN-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ac5a07cda8a0f8d4948e6a01d0b3bb6ce9fe7830
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Javier-Martinez-Canillas/drm-solomon-Add-SSD130x-OLED-displays-SPI-support/20220412-051518
-        git checkout ac5a07cda8a0f8d4948e6a01d0b3bb6ce9fe7830
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/solomon/
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/ptp/ptp_sysfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/solomon/ssd130x.c:894:12: warning: cast to smaller integer type 'enum ssd130x_variants' from 'const void *' [-Wvoid-pointer-to-enum-cast]
-           variant = (enum ssd130x_variants)device_get_match_data(dev);
-                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +894 drivers/gpu/drm/solomon/ssd130x.c
-
-   874	
-   875	struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
-   876	{
-   877		struct ssd130x_device *ssd130x;
-   878		enum ssd130x_variants variant;
-   879		struct backlight_device *bl;
-   880		struct drm_device *drm;
-   881		int ret;
-   882	
-   883		ssd130x = devm_drm_dev_alloc(dev, &ssd130x_drm_driver,
-   884					     struct ssd130x_device, drm);
-   885		if (IS_ERR(ssd130x))
-   886			return ERR_PTR(dev_err_probe(dev, PTR_ERR(ssd130x),
-   887						     "Failed to allocate DRM device\n"));
-   888	
-   889		drm = &ssd130x->drm;
-   890	
-   891		ssd130x->dev = dev;
-   892		ssd130x->regmap = regmap;
-   893	
- > 894		variant = (enum ssd130x_variants)device_get_match_data(dev);
-   895	
-   896		if (variant >= NR_SSD130X_VARIANTS)
-   897			return ERR_PTR(dev_err_probe(dev, -EINVAL,
-   898						     "Invalid SSD130x variant\n"));
-   899	
-   900		ssd130x->device_info = &ssd130x_variants[variant];
-   901	
-   902		if (ssd130x->device_info->page_mode_only)
-   903			ssd130x->page_address_mode = 1;
-   904	
-   905		ssd130x_parse_properties(ssd130x);
-   906	
-   907		ret = ssd130x_get_resources(ssd130x);
-   908		if (ret)
-   909			return ERR_PTR(ret);
-   910	
-   911		bl = devm_backlight_device_register(dev, dev_name(dev), dev, ssd130x,
-   912						    &ssd130xfb_bl_ops, NULL);
-   913		if (IS_ERR(bl))
-   914			return ERR_PTR(dev_err_probe(dev, PTR_ERR(bl),
-   915						     "Unable to register backlight device\n"));
-   916	
-   917		bl->props.brightness = ssd130x->contrast;
-   918		bl->props.max_brightness = MAX_CONTRAST;
-   919		ssd130x->bl_dev = bl;
-   920	
-   921		ret = ssd130x_init_modeset(ssd130x);
-   922		if (ret)
-   923			return ERR_PTR(ret);
-   924	
-   925		ret = drm_dev_register(drm, 0);
-   926		if (ret)
-   927			return ERR_PTR(dev_err_probe(dev, ret, "DRM device register failed\n"));
-   928	
-   929		drm_fbdev_generic_setup(drm, 0);
-   930	
-   931		return ssd130x;
-   932	}
-   933	EXPORT_SYMBOL_GPL(ssd130x_probe);
-   934	
-
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index 41b92dc2f011..9233bfedeb17 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -14,7 +14,7 @@ static ssize_t clock_name_show(struct device *dev,
+ 			       struct device_attribute *attr, char *page)
+ {
+ 	struct ptp_clock *ptp = dev_get_drvdata(dev);
+-	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
++	return sysfs_emit(page, "%s\n", ptp->info->name);
+ }
+ static DEVICE_ATTR_RO(clock_name);
+ 
+@@ -387,7 +387,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
+ 
+ 	mutex_unlock(&ptp->pincfg_mux);
+ 
+-	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
++	return sysfs_emit(page, "%u %u\n", func, chan);
+ }
+ 
+ static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
+
+
