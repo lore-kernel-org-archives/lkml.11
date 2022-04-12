@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD06C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6316C47081
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353197AbiDLHHr (ORCPT
+        id S1353216AbiDLHH5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
+        Tue, 12 Apr 2022 03:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351800AbiDLGy3 (ORCPT
+        with ESMTP id S1351756AbiDLGyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:29 -0400
+        Tue, 12 Apr 2022 02:54:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60111218C;
-        Mon, 11 Apr 2022 23:44:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58CB138BFD;
+        Mon, 11 Apr 2022 23:43:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB345B81B29;
-        Tue, 12 Apr 2022 06:44:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53919C385A6;
-        Tue, 12 Apr 2022 06:44:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B53A7B818C8;
+        Tue, 12 Apr 2022 06:43:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 088E6C385A1;
+        Tue, 12 Apr 2022 06:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745843;
-        bh=922lKd+qlzjuiLKu5Mt5JAbArdtj5nnXQTonpSicBFQ=;
+        s=korg; t=1649745832;
+        bh=qieKbnNZydAiQCAX6EL2KZDMxVDRgcQ+avP/HDR/zJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPVEHIDgI8I1kyCzNUH5zBHr7qclZfFiLf2ujiIMUjEE3LX3aM/Np8qNqooHvRITX
-         A2ZuUSjX1WcrVrTOlWPG2ekZvXsGX5xw2SsRvhOHS15skLH/Yg0EA3OA3FAMRuAb+5
-         dk4QYeL342NoF33iblHnWTjUs0jttg839KpwQqmI=
+        b=2KCjXVNAnyvKL324GvaDrJN98c8vrS9hmG4UbFczPxlqzM2EitMNzD2IzHvx1vgye
+         Jyrb9IUTFR9XTO3dk3uIDBGjP3feUX0TAOJjGXJn2+7/jcO3kfdmL9OMyumNrAhoOs
+         sYfanA20zTNb2t4zOvfaCcskJ/4u9FETGdY+2/UM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 069/277] scsi: pm8001: Fix task leak in pm8001_send_abort_all()
-Date:   Tue, 12 Apr 2022 08:27:52 +0200
-Message-Id: <20220412062944.045222841@linuxfoundation.org>
+Subject: [PATCH 5.15 065/277] drm/amdkfd: make CRAT table missing message informational only
+Date:   Tue, 12 Apr 2022 08:27:48 +0200
+Message-Id: <20220412062943.930625241@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,58 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit f90a74892f3acf0cdec5844e90fc8686ca13e7d7 ]
+[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
 
-In pm8001_send_abort_all(), make sure to free the allocated sas task
-if pm8001_tag_alloc() or pm8001_mpi_build_cmd() fail.
+The driver has a fallback so make the message informational
+rather than a warning. The driver has a fallback if the
+Component Resource Association Table (CRAT) is missing, so
+make this informational now.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-21-damien.lemoal@opensource.wdc.com
-Reviewed-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 9e6ffc37d6b0..2adf1435a187 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1767,7 +1767,6 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
- 	}
- 
- 	task = sas_alloc_slow_task(GFP_ATOMIC);
--
- 	if (!task) {
- 		pm8001_dbg(pm8001_ha, FAIL, "cannot allocate task\n");
- 		return;
-@@ -1776,8 +1775,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
- 	task->task_done = pm8001_task_done;
- 
- 	res = pm8001_tag_alloc(pm8001_ha, &ccb_tag);
--	if (res)
-+	if (res) {
-+		sas_free_task(task);
- 		return;
-+	}
- 
- 	ccb = &pm8001_ha->ccb_info[ccb_tag];
- 	ccb->device = pm8001_ha_dev;
-@@ -1794,8 +1795,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
- 
- 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &task_abort,
- 			sizeof(task_abort), 0);
--	if (ret)
-+	if (ret) {
-+		sas_free_task(task);
- 		pm8001_tag_free(pm8001_ha, ccb_tag);
-+	}
- 
- }
- 
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+index c33d689f29e8..e574aa32a111 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -1563,7 +1563,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
+ 	/* Fetch the CRAT table from ACPI */
+ 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
+ 	if (status == AE_NOT_FOUND) {
+-		pr_warn("CRAT table not found\n");
++		pr_info("CRAT table not found\n");
+ 		return -ENODATA;
+ 	} else if (ACPI_FAILURE(status)) {
+ 		const char *err = acpi_format_exception(status);
 -- 
 2.35.1
 
