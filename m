@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 658FEC3527C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E56CC35294
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381285AbiDLIXW (ORCPT
+        id S1379592AbiDLIUk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        Tue, 12 Apr 2022 04:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353715AbiDLHZw (ORCPT
+        with ESMTP id S1354132AbiDLH0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:52 -0400
+        Tue, 12 Apr 2022 03:26:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897B4E80;
-        Tue, 12 Apr 2022 00:04:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F05D44A14;
+        Tue, 12 Apr 2022 00:05:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29CEE60B65;
-        Tue, 12 Apr 2022 07:04:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3038AC385A1;
-        Tue, 12 Apr 2022 07:04:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1AAF616B2;
+        Tue, 12 Apr 2022 07:05:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF3CC385CA;
+        Tue, 12 Apr 2022 07:05:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747044;
-        bh=fvIHxnnFvwmIhSD9YWqBPMFEOBPHcD8Axfxa+wT9Qgk=;
+        s=korg; t=1649747158;
+        bh=2q29pr8mEm+erOMqO2aLbkxAV4h0guqZaTZONc0j35o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xZQz4gWGOexgtYZsqsuye/c2nrnOBPdV6MUYkeztifpju9f1R/imNRghv1rCgqfBA
-         r9IRpphGi2i6ShHHBcrJyx7UXFeOsik2qBQoFHjoUBLpxQTeBciZ147u89DUlCdLxF
-         F5T+ED+/OmHZPD5qysM2phU2ryM4v20sme0uaV6s=
+        b=E42xJuCbNWO2aLHVxvg91TuMFf2VcIK9T5elNhH3dFUK69xWnViIilAORcqnyYb0o
+         xh1AhmxUVaBlli1ZmUpKhfehSG0M/STzmZsyb+FEXoCigwxmVb8OvgALy+hYxYhlFJ
+         yZdoP7X7rsp6/K8DA2JJom1zPfEnxZdLA3PHq0O8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Michal Hocko <mhocko@suse.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 223/285] mm/mempolicy: fix mpol_new leak in shared_policy_replace
-Date:   Tue, 12 Apr 2022 08:31:20 +0200
-Message-Id: <20220412062950.093125745@linuxfoundation.org>
+        stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Subject: [PATCH 5.16 264/285] bpf: Make remote_port field in struct bpf_sk_lookup 16-bit wide
+Date:   Tue, 12 Apr 2022 08:32:01 +0200
+Message-Id: <20220412062951.279798638@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -53,51 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Jakub Sitnicki <jakub@cloudflare.com>
 
-commit 4ad099559b00ac01c3726e5c95dc3108ef47d03e upstream.
+commit 9a69e2b385f443f244a7e8b8bcafe5ccfb0866b4 upstream.
 
-If mpol_new is allocated but not used in restart loop, mpol_new will be
-freed via mpol_put before returning to the caller.  But refcnt is not
-initialized yet, so mpol_put could not do the right things and might
-leak the unused mpol_new.  This would happen if mempolicy was updated on
-the shared shmem file while the sp->lock has been dropped during the
-memory allocation.
+remote_port is another case of a BPF context field documented as a 32-bit
+value in network byte order for which the BPF context access converter
+generates a load of a zero-padded 16-bit integer in network byte order.
 
-This issue could be triggered easily with the below code snippet if
-there are many processes doing the below work at the same time:
+First such case was dst_port in bpf_sock which got addressed in commit
+4421a582718a ("bpf: Make dst_port field in struct bpf_sock 16-bit wide").
 
-  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
-  shm = shmat(shmid, 0, 0);
-  loop many times {
-    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
-    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
-          maxnode, 0);
-  }
+Loading 4-bytes from the remote_port offset and converting the value with
+bpf_ntohl() leads to surprising results, as the expected value is shifted
+by 16 bits.
 
-Link: https://lkml.kernel.org/r/20220329111416.27954-1-linmiaohe@huawei.com
-Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: <stable@vger.kernel.org>	[3.8]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reduce the confusion by splitting the field in two - a 16-bit field holding
+a big-endian integer, and a 16-bit zero-padding anonymous field that
+follows it.
+
+Suggested-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220209184333.654927-2-jakub@cloudflare.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mempolicy.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/uapi/linux/bpf.h |    3 ++-
+ net/bpf/test_run.c       |    4 ++--
+ net/core/filter.c        |    3 ++-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -2653,6 +2653,7 @@ alloc_new:
- 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
- 	if (!mpol_new)
- 		goto err_out;
-+	atomic_set(&mpol_new->refcnt, 1);
- 	goto restart;
- }
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -6293,7 +6293,8 @@ struct bpf_sk_lookup {
+ 	__u32 protocol;		/* IP protocol (IPPROTO_TCP, IPPROTO_UDP) */
+ 	__u32 remote_ip4;	/* Network byte order */
+ 	__u32 remote_ip6[4];	/* Network byte order */
+-	__u32 remote_port;	/* Network byte order */
++	__be16 remote_port;	/* Network byte order */
++	__u16 :16;		/* Zero padding */
+ 	__u32 local_ip4;	/* Network byte order */
+ 	__u32 local_ip6[4];	/* Network byte order */
+ 	__u32 local_port;	/* Host byte order */
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -960,7 +960,7 @@ int bpf_prog_test_run_sk_lookup(struct b
+ 	if (!range_is_zero(user_ctx, offsetofend(typeof(*user_ctx), local_port), sizeof(*user_ctx)))
+ 		goto out;
  
+-	if (user_ctx->local_port > U16_MAX || user_ctx->remote_port > U16_MAX) {
++	if (user_ctx->local_port > U16_MAX) {
+ 		ret = -ERANGE;
+ 		goto out;
+ 	}
+@@ -968,7 +968,7 @@ int bpf_prog_test_run_sk_lookup(struct b
+ 	ctx.family = (u16)user_ctx->family;
+ 	ctx.protocol = (u16)user_ctx->protocol;
+ 	ctx.dport = (u16)user_ctx->local_port;
+-	ctx.sport = (__force __be16)user_ctx->remote_port;
++	ctx.sport = user_ctx->remote_port;
+ 
+ 	switch (ctx.family) {
+ 	case AF_INET:
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -10563,7 +10563,8 @@ static bool sk_lookup_is_valid_access(in
+ 	case bpf_ctx_range(struct bpf_sk_lookup, local_ip4):
+ 	case bpf_ctx_range_till(struct bpf_sk_lookup, remote_ip6[0], remote_ip6[3]):
+ 	case bpf_ctx_range_till(struct bpf_sk_lookup, local_ip6[0], local_ip6[3]):
+-	case bpf_ctx_range(struct bpf_sk_lookup, remote_port):
++	case offsetof(struct bpf_sk_lookup, remote_port) ...
++	     offsetof(struct bpf_sk_lookup, local_ip4) - 1:
+ 	case bpf_ctx_range(struct bpf_sk_lookup, local_port):
+ 		bpf_ctx_record_field_size(info, sizeof(__u32));
+ 		return bpf_ctx_narrow_access_ok(off, size, sizeof(__u32));
 
 
