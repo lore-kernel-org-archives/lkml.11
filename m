@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DDCC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E2DC46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377620AbiDLHuy (ORCPT
+        id S1377645AbiDLHvE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        Tue, 12 Apr 2022 03:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348715AbiDLHWL (ORCPT
+        with ESMTP id S1351976AbiDLHXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:22:11 -0400
+        Tue, 12 Apr 2022 03:23:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3F42CE05;
-        Mon, 11 Apr 2022 23:59:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07582CE35;
+        Mon, 11 Apr 2022 23:59:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E34EB60B2E;
-        Tue, 12 Apr 2022 06:59:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2EA7C385A1;
-        Tue, 12 Apr 2022 06:59:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE151615B9;
+        Tue, 12 Apr 2022 06:59:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB481C385A1;
+        Tue, 12 Apr 2022 06:59:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746787;
-        bh=Rsjvxg+k8r2vza09ZjsYYA3qoPxRWtfGsNYwNg5EE+M=;
+        s=korg; t=1649746790;
+        bh=JyGYJOthK6nmcElE9g3HqhMrgYpXY4Choqn2XsHK3f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=039ZQmVIVwbnqe4Q5/sE6w0lnR/wdLCxXRNSuYc+93ANbHfef1RCqnhnj5jhNr1c1
-         q0W71SS4LJIEkXtcPqDFuG+/E9EM9PDv+KylPG0sYGl/6cIGBcWnjj+KG5d9aRuufa
-         egjVG5np+Hx9oU4RYcnEn1ALuuJW5ZMGGWGF/0Cc=
+        b=r/TYlGwqn2DnVRvXie1TSvwnC0n3W36HR/WZ0Y46zWKJxy0hRH9RuBIDja3vAoejS
+         dktueQ1c5U/eaFmMy9KLDrRrCzccGg/7FUmvpKRvXc1qsEGsA1W0H0+4Dj74kHd+im
+         BzyoOKbd1oezSJ4Pk2CendsqB0WMYrtvlPgOpha4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
         Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 131/285] clk: ti: Preserve node in ti_dt_clocks_register()
-Date:   Tue, 12 Apr 2022 08:29:48 +0200
-Message-Id: <20220412062947.446044442@linuxfoundation.org>
+Subject: [PATCH 5.16 132/285] clk: Enforce that disjoints limits are invalid
+Date:   Tue, 12 Apr 2022 08:29:49 +0200
+Message-Id: <20220412062947.476367506@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,54 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 80864594ff2ad002e2755daf97d46ff0c86faf1f ]
+[ Upstream commit 10c46f2ea914202482d19cf80dcc9c321c9ff59b ]
 
-In preparation for making use of the clock-output-names, we want to
-keep node around in ti_dt_clocks_register().
+If we were to have two users of the same clock, doing something like:
 
-This change should not needed as a fix currently.
+clk_set_rate_range(user1, 1000, 2000);
+clk_set_rate_range(user2, 3000, 4000);
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220204071449.16762-3-tony@atomide.com
+The second call would fail with -EINVAL, preventing from getting in a
+situation where we end up with impossible limits.
+
+However, this is never explicitly checked against and enforced, and
+works by relying on an undocumented behaviour of clk_set_rate().
+
+Indeed, on the first clk_set_rate_range will make sure the current clock
+rate is within the new range, so it will be between 1000 and 2000Hz. On
+the second clk_set_rate_range(), it will consider (rightfully), that our
+current clock is outside of the 3000-4000Hz range, and will call
+clk_core_set_rate_nolock() to set it to 3000Hz.
+
+clk_core_set_rate_nolock() will then call clk_calc_new_rates() that will
+eventually check that our rate 3000Hz rate is outside the min 3000Hz max
+2000Hz range, will bail out, the error will propagate and we'll
+eventually return -EINVAL.
+
+This solely relies on the fact that clk_calc_new_rates(), and in
+particular clk_core_determine_round_nolock(), won't modify the new rate
+allowing the error to be reported. That assumption won't be true for all
+drivers, and most importantly we'll break that assumption in a later
+patch.
+
+It can also be argued that we shouldn't even reach the point where we're
+calling clk_core_set_rate_nolock().
+
+Let's make an explicit check for disjoints range before we're doing
+anything.
+
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220225143534.405820-4-maxime@cerno.tech
 Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/ti/clk.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/clk/clk.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/clk/ti/clk.c b/drivers/clk/ti/clk.c
-index 3da33c786d77..29eafab4353e 100644
---- a/drivers/clk/ti/clk.c
-+++ b/drivers/clk/ti/clk.c
-@@ -131,7 +131,7 @@ int ti_clk_setup_ll_ops(struct ti_clk_ll_ops *ops)
- void __init ti_dt_clocks_register(struct ti_dt_clk oclks[])
- {
- 	struct ti_dt_clk *c;
--	struct device_node *node, *parent;
-+	struct device_node *node, *parent, *child;
- 	struct clk *clk;
- 	struct of_phandle_args clkspec;
- 	char buf[64];
-@@ -171,10 +171,13 @@ void __init ti_dt_clocks_register(struct ti_dt_clk oclks[])
- 		node = of_find_node_by_name(NULL, buf);
- 		if (num_args && compat_mode) {
- 			parent = node;
--			node = of_get_child_by_name(parent, "clock");
--			if (!node)
--				node = of_get_child_by_name(parent, "clk");
--			of_node_put(parent);
-+			child = of_get_child_by_name(parent, "clock");
-+			if (!child)
-+				child = of_get_child_by_name(parent, "clk");
-+			if (child) {
-+				of_node_put(parent);
-+				node = child;
-+			}
- 		}
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 2c5db2df9d42..aaf2793ef638 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -631,6 +631,24 @@ static void clk_core_get_boundaries(struct clk_core *core,
+ 		*max_rate = min(*max_rate, clk_user->max_rate);
+ }
  
- 		clkspec.np = node;
++static bool clk_core_check_boundaries(struct clk_core *core,
++				      unsigned long min_rate,
++				      unsigned long max_rate)
++{
++	struct clk *user;
++
++	lockdep_assert_held(&prepare_lock);
++
++	if (min_rate > core->max_rate || max_rate < core->min_rate)
++		return false;
++
++	hlist_for_each_entry(user, &core->clks, clks_node)
++		if (min_rate > user->max_rate || max_rate < user->min_rate)
++			return false;
++
++	return true;
++}
++
+ void clk_hw_set_rate_range(struct clk_hw *hw, unsigned long min_rate,
+ 			   unsigned long max_rate)
+ {
+@@ -2347,6 +2365,11 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
+ 	clk->min_rate = min;
+ 	clk->max_rate = max;
+ 
++	if (!clk_core_check_boundaries(clk->core, min, max)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	rate = clk_core_get_rate_nolock(clk->core);
+ 	if (rate < min || rate > max) {
+ 		/*
+@@ -2375,6 +2398,7 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
+ 		}
+ 	}
+ 
++out:
+ 	if (clk->exclusive_count)
+ 		clk_core_rate_protect(clk->core);
+ 
 -- 
 2.35.1
 
