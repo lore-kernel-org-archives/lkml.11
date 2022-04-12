@@ -2,79 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E326C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0629DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355462AbiDLNsq (ORCPT
+        id S1356265AbiDLNtM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
+        Tue, 12 Apr 2022 09:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351841AbiDLNsn (ORCPT
+        with ESMTP id S1356228AbiDLNtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:48:43 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8FE53E0E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:46:25 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id m132so3900870ybm.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:46:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OgwLkfwtGf8/loBEqnh01cIKZgA1erKp1D0/s+cv76Q=;
-        b=QTTouREbF51x1D/wPkA2j0JPBO8onK8rDVHUSf3JIZoaCuEAQNtYbnxTUCo2i3j3xc
-         CPYuz25QADgIqCpbx+yj2z0UuClgDLIalj53ViDrStnIN2neUwEtv5wRLZ3K0GmA0659
-         q41/3oqIrYFuaKFNz2BlFZ4WS299jRStkJqs3c01dSuIl0rY+iYBrqXtkVyCpX7ad3wu
-         NEflxlzMQLTl0tUBe2b65GP3FPHUXtu8yRC7dAghkcP5Gqad2M4kplH0NGBtYY4BLF0/
-         d3l0WItEJ2v8IaQa8oFnLcaYylSudwzGLP040s5+D9UYrUSS3BcEnmWS0UZqlziIqo62
-         Zj5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OgwLkfwtGf8/loBEqnh01cIKZgA1erKp1D0/s+cv76Q=;
-        b=PjTWbvHbzOKqPkzfI/KafUGeSDKJUGPmiAf5Cmx5sdYqf+FDwY4yR0+ScBn9anFHLe
-         R/Leq13OqcoBI8MSjC+J+WVBLos7ffraEIE2qkD9gaAKm7ZfA3F9YR6OGu6RYFQwTOO6
-         h30rPCUVsx6fJCvEt0ManbFBHHXCywI1KqABNMXeuHwL7qjyJ1l6xmIxapyLuCwupkL+
-         iGTbqvAL/qyToExDJe+h826lbXzRRvvFAnzF3ksPrmUHcxQC+SQLacQQ08Ez1+FyToCY
-         XTFR+hN7r7nQ1OcZzlH5iQGvWHZL9NE/ztYXRXgXqYRIHU3xMH2niero8meBZAHOI8UJ
-         c6iw==
-X-Gm-Message-State: AOAM530bmFQBrxBEmAZgoB4n1ZAmCr1P2ClzJCeTgHxXAkoGvp+INB6L
-        nWaocdUVOBzWXcDtZ2gK4CFplUNs0vn/HF4qH+UW/A==
-X-Google-Smtp-Source: ABdhPJxvBXLqUyuGpr5OcOlOD3eldCLItE3Y8ZEGJvE6Msor5ApYtcUhRNATWrsqKELftLsynbTXgcw/ZT8CT8LDXzk=
-X-Received: by 2002:a25:3d02:0:b0:63c:a59b:8246 with SMTP id
- k2-20020a253d02000000b0063ca59b8246mr27665505yba.369.1649771185066; Tue, 12
- Apr 2022 06:46:25 -0700 (PDT)
+        Tue, 12 Apr 2022 09:49:06 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDB354BDE;
+        Tue, 12 Apr 2022 06:46:48 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kd6NP250DzBrX8;
+        Tue, 12 Apr 2022 21:42:29 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 21:46:46 +0800
+Received: from [10.174.176.52] (10.174.176.52) by
+ kwepemm600015.china.huawei.com (7.193.23.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 21:46:45 +0800
+Message-ID: <4a8e21fb-d8bf-5428-67e5-41c47529e641@huawei.com>
+Date:   Tue, 12 Apr 2022 21:46:44 +0800
 MIME-Version: 1.0
-References: <20220412085305.2533030-1-lv.ruyi@zte.com.cn>
-In-Reply-To: <20220412085305.2533030-1-lv.ruyi@zte.com.cn>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 12 Apr 2022 15:46:14 +0200
-Message-ID: <CACRpkdYf7BRcB_PT4VUhrUZX2OTMzaKCtoJHuHdrWrKGjaz-Yg@mail.gmail.com>
-Subject: Re: [PATCH] mfd: fix error check return value of platform_get_irq()
-To:     cgel.zte@gmail.com
-Cc:     lee.jones@linaro.org, gremlin@gremlin.it,
-        gregkh@linuxfoundation.org, mad_soft@inbox.ru,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH -next 1/2] nfs: nfs{,4}_file_flush should consume
+ writeback error
+To:     Trond Myklebust <trondmy@hammerspace.com>,
+        "anna@kernel.org" <anna@kernel.org>,
+        "smayhew@redhat.com" <smayhew@redhat.com>
+CC:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "liuyongqiang13@huawei.com" <liuyongqiang13@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "yi.zhang@huawei.com" <yi.zhang@huawei.com>,
+        "zhangxiaoxu5@huawei.com" <zhangxiaoxu5@huawei.com>,
+        <smayhew@redhat.com>
+References: <20220305124636.2002383-1-chenxiaosong2@huawei.com>
+ <20220305124636.2002383-2-chenxiaosong2@huawei.com>
+ <ca81e90788eabbf6b5df5db7ea407199a6a3aa04.camel@hammerspace.com>
+ <5666cb64-c9e4-0549-6ddb-cfc877c9c071@huawei.com>
+ <eab4bbb565a50bd09c2dbd3522177237fde2fad9.camel@hammerspace.com>
+ <037054f5ac2cd13e59db14b12f4ab430f1ddef5d.camel@hammerspace.com>
+From:   "chenxiaosong (A)" <chenxiaosong2@huawei.com>
+In-Reply-To: <037054f5ac2cd13e59db14b12f4ab430f1ddef5d.camel@hammerspace.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.52]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:53 AM <cgel.zte@gmail.com> wrote:
+在 2022/3/6 23:08, Trond Myklebust 写道:
+> 
+> Just to clarify a little.
+> 
+> I don't see a need to consume the writeback errors on close(), unless
+> other filesystems do the same. If the intention is that fsync() should
+> see _all_ errors that haven't already been seen, then NFS should follow
+> the same semantics as all the other filesystems.
+> 
 
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
->
-> platform_get_irq() return negative value on failure, so null check of
-> irq is incorrect. Fix it by comparing whether it is less than zero.
->
-> Fixes: dcc21cc09e3c ("mfd: Add driver for Atmel Microcontroller on iPaq h3xxx")
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Other filesystem will _not_ clear writeback error on close().
+And other filesystem will _not_ clear writeback error on async write() too.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Other filesystem _only_ clear writeback error on fsync() or sync write().
 
-Yours,
-Linus Walleij
+Should NFS follow the same semantics as all the other filesystems?
