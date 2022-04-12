@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3588C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F66DC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351788AbiDLH15 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
+        id S237757AbiDLH2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351690AbiDLHMv (ORCPT
+        with ESMTP id S1351755AbiDLHMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:51 -0400
+        Tue, 12 Apr 2022 03:12:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4DF15A18;
-        Mon, 11 Apr 2022 23:51:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEE917AAB;
+        Mon, 11 Apr 2022 23:52:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38B5C6146F;
-        Tue, 12 Apr 2022 06:51:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44014C385A1;
-        Tue, 12 Apr 2022 06:51:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACD4A61045;
+        Tue, 12 Apr 2022 06:52:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9C81C385A6;
+        Tue, 12 Apr 2022 06:52:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746303;
-        bh=MIJOt/rCjVZ1I/G8JnoYtBGZqGnfCfzujr8/xisSegw=;
+        s=korg; t=1649746334;
+        bh=qVZQZO1froVUTZ6TwlksDchw3cHLrw0uS/UZVNIs+5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hqZyjym/ECeHkbtYHhYSCvJls3XNxYOdj/GCseQ/4UNNwlcdQbqQS+yXfkFWSRfRi
-         +Z7qDAeZ8J/qyIfX51eQLmuW1r2PJX7RRplIFww1iwXUsDMsDtHWo7ngHXsNmE0J6u
-         /O8+VHIHQ4nlegyg2e0y1lD+VYtWg8QG/gV25E50=
+        b=YM7rCiqBaAo5MMHhBIp2pXescf6KKq1lNp7Fj8Smnd0J23+jbJO7gwHZzfUn5LMmq
+         wcTHwKg/xTbK1gw39Zs7KUIRtGHjR/1rknkuuR13Is7cbR8waOwWPCJSRCjhzLNSPO
+         G6v+ygLSgRK0vmC0vA9nFhiozdxihnaVcY447tgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 5.15 235/277] perf: qcom_l2_pmu: fix an incorrect NULL check on list iterator
-Date:   Tue, 12 Apr 2022 08:30:38 +0200
-Message-Id: <20220412062948.845383567@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.15 245/277] drm/nouveau/pmu: Add missing callbacks for Tegra devices
+Date:   Tue, 12 Apr 2022 08:30:48 +0200
+Message-Id: <20220412062949.132045062@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,53 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Karol Herbst <kherbst@redhat.com>
 
-commit 2012a9e279013933885983cbe0a5fe828052563b upstream.
+commit 38d4e5cf5b08798f093374e53c2f4609d5382dd5 upstream.
 
-The bug is here:
-	return cluster;
+Fixes a crash booting on those platforms with nouveau.
 
-The list iterator value 'cluster' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-is found.
-
-To fix the bug, return 'cluster' when found, otherwise return NULL.
-
-Cc: stable@vger.kernel.org
-Fixes: 21bdbb7102ed ("perf: add qcom l2 cache perf events driver")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327055733.4070-1-xiam0nd.tong@gmail.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 4cdd2450bf73 ("drm/nouveau/pmu/gm200-: use alternate falcon reset sequence")
+Cc: Ben Skeggs <bskeggs@redhat.com>
+Cc: Karol Herbst <kherbst@redhat.com>
+Cc: dri-devel@lists.freedesktop.org
+Cc: nouveau@lists.freedesktop.org
+Cc: <stable@vger.kernel.org> # v5.17+
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220322124800.2605463-1-kherbst@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/perf/qcom_l2_pmu.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c |    1 +
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c |    2 +-
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c |    1 +
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h  |    1 +
+ 4 files changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/perf/qcom_l2_pmu.c
-+++ b/drivers/perf/qcom_l2_pmu.c
-@@ -736,7 +736,7 @@ static struct cluster_pmu *l2_cache_asso
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
+@@ -216,6 +216,7 @@ gm20b_pmu = {
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+ 	.initmsg = gm20b_pmu_initmsg,
++	.reset = gf100_pmu_reset,
+ };
+ 
+ #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
+@@ -23,7 +23,7 @@
+  */
+ #include "priv.h"
+ 
+-static void
++void
+ gp102_pmu_reset(struct nvkm_pmu *pmu)
  {
- 	u64 mpidr;
- 	int cpu_cluster_id;
--	struct cluster_pmu *cluster = NULL;
-+	struct cluster_pmu *cluster;
+ 	struct nvkm_device *device = pmu->subdev.device;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
+@@ -83,6 +83,7 @@ gp10b_pmu = {
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+ 	.initmsg = gm20b_pmu_initmsg,
++	.reset = gp102_pmu_reset,
+ };
  
- 	/*
- 	 * This assumes that the cluster_id is in MPIDR[aff1] for
-@@ -758,10 +758,10 @@ static struct cluster_pmu *l2_cache_asso
- 			 cluster->cluster_id);
- 		cpumask_set_cpu(cpu, &cluster->cluster_cpus);
- 		*per_cpu_ptr(l2cache_pmu->pmu_cluster, cpu) = cluster;
--		break;
-+		return cluster;
- 	}
+ #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
+@@ -41,6 +41,7 @@ int gt215_pmu_send(struct nvkm_pmu *, u3
  
--	return cluster;
-+	return NULL;
- }
+ bool gf100_pmu_enabled(struct nvkm_pmu *);
+ void gf100_pmu_reset(struct nvkm_pmu *);
++void gp102_pmu_reset(struct nvkm_pmu *pmu);
  
- static int l2cache_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
+ void gk110_pmu_pgob(struct nvkm_pmu *, bool);
+ 
 
 
