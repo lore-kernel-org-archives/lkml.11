@@ -2,113 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A03C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F957C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358602AbiDLSI0 (ORCPT
+        id S1358600AbiDLSI7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 14:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
+        Tue, 12 Apr 2022 14:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358593AbiDLSIX (ORCPT
+        with ESMTP id S239431AbiDLSI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 14:08:23 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6AC52E081
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:06:04 -0700 (PDT)
+        Tue, 12 Apr 2022 14:08:56 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E85E4CD5C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:06:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649786764; x=1681322764;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=z35X25eVpVtyKeSD2yf5lglI8oGresHmsF/zKzRONXQ=;
-  b=fpO9o/LABbUDHzSgWORoOL3UCPJ9ValPVJKuERL37+KXPGi6mMzaknyw
-   Ah28wIlBU4EdxVWlqv0gnCer5CNO2sCjljD2X2skBQ4NxGB7HwseHebCa
-   Gt5JAiFcrPs8IEnHkrjZFFPyBVmXktchLOX+Q9h9prorIOF5N/f8Hx4sO
-   utzX0cKp4s87YuYixUmomq1TyDW+qe4JnODBZ+yxE6m863FS0ptPEwWji
-   7HGzerQ97ASP/cba0JZ3oqDdj6mv2P5Hr99pjrO3VYWRe+cQPR/0UtENS
-   3edxKNAwjQKdoA3JChoObjMAJ7h6bolmYRc/8yLSw/y+DYeukKeSFN+QC
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242403441"
+  t=1649786798; x=1681322798;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IeaSKSuXPhVpXFM/OGOekdHqEQjfF86SwDcNvu0ysGk=;
+  b=nggviThdHYwy2EYrznEuH+LirmSCGdvzQWuh9LdWXX2dDajsy+lUNYgS
+   kMErNyHoIR90U0JLjDvRdHVl5G3CzUxx6Y5u6/51M7aY89H8YebASj/+6
+   yYW+pMgyy2N0je3SZkWwG8mLzBwIw2/8XMVUpvYostnb2xM34WYyvddVK
+   D98cpNkUWaz4Jfc1UJb4As1/T5iBSi4ATs8c1brkvwAKex20liBxqvuIt
+   Tnn2lPXjKmhf4BvfwZeZHT7yMHsC37kcuync3BvPHqWi+4O6kE7howvqY
+   3Nc7FEvGYuVHkIcVEUu2h8FQp3VIFMb40OQMdwPNKeM1gbNKsQT/lydLf
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="244347985"
 X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="242403441"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:01:09 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="244347985"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 10:57:25 -0700
 X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="526155168"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 12 Apr 2022 11:01:08 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neKp9-00032B-AC;
-        Tue, 12 Apr 2022 18:01:07 +0000
-Date:   Wed, 13 Apr 2022 02:00:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bart Van Assche <bvanassche@acm.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [bvanassche:ufs-for-next 29/29]
- drivers/ufs/host/tc-dwc-g210-pltfrm.c:36:34: warning: unused variable
- 'tc_dwc_g210_pltfm_match'
-Message-ID: <202204130103.bxPsWXGw-lkp@intel.com>
+   d="scan'208";a="724563522"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 10:57:23 -0700
+Date:   Tue, 12 Apr 2022 10:59:17 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Bruno Moreira-Guedes <codeagain@codeagain.dev>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev,
+        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
+Subject: Re: [PATCH v2 1/3] staging: vme: Adjusted VME_USER in Kconfig
+Message-ID: <20220412175917.GA1236898@alison-desk>
+References: <cover.1649721450.git.codeagain@codeagain.dev>
+ <cfd7014e7f70cb928aa957f56bb31d8f514c2446.1649721450.git.codeagain@codeagain.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <cfd7014e7f70cb928aa957f56bb31d8f514c2446.1649721450.git.codeagain@codeagain.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/bvanassche/linux ufs-for-next
-head:   e1c32435245394413b0308d1329938ce4db52877
-commit: e1c32435245394413b0308d1329938ce4db52877 [29/29] scsi: ufs: Split the drivers/scsi/ufs directory
-config: x86_64-randconfig-a002-20220411 (https://download.01.org/0day-ci/archive/20220413/202204130103.bxPsWXGw-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/bvanassche/linux/commit/e1c32435245394413b0308d1329938ce4db52877
-        git remote add bvanassche https://github.com/bvanassche/linux
-        git fetch --no-tags bvanassche ufs-for-next
-        git checkout e1c32435245394413b0308d1329938ce4db52877
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/ufs/host/
+On Tue, Apr 12, 2022 at 03:55:21AM -0300, Bruno Moreira-Guedes wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+'Adjusted' is unecessarily vague. In the commit msg try to say
+exactly what the patch did. Write in the imperative tense, like
+you are issuing commands.
 
-All warnings (new ones prefixed by >>):
+Something like 'Move VME staging driver to staging Kconfig' , or
+'Source vme driver from staging Kconfig'.  
 
->> drivers/ufs/host/tc-dwc-g210-pltfrm.c:36:34: warning: unused variable 'tc_dwc_g210_pltfm_match' [-Wunused-const-variable]
-   static const struct of_device_id tc_dwc_g210_pltfm_match[] = {
-                                    ^
-   1 warning generated.
+> Currently, the VME_USER driver is in the staging tree Kconfig, unlike
+> other VME drivers already moved to the main portions of the kernel tree.
+> Its configuration is, however, nested into the VME_BUS config option,
+> which might be misleading.
+> 
+> Since the staging tree "[...] is used to hold stand-alone[1] drivers and
+> filesystem that are not ready to be merged into the main portion of the
+> Linux kernel tree [...]"[1], IMHO all staging drivers should appear
+
+Skip the 'IMHO'. It's all your HO and if you state anything incorrectly,
+your reviewers should catch it. If you are truly making a wild guess
+about something, either look into it further, or not it in a question
+below the '---'.
+
+This commit message is otherwise very well written. It explains the
+why of this patch nicely. 
+
+Again, for this set, perhaps the changelog in the cover letter only.
+
+> nested into the Main Menu -> Device Drivers -> Staging Drivers to make
+> sure the user don't pick it without being fully aware of its staging
+> status as it could be the case in Menu -> Device Drivers -> VME bridge
+> support (the current location).
+> 
+> With this change menuconfig users will clearly know this is not a driver
+> in the main portion of the kernel tree and decide whether to build it or
+> not with that clearly in mind.
+> 
+> This change goes into the same direction of commit 4b4cdf3979c3
+> ("STAGING: Move staging drivers back to staging-specific menu")
+> 
+> CHANGELOG
+> v1:
+>  - Sourced "drivers/staging/vme/devices/Kconfig" in
+>    "drivers/staging/Kconfig" and unsourced in "drivers/vme/Kconfig".
+> 
+> v2:
+> - Turned into a patchset to (1) fix missing "depends on" missing entry
+>   in config VME_USER at "drivers/staging/vme/devices/Kconfig",
+>   affecting the behavior of this patch, and (2) fix unnecessary
+>   remaining files from the time the whole vme subtree was in staging.
+> 
+> REFERENCES
+> [1] https://lkml.org/lkml/2009/3/18/314
+> 
+> Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+> ---
+>  drivers/staging/Kconfig | 2 ++
+>  drivers/vme/Kconfig     | 2 --
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+> index 932acb4e8cbc..0545850eb2ff 100644
+> --- a/drivers/staging/Kconfig
+> +++ b/drivers/staging/Kconfig
+> @@ -88,4 +88,6 @@ source "drivers/staging/qlge/Kconfig"
+>  
+>  source "drivers/staging/wfx/Kconfig"
+>  
+> +source "drivers/staging/vme/devices/Kconfig"
+> +
+>  endif # STAGING
+> diff --git a/drivers/vme/Kconfig b/drivers/vme/Kconfig
+> index 936392ca3c8c..c13dd9d2a604 100644
+> --- a/drivers/vme/Kconfig
+> +++ b/drivers/vme/Kconfig
+> @@ -15,6 +15,4 @@ source "drivers/vme/bridges/Kconfig"
+>  
+>  source "drivers/vme/boards/Kconfig"
+>  
+> -source "drivers/staging/vme/devices/Kconfig"
+> -
+>  endif # VME
+> -- 
+> 2.35.1
+> 
 
 
-vim +/tc_dwc_g210_pltfm_match +36 drivers/ufs/host/tc-dwc-g210-pltfrm.c
-
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  35  
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11 @36  static const struct of_device_id tc_dwc_g210_pltfm_match[] = {
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  37  	{
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  38  		.compatible = "snps,g210-tc-6.00-20bit",
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  39  		.data = &tc_dwc_g210_20bit_pltfm_hba_vops,
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  40  	},
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  41  	{
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  42  		.compatible = "snps,g210-tc-6.00-40bit",
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  43  		.data = &tc_dwc_g210_40bit_pltfm_hba_vops,
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  44  	},
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  45  	{ },
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  46  };
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  47  MODULE_DEVICE_TABLE(of, tc_dwc_g210_pltfm_match);
-fc040a3fc47cad drivers/scsi/ufs/tc-dwc-g210-pltfrm.c Joao Pinto 2016-05-11  48  
-
-:::::: The code at line 36 was first introduced by commit
-:::::: fc040a3fc47cad038f774275ea61fe6d5b57d7cc ufs: add TC G210 platform driver
-
-:::::: TO: Joao Pinto <Joao.Pinto@synopsys.com>
-:::::: CC: Martin K. Petersen <martin.petersen@oracle.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
