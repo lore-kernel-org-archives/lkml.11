@@ -2,87 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F094C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E44D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351752AbiDLMbV (ORCPT
+        id S1351955AbiDLMbd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
+        Tue, 12 Apr 2022 08:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355538AbiDLM3a (ORCPT
+        with ESMTP id S231985AbiDLMaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:29:30 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A627353A46
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649763820; x=1681299820;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/CXkkOa1Qb1zYpVNyIs99QKNPxZBdARfFd4I1EE/yEY=;
-  b=GsbkOgSzplfKZwBD3YXZXsUmk6vm4beGJ1DdOyi6+Hw3I4C/4lW+TG3h
-   Qnx2dGRtQrw/mzfrAdRNIUxHBSJO22FaQPzUTOi6hJAdXP1QBQXYr28TM
-   jenVvXDLiz2ZFi2YyIoJezyUNaFmRa1QBV8lYJyCD5O/xQj8tJEPWjb32
-   XyC3uxm1DNhC2yJMz2B62b0rKYTvxTYht/LFJVlniKOIONpVIaUWnGIXA
-   RcFm+Cm46VaQ7iqw0JgeBJnXgv9WpTxA0LWzwRBhvkXz8SsuNE3fKka2L
-   RbvBsoGSx1cItdTv9CxWEOcsVI9R8jeI18SbVr501lfojhjEIgOAQAG0E
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262536050"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="262536050"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:43:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="724417241"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 04:43:31 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neEvi-0002ou-NZ;
-        Tue, 12 Apr 2022 11:43:30 +0000
-Date:   Tue, 12 Apr 2022 19:43:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:crng/random/jd/not-zero-entropy 6/12] ERROR:
- modpost: "random_get_entropy_fallback" [crypto/jitterentropy_rng.ko]
- undefined!
-Message-ID: <202204121911.NhZSbyFC-lkp@intel.com>
+        Tue, 12 Apr 2022 08:30:10 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF6710FC0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:47:50 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 23CBZOhW055481;
+        Tue, 12 Apr 2022 19:35:24 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 12 Apr
+ 2022 19:47:04 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <guoheyi@linux.alibaba.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>, <dylan_hung@aspeedtech.com>,
+        <yangyingliang@huawei.com>, <joel@jms.id.au>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [PATCH] net: ftgmac100: access hardware register after clock ready
+Date:   Tue, 12 Apr 2022 19:48:59 +0800
+Message-ID: <20220412114859.18665-1-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 23CBZOhW055481
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/not-zero-entropy
-head:   4ee3bf173a552cd996e048d57f65bb5b471ab577
-commit: 223939a5e0da931df37ab6bcd3e84bd74d931f35 [6/12] mips: use fallback for random_get_entropy() instead of zero
-config: mips-decstation_64_defconfig (https://download.01.org/0day-ci/archive/20220412/202204121911.NhZSbyFC-lkp@intel.com/config)
-compiler: mips64el-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/223939a5e0da931df37ab6bcd3e84bd74d931f35
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block crng/random/jd/not-zero-entropy
-        git checkout 223939a5e0da931df37ab6bcd3e84bd74d931f35
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
+AST2600 MAC register 0x58 is writable only when the MAC clock is
+enabled.  Usually, the MAC clock is enabled by the bootloader so
+register 0x58 is set normally when the bootloader is involved.  To make
+ast2600 ftgmac100 work without the bootloader, postpone the register
+write until the clock is ready.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 137d23cea1c0 ("net: ftgmac100: Fix Aspeed ast2600 TX hang issue")
+Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+---
+ drivers/net/ethernet/faraday/ftgmac100.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "random_get_entropy_fallback" [crypto/jitterentropy_rng.ko] undefined!
-
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index d5356db7539a..caf48023f8ea 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1835,11 +1835,6 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 		priv->rxdes0_edorr_mask = BIT(30);
+ 		priv->txdes0_edotr_mask = BIT(30);
+ 		priv->is_aspeed = true;
+-		/* Disable ast2600 problematic HW arbitration */
+-		if (of_device_is_compatible(np, "aspeed,ast2600-mac")) {
+-			iowrite32(FTGMAC100_TM_DEFAULT,
+-				  priv->base + FTGMAC100_OFFSET_TM);
+-		}
+ 	} else {
+ 		priv->rxdes0_edorr_mask = BIT(15);
+ 		priv->txdes0_edotr_mask = BIT(15);
+@@ -1911,6 +1906,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 		err = ftgmac100_setup_clk(priv);
+ 		if (err)
+ 			goto err_phy_connect;
++
++		/* Disable ast2600 problematic HW arbitration */
++		if (of_device_is_compatible(np, "aspeed,ast2600-mac"))
++			iowrite32(FTGMAC100_TM_DEFAULT,
++				  priv->base + FTGMAC100_OFFSET_TM);
+ 	}
+ 
+ 	/* Default ring sizes */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
