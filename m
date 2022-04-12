@@ -2,142 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8671CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97374C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357644AbiDLQdz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37388 "EHLO
+        id S231253AbiDLQd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 12:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357695AbiDLQdc (ORCPT
+        with ESMTP id S1357689AbiDLQd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:33:32 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514195E769
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:11 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id q14so24718480ljc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RIrthwm6tdm2aQE/w3RNrvd+PErUsx9KWtS5YZPvaAw=;
-        b=QGf3FpzYei83T8HcSKJorhnUgZvI/5VvV6a5G+/cctmgZ7rbbAyy8V4DbgESDpmRSm
-         5IhZjCeNh0R39MUfLo4qjqE9YtmPT9mUmXL/HkUI+lrl1aydFAm9T+bk+e5KxKCcsLk2
-         MHB4LP2yINUa4X8UmpyEErsSopyrheuUpxe/I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RIrthwm6tdm2aQE/w3RNrvd+PErUsx9KWtS5YZPvaAw=;
-        b=VRihKzOErHTTPediGbr6N46vlvtjNOEzOZZreF+Xt0I/Mu7eX0OiYHN6yuud1/ma1y
-         FcOPNuQhXD9PeMXqpkY44eaFG85CkC2BjCSp1Tlpdfdn3XkrBqSVjeoDZyqqv6xJwqOG
-         uJr2M4X+6A4Bk6hM4MEYJ0P7olmi+VKqpPQwBXNkkxmTLRw1pvGNyFwfyg5wBamUKEpk
-         eOdUYETFR/5nPT1PCkORGHL9zeAn0qoRnU/gNaAqkYXYMUEBjRShJUVxh2zXX8PSl30G
-         z52FDeCZ8wk7WCFHwWfbAJOvzgH0Non1HZl0FfgIASzMV1y43PdXf0lRg+HDblWs2MJ0
-         j6xA==
-X-Gm-Message-State: AOAM532dDN+LFssLHFisIwifFzQWAnDWsDBF8tTNSK+73SJdolgZr3Mm
-        f04kmU2D/0fi8xQS7aRZ41L1Rh/nJbJpNde1
-X-Google-Smtp-Source: ABdhPJxX16glqbwPgxkWy6eQgmAoZDZ4jBWqFF8qtDFMJgNm13Pj34Dr0Iv29DVeXVBHL7vVEmJbBQ==
-X-Received: by 2002:a05:651c:a09:b0:24c:7228:ae21 with SMTP id k9-20020a05651c0a0900b0024c7228ae21mr1715593ljq.397.1649781068310;
-        Tue, 12 Apr 2022 09:31:08 -0700 (PDT)
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
-        by smtp.gmail.com with ESMTPSA id h12-20020a19ca4c000000b00464f0760504sm1804109lfj.276.2022.04.12.09.31.05
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 09:31:06 -0700 (PDT)
-Received: by mail-lf1-f43.google.com with SMTP id bq30so20370164lfb.3
+        Tue, 12 Apr 2022 12:33:28 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812B25E168
         for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:05 -0700 (PDT)
-X-Received: by 2002:a05:6512:b12:b0:44a:ba81:f874 with SMTP id
- w18-20020a0565120b1200b0044aba81f874mr26536279lfu.449.1649781065537; Tue, 12
- Apr 2022 09:31:05 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 23CF1qip006055
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:04 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=baEaCrnLBHjc8dj+cmCnEDyggTYvxeftZ9u5tqzYlTQ=;
+ b=WL6IG/v+96ZbexC5BmYEsm9xxAiTaY3eamthvpYVTqKiZsXSI5a2Gi3l8YHyzrhE6DBq
+ BjvDqx39p/bCZpr5BpSh6iIL/oEjxT2ZlP/uvFK7ciIMe1eNV4Ay1EinpGHGjNrDd2Gq
+ C8g47Au16XQ3NEUuOs4fmDGmn/SHnC7GRJw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net (PPS) with ESMTPS id 3fckykgq36-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:04 -0700
+Received: from twshared6486.05.ash9.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 12 Apr 2022 09:31:02 -0700
+Received: by devbig039.lla1.facebook.com (Postfix, from userid 572232)
+        id A736C745606C; Tue, 12 Apr 2022 09:30:48 -0700 (PDT)
+From:   Dylan Yudaken <dylany@fb.com>
+To:     <io-uring@vger.kernel.org>
+CC:     <axboe@kernel.dk>, <asml.silence@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
+        Dylan Yudaken <dylany@fb.com>
+Subject: [PATCH 3/4] io_uring: verify resv is 0 in ringfd register/unregister
+Date:   Tue, 12 Apr 2022 09:30:41 -0700
+Message-ID: <20220412163042.2788062-4-dylany@fb.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220412163042.2788062-1-dylany@fb.com>
+References: <20220412163042.2788062-1-dylany@fb.com>
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2204111023230.6206@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wijDnLH2K3Rh2JJo-SmWL_ntgzQCDxPeXbJ9A-vTF3ZvA@mail.gmail.com>
- <alpine.LRH.2.02.2204111236390.31647@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com> <alpine.LRH.2.02.2204120520140.19025@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2204120520140.19025@file01.intranet.prod.int.rdu2.redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 12 Apr 2022 06:30:49 -1000
-X-Gmail-Original-Message-ID: <CAHk-=wiJTqx4Pec653ZFKEiNv2jtfWsNyevoV9TYa05kD0vVsg@mail.gmail.com>
-Message-ID: <CAHk-=wiJTqx4Pec653ZFKEiNv2jtfWsNyevoV9TYa05kD0vVsg@mail.gmail.com>
-Subject: Re: [PATCH] stat: fix inconsistency between struct stat and struct compat_stat
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: NiXb3jjnq2cYYFqBsXHH-4CYl2GkYc-C
+X-Proofpoint-GUID: NiXb3jjnq2cYYFqBsXHH-4CYl2GkYc-C
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 11:41 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
->
-> Also, if the st_dev and st_rdev values are 32-bit, we don't have to use
-> old_valid_dev to test if the value fits into them. This fixes -EOVERFLOW
-> on filesystems that are on NVMe because NVMe uses the major number 259.
+Only allow resv field to be 0 in struct io_uring_rsrc_update user
+arguments.
 
-The problem with this part of the patch is that this:
+Fixes: e7a6c00dc77a ("io_uring: add support for registering ring file des=
+criptors")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+---
+ fs/io_uring.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-> @@ -353,7 +352,7 @@ static int cp_new_stat(struct kstat *sta
->  #endif
->
->         INIT_STRUCT_STAT_PADDING(tmp);
-> -       tmp.st_dev = encode_dev(stat->dev);
-> +       tmp.st_dev = new_encode_dev(stat->dev);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index e899192ffb77..a84bfec97d0d 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -10533,6 +10533,11 @@ static int io_ringfd_register(struct io_ring_ctx=
+ *ctx, void __user *__arg,
+ 			break;
+ 		}
+=20
++		if (reg.resv) {
++			ret =3D -EINVAL;
++			break;
++		}
++
+ 		if (reg.offset =3D=3D -1U) {
+ 			start =3D 0;
+ 			end =3D IO_RINGFD_REG_MAX;
+@@ -10579,7 +10584,7 @@ static int io_ringfd_unregister(struct io_ring_ct=
+x *ctx, void __user *__arg,
+ 			ret =3D -EFAULT;
+ 			break;
+ 		}
+-		if (reg.offset >=3D IO_RINGFD_REG_MAX) {
++		if (reg.resv || reg.offset >=3D IO_RINGFD_REG_MAX) {
+ 			ret =3D -EINVAL;
+ 			break;
+ 		}
+--=20
+2.30.2
 
-completely changes the format of that st_dev field.
-
-For completely insane historical reasons, we have had the rule that
-
- - 32-bit architectures encode the device into a 16 bit value
-
- - 64-bit architectures encode the device number into a 32 bit value
-
-and that has been true *despite* the fact that the actual "st_dev"
-field has been 32-bit and 64-bit respectively since 2003!
-
-And it doesn't help that to confuse things even more, the _naming_ of
-those "encode_dev" functions is "old and new", so that logically you'd
-think that "cp_new_stat()" would use "new_encode_dev()". Nope.
-
-So on 32-bit architectures, cp_new_stat() uses "old_encode_dev()",
-which historically put the minor number in bits 0..7, and the major
-number in bits 8..15.
-
-End result: on a 32-bit system (or in the compat syscall mode),
-changing to new_encode_dev() would confuse anybody (like just "ls -l
-/dev") that uses that old stat call and tries to print out major/minor
-numbers.
-
-Now,. the good news is that
-
- (a) nobody should use that old stat call, since the new world order
-is called "stat64" and has been for a loooong time - also since at
-least 2003)
-
- (b) we could just hide the bits in upper bits instead.
-
-So what I suggest we do is to make old_encode_dev() put the minor bits
-in bits 0..7 _and_ 16..23, and the major bits in 8..15 _and_ 24..32.
-
-And then the -EOVERFLOW should be something like
-
-        unsigned int st_dev = encode_dev(stat->dev);
-        tmp.st_dev = st_dev;
-        if (st_dev != tmp.st_dev)
-                return -EOVERFLOW;
-
-for the lcase that tmp.st_dev is actually 16-bit (ie the compat case
-for some architecture where the padding wasn't there?)
-
-NOTE: That will still screw up 'ls -l' output, but only for the
-devices that previously would have returned -EOVERFLOW.
-
-And it will make anybopdy who does that "stat1->st_dev ==
-stat2->st_dev && ino == ino2" thing for testing "same inode" work just
-fine.
-
-              Linus
