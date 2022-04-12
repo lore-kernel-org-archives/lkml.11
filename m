@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83589C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A37C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356400AbiDLHfd (ORCPT
+        id S1356370AbiDLHfY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
+        Tue, 12 Apr 2022 03:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347457AbiDLHLz (ORCPT
+        with ESMTP id S1352132AbiDLHNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:11:55 -0400
+        Tue, 12 Apr 2022 03:13:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947794AE0D;
-        Mon, 11 Apr 2022 23:50:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CA113F81;
+        Mon, 11 Apr 2022 23:54:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC742B818C8;
-        Tue, 12 Apr 2022 06:50:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A5CC385B4;
-        Tue, 12 Apr 2022 06:50:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80EE9B81B44;
+        Tue, 12 Apr 2022 06:54:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF99AC385A6;
+        Tue, 12 Apr 2022 06:54:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746201;
-        bh=E3sHZwE7Y3egda4sYsmhC+E3OtwsJ2haWtifZ+1d1k8=;
+        s=korg; t=1649746458;
+        bh=smfjITSV1YHK4/bfAMDR+H6NLc2WvBO/3LmrqMnJXJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TUQR0LSfGoWC5ez7JAi2L4RrsxTZm3bypxmtj42bqFoHytbD85IVSGyh5QcZaFLBx
-         qE2xx++Ucalb2WB2l5kFhFzlNF1UY3C3i9/YpMGLhYEtS1XueZnpzefXqjCJfp4Tqf
-         0a7by7RosJ4LlygoOtwZU1rUiFyX1SY6I0tD3wrI=
+        b=obQeLNhxdi1AFudI0JEsnNC5KOYc3reMPI+B668mwQ40MV7Fz5urdcVxUFBsSn8s5
+         a1iosBQWZW49mIlqGHFvsFzDPK7qeuvhcrOMeJ3ljRmusCCH2t/spDhV1KN75NlsW/
+         iQ2sHjrxSVIjJKan4nXbjNp8pGr+oFcscOPbtlyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 198/277] io_uring: dont touch scm_fp_list after queueing skb
-Date:   Tue, 12 Apr 2022 08:30:01 +0200
-Message-Id: <20220412062947.768668204@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <philipp.zabel@gmail.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 013/285] drm/edid: improve non-desktop quirk logging
+Date:   Tue, 12 Apr 2022 08:27:50 +0200
+Message-Id: <20220412062944.060255199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Jani Nikula <jani.nikula@intel.com>
 
-[ Upstream commit a07211e3001435fe8591b992464cd8d5e3c98c5a ]
+[ Upstream commit ce99534e978d4a36787dbe5e5c57749d12e6bf4a ]
 
-It's safer to not touch scm_fp_list after we queued an skb to which it
-was assigned, there might be races lurking if we screw subtle sync
-guarantees on the io_uring side.
+Improve non-desktop quirk logging if the EDID indicates non-desktop. If
+both are set, note about redundant quirk. If there's no quirk but the
+EDID indicates non-desktop, don't log non-desktop is set to 0.
 
-Fixes: 6b06314c47e14 ("io_uring: add file set registration")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Cc: Philipp Zabel <philipp.zabel@gmail.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Reviewed-by: Philipp Zabel <philipp.zabel@gmail.com>
+Tested-by: Philipp Zabel <philipp.zabel@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211228101051.317989-1-jani.nikula@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/drm_edid.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 21823d1e91de..2faa558778ba 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8126,8 +8126,12 @@ static int __io_sqe_files_scm(struct io_ring_ctx *ctx, int nr, int offset)
- 		refcount_add(skb->truesize, &sk->sk_wmem_alloc);
- 		skb_queue_head(&sk->sk_receive_queue, skb);
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index a71b82668a98..83e5c115e754 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5325,17 +5325,13 @@ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edi
+ 	info->width_mm = edid->width_cm * 10;
+ 	info->height_mm = edid->height_cm * 10;
  
--		for (i = 0; i < nr_files; i++)
--			fput(fpl->fp[i]);
-+		for (i = 0; i < nr; i++) {
-+			struct file *file = io_file_from_index(ctx, i + offset);
+-	info->non_desktop = !!(quirks & EDID_QUIRK_NON_DESKTOP);
+-
+ 	drm_get_monitor_range(connector, edid);
+ 
+-	DRM_DEBUG_KMS("non_desktop set to %d\n", info->non_desktop);
+-
+ 	if (edid->revision < 3)
+-		return quirks;
++		goto out;
+ 
+ 	if (!(edid->input & DRM_EDID_INPUT_DIGITAL))
+-		return quirks;
++		goto out;
+ 
+ 	info->color_formats |= DRM_COLOR_FORMAT_RGB444;
+ 	drm_parse_cea_ext(connector, edid);
+@@ -5356,7 +5352,7 @@ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edi
+ 
+ 	/* Only defined for 1.4 with digital displays */
+ 	if (edid->revision < 4)
+-		return quirks;
++		goto out;
+ 
+ 	switch (edid->input & DRM_EDID_DIGITAL_DEPTH_MASK) {
+ 	case DRM_EDID_DIGITAL_DEPTH_6:
+@@ -5393,6 +5389,13 @@ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edi
+ 
+ 	drm_update_mso(connector, edid);
+ 
++out:
++	if (quirks & EDID_QUIRK_NON_DESKTOP) {
++		drm_dbg_kms(connector->dev, "Non-desktop display%s\n",
++			    info->non_desktop ? " (redundant quirk)" : "");
++		info->non_desktop = true;
++	}
 +
-+			if (file)
-+				fput(file);
-+		}
- 	} else {
- 		kfree_skb(skb);
- 		free_uid(fpl->user);
+ 	return quirks;
+ }
+ 
 -- 
 2.35.1
 
