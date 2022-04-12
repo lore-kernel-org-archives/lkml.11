@@ -2,121 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A37C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD614C47080
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356370AbiDLHfY (ORCPT
+        id S1352993AbiDLHg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
+        Tue, 12 Apr 2022 03:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352132AbiDLHNb (ORCPT
+        with ESMTP id S1352191AbiDLHNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CA113F81;
-        Mon, 11 Apr 2022 23:54:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80EE9B81B44;
-        Tue, 12 Apr 2022 06:54:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF99AC385A6;
-        Tue, 12 Apr 2022 06:54:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746458;
-        bh=smfjITSV1YHK4/bfAMDR+H6NLc2WvBO/3LmrqMnJXJ4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obQeLNhxdi1AFudI0JEsnNC5KOYc3reMPI+B668mwQ40MV7Fz5urdcVxUFBsSn8s5
-         a1iosBQWZW49mIlqGHFvsFzDPK7qeuvhcrOMeJ3ljRmusCCH2t/spDhV1KN75NlsW/
-         iQ2sHjrxSVIjJKan4nXbjNp8pGr+oFcscOPbtlyI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <philipp.zabel@gmail.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 013/285] drm/edid: improve non-desktop quirk logging
-Date:   Tue, 12 Apr 2022 08:27:50 +0200
-Message-Id: <20220412062944.060255199@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:13:37 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F435140E7
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:54:26 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 23C6gdUM026334;
+        Tue, 12 Apr 2022 14:42:39 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 12 Apr
+ 2022 14:54:19 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <krzk+dt@kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [PATCH v4 2/3] net: mdio: add reset control for Aspeed MDIO
+Date:   Tue, 12 Apr 2022 14:56:10 +0800
+Message-ID: <20220412065611.8930-3-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220412065611.8930-1-dylan_hung@aspeedtech.com>
+References: <20220412065611.8930-1-dylan_hung@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 23C6gdUM026334
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jani Nikula <jani.nikula@intel.com>
+Add reset assertion/deassertion for Aspeed MDIO.  There are 4 MDIO
+controllers embedded in Aspeed AST2600 SOC and share one reset control
+register SCU50[3].  To work with old DT blobs which don't have the reset
+property, devm_reset_control_get_optional_shared is used in this change.
 
-[ Upstream commit ce99534e978d4a36787dbe5e5c57749d12e6bf4a ]
-
-Improve non-desktop quirk logging if the EDID indicates non-desktop. If
-both are set, note about redundant quirk. If there's no quirk but the
-EDID indicates non-desktop, don't log non-desktop is set to 0.
-
-Cc: Philipp Zabel <philipp.zabel@gmail.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Philipp Zabel <philipp.zabel@gmail.com>
-Tested-by: Philipp Zabel <philipp.zabel@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211228101051.317989-1-jani.nikula@intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 ---
- drivers/gpu/drm/drm_edid.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/mdio/mdio-aspeed.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index a71b82668a98..83e5c115e754 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -5325,17 +5325,13 @@ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edi
- 	info->width_mm = edid->width_cm * 10;
- 	info->height_mm = edid->height_cm * 10;
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index e2273588c75b..1afb58ccc524 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -3,6 +3,7 @@
  
--	info->non_desktop = !!(quirks & EDID_QUIRK_NON_DESKTOP);
--
- 	drm_get_monitor_range(connector, edid);
+ #include <linux/bitfield.h>
+ #include <linux/delay.h>
++#include <linux/reset.h>
+ #include <linux/iopoll.h>
+ #include <linux/mdio.h>
+ #include <linux/module.h>
+@@ -37,6 +38,7 @@
  
--	DRM_DEBUG_KMS("non_desktop set to %d\n", info->non_desktop);
--
- 	if (edid->revision < 3)
--		return quirks;
-+		goto out;
+ struct aspeed_mdio {
+ 	void __iomem *base;
++	struct reset_control *reset;
+ };
  
- 	if (!(edid->input & DRM_EDID_INPUT_DIGITAL))
--		return quirks;
-+		goto out;
+ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+@@ -120,6 +122,12 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 	if (IS_ERR(ctx->base))
+ 		return PTR_ERR(ctx->base);
  
- 	info->color_formats |= DRM_COLOR_FORMAT_RGB444;
- 	drm_parse_cea_ext(connector, edid);
-@@ -5356,7 +5352,7 @@ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edi
- 
- 	/* Only defined for 1.4 with digital displays */
- 	if (edid->revision < 4)
--		return quirks;
-+		goto out;
- 
- 	switch (edid->input & DRM_EDID_DIGITAL_DEPTH_MASK) {
- 	case DRM_EDID_DIGITAL_DEPTH_6:
-@@ -5393,6 +5389,13 @@ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edi
- 
- 	drm_update_mso(connector, edid);
- 
-+out:
-+	if (quirks & EDID_QUIRK_NON_DESKTOP) {
-+		drm_dbg_kms(connector->dev, "Non-desktop display%s\n",
-+			    info->non_desktop ? " (redundant quirk)" : "");
-+		info->non_desktop = true;
-+	}
++	ctx->reset = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
++	if (IS_ERR(ctx->reset))
++		return PTR_ERR(ctx->reset);
 +
- 	return quirks;
- }
++	reset_control_deassert(ctx->reset);
++
+ 	bus->name = DRV_NAME;
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s%d", pdev->name, pdev->id);
+ 	bus->parent = &pdev->dev;
+@@ -129,6 +137,7 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 	rc = of_mdiobus_register(bus, pdev->dev.of_node);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus!\n");
++		reset_control_assert(ctx->reset);
+ 		return rc;
+ 	}
  
+@@ -139,7 +148,11 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 
+ static int aspeed_mdio_remove(struct platform_device *pdev)
+ {
+-	mdiobus_unregister(platform_get_drvdata(pdev));
++	struct mii_bus *bus = (struct mii_bus *)platform_get_drvdata(pdev);
++	struct aspeed_mdio *ctx = bus->priv;
++
++	reset_control_assert(ctx->reset);
++	mdiobus_unregister(bus);
+ 
+ 	return 0;
+ }
 -- 
-2.35.1
-
-
+2.25.1
 
