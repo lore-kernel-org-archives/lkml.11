@@ -2,83 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF781C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54634C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344672AbiDLED1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 00:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        id S236544AbiDLEDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 00:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231396AbiDLECc (ORCPT
+        with ESMTP id S240329AbiDLECe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 00:02:32 -0400
+        Tue, 12 Apr 2022 00:02:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D0A245BC;
-        Mon, 11 Apr 2022 21:00:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042DB2E086;
+        Mon, 11 Apr 2022 21:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34100B81B11;
-        Tue, 12 Apr 2022 04:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C89B7C385A8;
-        Tue, 12 Apr 2022 04:00:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B725B81B1B;
+        Tue, 12 Apr 2022 04:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 36F10C385AF;
+        Tue, 12 Apr 2022 04:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649736012;
-        bh=JQr8nc/fLXzYmZHteS1P6F/+WrEu7PTFCtSGGVDCopQ=;
+        s=k20201202; t=1649736015;
+        bh=TY7gGfJs5euHlBN2b6zVY5B8FHjRyu0Gz1a+MlarEaA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PSkzPva8YE+ZWh1rsH9fdgPMJlaAQF+hHpwTZKPv2IHbeh7tnSwZrilGmnj81qLGq
-         0u1xLC4CCe30oMcQfhopPfLLDTryPpLp71XSd7rIeBVtSbykhpgjb17U1I+s7ji/j9
-         85pOb+xndtOTduvIW3GFWD+n//gO4TMazpK1xtUdUu2mxHK4J0nu3ks6QORWQqwzTw
-         eArFCxKawzMwqRsXO5o89KqvbUhOy6yHMz2Ymevy3GHcFixYkXLYVrxzlNoMx4T75G
-         fLdj0mj6IiHOpiVY462He4ibG9JvHOEqtybIW8ljcB5QRe6WC4iinUimGDBrwkq4xu
-         cIqynd0HoXoOg==
+        b=cY2XZHv2+GSYnMXVNtFw/9vrLQ6cmsBuoxO4Fu7reUiFQdrV70gDI6LjslCYkF9Cl
+         R1TQsTYvyfcUcdfYRHjWoataXhMhxvW7S2Yzv8lUz/RgwMbftqTvNsjMcbu9ID2Dsk
+         OzzSFI4rnGUJdHfSqmkNQdlflMBAtbjzHBLFUbga8cAweFlD5Flc4NKf1VJIG+ukxF
+         +lx6ukYGCr5cK/Che6GN77iHcDtVFVXOX9vfj/zMb0d6oczpnn2XGzY8lJyUv8fRSW
+         FXr+ogwYb2fwlqlLO24eqW4hRPVSOmA426pO/wKPdVRGM+DPhem0igyb+cI30XnK1N
+         /kRONJbEFNAQQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AEFCCE8DBD1;
-        Tue, 12 Apr 2022 04:00:12 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 224AEE85D15;
+        Tue, 12 Apr 2022 04:00:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] net: lan966x: lan966x fixes
+Subject: Re: [PATCH] net: calxedaxgmac: Fix typo (doubled "the")
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164973601271.30868.16345323941308657793.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Apr 2022 04:00:12 +0000
-References: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
+Message-Id: <164973601513.30868.4142850711416395196.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Apr 2022 04:00:15 +0000
+References: <20220409182147.2509788-1-j.neuschaefer@gmx.net>
+In-Reply-To: <20220409182147.2509788-1-j.neuschaefer@gmx.net>
+To:     =?utf-8?q?Jonathan_Neusch=C3=A4fer_=3Cj=2Eneuschaefer=40gmx=2Enet=3E?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, shenyang39@huawei.com,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sat, 9 Apr 2022 20:41:39 +0200 you wrote:
-> This contains different fixes for lan966x in different areas like PTP, MAC,
-> Switchdev and IGMP processing.
+On Sat,  9 Apr 2022 20:21:45 +0200 you wrote:
+> Fix a doubled word in the comment above xgmac_poll.
 > 
-> Horatiu Vultur (4):
->   net: lan966x: Update lan966x_ptp_get_nominal_value
->   net: lan966x: Fix IGMP snooping when frames have vlan tag
->   net: lan966x: Fix when a port's upper is changed.
->   net: lan966x: Stop processing the MAC entry is port is wrong.
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+> ---
+>  drivers/net/ethernet/calxeda/xgmac.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/4] net: lan966x: Update lan966x_ptp_get_nominal_value
-    https://git.kernel.org/netdev/net/c/eb9c0d671e94
-  - [net,2/4] net: lan966x: Fix IGMP snooping when frames have vlan tag
-    https://git.kernel.org/netdev/net/c/6476f90aefaf
-  - [net,3/4] net: lan966x: Fix when a port's upper is changed.
-    https://git.kernel.org/netdev/net/c/d7a947d289dc
-  - [net,4/4] net: lan966x: Stop processing the MAC entry is port is wrong.
-    https://git.kernel.org/netdev/net/c/269219321eb7
+  - net: calxedaxgmac: Fix typo (doubled "the")
+    https://git.kernel.org/netdev/net-next/c/d6967d04145e
 
 You are awesome, thank you!
 -- 
