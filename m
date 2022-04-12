@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C17C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D54C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356748AbiDLHjS (ORCPT
+        id S1356808AbiDLHjX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
+        Tue, 12 Apr 2022 03:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352825AbiDLHOa (ORCPT
+        with ESMTP id S1352935AbiDLHOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8046EE0EB;
-        Mon, 11 Apr 2022 23:55:11 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC493206B;
+        Mon, 11 Apr 2022 23:55:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94D0E61451;
-        Tue, 12 Apr 2022 06:55:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47ADC385B6;
-        Tue, 12 Apr 2022 06:55:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79E86B81B47;
+        Tue, 12 Apr 2022 06:55:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCD9FC385A1;
+        Tue, 12 Apr 2022 06:55:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746510;
-        bh=dlwLqBXYP8OkZ069bvbEEpvkzus7DEWuXsJub3j4qr8=;
+        s=korg; t=1649746521;
+        bh=yEpisErz6K+71iwfSBr0egtIMOIDymtqooPXz3MsouU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hm3P3445RuM/VSD1+/gJVxcHDZ301ro/DbqbPpw8FcJ20t0CRdJ9Kw51TOzHG9oSZ
-         /ZFFlQBmJZlTo81cZrTdgYeyi5UL+gt6PTtvL/yq7XcoQln2WjEdDIjfiOjjmTo9ni
-         pNXjPrnAaLPWzHtqpfJoUKrDflrPGRItTYIS/sIg=
+        b=vdEELxlH8pwzIPNPPOde41Qn6NYblIcE4v/eDda1GruuaGo9Sobz3j0Gorw0yFkty
+         0/BkIZRu04MsmBwLGQ6GPVSWmcbSN/E20ZMIXNPn6VZsRxpFx+WdmFv3noB7oO2qd+
+         TuxYCn5g1coF1h8AehkYSSgu/Sp+GKrTb5gubVOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
-        Jim Mattson <jmattson@google.com>,
-        Like Xu <likexu@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 007/285] KVM: x86/pmu: Fix and isolate TSX-specific performance event logic
-Date:   Tue, 12 Apr 2022 08:27:44 +0200
-Message-Id: <20220412062943.886304721@linuxfoundation.org>
+Subject: [PATCH 5.16 028/285] ath11k: mhi: use mhi_sync_power_up()
+Date:   Tue, 12 Apr 2022 08:28:05 +0200
+Message-Id: <20220412062944.490077730@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,129 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Kalle Valo <quic_kvalo@quicinc.com>
 
-[ Upstream commit e644896f5106aa3f6d7e8c7adf2e4dc0fce53555 ]
+[ Upstream commit 3df6d74aedfdca919cca475d15dfdbc8b05c9e5d ]
 
-HSW_IN_TX* bits are used in generic code which are not supported on
-AMD. Worse, these bits overlap with AMD EventSelect[11:8] and hence
-using HSW_IN_TX* bits unconditionally in generic code is resulting in
-unintentional pmu behavior on AMD. For example, if EventSelect[11:8]
-is 0x2, pmc_reprogram_counter() wrongly assumes that
-HSW_IN_TX_CHECKPOINTED is set and thus forces sampling period to be 0.
+If amss.bin was missing ath11k would crash during 'rmmod ath11k_pci'. The
+reason for that was that we were using mhi_async_power_up() which does not
+check any errors. But mhi_sync_power_up() on the other hand does check for
+errors so let's use that to fix the crash.
 
-Also per the SDM, both bits 32 and 33 "may only be set if the processor
-supports HLE or RTM" and for "IN_TXCP (bit 33): this bit may only be set
-for IA32_PERFEVTSEL2."
+I was not able to find a reason why an async version was used.
+ath11k_mhi_start() (which enables state ATH11K_MHI_POWER_ON) is called from
+ath11k_hif_power_up(), which can sleep. So sync version should be safe to use
+here.
 
-Opportunistically eliminate code redundancy, because if the HSW_IN_TX*
-bit is set in pmc->eventsel, it is already set in attr.config.
+[  145.569731] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC KASAN PTI
+[  145.569789] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+[  145.569843] CPU: 2 PID: 1628 Comm: rmmod Kdump: loaded Tainted: G        W         5.16.0-wt-ath+ #567
+[  145.569898] Hardware name: Intel(R) Client Systems NUC8i7HVK/NUC8i7HVB, BIOS HNKBLi70.86A.0067.2021.0528.1339 05/28/2021
+[  145.569956] RIP: 0010:ath11k_hal_srng_access_begin+0xb5/0x2b0 [ath11k]
+[  145.570028] Code: df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 ec 01 00 00 48 8b ab a8 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 ea 48 c1 ea 03 <0f> b6 14 02 48 89 e8 83 e0 07 83 c0 03 45 85 ed 75 48 38 d0 7c 08
+[  145.570089] RSP: 0018:ffffc900025d7ac0 EFLAGS: 00010246
+[  145.570144] RAX: dffffc0000000000 RBX: ffff88814fca2dd8 RCX: 1ffffffff50cb455
+[  145.570196] RDX: 0000000000000000 RSI: ffff88814fca2dd8 RDI: ffff88814fca2e80
+[  145.570252] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffffa8659497
+[  145.570329] R10: fffffbfff50cb292 R11: 0000000000000001 R12: ffff88814fca0000
+[  145.570410] R13: 0000000000000000 R14: ffff88814fca2798 R15: ffff88814fca2dd8
+[  145.570465] FS:  00007fa399988540(0000) GS:ffff888233e00000(0000) knlGS:0000000000000000
+[  145.570519] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  145.570571] CR2: 00007fa399b51421 CR3: 0000000137898002 CR4: 00000000003706e0
+[  145.570623] Call Trace:
+[  145.570675]  <TASK>
+[  145.570727]  ? ath11k_ce_tx_process_cb+0x34b/0x860 [ath11k]
+[  145.570797]  ath11k_ce_tx_process_cb+0x356/0x860 [ath11k]
+[  145.570864]  ? tasklet_init+0x150/0x150
+[  145.570919]  ? ath11k_ce_alloc_pipes+0x280/0x280 [ath11k]
+[  145.570986]  ? tasklet_clear_sched+0x42/0xe0
+[  145.571042]  ? tasklet_kill+0xe9/0x1b0
+[  145.571095]  ? tasklet_clear_sched+0xe0/0xe0
+[  145.571148]  ? irq_has_action+0x120/0x120
+[  145.571202]  ath11k_ce_cleanup_pipes+0x45a/0x580 [ath11k]
+[  145.571270]  ? ath11k_pci_stop+0x10e/0x170 [ath11k_pci]
+[  145.571345]  ath11k_core_stop+0x8a/0xc0 [ath11k]
+[  145.571434]  ath11k_core_deinit+0x9e/0x150 [ath11k]
+[  145.571499]  ath11k_pci_remove+0xd2/0x260 [ath11k_pci]
+[  145.571553]  pci_device_remove+0x9a/0x1c0
+[  145.571605]  __device_release_driver+0x332/0x660
+[  145.571659]  driver_detach+0x1e7/0x2c0
+[  145.571712]  bus_remove_driver+0xe2/0x2d0
+[  145.571772]  pci_unregister_driver+0x21/0x250
+[  145.571826]  __do_sys_delete_module+0x30a/0x4b0
+[  145.571879]  ? free_module+0xac0/0xac0
+[  145.571933]  ? lockdep_hardirqs_on_prepare.part.0+0x18c/0x370
+[  145.571986]  ? syscall_enter_from_user_mode+0x1d/0x50
+[  145.572039]  ? lockdep_hardirqs_on+0x79/0x100
+[  145.572097]  do_syscall_64+0x3b/0x90
+[  145.572153]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Reported-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Reported-by: Jim Mattson <jmattson@google.com>
-Fixes: 103af0a98788 ("perf, kvm: Support the in_tx/in_tx_cp modifiers in KVM arch perfmon emulation v5")
-Co-developed-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
-Message-Id: <20220309084257.88931-1-likexu@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
+
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220127090117.2024-2-kvalo@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/pmu.c           | 15 +++++----------
- arch/x86/kvm/vmx/pmu_intel.c | 13 ++++++++++---
- 2 files changed, 15 insertions(+), 13 deletions(-)
+ drivers/net/wireless/ath/ath11k/mhi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 255ef63a4354..227b06dd1fea 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -96,8 +96,7 @@ static void kvm_perf_overflow_intr(struct perf_event *perf_event,
- 
- static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 				  u64 config, bool exclude_user,
--				  bool exclude_kernel, bool intr,
--				  bool in_tx, bool in_tx_cp)
-+				  bool exclude_kernel, bool intr)
- {
- 	struct perf_event *event;
- 	struct perf_event_attr attr = {
-@@ -113,16 +112,14 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 
- 	attr.sample_period = get_sample_period(pmc, pmc->counter);
- 
--	if (in_tx)
--		attr.config |= HSW_IN_TX;
--	if (in_tx_cp) {
-+	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
-+	    guest_cpuid_is_intel(pmc->vcpu)) {
- 		/*
- 		 * HSW_IN_TX_CHECKPOINTED is not supported with nonzero
- 		 * period. Just clear the sample period so at least
- 		 * allocating the counter doesn't fail.
- 		 */
- 		attr.sample_period = 0;
--		attr.config |= HSW_IN_TX_CHECKPOINTED;
- 	}
- 
- 	event = perf_event_create_kernel_counter(&attr, -1, current,
-@@ -229,9 +226,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- 	pmc_reprogram_counter(pmc, type, config,
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_OS),
--			      eventsel & ARCH_PERFMON_EVENTSEL_INT,
--			      (eventsel & HSW_IN_TX),
--			      (eventsel & HSW_IN_TX_CHECKPOINTED));
-+			      eventsel & ARCH_PERFMON_EVENTSEL_INT);
- }
- EXPORT_SYMBOL_GPL(reprogram_gp_counter);
- 
-@@ -267,7 +262,7 @@ void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int idx)
- 			      kvm_x86_ops.pmu_ops->find_fixed_event(idx),
- 			      !(en_field & 0x2), /* exclude user */
- 			      !(en_field & 0x1), /* exclude kernel */
--			      pmi, false, false);
-+			      pmi);
- }
- EXPORT_SYMBOL_GPL(reprogram_fixed_counter);
- 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 9e380a939c72..ee2452215e93 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -395,6 +395,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	struct kvm_pmc *pmc;
- 	u32 msr = msr_info->index;
- 	u64 data = msr_info->data;
-+	u64 reserved_bits;
- 
- 	switch (msr) {
- 	case MSR_CORE_PERF_FIXED_CTR_CTRL:
-@@ -449,7 +450,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		} else if ((pmc = get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0))) {
- 			if (data == pmc->eventsel)
- 				return 0;
--			if (!(data & pmu->reserved_bits)) {
-+			reserved_bits = pmu->reserved_bits;
-+			if ((pmc->idx == 2) &&
-+			    (pmu->raw_event_mask & HSW_IN_TX_CHECKPOINTED))
-+				reserved_bits ^= HSW_IN_TX_CHECKPOINTED;
-+			if (!(data & reserved_bits)) {
- 				reprogram_gp_counter(pmc, data);
- 				return 0;
- 			}
-@@ -523,8 +528,10 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	entry = kvm_find_cpuid_entry(vcpu, 7, 0);
- 	if (entry &&
- 	    (boot_cpu_has(X86_FEATURE_HLE) || boot_cpu_has(X86_FEATURE_RTM)) &&
--	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM)))
--		pmu->reserved_bits ^= HSW_IN_TX|HSW_IN_TX_CHECKPOINTED;
-+	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM))) {
-+		pmu->reserved_bits ^= HSW_IN_TX;
-+		pmu->raw_event_mask |= (HSW_IN_TX|HSW_IN_TX_CHECKPOINTED);
-+	}
- 
- 	bitmap_set(pmu->all_valid_pmc_idx,
- 		0, pmu->nr_arch_gp_counters);
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index 49c0b1ad40a0..f2149241fb13 100644
+--- a/drivers/net/wireless/ath/ath11k/mhi.c
++++ b/drivers/net/wireless/ath/ath11k/mhi.c
+@@ -519,7 +519,7 @@ static int ath11k_mhi_set_state(struct ath11k_pci *ab_pci,
+ 		ret = 0;
+ 		break;
+ 	case ATH11K_MHI_POWER_ON:
+-		ret = mhi_async_power_up(ab_pci->mhi_ctrl);
++		ret = mhi_sync_power_up(ab_pci->mhi_ctrl);
+ 		break;
+ 	case ATH11K_MHI_POWER_OFF:
+ 		mhi_power_down(ab_pci->mhi_ctrl, true);
 -- 
 2.35.1
 
