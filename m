@@ -2,107 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6165DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C277DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353387AbiDLMhe (ORCPT
+        id S1348150AbiDLMkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        Tue, 12 Apr 2022 08:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351898AbiDLMgO (ORCPT
+        with ESMTP id S1351194AbiDLMgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:36:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48C2B13F81;
-        Tue, 12 Apr 2022 04:55:42 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 133121424;
-        Tue, 12 Apr 2022 04:55:42 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.38.213])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B9AC33F70D;
-        Tue, 12 Apr 2022 04:55:35 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-perf-users@vger.kernel.org
-Subject: [RFC V2 8/8] arm64/perf: Enable branch stack sampling
-Date:   Tue, 12 Apr 2022 17:24:55 +0530
-Message-Id: <20220412115455.293119-9-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412115455.293119-1-anshuman.khandual@arm.com>
-References: <20220412115455.293119-1-anshuman.khandual@arm.com>
+        Tue, 12 Apr 2022 08:36:15 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD334CC
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:56:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649764580; x=1681300580;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=L0qUnMQOFRRb2Pk8gqURd8V55DtzojRRl0dzjoOnUPY=;
+  b=aPb2Qki5qVZwYQ9w8N0hBFRX4NSqJqdPJd0nGKyUxluWAgng4eJ29FL6
+   crUaZhTul+0xvdfTyP5JhPpPuQbi2+hDxIFIbB14nieKnRE9Xf2ij7TqQ
+   gdYUPEU2CtVVPNC8ChdUl5juPoIQkosmdP4M7RSBgypNPDYpeeS1weOxB
+   1ytezj99tLtd0jZbs5RBODh5XDuPGPRjH9QbsreN3cPKl4u/414M9oRQm
+   XI934fUZ4tlu1weptVSjnNSIDBjNnNgQpIAk2/oHQ18mmngFd6j6CTJnr
+   7gVAlZw4XVzEibrrC1/17SpwoUSd99XkNk0OCrcnQRT08e4IkaVLamV9Y
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="325267536"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="325267536"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:56:20 -0700
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="572730132"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.174]) ([10.254.210.174])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:56:16 -0700
+Message-ID: <317c1d39-13df-2559-dff7-2a5c82630739@linux.intel.com>
+Date:   Tue, 12 Apr 2022 19:56:14 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC v3 02/12] iommu: Add a flag to indicate immutable
+ singleton group
+Content-Language: en-US
+To:     Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <20220410102443.294128-1-baolu.lu@linux.intel.com>
+ <20220410102443.294128-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB527679E5CE0516B2786F57518CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <7c70a136-6871-b48c-8e46-852bb1b62958@linux.intel.com>
+ <e8d8d08c-8327-b0ad-6bdd-ef10cd34e212@intel.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <e8d8d08c-8327-b0ad-6bdd-ef10cd34e212@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that all the required pieces are already in place, just enable the perf
-branch stack sampling support on arm64 platform, by removing the gate which
-blocks it in armpmu_event_init().
+Hi Yi,
 
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- drivers/perf/arm_pmu.c | 32 +++++++++++++++++++++++++++++---
- 1 file changed, 29 insertions(+), 3 deletions(-)
+On 2022/4/12 14:34, Yi Liu wrote:
+>>>
+>>>>
+>>>> This adds a flag in the iommu_group struct to indicate an immutable
+>>>> singleton group, and uses standard PCI bus topology, isolation 
+>>>> features,
+>>>> and DMA alias quirks to set the flag. If the device came from DT, 
+>>>> assume
+>>>> it is static and then the singleton attribute can know from the device
+>>>> count in the group.
+>>>
+>>> where does the assumption come from?
+>>
+>> Hotplug is the only factor that can dynamically affect the
+>> characteristics of IOMMU group singleton as far as I can see. If a
+>> device node was created from the DT, it could be treated as static,
+>> hence we can judge the singleton in iommu probe phase during boot.
+> 
+> not sure if hotplug is the only factor. Is it possible that admin modifies
+> the ACS configuration on the bridge?
 
-diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
-index ab187a3bcdab..8b08811f662a 100644
---- a/drivers/perf/arm_pmu.c
-+++ b/drivers/perf/arm_pmu.c
-@@ -539,9 +539,35 @@ static int armpmu_event_init(struct perf_event *event)
- 		!cpumask_test_cpu(event->cpu, &armpmu->supported_cpus))
- 		return -ENOENT;
- 
--	/* does not support taken branch sampling */
--	if (has_branch_stack(event))
--		return -EOPNOTSUPP;
-+	if (has_branch_stack(event)) {
-+		/*
-+		 * BRBE support is absent. Select CONFIG_ARM_BRBE_PMU
-+		 * in the config, before branch stack sampling events
-+		 * can be requested.
-+		 */
-+		if (!IS_ENABLED(CONFIG_ARM_BRBE_PMU)) {
-+			pr_warn_once("BRBE is disabled, select CONFIG_ARM_BRBE_PMU\n");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_KERNEL) {
-+			if (!perfmon_capable()) {
-+				pr_warn_once("does not have permission for kernel branch filter\n");
-+				return -EPERM;
-+			}
-+		}
-+
-+		/*
-+		 * Branch stack sampling event can not be supported in
-+		 * case either the required driver itself is absent or
-+		 * BRBE buffer, is not supported. Besides checking for
-+		 * the callback prevents a crash in case it's absent.
-+		 */
-+		if (!armpmu->brbe_supported || !armpmu->brbe_supported(event)) {
-+			pr_warn_once("BRBE is not supported\n");
-+			return -EOPNOTSUPP;
-+		}
-+	}
- 
- 	if (armpmu->map_event(event) == -ENOENT)
- 		return -ENOENT;
--- 
-2.25.1
+Not likely. This will completely change the existing iommu_group
+settings.
 
+Best regards,
+baolu
