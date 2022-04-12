@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 395B4C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6029BC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353422AbiDLHZd (ORCPT
+        id S1353607AbiDLHZt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
+        Tue, 12 Apr 2022 03:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351610AbiDLHMq (ORCPT
+        with ESMTP id S1351642AbiDLHMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27DF29812;
-        Mon, 11 Apr 2022 23:50:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D71C28E3D;
+        Mon, 11 Apr 2022 23:50:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D3DE61476;
-        Tue, 12 Apr 2022 06:50:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57473C385A6;
-        Tue, 12 Apr 2022 06:50:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F323B81B43;
+        Tue, 12 Apr 2022 06:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CF6C385A6;
+        Tue, 12 Apr 2022 06:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746232;
-        bh=XAj7FCfm0M/jy4rFK9gDsnIs+X5IJ8/MZGnWY/bFg0Q=;
+        s=korg; t=1649746252;
+        bh=r7zwxBmSBYLoVuMUOCzhurkmYQox+oscdpkyavZfQGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uqOHCu7zzQ7L1xnE6IIihwBqk/oDOKlpsZHjNW5LckSe6h5JVe7H7CD8H1QxU3s/z
-         5LObkrY91HeQWyM1DdEttbwmIUUTKQn2RjYpbuVz5ZQGzD0Pv7obaq5ENGowCdtpA1
-         GTvzHqO1F8KUGguCCz8mNeFmYIoW1jKNLAIV2vJg=
+        b=NFb8Y9tgG4Dylb0+2rEzyvmD+9rylPFDTUPil+FrcFNd9wU/kyI4F7mJm5X8OEbPL
+         63HRjebR87jSBM+T2Sdgj3JcgqLBen6W19QqkA5bINnIPYWhpmgxAE6KouwEKdyK6Z
+         qA6vFTCBaL6nKWQrLfNRZ3SP/Dlq3pxK/W5tZDLA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 208/277] scsi: ufs: ufs-pci: Add support for Intel MTL
-Date:   Tue, 12 Apr 2022 08:30:11 +0200
-Message-Id: <20220412062948.059258356@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com,
+        Guo Xuenan <guoxuenan@huawei.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Yann Collet <cyan@fb.com>, Chengyang Fan <cy.fan@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 214/277] lz4: fix LZ4_decompress_safe_partial read out of bound
+Date:   Tue, 12 Apr 2022 08:30:17 +0200
+Message-Id: <20220412062948.233488492@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,62 +55,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Guo Xuenan <guoxuenan@huawei.com>
 
-commit 4049f7acef3eb37c1ea0df45f3ffc29404f4e708 upstream.
+commit eafc0a02391b7b36617b36c97c4b5d6832cf5e24 upstream.
 
-Add PCI ID and callbacks to support Intel Meteor Lake (MTL).
+When partialDecoding, it is EOF if we've either filled the output buffer
+or can't proceed with reading an offset for following match.
 
-Link: https://lore.kernel.org/r/20220404055038.2208051-1-adrian.hunter@intel.com
-Cc: stable@vger.kernel.org # v5.15+
-Reviewed-by: Avri Altman <avri.altman@wdc.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+In some extreme corner cases when compressed data is suitably corrupted,
+UAF will occur.  As reported by KASAN [1], LZ4_decompress_safe_partial
+may lead to read out of bound problem during decoding.  lz4 upstream has
+fixed it [2] and this issue has been disscussed here [3] before.
+
+current decompression routine was ported from lz4 v1.8.3, bumping
+lib/lz4 to v1.9.+ is certainly a huge work to be done later, so, we'd
+better fix it first.
+
+[1] https://lore.kernel.org/all/000000000000830d1205cf7f0477@google.com/
+[2] https://github.com/lz4/lz4/commit/c5d6f8a8be3927c0bec91bcc58667a6cfad244ad#
+[3] https://lore.kernel.org/all/CC666AE8-4CA4-4951-B6FB-A2EFDE3AC03B@fb.com/
+
+Link: https://lkml.kernel.org/r/20211111105048.2006070-1-guoxuenan@huawei.com
+Reported-by: syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com
+Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
+Reviewed-by: Nick Terrell <terrelln@fb.com>
+Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Cc: Yann Collet <cyan@fb.com>
+Cc: Chengyang Fan <cy.fan@huawei.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshcd-pci.c |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ lib/lz4/lz4_decompress.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/ufs/ufshcd-pci.c
-+++ b/drivers/scsi/ufs/ufshcd-pci.c
-@@ -428,6 +428,12 @@ static int ufs_intel_adl_init(struct ufs
- 	return ufs_intel_common_init(hba);
- }
+--- a/lib/lz4/lz4_decompress.c
++++ b/lib/lz4/lz4_decompress.c
+@@ -271,8 +271,12 @@ static FORCE_INLINE int LZ4_decompress_g
+ 			ip += length;
+ 			op += length;
  
-+static int ufs_intel_mtl_init(struct ufs_hba *hba)
-+{
-+	hba->caps |= UFSHCD_CAP_CRYPTO | UFSHCD_CAP_WB_EN;
-+	return ufs_intel_common_init(hba);
-+}
-+
- static struct ufs_hba_variant_ops ufs_intel_cnl_hba_vops = {
- 	.name                   = "intel-pci",
- 	.init			= ufs_intel_common_init,
-@@ -465,6 +471,16 @@ static struct ufs_hba_variant_ops ufs_in
- 	.device_reset		= ufs_intel_device_reset,
- };
- 
-+static struct ufs_hba_variant_ops ufs_intel_mtl_hba_vops = {
-+	.name                   = "intel-pci",
-+	.init			= ufs_intel_mtl_init,
-+	.exit			= ufs_intel_common_exit,
-+	.hce_enable_notify	= ufs_intel_hce_enable_notify,
-+	.link_startup_notify	= ufs_intel_link_startup_notify,
-+	.resume			= ufs_intel_resume,
-+	.device_reset		= ufs_intel_device_reset,
-+};
-+
- #ifdef CONFIG_PM_SLEEP
- static int ufshcd_pci_restore(struct device *dev)
- {
-@@ -579,6 +595,7 @@ static const struct pci_device_id ufshcd
- 	{ PCI_VDEVICE(INTEL, 0x98FA), (kernel_ulong_t)&ufs_intel_lkf_hba_vops },
- 	{ PCI_VDEVICE(INTEL, 0x51FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
- 	{ PCI_VDEVICE(INTEL, 0x54FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
-+	{ PCI_VDEVICE(INTEL, 0x7E47), (kernel_ulong_t)&ufs_intel_mtl_hba_vops },
- 	{ }	/* terminate list */
- };
- 
+-			/* Necessarily EOF, due to parsing restrictions */
+-			if (!partialDecoding || (cpy == oend))
++			/* Necessarily EOF when !partialDecoding.
++			 * When partialDecoding, it is EOF if we've either
++			 * filled the output buffer or
++			 * can't proceed with reading an offset for following match.
++			 */
++			if (!partialDecoding || (cpy == oend) || (ip >= (iend - 2)))
+ 				break;
+ 		} else {
+ 			/* may overwrite up to WILDCOPYLENGTH beyond cpy */
 
 
