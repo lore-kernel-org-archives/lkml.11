@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AEAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351279AbiDLMG2 (ORCPT
+        id S1351576AbiDLMGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
+        Tue, 12 Apr 2022 08:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351775AbiDLMCn (ORCPT
+        with ESMTP id S1351819AbiDLMCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 08:02:43 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B30653E0F;
-        Tue, 12 Apr 2022 03:59:10 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id d10so21937179edj.0;
-        Tue, 12 Apr 2022 03:59:10 -0700 (PDT)
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D287DA89;
+        Tue, 12 Apr 2022 03:59:13 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id l7so31105884ejn.2;
+        Tue, 12 Apr 2022 03:59:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fIZenjsGtzoZOCvRY/8dIr7NFNGibTLVVWT+oNYuIJo=;
-        b=O+BdGb0v7IyCBRQtf3EZKDW/fxwuFivAq1K1m8aSR/ytFEwq46qecATmSDqqsoJYRK
-         Y/MwY/ukhLjhxOkctLHbr7I4ckDi+C2PoR4izz8aAHHuQvSrf7Hh57Aufl+a+Hw+mZwr
-         MaSrmhvityUftJvqYYObK31mfpHkKhm8Qax7fB4QZHucg5MBhdGgAJmsHbY1MgPwUhN4
-         +njMvCDSfbXqNTHqnZgM8Km2KzKAuvYsx8cNL34U0iaaw73aC482LJD5MlBvoU22NJzF
-         WXeO/fGRt9/1u+k6LWTzxKFXC33QPJRaHNQ54Bfh+n+aVJMr5rLXCmQPFnNAdGIiCNW3
-         mg0A==
+        bh=woYPht1iAY/ITrpUe+WmESGMoM6pZPj3PA3p1Q9RO1s=;
+        b=GLAEL/Wnep8C6HgHiZIeQleRfVNhSS+4/IX8MmJQcWytrQ4gxe72994e2BvJApV3Gh
+         +mNin1xpG/WQ/D6ovz8BvFIqNOhFfWp/fZ9cgSKQ6eTUvGI8WcXlhs4/GKGrhpXEsGcl
+         rxCeEihBgqEqVzLatl4dCY8obePJoW+H0b4qyhgf1gmsVkm6qKM8NMjq0JX/A60ZN6UD
+         hBFrqYvcL+vhI34TqDRks6xnYoKdpyCqNKlPKc+msvi2JB4Ux9bNUCcuj2rklCJkH1A7
+         ++xTwBP8+uSMDY4K8o4JFoOrMZefXLk5jdDqQ80MG0AM7Vz/QbJOlik0jeja5ONs+AdT
+         fHGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fIZenjsGtzoZOCvRY/8dIr7NFNGibTLVVWT+oNYuIJo=;
-        b=DsEBmo2Kpzc4OlnHMY+rTTboKxxLkzUGfKlw15NjrGcljD+ffJKcZKNjFD3GB7Nl8r
-         esr8R723AIhaerN8F2iUO6Zs5voBr0EQLNkFXWYeWiuAYjwcB4SZ5655Zp8OBJmpw5eI
-         4c0WmQpj0ehP8gl+bOpG2e7DsczMOalfgRNK3imjDxJOCIFWkGCVWvmYPPHN4LPNTj6x
-         AJwLB4ve5wl0jrAgIgyjxxMNfHO4NPtg5x78qtSbqpN0Nz8lF7q41L3ahsNDnngnvdnV
-         p9gtnWgwaUFXF9FxAqFhv9kg2WX4z6lapTMki44XxhH4+9redVU/utt36LM152Ls4Xke
-         tKMA==
-X-Gm-Message-State: AOAM530sR0RezBoPMi4WvIuaz6xcL5zYaMKjpz8xlpA7FxsUG0Eaxqy4
-        9PvnCeVfulPJ6SFZKnBuKak=
-X-Google-Smtp-Source: ABdhPJxBdd4nYfNJLAMB/gvCpT9MR5g2MN/g0AMD5E0/fevu9Z0Vl/VApU+6pED4uixMBmcAxsu+dg==
-X-Received: by 2002:aa7:d602:0:b0:41d:78e2:655d with SMTP id c2-20020aa7d602000000b0041d78e2655dmr11490685edr.388.1649761148688;
-        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
+        bh=woYPht1iAY/ITrpUe+WmESGMoM6pZPj3PA3p1Q9RO1s=;
+        b=WCWlT/kM5P5OgiaBKycKJxJvd3BmGZJ6qPEETKc+Df80eu7bpw7a4hTwpPbfyz9uQL
+         jLWQiQojv6Jtrnx8s7p3u9wxxOR/j4WJwsjqlHEbcT4+Z0vJRnrjcPb4ZGqRPSA1tzWN
+         17bACKIJl46aroIN/8l9I1I9ElBiiCdEnmPUX0L+7BxSK7dKSnq4j+Q9IEyAIWExFyvA
+         GsuJ3HdoTZ49rQgvc9D9NQCJ2xSe/dUwKjAFFDf95tsTHfgKPPLs1tTKY4BahnqTCjFs
+         rx+1PUhIpGN+SQbLDVenYFewvSGvrVS9BVXFvKljJqyvvAvb9S4pGpN6Ecgn4X9Jl6Pu
+         +v+Q==
+X-Gm-Message-State: AOAM531b6UHsK46X666r/hiif2eBdUHJQt76RjNQnylloEiahfqxscy5
+        QtDvjlCWt41i50DFx+wknWQ=
+X-Google-Smtp-Source: ABdhPJysV63pOngoiWallc/o6MAAi1ONJ0q1M9shqH9IFFtJ3yFNQc/buwFaIzPGEAMqB8pNQlQ0+A==
+X-Received: by 2002:a17:906:1603:b0:6ce:362:c938 with SMTP id m3-20020a170906160300b006ce0362c938mr34468664ejd.253.1649761151541;
+        Tue, 12 Apr 2022 03:59:11 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.07
+        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
+        Tue, 12 Apr 2022 03:59:11 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -87,9 +87,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v2 13/18] net: qede: Remove check of list iterator against head past the loop body
-Date:   Tue, 12 Apr 2022 12:58:25 +0200
-Message-Id: <20220412105830.3495846-14-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v2 15/18] net: netcp: Remove usage of list iterator for list_add() after loop body
+Date:   Tue, 12 Apr 2022 12:58:27 +0200
+Message-Id: <20220412105830.3495846-16-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
@@ -99,54 +99,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When list_for_each_entry() completes the iteration over the whole list
-without breaking the loop, the iterator value will be a bogus pointer
-computed based on the head element.
-
-While it is safe to use the pointer to determine if it was computed
-based on the head element, either with list_entry_is_head() or
-&pos->member == head, using the iterator variable after the loop should
-be avoided.
-
 In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
+traversal loop, use a dedicated pointer pointing to the location
+where the element should be inserted [1].
+
+Before, the code implicitly used the head when no element was found
+when using &next->list. The new 'pos' variable is set to the list head
+by default and overwritten if the list exits early, marking the
+insertion point for list_add().
 
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/ethernet/qlogic/qede/qede_filter.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/ti/netcp_core.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index 3010833ddde3..3d167e37e654 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -829,18 +829,21 @@ int qede_configure_vlan_filters(struct qede_dev *edev)
- int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
+diff --git a/drivers/net/ethernet/ti/netcp_core.c b/drivers/net/ethernet/ti/netcp_core.c
+index 16507bff652a..f25104b5a31b 100644
+--- a/drivers/net/ethernet/ti/netcp_core.c
++++ b/drivers/net/ethernet/ti/netcp_core.c
+@@ -471,6 +471,7 @@ struct netcp_hook_list {
+ int netcp_register_txhook(struct netcp_intf *netcp_priv, int order,
+ 			  netcp_hook_rtn *hook_rtn, void *hook_data)
  {
- 	struct qede_dev *edev = netdev_priv(dev);
--	struct qede_vlan *vlan;
-+	struct qede_vlan *vlan = NULL;
-+	struct qede_vlan *iter;
- 	int rc = 0;
++	struct list_head *pos = &netcp_priv->txhook_list_head;
+ 	struct netcp_hook_list *entry;
+ 	struct netcp_hook_list *next;
+ 	unsigned long flags;
+@@ -485,10 +486,12 @@ int netcp_register_txhook(struct netcp_intf *netcp_priv, int order,
  
- 	DP_VERBOSE(edev, NETIF_MSG_IFDOWN, "Removing vlan 0x%04x\n", vid);
- 
- 	/* Find whether entry exists */
- 	__qede_lock(edev);
--	list_for_each_entry(vlan, &edev->vlan_list, list)
--		if (vlan->vid == vid)
-+	list_for_each_entry(iter, &edev->vlan_list, list)
-+		if (iter->vid == vid) {
-+			vlan = iter;
+ 	spin_lock_irqsave(&netcp_priv->lock, flags);
+ 	list_for_each_entry(next, &netcp_priv->txhook_list_head, list) {
+-		if (next->order > order)
++		if (next->order > order) {
++			pos = &next->list;
  			break;
 +		}
+ 	}
+-	__list_add(&entry->list, next->list.prev, &next->list);
++	list_add_tail(&entry->list, pos);
+ 	spin_unlock_irqrestore(&netcp_priv->lock, flags);
  
--	if (list_entry_is_head(vlan, &edev->vlan_list, list)) {
-+	if (!vlan) {
- 		DP_VERBOSE(edev, (NETIF_MSG_IFUP | NETIF_MSG_IFDOWN),
- 			   "Vlan isn't configured\n");
- 		goto out;
+ 	return 0;
+@@ -520,6 +523,7 @@ EXPORT_SYMBOL_GPL(netcp_unregister_txhook);
+ int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
+ 			  netcp_hook_rtn *hook_rtn, void *hook_data)
+ {
++	struct list_head *pos = &netcp_priv->rxhook_list_head;
+ 	struct netcp_hook_list *entry;
+ 	struct netcp_hook_list *next;
+ 	unsigned long flags;
+@@ -534,10 +538,12 @@ int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
+ 
+ 	spin_lock_irqsave(&netcp_priv->lock, flags);
+ 	list_for_each_entry(next, &netcp_priv->rxhook_list_head, list) {
+-		if (next->order > order)
++		if (next->order > order) {
++			pos = &next->list;
+ 			break;
++		}
+ 	}
+-	__list_add(&entry->list, next->list.prev, &next->list);
++	list_add_tail(&entry->list, pos);
+ 	spin_unlock_irqrestore(&netcp_priv->lock, flags);
+ 
+ 	return 0;
 -- 
 2.25.1
 
