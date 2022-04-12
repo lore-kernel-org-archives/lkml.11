@@ -2,152 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 477E2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353127AbiDLKXT (ORCPT
+        id S1346934AbiDLK0M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
+        Tue, 12 Apr 2022 06:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380630AbiDLKUw (ORCPT
+        with ESMTP id S1379254AbiDLKTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:20:52 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1550D4C43E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:25:40 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id bh17so36067632ejb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:25:40 -0700 (PDT)
+        Tue, 12 Apr 2022 06:19:38 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8128220E4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:18:30 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id m14so2370727wrb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:18:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=X3YNHPaCJ0j6J7AgyeqSNpvtgtUHrIrd+cUv59gmDdw=;
-        b=VDmPWsFhmRDehPDyMetWshMjV0aZT1SEh3ZvGVJlflnm8d84DzneF+d9o2XKkbbkOJ
-         /lvK8KKFLduChzyolt0Ln3fsQHpjlFOlwNPW0h945g1CRhI7iiDEtkLU/nsZKJUC9KiR
-         8DQncwuLk6UdZA/HGp0Ve/2q+uovgoLrD4RB9EbHiVswxU1MN7un0J7cbvnfcFAzTaxS
-         MpKfhWbdjYjS1ufX/R4/k7ZB1xwawDdO21viIotcT4DWbpzR6zukClEn+PkmYCZwynKw
-         DTArIWvs1+fSxPGUpZki8xbuQrNRtW3vhoUti9/7UqU88slSL1ifx3ThSeBAD05ZcEzW
-         MBdQ==
+        bh=t1lzjwxfRXe1DwU9VxJjnLzAF8CyRAgCWO3N0tVaS6A=;
+        b=f01vyjAEjFoGUrkbgP2UXQGBY1xVxDhe0SiX9aofWD9JMxHLgQk63dG1EqGaWLpYv+
+         UzFRqPYlI69MMAP6HRWmAqnO3RWWmHVrd8TjspfasQaP/WBMuyG2wpcrm3IGN6/DgUoV
+         8N9x5l8Nz3gyMLUcSxxZ52Z394Od1YSmPAtSDX+4evi4ZNIdRIz1TqAMoUYBRJw7OGw4
+         Lpri9tle00M6lwOn1g0zLhElnDIUExObh2NYjkw85BvbXWliFSOZ3Taas/l4HczG5LCX
+         R2NAX3FE9vhKR9VeYBXr/RVJc6fSBVj5N0t5Kp6+EXGr06njt6IX4KtfcxPcAa1TI1UI
+         oRmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=X3YNHPaCJ0j6J7AgyeqSNpvtgtUHrIrd+cUv59gmDdw=;
-        b=2bC2UUjXdohMcrPfKLGDRooTbtDzw8I8qFzz41CivSe1vcpmVvQ4r+2EJ3GOtzmsp+
-         W0+tyll2u+vL7EYSS68trple9pX0dDwQgwE3uR5eN7eD/RwPRXq1YYJ5emHsR6sT+yI0
-         U4XI+n0ECDrkjy6QcE5BZ1mxjrF+/vqPDzzqeaHvjQ73YZK1qEw11sDnZlKnMtYzBZl4
-         XQ52/NvvpAPE4qLLzSE84a20xoWj0rk6+8qvLgytYywdczcGj5X5BIVh5JwYoaKpeDlM
-         iJ0V6W0aFKIfcINbmNuYIFUMUqjtSEJmX/89u6kbwtF5AgXrWMJmAuNOQzYYPSzkZMOT
-         lzPA==
-X-Gm-Message-State: AOAM532Y5E7/03h2vfpvAeSduyhNPUqb2uYOGD/i7QNGN4eE4oyWUQPe
-        lbr4LnwpkqU6pT88O3xpLMKJQmEX/YhBqTsXP9Q=
-X-Google-Smtp-Source: ABdhPJyOaUXGrfelcS+wdxAvMUvh4iGL4B43HTVL/dE8NDiNrkZdvrJKneNEM5Q6Hsisd4g2s0OHs2NgcPmFTA8u37Q=
-X-Received: by 2002:a17:906:1be1:b0:6ce:b0a8:17d with SMTP id
- t1-20020a1709061be100b006ceb0a8017dmr33419444ejg.413.1649755538517; Tue, 12
- Apr 2022 02:25:38 -0700 (PDT)
+        bh=t1lzjwxfRXe1DwU9VxJjnLzAF8CyRAgCWO3N0tVaS6A=;
+        b=sIKw4W//QSyYvyz0AQbeUdPOBEF9RS/2ZxdPqAwjabVftwBmHXDU1JWQImYdUHQhyg
+         rOmWl5BvIZHav9nLnGgOYeNzrmNISI0WMrpp60gypjexhnc6Moyt6McM/Bum77M/DPrG
+         8OF6KdGcYs5fNFjw4ahSEOK2HQoUv21M/zS4MaEmL+FVXprz9ON8Nx60+qhxe2EAZLbb
+         0hshnIsvnkaEdPFqH7U6QqV7TN7Fb0LYbGo2GTE9H8QBNx6yCNkANm7tQOANy0Mj5JJa
+         2IRvu4SDU5MrcYcajqGIrS+PYxlSI2jrJrX6WioTmuI2q6BwU40luQbA+KuoSJKPlmtM
+         aMug==
+X-Gm-Message-State: AOAM532v3CNdps0IYD4HxFaKc0u0LzvfQnsmd4dBanS/N3pB3jhE1UY2
+        RjRdn7OXVpKnfBGTHiT1NG7pfD6MWP/UsR9qsFMXqg==
+X-Google-Smtp-Source: ABdhPJyJZQSz39RZRShX34GTe7gth4LcPYRJldMbR5u2AYoxr6ePL9Zbhj0Uk6ECOq/NAoYbHYNTVCHKNrEl1z2ynwE=
+X-Received: by 2002:adf:cd87:0:b0:207:b0ad:6d8 with SMTP id
+ q7-20020adfcd87000000b00207b0ad06d8mr1062384wrj.111.1649755109255; Tue, 12
+ Apr 2022 02:18:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220408052207.209856-1-dzm91@hust.edu.cn> <f125ece9-872e-39d9-48a5-15b85508f6b6@kernel.org>
- <CAD-N9QV7RUfBreaVOmC0JUwVfieM3kOYigOav8=vpAoak6Uc6A@mail.gmail.com>
- <7e896205-027d-32e2-32b5-8951231132ac@kernel.org> <CAD-N9QXM_xds692Lh-QZc5aL01uRivLGrNnxJys41hiTUfKE5w@mail.gmail.com>
- <2f5b7291-da06-0895-8e75-c7a37251b47e@kernel.org> <CAD-N9QX7wKN_x88w7p6t1KWeTGodeF-o0i-1d0Sq4Ja1OzPFoA@mail.gmail.com>
- <YlPHWaSlk21cc32p@sol.localdomain> <a25bac9c-188b-4ab4-21e2-d34e20c92524@kernel.org>
-In-Reply-To: <a25bac9c-188b-4ab4-21e2-d34e20c92524@kernel.org>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 12 Apr 2022 17:25:12 +0800
-Message-ID: <CAD-N9QWCHZ46wL5zOzWSeesGRk0xzKC4oGy2f8E08FTJhE5UCA@mail.gmail.com>
-Subject: Re: [f2fs-dev] [PATCH] fs: f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
-To:     Chao Yu <chao@kernel.org>
-Cc:     Eric Biggers <ebiggers@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
-        linux-f2fs-devel@lists.sourceforge.net
+References: <20220304171913.2292458-1-james.clark@arm.com> <20220304171913.2292458-9-james.clark@arm.com>
+In-Reply-To: <20220304171913.2292458-9-james.clark@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Tue, 12 Apr 2022 10:18:18 +0100
+Message-ID: <CAJ9a7Vj+0GN3xN2S9=hMUJuLtnSmHVbN8W-B4H_juSG+DG+z5Q@mail.gmail.com>
+Subject: Re: [PATCH v3 08/15] coresight: etm4x: Cleanup TRCSTALLCTLR register accesses
+To:     James Clark <James.Clark@arm.com>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        Anshuman.Khandual@arm.com, mathieu.poirier@linaro.org,
+        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 5:53 PM Chao Yu <chao@kernel.org> wrote:
+On Fri, 4 Mar 2022 at 17:19, James Clark <james.clark@arm.com> wrote:
 >
-> On 2022/4/11 14:14, Eric Biggers wrote:
-> > On Mon, Apr 11, 2022 at 01:06:09PM +0800, Dongliang Mu wrote:
-> >> On Mon, Apr 11, 2022 at 11:10 AM Chao Yu <chao@kernel.org> wrote:
-> >>>
-> >>> On 2022/4/9 14:42, Dongliang Mu wrote:
-> >>>> On Sat, Apr 9, 2022 at 11:46 AM Chao Yu <chao@kernel.org> wrote:
-> >>>>>
-> >>>>> On 2022/4/9 9:34, Dongliang Mu wrote:
-> >>>>>> On Sat, Apr 9, 2022 at 8:27 AM Chao Yu <chao@kernel.org> wrote:
-> >>>>>>>
-> >>>>>>> On 2022/4/8 13:22, Dongliang Mu wrote:
-> >>>>>>>> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> >>>>>>>>
-> >>>>>>>> In f2fs_is_valid_blkaddr, if type is DATA_GENERIC_ENHANCE or
-> >>>>>>>> DATA_GENERIC_ENHANCE_READ, it invokes WARN_ON(1) not matter
-> >>>>>>>> blkaddr is in the range or not.
-> >>>>>>>
-> >>>>>>> If we run into the path where we invoke WARN_ON(1) in f2fs_is_valid_blkaddr(),
-> >>>>>>> It means f2fs image may be broken, or there is a bug in f2fs.
-> >>>>>>>
-> >>>>>>> So, do you suffer any related issue in your environment?
-> >>>>>>
-> >>>>>> related issue? Can you explain a little?
-> >>>>>>
-> >>>>>> If you mean if this warning occurs, any other issues or crash
-> >>>>>
-> >>>>> I mean have you seen any warning info printed in the path of
-> >>>>> f2fs_is_valid_blkaddr() before applying this patch, and if so, w/ what
-> >>>>> reproducer? or you just figure out this patch from perspective of code
-> >>>>> review?
-> >>>>
-> >>>> Yes, I have seen both warning information from Syzbot [1] and my local
-> >>>> syzkaller instance.
-> >>>>
-> >>>> In f2fs_is_valid_blkaddr, if the following condition is satisfied,
-> >>>> i.e., blkaddr is not in the right range [2], it will directly invoke
-> >>>> one WARN_ON.
-> >>>>
-> >>>> if (unlikely(blkaddr >= MAX_BLKADDR(sbi) ||
-> >>>>                    blkaddr < MAIN_BLKADDR(sbi))) {
-> >>>>
-> >>>> This is the case on Syzbot.
-> >>>>
-> >>>> Otherwise, it will jump into __is_bitmap_valid. And if the following
-> >>>> condition is satisfied [3], it will trigger another WARN_ON.
-> >>>>
-> >>>> exist = f2fs_test_bit(offset, se->cur_valid_map);
-> >>>> if (!exist && type == DATA_GENERIC_ENHANCE) {
-> >>>>
-> >>>> This appears in my local syzbot instance, but unfortunately it does
-> >>>> not get any reproducer.
-> >>>
-> >>> Oh, it occurs in syzbot test, I guess it is possible that f2fs prints such
-> >>> warning info after blkaddr of node/data block was fuzzed to invalid one.
-> >>>
-> >>> I prefer to keep WARN_ON() to catch more info of bugs found by non-fuzzed
-> >>> type test.
-> >>>
-> >>> Thoughts?
-> >>
-> >> I am fine with both options. I can remove the WARN_ON in my local
-> >> syzkaller instance and continue fuzzing Linux kernel.
-> >>
-> >> +Dmitry Vyukov how do you think? If WARN_ON is kept, this crash will
-> >> occur on Syzbot from time to time.
-> >
-> > WARN_ON is for kernel bugs; please refer to the documentation in
-> > include/asm-generic/bug.h.  If this is a kernel bug, then the kernel bug needs
-> > to be fixed.  Otherwise, the WARN_ON needs to be removed.
+> This is a no-op change for style and consistency and has no effect on
+> the binary output by the compiler. In sysreg.h fields are defined as
+> the register name followed by the field name and then _MASK. This
+> allows for grepping for fields by name rather than using magic numbers.
 >
-> Alright, so how about using dump_stack() instead as suggested in doc?
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 12 ++++++------
+>  drivers/hwtracing/coresight/coresight-etm4x.h       |  4 ++++
+>  2 files changed, 10 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> index 2d29e9daf515..cd24590ea38a 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> @@ -397,22 +397,22 @@ static ssize_t mode_store(struct device *dev,
+>
+>         /* bit[8], Instruction stall bit */
+>         if ((config->mode & ETM_MODE_ISTALL_EN) && (drvdata->stallctl == true))
+> -               config->stall_ctrl |= BIT(8);
+> +               config->stall_ctrl |= TRCSTALLCTLR_ISTALL;
+>         else
+> -               config->stall_ctrl &= ~BIT(8);
+> +               config->stall_ctrl &= ~TRCSTALLCTLR_ISTALL;
+>
+>         /* bit[10], Prioritize instruction trace bit */
+>         if (config->mode & ETM_MODE_INSTPRIO)
+> -               config->stall_ctrl |= BIT(10);
+> +               config->stall_ctrl |= TRCSTALLCTLR_INSTPRIORITY;
+>         else
+> -               config->stall_ctrl &= ~BIT(10);
+> +               config->stall_ctrl &= ~TRCSTALLCTLR_INSTPRIORITY;
+>
+>         /* bit[13], Trace overflow prevention bit */
+>         if ((config->mode & ETM_MODE_NOOVERFLOW) &&
+>                 (drvdata->nooverflow == true))
+> -               config->stall_ctrl |= BIT(13);
+> +               config->stall_ctrl |= TRCSTALLCTLR_NOOVERFLOW;
+>         else
+> -               config->stall_ctrl &= ~BIT(13);
+> +               config->stall_ctrl &= ~TRCSTALLCTLR_NOOVERFLOW;
+>
+>         /* bit[9] Start/stop logic control bit */
+>         if (config->mode & ETM_MODE_VIEWINST_STARTSTOP)
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
+> index cbba46f14ada..36934056a5dc 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
+> @@ -196,6 +196,10 @@
+>  #define TRCEVENTCTL1R_ATB                      BIT(11)
+>  #define TRCEVENTCTL1R_LPOVERRIDE               BIT(12)
+>
+> +#define TRCSTALLCTLR_ISTALL                    BIT(8)
+> +#define TRCSTALLCTLR_INSTPRIORITY              BIT(10)
+> +#define TRCSTALLCTLR_NOOVERFLOW                        BIT(13)
+> +
+>  /*
+>   * System instructions to access ETM registers.
+>   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+> --
+> 2.28.0
+>
 
-I agree. Let's change WARN_ON to dump_stack().
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
 
->
-> Thanks,
->
-> >
-> > - Eric
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
