@@ -2,97 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E330C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353007AbiDLLZq (ORCPT
+        id S1349498AbiDLL0F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
+        Tue, 12 Apr 2022 07:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345938AbiDLLZZ (ORCPT
+        with ESMTP id S1351255AbiDLLZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:25:25 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8729F382;
-        Tue, 12 Apr 2022 03:05:40 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4BB8E100013;
-        Tue, 12 Apr 2022 10:05:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649757939;
+        Tue, 12 Apr 2022 07:25:40 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6DA2B25A;
+        Tue, 12 Apr 2022 03:07:51 -0700 (PDT)
+Received: from zn.tnic (p200300ea97156149329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:6149:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9608C1EC04EC;
+        Tue, 12 Apr 2022 12:07:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649758065;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HLXv+fctRgNNYYJJTbwIOlWDeyNd2mLv72FQ+bxrQ8Y=;
-        b=msmCUWmcxRHbBvMkFgaVIxOulrCXc4kL/L0NiWA6A7nCdvKmhEWDWMUYrEwbDidGOTXdaJ
-        DmKQ+MDh+3oA8D96K2UQs0nJRDKxE2d8aQ2OmAba78hqz4f67hNT6tHJg2BAS8Fw3T7/o5
-        CZCjdZHdMpRuR5GHd0pbaWL+q+Z4Jjg81j1LP7tTqLRCC6PTB/kTo7QnzwLHyxJxr9q4/c
-        S3fCEvy9dtKpu+2V+2OuBC25oYF7mbXi7i+3aEA2lruvMoay5hSwqnnmGuzSZhvrT1yPEz
-        vkLKCGqD/nyVXD/9XLw2jc6Cscm+scTEsBDSXz3WEjQE+pUMp3Gk52VNozhZtg==
-Date:   Tue, 12 Apr 2022 12:05:35 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
-        Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>
-Subject: Re: [PATCH 3/6] PCI: rcar-gen2: Add R9A06G032 support
-Message-ID: <20220412120535.4bf77ab1@xps13>
-In-Reply-To: <20220412094029.287562-4-herve.codina@bootlin.com>
-References: <20220412094029.287562-1-herve.codina@bootlin.com>
-        <20220412094029.287562-4-herve.codina@bootlin.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=o3lXO1BKF/S5AzldA58rjm6HBnn56CuwTB6uiL2Y1Ag=;
+        b=MnAIT7Er8JwAM4b0GD9rgLkDQyjcarmya9EyILrxMvNLKZ0HrhcSex/LUG4qj5DimKo4xp
+        FUSPF+Ow9Iqn/lR66hENQLYudzalsAfqsYDdVNCEP3UQRqaJ97IASCFGZJ0A5WCoQftN+r
+        A6Lci8BJ2YNNbYwSUe5vjOAJqh086DM=
+Date:   Tue, 12 Apr 2022 12:07:46 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jane Chu <jane.chu@oracle.com>
+Cc:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
+        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
+        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
+        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
+        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        x86@kernel.org
+Subject: Re: [PATCH v7 3/6] mce: fix set_mce_nospec to always unmap the whole
+ page
+Message-ID: <YlVPcrK4SSXyPx+Y@zn.tnic>
+References: <20220405194747.2386619-1-jane.chu@oracle.com>
+ <20220405194747.2386619-4-jane.chu@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220405194747.2386619-4-jane.chu@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Herve,
+On Tue, Apr 05, 2022 at 01:47:44PM -0600, Jane Chu wrote:
+> The set_memory_uc() approach doesn't work well in all cases.
+> For example, when "The VMM unmapped the bad page from guest
+> physical space and passed the machine check to the guest."
+> "The guest gets virtual #MC on an access to that page.
+>  When the guest tries to do set_memory_uc() and instructs
+>  cpa_flush() to do clean caches that results in taking another
+>  fault / exception perhaps because the VMM unmapped the page
+>  from the guest."
 
-herve.codina@bootlin.com wrote on Tue, 12 Apr 2022 11:40:26 +0200:
+I presume this is quoting someone...
 
-> Add Renesas R9A06G032 SoC support to the Renesas R-Car gen2 PCI
-> bridge driver.
-> The Renesas RZ/N1D (R9A06G032) internal PCI bridge is compatible
-> with the one available in the R-Car Gen2 family.
->=20
-> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+> Since the driver has special knowledge to handle NP or UC,
+> let's mark the poisoned page with NP and let driver handle it
+
+s/let's mark/mark/
+
+> when it comes down to repair.
+> 
+> Please refer to discussions here for more details.
+> https://lore.kernel.org/all/CAPcyv4hrXPb1tASBZUg-GgdVs0OOFKXMXLiHmktg_kFi7YBMyQ@mail.gmail.com/
+> 
+> Now since poisoned page is marked as not-present, in order to
+> avoid writing to a 'np' page and trigger kernel Oops, also fix
+
+You can write it out: "non-present page..."
+
+> pmem_do_write().
+> 
+> Fixes: 284ce4011ba6 ("x86/memory_failure: Introduce {set, clear}_mce_nospec()")
+> Signed-off-by: Jane Chu <jane.chu@oracle.com>
 > ---
->  drivers/pci/controller/pci-rcar-gen2.c | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/drivers/pci/controller/pci-rcar-gen2.c b/drivers/pci/control=
-ler/pci-rcar-gen2.c
-> index 528bc3780e01..586e4785a57f 100644
-> --- a/drivers/pci/controller/pci-rcar-gen2.c
-> +++ b/drivers/pci/controller/pci-rcar-gen2.c
-> @@ -352,6 +352,8 @@ static const struct of_device_id rcar_pci_of_match[] =
-=3D {
->  	{ .compatible =3D "renesas,pci-r8a7791", },
->  	{ .compatible =3D "renesas,pci-r8a7794", },
->  	{ .compatible =3D "renesas,pci-rcar-gen2", },
-> +	{ .compatible =3D "renesas,pci-r9a06g032", },
-> +	{ .compatible =3D "renesas,pci-rzn1", },
+>  arch/x86/kernel/cpu/mce/core.c |  6 +++---
+>  arch/x86/mm/pat/set_memory.c   | 18 ++++++------------
+>  drivers/nvdimm/pmem.c          | 31 +++++++------------------------
+>  include/linux/set_memory.h     |  4 ++--
+>  4 files changed, 18 insertions(+), 41 deletions(-)
 
-I don't think you don't yet need to match against the two, matching
-against pci-rzn1 is enough for now, until we discover that something is
-specific in the r9a06g032 family and we need to handle something else
-of course.
+For such mixed subsystem patches we probably should talk about who picks
+them up, eventually...
 
-Thanks,
-Miqu=C3=A8l
+> diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+> index 981496e6bc0e..fa67bb9d1afe 100644
+> --- a/arch/x86/kernel/cpu/mce/core.c
+> +++ b/arch/x86/kernel/cpu/mce/core.c
+> @@ -579,7 +579,7 @@ static int uc_decode_notifier(struct notifier_block *nb, unsigned long val,
+>  
+>  	pfn = mce->addr >> PAGE_SHIFT;
+>  	if (!memory_failure(pfn, 0)) {
+> -		set_mce_nospec(pfn, whole_page(mce));
+> +		set_mce_nospec(pfn);
+>  		mce->kflags |= MCE_HANDLED_UC;
+>  	}
+>  
+> @@ -1316,7 +1316,7 @@ static void kill_me_maybe(struct callback_head *cb)
+>  
+>  	ret = memory_failure(p->mce_addr >> PAGE_SHIFT, flags);
+>  	if (!ret) {
+> -		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
+> +		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
+>  		sync_core();
+>  		return;
+>  	}
+> @@ -1342,7 +1342,7 @@ static void kill_me_never(struct callback_head *cb)
+>  	p->mce_count = 0;
+>  	pr_err("Kernel accessed poison in user space at %llx\n", p->mce_addr);
+>  	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, 0))
+> -		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
+> +		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
+>  }
+
+Both that ->mce_whole_page and whole_page() look unused after this.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
