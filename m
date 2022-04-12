@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4854C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbiDLGkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
+        id S1350160AbiDLGkU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350399AbiDLGh7 (ORCPT
+        with ESMTP id S1350500AbiDLGiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:37:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5655A15FD6;
-        Mon, 11 Apr 2022 23:34:34 -0700 (PDT)
+        Tue, 12 Apr 2022 02:38:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F8A17045;
+        Mon, 11 Apr 2022 23:34:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5441E61890;
-        Tue, 12 Apr 2022 06:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558D2C385A6;
-        Tue, 12 Apr 2022 06:34:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0C8BCCE1C07;
+        Tue, 12 Apr 2022 06:34:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C4DC385A1;
+        Tue, 12 Apr 2022 06:34:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745273;
-        bh=a+uHOV3S+wzgELtM9/J/Au4uHNeGFKSUUdWscUaa3vw=;
+        s=korg; t=1649745279;
+        bh=cFM4iAOAUcY2noH7rlzn4l8eFTeuIiD0QzSJJGTIXsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1kLtQpKwpjnnNSDG4D5Nw/ZOVteo67jj1/gUifgCEjDfNFoMiuhtptnr4d95kisda
-         hTVuO+MssjQrmyIiGHZD1q5uEZ4oInIpa03zmI3PA6nXNSaw3TJObiYw1lhHdesQod
-         GuKZ+fGoBM/zsplUEq0yypHRFqJyTxzaL3aI96kg=
+        b=xlHWFqjqX+aPFUsqlpYDCDUEC+yMe/w5ZJa58m4K8LnsKEQDJ4tluinfxCf2c8Qeu
+         iBYLd9ChIK5xwB6pmoLseRqIfmSq9g6ZvQKBaoDwhU4RHPAQvwZYav1tPx1gpBl/aD
+         To6/i/BtmPZYVyc3Un4vRX09rIaxXmsEaJFN4snM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
         Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 040/171] scsi: pm8001: Fix pm80xx_pci_mem_copy() interface
-Date:   Tue, 12 Apr 2022 08:28:51 +0200
-Message-Id: <20220412062929.046626942@linuxfoundation.org>
+Subject: [PATCH 5.10 042/171] scsi: pm8001: Fix task leak in pm8001_send_abort_all()
+Date:   Tue, 12 Apr 2022 08:28:53 +0200
+Message-Id: <20220412062929.104511502@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -52,57 +53,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 3762d8f6edcdb03994c919f9487fd6d336c06561 ]
+[ Upstream commit f90a74892f3acf0cdec5844e90fc8686ca13e7d7 ]
 
-The declaration of the local variable destination1 in pm80xx_pci_mem_copy()
-as a pointer to a u32 results in the sparse warning:
+In pm8001_send_abort_all(), make sure to free the allocated sas task
+if pm8001_tag_alloc() or pm8001_mpi_build_cmd() fail.
 
-warning: incorrect type in assignment (different base types)
-    expected unsigned int [usertype]
-    got restricted __le32 [usertype]
-
-Furthermore, the destination" argument of pm80xx_pci_mem_copy() is wrongly
-declared with the const attribute.
-
-Fix both problems by changing the type of the "destination" argument to
-"__le32 *" and use this argument directly inside the pm80xx_pci_mem_copy()
-function, thus removing the need for the destination1 local variable.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-6-damien.lemoal@opensource.wdc.com
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-21-damien.lemoal@opensource.wdc.com
+Reviewed-by: John Garry <john.garry@huawei.com>
 Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index b5e60553acdc..a10c6f6b6f25 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -66,18 +66,16 @@ int pm80xx_bar4_shift(struct pm8001_hba_info *pm8001_ha, u32 shift_value)
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index e0803ce2957b..616e52be817d 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -1711,7 +1711,6 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 	}
+ 
+ 	task = sas_alloc_slow_task(GFP_ATOMIC);
+-
+ 	if (!task) {
+ 		pm8001_dbg(pm8001_ha, FAIL, "cannot allocate task\n");
+ 		return;
+@@ -1720,8 +1719,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 	task->task_done = pm8001_task_done;
+ 
+ 	res = pm8001_tag_alloc(pm8001_ha, &ccb_tag);
+-	if (res)
++	if (res) {
++		sas_free_task(task);
+ 		return;
++	}
+ 
+ 	ccb = &pm8001_ha->ccb_info[ccb_tag];
+ 	ccb->device = pm8001_ha_dev;
+@@ -1738,8 +1739,10 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 
+ 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &task_abort,
+ 			sizeof(task_abort), 0);
+-	if (ret)
++	if (ret) {
++		sas_free_task(task);
+ 		pm8001_tag_free(pm8001_ha, ccb_tag);
++	}
+ 
  }
  
- static void pm80xx_pci_mem_copy(struct pm8001_hba_info  *pm8001_ha, u32 soffset,
--				const void *destination,
-+				__le32 *destination,
- 				u32 dw_count, u32 bus_base_number)
- {
- 	u32 index, value, offset;
--	u32 *destination1;
--	destination1 = (u32 *)destination;
- 
--	for (index = 0; index < dw_count; index += 4, destination1++) {
-+	for (index = 0; index < dw_count; index += 4, destination++) {
- 		offset = (soffset + index);
- 		if (offset < (64 * 1024)) {
- 			value = pm8001_cr32(pm8001_ha, bus_base_number, offset);
--			*destination1 =  cpu_to_le32(value);
-+			*destination = cpu_to_le32(value);
- 		}
- 	}
- 	return;
 -- 
 2.35.1
 
