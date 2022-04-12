@@ -2,165 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346ABC35295
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E2EC352AA
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355621AbiDLIIi (ORCPT
+        id S1356293AbiDLIJZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
+        Tue, 12 Apr 2022 04:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355318AbiDLH1Z (ORCPT
+        with ESMTP id S1353626AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E40949264
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:07:29 -0700 (PDT)
-Received: from kwepemi100002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kcxbw3Jm3zdZqC;
-        Tue, 12 Apr 2022 15:06:52 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100002.china.huawei.com (7.221.188.188) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 15:07:26 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 15:07:25 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: [RFC PATCH -next V3 5/6] arm64: add {get, put}_user to machine check safe
-Date:   Tue, 12 Apr 2022 07:25:51 +0000
-Message-ID: <20220412072552.2526871-6-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-In-Reply-To: <20220412072552.2526871-1-tongtiangen@huawei.com>
-References: <20220412072552.2526871-1-tongtiangen@huawei.com>
+        Tue, 12 Apr 2022 03:25:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8303343AF3;
+        Tue, 12 Apr 2022 00:02:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35E22B81B4E;
+        Tue, 12 Apr 2022 07:02:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A81ABC385A1;
+        Tue, 12 Apr 2022 07:02:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746935;
+        bh=RJjn3tcoxr5M4Sp8qwu6YBWZMc7sAaScNhEJPC1mWFQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1o18ZuRSoqH+o2zNa38wL/Mocj9aG+ByGQ2/E4PaMI/KLwUGep+hy1aAhc5LVqWAu
+         mohrsm95K4zucW5ty76rXbYD0pzdJIgtCw4zBnlU6ONJVYuS6zONvI1TmTIOVNzyF6
+         f55ytlVMMUQnYDRFHaTp8Q51QW8exRDl9m2bWsck=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 183/285] sctp: count singleton chunks in assoc user stats
+Date:   Tue, 12 Apr 2022 08:30:40 +0200
+Message-Id: <20220412062948.946719395@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add {get, put}_user() to machine check safe.
+From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
 
-If get/put fail due to hardware memory error, if get/put fail due to
-hardware memory error, only the relevant processes are affected, so killing
-the user process and isolate the user page with hardware memory errors is a
-more reasonable choice than kernel panic.
+[ Upstream commit e3d37210df5c41c51147a2d5d465de1a4d77be7a ]
 
-Add new extable type EX_TYPE_UACCESS_MC_ERR_ZERO which can be used for
-uaccess that can be recovered from hardware memory errors. The difference
-from EX_TYPE_UACCESS_MC is that this type also sets additional two target
-register which save error code and value needs to be set zero.
+Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
+COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
+counter available to the assoc owner.
 
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+These are all control chunks so they should be counted as such.
+
+Add counting of singleton chunks so they are properly accounted for.
+
+Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
+Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Link: https://lore.kernel.org/r/c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/asm-extable.h | 14 ++++++++++++++
- arch/arm64/include/asm/uaccess.h     |  4 ++--
- arch/arm64/mm/extable.c              |  3 +++
- 3 files changed, 19 insertions(+), 2 deletions(-)
+ net/sctp/outqueue.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
-index 8af4e7cc9578..62eafb651773 100644
---- a/arch/arm64/include/asm/asm-extable.h
-+++ b/arch/arm64/include/asm/asm-extable.h
-@@ -10,6 +10,7 @@
+diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
+index ff47091c385e..b3950963fc8f 100644
+--- a/net/sctp/outqueue.c
++++ b/net/sctp/outqueue.c
+@@ -911,6 +911,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
+ 				ctx->asoc->base.sk->sk_err = -error;
+ 				return;
+ 			}
++			ctx->asoc->stats.octrlchunks++;
+ 			break;
  
- /* _MC indicates that can fixup from machine check errors */
- #define EX_TYPE_UACCESS_MC		5
-+#define EX_TYPE_UACCESS_MC_ERR_ZERO	6
+ 		case SCTP_CID_ABORT:
+@@ -935,7 +936,10 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
  
- #ifdef __ASSEMBLY__
- 
-@@ -75,6 +76,15 @@
- #define EX_DATA_REG(reg, gpr)						\
- 	"((.L__gpr_num_" #gpr ") << " __stringify(EX_DATA_REG_##reg##_SHIFT) ")"
- 
-+#define _ASM_EXTABLE_UACCESS_MC_ERR_ZERO(insn, fixup, err, zero)		\
-+	__DEFINE_ASM_GPR_NUMS							\
-+	__ASM_EXTABLE_RAW(#insn, #fixup,					\
-+			  __stringify(EX_TYPE_UACCESS_MC_ERR_ZERO),		\
-+			  "("							\
-+			    EX_DATA_REG(ERR, err) " | "				\
-+			    EX_DATA_REG(ZERO, zero)				\
-+			  ")")
-+
- #define _ASM_EXTABLE_UACCESS_ERR_ZERO(insn, fixup, err, zero)		\
- 	__DEFINE_ASM_GPR_NUMS						\
- 	__ASM_EXTABLE_RAW(#insn, #fixup, 				\
-@@ -87,6 +97,10 @@
- #define _ASM_EXTABLE_UACCESS_ERR(insn, fixup, err)			\
- 	_ASM_EXTABLE_UACCESS_ERR_ZERO(insn, fixup, err, wzr)
- 
-+
-+#define _ASM_EXTABLE_UACCESS_MC_ERR(insn, fixup, err)			\
-+	_ASM_EXTABLE_UACCESS_MC_ERR_ZERO(insn, fixup, err, wzr)
-+
- #define EX_DATA_REG_DATA_SHIFT	0
- #define EX_DATA_REG_DATA	GENMASK(4, 0)
- #define EX_DATA_REG_ADDR_SHIFT	5
-diff --git a/arch/arm64/include/asm/uaccess.h b/arch/arm64/include/asm/uaccess.h
-index e8dce0cc5eaa..e41b47df48b0 100644
---- a/arch/arm64/include/asm/uaccess.h
-+++ b/arch/arm64/include/asm/uaccess.h
-@@ -236,7 +236,7 @@ static inline void __user *__uaccess_mask_ptr(const void __user *ptr)
- 	asm volatile(							\
- 	"1:	" load "	" reg "1, [%2]\n"			\
- 	"2:\n"								\
--	_ASM_EXTABLE_UACCESS_ERR_ZERO(1b, 2b, %w0, %w1)			\
-+	_ASM_EXTABLE_UACCESS_MC_ERR_ZERO(1b, 2b, %w0, %w1)		\
- 	: "+r" (err), "=&r" (x)						\
- 	: "r" (addr))
- 
-@@ -325,7 +325,7 @@ do {									\
- 	asm volatile(							\
- 	"1:	" store "	" reg "1, [%2]\n"			\
- 	"2:\n"								\
--	_ASM_EXTABLE_UACCESS_ERR(1b, 2b, %w0)				\
-+	_ASM_EXTABLE_UACCESS_MC_ERR(1b, 2b, %w0)			\
- 	: "+r" (err)							\
- 	: "r" (x), "r" (addr))
- 
-diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-index 5de256a25464..ca7388f3923b 100644
---- a/arch/arm64/mm/extable.c
-+++ b/arch/arm64/mm/extable.c
-@@ -79,6 +79,7 @@ bool fixup_exception(struct pt_regs *regs)
- 	case EX_TYPE_BPF:
- 		return ex_handler_bpf(ex, regs);
- 	case EX_TYPE_UACCESS_ERR_ZERO:
-+	case EX_TYPE_UACCESS_MC_ERR_ZERO:
- 		return ex_handler_uaccess_err_zero(ex, regs);
- 	case EX_TYPE_LOAD_UNALIGNED_ZEROPAD:
- 		return ex_handler_load_unaligned_zeropad(ex, regs);
-@@ -98,6 +99,8 @@ bool fixup_exception_mc(struct pt_regs *regs)
- 	switch (ex->type) {
- 	case EX_TYPE_UACCESS_MC:
- 		return ex_handler_fixup(ex, regs);
-+	case EX_TYPE_UACCESS_MC_ERR_ZERO:
-+		return ex_handler_uaccess_err_zero(ex, regs);
- 	}
- 
- 	return false;
+ 		case SCTP_CID_HEARTBEAT:
+ 			if (chunk->pmtu_probe) {
+-				sctp_packet_singleton(ctx->transport, chunk, ctx->gfp);
++				error = sctp_packet_singleton(ctx->transport,
++							      chunk, ctx->gfp);
++				if (!error)
++					ctx->asoc->stats.octrlchunks++;
+ 				break;
+ 			}
+ 			fallthrough;
 -- 
-2.18.0.huawei.25
+2.35.1
+
+
 
