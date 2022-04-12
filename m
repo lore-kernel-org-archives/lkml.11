@@ -2,170 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9848C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEAEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350420AbiDLLgW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46190 "EHLO
+        id S243183AbiDLLga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352856AbiDLLfX (ORCPT
+        with ESMTP id S1343960AbiDLLf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:35:23 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528811AF1C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:14:30 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id bv19so13313606ejb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:14:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HSgeYSmWoTB8urz+2j0ITeuhf+Crm+J/7fwK9uhlHHk=;
-        b=fT7SCw7VNFb+6UVFgqTXEoZ9drpI5oMjPjHY1QKKIpMzHIIPMh3gGlfPka948WAtIz
-         QVmrfzrgvXaSM4v+IQeadpIgelQs53FBQyinrWvzZbYSDec5dBnbR2tdZM2WicrbMg4A
-         xQC3Y5pFTY4aV0Z0ugdAR2FO5cEdlrjjl5J2b1+GBzrDNnQR34y0UlvdHpqgWLVFXZG9
-         TPYBkIRMYYpFM1PIxdTo2PKPxk0GoTk9wLNF0dcgriMkTBE4O9jnWrH8PNmnMaIhp/Xa
-         QITuTf8C6OlC0nHRjrH+C5Mck8luHjFBzeUx/z9c3aR+TkinBhXa4SPbQ29/UxJy0cJ1
-         UMCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HSgeYSmWoTB8urz+2j0ITeuhf+Crm+J/7fwK9uhlHHk=;
-        b=SpTBSy7yrFpXjKoHlz8Dq/0yGO6wERMf1ADLuyIJTFIEvlI+ZkNYSyE25K1NXM53M0
-         giVKmT/YH4RM1dSAhX+Zegr1kdej930gKi2WsUVIhCrJgfye66E3XcTa9NSE5YPFUNqD
-         g9F37wToOH/wwS9QU+2cTDWWqJIGAIaxgBztuiYWYercoIsmccVAZhBFM0oeIiHjsSJV
-         s8rrI1B8/oHhnEt3uhOD45BvNKvx00TWTz0w4ieOjSzzXPMGWw+m8MmKnFcs2d3O4Jck
-         SCR0bj7SUP7wl6qld0eeQALkSp+Ge+VtkugbGsLSeEvpje+ousZM0D/m1RYZnqhqJfFJ
-         uoDw==
-X-Gm-Message-State: AOAM531dIyhtzb89a4j9NJU4iY3OJVAEOvSnwvrvbi81Mxx3C5uFQmiU
-        39qoG/3OUGtvfCDv2YxfqRvlLi9JuEjNOrVR
-X-Google-Smtp-Source: ABdhPJwdC8sNY9RG8gwiHPtrcpJsAblAVRRXhlJAqVGT6wLUqkjf0DItHobueGFwQAM/ERtI2c8ehw==
-X-Received: by 2002:a17:907:961d:b0:6e7:eefa:ddd0 with SMTP id gb29-20020a170907961d00b006e7eefaddd0mr33612459ejc.321.1649758468879;
-        Tue, 12 Apr 2022 03:14:28 -0700 (PDT)
-Received: from [192.168.1.18] (hst-221-53.medicom.bg. [84.238.221.53])
-        by smtp.googlemail.com with ESMTPSA id q7-20020a170906540700b006d5eca5c9cfsm13009524ejo.191.2022.04.12.03.14.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 03:14:28 -0700 (PDT)
-Message-ID: <329f5120-42c5-e5df-a138-c8b634b6a550@linaro.org>
-Date:   Tue, 12 Apr 2022 13:14:27 +0300
+        Tue, 12 Apr 2022 07:35:29 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1921EAEB;
+        Tue, 12 Apr 2022 03:14:31 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23CAERCM014348;
+        Tue, 12 Apr 2022 05:14:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649758467;
+        bh=goIf/+oHT3mTd+K70oXaHeKMvUYn/pb85zWP3XydD7o=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=eBlVPQBr+D9K66/tOzRN+L+pVzIHVbPka8xUnAxvInz7jOTCkagFMqNEHftWk7LCL
+         FASqmKSv7DXMv24EEtC+kIQZyEhAE62nUrzFtG1QJW44iO0dzNMHdSw7YBNs+PzSvD
+         AiuY+v/cVz/g4p6kHJt3J/BJUkAzB9lV0qUoI1p8=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23CAERf3037804
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 05:14:27 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
+ Apr 2022 05:14:26 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 12 Apr 2022 05:14:26 -0500
+Received: from keerthy.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23CAEJmO122452;
+        Tue, 12 Apr 2022 05:14:23 -0500
+From:   Keerthy <j-keerthy@ti.com>
+To:     <robh+dt@kernel.org>, <daniel.lezcano@linaro.org>,
+        <rui.zhang@intel.com>, <amitk@kernel.org>, <kristo@kernel.org>
+CC:     <j-keerthy@ti.com>, <linux-pm@vger.kernel.org>, <vigneshr@ti.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 1/4] dt-bindings: thermal: k3-j72xx: Add VTM bindings documentation
+Date:   Tue, 12 Apr 2022 15:44:06 +0530
+Message-ID: <20220412101409.7980-2-j-keerthy@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220412101409.7980-1-j-keerthy@ti.com>
+References: <20220412101409.7980-1-j-keerthy@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] media: venus: do not queue internal buffers from
- previous sequence
-Content-Language: en-US
-To:     Vikash Garodia <quic_vgarodia@quicinc.com>,
-        linux-media@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <1649747356-3207-1-git-send-email-quic_vgarodia@quicinc.com>
- <1649747356-3207-2-git-send-email-quic_vgarodia@quicinc.com>
-From:   Stanimir Varbanov <stanimir.varbanov@linaro.org>
-In-Reply-To: <1649747356-3207-2-git-send-email-quic_vgarodia@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vikash,
+Add VTM bindings documentation. In the Voltage Thermal
+Management Module(VTM), K3 J72XX supplies a voltage
+reference and a temperature sensor feature that are gathered in the band
+gap voltage and temperature sensor (VBGAPTS) module. The band
+gap provides current and voltage reference for its internal
+circuits and other analog IP blocks. The analog-to-digital
+converter (ADC) produces an output value that is proportional
+to the silicon temperature.
 
-Thanks for the patch!
+Signed-off-by: Keerthy <j-keerthy@ti.com>
+---
+ .../bindings/thermal/ti,j72xx-thermal.yaml    | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
 
-On 4/12/22 10:09, Vikash Garodia wrote:
-> During reconfig (DRC) event from firmware, it is not guaranteed that
-> all the DPB(internal) buffers would be released by the firmware. Some
-> buffers might be released gradually while processing frames from the
-> new sequence. These buffers now stay idle in the dpblist.
-> In subsequent call to queue the DPBs to firmware, these idle buffers
-> should not be queued. The fix identifies those buffers and free them.
-> ---
->  drivers/media/platform/qcom/venus/helpers.c | 37 ++++++++++++++++++++++-------
->  1 file changed, 28 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
-> index 0bca95d..0602f03 100644
-> --- a/drivers/media/platform/qcom/venus/helpers.c
-> +++ b/drivers/media/platform/qcom/venus/helpers.c
-> @@ -90,12 +90,31 @@ bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt)
->  }
->  EXPORT_SYMBOL_GPL(venus_helper_check_codec);
->  
-> +static int venus_helper_free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
-
-This function should return void. Also, venus_helper_ prefix is not
-needed since if you follow the helpers.c style the prefix is only used
-for exported helper functions.
-
-I guess it could be:
-
-static void free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
-
-With this fixed:
-
-Acked-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-
-> +{
-> +	ida_free(&inst->dpb_ids, buf->dpb_out_tag);
-> +
-> +	list_del_init(&buf->list);
-> +	dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
-> +		       buf->attrs);
-> +	kfree(buf);
-> +
-> +	return 0;
-> +}
-> +
->  int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
->  {
-> -	struct intbuf *buf;
-> +	struct intbuf *buf, *next;
-> +	unsigned int dpb_size = 0;
->  	int ret = 0;
->  
-> -	list_for_each_entry(buf, &inst->dpbbufs, list) {
-> +	if (inst->dpb_buftype == HFI_BUFFER_OUTPUT)
-> +		dpb_size = inst->output_buf_size;
-> +	else if (inst->dpb_buftype == HFI_BUFFER_OUTPUT2)
-> +		dpb_size = inst->output2_buf_size;
-> +
-> +
-> +	list_for_each_entry_safe(buf, next, &inst->dpbbufs, list) {
->  		struct hfi_frame_data fdata;
->  
->  		memset(&fdata, 0, sizeof(fdata));
-> @@ -106,6 +125,12 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
->  		if (buf->owned_by == FIRMWARE)
->  			continue;
->  
-> +		/* free buffer from previous sequence which was released later */
-> +		if (dpb_size > buf->size) {
-> +			venus_helper_free_dpb_buf(inst, buf);
-> +			continue;
-> +		}
-> +
->  		fdata.clnt_data = buf->dpb_out_tag;
->  
->  		ret = hfi_session_process_buf(inst, &fdata);
-> @@ -127,13 +152,7 @@ int venus_helper_free_dpb_bufs(struct venus_inst *inst)
->  	list_for_each_entry_safe(buf, n, &inst->dpbbufs, list) {
->  		if (buf->owned_by == FIRMWARE)
->  			continue;
-> -
-> -		ida_free(&inst->dpb_ids, buf->dpb_out_tag);
-> -
-> -		list_del_init(&buf->list);
-> -		dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
-> -			       buf->attrs);
-> -		kfree(buf);
-> +		venus_helper_free_dpb_buf(inst, buf);
->  	}
->  
->  	if (list_empty(&inst->dpbbufs))
-
+diff --git a/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
+new file mode 100644
+index 000000000000..8483c495cb9a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/thermal/ti,j72xx-thermal.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments J72XX VTM (DTS) binding
++
++maintainers:
++  - Keerthy <j-keerthy@ti.com>
++
++properties:
++  compatible:
++    const: ti,j721e-vtm
++    oneOf:
++      - enum:
++          - ti,j721e-vtm
++          - ti,j7200-vtm
++
++  reg:
++    maxItems: 3
++
++  power-domains:
++    maxItems: 1
++
++  "#thermal-sensor-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - power-domains
++  - "#thermal-sensor-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/soc/ti,sci_pm_domain.h>
++    wkup_vtm0: wkup_vtm0@42040000 {
++        compatible = "ti,j721e-vtm";
++        reg = <0x42040000 0x350>,
++            <0x42050000 0x350>,
++            <0x43000300 0x10>;
++        power-domains = <&k3_pds 154 TI_SCI_PD_EXCLUSIVE>;
++        #thermal-sensor-cells = <1>;
++    };
++
++    mpu_thermal: mpu_thermal {
++        polling-delay-passive = <250>; /* milliseconds */
++        polling-delay = <500>; /* milliseconds */
++        thermal-sensors = <&wkup_vtm0 0>;
++
++        trips {
++                mpu_crit: mpu_crit {
++                        temperature = <125000>; /* milliCelsius */
++                        hysteresis = <2000>; /* milliCelsius */
++                        type = "critical";
++                };
++        };
++    };
++...
 -- 
-regards,
-Stan
+2.17.1
+
