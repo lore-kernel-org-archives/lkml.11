@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0633DC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0CAC352A8
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359401AbiDLHnB (ORCPT
+        id S1359635AbiDLHn1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
+        Tue, 12 Apr 2022 03:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353936AbiDLHQi (ORCPT
+        with ESMTP id S1354060AbiDLHQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:16:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6775B42499;
-        Mon, 11 Apr 2022 23:57:47 -0700 (PDT)
+        Tue, 12 Apr 2022 03:16:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C019348882;
+        Mon, 11 Apr 2022 23:58:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6B7060EEB;
-        Tue, 12 Apr 2022 06:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0214AC385A6;
-        Tue, 12 Apr 2022 06:57:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0588B615A4;
+        Tue, 12 Apr 2022 06:58:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A942C385A6;
+        Tue, 12 Apr 2022 06:58:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746666;
-        bh=rQ1sIUJmPcKMjONAfGVjnlPTe+lzGwpPriP4zODIReU=;
+        s=korg; t=1649746685;
+        bh=b/+qkuaKqcpsC6aEEb3D76mekCKpkMRju0VRn4DhoMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C8/4x76xylE/UZ55zV4hJHp96TXrNDrr9zGXkDUg3jRoCLzrbQPhCFrwy1L0aRYOy
-         uB0PT/l/8+y9WwhPTr/KwD/ap3+G/eMW8JEp4RVrMZCqDSTa+dlBXDbRCf3hJ/DXqk
-         UOj8LhGrpt/8mrLWm41LTPtkk/eCSviEVeFUxqzg=
+        b=noOiP1r+jyXdrKoi9DWVBdssEHrq7rYCmfgsowbYZNY9h5wIGSEVkTRO5EJSUUqNv
+         GNxkfyXNr4K+N0zRjf4GnOMr7rodHCK3gmlWWqTvH8wcIlcd40a7+BZQul2XU+tMQv
+         du0kdHDFc+JUwGG21XJXkHSeu+IU70kxn7Uv+q4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Li Chen <lchen@ambarella.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 088/285] PCI: endpoint: Fix misused goto label
-Date:   Tue, 12 Apr 2022 08:29:05 +0200
-Message-Id: <20220412062946.203200527@linuxfoundation.org>
+Subject: [PATCH 5.16 094/285] can: etas_es58x: es58x_fd_rx_event_msg(): initialize rx_event_msg before calling es58x_check_msg_len()
+Date:   Tue, 12 Apr 2022 08:29:11 +0200
+Message-Id: <20220412062946.376907108@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,34 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Chen <lchen@ambarella.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit bf8d87c076f55b8b4dfdb6bc6c6b6dc0c2ccb487 ]
+[ Upstream commit 7a8cd7c0ee823a1cc893ab3feaa23e4b602bfb9a ]
 
-Fix a misused goto label jump since that can result in a memory leak.
+Function es58x_fd_rx_event() invokes the es58x_check_msg_len() macro:
 
-Link: https://lore.kernel.org/r/17e7b9b9ee6.c6d9c6a02564.4545388417402742326@zohomail.com
-Signed-off-by: Li Chen <lchen@ambarella.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
+| 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
+
+While doing so, it dereferences an uninitialized
+variable: *rx_event_msg.
+
+This is actually harmless because es58x_check_msg_len() only uses
+preprocessor macros (sizeof() and __stringify()) on
+*rx_event_msg. c.f. [1].
+
+Nonetheless, this pattern is confusing so the lines are reordered to
+make sure that rx_event_msg is correctly initialized.
+
+This patch also fixes a false positive warning reported by cppcheck:
+
+| cppcheck possible warnings: (new ones prefixed by >>, may not be real problems)
+|
+|    In file included from drivers/net/can/usb/etas_es58x/es58x_fd.c:
+| >> drivers/net/can/usb/etas_es58x/es58x_fd.c:174:8: warning: Uninitialized variable: rx_event_msg [uninitvar]
+|     ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
+|           ^
+
+[1] https://elixir.bootlin.com/linux/v5.16/source/drivers/net/can/usb/etas_es58x/es58x_core.h#L467
+
+Link: https://lore.kernel.org/all/20220306101302.708783-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/endpoint/functions/pci-epf-test.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/usb/etas_es58x/es58x_fd.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index c7e45633beaf..5b833f00e980 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -451,7 +451,7 @@ static int pci_epf_test_write(struct pci_epf_test *epf_test)
- 		if (!epf_test->dma_supported) {
- 			dev_err(dev, "Cannot transfer data using DMA\n");
- 			ret = -EINVAL;
--			goto err_map_addr;
-+			goto err_dma_map;
- 		}
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+index 4f0cae29f4d8..b71d1530638b 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+@@ -171,12 +171,11 @@ static int es58x_fd_rx_event_msg(struct net_device *netdev,
+ 	const struct es58x_fd_rx_event_msg *rx_event_msg;
+ 	int ret;
  
- 		src_phys_addr = dma_map_single(dma_dev, buf, reg->size,
++	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
+ 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
+ 	if (ret)
+ 		return ret;
+ 
+-	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
+-
+ 	return es58x_rx_err_msg(netdev, rx_event_msg->error_code,
+ 				rx_event_msg->event_code,
+ 				get_unaligned_le64(&rx_event_msg->timestamp));
 -- 
 2.35.1
 
