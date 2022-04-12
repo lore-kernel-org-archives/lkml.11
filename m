@@ -2,211 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78704C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229599AbiDLXS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
+        id S229533AbiDLXS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiDLXSU (ORCPT
+        with ESMTP id S229644AbiDLXSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:18:20 -0400
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4761605FF;
-        Tue, 12 Apr 2022 15:05:49 -0700 (PDT)
-Received: by mail-oi1-f177.google.com with SMTP id k13so197818oiw.1;
-        Tue, 12 Apr 2022 15:05:49 -0700 (PDT)
+        Tue, 12 Apr 2022 19:18:36 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14DC48388
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:06:41 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id c1so245839qvl.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:06:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p8u0CU1KvgYWMsdxtEOdCdEghJkrxplipXTRXNrm5S4=;
+        b=DG+c7994oyQk1ElIm/4+o0ZgHIWOGTmheFs0LERWEGROvm/qYckVHs43ZYbkEj5VJM
+         odL33hJmPMezfqOLZjCdle4myMgQVudQGGblllA2bim+A+cJ8wmSnrCk5/ZIwvHKy+wZ
+         qeZBtrDRaZzAUEZIsm/GiIY8LlnmxZTCSd9DKxM862ZoTZhg3Un8XVa3lYSecE9e9Wmk
+         qzo2RQq20WVvANBn49L9mCw0P8sXnxvRDThzOMFclR6YeKIvD8zKdMIiC7Udr7NvMdHp
+         KF2fat9SEMQ14gg5Y1VymtEptuwhBxS204RX03E/hw5+umWOBV0+TvWZbSLstb3v1sqT
+         OHzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=qiLhy5En6qOrIdw1hARFp7ZQvamsIP/5dzhc1+Si6fI=;
-        b=j75vQXUcUtvIy9dkQc5F49qHb2qyMhzcL0x30FDZve8m16FQu7XYdFsjf86cirO8a1
-         jmCXud2aDG+j7ipCz2WNqCxj3hi3oInw4yX2BMLwBcHb8yNdJhSjgHlwMOQ+7Q/rpEOk
-         ftqahx928UQZANHPCtFVJW1kb0SfQC/Uc+rKIX6lBlfhBFYny2tYWULw/Q+9/+YqdUjm
-         PsqJMgAz+UU62C55M+UcDMpWrwIxrRS0tC1Y01p1AaHLoLD9GsVYXDoELf9BiQmCXJ1V
-         L0DF6/Y92fpHPufZA8B7MgOqV1E9ypqiHnd9MvnGfNRntMYd6hbFpjdrSdQ131I0+Elb
-         OqVw==
-X-Gm-Message-State: AOAM5330TAppQbNgZNs86R+37llgBlzMa4U9ENHiXbuHvmEw04R7W4Wx
-        +qb1/6aWYcDfSJ7ApuwkrmkyzWPXKw==
-X-Google-Smtp-Source: ABdhPJzipANd7lS/ByWMtonoDdO+pJ9I111+w80YFq0oVtDRmvTMiuTaB2NXYLveW1Q+1PGg3bMB9w==
-X-Received: by 2002:a05:6808:238a:b0:2f7:22df:1d58 with SMTP id bp10-20020a056808238a00b002f722df1d58mr2655257oib.10.1649801148672;
-        Tue, 12 Apr 2022 15:05:48 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id j16-20020a056808057000b002fa638813acsm608665oig.36.2022.04.12.15.05.48
+        bh=p8u0CU1KvgYWMsdxtEOdCdEghJkrxplipXTRXNrm5S4=;
+        b=6B7x8iLKY+uPZnpwVSlt3S8hW4v7kvm9F70mxwJ572t4oyMQ/ho7485ixMvSWMxJ7q
+         ystpB7MBRdRjqD+b7UiH6voiBZaeZtFiJHqvSiLy/mnIqNtff0T5rGlZOuVn2Ur4fTyT
+         KUc1XXOJ8M45eT3OdCAJgjbORi/1N9qXtS/fAADLQzB8iSSdBkJusGdq1OHuanUK2Nz1
+         BKPFbxjVg6Plnd6KVR3ZYJHJ339wagZAu7OOYWnBry9GjqRmkbno0Rzjr4KMMrFYML2k
+         6V1U/5jWs2GDkVJTi7H0mhQ0Xx0RFqJVDcojo0oMFYpBU+8HW8vkXv3cRL7i9jtAX/Ic
+         R3CQ==
+X-Gm-Message-State: AOAM533DQd0RgKnBqxpDnA35RKYeZA9mKRrVbr4PBM/J1Hf1w+QKLxpn
+        p7OPqg4tDjXfv9nFSi7Due1OiL5LpMZK5w==
+X-Google-Smtp-Source: ABdhPJx8BTXc5+r92UKhVYuhBH/X61uNdS2qyAXuDlYul0QoeHX4uiTUuk38GGOdMl8bX6rqymn6Eg==
+X-Received: by 2002:a17:902:f282:b0:158:339c:d4a2 with SMTP id k2-20020a170902f28200b00158339cd4a2mr19010663plc.134.1649799255087;
+        Tue, 12 Apr 2022 14:34:15 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id y3-20020a17090a8b0300b001c735089cc2sm416972pjn.54.2022.04.12.14.34.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 15:05:48 -0700 (PDT)
-Received: (nullmailer pid 1026559 invoked by uid 1000);
-        Tue, 12 Apr 2022 22:05:47 -0000
-Date:   Tue, 12 Apr 2022 17:05:47 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] dt-bindings: PCI: uniphier-ep: Clean up reg,
- clocks, resets, and their names using compatible string
-Message-ID: <YlX3uxZzmnb1nM/R@robh.at.kernel.org>
-References: <1649294553-17310-1-git-send-email-hayashi.kunihiko@socionext.com>
- <1649294553-17310-3-git-send-email-hayashi.kunihiko@socionext.com>
+        Tue, 12 Apr 2022 14:34:14 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 21:34:10 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [RFC PATCH V3 4/4] KVM: X86: Use passthrough and pae_root shadow
+ page for 32bit guests
+Message-ID: <YlXwUqnI2CeYT/xx@google.com>
+References: <20220330132152.4568-1-jiangshanlai@gmail.com>
+ <20220330132152.4568-5-jiangshanlai@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1649294553-17310-3-git-send-email-hayashi.kunihiko@socionext.com>
+In-Reply-To: <20220330132152.4568-5-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 10:22:32AM +0900, Kunihiko Hayashi wrote:
-> Instead of "oneOf:" choices, use "allOf:" and "if:" to define reg, clocks,
-> resets, and their names that can be taken by the compatible string.
-> 
-> The order of their names doesn't change here.
-> 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+On Wed, Mar 30, 2022, Lai Jiangshan wrote:
 > ---
->  .../pci/socionext,uniphier-pcie-ep.yaml       | 84 ++++++++++++-------
->  1 file changed, 56 insertions(+), 28 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml
-> index 437e61618d06..49a5b2ca266c 100644
-> --- a/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml
-> +++ b/Documentation/devicetree/bindings/pci/socionext,uniphier-pcie-ep.yaml
-> @@ -15,9 +15,6 @@ description: |
->  maintainers:
->    - Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
->  
-> -allOf:
-> -  - $ref: /schemas/pci/snps,dw-pcie-ep.yaml#
-> -
->  properties:
->    compatible:
->      enum:
-> @@ -28,41 +25,19 @@ properties:
->      minItems: 4
->      maxItems: 5
->  
-> -  reg-names:
-> -    oneOf:
-> -      - items:
-> -          - const: dbi
-> -          - const: dbi2
-> -          - const: link
-> -          - const: addr_space
-> -      - items:
-> -          - const: dbi
-> -          - const: dbi2
-> -          - const: link
-> -          - const: addr_space
-> -          - const: atu
+>  arch/x86/include/asm/kvm_host.h |   4 -
+>  arch/x86/kvm/mmu/mmu.c          | 290 +-------------------------------
+>  arch/x86/kvm/mmu/paging_tmpl.h  |  13 +-
+>  3 files changed, 20 insertions(+), 287 deletions(-)
 
-This could be just:
-
-      minItems: 4
-      items:
-        - const: dbi
-        - const: dbi2
-        - const: link
-        - const: addr_space
-        - const: atu
-
-Then the if/then can have just 'minItems: 5' or 'maxItems: 4' for each 
-case. I prefer the if/then schemas to be minimal.
-
-> +  reg-names: true
->  
->    clocks:
->      minItems: 1
->      maxItems: 2
->  
-> -  clock-names:
-> -    oneOf:
-> -      - items:              # for Pro5
-> -          - const: gio
-> -          - const: link
-> -      - const: link         # for NX1
-> +  clock-names: true
->  
->    resets:
->      minItems: 1
->      maxItems: 2
->  
-> -  reset-names:
-> -    oneOf:
-> -      - items:              # for Pro5
-> -          - const: gio
-> -          - const: link
-> -      - const: link         # for NX1
-> +  reset-names: true
->  
->    num-ib-windows:
->      const: 16
-> @@ -78,6 +53,59 @@ properties:
->    phy-names:
->      const: pcie-phy
->  
-> +allOf:
-> +  - $ref: /schemas/pci/snps,dw-pcie-ep.yaml#
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: socionext,uniphier-pro5-pcie-ep
-> +    then:
-> +      properties:
-> +        reg:
-> +          minItems: 4
-> +          maxItems: 4
-> +        reg-names:
-> +          items:
-> +            - const: dbi
-> +            - const: dbi2
-> +            - const: link
-> +            - const: addr_space
-> +        clocks:
-> +          minItems: 2
-> +          maxItems: 2
-> +        clock-names:
-> +          items:
-> +            - const: gio
-> +            - const: link
-> +        resets:
-> +          minItems: 2
-> +          maxItems: 2
-> +        reset-names:
-> +          items:
-> +            - const: gio
-> +            - const: link
-> +    else:
-> +      properties:
-> +        reg:
-> +          minItems: 4
-> +          maxItems: 5
-> +        reg-names:
-> +          items:
-> +            - const: dbi
-> +            - const: dbi2
-> +            - const: link
-> +            - const: addr_space
-> +            - const: atu
-> +        clocks:
-> +          maxItems: 1
-> +        clock-names:
-> +          const: link
-> +        resets:
-> +          maxItems: 1
-> +        reset-names:
-> +          const: link
-> +
->  required:
->    - compatible
->    - reg
-> -- 
-> 2.25.1
-> 
-> 
+This diffstat is amazing :-)
