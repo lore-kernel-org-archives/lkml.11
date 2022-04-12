@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8019AC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4AB2C41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350996AbiDLGsX (ORCPT
+        id S1350959AbiDLGsV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
+        Tue, 12 Apr 2022 02:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351160AbiDLGoJ (ORCPT
+        with ESMTP id S1351152AbiDLGoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:44:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFDB939810;
-        Mon, 11 Apr 2022 23:37:36 -0700 (PDT)
+        Tue, 12 Apr 2022 02:44:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F88639816;
+        Mon, 11 Apr 2022 23:37:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2D364CE1C0A;
-        Tue, 12 Apr 2022 06:37:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40602C385A8;
-        Tue, 12 Apr 2022 06:37:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE440B81B43;
+        Tue, 12 Apr 2022 06:37:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CCD5C385A1;
+        Tue, 12 Apr 2022 06:37:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745453;
-        bh=HhsWse4aJa2j35JND5dIW4AAU37/WjdA3YvpJ1bUwCI=;
+        s=korg; t=1649745450;
+        bh=RvVN9NGk7CZW5sgzfkl0x8gZdQ/3SrM078EXa4GD8tQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O7Drx1bWo+GTSUOQbgxbot0Utd42v1gW0s9E0AgZO9YWeArhfFpDKqrkO+vJS2P1Q
-         0uZVUblAutssEiIHDF6+x5MZ51IpNoC2pc4sWl28ucDRlNbte5NO6bJPJMsDuSdgGA
-         7pl++LtsCA9g8R8RhPdch94CuLBkpG62Q5vE18zk=
+        b=EPCdSudRQlyW9WWMwJ8TcXTzvzQK4ivv8uQJLNB7Yy9bKRw9+UTak1wsnJNA0MIFC
+         DVid03Z67gW2ghnXS6l6Pkb8s8eIvck5L3MlumdN1vlg9tu8/LCxxsHMtPdSvFR/lQ
+         aGHYVQ2us1drYZxZkT8rx7HwPIesExARUGCO7N7M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
-        ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 100/171] Revert "NFSv4: Handle the special Linux file open access mode"
-Date:   Tue, 12 Apr 2022 08:29:51 +0200
-Message-Id: <20220412062930.778099991@linuxfoundation.org>
+Subject: [PATCH 5.10 073/171] staging: vchiq_core: handle NULL result of find_service_by_handle
+Date:   Tue, 12 Apr 2022 08:29:24 +0200
+Message-Id: <20220412062929.996163715@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,56 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit ab0fc21bc7105b54bafd85bd8b82742f9e68898a ]
+[ Upstream commit ca225857faf237234d2fffe5d1919467dfadd822 ]
 
-This reverts commit 44942b4e457beda00981f616402a1a791e8c616e.
+In case of an invalid handle the function find_servive_by_handle
+returns NULL. So take care of this and avoid a NULL pointer dereference.
 
-After secondly opening a file with O_ACCMODE|O_DIRECT flags,
-nfs4_valid_open_stateid() will dereference NULL nfs4_state when lseek().
-
-Reproducer:
-  1. mount -t nfs -o vers=4.2 $server_ip:/ /mnt/
-  2. fd = open("/mnt/file", O_ACCMODE|O_DIRECT|O_CREAT)
-  3. close(fd)
-  4. fd = open("/mnt/file", O_ACCMODE|O_DIRECT)
-  5. lseek(fd)
-
-Reported-by: Lyu Tao <tao.lyu@epfl.ch>
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Link: https://lore.kernel.org/r/1642968143-19281-18-git-send-email-stefan.wahren@i2se.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/inode.c    | 1 -
- fs/nfs/nfs4file.c | 2 +-
- 2 files changed, 1 insertion(+), 2 deletions(-)
+ .../staging/vc04_services/interface/vchiq_arm/vchiq_core.c  | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
-index f27ecc2e490f..1adece1cff3e 100644
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -1139,7 +1139,6 @@ int nfs_open(struct inode *inode, struct file *filp)
- 	nfs_fscache_open_file(inode, filp);
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(nfs_open);
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+index 38b10fd5d992..95b91fe45cb3 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+@@ -2280,6 +2280,9 @@ void vchiq_msg_queue_push(unsigned int handle, struct vchiq_header *header)
+ 	struct vchiq_service *service = find_service_by_handle(handle);
+ 	int pos;
  
- /*
-  * This function is called whenever some part of NFS notices that
-diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
-index a1e5c6b85ded..7b13408a2d70 100644
---- a/fs/nfs/nfs4file.c
-+++ b/fs/nfs/nfs4file.c
-@@ -51,7 +51,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
- 		return err;
++	if (!service)
++		return;
++
+ 	while (service->msg_queue_write == service->msg_queue_read +
+ 		VCHIQ_MAX_SLOTS) {
+ 		if (wait_for_completion_interruptible(&service->msg_queue_pop))
+@@ -2299,6 +2302,9 @@ struct vchiq_header *vchiq_msg_hold(unsigned int handle)
+ 	struct vchiq_header *header;
+ 	int pos;
  
- 	if ((openflags & O_ACCMODE) == 3)
--		return nfs_open(inode, filp);
-+		openflags--;
++	if (!service)
++		return NULL;
++
+ 	if (service->msg_queue_write == service->msg_queue_read)
+ 		return NULL;
  
- 	/* We can't create new files here */
- 	openflags &= ~(O_CREAT|O_EXCL);
 -- 
 2.35.1
 
