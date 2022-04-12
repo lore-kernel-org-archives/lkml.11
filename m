@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2EDC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7C7C3527C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391024AbiDLJZi (ORCPT
+        id S1389457AbiDLJXq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        Tue, 12 Apr 2022 05:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354736AbiDLIKW (ORCPT
+        with ESMTP id S1357088AbiDLHjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:10:22 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A1365FB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:19 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB8A-0007g8-Ln; Tue, 12 Apr 2022 09:40:06 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB89-00AQYb-5t; Tue, 12 Apr 2022 09:40:05 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v1 00/17] protonic fixes 
-Date:   Tue, 12 Apr 2022 09:39:47 +0200
-Message-Id: <20220412074004.2485264-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Tue, 12 Apr 2022 03:39:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC12767D;
+        Tue, 12 Apr 2022 00:11:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7BFFB81A8F;
+        Tue, 12 Apr 2022 07:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0542FC385A5;
+        Tue, 12 Apr 2022 07:11:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747496;
+        bh=PIRfs3JA6VwCrYK9rs78+T4RhVQHLme5xSV84VBX9NY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vcsAqVK2gf3KCnMYzc9qy9eIN2ej0+ygQ7OLrvCk3KVRq8MNnaPijVnoJ/sKnT+ay
+         kAG1WaF6dw0KkXAGQtMnB5QQtBZbsBFVyUG3nU91l9Uw4Q35U1kXg2ciZGjNJWEWSg
+         HuzcH5ebElA/x39DqbH23zlfYxB2KaZUG7Zn1Z/0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 099/343] drm/amdkfd: make CRAT table missing message informational only
+Date:   Tue, 12 Apr 2022 08:28:37 +0200
+Message-Id: <20220412062953.958432293@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series provide two main part of changes:
-- Remove prototype specific deprecated code not used in production.
-- Unify vicut1 and victgo variants to reduce maintaining overhead.
+From: Alex Deucher <alexander.deucher@amd.com>
 
-David Jander (16):
-  arm: dts: imx6qdl-vicut1.dtsi: remove TiWi module
-  arm: dts: imx6qdl-vicut1.dtsi: Put nON_SWITCH in own pinctrl grp
-  arm: dts: imx6qdl-vicut1.dtsi: Remove PCIe
-  arm: dts: imx6qdl-vicut1/victgo: Remove UART2
-  arm: dts: imx6qdl-vicut1.dtsi: Fix LED names
-  arm: dts: imx6qdl-vicut1.dtsi: Fix debug LED gpio pins
-  arm: dts: imx6qdl-vicut1.dtsi: Update GPIO line names
-  arm: dts: imx6qdl-vicut1.dtsi: Remove conflicting pinctrl entry
-  arm: dts: imx6q-vicut1.dts: remove sata node
-  arm: dts: imx6dl-victgo.dts: update gpio names
-  arm: dts: imx6dl-victgo.dts: Factor out common parts to
-    imx6qdl-victgo.dtsi
-  arm: dts: imx6qdl-vicut1.dtsi: Move some node out to DTS files
-  arm: dts: Remove imx6qdl-victgo.dtsi
-  arm: dts: imx6qdl-vicut1: Factor out common parts of 12inch board
-    variants
-  arm: dts: imx6dl-victgo.dts: Remove touchscreen x axis inversion
-  arm: dts: imx6qdl-vicut1.dtsi: Add missing ISB led node
+[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
 
-Oleksij Rempel (1):
-  arm: dts: imx6qdl-vicut1.dtsi: add thermal zone and attach tmp103 to
-    it.
+The driver has a fallback so make the message informational
+rather than a warning. The driver has a fallback if the
+Component Resource Association Table (CRAT) is missing, so
+make this informational now.
 
- arch/arm/boot/dts/imx6dl-victgo.dts          | 682 +------------------
- arch/arm/boot/dts/imx6dl-vicut1.dts          |   1 +
- arch/arm/boot/dts/imx6q-vicut1.dts           |   5 +-
- arch/arm/boot/dts/imx6qdl-vicut1-12inch.dtsi | 128 ++++
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi        | 222 +-----
- arch/arm/boot/dts/imx6qp-vicutp.dts          |   1 +
- 6 files changed, 178 insertions(+), 861 deletions(-)
- create mode 100644 arch/arm/boot/dts/imx6qdl-vicut1-12inch.dtsi
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+index 9624bbe8b501..281def1c6c08 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -1567,7 +1567,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
+ 	/* Fetch the CRAT table from ACPI */
+ 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
+ 	if (status == AE_NOT_FOUND) {
+-		pr_warn("CRAT table not found\n");
++		pr_info("CRAT table not found\n");
+ 		return -ENODATA;
+ 	} else if (ACPI_FAILURE(status)) {
+ 		const char *err = acpi_format_exception(status);
 -- 
-2.30.2
+2.35.1
+
+
 
