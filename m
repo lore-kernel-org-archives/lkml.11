@@ -2,144 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F11FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA18DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343798AbiDLMeX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
+        id S243890AbiDLMfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345339AbiDLMdS (ORCPT
+        with ESMTP id S1346084AbiDLMf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:33:18 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615C55A157;
-        Tue, 12 Apr 2022 04:51:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=knAjhsG/6jthQQWVo2QqXwIZ8VPSdd1nuBR6NhivhIM=; b=NM1atfIUmU+QivfU/eeeHNMPrm
-        A9rGuB8iqq6/RLJFLEX8OGlSVztUHLlL8GpK7bGqdpMtnHLhmE+dEWQRq2pLha152nQDDwlIUdVo3
-        Faeo9/VdbgrBhy8SWYiGNCNZaR1MyAdvEY93AV6b9KJKyjPznELglMFaeCLVQ6Lev13nMe5D6TbzL
-        xyBCbmVFiAv5qO+l5Rczg3EOtmu7mJSXWHgU0cePNto6rKhVz0JlrHxFAes+PizBPdAndcyfiTRrg
-        MpIb0NGroSCzA8Obcx4bttculHZ9CEW+gU7rprcR970T4KnQGGginaQyWjXgApRbAzarwiA9+/AVh
-        XFcfZxuA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neF2o-004JiX-Ja; Tue, 12 Apr 2022 11:50:51 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 70FCD300C64;
-        Tue, 12 Apr 2022 13:50:47 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 4EA113017A437; Tue, 12 Apr 2022 13:50:47 +0200 (CEST)
-Message-ID: <20220412114853.964298896@infradead.org>
-User-Agent: quilt/0.66
-Date:   Tue, 12 Apr 2022 13:44:25 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, ebiederm@xmission.com,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, tj@kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH 4/5] freezer,umh: Clean up freezer/initrd interaction
-References: <20220412114421.691372568@infradead.org>
+        Tue, 12 Apr 2022 08:35:27 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E433F5DE44
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:53:47 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id u15so18162594ejf.11
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:53:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cwWMneWmYo0bsVQNTnfjzMcjYCr1j17IxDi8v2ddzV0=;
+        b=pOPSFaKNtRrc6Xfd6Mgck9tiiSqlG/jRNHohJ6jbz469ZDQEJDVr5tBlX/x+HzYwET
+         UazcNzCtzLdaFmC9tgK7KPUq7O+v+EG92zXkoHj1FlwX+809xEXwr5rOZJKRTlgzWRJb
+         LfVUVGYh6ySPN0yaBiYZXDMMoGG5bWlAEOBfIMFCnuMm8eOS/PMXVrzTVblV5IhcGbI2
+         ocGyzKdbCItAa649nhhKEpivREE2IGCbn0YXFUrMUthE1DrYQBA/g8MRXaF2P5ixtFOk
+         fB/cBcJTrOJIU5kUorcq+6d7oZCRDkUB0tnNdsEDPtBYpA389yzBbduVHLPf+NYbvrmJ
+         DFPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cwWMneWmYo0bsVQNTnfjzMcjYCr1j17IxDi8v2ddzV0=;
+        b=wCFaoI5vid59CLi5QYS+32D5RX/LtpvheiOUZ7SXJlrGcNq2ID2Fht7G9u4xJLmKGW
+         CgQGZD6VFjHTn/4dF0PXsEEcKIVNrJKug8EUvIvN36/Z6ze0ETZvFPSt9O59NzvMz80g
+         jzAMTCgMfSPfn6w8BCO0afWG7uX42h3KVnCH9PmTBZnKwO1rMMmZAvESQ2N07oPrZXMh
+         uwrkZAemJ6rqkse/FHhqFM3LJEsqmJXupJtUyrESKsaDnkkwhtnXokxZ/ZKnOWuOCzxV
+         +2vU/VZ8tztDmkkCfu/dTvLFiCTx+5Kw/HvOSuHQG+e94JaKU+2oEEGHIxmXaf+anLYP
+         HYCg==
+X-Gm-Message-State: AOAM5307jnQrNucXc87pWO0AkwfLZSkvtrfdehfYbcuMvdMElL2mz2fY
+        URzXFhsrdeo0gsShQc+V5Q3Qiw==
+X-Google-Smtp-Source: ABdhPJzjUIVyQeW3XuC0ld4eIJnrJZrmjsdr+XuecYgxxiG+iAXjBdVXzyJPY252GX4f3SnJi4TWGA==
+X-Received: by 2002:a17:906:99c5:b0:6df:8215:4ccd with SMTP id s5-20020a17090699c500b006df82154ccdmr34666885ejn.684.1649764426399;
+        Tue, 12 Apr 2022 04:53:46 -0700 (PDT)
+Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id v21-20020a1709064e9500b006e8973a14d0sm2158703eju.174.2022.04.12.04.53.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 04:53:45 -0700 (PDT)
+Message-ID: <c13a0f34-4938-3d56-43e0-5a9053e0bc25@linaro.org>
+Date:   Tue, 12 Apr 2022 13:53:44 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
+Content-Language: en-US
+To:     Camel Guo <camel.guo@axis.com>, linux@roeck-us.net,
+        jdelvare@suse.com, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     kernel@axis.com, linux-hwmon@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Camel Guo <camelg@axis.com>
+References: <20220411100329.1783432-1-camel.guo@axis.com>
+ <20220411100329.1783432-2-camel.guo@axis.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220411100329.1783432-2-camel.guo@axis.com>
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-handle_initrd() marks itself as PF_FREEZER_SKIP in order to ensure
-that the UMH, which is going to freeze the system, doesn't
-indefinitely wait for it's caller.
+On 11/04/2022 12:03, Camel Guo wrote:
+> From: Camel Guo <camelg@axis.com>
+> 
+> Document the TMP401, TMP411 and TMP43x device devicetree bindings
+> 
+> Signed-off-by: Camel Guo <camelg@axis.com>
+> ---
+>  .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 111 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 112 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> 
 
-Rework things by adding UMH_FREEZABLE to indicate the completion is
-freezable.
+Thank you for your patch. There is something to discuss/improve.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- include/linux/umh.h     |    9 +++++----
- init/do_mounts_initrd.c |   10 +---------
- kernel/umh.c            |    8 ++++++++
- 3 files changed, 14 insertions(+), 13 deletions(-)
+> diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> new file mode 100644
+> index 000000000000..28be5cbb009b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> @@ -0,0 +1,111 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/hwmon/ti,tmp401.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: TMP401, TPM411 and TMP43x temperature sensor
+> +
+> +maintainers:
+> +  - Guenter Roeck <linux@roeck-us.net>
+> +
+> +description: |
+> +  ±1°C Remote and Local temperature sensor
+> +
+> +  Datasheets:
+> +  https://www.ti.com/lit/ds/symlink/tmp401.pdf
+> +  https://www.ti.com/lit/ds/symlink/tmp411.pdf
+> +  https://www.ti.com/lit/ds/symlink/tmp431.pdf
+> +  https://www.ti.com/lit/ds/symlink/tmp435.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - ti,tmp401
+> +      - ti,tmp411
+> +      - ti,tmp431
+> +      - ti,tmp432
+> +      - ti,tmp435
 
---- a/include/linux/umh.h
-+++ b/include/linux/umh.h
-@@ -11,10 +11,11 @@
- struct cred;
- struct file;
- 
--#define UMH_NO_WAIT	0	/* don't wait at all */
--#define UMH_WAIT_EXEC	1	/* wait for the exec, but not the process */
--#define UMH_WAIT_PROC	2	/* wait for the process to complete */
--#define UMH_KILLABLE	4	/* wait for EXEC/PROC killable */
-+#define UMH_NO_WAIT	0x00	/* don't wait at all */
-+#define UMH_WAIT_EXEC	0x01	/* wait for the exec, but not the process */
-+#define UMH_WAIT_PROC	0x02	/* wait for the process to complete */
-+#define UMH_KILLABLE	0x04	/* wait for EXEC/PROC killable */
-+#define UMH_FREEZABLE	0x08	/* wait for EXEC/PROC freezable */
- 
- struct subprocess_info {
- 	struct work_struct work;
---- a/init/do_mounts_initrd.c
-+++ b/init/do_mounts_initrd.c
-@@ -79,19 +79,11 @@ static void __init handle_initrd(void)
- 	init_mkdir("/old", 0700);
- 	init_chdir("/old");
- 
--	/*
--	 * In case that a resume from disk is carried out by linuxrc or one of
--	 * its children, we need to tell the freezer not to wait for us.
--	 */
--	current->flags |= PF_FREEZER_SKIP;
--
- 	info = call_usermodehelper_setup("/linuxrc", argv, envp_init,
- 					 GFP_KERNEL, init_linuxrc, NULL, NULL);
- 	if (!info)
- 		return;
--	call_usermodehelper_exec(info, UMH_WAIT_PROC);
--
--	current->flags &= ~PF_FREEZER_SKIP;
-+	call_usermodehelper_exec(info, UMH_WAIT_PROC|UMH_FREEZABLE);
- 
- 	/* move initrd to rootfs' /old */
- 	init_mount("..", ".", NULL, MS_MOVE, NULL);
---- a/kernel/umh.c
-+++ b/kernel/umh.c
-@@ -28,6 +28,7 @@
- #include <linux/async.h>
- #include <linux/uaccess.h>
- #include <linux/initrd.h>
-+#include <linux/freezer.h>
- 
- #include <trace/events/module.h>
- 
-@@ -436,6 +437,9 @@ int call_usermodehelper_exec(struct subp
- 	if (wait == UMH_NO_WAIT)	/* task has freed sub_info */
- 		goto unlock;
- 
-+	if (wait & UMH_FREEZABLE)
-+		freezer_do_not_count();
-+
- 	if (wait & UMH_KILLABLE) {
- 		retval = wait_for_completion_killable(&done);
- 		if (!retval)
-@@ -448,6 +452,10 @@ int call_usermodehelper_exec(struct subp
- 	}
- 
- 	wait_for_completion(&done);
-+
-+	if (wait & UMH_FREEZABLE)
-+		freezer_count();
-+
- wait_done:
- 	retval = sub_info->retval;
- out:
+Blank line, please.
+
+> +  reg:
+> +    maxItems: 1
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 0
+> +
+> +  ti,extended-range-enable:
+> +    description: |
+
+No need for "|". Here and in most of other cases below.
+
+> +      When set, this sensor measures over extended temperature range.
+> +    type: boolean
+> +
+> +  ti,n-factor:
+> +    description: |
+> +      The value (two's complement) to be programmed in the n-factor correction
+> +      register.
+
+Do not describe the programming model (registers) but hardware property
+instead.
+
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    items:
+> +      minimum: 0
+> +      maximum: 255
+> +
+> +  ti,beta-compensation:
+> +    description: |
+> +      The value to be programmed in the beta range register.
+
+The same, register values should not be stored in DT.
+
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    items:
+> +      minimum: 0
+> +      maximum: 15
+> +
 
 
+Best regards,
+Krzysztof
