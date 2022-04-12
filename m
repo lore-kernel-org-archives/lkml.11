@@ -2,91 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 863D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229957AbiDLXZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
+        id S229988AbiDLXZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiDLXY3 (ORCPT
+        with ESMTP id S229774AbiDLXY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 19:24:29 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C4932EDF
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:43:53 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id e11so4996vso.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:43:53 -0700 (PDT)
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C9E6F4B0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:43:56 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id o205-20020a2541d6000000b00641200d2601so262457yba.11
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:43:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wFSlDAEzxG2DmB4Xo/jpKWlcMReBrQbKvAja9Mz03WY=;
-        b=BAgyN2cjIkVkau6NaxZfdrINA1JnGPeOxEMSQIuNw88cOd9poeQU7JYlOrJo65FxMh
-         SBZgNZs5Eozgz9MxeaLL6P9JPOH5DJW1eYYB93FJ2KdIzLY35CGr7lfUEU8C4VpTHqN3
-         NKIU5fUui4D5BaZHPQ5Pgq3P7eJ2M8bgOu89A=
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=AMvt99Ex3LWgVMSklCg5XNF3Fu8kmLTfCLQjqVndY6w=;
+        b=RazfDvaD5aj8XVU4guL9lnFicByqFFYKMKgI9ETIiiTeEWVsXQiUmC4r9d+KA7NlGz
+         SMpX/oUt8RqMU0SPyZhXdqUQDx8LQQUHQ6iD3GKz8/G7FOVI0743NRajKeuQyq4Oxk4W
+         eFksHyrtSZwa3mmURayx+lMlxJJVuTmYVWEbV46ZNxN8Mx+pyDt8lkTgCjOVXGBWGHCm
+         yHyM2NQPx3xwEvLMhtxV4Jxn4NYyIPvlfVHF1PJ8ypg4N4dqW624dI5Z07Dr/nvsczuy
+         CXbA2dXFHKpoD+vUdHIKSREFJjDiBl/oozVwp9T6RVdmqMsulQamDI0WhVn3V2vcxJvy
+         OjsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wFSlDAEzxG2DmB4Xo/jpKWlcMReBrQbKvAja9Mz03WY=;
-        b=IwxrX5Qf3hBk5S/PHz5fo3YbTvs+f9qaAMs8QTjp5+moYeV8oGSCbWjRyWpdi8BrVc
-         PVEJ4DtsOTx7Zik127eYYd7O0a6gjbkMrfUtOb3+SoQoa+T8rgxgJ4P9ZvKiVaU1o+oq
-         drKUdnPaDYC/9Y0Bniea4N+R8yY/Jk/gdVM2htvn708H9XI42iBE5UD9IlchNoVXoaY8
-         83HZTrfMKemTx6xDmE1LMB3J1wZm/FNDMKOvLZhoW8vFDL2U+HgBj5foRqyZsKEy5zq0
-         mzQJ+XC6yvE8b6vynEpn1zfWw/m2ldCbribVPnNOlPJknls3HMHqGrgs/AhhWZb2y0fW
-         ps/w==
-X-Gm-Message-State: AOAM53338kcQJQ63Zwwl71bbKqcDg34cV7uGOWcS+rjhEQMFw79hnSQt
-        diZIt5evLAiGEHUpu91lzH53T+0jGypnLw==
-X-Google-Smtp-Source: ABdhPJzbjoFfvbiVhFHrd/ap9MG24S9rnvtRGaAqVEv5YOwoNHzH2GnHp5wYCqSOLPVNm+CpToaQlA==
-X-Received: by 2002:a17:902:e84d:b0:156:bf35:6449 with SMTP id t13-20020a170902e84d00b00156bf356449mr39376031plg.26.1649798738080;
-        Tue, 12 Apr 2022 14:25:38 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 123-20020a620681000000b004fa7c20d732sm38747092pfg.133.2022.04.12.14.25.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 14:25:37 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, x86@kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH] init/Kconfig: Remove USELIB syscall by default
-Date:   Tue, 12 Apr 2022 14:25:20 -0700
-Message-Id: <20220412212519.4113845-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=804; h=from:subject; bh=6oMzRtW3jqjXSXD7mwm7E3NvhHShAvTH9FoLSWVAO4M=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiVe4+5UcWIk2DLvOe8RGsuRpGeIvF3QQi+b9keWfe ae+3yXGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYlXuPgAKCRCJcvTf3G3AJkLiD/ 96HnJHanZQA4f1r3EyXeSCTJK9Br96PbdgM0mL+dn+KI2TY5vNV9yastv+A68vDF1obNNVqoReykC5 5FN5BcdjFCoiim0fnBWl4jfiIL2cWZh5j4Yy24c2l6fo18d5VLT1I72U1VTkxOtR8M+oywg0x7RUj3 oWVEcGIBOfHJ49YBhM+Y/suTJEuCVy/+WMLl2miWyTj5iO1mNfn5mClXdG5B5HJlwxlULu9LijoC5L LUw+yx5pA6uq+8TCkkkMqg3L+242aXJ9qrUsNPbzQOertituEAg6BTEcLB+0mvw56CjNLSKeuXCujP VhSbgWg9jIfAwh4njrUTNuhpCdsvQcpHwq2EVl6M58ZEgW/r55JXgZ7GEqvHy/EXU130mZ01OcyBOD PWsleIP4AuCncIMwLoJdmCct7m76kqBt+tpD9eapWSat6+Rm1+21ajAidllEIIguzs12iXm35LCpiC IT2f/oKL99C79d34/n8pCbsaSJiIVW8TjmNQX2NtFt84SyM/ScriTvsbQIQ3WD3qIedxUGg8iEkQ+I 2oDnhfLQ0J0leXj7EqVIgepP9NEd+dGTxVnbg3OlYRbCbbx2RilC5zweK4hQoim5epE4p4oSWOg1Tb kHXFcL/j/XLHkgOrIC3BmKfszU+YZK6oJBJNO3fhyuHnHzshnZ/OurXaEt4A==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=AMvt99Ex3LWgVMSklCg5XNF3Fu8kmLTfCLQjqVndY6w=;
+        b=DLpoSK4SCD5rkjNhsSb3yUxJjZGDRIaqG+Q9abwBYQ1fkIslGTBghucJaI2MwSF3Z8
+         RAgTMqP9cQnM1fs/FLGueOb+opy6To6PP4IYqFALJwqmfLIykdB2ybk+BiFZbrr+tYXU
+         po+l473Ela/gmEYYiOrvRBupaEsISDpp6Uqng9OGK/naR24tM8hGBgsINDHgn4mjPMBq
+         o9zWPDw2qunBWb+TOIDwA1HsC0/e/hF/Na3PpEE2Q2BdPOGhNMYS0n0lA1cir0Y5nF9Q
+         7gxYL3MV0yX1FUkWK6gw/3TVr1SAB8llq8zZAYFg9nPmWE3rPNy/NaEsfGVlCfDcMyQy
+         ofJA==
+X-Gm-Message-State: AOAM532xWY0VpTucAG1yaizlrqDTMfHlE6LwG6/s7Buwz0ElIWEGOE3n
+        yXh86lXkQ8EsGpY4afrLvOn966prgQsn/2g=
+X-Google-Smtp-Source: ABdhPJxCd0bNO7tLDwtDjUMz0mlBl45zHQLJLdIutO0p8cCHIr5/4Sb9YUXg6f/qhNMrRWACrr9iOa0pZYfPhJM=
+X-Received: from tansuresh.svl.corp.google.com ([2620:15c:2c5:13:8573:aa64:c3e8:ebc])
+ (user=tansuresh job=sendgmr) by 2002:a25:d34f:0:b0:641:3dcc:c2de with SMTP id
+ e76-20020a25d34f000000b006413dccc2demr11259325ybf.547.1649803435313; Tue, 12
+ Apr 2022 15:43:55 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 15:43:45 -0700
+Message-Id: <20220412224348.1038613-1-tansuresh@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+Subject: [PATCH v2 0/3] Asynchronous shutdown interface and example implementation
+From:   Tanjore Suresh <tansuresh@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, Tanjore Suresh <tansuresh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The uselib syscall has been long deprecated. There's no need to keep
-this enabled by default under X86_32.
+Problem:
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- init/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Some of our machines are configured with  many NVMe devices and
+are validated for strict shutdown time requirements. Each NVMe
+device plugged into the system, typicaly takes about 4.5 secs
+to shutdown. A system with 16 such NVMe devices will takes
+approximately 80 secs to shutdown and go through reboot.
 
-diff --git a/init/Kconfig b/init/Kconfig
-index ddcbefe535e9..5cddb9ba0eef 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -435,8 +435,8 @@ config CROSS_MEMORY_ATTACH
- 	  See the man page for more details.
- 
- config USELIB
--	bool "uselib syscall"
--	def_bool ALPHA || M68K || SPARC || X86_32 || IA32_EMULATION
-+	bool "uselib syscall (for libc5 and earlier)"
-+	default ALPHA || M68K || SPARC
- 	help
- 	  This option enables the uselib syscall, a system call used in the
- 	  dynamic linker from libc5 and earlier.  glibc does not use this
+The current shutdown APIs as defined at bus level is defined to be
+synchronous. Therefore, more devices are in the system the greater
+the time it takes to shutdown. This shutdown time significantly
+contributes the machine reboot time.
+
+Solution:
+
+This patch set proposes an asynchronous shutdown interface at bus level,
+modifies the core driver, device shutdown routine to exploit the
+new interface while maintaining backward compatibility with synchronous
+implementation already existing (Patch 1 of 3) and exploits new interface
+to enable all PCI-E based devices to use asynchronous interface semantics
+if necessary (Patch 2 of 3). The implementation at PCI-E level also works
+in a backward compatible way, to allow exiting device implementation
+to work with current synchronous semantics. Only show cases an example
+implementation for NVMe device to exploit this asynchronous shutdown
+interface. (Patch 3 of 3).
+
+Changelog:
+
+v2: - Replaced the shutdown_pre & shutdown_post entry point names with the
+      recommended names (async_shutdown_start and asynch_shutdown_end).
+
+    - Comment about ordering requirements between bridge shutdown versus
+      leaf/endpoint shutdown was agreed to be different when calling
+      async_shutdown_start and async_shutdown_end. Now this implements the
+      same order of calling both start and end entry points.
+
+Tanjore Suresh (3):
+  driver core: Support asynchronous driver shutdown
+  PCI: Support asynchronous shutdown
+  nvme: Add async shutdown support
+
+ drivers/base/core.c        | 38 +++++++++++++++++-
+ drivers/nvme/host/core.c   | 28 +++++++++----
+ drivers/nvme/host/nvme.h   |  8 ++++
+ drivers/nvme/host/pci.c    | 80 ++++++++++++++++++++++++--------------
+ drivers/pci/pci-driver.c   | 20 ++++++++--
+ include/linux/device/bus.h | 12 ++++++
+ include/linux/pci.h        |  4 ++
+ 7 files changed, 149 insertions(+), 41 deletions(-)
+
 -- 
-2.32.0
+2.36.0.rc0.470.gd361397f0d-goog
 
