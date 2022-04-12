@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBBDC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 187BEC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354952AbiDLH1A (ORCPT
+        id S1354825AbiDLH0w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        Tue, 12 Apr 2022 03:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351684AbiDLHMv (ORCPT
+        with ESMTP id S1351670AbiDLHMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E9D15A13;
-        Mon, 11 Apr 2022 23:51:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CA513CFD;
+        Mon, 11 Apr 2022 23:51:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E75BB81B46;
-        Tue, 12 Apr 2022 06:51:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBB77C385A6;
-        Tue, 12 Apr 2022 06:51:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9400761045;
+        Tue, 12 Apr 2022 06:51:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B98C385A8;
+        Tue, 12 Apr 2022 06:51:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746298;
-        bh=emkGqcMDUCeaiO2p3L470ZxdL17k8ipq4bfbn2luobw=;
+        s=korg; t=1649746282;
+        bh=vr7Wo20zHLHWbtiSd/Y1L2t36ZxOiBHBQ+ROACpAYAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IDIivkULK3kR96srp99z9vjhS8Qij8Kr7SKA1TWb5UNSgYMixEYFRAJRVyajg6BZu
-         LZGXLzWU/DKxoegYFzT/5ciQd6CvnROxqESoR3Jd0GzY+FKeXHbGcPvbvyWsgQbEIx
-         asGVS0IvbePHbm6v5fc6XQxpi5PrVTJw1jh5gkao=
+        b=N2EZF2Du3lZvRhV4SpLDPnQPW8/xhimVO91SN51U3ADNUHER2dR+Y3S3IWi8cdEsi
+         0dNWDdsOaMmm7sxZofBJCTAGBCQhaREF/SdBoZbgCA3H8yTSZz0GazHhMFiio0evlE
+         3E5IbUrE5BJXvJ73Qa0OcIgV27XZSp2aW7L1kKW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 233/277] perf/x86/intel: Dont extend the pseudo-encoding to GP counters
-Date:   Tue, 12 Apr 2022 08:30:36 +0200
-Message-Id: <20220412062948.786234057@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 186/277] net: openvswitch: dont send internal clone attribute to the userspace.
+Date:   Tue, 12 Apr 2022 08:29:49 +0200
+Message-Id: <20220412062947.418963941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,73 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-commit 4a263bf331c512849062805ef1b4ac40301a9829 upstream.
+[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
 
-The INST_RETIRED.PREC_DIST event (0x0100) doesn't count on SPR.
-perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
+'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+performance optimization inside the kernel.  It's added by the kernel
+while parsing user-provided actions and should not be sent during the
+flow dump as it's not part of the uAPI.
 
- Performance counter stats for 'CPU(s) 0':
+The issue doesn't cause any significant problems to the ovs-vswitchd
+process, because reported actions are not really used in the
+application lifecycle and only supposed to be shown to a human via
+ovs-dpctl flow dump.  However, the action list is still incorrect
+and causes the following error if the user wants to look at the
+datapath flows:
 
-           607,246      cpu/event=0xc0,umask=0x0/
-                 0      cpu/event=0x0,umask=0x1/
+  # ovs-dpctl add-dp system@ovs-system
+  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
+                  ct(commit),0)
 
-The encoding for INST_RETIRED.PREC_DIST is pseudo-encoding, which
-doesn't work on the generic counters. However, current perf extends its
-mask to the generic counters.
+With the fix:
 
-The pseudo event-code for a fixed counter must be 0x00. Check and avoid
-extending the mask for the fixed counter event which using the
-pseudo-encoding, e.g., ref-cycles and PREC_DIST event.
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(ct(commit),0)
 
-With the patch,
-perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
+Additionally fixed an incorrect attribute name in the comment.
 
- Performance counter stats for 'CPU(s) 0':
-
-           583,184      cpu/event=0xc0,umask=0x0/
-           583,048      cpu/event=0x0,umask=0x1/
-
-Fixes: 2de71ee153ef ("perf/x86/intel: Fix ICL/SPR INST_RETIRED.PREC_DIST encodings")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/1648482543-14923-1-git-send-email-kan.liang@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b233504033db ("openvswitch: kernel datapath clone action")
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
+Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/intel/core.c      |    6 +++++-
- arch/x86/include/asm/perf_event.h |    5 +++++
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ net/openvswitch/actions.c      | 2 +-
+ net/openvswitch/flow_netlink.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -5466,7 +5466,11 @@ static void intel_pmu_check_event_constr
- 			/* Disabled fixed counters which are not in CPUID */
- 			c->idxmsk64 &= intel_ctrl;
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 780d9e2246f3..8955f31fa47e 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1051,7 +1051,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
+ 	int rem = nla_len(attr);
+ 	bool dont_clone_flow_key;
  
--			if (c->idxmsk64 != INTEL_PMC_MSK_FIXED_REF_CYCLES)
-+			/*
-+			 * Don't extend the pseudo-encoding to the
-+			 * generic counters
-+			 */
-+			if (!use_fixed_pseudo_encoding(c->code))
- 				c->idxmsk64 |= (1ULL << num_counters) - 1;
- 		}
- 		c->idxmsk64 &=
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -241,6 +241,11 @@ struct x86_pmu_capability {
- #define INTEL_PMC_IDX_FIXED_SLOTS	(INTEL_PMC_IDX_FIXED + 3)
- #define INTEL_PMC_MSK_FIXED_SLOTS	(1ULL << INTEL_PMC_IDX_FIXED_SLOTS)
+-	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
++	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
+ 	clone_arg = nla_data(attr);
+ 	dont_clone_flow_key = nla_get_u32(clone_arg);
+ 	actions = nla_next(clone_arg, &rem);
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 0d677c9c2c80..2679007f8aeb 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -3429,7 +3429,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
+ 	if (!start)
+ 		return -EMSGSIZE;
  
-+static inline bool use_fixed_pseudo_encoding(u64 code)
-+{
-+	return !(code & 0xff);
-+}
-+
- /*
-  * We model BTS tracing as another fixed-mode PMC.
-  *
+-	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
++	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
++	attr = nla_next(nla_data(attr), &rem);
++	err = ovs_nla_put_actions(attr, rem, skb);
+ 
+ 	if (err)
+ 		nla_nest_cancel(skb, start);
+-- 
+2.35.1
+
 
 
