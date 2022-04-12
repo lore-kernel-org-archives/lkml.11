@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21544C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239473AbiDLGrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
+        id S1350623AbiDLGrc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350962AbiDLGnm (ORCPT
+        with ESMTP id S1351016AbiDLGnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:43:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C256038D88;
-        Mon, 11 Apr 2022 23:37:03 -0700 (PDT)
+        Tue, 12 Apr 2022 02:43:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5C739143;
+        Mon, 11 Apr 2022 23:37:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C41618C8;
-        Tue, 12 Apr 2022 06:37:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA93C385A1;
-        Tue, 12 Apr 2022 06:37:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD78FB81B29;
+        Tue, 12 Apr 2022 06:37:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F40C385A1;
+        Tue, 12 Apr 2022 06:37:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745422;
-        bh=R3k2lfBcI5rjmRJ0X0lmdBQWHUVBA+/woet3tQcWTtk=;
+        s=korg; t=1649745428;
+        bh=X62b0Q0P9Zr7NPTCiTF1KoeFOQKbxwT1dnaBcNKvL9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L2wX6/Zz4ACIm3zQKifRMgzR+CgrsANcJYMPzgrExYF9JcidyZHoBXu9hdhTYujHN
-         TTDUQAVP9LlU40MGuQxow0wK+L2xFCqIJdCbw1ziFYmlYlWV4+dnzqQrBDx+JY87wg
-         8u3oCjDRfyRZO3A1PwkJv9xsYjd1LvtZagfPCvts=
+        b=ZYXSyS8o8Xs04s+gb6iqqgV2HwSt3sOjTwQWsnNtO3HLDK+Glq3g5oz7Y2q47Do6b
+         FGTHmPz3JZ+YgPcDRwrJExNUUf7kNcFK+oYXmbtDyPATp7tONsOi34twWkRXPJIlfe
+         +KGq8+kItYZNPB3IVElKFInGkSYVCrwP7oakLgNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
-        Haimin Zhang <tcs_kernel@tencent.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 090/171] jfs: prevent NULL deref in diFree
-Date:   Tue, 12 Apr 2022 08:29:41 +0200
-Message-Id: <20220412062930.490026471@linuxfoundation.org>
+Subject: [PATCH 5.10 092/171] NFS: nfsiod should not block forever in mempool_alloc()
+Date:   Tue, 12 Apr 2022 08:29:43 +0200
+Message-Id: <20220412062930.547500805@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -50,46 +50,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit a53046291020ec41e09181396c1e829287b48d47 ]
+[ Upstream commit 515dcdcd48736576c6f5c197814da6f81c60a21e ]
 
-Add validation check for JFS_IP(ipimap)->i_imap to prevent a NULL deref
-in diFree since diFree uses it without do any validations.
-When function jfs_mount calls diMount to initialize fileset inode
-allocation map, it can fail and JFS_IP(ipimap)->i_imap won't be
-initialized. Then it calls diFreeSpecial to close fileset inode allocation
-map inode and it will flow into jfs_evict_inode. Function jfs_evict_inode
-just validates JFS_SBI(inode->i_sb)->ipimap, then calls diFree. diFree use
-JFS_IP(ipimap)->i_imap directly, then it will cause a NULL deref.
+The concern is that since nfsiod is sometimes required to kick off a
+commit, it can get locked up waiting forever in mempool_alloc() instead
+of failing gracefully and leaving the commit until later.
 
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Try to allocate from the slab first, with GFP_KERNEL | __GFP_NORETRY,
+then fall back to a non-blocking attempt to allocate from the memory
+pool.
+
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/inode.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/nfs/internal.h      |  7 +++++++
+ fs/nfs/pnfs_nfs.c      |  8 ++++++--
+ fs/nfs/write.c         | 24 +++++++++---------------
+ include/linux/nfs_fs.h |  2 +-
+ 4 files changed, 23 insertions(+), 18 deletions(-)
 
-diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
-index b0eb9c85eea0..980aa3300f10 100644
---- a/fs/jfs/inode.c
-+++ b/fs/jfs/inode.c
-@@ -146,12 +146,13 @@ void jfs_evict_inode(struct inode *inode)
- 		dquot_initialize(inode);
+diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+index 98554dd18a71..7de38abb6566 100644
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -578,6 +578,13 @@ nfs_write_match_verf(const struct nfs_writeverf *verf,
+ 		!nfs_write_verifier_cmp(&req->wb_verf, &verf->verifier);
+ }
  
- 		if (JFS_IP(inode)->fileset == FILESYSTEM_I) {
-+			struct inode *ipimap = JFS_SBI(inode->i_sb)->ipimap;
- 			truncate_inode_pages_final(&inode->i_data);
++static inline gfp_t nfs_io_gfp_mask(void)
++{
++	if (current->flags & PF_WQ_WORKER)
++		return GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN;
++	return GFP_KERNEL;
++}
++
+ /* unlink.c */
+ extern struct rpc_task *
+ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
+diff --git a/fs/nfs/pnfs_nfs.c b/fs/nfs/pnfs_nfs.c
+index 7b9d701bef01..a2ad8bb87e2d 100644
+--- a/fs/nfs/pnfs_nfs.c
++++ b/fs/nfs/pnfs_nfs.c
+@@ -419,7 +419,7 @@ static struct nfs_commit_data *
+ pnfs_bucket_fetch_commitdata(struct pnfs_commit_bucket *bucket,
+ 			     struct nfs_commit_info *cinfo)
+ {
+-	struct nfs_commit_data *data = nfs_commitdata_alloc(false);
++	struct nfs_commit_data *data = nfs_commitdata_alloc();
  
- 			if (test_cflag(COMMIT_Freewmap, inode))
- 				jfs_free_zero_link(inode);
+ 	if (!data)
+ 		return NULL;
+@@ -515,7 +515,11 @@ pnfs_generic_commit_pagelist(struct inode *inode, struct list_head *mds_pages,
+ 	unsigned int nreq = 0;
  
--			if (JFS_SBI(inode->i_sb)->ipimap)
-+			if (ipimap && JFS_IP(ipimap)->i_imap)
- 				diFree(inode);
+ 	if (!list_empty(mds_pages)) {
+-		data = nfs_commitdata_alloc(true);
++		data = nfs_commitdata_alloc();
++		if (!data) {
++			nfs_retry_commit(mds_pages, NULL, cinfo, -1);
++			return -ENOMEM;
++		}
+ 		data->ds_commit_index = -1;
+ 		list_splice_init(mds_pages, &data->pages);
+ 		list_add_tail(&data->list, &list);
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index cc926e69ee9b..a97eaf4e813c 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -70,27 +70,17 @@ static mempool_t *nfs_wdata_mempool;
+ static struct kmem_cache *nfs_cdata_cachep;
+ static mempool_t *nfs_commit_mempool;
  
- 			/*
+-struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail)
++struct nfs_commit_data *nfs_commitdata_alloc(void)
+ {
+ 	struct nfs_commit_data *p;
+ 
+-	if (never_fail)
+-		p = mempool_alloc(nfs_commit_mempool, GFP_NOIO);
+-	else {
+-		/* It is OK to do some reclaim, not no safe to wait
+-		 * for anything to be returned to the pool.
+-		 * mempool_alloc() cannot handle that particular combination,
+-		 * so we need two separate attempts.
+-		 */
++	p = kmem_cache_zalloc(nfs_cdata_cachep, nfs_io_gfp_mask());
++	if (!p) {
+ 		p = mempool_alloc(nfs_commit_mempool, GFP_NOWAIT);
+-		if (!p)
+-			p = kmem_cache_alloc(nfs_cdata_cachep, GFP_NOIO |
+-					     __GFP_NOWARN | __GFP_NORETRY);
+ 		if (!p)
+ 			return NULL;
++		memset(p, 0, sizeof(*p));
+ 	}
+-
+-	memset(p, 0, sizeof(*p));
+ 	INIT_LIST_HEAD(&p->pages);
+ 	return p;
+ }
+@@ -1800,7 +1790,11 @@ nfs_commit_list(struct inode *inode, struct list_head *head, int how,
+ 	if (list_empty(head))
+ 		return 0;
+ 
+-	data = nfs_commitdata_alloc(true);
++	data = nfs_commitdata_alloc();
++	if (!data) {
++		nfs_retry_commit(head, NULL, cinfo, -1);
++		return -ENOMEM;
++	}
+ 
+ 	/* Set up the argument struct */
+ 	nfs_init_commit(data, head, NULL, cinfo);
+diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
+index 2a17e0dfd431..e39342945a80 100644
+--- a/include/linux/nfs_fs.h
++++ b/include/linux/nfs_fs.h
+@@ -551,7 +551,7 @@ extern int nfs_wb_all(struct inode *inode);
+ extern int nfs_wb_page(struct inode *inode, struct page *page);
+ extern int nfs_wb_page_cancel(struct inode *inode, struct page* page);
+ extern int  nfs_commit_inode(struct inode *, int);
+-extern struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail);
++extern struct nfs_commit_data *nfs_commitdata_alloc(void);
+ extern void nfs_commit_free(struct nfs_commit_data *data);
+ bool nfs_commit_end(struct nfs_mds_commit_info *cinfo);
+ 
 -- 
 2.35.1
 
