@@ -2,42 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9946CC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC07C35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387223AbiDLJGK (ORCPT
+        id S1387158AbiDLJFv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
+        Tue, 12 Apr 2022 05:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359241AbiDLHmw (ORCPT
+        with ESMTP id S1359225AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566422A268;
-        Tue, 12 Apr 2022 00:21:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBEC29CA5;
+        Tue, 12 Apr 2022 00:20:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16542B81B62;
-        Tue, 12 Apr 2022 07:21:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C961C385A5;
-        Tue, 12 Apr 2022 07:21:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29560616B2;
+        Tue, 12 Apr 2022 07:20:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3CD4C385A5;
+        Tue, 12 Apr 2022 07:20:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748063;
-        bh=LveDTNz49FYcxLOtDFHSOrot2rhbCYmOg4T9rw6dpMs=;
+        s=korg; t=1649748052;
+        bh=m3tZRxMr7S8zSbKcnoVMQqq10GyW2aQbMlmVavnojeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GVuE2r5KsUbeHJ4RT/lu9VHo4h6zxLR0EEVvri5IsU9rSkYE4mDzGp0St86SUMa1A
-         WwH/Heqw6vBV4fLw+duv5bXcpYr6DlzGoDF37IXeiIAsusAX8cb3bs8aPEIk3jXkm8
-         vI/gscOZvfRe8WXv331GaTY561uOcHw1FKOO8w+0=
+        b=o4d5oc5leogTQ7ZP6BjcfkOJbIzCbiAw9b6yFVA+I12IMmR/WwcdO2s36GlreLuKy
+         xugTBf7eTxlLa0PMIKdjQbckUANpoMYYL7kipAQhN1zarWQmDKXLota/V8RLieB47i
+         XdZ+jaD8wa3lZD8ViB42/vRAAeyUP0kJKi6eeXlQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Marty <info@benjaminmarty.ch>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 306/343] drm/amdgpu/display: change pipe policy for DCN 2.1
-Date:   Tue, 12 Apr 2022 08:32:04 +0200
-Message-Id: <20220412063000.156159554@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
+        Zack Rusin <zackr@vmware.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>, Sam Ravnborg <sam@ravnborg.org>,
+        Zheyu Ma <zheyuma97@gmail.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH 5.17 302/343] fbdev: Fix unregistering of framebuffers without device
+Date:   Tue, 12 Apr 2022 08:32:00 +0200
+Message-Id: <20220412063000.040458442@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,32 +63,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Marty <info@benjaminmarty.ch>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-commit 879791ad8bf3dc5453061cad74776a617b6e3319 upstream.
+commit 0f525289ff0ddeb380813bd81e0f9bdaaa1c9078 upstream.
 
-Fixes crash on MST Hub disconnect.
+OF framebuffers do not have an underlying device in the Linux
+device hierarchy. Do a regular unregister call instead of hot
+unplugging such a non-existing device. Fixes a NULL dereference.
+An example error message on ppc64le is shown below.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1849
-Fixes: ee2698cf79cc ("drm/amd/display: Changed pipe split policy to allow for multi-display pipe split")
-Signed-off-by: Benjamin Marty <info@benjaminmarty.ch>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+  BUG: Kernel NULL pointer dereference on read at 0x00000060
+  Faulting instruction address: 0xc00000000080dfa4
+  Oops: Kernel access of bad area, sig: 11 [#1]
+  LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
+  [...]
+  CPU: 2 PID: 139 Comm: systemd-udevd Not tainted 5.17.0-ae085d7f9365 #1
+  NIP:  c00000000080dfa4 LR: c00000000080df9c CTR: c000000000797430
+  REGS: c000000004132fe0 TRAP: 0300   Not tainted  (5.17.0-ae085d7f9365)
+  MSR:  8000000002009033 <SF,VEC,EE,ME,IR,DR,RI,LE>  CR: 28228282  XER: 20000000
+  CFAR: c00000000000c80c DAR: 0000000000000060 DSISR: 40000000 IRQMASK: 0
+  GPR00: c00000000080df9c c000000004133280 c00000000169d200 0000000000000029
+  GPR04: 00000000ffffefff c000000004132f90 c000000004132f88 0000000000000000
+  GPR08: c0000000015658f8 c0000000015cd200 c0000000014f57d0 0000000048228283
+  GPR12: 0000000000000000 c00000003fffe300 0000000020000000 0000000000000000
+  GPR16: 0000000000000000 0000000113fc4a40 0000000000000005 0000000113fcfb80
+  GPR20: 000001000f7283b0 0000000000000000 c000000000e4a588 c000000000e4a5b0
+  GPR24: 0000000000000001 00000000000a0000 c008000000db0168 c0000000021f6ec0
+  GPR28: c0000000016d65a8 c000000004b36460 0000000000000000 c0000000016d64b0
+  NIP [c00000000080dfa4] do_remove_conflicting_framebuffers+0x184/0x1d0
+  [c000000004133280] [c00000000080df9c] do_remove_conflicting_framebuffers+0x17c/0x1d0 (unreliable)
+  [c000000004133350] [c00000000080e4d0] remove_conflicting_framebuffers+0x60/0x150
+  [c0000000041333a0] [c00000000080e6f4] remove_conflicting_pci_framebuffers+0x134/0x1b0
+  [c000000004133450] [c008000000e70438] drm_aperture_remove_conflicting_pci_framebuffers+0x90/0x100 [drm]
+  [c000000004133490] [c008000000da0ce4] bochs_pci_probe+0x6c/0xa64 [bochs]
+  [...]
+  [c000000004133db0] [c00000000002aaa0] system_call_exception+0x170/0x2d0
+  [c000000004133e10] [c00000000000c3cc] system_call_common+0xec/0x250
+
+The bug [1] was introduced by commit 27599aacbaef ("fbdev: Hot-unplug
+firmware fb devices on forced removal"). Most firmware framebuffers
+have an underlying platform device, which can be hot-unplugged
+before loading the native graphics driver. OF framebuffers do not
+(yet) have that device. Fix the code by unregistering the framebuffer
+as before without a hot unplug.
+
+Tested with 5.17 on qemu ppc64le emulation.
+
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Cc: Zack Rusin <zackr@vmware.com>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: stable@vger.kernel.org # v5.11+
+Cc: Helge Deller <deller@gmx.de>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Zheyu Ma <zheyuma97@gmail.com>
+Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Link: https://lore.kernel.org/all/YkHXO6LGHAN0p1pq@debian/ # [1]
+Link: https://patchwork.freedesktop.org/patch/msgid/20220404194402.29974-1-tzimmermann@suse.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbmem.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.c
-@@ -873,7 +873,7 @@ static const struct dc_debug_options deb
- 		.clock_trace = true,
- 		.disable_pplib_clock_request = true,
- 		.min_disp_clk_khz = 100000,
--		.pipe_split_policy = MPC_SPLIT_DYNAMIC,
-+		.pipe_split_policy = MPC_SPLIT_AVOID_MULT_DISP,
- 		.force_single_disp_pipe_split = false,
- 		.disable_dcc = DCC_ENABLE,
- 		.vsr_support = true,
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1583,7 +1583,14 @@ static void do_remove_conflicting_frameb
+ 			 * If it's not a platform device, at least print a warning. A
+ 			 * fix would add code to remove the device from the system.
+ 			 */
+-			if (dev_is_platform(device)) {
++			if (!device) {
++				/* TODO: Represent each OF framebuffer as its own
++				 * device in the device hierarchy. For now, offb
++				 * doesn't have such a device, so unregister the
++				 * framebuffer as before without warning.
++				 */
++				do_unregister_framebuffer(registered_fb[i]);
++			} else if (dev_is_platform(device)) {
+ 				registered_fb[i]->forced_out = true;
+ 				platform_device_unregister(to_platform_device(device));
+ 			} else {
 
 
