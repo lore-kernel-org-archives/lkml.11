@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB568C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354877AbiDLH05 (ORCPT
+        id S1355378AbiDLH1d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
+        Tue, 12 Apr 2022 03:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351674AbiDLHMv (ORCPT
+        with ESMTP id S1351720AbiDLHMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:51 -0400
+        Tue, 12 Apr 2022 03:12:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF2213FAB;
-        Mon, 11 Apr 2022 23:51:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CF5165AB;
+        Mon, 11 Apr 2022 23:51:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02B82B81B49;
-        Tue, 12 Apr 2022 06:51:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C90BC385A1;
-        Tue, 12 Apr 2022 06:51:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84715B81B46;
+        Tue, 12 Apr 2022 06:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2B7C385A8;
+        Tue, 12 Apr 2022 06:51:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746284;
-        bh=brRah2FuEZfM4nCDSAXpZRubw7Gb1YvCQJxvJrQ1hmU=;
+        s=korg; t=1649746317;
+        bh=a0yLX0T6TEa0bit/jXiRG3kadDajY2XPRPzgFSSAFEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qsaGjvIBagS1Y6Df1tCOL7ENUUqMBN8CXqLWhbQTUYZAA1RLQ0OKL9DddtOdzNOa2
-         VH48JH3FqVqLQHHrTAtgTrz7IqBnszNmFF79a8qvxsPirTtYBcTgDVW1+z3jccfvK2
-         TlJ3RIxgX8Cz33qn/qPEcJLjRmbMxVQrAx1xDOIA=
+        b=KayfRNynVsRafNeJeAJjo7+VAXCoMm7ah1mfL8Lhq3ZlJC1SO/uCUy44CxVxADTip
+         Hzr9L/WPkj42EvmxdUhHEjp7QzUTahKzAcB6REUW+xdzKHrnZEsUNe+tiWZnQakzZE
+         kBsDvZafOtjwKUWd0hjfpF/vDI9l3mi7adioJ288=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mauri Sandberg <maukka@ext.kapsi.fi>,
-        Thomas Walther <walther-it@gmx.de>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 187/277] net: ethernet: mv643xx: Fix over zealous checking of_get_mac_address()
-Date:   Tue, 12 Apr 2022 08:29:50 +0200
-Message-Id: <20220412062947.447835407@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.15 240/277] SUNRPC: Prevent immediate close+reconnect
+Date:   Tue, 12 Apr 2022 08:30:43 +0200
+Message-Id: <20220412062948.990253262@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,45 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 11f8e7c122ce013fa745029fa8c94c6db69c2e54 ]
+commit 3be232f11a3cc9b0ef0795e39fa11bdb8e422a06 upstream.
 
-There is often not a MAC address available in an EEPROM accessible by
-Linux with Marvell devices. Instead the bootload has the MAC address
-and directly programs it into the hardware. So don't consider an error
-from of_get_mac_address() has fatal. However, the check was added for
-the case where there is a MAC address in an the EEPROM, but the EEPROM
-has not probed yet, and -EPROBE_DEFER is returned. In that case the
-error should be returned. So make the check specific to this error
-code.
+If we have already set up the socket and are waiting for it to connect,
+then don't immediately close and retry.
 
-Cc: Mauri Sandberg <maukka@ext.kapsi.fi>
-Reported-by: Thomas Walther <walther-it@gmx.de>
-Fixes: 42404d8f1c01 ("net: mv643xx_eth: process retval from of_get_mac_address")
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220405000404.3374734-1-andrew@lunn.ch
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/marvell/mv643xx_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/xprt.c     |    3 ++-
+ net/sunrpc/xprtsock.c |    2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
-index 1b61fe2e9b4d..90fd5588e20d 100644
---- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-+++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-@@ -2747,7 +2747,7 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
- 	}
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -767,7 +767,8 @@ EXPORT_SYMBOL_GPL(xprt_disconnect_done);
+  */
+ static void xprt_schedule_autoclose_locked(struct rpc_xprt *xprt)
+ {
+-	set_bit(XPRT_CLOSE_WAIT, &xprt->state);
++	if (test_and_set_bit(XPRT_CLOSE_WAIT, &xprt->state))
++		return;
+ 	if (test_and_set_bit(XPRT_LOCKED, &xprt->state) == 0)
+ 		queue_work(xprtiod_workqueue, &xprt->task_cleanup);
+ 	else if (xprt->snd_task && !test_bit(XPRT_SND_IS_COOKIE, &xprt->state))
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2365,7 +2365,7 @@ static void xs_connect(struct rpc_xprt *
  
- 	ret = of_get_mac_address(pnp, ppd.mac_addr);
--	if (ret)
-+	if (ret == -EPROBE_DEFER)
- 		return ret;
+ 	WARN_ON_ONCE(!xprt_lock_connect(xprt, task, transport));
  
- 	mv643xx_eth_property(pnp, "tx-queue-size", ppd.tx_queue_size);
--- 
-2.35.1
-
+-	if (transport->sock != NULL) {
++	if (transport->sock != NULL && !xprt_connecting(xprt)) {
+ 		dprintk("RPC:       xs_connect delayed xprt %p for %lu "
+ 				"seconds\n",
+ 				xprt, xprt->reestablish_timeout / HZ);
 
 
