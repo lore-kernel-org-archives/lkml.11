@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8579EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 507F3C46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358609AbiDLHlz (ORCPT
+        id S1358480AbiDLHlo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        Tue, 12 Apr 2022 03:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353630AbiDLHPw (ORCPT
+        with ESMTP id S1353509AbiDLHPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:15:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B503B3AA6E;
-        Mon, 11 Apr 2022 23:57:12 -0700 (PDT)
+        Tue, 12 Apr 2022 03:15:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F3D3983B;
+        Mon, 11 Apr 2022 23:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54591B81B4E;
-        Tue, 12 Apr 2022 06:57:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B75EFC385A8;
-        Tue, 12 Apr 2022 06:57:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2A1DB81B58;
+        Tue, 12 Apr 2022 06:56:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F42CC385A6;
+        Tue, 12 Apr 2022 06:56:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746624;
-        bh=hta54ajdwmJh2NBKG/lZbC1dBvxycmRgwzA6FsJy5NI=;
+        s=korg; t=1649746618;
+        bh=qieKbnNZydAiQCAX6EL2KZDMxVDRgcQ+avP/HDR/zJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3TJsIld6gWrMoSuMjyaUBmOGi3LmJxJ2lCiaECNAGw67m+zR2rFRrLGiULZF7VUD
-         8yVTESEidiNz+zZmFJQKW+aCGnY7HQgMLhOgxiJ6dKZuuw4mIGwaPcK7fAJ6dJIg5y
-         02C87ePZnqYX5wUAC0Pk+Sl9hEN/nE4g776gSlKI=
+        b=MA0HbnLORezgjmZ7yvL0SIAJWAeZ9R+MXcL5QZVSrUDQ2iIszt7N1VO+DdIcFqHc6
+         xyXx8xtK5wjYQoTueIs1YLaPvFEIssbBmeQOJpzfmIPN76gFc56oO1iVJEEUSmmEWU
+         emeJ0n00HBW8gsEpnPIvH+/eRHzqSUkXZMkNHYS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 032/285] scsi: mvsas: Replace snprintf() with sysfs_emit()
-Date:   Tue, 12 Apr 2022 08:28:09 +0200
-Message-Id: <20220412062944.604408112@linuxfoundation.org>
+Subject: [PATCH 5.16 068/285] drm/amdkfd: make CRAT table missing message informational only
+Date:   Tue, 12 Apr 2022 08:28:45 +0200
+Message-Id: <20220412062945.631202288@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,50 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
+[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
 
-coccinelle report:
-./drivers/scsi/mvsas/mv_init.c:699:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/mvsas/mv_init.c:747:8-16:
-WARNING: use scnprintf or sprintf
+The driver has a fallback so make the message informational
+rather than a warning. The driver has a fallback if the
+Component Resource Association Table (CRAT) is missing, so
+make this informational now.
 
-Use sysfs_emit() instead of scnprintf() or sprintf().
-
-Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mvsas/mv_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
-index dcae2d4464f9..44df7c03aab8 100644
---- a/drivers/scsi/mvsas/mv_init.c
-+++ b/drivers/scsi/mvsas/mv_init.c
-@@ -696,7 +696,7 @@ static struct pci_driver mvs_pci_driver = {
- static ssize_t driver_version_show(struct device *cdev,
- 				   struct device_attribute *attr, char *buffer)
- {
--	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
-+	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
- }
- 
- static DEVICE_ATTR_RO(driver_version);
-@@ -744,7 +744,7 @@ static ssize_t interrupt_coalescing_store(struct device *cdev,
- static ssize_t interrupt_coalescing_show(struct device *cdev,
- 					 struct device_attribute *attr, char *buffer)
- {
--	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
-+	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
- }
- 
- static DEVICE_ATTR_RW(interrupt_coalescing);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+index c33d689f29e8..e574aa32a111 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -1563,7 +1563,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
+ 	/* Fetch the CRAT table from ACPI */
+ 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
+ 	if (status == AE_NOT_FOUND) {
+-		pr_warn("CRAT table not found\n");
++		pr_info("CRAT table not found\n");
+ 		return -ENODATA;
+ 	} else if (ACPI_FAILURE(status)) {
+ 		const char *err = acpi_format_exception(status);
 -- 
 2.35.1
 
