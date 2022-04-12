@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AE8C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D43DC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354964AbiDLIGe (ORCPT
+        id S1355022AbiDLIGp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42858 "EHLO
+        Tue, 12 Apr 2022 04:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354114AbiDLH0D (ORCPT
+        with ESMTP id S1354097AbiDLH0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:26:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4D53DA46;
-        Tue, 12 Apr 2022 00:05:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01517183AF;
+        Tue, 12 Apr 2022 00:05:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A54C60B2B;
-        Tue, 12 Apr 2022 07:05:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9F5C385A6;
-        Tue, 12 Apr 2022 07:05:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6049B81B4E;
+        Tue, 12 Apr 2022 07:05:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 293B9C385A6;
+        Tue, 12 Apr 2022 07:05:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747150;
-        bh=HFTubQlxTi5H1yhzeB1NGPlrNMQ4UuCdTnoHC1d8+oE=;
+        s=korg; t=1649747133;
+        bh=qVZQZO1froVUTZ6TwlksDchw3cHLrw0uS/UZVNIs+5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n1V2nmdJMphf+5Y8qIxC+6eLhp0kBvkAL8fAhdKtgEA2s7m+O9dE1vQJmM3i2Hi13
-         YuepGMaOxyW7GnMJEtEHOG3+1TEHeIybB7Dt6iIdKKv9wvwEYXwiNINJ/2izwLUlcJ
-         bp4mRHa2pU9tOnQsRfw5/4Y+pBJUL5dmGOFvOdzg=
+        b=vrNMr9muHEC+CxZbM1H8mNNiqpHplYua50Y7dOSd7WWi2wiQhHF5rt4owBuLlyL3a
+         8FMg3VhakrAhIQXK5Bvz4bZhgw5xOMBWYbY3N+0WA7HekVRUMbLSf7yyXm7zeg0b4T
+         oYIY7EHYpX6VHteJg7V+tpwDuv6X/JC8aLOur/lI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 262/285] net/smc: send directly on setting TCP_NODELAY
-Date:   Tue, 12 Apr 2022 08:31:59 +0200
-Message-Id: <20220412062951.223603984@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.16 256/285] drm/nouveau/pmu: Add missing callbacks for Tegra devices
+Date:   Tue, 12 Apr 2022 08:31:53 +0200
+Message-Id: <20220412062951.049355968@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,39 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+From: Karol Herbst <kherbst@redhat.com>
 
-commit b70a5cc045197aad9c159042621baf3c015f6cc7 upstream.
+commit 38d4e5cf5b08798f093374e53c2f4609d5382dd5 upstream.
 
-In commit ea785a1a573b("net/smc: Send directly when
-TCP_CORK is cleared"), we don't use delayed work
-to implement cork.
+Fixes a crash booting on those platforms with nouveau.
 
-This patch use the same algorithm, removes the
-delayed work when setting TCP_NODELAY and send
-directly in setsockopt(). This also makes the
-TCP_NODELAY the same as TCP.
-
-Cc: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 4cdd2450bf73 ("drm/nouveau/pmu/gm200-: use alternate falcon reset sequence")
+Cc: Ben Skeggs <bskeggs@redhat.com>
+Cc: Karol Herbst <kherbst@redhat.com>
+Cc: dri-devel@lists.freedesktop.org
+Cc: nouveau@lists.freedesktop.org
+Cc: <stable@vger.kernel.org> # v5.17+
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220322124800.2605463-1-kherbst@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/smc/af_smc.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c |    1 +
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c |    2 +-
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c |    1 +
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h  |    1 +
+ 4 files changed, 4 insertions(+), 1 deletion(-)
 
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2621,8 +2621,8 @@ static int smc_setsockopt(struct socket
- 		    sk->sk_state != SMC_CLOSED) {
- 			if (val) {
- 				SMC_STAT_INC(smc, ndly_cnt);
--				mod_delayed_work(smc->conn.lgr->tx_wq,
--						 &smc->conn.tx_work, 0);
-+				smc_tx_pending(&smc->conn);
-+				cancel_delayed_work(&smc->conn.tx_work);
- 			}
- 		}
- 		break;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
+@@ -216,6 +216,7 @@ gm20b_pmu = {
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+ 	.initmsg = gm20b_pmu_initmsg,
++	.reset = gf100_pmu_reset,
+ };
+ 
+ #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
+@@ -23,7 +23,7 @@
+  */
+ #include "priv.h"
+ 
+-static void
++void
+ gp102_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
+@@ -83,6 +83,7 @@ gp10b_pmu = {
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+ 	.initmsg = gm20b_pmu_initmsg,
++	.reset = gp102_pmu_reset,
+ };
+ 
+ #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
+@@ -41,6 +41,7 @@ int gt215_pmu_send(struct nvkm_pmu *, u3
+ 
+ bool gf100_pmu_enabled(struct nvkm_pmu *);
+ void gf100_pmu_reset(struct nvkm_pmu *);
++void gp102_pmu_reset(struct nvkm_pmu *pmu);
+ 
+ void gk110_pmu_pgob(struct nvkm_pmu *, bool);
+ 
 
 
