@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68430C3527C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84423C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354268AbiDLHih (ORCPT
+        id S1354370AbiDLHin (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57384 "EHLO
+        Tue, 12 Apr 2022 03:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352587AbiDLHOJ (ORCPT
+        with ESMTP id S1352646AbiDLHOM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:09 -0400
+        Tue, 12 Apr 2022 03:14:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E9F2E0BE;
-        Mon, 11 Apr 2022 23:54:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232472E9F5;
+        Mon, 11 Apr 2022 23:54:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FF26B81B47;
-        Tue, 12 Apr 2022 06:54:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5941BC385A6;
-        Tue, 12 Apr 2022 06:54:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F68AB81B49;
+        Tue, 12 Apr 2022 06:54:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA7DAC385A1;
+        Tue, 12 Apr 2022 06:54:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746488;
-        bh=IXY3m/Vsk0pN/xR56n8JlJlq6WlGZzaF811G+aG5+RY=;
+        s=korg; t=1649746494;
+        bh=Y4PFYmdYR2WjNP0fkjHUgXF9wtFrae+g7GdxMfughyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q0b0A/pXwAQY2WfbY4ynkzrcAlRPDa2DemqRs44/vuVCJmDR0d1KtryHnPYdbWjx8
-         z9F5oERsABi3huXACvrqW0idntRO8abByoxC/S6i0zH9YZCJpEq5QtdqsXRmYDz02k
-         gF6NX8C55afZkCIodFqOPhGE8SHt1x5ZsXA/MQi4=
+        b=hQ41pCGuhmjBuOlrrdm/Mccs6m5nJKTVytrnfxteM1QWgFnrP0fwGMSXy6acsiirL
+         TslsyUzR9nFeMfU0ZvvWdbz0PqgZNuv//utn3ZxcDDSd0GO1/7z/9MCr9uyZRD7Pdx
+         hJicw6qUTHjz8kWSC3T+YNwk9QiF0alept7i2OdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philip Yang <Philip.Yang@amd.com>,
-        Ruili Ji <ruili.ji@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 023/285] drm/amdkfd: Ensure mm remain valid in svm deferred_list work
-Date:   Tue, 12 Apr 2022 08:28:00 +0200
-Message-Id: <20220412062944.348720367@linuxfoundation.org>
+Subject: [PATCH 5.16 025/285] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
+Date:   Tue, 12 Apr 2022 08:28:02 +0200
+Message-Id: <20220412062944.405177939@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,139 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+From: Maxim Kiselev <bigunclemax@gmail.com>
 
-[ Upstream commit 367c9b0f1b8750a704070e7ae85234d591290434 ]
+[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
 
-svm_deferred_list work should continue to handle deferred_range_list
-which maybe split to child range to avoid child range leak, and remove
-ranges mmu interval notifier to avoid mm mm_count leak. So taking mm
-reference when adding range to deferred list, to ensure mm is valid in
-the scheduled deferred_list_work, and drop the mm referrence after range
-is handled.
+T1040RDB has two RTL8211E-VB phys which requires setting
+of internal delays for correct work.
 
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reported-by: Ruili Ji <ruili.ji@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Changing the phy-connection-type property to `rgmii-id`
+will fix this issue.
+
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 62 ++++++++++++++++------------
- 1 file changed, 36 insertions(+), 26 deletions(-)
+ arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-index c0b8f4ff80b8..ea1c5aaf659a 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-@@ -1926,10 +1926,9 @@ svm_range_update_notifier_and_interval_tree(struct mm_struct *mm,
- }
+diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+index 099a598c74c0..bfe1ed5be337 100644
+--- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
++++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+@@ -139,12 +139,12 @@
+ 		fman@400000 {
+ 			ethernet@e6000 {
+ 				phy-handle = <&phy_rgmii_0>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
- static void
--svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange)
-+svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange,
-+			 struct mm_struct *mm)
- {
--	struct mm_struct *mm = prange->work_item.mm;
--
- 	switch (prange->work_item.op) {
- 	case SVM_OP_NULL:
- 		pr_debug("NULL OP 0x%p prange 0x%p [0x%lx 0x%lx]\n",
-@@ -2013,34 +2012,41 @@ static void svm_range_deferred_list_work(struct work_struct *work)
- 	pr_debug("enter svms 0x%p\n", svms);
+ 			ethernet@e8000 {
+ 				phy-handle = <&phy_rgmii_1>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
- 	p = container_of(svms, struct kfd_process, svms);
--	/* Avoid mm is gone when inserting mmu notifier */
--	mm = get_task_mm(p->lead_thread);
--	if (!mm) {
--		pr_debug("svms 0x%p process mm gone\n", svms);
--		return;
--	}
--retry:
--	mmap_write_lock(mm);
--
--	/* Checking for the need to drain retry faults must be inside
--	 * mmap write lock to serialize with munmap notifiers.
--	 */
--	if (unlikely(atomic_read(&svms->drain_pagefaults))) {
--		mmap_write_unlock(mm);
--		svm_range_drain_retry_fault(svms);
--		goto retry;
--	}
- 
- 	spin_lock(&svms->deferred_list_lock);
- 	while (!list_empty(&svms->deferred_range_list)) {
- 		prange = list_first_entry(&svms->deferred_range_list,
- 					  struct svm_range, deferred_list);
--		list_del_init(&prange->deferred_list);
- 		spin_unlock(&svms->deferred_list_lock);
- 
- 		pr_debug("prange 0x%p [0x%lx 0x%lx] op %d\n", prange,
- 			 prange->start, prange->last, prange->work_item.op);
- 
-+		mm = prange->work_item.mm;
-+retry:
-+		mmap_write_lock(mm);
-+
-+		/* Checking for the need to drain retry faults must be inside
-+		 * mmap write lock to serialize with munmap notifiers.
-+		 */
-+		if (unlikely(atomic_read(&svms->drain_pagefaults))) {
-+			mmap_write_unlock(mm);
-+			svm_range_drain_retry_fault(svms);
-+			goto retry;
-+		}
-+
-+		/* Remove from deferred_list must be inside mmap write lock, for
-+		 * two race cases:
-+		 * 1. unmap_from_cpu may change work_item.op and add the range
-+		 *    to deferred_list again, cause use after free bug.
-+		 * 2. svm_range_list_lock_and_flush_work may hold mmap write
-+		 *    lock and continue because deferred_list is empty, but
-+		 *    deferred_list work is actually waiting for mmap lock.
-+		 */
-+		spin_lock(&svms->deferred_list_lock);
-+		list_del_init(&prange->deferred_list);
-+		spin_unlock(&svms->deferred_list_lock);
-+
- 		mutex_lock(&svms->lock);
- 		mutex_lock(&prange->migrate_mutex);
- 		while (!list_empty(&prange->child_list)) {
-@@ -2051,19 +2057,20 @@ static void svm_range_deferred_list_work(struct work_struct *work)
- 			pr_debug("child prange 0x%p op %d\n", pchild,
- 				 pchild->work_item.op);
- 			list_del_init(&pchild->child_list);
--			svm_range_handle_list_op(svms, pchild);
-+			svm_range_handle_list_op(svms, pchild, mm);
- 		}
- 		mutex_unlock(&prange->migrate_mutex);
- 
--		svm_range_handle_list_op(svms, prange);
-+		svm_range_handle_list_op(svms, prange, mm);
- 		mutex_unlock(&svms->lock);
-+		mmap_write_unlock(mm);
-+
-+		/* Pairs with mmget in svm_range_add_list_work */
-+		mmput(mm);
- 
- 		spin_lock(&svms->deferred_list_lock);
- 	}
- 	spin_unlock(&svms->deferred_list_lock);
--
--	mmap_write_unlock(mm);
--	mmput(mm);
- 	pr_debug("exit svms 0x%p\n", svms);
- }
- 
-@@ -2081,6 +2088,9 @@ svm_range_add_list_work(struct svm_range_list *svms, struct svm_range *prange,
- 			prange->work_item.op = op;
- 	} else {
- 		prange->work_item.op = op;
-+
-+		/* Pairs with mmput in deferred_list_work */
-+		mmget(mm);
- 		prange->work_item.mm = mm;
- 		list_add_tail(&prange->deferred_list,
- 			      &prange->svms->deferred_range_list);
+ 			mdio0: mdio@fc000 {
 -- 
 2.35.1
 
