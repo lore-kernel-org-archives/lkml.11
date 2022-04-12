@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A186DC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F220DC46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351954AbiDLHE3 (ORCPT
+        id S1351837AbiDLHEU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48518 "EHLO
+        Tue, 12 Apr 2022 03:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351550AbiDLGx5 (ORCPT
+        with ESMTP id S1351552AbiDLGx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:53:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD940186E3;
-        Mon, 11 Apr 2022 23:42:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02222186F1;
+        Mon, 11 Apr 2022 23:42:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AC0160A21;
-        Tue, 12 Apr 2022 06:42:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59545C385A1;
-        Tue, 12 Apr 2022 06:42:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9434560A6A;
+        Tue, 12 Apr 2022 06:42:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FB6FC385A6;
+        Tue, 12 Apr 2022 06:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745752;
-        bh=flvFAc8M59j1scH/4PE3HVGl03Kprf27IIpTnFk4qSk=;
+        s=korg; t=1649745758;
+        bh=MXv3i1pr2GX2Y7HTpAUICBuVKQpGt1lq5seKbn+0k2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vph6Olgfu8iY6s5fCyhWzo7rUA+Ot/yyoxno9XdnPHGzxlvB6uXhgHUmWiRuCZkKL
-         U4vNK7/vg6sTHCnuKn0lJR0v9V0bxQyU0vhp10sGIG6bNiP7IKWprj/kUKQFo+d79E
-         wxtBIiAPFBWrsgmBRfdojQDzbNDnm5uyaI365BOg=
+        b=xyv7y04gP0JQksOwipQTpnwQDeK3nQDdYbEhnwODmT+na2CLFyR2Y39Eyk87I43fi
+         YK75TNodLvjUAhvqT4QrObdXjhgVyC58Um5hq/1og67EiiI2rhiXlCmYf666L4M8q4
+         YNwcar1prKgjzPozj1NRiOpFtDlr2ZmaF7irt6ws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jann Horn <jannh@google.com>,
+        Taras Madan <tarasmadan@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 035/277] scsi: bfa: Replace snprintf() with sysfs_emit()
-Date:   Tue, 12 Apr 2022 08:27:18 +0200
-Message-Id: <20220412062943.061091209@linuxfoundation.org>
+Subject: [PATCH 5.15 010/277] kfence: limit currently covered allocations when pool nearly full
+Date:   Tue, 12 Apr 2022 08:26:53 +0200
+Message-Id: <20220412062942.333129269@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,167 +56,288 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Marco Elver <elver@google.com>
 
-[ Upstream commit 2245ea91fd3a04cafbe2f54911432a8657528c3b ]
+[ Upstream commit 08f6b10630f284755087f58aa393402e15b92977 ]
 
-coccinelle report:
-./drivers/scsi/bfa/bfad_attr.c:908:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:860:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:888:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:853:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:808:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:728:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:822:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:927:9-17:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:900:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:874:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:714:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:839:8-16:
-WARNING: use scnprintf or sprintf
+One of KFENCE's main design principles is that with increasing uptime,
+allocation coverage increases sufficiently to detect previously
+undetected bugs.
 
-Use sysfs_emit() instead of scnprintf() or sprintf().
+We have observed that frequent long-lived allocations of the same source
+(e.g.  pagecache) tend to permanently fill up the KFENCE pool with
+increasing system uptime, thus breaking the above requirement.  The
+workaround thus far had been increasing the sample interval and/or
+increasing the KFENCE pool size, but is no reliable solution.
 
-Link: https://lore.kernel.org/r/def83ff75faec64ba592b867a8499b1367bae303.1643181468.git.yang.guang5@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+To ensure diverse coverage of allocations, limit currently covered
+allocations of the same source once pool utilization reaches 75%
+(configurable via `kfence.skip_covered_thresh`) or above.  The effect is
+retaining reasonable allocation coverage when the pool is close to full.
+
+A side-effect is that this also limits frequent long-lived allocations
+of the same source filling up the pool permanently.
+
+Uniqueness of an allocation for coverage purposes is based on its
+(partial) allocation stack trace (the source).  A Counting Bloom filter
+is used to check if an allocation is covered; if the allocation is
+currently covered, the allocation is skipped by KFENCE.
+
+Testing was done using:
+
+	(a) a synthetic workload that performs frequent long-lived
+	    allocations (default config values; sample_interval=1;
+	    num_objects=63), and
+
+	(b) normal desktop workloads on an otherwise idle machine where
+	    the problem was first reported after a few days of uptime
+	    (default config values).
+
+In both test cases the sampled allocation rate no longer drops to zero
+at any point.  In the case of (b) we observe (after 2 days uptime) 15%
+unique allocations in the pool, 77% pool utilization, with 20% "skipped
+allocations (covered)".
+
+[elver@google.com: simplify and just use hash_32(), use more random stack_hash_seed]
+  Link: https://lkml.kernel.org/r/YU3MRGaCaJiYht5g@elver.google.com
+[elver@google.com: fix 32 bit]
+
+Link: https://lkml.kernel.org/r/20210923104803.2620285-4-elver@google.com
+Signed-off-by: Marco Elver <elver@google.com>
+Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Acked-by: Alexander Potapenko <glider@google.com>
+Cc: Aleksandr Nogikh <nogikh@google.com>
+Cc: Jann Horn <jannh@google.com>
+Cc: Taras Madan <tarasmadan@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/bfa/bfad_attr.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ mm/kfence/core.c   | 109 ++++++++++++++++++++++++++++++++++++++++++++-
+ mm/kfence/kfence.h |   2 +
+ 2 files changed, 109 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/bfa/bfad_attr.c b/drivers/scsi/bfa/bfad_attr.c
-index 5ae1e3f78910..e049cdb3c286 100644
---- a/drivers/scsi/bfa/bfad_attr.c
-+++ b/drivers/scsi/bfa/bfad_attr.c
-@@ -711,7 +711,7 @@ bfad_im_serial_num_show(struct device *dev, struct device_attribute *attr,
- 	char serial_num[BFA_ADAPTER_SERIAL_NUM_LEN];
+diff --git a/mm/kfence/core.c b/mm/kfence/core.c
+index 4eec0c5d32b5..51ea9193cecb 100644
+--- a/mm/kfence/core.c
++++ b/mm/kfence/core.c
+@@ -10,12 +10,15 @@
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
+ #include <linux/debugfs.h>
++#include <linux/hash.h>
+ #include <linux/irq_work.h>
++#include <linux/jhash.h>
+ #include <linux/kcsan-checks.h>
+ #include <linux/kfence.h>
+ #include <linux/kmemleak.h>
+ #include <linux/list.h>
+ #include <linux/lockdep.h>
++#include <linux/log2.h>
+ #include <linux/memblock.h>
+ #include <linux/moduleparam.h>
+ #include <linux/random.h>
+@@ -82,6 +85,10 @@ static const struct kernel_param_ops sample_interval_param_ops = {
+ };
+ module_param_cb(sample_interval, &sample_interval_param_ops, &kfence_sample_interval, 0600);
  
- 	bfa_get_adapter_serial_num(&bfad->bfa, serial_num);
--	return snprintf(buf, PAGE_SIZE, "%s\n", serial_num);
-+	return sysfs_emit(buf, "%s\n", serial_num);
- }
++/* Pool usage% threshold when currently covered allocations are skipped. */
++static unsigned long kfence_skip_covered_thresh __read_mostly = 75;
++module_param_named(skip_covered_thresh, kfence_skip_covered_thresh, ulong, 0644);
++
+ /* The pool of pages used for guard pages and objects. */
+ char *__kfence_pool __ro_after_init;
+ EXPORT_SYMBOL(__kfence_pool); /* Export for test modules. */
+@@ -106,6 +113,32 @@ DEFINE_STATIC_KEY_FALSE(kfence_allocation_key);
+ /* Gates the allocation, ensuring only one succeeds in a given period. */
+ atomic_t kfence_allocation_gate = ATOMIC_INIT(1);
  
- static ssize_t
-@@ -725,7 +725,7 @@ bfad_im_model_show(struct device *dev, struct device_attribute *attr,
- 	char model[BFA_ADAPTER_MODEL_NAME_LEN];
++/*
++ * A Counting Bloom filter of allocation coverage: limits currently covered
++ * allocations of the same source filling up the pool.
++ *
++ * Assuming a range of 15%-85% unique allocations in the pool at any point in
++ * time, the below parameters provide a probablity of 0.02-0.33 for false
++ * positive hits respectively:
++ *
++ *	P(alloc_traces) = (1 - e^(-HNUM * (alloc_traces / SIZE)) ^ HNUM
++ */
++#define ALLOC_COVERED_HNUM	2
++#define ALLOC_COVERED_ORDER	(const_ilog2(CONFIG_KFENCE_NUM_OBJECTS) + 2)
++#define ALLOC_COVERED_SIZE	(1 << ALLOC_COVERED_ORDER)
++#define ALLOC_COVERED_HNEXT(h)	hash_32(h, ALLOC_COVERED_ORDER)
++#define ALLOC_COVERED_MASK	(ALLOC_COVERED_SIZE - 1)
++static atomic_t alloc_covered[ALLOC_COVERED_SIZE];
++
++/* Stack depth used to determine uniqueness of an allocation. */
++#define UNIQUE_ALLOC_STACK_DEPTH ((size_t)8)
++
++/*
++ * Randomness for stack hashes, making the same collisions across reboots and
++ * different machines less likely.
++ */
++static u32 stack_hash_seed __ro_after_init;
++
+ /* Statistics counters for debugfs. */
+ enum kfence_counter_id {
+ 	KFENCE_COUNTER_ALLOCATED,
+@@ -115,6 +148,7 @@ enum kfence_counter_id {
+ 	KFENCE_COUNTER_BUGS,
+ 	KFENCE_COUNTER_SKIP_INCOMPAT,
+ 	KFENCE_COUNTER_SKIP_CAPACITY,
++	KFENCE_COUNTER_SKIP_COVERED,
+ 	KFENCE_COUNTER_COUNT,
+ };
+ static atomic_long_t counters[KFENCE_COUNTER_COUNT];
+@@ -126,11 +160,57 @@ static const char *const counter_names[] = {
+ 	[KFENCE_COUNTER_BUGS]		= "total bugs",
+ 	[KFENCE_COUNTER_SKIP_INCOMPAT]	= "skipped allocations (incompatible)",
+ 	[KFENCE_COUNTER_SKIP_CAPACITY]	= "skipped allocations (capacity)",
++	[KFENCE_COUNTER_SKIP_COVERED]	= "skipped allocations (covered)",
+ };
+ static_assert(ARRAY_SIZE(counter_names) == KFENCE_COUNTER_COUNT);
  
- 	bfa_get_adapter_model(&bfad->bfa, model);
--	return snprintf(buf, PAGE_SIZE, "%s\n", model);
-+	return sysfs_emit(buf, "%s\n", model);
- }
+ /* === Internals ============================================================ */
  
- static ssize_t
-@@ -805,7 +805,7 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
- 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
- 			"Invalid Model");
- 
--	return snprintf(buf, PAGE_SIZE, "%s\n", model_descr);
-+	return sysfs_emit(buf, "%s\n", model_descr);
- }
- 
- static ssize_t
-@@ -819,7 +819,7 @@ bfad_im_node_name_show(struct device *dev, struct device_attribute *attr,
- 	u64        nwwn;
- 
- 	nwwn = bfa_fcs_lport_get_nwwn(port->fcs_port);
--	return snprintf(buf, PAGE_SIZE, "0x%llx\n", cpu_to_be64(nwwn));
-+	return sysfs_emit(buf, "0x%llx\n", cpu_to_be64(nwwn));
- }
- 
- static ssize_t
-@@ -836,7 +836,7 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
- 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
- 	strlcpy(symname, port_attr.port_cfg.sym_name.symname,
- 			BFA_SYMNAME_MAXLEN);
--	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
-+	return sysfs_emit(buf, "%s\n", symname);
- }
- 
- static ssize_t
-@@ -850,14 +850,14 @@ bfad_im_hw_version_show(struct device *dev, struct device_attribute *attr,
- 	char hw_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_pci_chip_rev(&bfad->bfa, hw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", hw_ver);
-+	return sysfs_emit(buf, "%s\n", hw_ver);
- }
- 
- static ssize_t
- bfad_im_drv_version_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
++static inline bool should_skip_covered(void)
++{
++	unsigned long thresh = (CONFIG_KFENCE_NUM_OBJECTS * kfence_skip_covered_thresh) / 100;
++
++	return atomic_long_read(&counters[KFENCE_COUNTER_ALLOCATED]) > thresh;
++}
++
++static u32 get_alloc_stack_hash(unsigned long *stack_entries, size_t num_entries)
++{
++	num_entries = min(num_entries, UNIQUE_ALLOC_STACK_DEPTH);
++	num_entries = filter_irq_stacks(stack_entries, num_entries);
++	return jhash(stack_entries, num_entries * sizeof(stack_entries[0]), stack_hash_seed);
++}
++
++/*
++ * Adds (or subtracts) count @val for allocation stack trace hash
++ * @alloc_stack_hash from Counting Bloom filter.
++ */
++static void alloc_covered_add(u32 alloc_stack_hash, int val)
++{
++	int i;
++
++	for (i = 0; i < ALLOC_COVERED_HNUM; i++) {
++		atomic_add(val, &alloc_covered[alloc_stack_hash & ALLOC_COVERED_MASK]);
++		alloc_stack_hash = ALLOC_COVERED_HNEXT(alloc_stack_hash);
++	}
++}
++
++/*
++ * Returns true if the allocation stack trace hash @alloc_stack_hash is
++ * currently contained (non-zero count) in Counting Bloom filter.
++ */
++static bool alloc_covered_contains(u32 alloc_stack_hash)
++{
++	int i;
++
++	for (i = 0; i < ALLOC_COVERED_HNUM; i++) {
++		if (!atomic_read(&alloc_covered[alloc_stack_hash & ALLOC_COVERED_MASK]))
++			return false;
++		alloc_stack_hash = ALLOC_COVERED_HNEXT(alloc_stack_hash);
++	}
++
++	return true;
++}
++
+ static bool kfence_protect(unsigned long addr)
  {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_VERSION);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_VERSION);
+ 	return !KFENCE_WARN_ON(!kfence_protect_page(ALIGN_DOWN(addr, PAGE_SIZE), true));
+@@ -270,7 +350,8 @@ static __always_inline void for_each_canary(const struct kfence_metadata *meta,
  }
  
- static ssize_t
-@@ -871,7 +871,7 @@ bfad_im_optionrom_version_show(struct device *dev,
- 	char optrom_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_adapter_optrom_ver(&bfad->bfa, optrom_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", optrom_ver);
-+	return sysfs_emit(buf, "%s\n", optrom_ver);
- }
- 
- static ssize_t
-@@ -885,7 +885,7 @@ bfad_im_fw_version_show(struct device *dev, struct device_attribute *attr,
- 	char fw_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_adapter_fw_ver(&bfad->bfa, fw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", fw_ver);
-+	return sysfs_emit(buf, "%s\n", fw_ver);
- }
- 
- static ssize_t
-@@ -897,7 +897,7 @@ bfad_im_num_of_ports_show(struct device *dev, struct device_attribute *attr,
- 			(struct bfad_im_port_s *) shost->hostdata[0];
- 	struct bfad_s *bfad = im_port->bfad;
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n",
-+	return sysfs_emit(buf, "%d\n",
- 			bfa_get_nports(&bfad->bfa));
- }
- 
-@@ -905,7 +905,7 @@ static ssize_t
- bfad_im_drv_name_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
+ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t gfp,
+-				  unsigned long *stack_entries, size_t num_stack_entries)
++				  unsigned long *stack_entries, size_t num_stack_entries,
++				  u32 alloc_stack_hash)
  {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_NAME);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_NAME);
+ 	struct kfence_metadata *meta = NULL;
+ 	unsigned long flags;
+@@ -333,6 +414,8 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
+ 	/* Pairs with READ_ONCE() in kfence_shutdown_cache(). */
+ 	WRITE_ONCE(meta->cache, cache);
+ 	meta->size = size;
++	meta->alloc_stack_hash = alloc_stack_hash;
++
+ 	for_each_canary(meta, set_canary_byte);
+ 
+ 	/* Set required struct page fields. */
+@@ -345,6 +428,8 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
+ 
+ 	raw_spin_unlock_irqrestore(&meta->lock, flags);
+ 
++	alloc_covered_add(alloc_stack_hash, 1);
++
+ 	/* Memory initialization. */
+ 
+ 	/*
+@@ -413,6 +498,8 @@ static void kfence_guarded_free(void *addr, struct kfence_metadata *meta, bool z
+ 
+ 	raw_spin_unlock_irqrestore(&meta->lock, flags);
+ 
++	alloc_covered_add(meta->alloc_stack_hash, -1);
++
+ 	/* Protect to detect use-after-frees. */
+ 	kfence_protect((unsigned long)addr);
+ 
+@@ -679,6 +766,7 @@ void __init kfence_init(void)
+ 	if (!kfence_sample_interval)
+ 		return;
+ 
++	stack_hash_seed = (u32)random_get_entropy();
+ 	if (!kfence_init_pool()) {
+ 		pr_err("%s failed\n", __func__);
+ 		return;
+@@ -756,6 +844,7 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
+ {
+ 	unsigned long stack_entries[KFENCE_STACK_DEPTH];
+ 	size_t num_stack_entries;
++	u32 alloc_stack_hash;
+ 
+ 	/*
+ 	 * Perform size check before switching kfence_allocation_gate, so that
+@@ -798,7 +887,23 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
+ 
+ 	num_stack_entries = stack_trace_save(stack_entries, KFENCE_STACK_DEPTH, 0);
+ 
+-	return kfence_guarded_alloc(s, size, flags, stack_entries, num_stack_entries);
++	/*
++	 * Do expensive check for coverage of allocation in slow-path after
++	 * allocation_gate has already become non-zero, even though it might
++	 * mean not making any allocation within a given sample interval.
++	 *
++	 * This ensures reasonable allocation coverage when the pool is almost
++	 * full, including avoiding long-lived allocations of the same source
++	 * filling up the pool (e.g. pagecache allocations).
++	 */
++	alloc_stack_hash = get_alloc_stack_hash(stack_entries, num_stack_entries);
++	if (should_skip_covered() && alloc_covered_contains(alloc_stack_hash)) {
++		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_COVERED]);
++		return NULL;
++	}
++
++	return kfence_guarded_alloc(s, size, flags, stack_entries, num_stack_entries,
++				    alloc_stack_hash);
  }
  
- static ssize_t
-@@ -924,14 +924,14 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
- 	rports = kcalloc(nrports, sizeof(struct bfa_rport_qualifier_s),
- 			 GFP_ATOMIC);
- 	if (rports == NULL)
--		return snprintf(buf, PAGE_SIZE, "Failed\n");
-+		return sysfs_emit(buf, "Failed\n");
+ size_t kfence_ksize(const void *addr)
+diff --git a/mm/kfence/kfence.h b/mm/kfence/kfence.h
+index c1f23c61e5f9..2a2d5de9d379 100644
+--- a/mm/kfence/kfence.h
++++ b/mm/kfence/kfence.h
+@@ -87,6 +87,8 @@ struct kfence_metadata {
+ 	/* Allocation and free stack information. */
+ 	struct kfence_track alloc_track;
+ 	struct kfence_track free_track;
++	/* For updating alloc_covered on frees. */
++	u32 alloc_stack_hash;
+ };
  
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
- 	bfa_fcs_lport_get_rport_quals(port->fcs_port, rports, &nrports);
- 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
- 	kfree(rports);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", nrports);
-+	return sysfs_emit(buf, "%d\n", nrports);
- }
- 
- static          DEVICE_ATTR(serial_number, S_IRUGO,
+ extern struct kfence_metadata kfence_metadata[CONFIG_KFENCE_NUM_OBJECTS];
 -- 
 2.35.1
 
