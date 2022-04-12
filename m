@@ -2,158 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 492D5C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 704B2C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353348AbiDLMI5 convert rfc822-to-8bit (ORCPT
+        id S1353463AbiDLMJF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:08:57 -0400
+        Tue, 12 Apr 2022 08:09:05 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352860AbiDLMDn (ORCPT
+        with ESMTP id S1354073AbiDLMEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:03:43 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03148232D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:00:51 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1neEGE-000510-FH; Tue, 12 Apr 2022 13:00:38 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1neEGA-002Z8P-Ul; Tue, 12 Apr 2022 13:00:33 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1neEG8-0006zj-QC; Tue, 12 Apr 2022 13:00:32 +0200
-Message-ID: <1ee3b0619ee976eaf88e7207318770d441418c94.camel@pengutronix.de>
-Subject: Re: [PATCH V4] mmc: sdhci-msm: Reset GCC_SDCC_BCR register for SDHC
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        adrian.hunter@intel.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, ulf.hansson@linaro.org,
-        chris@printf.net, venkatg@codeaurora.org, gdjakov@mm-sol.com,
-        quic_asutoshd@quicinc.com
-Cc:     linux-mmc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com
-Date:   Tue, 12 Apr 2022 13:00:32 +0200
-In-Reply-To: <1649759983-22035-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1649759983-22035-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        Tue, 12 Apr 2022 08:04:21 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BC547ADC;
+        Tue, 12 Apr 2022 04:07:00 -0700 (PDT)
+X-UUID: 676868af6406413787f0d702b42f98eb-20220412
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:51df6b48-84d7-4058-bb75-9795b7018160,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:50,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:50
+X-CID-INFO: VERSION:1.1.4,REQID:51df6b48-84d7-4058-bb75-9795b7018160,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:50,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:50
+X-CID-META: VersionHash:faefae9,CLOUDID:8e5ae6a8-d103-4e36-82b9-b0e86991b3df,C
+        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
+        l,QS:0,BEC:nil
+X-UUID: 676868af6406413787f0d702b42f98eb-20220412
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <deren.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 417370313; Tue, 12 Apr 2022 19:06:56 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 12 Apr 2022 19:06:55 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Apr 2022 19:06:55 +0800
+Message-ID: <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+From:   Deren Wu <deren.wu@mediatek.com>
+To:     Kalle Valo <kvalo@kernel.org>, Philippe Schenker <dev@pschenker.ch>
+CC:     <linux-wireless@vger.kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        <linux@leemhuis.info>, "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        "Sean Wang" <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        "YN Chen" <YN.Chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <netdev@vger.kernel.org>
+Date:   Tue, 12 Apr 2022 19:06:54 +0800
+In-Reply-To: <87y20aod5d.fsf@kernel.org>
+References: <20220412090415.17541-1-dev@pschenker.ch>
+         <87y20aod5d.fsf@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Di, 2022-04-12 at 16:09 +0530, Shaik Sajida Bhanu wrote:
-> Reset GCC_SDCC_BCR register before every fresh initilazation. This will
-> reset whole SDHC-msm controller, clears the previous power control
-> states and avoids, software reset timeout issues as below.
+On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
+> Philippe Schenker <dev@pschenker.ch> writes:
 > 
-> [ 5.458061][ T262] mmc1: Reset 0x1 never completed.
-> [ 5.462454][ T262] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
-> [ 5.469065][ T262] mmc1: sdhci: Sys addr: 0x00000000 | Version: 0x00007202
-> [ 5.475688][ T262] mmc1: sdhci: Blk size: 0x00000000 | Blk cnt: 0x00000000
-> [ 5.482315][ T262] mmc1: sdhci: Argument: 0x00000000 | Trn mode: 0x00000000
-> [ 5.488927][ T262] mmc1: sdhci: Present: 0x01f800f0 | Host ctl: 0x00000000
-> [ 5.495539][ T262] mmc1: sdhci: Power: 0x00000000 | Blk gap: 0x00000000
-> [ 5.502162][ T262] mmc1: sdhci: Wake-up: 0x00000000 | Clock: 0x00000003
-> [ 5.508768][ T262] mmc1: sdhci: Timeout: 0x00000000 | Int stat: 0x00000000
-> [ 5.515381][ T262] mmc1: sdhci: Int enab: 0x00000000 | Sig enab: 0x00000000
-> [ 5.521996][ T262] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000000
-> [ 5.528607][ T262] mmc1: sdhci: Caps: 0x362dc8b2 | Caps_1: 0x0000808f
-> [ 5.535227][ T262] mmc1: sdhci: Cmd: 0x00000000 | Max curr: 0x00000000
-> [ 5.541841][ T262] mmc1: sdhci: Resp[0]: 0x00000000 | Resp[1]: 0x00000000
-> [ 5.548454][ T262] mmc1: sdhci: Resp[2]: 0x00000000 | Resp[3]: 0x00000000
-> [ 5.555079][ T262] mmc1: sdhci: Host ctl2: 0x00000000
-> [ 5.559651][ T262] mmc1: sdhci_msm: ----------- VENDOR REGISTER DUMP-----------
-> [ 5.566621][ T262] mmc1: sdhci_msm: DLL sts: 0x00000000 | DLL cfg: 0x6000642c | DLL cfg2: 0x0020a000
-> [ 5.575465][ T262] mmc1: sdhci_msm: DLL cfg3: 0x00000000 | DLL usr ctl: 0x00010800 | DDR cfg: 0x80040873
-> [ 5.584658][ T262] mmc1: sdhci_msm: Vndr func: 0x00018a9c | Vndr func2 : 0xf88218a8 Vndr func3: 0x02626040
+> > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+> > 
+> > This commit introduces a regression on some systems where the
+> > kernel is
+> > crashing in different locations after a reboot was issued.
+> > 
+> > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest
+> > firmware.
+> > 
+> > Link: 
+> > https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
+> >  
+> > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
 > 
-> Fixes: 0eb0d9f4de34 ("mmc: sdhci-msm: Initial support for Qualcomm chipsets")
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-> ---
->  drivers/mmc/host/sdhci-msm.c | 38 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 38 insertions(+)
+> Can I take this to wireless tree? Felix, ack?
 > 
-> diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
-> index 50c71e0..0e5fb62 100644
-> --- a/drivers/mmc/host/sdhci-msm.c
-> +++ b/drivers/mmc/host/sdhci-msm.c
-> @@ -17,6 +17,7 @@
->  #include <linux/regulator/consumer.h>
->  #include <linux/interconnect.h>
->  #include <linux/pinctrl/consumer.h>
-> +#include <linux/reset.h>
->  
+> I'll also add:
 > 
+> Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
 > 
-> 
->  #include "sdhci-pltfm.h"
->  #include "cqhci.h"
-> @@ -2482,6 +2483,39 @@ static inline void sdhci_msm_get_of_property(struct platform_device *pdev,
->  	of_property_read_u32(node, "qcom,dll-config", &msm_host->dll_config);
->  }
->  
-> 
-> 
-> 
-> +static int sdhci_msm_gcc_reset(struct device *dev, struct sdhci_host *host)
-> +{
-> +	struct reset_control *reset;
-> +	int ret = 0;
 
-No need to initialize ret.
+Hi Kalle,
 
-> +
-> +	reset = reset_control_get_optional_exclusive(dev, NULL);
-> +	if (IS_ERR(reset))
-> +		return dev_err_probe(dev, PTR_ERR(reset),
-> +				"unable to acquire core_reset\n");
-> +
-> +	if (!reset)
-> +		return ret;
-> +
-> +	ret = reset_control_assert(reset);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "core_reset assert failed\n");
+We have a patch for a similar problem. Can you wait for the
+verification by Philippe?
+Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure after
+reboot")
+Link: 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/wireless/mediatek/mt76?id=602cc0c9618a819ab00ea3c9400742a0ca318380
 
-Missing reset_control_put(reset) in the error path.
+I can reproduce the problem in my v5.16-rc5 desktop. And the issue can
+be fixed when the patch applied.
 
-> +
-> +	/*
-> +	 * The hardware requirement for delay between assert/deassert
-> +	 * is at least 3-4 sleep clock (32.7KHz) cycles, which comes to
-> +	 * ~125us (4/32768). To be on the safe side add 200us delay.
-> +	 */
-> +	usleep_range(200, 210);
-> +
-> +	ret = reset_control_deassert(reset);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "core_reset deassert failed\n");
 
-Same as above. Maybe make both ret = dev_err_probe() and goto ...
+Hi Philippe,
 
-> +
-> +	usleep_range(200, 210);
+Can you please help to check the patch in your platform?
 
-... here.
 
-> +	reset_control_put(reset);
-> +
-> +	return ret;
-> +}
+Regards,
+Deren
 
-regards
-Philipp
