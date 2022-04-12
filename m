@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81915C47095
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C539C47094
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352418AbiDLHYB (ORCPT
+        id S1352457AbiDLHYD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        Tue, 12 Apr 2022 03:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232736AbiDLHHX (ORCPT
+        with ESMTP id S1353213AbiDLHH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:07:23 -0400
+        Tue, 12 Apr 2022 03:07:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B43349CB5;
-        Mon, 11 Apr 2022 23:49:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5002049F26;
+        Mon, 11 Apr 2022 23:49:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06310610FB;
-        Tue, 12 Apr 2022 06:49:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13FA1C385A1;
-        Tue, 12 Apr 2022 06:49:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1788461014;
+        Tue, 12 Apr 2022 06:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0C8C385A1;
+        Tue, 12 Apr 2022 06:49:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746165;
-        bh=owrRxY8cSiGya61jUO0X4zrPASoREzU4RoHqg/WmKWY=;
+        s=korg; t=1649746173;
+        bh=mxzMGIsc4EElzjxQs773kRlvMwo90Gx/WqNBvtQSY4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1YVp9kOMsEY3yHsCMTHX2T4bEsCP+QE2l2fLctUwQAr8Vo6D2Hhm8i07sHIzMKgwC
-         XogkGrB6JtBt98s5rfj6kK5dyVV1/H5WAXhW95FdcGdEZXg+tekJoYVGKQA+HWcc6s
-         MDczK+0z2Zv4+D8nMqoFqhyIEAsFQCW2e3S1S8Vg=
+        b=NwWxAf+lc+Ghj/h6G7JjLP+Jx/WsKKH9G7b3JREq6fFOiGBFRyclw9gNlQfhNffKT
+         dJm35o1dG5ssyTl0lImojd6Req4yVRe/GOMUUuPmnl4q0l72xhQOU4UGq++XLtILGU
+         dv1ITtAJs+sLoWBMn5tGbaElvfA/+M6Fh6obYAHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 144/277] rtc: mc146818-lib: change return values of mc146818_get_time()
-Date:   Tue, 12 Apr 2022 08:29:07 +0200
-Message-Id: <20220412062946.202178265@linuxfoundation.org>
+Subject: [PATCH 5.15 137/277] SUNRPC: Fix socket waits for write buffer space
+Date:   Tue, 12 Apr 2022 08:29:00 +0200
+Message-Id: <20220412062946.000155475@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,45 +50,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit d35786b3a28dee20b12962ae2dd365892a99ed1a ]
+[ Upstream commit 7496b59f588dd52886fdbac7633608097543a0a5 ]
 
-No function is checking mc146818_get_time() return values yet, so
-correct them to make them more customary.
+The socket layer requires that we use the socket lock to protect changes
+to the sock->sk_write_pending field and others.
 
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-3-mat.jonczyk@o2.pl
+Reported-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-mc146818-lib.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/sunrpc/xprtsock.c | 54 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 39 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
-index 04b05e3b68cb..bd48cee3027e 100644
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -25,7 +25,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
- 	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
- 		spin_unlock_irqrestore(&rtc_lock, flags);
- 		memset(time, 0xff, sizeof(*time));
--		return 0;
-+		return -EIO;
- 	}
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 04f1b78bcbca..2096b26adde5 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -763,12 +763,12 @@ xs_stream_start_connect(struct sock_xprt *transport)
+ /**
+  * xs_nospace - handle transmit was incomplete
+  * @req: pointer to RPC request
++ * @transport: pointer to struct sock_xprt
+  *
+  */
+-static int xs_nospace(struct rpc_rqst *req)
++static int xs_nospace(struct rpc_rqst *req, struct sock_xprt *transport)
+ {
+-	struct rpc_xprt *xprt = req->rq_xprt;
+-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
++	struct rpc_xprt *xprt = &transport->xprt;
+ 	struct sock *sk = transport->inet;
+ 	int ret = -EAGAIN;
  
- 	/*
-@@ -116,7 +116,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
+@@ -779,25 +779,49 @@ static int xs_nospace(struct rpc_rqst *req)
  
- 	time->tm_mon--;
+ 	/* Don't race with disconnect */
+ 	if (xprt_connected(xprt)) {
++		struct socket_wq *wq;
++
++		rcu_read_lock();
++		wq = rcu_dereference(sk->sk_wq);
++		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
++		rcu_read_unlock();
++
+ 		/* wait for more buffer space */
++		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+ 		sk->sk_write_pending++;
+ 		xprt_wait_for_buffer_space(xprt);
+ 	} else
+ 		ret = -ENOTCONN;
  
--	return RTC_24H;
-+	return 0;
+ 	spin_unlock(&xprt->transport_lock);
++	return ret;
++}
+ 
+-	/* Race breaker in case memory is freed before above code is called */
+-	if (ret == -EAGAIN) {
+-		struct socket_wq *wq;
++static int xs_sock_nospace(struct rpc_rqst *req)
++{
++	struct sock_xprt *transport =
++		container_of(req->rq_xprt, struct sock_xprt, xprt);
++	struct sock *sk = transport->inet;
++	int ret = -EAGAIN;
+ 
+-		rcu_read_lock();
+-		wq = rcu_dereference(sk->sk_wq);
+-		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
+-		rcu_read_unlock();
++	lock_sock(sk);
++	if (!sock_writeable(sk))
++		ret = xs_nospace(req, transport);
++	release_sock(sk);
++	return ret;
++}
+ 
+-		sk->sk_write_space(sk);
+-	}
++static int xs_stream_nospace(struct rpc_rqst *req)
++{
++	struct sock_xprt *transport =
++		container_of(req->rq_xprt, struct sock_xprt, xprt);
++	struct sock *sk = transport->inet;
++	int ret = -EAGAIN;
++
++	lock_sock(sk);
++	if (!sk_stream_memory_free(sk))
++		ret = xs_nospace(req, transport);
++	release_sock(sk);
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(mc146818_get_time);
  
+@@ -887,7 +911,7 @@ static int xs_local_send_request(struct rpc_rqst *req)
+ 	case -ENOBUFS:
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_stream_nospace(req);
+ 		break;
+ 	default:
+ 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
+@@ -963,7 +987,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
+ 		/* Should we call xs_close() here? */
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_sock_nospace(req);
+ 		break;
+ 	case -ENETUNREACH:
+ 	case -ENOBUFS:
+@@ -1083,7 +1107,7 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
+ 		/* Should we call xs_close() here? */
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_stream_nospace(req);
+ 		break;
+ 	case -ECONNRESET:
+ 	case -ECONNREFUSED:
 -- 
 2.35.1
 
