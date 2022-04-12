@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DACBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C513C47084
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353903AbiDLHQf (ORCPT
+        id S1351441AbiDLHSF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
+        Tue, 12 Apr 2022 03:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351836AbiDLHEU (ORCPT
+        with ESMTP id S1352111AbiDLHEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:04:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5500D45ADC;
-        Mon, 11 Apr 2022 23:47:28 -0700 (PDT)
+        Tue, 12 Apr 2022 03:04:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D567A46B22;
+        Mon, 11 Apr 2022 23:47:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E56160A6A;
-        Tue, 12 Apr 2022 06:47:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83966C385A1;
-        Tue, 12 Apr 2022 06:47:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C64CB81B4A;
+        Tue, 12 Apr 2022 06:47:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6673EC385A6;
+        Tue, 12 Apr 2022 06:47:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746046;
-        bh=X/XV6dqIM01stGb6muJgsi2Mox5PAsrFHhzqwvCyAKg=;
+        s=korg; t=1649746060;
+        bh=vSEirDE08DDshdO7veGpX3SMni+/P5RvHskaZiqXZ6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aedWuH1O7xzvI09iccHePxvCJJGRcjAmznJgwj3JDmxf66N4E5QZkcs3CkK/GiFmi
-         JMAEluMmY01+LqFa1pxwsvNtMGCCV2+U5NJq8drzlb3/5UQfFViDu86aqmOv6SX5lL
-         ZkdR3jIs+LfeQ8gyyzl8UrSncg712p20WFk9e2UA=
+        b=WIWcJcD6t8eS2W6j/aefO40++h0pQLr5MY2K1NWrVaZrkPjxYt2t0oKIg15FWXzJc
+         7KN7bRLSkPozS6X4d3Hg3lFBkZRmdVipqfpfiKRtYzxPHFoNh1KwMvubGHG03dG2U/
+         0MY9bwW8FahsL5HnkK6oJXwIlnjYe4/3IAEuSehc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 100/277] xtensa: fix DTC warning unit_address_format
-Date:   Tue, 12 Apr 2022 08:28:23 +0200
-Message-Id: <20220412062944.936601266@linuxfoundation.org>
+Subject: [PATCH 5.15 147/277] drm/amdgpu: fix off by one in amdgpu_gfx_kiq_acquire()
+Date:   Tue, 12 Apr 2022 08:29:10 +0200
+Message-Id: <20220412062946.291014065@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,101 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
+[ Upstream commit 1647b54ed55d4d48c7199d439f8834626576cbe9 ]
 
-DTC issues the following warnings when building xtfpga device trees:
+This post-op should be a pre-op so that we do not pass -1 as the bit
+number to test_bit().  The current code will loop downwards from 63 to
+-1.  After changing to a pre-op, it loops from 63 to 0.
 
- /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
-
-Drop leading 0x from flash partition unit names.
-
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Fixes: 71c37505e7ea ("drm/amdgpu/gfx: move more common KIQ code to amdgpu_gfx.c")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-index 9bf8bad1dd18..c33932568aa7 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-@@ -8,19 +8,19 @@
- 			reg = <0x00000000 0x08000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "data";
- 				reg = <0x00000000 0x06000000>;
- 			};
--			partition@0x6000000 {
-+			partition@6000000 {
- 				label = "boot loader area";
- 				reg = <0x06000000 0x00800000>;
- 			};
--			partition@0x6800000 {
-+			partition@6800000 {
- 				label = "kernel image";
- 				reg = <0x06800000 0x017e0000>;
- 			};
--			partition@0x7fe0000 {
-+			partition@7fe0000 {
- 				label = "boot environment";
- 				reg = <0x07fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-index 40c2f81f7cb6..7bde2ab2d6fb 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-@@ -8,19 +8,19 @@
- 			reg = <0x08000000 0x01000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x00400000>;
- 			};
--			partition@0x400000 {
-+			partition@400000 {
- 				label = "kernel image";
- 				reg = <0x00400000 0x00600000>;
- 			};
--			partition@0xa00000 {
-+			partition@a00000 {
- 				label = "data";
- 				reg = <0x00a00000 0x005e0000>;
- 			};
--			partition@0xfe0000 {
-+			partition@fe0000 {
- 				label = "boot environment";
- 				reg = <0x00fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-index fb8d3a9f33c2..0655b868749a 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-@@ -8,11 +8,11 @@
- 			reg = <0x08000000 0x00400000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x003f0000>;
- 			};
--			partition@0x3f0000 {
-+			partition@3f0000 {
- 				label = "boot environment";
- 				reg = <0x003f0000 0x00010000>;
- 			};
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
+index 1916ec84dd71..e7845df6cad2 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
+@@ -266,7 +266,7 @@ static int amdgpu_gfx_kiq_acquire(struct amdgpu_device *adev,
+ 		    * adev->gfx.mec.num_pipe_per_mec
+ 		    * adev->gfx.mec.num_queue_per_pipe;
+ 
+-	while (queue_bit-- >= 0) {
++	while (--queue_bit >= 0) {
+ 		if (test_bit(queue_bit, adev->gfx.mec.queue_bitmap))
+ 			continue;
+ 
 -- 
 2.35.1
 
