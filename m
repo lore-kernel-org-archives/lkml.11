@@ -2,26 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7131C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70983C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354963AbiDLNGR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
+        id S234717AbiDLNGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 09:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356390AbiDLND1 (ORCPT
+        with ESMTP id S1356352AbiDLND0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:27 -0400
+        Tue, 12 Apr 2022 09:03:26 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8663DEBF
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 858AC6CA4B
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:11 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9ACF1169C;
-        Tue, 12 Apr 2022 05:45:26 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3FB681570;
+        Tue, 12 Apr 2022 05:45:11 -0700 (PDT)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 496CE3F70D;
-        Tue, 12 Apr 2022 05:45:24 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E19033F70D;
+        Tue, 12 Apr 2022 05:45:08 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -38,9 +37,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 15/21] x86/resctrl: Abstract __rmid_read()
-Date:   Tue, 12 Apr 2022 12:44:13 +0000
-Message-Id: <20220412124419.30689-16-james.morse@arm.com>
+Subject: [PATCH v4 09/21] x86/resctrl: Remove architecture copy of mbps_val
+Date:   Tue, 12 Apr 2022 12:44:07 +0000
+Message-Id: <20220412124419.30689-10-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
 References: <20220412124419.30689-1-james.morse@arm.com>
@@ -50,18 +49,13 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__rmid_read() selects the specified eventid and returns the counter
-value from the MSR. The error handling is architecture specific, and
-handled by the callers, rdtgroup_mondata_show() and __mon_event_count().
+The resctrl arch code provides a second configuration array mbps_val[]
+for the MBA software controller.
 
-Error handling should be handled by architecture specific code, as
-a different architecture may have different requirements. MPAM's
-counters can report that they are 'not ready', requiring a second
-read after a short delay. This should be hidden from resctrl.
+Since resctrl switched over to allocating and freeing its own array
+when needed, nothing uses the arch code version.
 
-Make __rmid_read() the architecture specific function for reading
-a counter. Rename it resctrl_arch_rmid_read() and move the error
-handling into it.
+Remove it.
 
 Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
 Tested-by: Xin Hao <xhao@linux.alibaba.com>
@@ -70,196 +64,120 @@ Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
-Changes since v3:
- * Changed return type of __mon_event_count().
- * Clarified comment in mon_event_count()
-
 Changes since v2:
- * Capitalisation
- * Stray newline restored
- * Removed rr->val set to the error value, and replaced it with clearing the
-   the error to hide Unavailable from monitor group reads. (and added a block
-   comment).
+ * Made setup_default_ctrlval() static.
 
 Changes since v1:
- * Return EINVAL from the impossible case in __mon_event_count() instead
-   of an x86 hardware specific value.
+ * Fixed spelling mistake
+ * Capitalisation
 ---
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c |  4 +-
- arch/x86/kernel/cpu/resctrl/internal.h    |  1 +
- arch/x86/kernel/cpu/resctrl/monitor.c     | 56 +++++++++++++++--------
- include/linux/resctrl.h                   |  1 +
- 4 files changed, 40 insertions(+), 22 deletions(-)
+ arch/x86/kernel/cpu/resctrl/core.c     | 20 ++++----------------
+ arch/x86/kernel/cpu/resctrl/internal.h |  3 ---
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c |  4 +---
+ 3 files changed, 5 insertions(+), 22 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-index ece3a1e0e6f2..d3f7eb2ac14b 100644
---- a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-+++ b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-@@ -579,9 +579,9 @@ int rdtgroup_mondata_show(struct seq_file *m, void *arg)
+diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
+index f69182973175..f0e2820af475 100644
+--- a/arch/x86/kernel/cpu/resctrl/core.c
++++ b/arch/x86/kernel/cpu/resctrl/core.c
+@@ -397,7 +397,7 @@ struct rdt_domain *rdt_find_domain(struct rdt_resource *r, int id,
+ 	return NULL;
+ }
  
- 	mon_event_read(&rr, r, d, rdtgrp, evtid, false);
+-void setup_default_ctrlval(struct rdt_resource *r, u32 *dc, u32 *dm)
++static void setup_default_ctrlval(struct rdt_resource *r, u32 *dc)
+ {
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	int i;
+@@ -406,18 +406,14 @@ void setup_default_ctrlval(struct rdt_resource *r, u32 *dc, u32 *dm)
+ 	 * Initialize the Control MSRs to having no control.
+ 	 * For Cache Allocation: Set all bits in cbm
+ 	 * For Memory Allocation: Set b/w requested to 100%
+-	 * and the bandwidth in MBps to U32_MAX
+ 	 */
+-	for (i = 0; i < hw_res->num_closid; i++, dc++, dm++) {
++	for (i = 0; i < hw_res->num_closid; i++, dc++)
+ 		*dc = r->default_ctrl;
+-		*dm = MBA_MAX_MBPS;
+-	}
+ }
  
--	if (rr.val & RMID_VAL_ERROR)
-+	if (rr.err == -EIO)
- 		seq_puts(m, "Error\n");
--	else if (rr.val & RMID_VAL_UNAVAIL)
-+	else if (rr.err == -EINVAL)
- 		seq_puts(m, "Unavailable\n");
- 	else
- 		seq_printf(m, "%llu\n", rr.val * hw_res->mon_scale);
+ static void domain_free(struct rdt_hw_domain *hw_dom)
+ {
+ 	kfree(hw_dom->ctrl_val);
+-	kfree(hw_dom->mbps_val);
+ 	kfree(hw_dom);
+ }
+ 
+@@ -426,23 +422,15 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
+ 	struct msr_param m;
+-	u32 *dc, *dm;
++	u32 *dc;
+ 
+ 	dc = kmalloc_array(hw_res->num_closid, sizeof(*hw_dom->ctrl_val),
+ 			   GFP_KERNEL);
+ 	if (!dc)
+ 		return -ENOMEM;
+ 
+-	dm = kmalloc_array(hw_res->num_closid, sizeof(*hw_dom->mbps_val),
+-			   GFP_KERNEL);
+-	if (!dm) {
+-		kfree(dc);
+-		return -ENOMEM;
+-	}
+-
+ 	hw_dom->ctrl_val = dc;
+-	hw_dom->mbps_val = dm;
+-	setup_default_ctrlval(r, dc, dm);
++	setup_default_ctrlval(r, dc);
+ 
+ 	m.low = 0;
+ 	m.high = hw_res->num_closid;
 diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index b34a1403f033..1d2e7bd6305f 100644
+index a7e2cbce29d5..373aaba53ecd 100644
 --- a/arch/x86/kernel/cpu/resctrl/internal.h
 +++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -94,6 +94,7 @@ struct rmid_read {
- 	struct rdt_domain	*d;
- 	enum resctrl_event_id	evtid;
- 	bool			first;
-+	int			err;
- 	u64			val;
+@@ -308,14 +308,12 @@ struct mbm_state {
+  *			  a resource
+  * @d_resctrl:	Properties exposed to the resctrl file system
+  * @ctrl_val:	array of cache or mem ctrl values (indexed by CLOSID)
+- * @mbps_val:	When mba_sc is enabled, this holds the bandwidth in MBps
+  *
+  * Members of this structure are accessed via helpers that provide abstraction.
+  */
+ struct rdt_hw_domain {
+ 	struct rdt_domain		d_resctrl;
+ 	u32				*ctrl_val;
+-	u32				*mbps_val;
  };
  
-diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index 71a13c04a846..20c54cbadc0c 100644
---- a/arch/x86/kernel/cpu/resctrl/monitor.c
-+++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -167,9 +167,9 @@ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
- 		memset(am, 0, sizeof(*am));
- }
+ static inline struct rdt_hw_domain *resctrl_to_arch_dom(struct rdt_domain *r)
+@@ -529,7 +527,6 @@ void mbm_setup_overflow_handler(struct rdt_domain *dom,
+ void mbm_handle_overflow(struct work_struct *work);
+ void __init intel_rdt_mbm_apply_quirk(void);
+ bool is_mba_sc(struct rdt_resource *r);
+-void setup_default_ctrlval(struct rdt_resource *r, u32 *dc, u32 *dm);
+ u32 delay_bw_map(unsigned long bw, struct rdt_resource *r);
+ void cqm_setup_limbo_handler(struct rdt_domain *dom, unsigned long delay_ms);
+ void cqm_handle_limbo(struct work_struct *work);
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index 07904308245c..441c1b7981c2 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -2353,10 +2353,8 @@ static int reset_all_ctrls(struct rdt_resource *r)
+ 		hw_dom = resctrl_to_arch_dom(d);
+ 		cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
  
--static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
-+int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *val)
- {
--	u64 val;
-+	u64 msr_val;
- 
- 	/*
- 	 * As per the SDM, when IA32_QM_EVTSEL.EvtID (bits 7:0) is configured
-@@ -180,14 +180,24 @@ static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
- 	 * are error bits.
- 	 */
- 	wrmsr(MSR_IA32_QM_EVTSEL, eventid, rmid);
--	rdmsrl(MSR_IA32_QM_CTR, val);
-+	rdmsrl(MSR_IA32_QM_CTR, msr_val);
- 
--	return val;
-+	if (msr_val & RMID_VAL_ERROR)
-+		return -EIO;
-+	if (msr_val & RMID_VAL_UNAVAIL)
-+		return -EINVAL;
-+
-+	*val = msr_val;
-+
-+	return 0;
- }
- 
- static bool rmid_dirty(struct rmid_entry *entry)
- {
--	u64 val = __rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID);
-+	u64 val = 0;
-+
-+	if (resctrl_arch_rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID, &val))
-+		return true;
- 
- 	return val >= resctrl_cqm_threshold;
- }
-@@ -259,8 +269,8 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
- {
- 	struct rdt_resource *r;
- 	struct rdt_domain *d;
--	int cpu;
--	u64 val;
-+	int cpu, err;
-+	u64 val = 0;
- 
- 	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
- 
-@@ -268,8 +278,10 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
+-		for (i = 0; i < hw_res->num_closid; i++) {
++		for (i = 0; i < hw_res->num_closid; i++)
+ 			hw_dom->ctrl_val[i] = r->default_ctrl;
+-			hw_dom->mbps_val[i] = MBA_MAX_MBPS;
+-		}
+ 	}
  	cpu = get_cpu();
- 	list_for_each_entry(d, &r->domains, list) {
- 		if (cpumask_test_cpu(cpu, &d->cpu_mask)) {
--			val = __rmid_read(entry->rmid, QOS_L3_OCCUP_EVENT_ID);
--			if (val <= resctrl_cqm_threshold)
-+			err = resctrl_arch_rmid_read(entry->rmid,
-+						     QOS_L3_OCCUP_EVENT_ID,
-+						     &val);
-+			if (err || val <= resctrl_cqm_threshold)
- 				continue;
- 		}
- 
-@@ -315,19 +327,19 @@ static u64 mbm_overflow_count(u64 prev_msr, u64 cur_msr, unsigned int width)
- 	return chunks >> shift;
- }
- 
--static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
-+static int __mon_event_count(u32 rmid, struct rmid_read *rr)
- {
- 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
- 	struct mbm_state *m;
--	u64 chunks, tval;
-+	u64 chunks, tval = 0;
- 
- 	if (rr->first)
- 		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
- 
--	tval = __rmid_read(rmid, rr->evtid);
--	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL)) {
--		return tval;
--	}
-+	rr->err = resctrl_arch_rmid_read(rmid, rr->evtid, &tval);
-+	if (rr->err)
-+		return rr->err;
-+
- 	switch (rr->evtid) {
- 	case QOS_L3_OCCUP_EVENT_ID:
- 		rr->val += tval;
-@@ -343,7 +355,7 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
- 		 * Code would never reach here because an invalid
- 		 * event id would fail the __rmid_read.
- 		 */
--		return RMID_VAL_ERROR;
-+		return -EINVAL;
- 	}
- 
- 	if (rr->first) {
-@@ -399,7 +411,7 @@ void mon_event_count(void *info)
- 	struct rdtgroup *rdtgrp, *entry;
- 	struct rmid_read *rr = info;
- 	struct list_head *head;
--	u64 ret_val;
-+	int ret_val;
- 
- 	rdtgrp = rr->rgrp;
- 
-@@ -419,9 +431,13 @@ void mon_event_count(void *info)
- 		}
- 	}
- 
--	/* Report error if none of rmid_reads are successful */
--	if (ret_val)
--		rr->val = ret_val;
-+	/*
-+	 * __mon_event_count() calls for newly created monitor groups may
-+	 * report -EINVAL/Unavailable if the monitor hasn't seen any traffic.
-+	 * Discard error if any of the monitor event reads succeeded.
-+	 */
-+	if (ret_val == 0)
-+		rr->err = 0;
- }
- 
- /*
-diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 0b48239f5920..70112dbfa128 100644
---- a/include/linux/resctrl.h
-+++ b/include/linux/resctrl.h
-@@ -219,6 +219,7 @@ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
- 			    u32 closid, enum resctrl_conf_type type);
- int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
- void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
-+int resctrl_arch_rmid_read(u32 rmid, enum resctrl_event_id eventid, u64 *res);
- 
- /**
-  * resctrl_arch_reset_rmid() - Reset any private state associated with rmid
+ 	/* Update CBM on this cpu if it's in cpu_mask. */
 -- 
 2.30.2
 
