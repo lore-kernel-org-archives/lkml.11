@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E00C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C77C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351363AbiDLHKl (ORCPT
+        id S1351386AbiDLHKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
+        Tue, 12 Apr 2022 03:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352164AbiDLGzM (ORCPT
+        with ESMTP id S1352246AbiDLGzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:55:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E63393FB;
-        Mon, 11 Apr 2022 23:45:02 -0700 (PDT)
+        Tue, 12 Apr 2022 02:55:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABE539825;
+        Mon, 11 Apr 2022 23:45:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57D4BB81B35;
-        Tue, 12 Apr 2022 06:45:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B72ECC385A1;
-        Tue, 12 Apr 2022 06:44:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7F0A8CE1C0B;
+        Tue, 12 Apr 2022 06:45:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF51C385A1;
+        Tue, 12 Apr 2022 06:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745900;
-        bh=mIXU9xcjRo5XYdo9MwkN4nZRgUu7LvTyJ9bQR2Brt14=;
+        s=korg; t=1649745906;
+        bh=L4AE/btcFbCZktUVXKI6UoJsesrXhv9p0ciRMSDqhhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FC0N5CztFGgGG/a/GhfDwWsvVOaK6z4R5/ZCfy1Hg2EnJUgcxAm04rFRAiybQpYXp
-         tFNjXch1Aa5hvpBxL9PgJi7cQE9l1TZ6jfvXY78EmuqgO1MprpaedJzYRjSweYXhXR
-         Qg0cYOCMPA5P0X4wIP2orvzRbPpWqbvbZOye9jEA=
+        b=CKeDETOoVvWaLnIYbHVEJeEyt1J5dS/rf/ba8KbFnUlK/m8U2eIS5SkcC4wXnjzzO
+         r3alXbeo50Q0gs2pCte2WXKZlHj5F6P4jilssW0AEBY15YtGRdvO6AQqoTN8JUdmdd
+         Jwxn+EjuKXSMFPQuIY/jqK6rQ15rGyyKvrzNOt2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 5.15 087/277] powerpc/code-patching: Pre-map patch area
-Date:   Tue, 12 Apr 2022 08:28:10 +0200
-Message-Id: <20220412062944.564653245@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 089/277] powerpc/secvar: fix refcount leak in format_show()
+Date:   Tue, 12 Apr 2022 08:28:12 +0200
+Message-Id: <20220412062944.621212296@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,97 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 591b4b268435f00d2f0b81f786c2c7bd5ef66416 ]
+[ Upstream commit d601fd24e6964967f115f036a840f4f28488f63f ]
 
-Paul reported a warning with DEBUG_ATOMIC_SLEEP=y:
+Refcount leak will happen when format_show returns failure in multiple
+cases. Unified management of of_node_put can fix this problem.
 
-  BUG: sleeping function called from invalid context at include/linux/sched/mm.h:256
-  in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 1, name: swapper/0
-  preempt_count: 0, expected: 0
-  ...
-  Call Trace:
-    dump_stack_lvl+0xa0/0xec (unreliable)
-    __might_resched+0x2f4/0x310
-    kmem_cache_alloc+0x220/0x4b0
-    __pud_alloc+0x74/0x1d0
-    hash__map_kernel_page+0x2cc/0x390
-    do_patch_instruction+0x134/0x4a0
-    arch_jump_label_transform+0x64/0x78
-    __jump_label_update+0x148/0x180
-    static_key_enable_cpuslocked+0xd0/0x120
-    static_key_enable+0x30/0x50
-    check_kvm_guest+0x60/0x88
-    pSeries_smp_probe+0x54/0xb0
-    smp_prepare_cpus+0x3e0/0x430
-    kernel_init_freeable+0x20c/0x43c
-    kernel_init+0x30/0x1a0
-    ret_from_kernel_thread+0x5c/0x64
-
-Peter pointed out that this is because do_patch_instruction() has
-disabled interrupts, but then map_patch_area() calls map_kernel_page()
-then hash__map_kernel_page() which does a sleeping memory allocation.
-
-We only see the warning in KVM guests with SMT enabled, which is not
-particularly common, or on other platforms if CONFIG_KPROBES is
-disabled, also not common. The reason we don't see it in most
-configurations is that another path that happens to have interrupts
-enabled has allocated the required page tables for us, eg. there's a
-path in kprobes init that does that. That's just pure luck though.
-
-As Christophe suggested, the simplest solution is to do a dummy
-map/unmap when we initialise the patching, so that any required page
-table levels are pre-allocated before the first call to
-do_patch_instruction(). This works because the unmap doesn't free any
-page tables that were allocated by the map, it just clears the PTE,
-leaving the page table levels there for the next map.
-
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Debugged-by: Peter Zijlstra <peterz@infradead.org>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220223015821.473097-1-mpe@ellerman.id.au
+Link: https://lore.kernel.org/r/20220302021959.10959-1-hbh25y@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/code-patching.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ arch/powerpc/kernel/secvar-sysfs.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
-index c5ed98823835..b76b31196be1 100644
---- a/arch/powerpc/lib/code-patching.c
-+++ b/arch/powerpc/lib/code-patching.c
-@@ -47,9 +47,14 @@ int raw_patch_instruction(u32 *addr, struct ppc_inst instr)
- #ifdef CONFIG_STRICT_KERNEL_RWX
- static DEFINE_PER_CPU(struct vm_struct *, text_poke_area);
+diff --git a/arch/powerpc/kernel/secvar-sysfs.c b/arch/powerpc/kernel/secvar-sysfs.c
+index a0a78aba2083..1ee4640a2641 100644
+--- a/arch/powerpc/kernel/secvar-sysfs.c
++++ b/arch/powerpc/kernel/secvar-sysfs.c
+@@ -26,15 +26,18 @@ static ssize_t format_show(struct kobject *kobj, struct kobj_attribute *attr,
+ 	const char *format;
  
-+static int map_patch_area(void *addr, unsigned long text_poke_addr);
-+static void unmap_patch_area(unsigned long addr);
-+
- static int text_area_cpu_up(unsigned int cpu)
- {
- 	struct vm_struct *area;
-+	unsigned long addr;
-+	int err;
+ 	node = of_find_compatible_node(NULL, NULL, "ibm,secvar-backend");
+-	if (!of_device_is_available(node))
+-		return -ENODEV;
++	if (!of_device_is_available(node)) {
++		rc = -ENODEV;
++		goto out;
++	}
  
- 	area = get_vm_area(PAGE_SIZE, VM_ALLOC);
- 	if (!area) {
-@@ -57,6 +62,15 @@ static int text_area_cpu_up(unsigned int cpu)
- 			cpu);
- 		return -1;
- 	}
-+
-+	// Map/unmap the area to ensure all page tables are pre-allocated
-+	addr = (unsigned long)area->addr;
-+	err = map_patch_area(empty_zero_page, addr);
-+	if (err)
-+		return err;
-+
-+	unmap_patch_area(addr);
-+
- 	this_cpu_write(text_poke_area, area);
+ 	rc = of_property_read_string(node, "format", &format);
+ 	if (rc)
+-		return rc;
++		goto out;
  
- 	return 0;
+ 	rc = sprintf(buf, "%s\n", format);
+ 
++out:
+ 	of_node_put(node);
+ 
+ 	return rc;
 -- 
 2.35.1
 
