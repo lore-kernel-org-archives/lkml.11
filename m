@@ -2,176 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE84C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350669AbiDLNJY (ORCPT
+        id S1355224AbiDLNJe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:09:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
+        Tue, 12 Apr 2022 09:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356048AbiDLNDP (ORCPT
+        with ESMTP id S1356407AbiDLND2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:15 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADE669736;
-        Tue, 12 Apr 2022 05:43:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649767409; x=1681303409;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8qFvSrU/FS5QRhradwFMQHfJ1XOmmKNV0jg14xFTIMU=;
-  b=iyzaUyrZalz9/hEnyx8dIom0noAAdAwisKuEW2XUepo+dW0rezr9BW8Q
-   zTIqCZfafJoxci/ODo5CAa3hKWH5twFHB1TxoMCOcy9glpR/7xJ36BXhh
-   M502DNE3QjoZq3+eP+cxosiqSG9kWlvQPIiBQT3/kki2u2oOqljm+rtHm
-   8=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Apr 2022 05:43:29 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:43:27 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 05:43:27 -0700
-Received: from [10.216.28.9] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Apr
- 2022 05:43:22 -0700
-Message-ID: <d6431bae-e9c6-e9ec-6ccc-aeb9d9391cc5@quicinc.com>
-Date:   Tue, 12 Apr 2022 18:13:19 +0530
+        Tue, 12 Apr 2022 09:03:28 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B61F8DFD3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:39 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6FAEA169C;
+        Tue, 12 Apr 2022 05:45:39 -0700 (PDT)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1F0923F70D;
+        Tue, 12 Apr 2022 05:45:37 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: [PATCH v4 20/21] x86/resctrl: Add resctrl_rmid_realloc_limit to abstract x86's boot_cpu_data
+Date:   Tue, 12 Apr 2022 12:44:18 +0000
+Message-Id: <20220412124419.30689-21-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
+References: <20220412124419.30689-1-james.morse@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v7 1/2] arm64: dts: qcom: sc7280: Add pinmux for I2S
- speaker and Headset
-Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1649685184-8448-1-git-send-email-quic_srivasam@quicinc.com>
- <1649685184-8448-2-git-send-email-quic_srivasam@quicinc.com>
- <YlR8Ai8Yv4j9fGAC@google.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <YlR8Ai8Yv4j9fGAC@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+resctrl_rmid_realloc_threshold can be set by user-space. The maximum
+value is specified by the architecture.
 
-On 4/12/2022 12:35 AM, Matthias Kaehlcke wrote:
-Thanks for your time Matthias!!!
-> On Mon, Apr 11, 2022 at 07:23:03PM +0530, Srinivasa Rao Mandadapu wrote:
->> Add pinmux nodes for primary and secondary I2S for SC7280 based platforms.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 14 +++++++++++
->>   arch/arm64/boot/dts/qcom/sc7280.dtsi     | 41 ++++++++++++++++++++++++++++++++
->>   2 files changed, 55 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> index ecbf2b8..4ba2274 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> @@ -462,6 +462,20 @@
->>   	drive-strength = <10>;
->>   };
->>   
->> +&mi2s1_data0 {
->> +	drive-strength = <6>;
->> +	bias-disable;
->> +};
->> +
->> +&mi2s1_sclk {
->> +	drive-strength = <6>;
->> +	bias-disable;
->> +};
->> +
->> +&mi2s1_ws {
->> +	drive-strength = <6>;
->> +};
->> +
-> With the new names the nodes should be inserted between 'dp_hot_plug_det' and
-> 'pm7325_gpios'.
-Okay. will change accordingly.
->
->>   &tlmm {
->>   	bt_en: bt-en {
->>   		pins = "gpio85";
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> index f0b64be..8099c80 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> @@ -3527,6 +3527,31 @@
->>   				function = "pcie1_clkreqn";
->>   			};
->>   
->> +			mi2s0_data0: mi2s0-data0 {
-> Similar as above, the new nodes should be inserted between
-> 'edp_hot_plug_det' and 'pcie1_clkreq_n'.
-Okay.
->
->> +				pins = "gpio98";
->> +				function = "mi2s0_data0";
->> +			};
->> +
->> +			mi2s0_data1: mi2s0-data1 {
->> +				pins = "gpio99";
->> +				function = "mi2s0_data1";
->> +			};
->> +
->> +			mi2s0_mclk: mi2s0-mclk {
->> +				pins = "gpio96";
->> +				function = "pri_mi2s";
->> +			};
->> +
->> +			mi2s0_sclk: mi2s0-sclk {
->> +				pins = "gpio97";
->> +				function = "mi2s0_sck";
->> +			};
->> +
->> +			mi2s0_ws: mi2s0-ws {
->> +				pins = "gpio100";
->> +				function = "mi2s0_ws";
->> +			};
->> +
->>   			qspi_clk: qspi-clk {
->>   				pins = "gpio14";
->>   				function = "qspi_clk";
->> @@ -4261,6 +4286,22 @@
->>   				drive-strength = <2>;
->>   				bias-bus-hold;
->>   			};
->> +
->> +			mi2s1_data0: mi2s1-data0 {
-> see above
-Okay.
->
->> +				pins = "gpio107";
->> +				function = "mi2s1_data0";
->> +			};
->> +
->> +			mi2s1_sclk: mi2s1-sclk {
->> +				pins = "gpio106";
->> +				function = "mi2s1_sck";
->> +			};
->> +
->> +			mi2s1_ws: mi2s1-ws {
->> +				pins = "gpio108";
->> +				function = "mi2s1_ws";
->> +			};
+Currently max_threshold_occ_write() reads the maximum value from
+boot_cpu_data.x86_cache_size, which is not portable to another
+architecture.
+
+Add resctrl_rmid_realloc_limit to describe the maximum size in bytes
+that user-space can set the threshold to.
+
+Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+---
+ arch/x86/kernel/cpu/resctrl/monitor.c  | 9 +++++++--
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c | 2 +-
+ include/linux/resctrl.h                | 1 +
+ 3 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+index 00f6e27e4e0d..bc5c31920a66 100644
+--- a/arch/x86/kernel/cpu/resctrl/monitor.c
++++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+@@ -64,6 +64,11 @@ unsigned int rdt_mon_features;
+  */
+ unsigned int resctrl_rmid_realloc_threshold;
+ 
++/*
++ * This is the maximum value for the reallocation threshold, in bytes.
++ */
++unsigned int resctrl_rmid_realloc_limit;
++
+ #define CF(cf)	((unsigned long)(1048576 * (cf) + 0.5))
+ 
+ /*
+@@ -744,10 +749,10 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
+ {
+ 	unsigned int mbm_offset = boot_cpu_data.x86_cache_mbm_width_offset;
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+-	unsigned int cl_size = boot_cpu_data.x86_cache_size;
+ 	unsigned int threshold;
+ 	int ret;
+ 
++	resctrl_rmid_realloc_limit = boot_cpu_data.x86_cache_size * 1024;
+ 	hw_res->mon_scale = boot_cpu_data.x86_cache_occ_scale;
+ 	r->num_rmid = boot_cpu_data.x86_cache_max_rmid + 1;
+ 	hw_res->mbm_width = MBM_CNTR_WIDTH_BASE;
+@@ -764,7 +769,7 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
+ 	 *
+ 	 * For a 35MB LLC and 56 RMIDs, this is ~1.8% of the LLC.
+ 	 */
+-	threshold = cl_size * 1024 / r->num_rmid;
++	threshold = resctrl_rmid_realloc_limit / r->num_rmid;
+ 
+ 	/*
+ 	 * Because num_rmid may not be a power of two, round the value
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index 7c35561e5216..0e9f9a527e6a 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -1059,7 +1059,7 @@ static ssize_t max_threshold_occ_write(struct kernfs_open_file *of,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (bytes > (boot_cpu_data.x86_cache_size * 1024))
++	if (bytes > resctrl_rmid_realloc_limit)
+ 		return -EINVAL;
+ 
+ 	resctrl_rmid_realloc_threshold = bytes;
+diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
+index fc4805901f1a..9c360999fb9b 100644
+--- a/include/linux/resctrl.h
++++ b/include/linux/resctrl.h
+@@ -251,5 +251,6 @@ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
+ 			     u32 rmid, enum resctrl_event_id eventid);
+ 
+ extern unsigned int resctrl_rmid_realloc_threshold;
++extern unsigned int resctrl_rmid_realloc_limit;
+ 
+ #endif /* _RESCTRL_H */
+-- 
+2.30.2
+
