@@ -2,145 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F9EAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C5C6C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345739AbiDLBMu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
+        id S244071AbiDLBOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344943AbiDLA6X (ORCPT
+        with ESMTP id S1350975AbiDLBKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C08D2B269;
-        Mon, 11 Apr 2022 17:50:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF5660A77;
-        Tue, 12 Apr 2022 00:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 707ACC385A3;
-        Tue, 12 Apr 2022 00:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724622;
-        bh=Q1HQeDFU9x7Fs+XYhAq+f0rh0AAVChmCSP3pcSdxFy8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MR0ko3PAovryWzKQNtFcW2bR0H7dva6iR7lHxQl2P55mGKBlw/9mme9Yb5B2UQVXW
-         lTUe4nKjRrIaH7PzItvs62VEH5Hybur+tKdMFzl41gUgyfXdRjhI19YVoTyGOZpC98
-         FnwB5BmzkD+7UlPBvK9yAcYi95zgHMPPXTL5dLs0DE0T2tczMYPb4SQwRPKJj29OBN
-         lUonCYLoBL8K6tz1dxbCtLrGCwy2Ypu/JMuqM5dNzfJnaqO+bcdK1AptkUFIJII4yX
-         obpZBRB/t+30bRqzJtnhR0i8MG3xdIW+VC2XhsAMdoc+iD1eNR3DLZxbITv6YCZqvt
-         FfslHo7FW3d0Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.10 25/30] powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit
-Date:   Mon, 11 Apr 2022 20:48:59 -0400
-Message-Id: <20220412004906.350678-25-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
-References: <20220412004906.350678-1-sashal@kernel.org>
+        Mon, 11 Apr 2022 21:10:34 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C22E13FA7;
+        Mon, 11 Apr 2022 18:07:29 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1ne503-0007LK-4Y; Tue, 12 Apr 2022 03:07:19 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Paolo Bonzini <pbonzini@redhat.com>, KVM <kvm@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Anup Patel <apatel@ventanamicro.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: Fixes tags need some work in the kvm-fixes tree
+Date:   Tue, 12 Apr 2022 03:07:18 +0200
+Message-ID: <2099797.irdbgypaU6@diego>
+In-Reply-To: <20220412080045.301da5ef@canb.auug.org.au>
+References: <20220412080045.301da5ef@canb.auug.org.au>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Am Dienstag, 12. April 2022, 00:00:45 CEST schrieb Stephen Rothwell:
+> Hi all,
+> 
+> In commit
+> 
+>   4054eee92902 ("RISC-V: KVM: include missing hwcap.h into vcpu_fp")
+> 
+> Fixes tag
+> 
+>   Fixes: 0a86512dc113 ("RISC-V: KVM: Factor-out FP virtualization into separate
 
-[ Upstream commit ffa0b64e3be58519ae472ea29a1a1ad681e32f48 ]
+hmm, when I sent it [0], the fixes tag was
+Fixes: 0a86512dc113 ("RISC-V: KVM: Factor-out FP virtualization into separate sources")
 
-mpe: On 64-bit Book3E vmalloc space starts at 0x8000000000000000.
+Did it get somehow mangled when the patch got applied?
 
-Because of the way __pa() works we have:
-  __pa(0x8000000000000000) == 0, and therefore
-  virt_to_pfn(0x8000000000000000) == 0, and therefore
-  virt_addr_valid(0x8000000000000000) == true
 
-Which is wrong, virt_addr_valid() should be false for vmalloc space.
-In fact all vmalloc addresses that alias with a valid PFN will return
-true from virt_addr_valid(). That can cause bugs with hardened usercopy
-as described below by Kefeng Wang:
+[0] https://lore.kernel.org/all/20220408092415.1603661-1-heiko@sntech.de/
 
-  When running ethtool eth0 on 64-bit Book3E, a BUG occurred:
+> 
+> has these problem(s):
+> 
+>   - Subject has leading but no trailing parentheses
+>   - Subject has leading but no trailing quotes
+> 
+> In commit
+> 
+>   ebdef0de2dbc ("KVM: selftests: riscv: Fix alignment of the guest_hang() function")
+> 
+> Fixes tag
+> 
+>   Fixes: 3e06cdf10520 ("KVM: selftests: Add initial support for RISC-V
+> 
+> has these problem(s):
+> 
+>   - Subject has leading but no trailing parentheses
+>   - Subject has leading but no trailing quotes
+> 
+> In commit
+> 
+>   fac372536439 ("KVM: selftests: riscv: Set PTE A and D bits in VS-stage page table")
+> 
+> Fixes tag
+> 
+>   Fixes: 3e06cdf10520 ("KVM: selftests: Add initial support for RISC-V
+> 
+> has these problem(s):
+> 
+>   - Subject has leading but no trailing parentheses
+>   - Subject has leading but no trailing quotes
+> 
+> Please do not split fixes tags over more than one line.
+> 
+> 
 
-    usercopy: Kernel memory exposure attempt detected from SLUB object not in SLUB page?! (offset 0, size 1048)!
-    kernel BUG at mm/usercopy.c:99
-    ...
-    usercopy_abort+0x64/0xa0 (unreliable)
-    __check_heap_object+0x168/0x190
-    __check_object_size+0x1a0/0x200
-    dev_ethtool+0x2494/0x2b20
-    dev_ioctl+0x5d0/0x770
-    sock_do_ioctl+0xf0/0x1d0
-    sock_ioctl+0x3ec/0x5a0
-    __se_sys_ioctl+0xf0/0x160
-    system_call_exception+0xfc/0x1f0
-    system_call_common+0xf8/0x200
 
-  The code shows below,
 
-    data = vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
-    copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
-
-  The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
-  on 64-bit Book3E, which leads to the panic.
-
-  As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
-  and __pa addresses") does, make sure the virt addr above PAGE_OFFSET in
-  the virt_addr_valid() for 64-bit, also add upper limit check to make
-  sure the virt is below high_memory.
-
-  Meanwhile, for 32-bit PAGE_OFFSET is the virtual address of the start
-  of lowmem, high_memory is the upper low virtual address, the check is
-  suitable for 32-bit, this will fix the issue mentioned in commit
-  602946ec2f90 ("powerpc: Set max_mapnr correctly") too.
-
-On 32-bit there is a similar problem with high memory, that was fixed in
-commit 602946ec2f90 ("powerpc: Set max_mapnr correctly"), but that
-commit breaks highmem and needs to be reverted.
-
-We can't easily fix __pa(), we have code that relies on its current
-behaviour. So for now add extra checks to virt_addr_valid().
-
-For 64-bit Book3S the extra checks are not necessary, the combination of
-virt_to_pfn() and pfn_valid() should yield the correct result, but they
-are harmless.
-
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-[mpe: Add additional change log detail]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406145802.538416-1-mpe@ellerman.id.au
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/include/asm/page.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
-index 254687258f42..f2c5c26869f1 100644
---- a/arch/powerpc/include/asm/page.h
-+++ b/arch/powerpc/include/asm/page.h
-@@ -132,7 +132,11 @@ static inline bool pfn_valid(unsigned long pfn)
- #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
- #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
- 
--#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
-+#define virt_addr_valid(vaddr)	({					\
-+	unsigned long _addr = (unsigned long)vaddr;			\
-+	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
-+	pfn_valid(virt_to_pfn(_addr));					\
-+})
- 
- /*
-  * On Book-E parts we need __va to parse the device tree and we can't
--- 
-2.35.1
 
