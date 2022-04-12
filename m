@@ -2,127 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8656AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 493D3C47087
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354571AbiDLHS4 (ORCPT
+        id S1354506AbiDLHS2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46932 "EHLO
+        Tue, 12 Apr 2022 03:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352313AbiDLHFJ (ORCPT
+        with ESMTP id S1352220AbiDLHE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:05:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C02473AC;
-        Mon, 11 Apr 2022 23:48:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 12 Apr 2022 03:04:59 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C6B27162
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:47:50 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FDCF60A21;
-        Tue, 12 Apr 2022 06:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1975C385A6;
-        Tue, 12 Apr 2022 06:47:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746080;
-        bh=5c7qbwUg4dhWQv9ZheJcLAo+7noBOw8SDyf2a6K/Dws=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3/rxo10Es0i6JtjuROMkO7YdX+y3JgwXchohxgJcq2Aop9JkntNk/tvYjaJ+WwYA
-         EH2ANXZR5+iX0tjekHC7mb6EZsOJt5OI5taNs/p4yfCLM+3b+mT4gfDMENDNBL49vW
-         gpt+olEEtlhLeNkcPKo9p4t4u0n80061RCsiu7Rk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 154/277] vdpa/mlx5: Rename control VQ workqueue to vdpa wq
-Date:   Tue, 12 Apr 2022 08:29:17 +0200
-Message-Id: <20220412062946.496512297@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kcx9w2HNHz4xXW;
+        Tue, 12 Apr 2022 16:47:48 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1649746069;
+        bh=m4MwxwbcZdNUXgF4qvMI9+VwYgaKkYE8vyW9IWIBWtI=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=bpPJhxFIp5kqmWf/g0qcLrUdm0Lgg1PISHaoWjkrZcEjmaDyJPe8un+f43k4joLTp
+         ZTsikZTszA6+03sTHL53h/XUNP7WjYqWSZ8yzKklwFbzWZ4h57tLtlTavQdBD+FYVD
+         fhGWiyOgX+t+4dyqjzCVXDImNMnqGG/IQoRlRbu0rCSihnAI4wCJXD/Sio8KsQvBth
+         Cz4fJyEsDPUCxrr2tBilZdyMak7lRicCSC4GzRqSKPAfgd7ZkDZcwMYUv9/biWB9hs
+         dHj39a+vrhdDqV25Tcm5vnBaWLeG0nGWJz+xTBSqViLq0vXiwSDcE6tuGHEwYgnAfE
+         sWNvp+ui4F6xg==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Ariel Marcovitch <arielmarcovitch@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: False positive kmemleak report for dtb properties names on powerpc
+In-Reply-To: <a9d13878-7820-d41c-9357-135094c8357f@csgroup.eu>
+References: <9dd08bb5-f39e-53d8-f88d-bec598a08c93@gmail.com>
+ <YjtXXlnbEp64eL0T@arm.com> <Yjtvtkn+CishCef6@kernel.org>
+ <2603cae9-3b75-cd13-1d41-2f1bed6ca32e@gmail.com>
+ <a9d13878-7820-d41c-9357-135094c8357f@csgroup.eu>
+Date:   Tue, 12 Apr 2022 16:47:47 +1000
+Message-ID: <87pmlm6bn0.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+> Hi Ariel
+>
+> Le 09/04/2022 =C3=A0 15:47, Ariel Marcovitch a =C3=A9crit=C2=A0:
+>> Hi Christophe, did you get the chance to look at this?
+>
+> I tested something this morning, it works for me, see below
+>
+>>=20
+>> On 23/03/2022 21:06, Mike Rapoport wrote:
+>>> Hi Catalin,
+>>>
+>>> On Wed, Mar 23, 2022 at 05:22:38PM +0000, Catalin Marinas wrote:
+>>>> Hi Ariel,
+>>>>
+>>>> On Fri, Feb 18, 2022 at 09:45:51PM +0200, Ariel Marcovitch wrote:
+>>>>> I was running a powerpc 32bit kernel (built using
+>>>>> qemu_ppc_mpc8544ds_defconfig
+>>>>> buildroot config, with enabling DEBUGFS+KMEMLEAK+HIGHMEM in the kernel
+>>>>> config)
+>
+> ...
+>
+>>>>> I don't suppose I can just shuffle the calls in setup_arch() around,=
+=20
+>>>>> so I
+>>>>> wanted to hear your opinions first
+>>>> I think it's better if we change the logic than shuffling the calls.
+>>>> IIUC MEMBLOCK_ALLOC_ACCESSIBLE means that __va() works on the phys
+>>>> address return by memblock, so something like below (untested):
+>>> MEMBLOCK_ALLOC_ACCESSIBLE means "anywhere", see commit e63075a3c937
+>>> ("memblock: Introduce default allocation limit and use it to replace
+>>> explicit ones"), so it won't help to detect high memory.
+>>>
+>>> If I remember correctly, ppc initializes memblock *very* early, so=20
+>>> setting
+>>> max_low_pfn along with lowmem_end_addr in
+>>> arch/powerpc/mm/init_32::MMU_init() makes sense to me.
+>>>
+>>> Maybe ppc folks have other ideas...
+>>> I've added Christophe who works on ppc32 these days.
+>
+> I think memblock is already available at the end of MMU_init() on PPC32=20
+> and at the end of early_setup() on PPC64. It means it is ready when we=20
+> enter setup_arch().
+>
+> I tested the change below, it works for me, I don't get any kmemleak=20
+> report anymore.
+>
+> diff --git a/arch/powerpc/kernel/setup-common.c=20
+> b/arch/powerpc/kernel/setup-common.c
+> index 518ae5aa9410..9f4e50b176c9 100644
+> --- a/arch/powerpc/kernel/setup-common.c
+> +++ b/arch/powerpc/kernel/setup-common.c
+> @@ -840,6 +840,9 @@ void __init setup_arch(char **cmdline_p)
+>   	/* Set a half-reasonable default so udelay does something sensible */
+>   	loops_per_jiffy =3D 500000000 / HZ;
+>
+> +	/* Parse memory topology */
+> +	mem_topology_setup();
+> +
+>   	/* Unflatten the device-tree passed by prom_init or kexec */
+>   	unflatten_device_tree();
 
-[ Upstream commit 218bdd20e56cab41a68481bc10c551ae3e0a24fb ]
+The 64-bit/NUMA version of mem_topology_setup() requires the device tree
+to be unflattened, so I don't think that can work.
 
-A subesequent patch will use the same workqueue for executing other
-work not related to control VQ. Rename the workqueue and the work queue
-entry used to convey information to the workqueue.
+Setting max_low_pfn etc in MMU_init() as Mike suggested seems more
+likely to work.
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Link: https://lore.kernel.org/r/20210909123635.30884-3-elic@nvidia.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/vdpa/mlx5/core/mlx5_vdpa.h | 2 +-
- drivers/vdpa/mlx5/net/mlx5_vnet.c  | 8 ++++----
- 2 files changed, 5 insertions(+), 5 deletions(-)
+But we might need to set it again in mem_topology_setup() though, so
+that things that change memblock_end_of_DRAM() are reflected, eg. memory
+limit or crash dump?
 
-diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-index 01a848adf590..81dc3d88d3dd 100644
---- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-+++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-@@ -63,7 +63,7 @@ struct mlx5_control_vq {
- 	unsigned short head;
- };
- 
--struct mlx5_ctrl_wq_ent {
-+struct mlx5_vdpa_wq_ent {
- 	struct work_struct work;
- 	struct mlx5_vdpa_dev *mvdev;
- };
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index f77a611f592f..f769e2dc6d26 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1573,14 +1573,14 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
- {
- 	virtio_net_ctrl_ack status = VIRTIO_NET_ERR;
- 	struct virtio_net_ctrl_hdr ctrl;
--	struct mlx5_ctrl_wq_ent *wqent;
-+	struct mlx5_vdpa_wq_ent *wqent;
- 	struct mlx5_vdpa_dev *mvdev;
- 	struct mlx5_control_vq *cvq;
- 	struct mlx5_vdpa_net *ndev;
- 	size_t read, write;
- 	int err;
- 
--	wqent = container_of(work, struct mlx5_ctrl_wq_ent, work);
-+	wqent = container_of(work, struct mlx5_vdpa_wq_ent, work);
- 	mvdev = wqent->mvdev;
- 	ndev = to_mlx5_vdpa_ndev(mvdev);
- 	cvq = &mvdev->cvq;
-@@ -1632,7 +1632,7 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
- 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
- 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
- 	struct mlx5_vdpa_virtqueue *mvq;
--	struct mlx5_ctrl_wq_ent *wqent;
-+	struct mlx5_vdpa_wq_ent *wqent;
- 
- 	if (!is_index_valid(mvdev, idx))
- 		return;
-@@ -2502,7 +2502,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name)
- 	if (err)
- 		goto err_mr;
- 
--	mvdev->wq = create_singlethread_workqueue("mlx5_vdpa_ctrl_wq");
-+	mvdev->wq = create_singlethread_workqueue("mlx5_vdpa_wq");
- 	if (!mvdev->wq) {
- 		err = -ENOMEM;
- 		goto err_res2;
--- 
-2.35.1
-
-
-
+cheers
