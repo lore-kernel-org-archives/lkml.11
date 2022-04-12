@@ -2,164 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5559BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4179C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391128AbiDLJ2X (ORCPT
+        id S1391205AbiDLJ2o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        Tue, 12 Apr 2022 05:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381489AbiDLIXn (ORCPT
+        with ESMTP id S1382358AbiDLIZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:23:43 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8794353E3F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1649750199; x=1681286199;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=iiMetrZRF3Mkl2sHpTBNl5772P3KvxjKkotXwYt7AYI=;
-  b=QIM6/ocqoEl1QiEG8leo+MjNNvJt+WtfhEk58maGaQRCS5b4BceQ1ucV
-   9Lx7snmSSiCME34VbyxcZi5+f6AGMCCHLEo59/fHXWg9ov6aDZ6s+Zqrc
-   M6d8wDHsI3S2YU6UsCbCwaz00J6YtQ4tcHRd2d8zg32YmB8eAoIeGcaIS
-   E34inLwlsBuPVt0IxfyQ4lcpu9nOq5AwiYk2VpP4kKRAWHb9ezwTb9wN5
-   GzdKYLTdYOCrMerIGF5nxn6RvD1TsQ1hszeFRvsNlRX41ZyomU4vrvbYe
-   Oh0o0GvXXlPoJtwQgfPFtYrLomgKZns4IU8zMnWV6PNFaVdWmIwuBvUoS
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,253,1643644800"; 
-   d="scan'208";a="202562241"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 12 Apr 2022 15:56:37 +0800
-IronPort-SDR: r+BaLWVTGuAAAfaPL/ClMScibUJfBEwEXQ24rxmva5AaMvoMNzaopAyR1So3KtpXpqVef4wxnr
- BIqNyofn3vs0IMb9Fq2aw7IsPILdAAUAvMEq11QKjc0GAtxUXyklM0QzPTVtf4m2cVg4uHuZA+
- aVGAa0snb5lr/moXHfxS/zUx9XTAgx5DkedJf1f1Vcnz++4ThmkqxPsrtAQw/2w/Uo8hVRXBnq
- 1+jGsrY4HYhq1u+0k9EvFPaWONYO5O9Lbe0hUS4rPTF35s3VJ0hVWWBAAj3T5UoQhn7POpMbAF
- 7n4huB1pUqBeJ4iX1ZSrl0m/
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 12 Apr 2022 00:27:54 -0700
-IronPort-SDR: MSdOdbeaOuCqgvRm57jz46oLAxzGaD1T1PYqcQOdRKVQVB5z431yHMm47kt4gdmiKjtyqDOaw2
- +T5d1dJC4rMC/jyc+ure1NQjGkaKv3rhczv1oiQCRcSp8SYhthDs1YjDol4X41KZSQ7r/0iFty
- 6Ab9oyRRp+gxmPwaoA+UncbEbSqIK/7GF0CVksn9rsPXJ07I0bGdUOyiAHISvSxM/v3eiWOXCS
- JFxGDMxrWhin5bBnsXKonkGYZ+1HEsOoPsIkuoSEqRHCoDH0ViocpHLfRPskJClGCGP6XLJktg
- k64=
-WDCIronportException: Internal
-Received: from shindev.dhcp.fujisawa.hgst.com (HELO shindev.fujisawa.hgst.com) ([10.149.52.173])
-  by uls-op-cesaip02.wdc.com with ESMTP; 12 Apr 2022 00:56:37 -0700
-From:   Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-To:     linux-kernel@vger.kernel.org, Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Subject: [PATCH v2] bus: fsl-mc-msi: fix MSI descriptor mutex lock for msi_first_desc()
-Date:   Tue, 12 Apr 2022 16:56:36 +0900
-Message-Id: <20220412075636.755454-1-shinichiro.kawasaki@wdc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 12 Apr 2022 04:25:00 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140047.outbound.protection.outlook.com [40.107.14.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880B45A16F;
+        Tue, 12 Apr 2022 00:58:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m2Epi1Eu8E2vFELzsVjwOnN52giyuJgv3zCu+56IGva0UeYGpVgCGtWcnZZYaDfpsOAN4InnkZP+uRNd8mOgOwXVvRhfr2eDPdRP7OlaNsSkBKTM8MQRfIaEPlcfy+Ux8SLqaF3pHRqu+Y9vRfyf3KjnzpHeECdcH5z1AKT25ioRH9U+SPEIuobHQgK6T/yj8rUI28GzzdndfA9K/h3EfFuHaKi/A6mU43cen802TibMYpQaEli+77rRGCqwS6xy5CFPR5TQ/mTV6T3pkyd9YQ1gy0ia10yykvcGz3KQWfPk624UljA4ZAGognxwgWqeY+J9rCDrEngvFlyFoF8eBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MN7SgkzzTm6W4WlfBQ1qpa8f7m7eVMAWARIJoyo8Ofk=;
+ b=Q7RXFMK1eKBeJZFceZdsQXmJgklnwNxIUu+OXuoeY/u4kRwwQvGA7DeGAe3ENUEE9JF3G+MX9aDvl3mUPlxt+E/5gE3VhNy49qlqdRO9AmKijbQY1hKBFfeSOur9m2ld0ZHPvXGeA2LZZkqWT6ZbLdAipBaCKEiLKmETOcu11RPT+56kxTLK2LiDgsDUkzFkd86lm5pEsHoHCDWtHCjwUOcb2NRafDCVQe7lo5iDk8RBnxTRWSHqjhdqAId+Fs3g9ZLTQ5DHUccakk1YpqFL27dhrqQTGDysMepByrgk1uabpMI0XxXxVOEF8SXhcK0k711ggxstJwpuN56kbHOxhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MN7SgkzzTm6W4WlfBQ1qpa8f7m7eVMAWARIJoyo8Ofk=;
+ b=YVCFgc8HgnWMDxQ8LaowHwa9YybcHU8o3ypCbxZkl0yQMiwS7pC9SsPVqkLEFsV+9aWqsa95PLsgTJayEY3JRghyo5YvOV+KVXwr+daPelYk3q0Yuwdkfk0Ye2YTDFIKU4piPlAWtXTxT/+lqIA9B8Z5+C9POMfWgdDqKrEPtfs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by AM0PR04MB5395.eurprd04.prod.outlook.com (2603:10a6:208:115::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.30; Tue, 12 Apr
+ 2022 07:58:52 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::a9d1:199:574b:502f]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::a9d1:199:574b:502f%6]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
+ 07:58:52 +0000
+Date:   Tue, 12 Apr 2022 10:58:50 +0300
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     sboyd@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V2 1/2] clk: imx: add mcore_booted module paratemter
+Message-ID: <YlUxOjpk3i0dSxGR@abelvesa>
+References: <20220228124112.3974242-1-peng.fan@oss.nxp.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228124112.3974242-1-peng.fan@oss.nxp.com>
+X-ClientProxiedBy: VI1PR09CA0122.eurprd09.prod.outlook.com
+ (2603:10a6:803:78::45) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c118664-91cb-4819-ccf2-08da1c5a48bb
+X-MS-TrafficTypeDiagnostic: AM0PR04MB5395:EE_
+X-Microsoft-Antispam-PRVS: <AM0PR04MB5395B67EAFF0A3200C06630BF6ED9@AM0PR04MB5395.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PpBfgCe2g61et4UrVuiSiLvanueAz8MZ1XVspcTXJQl1CSnENylevw5GO066lalZ6kz9UUt6neXxPaXW1ydr1VyBsAb9P0nvBH09HH6Pr8M3A6l+9VAALKh1SrngIXK4S8Exo7aywDPkmdo8bpBashf/LZOj2afJCqj+VbXe6CrnzspAg+Lz6hx4yaxd7Al/67rytm/nZFgk115OqCVadp4Hg98QxnZXFlmx0ep6I+CgOjQSAAUsEoWGFtCSTTt9Ar/BaUUKqlHgdLF1pkygDCZuqDtFhhPsVjHqvn3O6aSkb+s+Olf44a1NW2CpLA/XRupZtkyktM8zQkp6LcI75Xl3NDsiopyc198148hIN+j4g7PqOwZ5vIBwIeMmp8AviY2TKiCWkEH5eVQHKLeW3bO4I9r5W1E1/yTeakM+x5Owp7WZLRo2CAYKw8LRbREvlQVV+/dPEO3066y3dW20lf5Wqo8VwP8axYGFfApDmcIN+vCD43cnmnBviy8jnYG3APb5LqjdHD/ezXM9mOH7rZkMK04Kd4wAXMYOupBjfP/Ell7flh6b8LcIf6DCJvwA7jFyKIUnttOn0AxK5IzIJ3FDU+j2jy/r0In6wewz9hU/4DJl00yjtNXGnBSuiwrVeVX8nilOemHe1sMk4u/ovOGm7PPA4OyEii0eKAvgQ7/0/v2EDcNon46RQIGMY7yZPma4YAhw9WTg4sh41YLasw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(33716001)(508600001)(83380400001)(86362001)(38100700002)(6486002)(2906002)(38350700002)(66556008)(9686003)(52116002)(53546011)(66946007)(8676002)(6862004)(4326008)(66476007)(316002)(5660300002)(6506007)(6512007)(8936002)(44832011)(186003)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4icPPtv94x1qRfFh8yRTk2J02oz7e6wbvN+goTv56OvKUqOBpyMtnqJ3p0ru?=
+ =?us-ascii?Q?jqUeTg1O2Ue4PD7mzfQ8OfTaqLktRAY0Nd+9Y5hsXkLzXI1Q+W+sHHhd0IUk?=
+ =?us-ascii?Q?jX21qGeRmQ4/olwo7CdusqGlXaMjuIl29ajVph8TlD65A/5GIQ0i+DAyHZJv?=
+ =?us-ascii?Q?RsRuIa0TsHpctYZGK20D6nEPoB+DEqqc6zxzBIIddd17KzbxyPVv4J9tHMPC?=
+ =?us-ascii?Q?5b0hLUbAkpvsAjTgAR5W3zZgJdVcNwZUFb9OA0aWl+5ZOZiagoX0zsDGu3hu?=
+ =?us-ascii?Q?LpEpxgsTtzb+YfQO2wUm7S6gvhPLkSalmUmmpizaqHoK9SK+sl2dCS2Ls4kS?=
+ =?us-ascii?Q?zYI3veejCy0GlwnH/TRsASoAV8diItEABS/+xWjizG8vKXbKK0eGWGOgR755?=
+ =?us-ascii?Q?42fRSup0TrB0IWnm9jdz2o7rpqBv+9x9TzM5ZvFJ8Hx2jxFc23EwzsYiC1cZ?=
+ =?us-ascii?Q?P3gJLQoXqmcBL7HhB26nxpqCB+r5LKBQenl3hq/yMZanbWOKpUH4N8JbxZMi?=
+ =?us-ascii?Q?RGIzW6etBV5yGUgezIPy25q9UA+XTKC1BHnnlW8iCs9J6wN7oPZwjMXsE+mD?=
+ =?us-ascii?Q?T2aNe6WcyPhuTj2Y8ewHKVwYz3acfKm8lztCnErBP9bKPsqeiieSWD2y0SNp?=
+ =?us-ascii?Q?hKMdidendwKtBaNsUNPMSn2FG1G02Vzna6zLokGzRbpBfnhto4/lszUJMAfV?=
+ =?us-ascii?Q?l38SrAxXNKo9jO+Jvg674B6iCn+TbbTWlxHFeq5ezaVgKCjgJLzyQA7E3swk?=
+ =?us-ascii?Q?Xuh6wL/RuAYQ74xyEeGz+mwzA2eOap1/LqEnGcrBz0faM0Rd1BkDbif8uqqO?=
+ =?us-ascii?Q?zYBV1j4JnHEAcipEKn2/2biPghAYas/iZ7I63t1Wgg9imv4WTdx/ASFJxtNy?=
+ =?us-ascii?Q?pntLxKIzGxdI1srXrUuXGK7zfst8OWrrFO+6yUqn/0aWwNVrIUi6lgW7/8ru?=
+ =?us-ascii?Q?122m9dOsgE7JH4ppoWLUmc/jUPwfHlEV4ExcmPRFQQkk65S5AqFCuMnHGF23?=
+ =?us-ascii?Q?mWQRDcCHAn+pDyxs3gKKbkXm+FQItlG+2iCZQffXePRgvm6LAy6J49GizjNw?=
+ =?us-ascii?Q?Etjy4cue6ERVUbNmhlXiki5gn35ZNhsH0llsV5YW/HUd2dUFVU27AONzC4WC?=
+ =?us-ascii?Q?38HOslOFHB7Q88RjFyOdRDtDIBbrsJn266KdTgXPlzjS+xyBNx6UWvT+luzw?=
+ =?us-ascii?Q?ME7b8D0uucx5U67QxHHBAt1NCnX3CntHkH+jq8Jen0BeXeRKClf58fbz4zfK?=
+ =?us-ascii?Q?njpAJHkw+2bxc6jizTriKSXz3UDZcNXKu4aRcOnC+zLZFYVG8slR2EvW1QUq?=
+ =?us-ascii?Q?CFMXhhjBxmionCqddS1Zf6d0TA++Un0F7ZK+sDTrp9nXhV1NI+K7fSngB4Vl?=
+ =?us-ascii?Q?3kBQAibhlvvULm7TyHq4Sb4QoYaRZixZuSCXZaf85+tRXlex4eGJAwAp9m3v?=
+ =?us-ascii?Q?7SBWEYo44YeqJO0i74JmqQx614WIiJa+d/4B21J1ibsR1pwVaP9QFF+pdA47?=
+ =?us-ascii?Q?sZ7s1o0ivcX3aI+6tFEQOXydwnMJ6fuHVNRwEBqMfsWJLUGyg4jo0tSDAqnq?=
+ =?us-ascii?Q?0mu2sulaJyp4++MUk/JG02UOoB97Wu9QlMu66finRWglBLGygJrvdq8gvPDm?=
+ =?us-ascii?Q?vkEEMUJZAz5bvQbXUljlkMqQE2y0RDPYaABrF4ULD6LLOd28tqEr0Y7OFOXz?=
+ =?us-ascii?Q?+3/GE9AbgrADFDwNNaXY3BuaCzySyVy1Ss7xnzDCeeZymz5K8SiAhYrnRlvF?=
+ =?us-ascii?Q?GH5Yghfv1g=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c118664-91cb-4819-ccf2-08da1c5a48bb
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 07:58:52.0654
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OoF3SW9ATaZmK5ryXGuS6lDbN4/6e8a5HEtRn8pgyHPSi29TVgkFZB4VOhJ49ufqLZUK5u9BRSkFyga3IGmh/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5395
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit e8604b1447b4 ("bus: fsl-mc-msi: Simplify MSI descriptor
-handling") introduced a call to the helper function msi_first_desc(),
-which needs MSI descriptor mutex lock before call. However, the required
-mutex lock was not added. This resulted in lockdep assert WARNING [1].
-Fix this by adding the mutex lock and unlock around the function call.
+On 22-02-28 20:41:11, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+>
+> Add mcore_booted boot parameter which could simplify AMP clock
+> management. To i.MX8M, there is CCM(clock control Module) to generate
+> clock root clock, anatop(analog PLL module) to generate PLL, and CCGR
+> (clock gating) to gate clocks to peripherals. As below:
+>   anatop->ccm->ccgr->peripheral
+>
+> Linux handles the clock management and the auxiliary core is under
+> control of Linux. Although there is per hardware domain control for CCGR
+> and CCM, auxiliary core normally only use CCGR hardware domain control
+> to avoid linux gate off the clk to peripherals and leave CCM ana anatop
+> to Linux.
+>
+> Per NXP hardware design, because CCGR already support gate to
+> peripherals, and clk root gate power leakage is negligible. So
+> when in AMP case, we could not register the clk root gate.
+>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 
-[1]
+I agree with this approach since every other option complicates things
+more.
 
-[    8.542804] WARNING: CPU: 4 PID: 119 at kernel/irq/msi.c:274 msi_first_desc+0xd0/0x10c
-[    8.551428] Modules linked in:
-[    8.555184] CPU: 4 PID: 119 Comm: kworker/u32:1 Not tainted 5.18.0-rc1+ #5
-[    8.562755] Hardware name: SolidRun Ltd. SolidRun CEX7 Platform, BIOS EDK II Aug  9 2021
-[    8.571539] Workqueue: events_unbound deferred_probe_work_func
-[    8.578079] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[    8.585736] pc : msi_first_desc+0xd0/0x10c
-[    8.590529] lr : msi_first_desc+0xcc/0x10c
-[    8.595321] sp : ffff800009856fb0
-[    8.599328] x29: ffff800009856fb0 x28: ffff3018789f0000 x27: ffff3018789f0000
-[    8.607175] x26: 1ffff0000130ae2a x25: 1fffe6030f13e0a4 x24: 1fffe6030f13e0a3
-[    8.615020] x23: ffff301878a09024 x22: ffff301860993800 x21: ffffc539150ec000
-[    8.622865] x20: 0000000000000000 x19: ffff301878a04880 x18: ffff30257b37b588
-[    8.630710] x17: 0000000000000000 x16: 1fffe6030c3d89a3 x15: 1fffe6030c3d8982
-[    8.638555] x14: 0000000000000004 x13: ffff301861ec4c14 x12: ffff70000130adc3
-[    8.646400] x11: 1ffff0000130adc2 x10: ffff70000130adc2 x9 : ffffc53911dd0790
-[    8.654245] x8 : ffff800009856e17 x7 : 0000000000000001 x6 : 0000000041b58ab3
-[    8.662089] x5 : ffff70000130ada2 x4 : 1ffff0000130add2 x3 : 1fffe6030c3d8802
-[    8.669933] x2 : 0000000000000000 x1 : 0000000000000000 x0 : 0000000000000000
-[    8.677778] Call trace:
-[    8.680918]  msi_first_desc+0xd0/0x10c
-[    8.685364]  fsl_mc_msi_domain_alloc_irqs+0x7c/0xc0
-[    8.690938]  fsl_mc_populate_irq_pool+0x80/0x3cc
-[    8.696251]  dprc_scan_objects+0x370/0x560
-[    8.701042]  dprc_probe+0x54/0x210
-[    8.705137]  fsl_mc_driver_probe+0x60/0xc0
-[    8.709934]  really_probe+0x328/0x9bc
-[    8.714292]  __driver_probe_device+0x268/0x3d0
-[    8.719431]  driver_probe_device+0x64/0x154
-[    8.724310]  __device_attach_driver+0x194/0x250
-[    8.729536]  bus_for_each_drv+0x114/0x190
-[    8.734241]  __device_attach+0x198/0x34c
-[    8.738859]  device_initial_probe+0x20/0x30
-[    8.743738]  bus_probe_device+0x168/0x1e0
-[    8.748443]  device_add+0x858/0x12a0
-[    8.752713]  fsl_mc_device_add+0x4bc/0x950
-[    8.757505]  fsl_mc_bus_probe+0x464/0x740
-[    8.762210]  platform_probe+0xd0/0x1b0
-[    8.766653]  really_probe+0x328/0x9bc
-[    8.771010]  __driver_probe_device+0x268/0x3d0
-[    8.776149]  driver_probe_device+0x64/0x154
-[    8.781028]  __device_attach_driver+0x194/0x250
-[    8.786254]  bus_for_each_drv+0x114/0x190
-[    8.790958]  __device_attach+0x198/0x34c
-[    8.795576]  device_initial_probe+0x20/0x30
-[    8.800455]  bus_probe_device+0x168/0x1e0
-[    8.805159]  deferred_probe_work_func+0x16c/0x24c
-[    8.810558]  process_one_work+0x69c/0xf40
-[    8.815265]  worker_thread+0x3dc/0xc50
-[    8.819710]  kthread+0x2cc/0x340
-[    8.823635]  ret_from_fork+0x10/0x20
-[    8.827909] irq event stamp: 2082
-[    8.831915] hardirqs last  enabled at (2081): [<ffffc539131f6670>] _raw_spin_unlock_irqrestore+0x120/0x144
-[    8.842267] hardirqs last disabled at (2082): [<ffffc539131d5ef4>] el1_dbg+0x24/0x80
-[    8.850708] softirqs last  enabled at (2002): [<ffffc53910d90a38>] __do_softirq+0x528/0x8e0
-[    8.859753] softirqs last disabled at (1997): [<ffffc53910e3c3e8>] __irq_exit_rcu+0x3f8/0x680
+Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
 
-Fixes: e8604b1447b4 ("bus: fsl-mc-msi: Simplify MSI descriptor handling")
-Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-CC: stable@vger.kernel.org # v5.17+
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
----
-Changes from v1:
-* Added a Reviewed-by tag
-* Reflected a nit comment on the list
-
- drivers/bus/fsl-mc/fsl-mc-msi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/bus/fsl-mc/fsl-mc-msi.c b/drivers/bus/fsl-mc/fsl-mc-msi.c
-index 5e0e4393ce4d..0cfe859a4ac4 100644
---- a/drivers/bus/fsl-mc/fsl-mc-msi.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-msi.c
-@@ -224,8 +224,12 @@ int fsl_mc_msi_domain_alloc_irqs(struct device *dev,  unsigned int irq_count)
- 	if (error)
- 		return error;
- 
-+	msi_lock_descs(dev);
- 	if (msi_first_desc(dev, MSI_DESC_ALL))
--		return -EINVAL;
-+		error = -EINVAL;
-+	msi_unlock_descs(dev);
-+	if (error)
-+		return error;
- 
- 	/*
- 	 * NOTE: Calling this function will trigger the invocation of the
--- 
-2.35.1
-
+> ---
+>
+> V2:
+>  Switch to use module parameter, tested on i.MX8MP-EVK
+>
+>  drivers/clk/imx/clk-imx8mm.c | 2 ++
+>  drivers/clk/imx/clk-imx8mn.c | 2 ++
+>  drivers/clk/imx/clk-imx8mp.c | 2 ++
+>  drivers/clk/imx/clk-imx8mq.c | 2 ++
+>  drivers/clk/imx/clk.c        | 3 +++
+>  drivers/clk/imx/clk.h        | 1 +
+>  6 files changed, 12 insertions(+)
+>
+> diff --git a/drivers/clk/imx/clk-imx8mm.c b/drivers/clk/imx/clk-imx8mm.c
+> index e8cbe181ec06..a452fd1bb891 100644
+> --- a/drivers/clk/imx/clk-imx8mm.c
+> +++ b/drivers/clk/imx/clk-imx8mm.c
+> @@ -639,6 +639,8 @@ static struct platform_driver imx8mm_clk_driver = {
+>  	},
+>  };
+>  module_platform_driver(imx8mm_clk_driver);
+> +module_param(mcore_booted, bool, S_IRUGO);
+> +MODULE_PARM_DESC(mcore_booted, "See Cortex-M core is booted or not");
+>
+>  MODULE_AUTHOR("Bai Ping <ping.bai@nxp.com>");
+>  MODULE_DESCRIPTION("NXP i.MX8MM clock driver");
+> diff --git a/drivers/clk/imx/clk-imx8mn.c b/drivers/clk/imx/clk-imx8mn.c
+> index 92fcbab4f5be..dc69b7464b3d 100644
+> --- a/drivers/clk/imx/clk-imx8mn.c
+> +++ b/drivers/clk/imx/clk-imx8mn.c
+> @@ -594,6 +594,8 @@ static struct platform_driver imx8mn_clk_driver = {
+>  	},
+>  };
+>  module_platform_driver(imx8mn_clk_driver);
+> +module_param(mcore_booted, bool, S_IRUGO);
+> +MODULE_PARM_DESC(mcore_booted, "See Cortex-M core is booted or not");
+>
+>  MODULE_AUTHOR("Anson Huang <Anson.Huang@nxp.com>");
+>  MODULE_DESCRIPTION("NXP i.MX8MN clock driver");
+> diff --git a/drivers/clk/imx/clk-imx8mp.c b/drivers/clk/imx/clk-imx8mp.c
+> index 18f5b7c3ca9d..250e45d9f844 100644
+> --- a/drivers/clk/imx/clk-imx8mp.c
+> +++ b/drivers/clk/imx/clk-imx8mp.c
+> @@ -721,6 +721,8 @@ static struct platform_driver imx8mp_clk_driver = {
+>  	},
+>  };
+>  module_platform_driver(imx8mp_clk_driver);
+> +module_param(mcore_booted, bool, S_IRUGO);
+> +MODULE_PARM_DESC(mcore_booted, "See Cortex-M core is booted or not");
+>
+>  MODULE_AUTHOR("Anson Huang <Anson.Huang@nxp.com>");
+>  MODULE_DESCRIPTION("NXP i.MX8MP clock driver");
+> diff --git a/drivers/clk/imx/clk-imx8mq.c b/drivers/clk/imx/clk-imx8mq.c
+> index 83cc2b1c3294..33897b56130d 100644
+> --- a/drivers/clk/imx/clk-imx8mq.c
+> +++ b/drivers/clk/imx/clk-imx8mq.c
+> @@ -632,6 +632,8 @@ static struct platform_driver imx8mq_clk_driver = {
+>  	},
+>  };
+>  module_platform_driver(imx8mq_clk_driver);
+> +module_param(mcore_booted, bool, S_IRUGO);
+> +MODULE_PARM_DESC(mcore_booted, "See Cortex-M core is booted or not");
+>
+>  MODULE_AUTHOR("Abel Vesa <abel.vesa@nxp.com>");
+>  MODULE_DESCRIPTION("NXP i.MX8MQ clock driver");
+> diff --git a/drivers/clk/imx/clk.c b/drivers/clk/imx/clk.c
+> index 7cc669934253..4bd6ad060eea 100644
+> --- a/drivers/clk/imx/clk.c
+> +++ b/drivers/clk/imx/clk.c
+> @@ -17,6 +17,9 @@
+>  DEFINE_SPINLOCK(imx_ccm_lock);
+>  EXPORT_SYMBOL_GPL(imx_ccm_lock);
+>
+> +bool mcore_booted;
+> +EXPORT_SYMBOL_GPL(mcore_booted);
+> +
+>  void imx_unregister_clocks(struct clk *clks[], unsigned int count)
+>  {
+>  	unsigned int i;
+> diff --git a/drivers/clk/imx/clk.h b/drivers/clk/imx/clk.h
+> index a7cbbcd1a3f4..5061a06468df 100644
+> --- a/drivers/clk/imx/clk.h
+> +++ b/drivers/clk/imx/clk.h
+> @@ -7,6 +7,7 @@
+>  #include <linux/clk-provider.h>
+>
+>  extern spinlock_t imx_ccm_lock;
+> +extern bool mcore_booted;
+>
+>  void imx_check_clocks(struct clk *clks[], unsigned int count);
+>  void imx_check_clk_hws(struct clk_hw *clks[], unsigned int count);
+> --
+> 2.25.1
+>
