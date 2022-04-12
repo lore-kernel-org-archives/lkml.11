@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004BCC3527C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC69C3527D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352704AbiDLHFw (ORCPT
+        id S1352791AbiDLHGA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
+        Tue, 12 Apr 2022 03:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351723AbiDLGyQ (ORCPT
+        with ESMTP id S1351745AbiDLGyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B7C38BC6;
-        Mon, 11 Apr 2022 23:43:42 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24C138DA0;
+        Mon, 11 Apr 2022 23:43:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC3C960B5E;
-        Tue, 12 Apr 2022 06:43:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E66ECC385A6;
-        Tue, 12 Apr 2022 06:43:40 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2DA67CE1C07;
+        Tue, 12 Apr 2022 06:43:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46375C385A6;
+        Tue, 12 Apr 2022 06:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745821;
-        bh=coE8RsUUJYW+3vi9y+Ncnu7S2AgcCtQ2sAsW9PxyBPQ=;
+        s=korg; t=1649745829;
+        bh=4/nBcUPzjSbQPjKcESvJiFW7uxyG6wmDn/mKu6L2yns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XpEiFoRfLOhX0T4m71TLOe+xxYUDoANIUFH9ImSy8otxVQs8m8kuBxQJZ3aIgjqmF
-         BGN7j7H+xZS7eCJs2mThepqixF6HQW56y2uFYCNitRZUGcNBE0A5el5mc4zbF2h/Dn
-         xZAT8MLGRIH3YocXzSEUNnlqjlFHuMk6dFOym7bg=
+        b=gCTKbbqBp5EshEaQMrJ2ihR+T5NHG32ok62QuphpTd74q+kDYKL7tu9yVFQgyP2hH
+         bDxRABV6A2P1+xcb6JRNpOGWl3Pdz9GO/4gAwkxR/Roj3loKTWriz8F4uNERIT1+1v
+         lBzgwmxa4z55FNktmKfPyL7Tc0xpqEbBS+yD2JRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Mike Snitzer <snitzer@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 061/277] drm/msm/dsi: Remove spurious IRQF_ONESHOT flag
-Date:   Tue, 12 Apr 2022 08:27:44 +0200
-Message-Id: <20220412062943.814409574@linuxfoundation.org>
+Subject: [PATCH 5.15 064/277] dm: requeue IO if mapping table not yet available
+Date:   Tue, 12 Apr 2022 08:27:47 +0200
+Message-Id: <20220412062943.900723004@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,47 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Thompson <daniel.thompson@linaro.org>
+From: Mike Snitzer <snitzer@redhat.com>
 
-[ Upstream commit 24b176d8827d167ac3b379317f60c0985f6e95aa ]
+[ Upstream commit fa247089de9936a46e290d4724cb5f0b845600f5 ]
 
-Quoting the header comments, IRQF_ONESHOT is "Used by threaded interrupts
-which need to keep the irq line disabled until the threaded handler has
-been run.". When applied to an interrupt that doesn't request a threaded
-irq then IRQF_ONESHOT has a lesser known (undocumented?) side effect,
-which it to disable the forced threading of irqs (and for "normal" kernels
-it is a nop). In this case I can find no evidence that suppressing forced
-threading is intentional. Had it been intentional then a driver must adopt
-the raw_spinlock API in order to avoid deadlocks on PREEMPT_RT kernels
-(and avoid calling any kernel API that uses regular spinlocks).
+Update both bio-based and request-based DM to requeue IO if the
+mapping table not available.
 
-Fix this by removing the spurious additional flag.
+This race of IO being submitted before the DM device ready is so
+narrow, yet possible for initial table load given that the DM device's
+request_queue is created prior, that it best to requeue IO to handle
+this unlikely case.
 
-This change is required for my Snapdragon 7cx Gen2 tablet to boot-to-GUI
-with PREEMPT_RT enabled.
-
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Link: https://lore.kernel.org/r/20220201174734.196718-2-daniel.thompson@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reported-by: Zhang Yi <yi.zhang@huawei.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi_host.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-rq.c |  7 ++++++-
+ drivers/md/dm.c    | 11 +++--------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index dc85974c7897..eea679a52e86 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -1909,7 +1909,7 @@ int msm_dsi_host_init(struct msm_dsi *msm_dsi)
+diff --git a/drivers/md/dm-rq.c b/drivers/md/dm-rq.c
+index a896dea9750e..53a9b16c7b2e 100644
+--- a/drivers/md/dm-rq.c
++++ b/drivers/md/dm-rq.c
+@@ -500,8 +500,13 @@ static blk_status_t dm_mq_queue_rq(struct blk_mq_hw_ctx *hctx,
  
- 	/* do not autoenable, will be enabled later */
- 	ret = devm_request_irq(&pdev->dev, msm_host->irq, dsi_host_irq,
--			IRQF_TRIGGER_HIGH | IRQF_ONESHOT | IRQF_NO_AUTOEN,
-+			IRQF_TRIGGER_HIGH | IRQF_NO_AUTOEN,
- 			"dsi_isr", msm_host);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to request IRQ%u: %d\n",
+ 	if (unlikely(!ti)) {
+ 		int srcu_idx;
+-		struct dm_table *map = dm_get_live_table(md, &srcu_idx);
++		struct dm_table *map;
+ 
++		map = dm_get_live_table(md, &srcu_idx);
++		if (unlikely(!map)) {
++			dm_put_live_table(md, srcu_idx);
++			return BLK_STS_RESOURCE;
++		}
+ 		ti = dm_table_find_target(map, 0);
+ 		dm_put_live_table(md, srcu_idx);
+ 	}
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index 443478a08857..36449422e7e0 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -1594,15 +1594,10 @@ static blk_qc_t dm_submit_bio(struct bio *bio)
+ 	struct dm_table *map;
+ 
+ 	map = dm_get_live_table(md, &srcu_idx);
+-	if (unlikely(!map)) {
+-		DMERR_LIMIT("%s: mapping table unavailable, erroring io",
+-			    dm_device_name(md));
+-		bio_io_error(bio);
+-		goto out;
+-	}
+ 
+-	/* If suspended, queue this IO for later */
+-	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags))) {
++	/* If suspended, or map not yet available, queue this IO for later */
++	if (unlikely(test_bit(DMF_BLOCK_IO_FOR_SUSPEND, &md->flags)) ||
++	    unlikely(!map)) {
+ 		if (bio->bi_opf & REQ_NOWAIT)
+ 			bio_wouldblock_error(bio);
+ 		else if (bio->bi_opf & REQ_RAHEAD)
 -- 
 2.35.1
 
