@@ -2,135 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D39CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351815AbiDLMLq (ORCPT
+        id S1351861AbiDLMLx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
+        Tue, 12 Apr 2022 08:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352944AbiDLMDp (ORCPT
+        with ESMTP id S1352553AbiDLMIX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:03:45 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D44B40
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:02:20 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id u15so17910671ejf.11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:02:20 -0700 (PDT)
+        Tue, 12 Apr 2022 08:08:23 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1506971A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:08:33 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bv19so13578256ejb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:08:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=VYlSwRs2xXTAAyUlwb+gbXuW16FUgB8AcvnUgAkw87M=;
-        b=eSbceTFB98b3Z4e++6Y2eKyh0djI4T4ned0/KGkHF4WkQ2ae1MrCfN/x1DtyjdQ9EK
-         I6uRjCoOv2AxG0UVJB0EOUOEcKG1gRlCsYmqXVCMaB1783YxmdMMk9Er1euKcvHliDpE
-         tRH2iCH/Aaoe6tasaDrdqEiifWeCJ3oo0c8Gps11Zz8r3CFiu+WckRFSke/7vQpAhA39
-         SdyWjtnFobiiFiq0baedSX18wfT0ay8xSeoyNDUUujyaFI7DfjEyqROymvDx4JAbt5cB
-         Q9dW0CrEFyWsiFUbVC+RGVEBAtPjMno47ARxUA30DU7nZ+ZhEguqThGbutt1Rd0YYr/W
-         YCig==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XFfMi83HyHhMrMz7nwFOvyizW6aspWQXX9TyM36MU7E=;
+        b=b7HD5VaNyiC3VzWVe5JREGw3WwW2DOqpJI4Bewo3xtQrIgFagoll75IZ3yOOR+4Ia8
+         Hq4uYn4Ma4bitgj6j3950YPwpqiihH2Psdv+JCkyXm+S369Fy8GLOxE06+xJz6+0fQu3
+         I8c2Y92E+Yqxiv7F1vQlKYnTlhH4SsP2NwatqTCS/hyQdsHcxHGHuN6Yw/rVQMl8fWCc
+         cB4FbbrvDCNASHjiGMm9kAX8yKSeZ9Up1/v5BaVEgKPeYi+tWMZXeD4nlK6jyZYk+LF4
+         HHLnI/a0wiIPO3AwudG3TnJWJ8SWv5/83nlmU8h+GscuAUHMufwenXyKP054m1UHd1ZB
+         /T9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=VYlSwRs2xXTAAyUlwb+gbXuW16FUgB8AcvnUgAkw87M=;
-        b=W0PfJwKq/c7samWYmmteiDUbbRjFgRpj+06gPfwQT54BZHbBKbJOjD91XxzcmLozwZ
-         +cffZA70LjtH/fymh2Ia97Tvn/7KEzXMS+H/JZIsjPI+gAJfOvSzzLkojBTsNS86rIMg
-         uA/TNDCUf/Zz4oi6Axb+f50BWJBC8daiYD0TFPS2WziTAmBUj4glZAinSEhBw4+sm8Yn
-         aPvq6GIBkMZiNwTL3ZkPdkF0hJ9+6/HmF7VCqkfQ70ZAbqWzow+TAZCiX9vwPBIlD7nG
-         H5RD2JdtPFLCvoa/bhFtu1xsR+/zl1la0jt8kN25qFrdEgOaUg8eB0lbqTJ5Vh0HPHmv
-         2RUg==
-X-Gm-Message-State: AOAM532ggP/8fN5k7AR/ACeCJ/YwLKDS0Ko7DruELjJlxejywX3pjAKf
-        hYw2WE5vx3Up3B7n17dKv+Y=
-X-Google-Smtp-Source: ABdhPJwPcRInSEEVAplx2Q7xSQldnlj/l6p5lEplZaCg8iRKCy5wsP3rhJrj4lvajacO3js5nLJNfQ==
-X-Received: by 2002:a17:907:d04:b0:6e8:8cbc:e86a with SMTP id gn4-20020a1709070d0400b006e88cbce86amr9739701ejc.194.1649761338744;
-        Tue, 12 Apr 2022 04:02:18 -0700 (PDT)
-Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.gmail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16990227edz.35.2022.04.12.04.02.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Apr 2022 04:02:18 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH 1/2] f2fs: use separate list iterator variable to call
- list_move_tail()
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <4d54f494-b143-8885-a31e-924a83409e2d@kernel.org>
-Date:   Tue, 12 Apr 2022 13:02:17 +0200
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <632AA316-A1B4-4E2C-B5FD-204FD3BE8633@gmail.com>
-References: <20220331221650.891790-1-jakobkoschel@gmail.com>
- <4d54f494-b143-8885-a31e-924a83409e2d@kernel.org>
-To:     Chao Yu <chao@kernel.org>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XFfMi83HyHhMrMz7nwFOvyizW6aspWQXX9TyM36MU7E=;
+        b=zTsrDVI4U6UClTNtUtX2gNp9uyQNnvPfTiI4FIx8XSzYf6S1kswLXrSW5lKvOI3zXw
+         fQvZUsOo0rDyrl00NZHB/pz5tCyz/YjG0RQlh+S5lK0alWcVMWb6exr8SpnlFJWzTMxN
+         7jcODwj6nOtSyCnsnX9cdreCJhCOlo5w4QaRsEP7s8ixBAFtc5Cw8PBcjU4xc93Mz7Hr
+         oOzoUy/AnleDsQ4qkRGMGuDZfHlW5WbQtJSHS2ckmE21PmZMBQ7ie4EEZ59w5SNIVA8P
+         dQ/TZSWteBU5MXWgXK5QLXIhNppbNgqgTcrFq2C7vMGk/Jqtwe/AGMmpAwIYKJJAtk6H
+         V+Dg==
+X-Gm-Message-State: AOAM5309rmzrmmYGpsU7YVRYG0XdwEAuW5tI2FKH0J25/O4V00EcWtch
+        Ivze2dUwZIqttUcFujSJcdE=
+X-Google-Smtp-Source: ABdhPJwLHaReY6LYzG74fFgMURZEJwl58p1XJ+dhTszQwIgB+7Fq69dLJACk10WyGa4/ANaPw78qNQ==
+X-Received: by 2002:a17:906:1692:b0:6e8:7641:c620 with SMTP id s18-20020a170906169200b006e87641c620mr12908634ejd.183.1649761711448;
+        Tue, 12 Apr 2022 04:08:31 -0700 (PDT)
+Received: from leap.localnet (host-82-60-208-254.retail.telecomitalia.it. [82.60.208.254])
+        by smtp.gmail.com with ESMTPSA id q11-20020a170906144b00b006cf61dfb03esm13023344ejc.62.2022.04.12.04.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 04:08:30 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Liu Junqi <liujunqi@pku.edu.cn>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@intel.com>,
+        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] MAINTAINERS: Remove D. Kershner from Unisys S-PAR maintainers
+Date:   Tue, 12 Apr 2022 13:08:28 +0200
+Message-ID: <2976258.CbtlEUcBR6@leap>
+In-Reply-To: <YlVXV4J41KBzKHtm@kroah.com>
+References: <20220412103629.8029-1-fmdefrancesco@gmail.com> <YlVXV4J41KBzKHtm@kroah.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On marted? 12 aprile 2022 12:41:27 CEST Greg Kroah-Hartman wrote:
+> On Tue, Apr 12, 2022 at 12:36:29PM +0200, Fabio M. De Francesco wrote:
+> > The email address of David Kershner is no more reachable. Remove his
+> > entry from the MAINTAINERS file for UNISYS S-PAR DRIVERS and change
+> > the status to "Orphan".
+> > 
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > ---
+> > 
+> > v1->v2: Change also the status of the entry to "Orphan" and rework the
+> > commit message. (Thanks to Greg Kroah-Hartman).
+> > 
+> >  MAINTAINERS | 3 +--
+> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> > 
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 3ed62dcd144e..9283c63565b3 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -20184,9 +20184,8 @@ F:	include/linux/cdrom.h
+> >  F:	include/uapi/linux/cdrom.h
+> >  
+> >  UNISYS S-PAR DRIVERS
+> > -M:	David Kershner <david.kershner@unisys.com>
+> >  L:	sparmaintainer@unisys.com (Unisys internal)
+> 
+> Again, please drop this "list" as it obviously is not going to anyone.
+
+OK, I'll also drop the "L:" line. I wasn't sure about it because I see 
+that there are other entries marked as "Orphan" and the list is still
+there. But you are right: although the "sparmaintainer" list address is
+not bouncing, it looks like nobody care to read messages there.
+  
+> And really, this whole code should be removed, no one seems to be using
+> it, and if they are, we can easily revert the removal and mark them as
+> the maintainer.
+
+1) If I remove the entire drivers/staging/unisys/ I suppose that, in 
+MAINTAINERS I should also remove the whole entry called "UNISYS S-PAR 
+DRIVERS", not only the "L:" line. 
+
+2) Furthermore, I understand that I should also should change the relevant 
+Kbuild files, otherwise all builds of staging would fail. 
+
+I'm sorry for asking but, as you probably recall, I have no prior experience 
+with removing drivers from trees and with the Kbuild's infrastructure. I'll 
+take some time to read how it works.
+
+Are the two arguments above correct?
+
+Thanks,
+
+Fabio M. De Francesco
 
 
-> On 12. Apr 2022, at 11:40, Chao Yu <chao@kernel.org> wrote:
->=20
-> On 2022/4/1 6:16, Jakob Koschel wrote:
->> In preparation to limit the scope of a list iterator to the list
->> traversal loop, use a dedicated pointer to point to the found element
->> [1].
->> If no break is hit or the list is empty, 'next' will be NULL and
->> list_move_tail() should be called explicitly on the head directly.
->> Link: =
-https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXPwr9Y7k9=
-sA6cWXJ6w@mail.gmail.com/
->> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
->> ---
->> fs/f2fs/segment.c | 12 ++++++++----
->> 1 file changed, 8 insertions(+), 4 deletions(-)
->> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
->> index 22dfeb991529..81ef2c3d08e5 100644
->> --- a/fs/f2fs/segment.c
->> +++ b/fs/f2fs/segment.c
->> @@ -4175,16 +4175,20 @@ static void release_sit_entry_set(struct =
-sit_entry_set *ses)
->> static void adjust_sit_entry_set(struct sit_entry_set *ses,
->> 						struct list_head *head)
->> {
->> -	struct sit_entry_set *next =3D ses;
->> +	struct sit_entry_set *next =3D NULL, *iter =3D ses;
->> 	if (list_is_last(&ses->set_list, head))
->> 		return;
->> -	list_for_each_entry_continue(next, head, set_list)
->> -		if (ses->entry_cnt <=3D next->entry_cnt)
->> +	list_for_each_entry_continue(iter, head, set_list)
->> +		if (ses->entry_cnt <=3D iter->entry_cnt) {
->> +			next =3D iter;
->> +			list_move_tail(&ses->set_list, &iter->set_list);
->> 			break;
->=20
-> return;
->=20
->> +		}
->> -	list_move_tail(&ses->set_list, &next->set_list);
->> +	if (!next)
->> +		list_move_tail(&ses->set_list, head);
->=20
-> list_move_tail(&ses->set_list, head);
->=20
-> Then we don't need @next variable, right?
-
-Of course yes, good spot! I'll fix and resend a v2 in the next days.
-Thanks for the input.
-
->=20
-> Thanks,
->=20
->> }
->> static void add_sit_entry(unsigned int segno, struct list_head *head)
->> base-commit: d888c83fcec75194a8a48ccd283953bdba7b2550
 
