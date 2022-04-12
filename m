@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561B8C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B780C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384306AbiDLIkG (ORCPT
+        id S1384254AbiDLIj4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
+        Tue, 12 Apr 2022 04:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357198AbiDLHjw (ORCPT
+        with ESMTP id S1357176AbiDLHjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D88140D1;
-        Tue, 12 Apr 2022 00:13:39 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D948913F77;
+        Tue, 12 Apr 2022 00:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F964B81895;
-        Tue, 12 Apr 2022 07:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92D71C385A6;
-        Tue, 12 Apr 2022 07:13:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7455861708;
+        Tue, 12 Apr 2022 07:13:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FDFBC385A5;
+        Tue, 12 Apr 2022 07:13:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747617;
-        bh=CeNnsAwWRiktZfe8Ev3NbZKEPZE7owzZjYfHqz/jVog=;
+        s=korg; t=1649747608;
+        bh=9xQ3uX4h9l1REPAIIrIh96bR7xnygsUSU5H1Cu9F32g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PIs9AvLxhtdL2nWK2QenQiHoD/28H9SuWa7LerD2G/pcsrs51b+R2rfFeTZU59FlC
-         sX8ZXu6bfcERv56LGNi9/5hKQY4A8M8hNODKvajlhQRgun3Gn49W+eZ9GI1hTZ4rN+
-         4JHMRI/C9R0e/6ZDos45o65vGSuVqQ8Idr3BhS9I=
+        b=FKCsTg5k+KAleHqAC7ViVP+z9u1P1tyXhi9KVoKQGq+XFtN/1aJe/ho5XN22uD8hx
+         UOw4zzsNY2LQYhYQdZrcYSMZOMPfooXYcqLBUb5RSZNAtvypy1tr1pSdRLfaRWup6O
+         NvZohir7O8Y+3f2v00DtoouwoAqde7W7ycn82qrQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 143/343] xen/usb: harden xen_hcd against malicious backends
-Date:   Tue, 12 Apr 2022 08:29:21 +0200
-Message-Id: <20220412062955.511302940@linuxfoundation.org>
+Subject: [PATCH 5.17 140/343] platform/x86: hp-wmi: Fix 0x05 error code reported by several WMI calls
+Date:   Tue, 12 Apr 2022 08:29:18 +0200
+Message-Id: <20220412062955.426856975@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,167 +50,149 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Jorge Lopez <jorge.lopez2@hp.com>
 
-[ Upstream commit aff477cb8f94613f501d386d10f20019e294bc35 ]
+[ Upstream commit be9d73e64957bbd31ee9a0d11adc0f720974c558 ]
 
-Make sure a malicious backend can't cause any harm other than wrong
-I/O data.
+Several WMI queries leverage hp_wmi_read_int function to read their
+data. hp_wmi_read_int function was corrected in a previous patch.
+Now, this function invokes hp_wmi_perform_query with input parameter
+of size zero and the output buffer of size 4.
 
-Missing are verification of the request id in a response, sanitizing
-the reported actual I/O length, and protection against interrupt storms
-from the backend.
+WMI commands calling hp_wmi_perform_query with input buffer size value
+of zero are listed below.
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220311103509.12908-1-jgross@suse.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+HPWMI_DISPLAY_QUERY
+HPWMI_HDDTEMP_QUERY
+HPWMI_ALS_QUERY
+HPWMI_HARDWARE_QUERY
+HPWMI_WIRELESS_QUERY
+HPWMI_BIOS_QUERY
+HPWMI_FEATURE_QUERY
+HPWMI_HOTKEY_QUERY
+HPWMI_FEATURE2_QUERY
+HPWMI_WIRELESS2_QUERY
+HPWMI_POSTCODEERROR_QUERY
+HPWMI_THERMAL_PROFILE_QUERY
+HPWMI_FAN_SPEED_MAX_GET_QUERY
+
+Invoking those WMI commands with an input buffer size greater
+than zero will cause error 0x05 to be returned.
+
+All WMI commands executed by the driver were reviewed and changes
+were made to ensure the expected input and output buffer size match
+the WMI specification.
+
+Changes were validated on a HP ZBook Workstation notebook,
+HP EliteBook x360, and HP EliteBook 850 G8.  Additional
+validation was included in the test process to ensure no other
+commands were incorrectly handled.
+
+Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
+Link: https://lore.kernel.org/r/20220310210853.28367-4-jorge.lopez2@hp.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xen-hcd.c | 57 ++++++++++++++++++++++++++++----------
- 1 file changed, 43 insertions(+), 14 deletions(-)
+ drivers/platform/x86/hp-wmi.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/host/xen-hcd.c b/drivers/usb/host/xen-hcd.c
-index 19b8c7ed74cb..4ed3ee328a4a 100644
---- a/drivers/usb/host/xen-hcd.c
-+++ b/drivers/usb/host/xen-hcd.c
-@@ -51,6 +51,7 @@ struct vdevice_status {
- struct usb_shadow {
- 	struct xenusb_urb_request req;
- 	struct urb *urb;
-+	bool in_flight;
- };
+diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+index f822ef6eb93c..88f0bfd6ecf1 100644
+--- a/drivers/platform/x86/hp-wmi.c
++++ b/drivers/platform/x86/hp-wmi.c
+@@ -330,7 +330,7 @@ static int hp_wmi_get_fan_speed(int fan)
+ 	char fan_data[4] = { fan, 0, 0, 0 };
  
- struct xenhcd_info {
-@@ -722,6 +723,12 @@ static void xenhcd_gnttab_done(struct xenhcd_info *info, unsigned int id)
- 	int nr_segs = 0;
- 	int i;
+ 	int ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_GET_QUERY, HPWMI_GM,
+-				       &fan_data, sizeof(fan_data),
++				       &fan_data, sizeof(char),
+ 				       sizeof(fan_data));
  
-+	if (!shadow->in_flight) {
-+		xenhcd_set_error(info, "Illegal request id");
-+		return;
-+	}
-+	shadow->in_flight = false;
-+
- 	nr_segs = shadow->req.nr_buffer_segs;
+ 	if (ret != 0)
+@@ -399,7 +399,7 @@ static int omen_thermal_profile_set(int mode)
+ 		return -EINVAL;
  
- 	if (xenusb_pipeisoc(shadow->req.pipe))
-@@ -805,6 +812,7 @@ static int xenhcd_do_request(struct xenhcd_info *info, struct urb_priv *urbp)
+ 	ret = hp_wmi_perform_query(HPWMI_SET_PERFORMANCE_MODE, HPWMI_GM,
+-				   &buffer, sizeof(buffer), sizeof(buffer));
++				   &buffer, sizeof(buffer), 0);
  
- 	info->urb_ring.req_prod_pvt++;
- 	info->shadow[id].urb = urb;
-+	info->shadow[id].in_flight = true;
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+@@ -436,7 +436,7 @@ static int hp_wmi_fan_speed_max_set(int enabled)
+ 	int ret;
  
- 	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&info->urb_ring, notify);
- 	if (notify)
-@@ -933,10 +941,27 @@ static int xenhcd_unlink_urb(struct xenhcd_info *info, struct urb_priv *urbp)
- 	return ret;
- }
+ 	ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_MAX_SET_QUERY, HPWMI_GM,
+-				   &enabled, sizeof(enabled), sizeof(enabled));
++				   &enabled, sizeof(enabled), 0);
  
--static int xenhcd_urb_request_done(struct xenhcd_info *info)
-+static void xenhcd_res_to_urb(struct xenhcd_info *info,
-+			      struct xenusb_urb_response *res, struct urb *urb)
-+{
-+	if (unlikely(!urb))
-+		return;
-+
-+	if (res->actual_length > urb->transfer_buffer_length)
-+		urb->actual_length = urb->transfer_buffer_length;
-+	else if (res->actual_length < 0)
-+		urb->actual_length = 0;
-+	else
-+		urb->actual_length = res->actual_length;
-+	urb->error_count = res->error_count;
-+	urb->start_frame = res->start_frame;
-+	xenhcd_giveback_urb(info, urb, res->status);
-+}
-+
-+static int xenhcd_urb_request_done(struct xenhcd_info *info,
-+				   unsigned int *eoiflag)
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+@@ -449,7 +449,7 @@ static int hp_wmi_fan_speed_max_get(void)
+ 	int val = 0, ret;
+ 
+ 	ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_MAX_GET_QUERY, HPWMI_GM,
+-				   &val, sizeof(val), sizeof(val));
++				   &val, 0, sizeof(val));
+ 
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+@@ -461,7 +461,7 @@ static int __init hp_wmi_bios_2008_later(void)
  {
- 	struct xenusb_urb_response res;
--	struct urb *urb;
- 	RING_IDX i, rp;
- 	__u16 id;
- 	int more_to_do = 0;
-@@ -963,16 +988,12 @@ static int xenhcd_urb_request_done(struct xenhcd_info *info)
- 			xenhcd_gnttab_done(info, id);
- 			if (info->error)
- 				goto err;
--			urb = info->shadow[id].urb;
--			if (likely(urb)) {
--				urb->actual_length = res.actual_length;
--				urb->error_count = res.error_count;
--				urb->start_frame = res.start_frame;
--				xenhcd_giveback_urb(info, urb, res.status);
--			}
-+			xenhcd_res_to_urb(info, &res, info->shadow[id].urb);
- 		}
+ 	int state = 0;
+ 	int ret = hp_wmi_perform_query(HPWMI_FEATURE_QUERY, HPWMI_READ, &state,
+-				       sizeof(state), sizeof(state));
++				       0, sizeof(state));
+ 	if (!ret)
+ 		return 1;
  
- 		xenhcd_add_id_to_freelist(info, id);
-+
-+		*eoiflag = 0;
- 	}
- 	info->urb_ring.rsp_cons = i;
- 
-@@ -990,7 +1011,7 @@ static int xenhcd_urb_request_done(struct xenhcd_info *info)
- 	return 0;
- }
- 
--static int xenhcd_conn_notify(struct xenhcd_info *info)
-+static int xenhcd_conn_notify(struct xenhcd_info *info, unsigned int *eoiflag)
+@@ -472,7 +472,7 @@ static int __init hp_wmi_bios_2009_later(void)
  {
- 	struct xenusb_conn_response res;
- 	struct xenusb_conn_request *req;
-@@ -1035,6 +1056,8 @@ static int xenhcd_conn_notify(struct xenhcd_info *info)
- 				       info->conn_ring.req_prod_pvt);
- 		req->id = id;
- 		info->conn_ring.req_prod_pvt++;
-+
-+		*eoiflag = 0;
- 	}
+ 	u8 state[128];
+ 	int ret = hp_wmi_perform_query(HPWMI_FEATURE2_QUERY, HPWMI_READ, &state,
+-				       sizeof(state), sizeof(state));
++				       0, sizeof(state));
+ 	if (!ret)
+ 		return 1;
  
- 	if (rc != info->conn_ring.req_prod_pvt)
-@@ -1057,14 +1080,19 @@ static int xenhcd_conn_notify(struct xenhcd_info *info)
- static irqreturn_t xenhcd_int(int irq, void *dev_id)
- {
- 	struct xenhcd_info *info = (struct xenhcd_info *)dev_id;
-+	unsigned int eoiflag = XEN_EOI_FLAG_SPURIOUS;
+@@ -550,7 +550,7 @@ static int hp_wmi_rfkill2_refresh(void)
+ 	int err, i;
  
--	if (unlikely(info->error))
-+	if (unlikely(info->error)) {
-+		xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
- 		return IRQ_HANDLED;
-+	}
+ 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
+-				   sizeof(state), sizeof(state));
++				   0, sizeof(state));
+ 	if (err)
+ 		return err;
  
--	while (xenhcd_urb_request_done(info) | xenhcd_conn_notify(info))
-+	while (xenhcd_urb_request_done(info, &eoiflag) |
-+	       xenhcd_conn_notify(info, &eoiflag))
- 		/* Yield point for this unbounded loop. */
- 		cond_resched();
+@@ -639,7 +639,7 @@ static ssize_t als_store(struct device *dev, struct device_attribute *attr,
+ 		return ret;
  
-+	xen_irq_lateeoi(irq, eoiflag);
- 	return IRQ_HANDLED;
- }
+ 	ret = hp_wmi_perform_query(HPWMI_ALS_QUERY, HPWMI_WRITE, &tmp,
+-				       sizeof(tmp), sizeof(tmp));
++				       sizeof(tmp), 0);
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
  
-@@ -1141,9 +1169,9 @@ static int xenhcd_setup_rings(struct xenbus_device *dev,
- 		goto fail;
- 	}
+@@ -660,9 +660,9 @@ static ssize_t postcode_store(struct device *dev, struct device_attribute *attr,
+ 	if (clear == false)
+ 		return -EINVAL;
  
--	err = bind_evtchn_to_irq(info->evtchn);
-+	err = bind_evtchn_to_irq_lateeoi(info->evtchn);
- 	if (err <= 0) {
--		xenbus_dev_fatal(dev, err, "bind_evtchn_to_irq");
-+		xenbus_dev_fatal(dev, err, "bind_evtchn_to_irq_lateeoi");
- 		goto fail;
- 	}
+-	/* Clear the POST error code. It is kept until until cleared. */
++	/* Clear the POST error code. It is kept until cleared. */
+ 	ret = hp_wmi_perform_query(HPWMI_POSTCODEERROR_QUERY, HPWMI_WRITE, &tmp,
+-				       sizeof(tmp), sizeof(tmp));
++				       sizeof(tmp), 0);
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
  
-@@ -1496,6 +1524,7 @@ static struct usb_hcd *xenhcd_create_hcd(struct xenbus_device *dev)
- 	for (i = 0; i < XENUSB_URB_RING_SIZE; i++) {
- 		info->shadow[i].req.id = i + 1;
- 		info->shadow[i].urb = NULL;
-+		info->shadow[i].in_flight = false;
- 	}
- 	info->shadow[XENUSB_URB_RING_SIZE - 1].req.id = 0x0fff;
+@@ -952,7 +952,7 @@ static int __init hp_wmi_rfkill2_setup(struct platform_device *device)
+ 	int err, i;
+ 
+ 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
+-				   sizeof(state), sizeof(state));
++				   0, sizeof(state));
+ 	if (err)
+ 		return err < 0 ? err : -EINVAL;
  
 -- 
 2.35.1
