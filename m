@@ -2,87 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D089C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38AD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357966AbiDLRIY (ORCPT
+        id S1357977AbiDLRKl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
+        Tue, 12 Apr 2022 13:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350498AbiDLRIV (ORCPT
+        with ESMTP id S1350498AbiDLRKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:08:21 -0400
-X-Greylist: delayed 278 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 10:06:04 PDT
-Received: from pb-smtp20.pobox.com (pb-smtp20.pobox.com [173.228.157.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FE760A93
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:06:04 -0700 (PDT)
-Received: from pb-smtp20.pobox.com (unknown [127.0.0.1])
-        by pb-smtp20.pobox.com (Postfix) with ESMTP id 8518B191BC5;
-        Tue, 12 Apr 2022 13:01:25 -0400 (EDT)
-        (envelope-from junio@pobox.com)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=from:to:cc
-        :subject:date:message-id:mime-version:content-type
-        :content-transfer-encoding; s=sasl; bh=mqhcnNmvbiavmed0HQ+JoUMz9
-        1tXynEc2wCcXEDjYZ0=; b=I3Yut4rCQdHmDqiniA1K2iX8kdrNG6j6IPB0FEY88
-        gELdv8cmBUFD39AQtPN6XuJ70c7j/vX91HQ5ZxXDPZJzJgtsiS8yEabnRDQ83p3i
-        un3YAjlSODL2krLsHKVB8ebq5hzIN0TtDFiDrmY8hn+HuX3rGHAKZld1kapi6/Mn
-        s0=
-Received: from pb-smtp20.sea.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp20.pobox.com (Postfix) with ESMTP id 7CE8D191BC4;
-        Tue, 12 Apr 2022 13:01:25 -0400 (EDT)
-        (envelope-from junio@pobox.com)
-Received: from pobox.com (unknown [35.185.214.157])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by pb-smtp20.pobox.com (Postfix) with ESMTPSA id 69962191BC3;
-        Tue, 12 Apr 2022 13:01:22 -0400 (EDT)
-        (envelope-from junio@pobox.com)
-From:   Junio C Hamano <gitster@pobox.com>
-To:     git@vger.kernel.org
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        git-packagers@googlegroups.com
-Subject: [ANNOUNCE] Git v2.35.2 and below for CVE-2022-24765
-Date:   Tue, 12 Apr 2022 10:01:21 -0700
-Message-ID: <xmqqv8veb5i6.fsf@gitster.g>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Tue, 12 Apr 2022 13:10:38 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F9614037;
+        Tue, 12 Apr 2022 10:08:20 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id r8so19668472oib.5;
+        Tue, 12 Apr 2022 10:08:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8ncYZG5WZb4xBrOPr/eInboRfbbDNW68lt8cRNT2hsk=;
+        b=uJAKHYcA02jQiMHU0l6fx8dGUzedJS8wsNMoQnoRCMb85uZGCsdK5bsxtb05xwcc6n
+         Z4RBB9CkyQyQ+Fo5Ti7AQBZJQIw3R+3eTkLTptReWVF0XqVD4W6gi0Bo2OcNLfmAPKKh
+         jMrysdyxhFNEnTC3o+zt+oLYxW7RzQvLZL9gYnwCJyTKeIyWt0mK0Ou4koqasrmMrgpv
+         Z1HW0mPxq/Lib02LBj1D7uVUI//nYcGXJ/fHbTcv1QzHPXtp3CgQ9ueJC6rlAQyzU6Jt
+         6vo1abG2JztXMlSw6d18Zb9vFp03fFM2F7yBXjbwzAiAX712V9wTBijTgUpWjB6tY4E6
+         8QFw==
+X-Gm-Message-State: AOAM530S1rxLLsbG2pKtrGDMBYcaWoIqvZVq/PcyQtBhOSFbvNqYbEHw
+        uT99SXUroZ3e2a6Tss15HA==
+X-Google-Smtp-Source: ABdhPJxrB37u8Aq8wyh7LZk3laglHfhYexiAKjReaVXTY1ffpS6Zhknewp/6/5OyHiDfXMZIUfYenw==
+X-Received: by 2002:a54:4010:0:b0:2ec:f4e0:8acb with SMTP id x16-20020a544010000000b002ecf4e08acbmr2209538oie.97.1649783299883;
+        Tue, 12 Apr 2022 10:08:19 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id c19-20020a9d7853000000b005cdbc0f02ccsm13743143otm.68.2022.04.12.10.08.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 10:08:19 -0700 (PDT)
+Received: (nullmailer pid 472113 invoked by uid 1000);
+        Tue, 12 Apr 2022 17:08:18 -0000
+Date:   Tue, 12 Apr 2022 12:08:18 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH] dt-bindings: power: renesas,rcar-sysc: correct typo in
+ path
+Message-ID: <YlWyAgVZ6FylBvDq@robh.at.kernel.org>
+References: <20220411095317.221317-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-X-Pobox-Relay-ID: 2E276376-BA82-11EC-9FE1-C85A9F429DF0-77302942!pb-smtp20.pobox.com
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411095317.221317-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The latest maintenance release Git v2.35.2, together with releases
-for older maintenance tracks v2.30.3, v2.31.2, v2.32.1, v2.33.2, and
-v2.34.2, are now available at the usual places.
+On Mon, 11 Apr 2022 11:53:17 +0200, Krzysztof Kozlowski wrote:
+> Fix typo '.' -> '/' in the path to headers.
+> 
+> Fixes: 981a34054038 ("dt-bindings: power: renesas,rcar-sysc: drop useless consumer example")
+> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-These maintenance releases are to address the security issues
-described in CVE-2022-24765.  Please update at your earliest
-opportunity.
-
-The tarballs are found at:
-
-    https://www.kernel.org/pub/software/scm/git/
-
-The following public repositories all have a copy of the 'v2.35.2',
-'v2.34.2', 'v2.33.2', 'v2.32.1', 'v2.31.2', and 'v2.30.3' tags.
-
-  url =3D https://git.kernel.org/pub/scm/git/git
-  url =3D https://kernel.googlesource.com/pub/scm/git/git
-  url =3D https://github.com/gitster/git
-
-CVE-2022-24765:
-   On multi-user machines, Git users might find themselves
-   unexpectedly in a Git worktree, e.g. when another user created a
-   repository in `C:\.git`, in a mounted network drive or in a
-   scratch space. Merely having a Git-aware prompt that runs `git
-   status` (or `git diff`) and navigating to a directory which is
-   supposedly not a Git worktree, or opening such a directory in an
-   editor or IDE such as VS Code or Atom, will potentially run
-   commands defined by that other user.
-
-Credit for finding this vulnerability goes to =E4=BF=9E=E6=99=A8=E4=B8=9C=
-; the fix was
-authored by Johannes Schindelin.
+Applied, thanks!
