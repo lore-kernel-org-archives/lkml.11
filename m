@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD722C4727C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B1FCC4743C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352547AbiDLHYM (ORCPT
+        id S1352673AbiDLHY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
+        Tue, 12 Apr 2022 03:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245734AbiDLHJI (ORCPT
+        with ESMTP id S1346202AbiDLHJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:09:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5094849F2B;
-        Mon, 11 Apr 2022 23:49:33 -0700 (PDT)
+        Tue, 12 Apr 2022 03:09:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D4E49C9C;
+        Mon, 11 Apr 2022 23:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B24EB81B4D;
-        Tue, 12 Apr 2022 06:49:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C8BC385A1;
-        Tue, 12 Apr 2022 06:49:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7AF98CE1BE8;
+        Tue, 12 Apr 2022 06:49:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B07CC385B7;
+        Tue, 12 Apr 2022 06:49:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746170;
-        bh=nPLzPo/W56YZK/GGNpaRlRiMxvPuMvqwPhfW/qv0P84=;
+        s=korg; t=1649746160;
+        bh=mR2O/g+rjFObtLuc8qXfsCZ+aho+SVwU90zDb6t0Px0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cPVpxRMio79QnEEPw3hlSKlnGQVclQgFy6LS1p+2+sS2v3l8EUAnyQ5hy9fh6/wUa
-         Jnsd0fE05oqmXUUFk9FU4Iqos9NNRR6aJmtJsyPwg9eriHBY1KLs6uP1PEsBSnIsS6
-         eewotImUPXcHpu74VdkP7xIt/9M1nRgq84Gt5MXk=
+        b=s/h724lc7VhHEEUfvGBEclx75jTHmiOzCif+M7KUEntakEcr7+MUhKP8SH9dPZa+v
+         KtoYREBYd6I3e+mW8k41fs9qVfa3+kI+whIOSRFQ6uXN2amF5+kT1ix2W3+SmLueZf
+         jqQgheDWByRp2moRaF+pbshehp6Nn7mVcGLgN8ZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 146/277] rtc: mc146818-lib: fix RTC presence check
-Date:   Tue, 12 Apr 2022 08:29:09 +0200
-Message-Id: <20220412062946.261637822@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 142/277] parisc: Fix patch code locking and flushing
+Date:   Tue, 12 Apr 2022 08:29:05 +0200
+Message-Id: <20220412062946.143865129@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -53,162 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit ea6fa4961aab8f90a8aa03575a98b4bda368d4b6 ]
+[ Upstream commit a9fe7fa7d874a536e0540469f314772c054a0323 ]
 
-To prevent an infinite loop in mc146818_get_time(),
-commit 211e5db19d15 ("rtc: mc146818: Detect and handle broken RTCs")
-added a check for RTC availability. Together with a later fix, it
-checked if bit 6 in register 0x0d is cleared.
+This change fixes the following:
 
-This, however, caused a false negative on a motherboard with an AMD
-SB710 southbridge; according to the specification [1], bit 6 of register
-0x0d of this chipset is a scratchbit. This caused a regression in Linux
-5.11 - the RTC was determined broken by the kernel and not used by
-rtc-cmos.c [3]. This problem was also reported in Fedora [4].
+1) The flags variable is not initialized. Always use raw_spin_lock_irqsave
+and raw_spin_unlock_irqrestore to serialize patching.
 
-As a better alternative, check whether the UIP ("Update-in-progress")
-bit is set for longer then 10ms. If that is the case, then apparently
-the RTC is either absent (and all register reads return 0xff) or broken.
-Also limit the number of loop iterations in mc146818_get_time() to 10 to
-prevent an infinite loop there.
+2) flush_kernel_vmap_range is primarily intended for DMA flushes. Since
+__patch_text_multiple is often called with interrupts disabled, it is
+better to directly call flush_kernel_dcache_range_asm and
+flush_kernel_icache_range_asm. This avoids an extra call.
 
-The functions mc146818_get_time() and mc146818_does_rtc_work() will be
-refactored later in this patch series, in order to fix a separate
-problem with reading / setting the RTC alarm time. This is done so to
-avoid a confusion about what is being fixed when.
+3) The final call to flush_icache_range is unnecessary.
 
-In a previous approach to this problem, I implemented a check whether
-the RTC_HOURS register contains a value <= 24. This, however, sometimes
-did not work correctly on my Intel Kaby Lake laptop. According to
-Intel's documentation [2], "the time and date RAM locations (0-9) are
-disconnected from the external bus" during the update cycle so reading
-this register without checking the UIP bit is incorrect.
-
-[1] AMD SB700/710/750 Register Reference Guide, page 308,
-https://developer.amd.com/wordpress/media/2012/10/43009_sb7xx_rrg_pub_1.00.pdf
-
-[2] 7th Generation Intel ® Processor Family I/O for U/Y Platforms [...] Datasheet
-Volume 1 of 2, page 209
-Intel's Document Number: 334658-006,
-https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/7th-and-8th-gen-core-family-mobile-u-y-processor-lines-i-o-datasheet-vol-1.pdf
-
-[3] Functions in arch/x86/kernel/rtc.c apparently were using it.
-
-[4] https://bugzilla.redhat.com/show_bug.cgi?id=1936688
-
-Fixes: 211e5db19d15 ("rtc: mc146818: Detect and handle broken RTCs")
-Fixes: ebb22a059436 ("rtc: mc146818: Dont test for bit 0-5 in Register D")
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-5-mat.jonczyk@o2.pl
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-cmos.c         | 10 ++++------
- drivers/rtc/rtc-mc146818-lib.c | 34 ++++++++++++++++++++++++++++++----
- include/linux/mc146818rtc.h    |  1 +
- 3 files changed, 35 insertions(+), 10 deletions(-)
+ arch/parisc/kernel/patch.c | 25 +++++++++++--------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
-index d0f58cca5c20..b90a603d6b12 100644
---- a/drivers/rtc/rtc-cmos.c
-+++ b/drivers/rtc/rtc-cmos.c
-@@ -800,16 +800,14 @@ cmos_do_probe(struct device *dev, struct resource *ports, int rtc_irq)
+diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
+index 80a0ab372802..e59574f65e64 100644
+--- a/arch/parisc/kernel/patch.c
++++ b/arch/parisc/kernel/patch.c
+@@ -40,10 +40,7 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags,
  
- 	rename_region(ports, dev_name(&cmos_rtc.rtc->dev));
+ 	*need_unmap = 1;
+ 	set_fixmap(fixmap, page_to_phys(page));
+-	if (flags)
+-		raw_spin_lock_irqsave(&patch_lock, *flags);
+-	else
+-		__acquire(&patch_lock);
++	raw_spin_lock_irqsave(&patch_lock, *flags);
  
--	spin_lock_irq(&rtc_lock);
--
--	/* Ensure that the RTC is accessible. Bit 6 must be 0! */
--	if ((CMOS_READ(RTC_VALID) & 0x40) != 0) {
--		spin_unlock_irq(&rtc_lock);
--		dev_warn(dev, "not accessible\n");
-+	if (!mc146818_does_rtc_work()) {
-+		dev_warn(dev, "broken or not accessible\n");
- 		retval = -ENXIO;
- 		goto cleanup1;
- 	}
- 
-+	spin_lock_irq(&rtc_lock);
-+
- 	if (!(flags & CMOS_RTC_FLAGS_NOFREQ)) {
- 		/* force periodic irq to CMOS reset default of 1024Hz;
- 		 *
-diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
-index 97e3cebb4da9..70137566981e 100644
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -8,10 +8,36 @@
- #include <linux/acpi.h>
- #endif
- 
-+/*
-+ * If the UIP (Update-in-progress) bit of the RTC is set for more then
-+ * 10ms, the RTC is apparently broken or not present.
-+ */
-+bool mc146818_does_rtc_work(void)
-+{
-+	int i;
-+	unsigned char val;
-+	unsigned long flags;
-+
-+	for (i = 0; i < 10; i++) {
-+		spin_lock_irqsave(&rtc_lock, flags);
-+		val = CMOS_READ(RTC_FREQ_SELECT);
-+		spin_unlock_irqrestore(&rtc_lock, flags);
-+
-+		if ((val & RTC_UIP) == 0)
-+			return true;
-+
-+		mdelay(1);
-+	}
-+
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(mc146818_does_rtc_work);
-+
- unsigned int mc146818_get_time(struct rtc_time *time)
+ 	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
+ }
+@@ -52,10 +49,7 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
  {
- 	unsigned char ctrl;
- 	unsigned long flags;
-+	unsigned int iter_count = 0;
- 	unsigned char century = 0;
- 	bool retry;
+ 	clear_fixmap(fixmap);
  
-@@ -20,13 +46,13 @@ unsigned int mc146818_get_time(struct rtc_time *time)
- #endif
+-	if (flags)
+-		raw_spin_unlock_irqrestore(&patch_lock, *flags);
+-	else
+-		__release(&patch_lock);
++	raw_spin_unlock_irqrestore(&patch_lock, *flags);
+ }
  
- again:
--	spin_lock_irqsave(&rtc_lock, flags);
--	/* Ensure that the RTC is accessible. Bit 6 must be 0! */
--	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
--		spin_unlock_irqrestore(&rtc_lock, flags);
-+	if (iter_count > 10) {
- 		memset(time, 0, sizeof(*time));
- 		return -EIO;
+ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+@@ -67,8 +61,9 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 	int mapped;
+ 
+ 	/* Make sure we don't have any aliases in cache */
+-	flush_kernel_vmap_range(addr, len);
+-	flush_icache_range(start, end);
++	flush_kernel_dcache_range_asm(start, end);
++	flush_kernel_icache_range_asm(start, end);
++	flush_tlb_kernel_range(start, end);
+ 
+ 	p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
+ 
+@@ -81,8 +76,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 			 * We're crossing a page boundary, so
+ 			 * need to remap
+ 			 */
+-			flush_kernel_vmap_range((void *)fixmap,
+-						(p-fixmap) * sizeof(*p));
++			flush_kernel_dcache_range_asm((unsigned long)fixmap,
++						      (unsigned long)p);
++			flush_tlb_kernel_range((unsigned long)fixmap,
++					       (unsigned long)p);
+ 			if (mapped)
+ 				patch_unmap(FIX_TEXT_POKE0, &flags);
+ 			p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags,
+@@ -90,10 +87,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 		}
  	}
-+	iter_count++;
-+
-+	spin_lock_irqsave(&rtc_lock, flags);
  
- 	/*
- 	 * Check whether there is an update in progress during which the
-diff --git a/include/linux/mc146818rtc.h b/include/linux/mc146818rtc.h
-index 0661af17a758..69c80c4325bf 100644
---- a/include/linux/mc146818rtc.h
-+++ b/include/linux/mc146818rtc.h
-@@ -123,6 +123,7 @@ struct cmos_rtc_board_info {
- #define RTC_IO_EXTENT_USED      RTC_IO_EXTENT
- #endif /* ARCH_RTC_LOCATION */
+-	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
++	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p);
++	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
+ 	if (mapped)
+ 		patch_unmap(FIX_TEXT_POKE0, &flags);
+-	flush_icache_range(start, end);
+ }
  
-+bool mc146818_does_rtc_work(void);
- unsigned int mc146818_get_time(struct rtc_time *time);
- int mc146818_set_time(struct rtc_time *time);
- 
+ void __kprobes __patch_text(void *addr, u32 insn)
 -- 
 2.35.1
 
