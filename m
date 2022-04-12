@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1791C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352057AbiDLNpW (ORCPT
+        id S1351598AbiDLNp1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
+        Tue, 12 Apr 2022 09:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356079AbiDLNoz (ORCPT
+        with ESMTP id S1349753AbiDLNpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:44:55 -0400
+        Tue, 12 Apr 2022 09:45:19 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D82D84ECED
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:42:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 797AC4EDED
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:42:42 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A3E6F1576;
-        Tue, 12 Apr 2022 06:42:37 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 455871516;
+        Tue, 12 Apr 2022 06:42:42 -0700 (PDT)
 Received: from localhost.localdomain (unknown [10.57.94.90])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7A86E3F70D;
-        Tue, 12 Apr 2022 06:42:36 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id F27A33F70D;
+        Tue, 12 Apr 2022 06:42:40 -0700 (PDT)
 From:   Vincent Donnefort <vincent.donnefort@arm.com>
 To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
 Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com, qperret@google.com
-Subject: [PATCH v4 4/7] sched/fair: Rename select_idle_mask to select_rq_mask
-Date:   Tue, 12 Apr 2022 14:42:17 +0100
-Message-Id: <20220412134220.1588482-5-vincent.donnefort@arm.com>
+        morten.rasmussen@arm.com, chris.redpath@arm.com,
+        qperret@google.com, Vincent Donnefort <vincent.donnefort@arm.com>
+Subject: [PATCH v4 7/7] sched/fair: Remove the energy margin in feec()
+Date:   Tue, 12 Apr 2022 14:42:20 +0100
+Message-Id: <20220412134220.1588482-8-vincent.donnefort@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412134220.1588482-1-vincent.donnefort@arm.com>
 References: <20220412134220.1588482-1-vincent.donnefort@arm.com>
@@ -38,71 +39,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dietmar Eggemann <dietmar.eggemann@arm.com>
+find_energy_efficient_cpu() integrates a margin to protect tasks from
+bouncing back and forth from a CPU to another. This margin is set as being
+6% of the total current energy estimated on the system. This however does
+not work for two reasons:
 
-Decouple the name of the per-cpu cpumask select_idle_mask from its usage
-in select_idle_[cpu/capacity]() of the CFS run-queue selection
-(select_task_rq_fair()).
+1. The energy estimation is not a good absolute value:
 
-This is to support the reuse of this cpumask in the Energy Aware
-Scheduling (EAS) path (find_energy_efficient_cpu()) of the CFS run-queue
-selection.
+compute_energy() used in feec() is a good estimation for task placement as
+it allows to compare the energy with and without a task. The computed
+delta will give a good overview of the cost for a certain task placement.
+It, however, doesn't work as an absolute estimation for the total energy
+of the system. First it adds the contribution to idle CPUs into the
+energy, second it mixes util_avg with util_est values. util_avg contains
+the near history for a CPU usage, it doesn't tell at all what the current
+utilization is. A system that has been quite busy in the near past will
+hold a very high energy and then a high margin preventing any task
+migration to a lower capacity CPU, wasting energy. It even creates a
+negative feedback loop: by holding the tasks on a less efficient CPU, the
+margin contributes in keeping the energy high.
 
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+2. The margin handicaps small tasks:
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index a62d25ec5b0d..f3f5540bae9e 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9456,7 +9456,7 @@ static struct kmem_cache *task_group_cache __read_mostly;
- #endif
- 
- DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
--DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
-+DECLARE_PER_CPU(cpumask_var_t, select_rq_mask);
- 
- void __init sched_init(void)
- {
-@@ -9505,7 +9505,7 @@ void __init sched_init(void)
- 	for_each_possible_cpu(i) {
- 		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
- 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
-+		per_cpu(select_rq_mask, i) = (cpumask_var_t)kzalloc_node(
- 			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
- 	}
- #endif /* CONFIG_CPUMASK_OFFSTACK */
+On a system where the workload is composed mostly of small tasks (which is
+often the case on Android), the overall energy will be high enough to
+create a margin none of those tasks can cross. On a Pixel4, a small
+utilization of 5% on all the CPUs creates a global estimated energy of 140
+joules, as per the Energy Model declaration of that same device. This
+means, after applying the 6% margin that any migration must save more than
+8 joules to happen. No task with a utilization lower than 40 would then be
+able to migrate away from the biggest CPU of the system.
+
+The 6% of the overall system energy was brought by the following patch:
+
+ (eb92692b2544 sched/fair: Speed-up energy-aware wake-ups)
+
+It was previously 6% of the prev_cpu energy. Also, the following one
+made this margin value conditional on the clusters where the task fits:
+
+ (8d4c97c105ca sched/fair: Only compute base_energy_pd if necessary)
+
+We could simply revert that margin change to what it was, but the original
+version didn't have strong grounds neither and as demonstrated in (1.) the
+estimated energy isn't a good absolute value. Instead, removing it
+completely. It is indeed, made possible by recent changes that improved
+energy estimation comparison fairness (sched/fair: Remove task_util from
+effective utilization in feec()) (PM: EM: Increase energy calculation
+precision) and task utilization stabilization (sched/fair: Decay task
+util_avg during migration)
+
+Without a margin, we could have feared bouncing between CPUs. But running
+LISA's eas_behaviour test coverage on three different platforms (Hikey960,
+RB-5 and DB-845) showed no issue.
+
+Removing the energy margin enables more energy-optimized placements for a
+more energy efficient system.
+
+Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 7cd1fb073fcf..f1e78f6adc98 100644
+index d17ef80487e4..1779405c377b 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -5848,7 +5848,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
- 
- /* Working cpumask for: load_balance, load_balance_newidle. */
- DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
--DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
-+DEFINE_PER_CPU(cpumask_var_t, select_rq_mask);
- 
- #ifdef CONFIG_NO_HZ_COMMON
- 
-@@ -6338,7 +6338,7 @@ static inline int select_idle_smt(struct task_struct *p, struct sched_domain *sd
-  */
- static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool has_idle_core, int target)
+@@ -6855,9 +6855,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
  {
--	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-+	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
- 	int i, cpu, idle_cpu = -1, nr = INT_MAX;
- 	struct rq *this_rq = this_rq();
- 	int this = smp_processor_id();
-@@ -6424,7 +6424,7 @@ select_idle_capacity(struct task_struct *p, struct sched_domain *sd, int target)
- 	int cpu, best_cpu = -1;
- 	struct cpumask *cpus;
+ 	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
+ 	unsigned long prev_delta = ULONG_MAX, best_delta = ULONG_MAX;
+-	int cpu, best_energy_cpu = prev_cpu, target = -1;
+ 	struct root_domain *rd = this_rq()->rd;
+-	unsigned long base_energy = 0;
++	int cpu, best_energy_cpu, target = -1;
+ 	struct sched_domain *sd;
+ 	struct perf_domain *pd;
+ 	struct energy_env eenv;
+@@ -6889,8 +6888,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 		unsigned long cpu_cap, cpu_thermal_cap, util;
+ 		unsigned long cur_delta, max_spare_cap = 0;
+ 		bool compute_prev_delta = false;
+-		unsigned long base_energy_pd;
+ 		int max_spare_cap_cpu = -1;
++		unsigned long base_energy;
  
--	cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
-+	cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
- 	cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
+ 		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
  
- 	task_util = uclamp_task_util(p);
+@@ -6945,16 +6944,15 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 
+ 		/* Compute the 'base' energy of the pd, without @p */
+ 		eenv_pd_busy_time(&eenv, cpus, p);
+-		base_energy_pd = compute_energy(&eenv, pd, cpus, p, -1);
+-		base_energy += base_energy_pd;
++		base_energy = compute_energy(&eenv, pd, cpus, p, -1);
+ 
+ 		/* Evaluate the energy impact of using prev_cpu. */
+ 		if (compute_prev_delta) {
+ 			prev_delta = compute_energy(&eenv, pd, cpus, p,
+ 						    prev_cpu);
+-			if (prev_delta < base_energy_pd)
++			if (prev_delta < base_energy)
+ 				goto unlock;
+-			prev_delta -= base_energy_pd;
++			prev_delta -= base_energy;
+ 			best_delta = min(best_delta, prev_delta);
+ 		}
+ 
+@@ -6962,9 +6960,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 		if (max_spare_cap_cpu >= 0) {
+ 			cur_delta = compute_energy(&eenv, pd, cpus, p,
+ 						   max_spare_cap_cpu);
+-			if (cur_delta < base_energy_pd)
++			if (cur_delta < base_energy)
+ 				goto unlock;
+-			cur_delta -= base_energy_pd;
++			cur_delta -= base_energy;
+ 			if (cur_delta < best_delta) {
+ 				best_delta = cur_delta;
+ 				best_energy_cpu = max_spare_cap_cpu;
+@@ -6973,12 +6971,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
+ 	}
+ 	rcu_read_unlock();
+ 
+-	/*
+-	 * Pick the best CPU if prev_cpu cannot be used, or if it saves at
+-	 * least 6% of the energy used by prev_cpu.
+-	 */
+-	if ((prev_delta == ULONG_MAX) ||
+-	    (prev_delta - best_delta) > ((prev_delta + base_energy) >> 4))
++	if (best_delta < prev_delta)
+ 		target = best_energy_cpu;
+ 
+ 	return target;
 -- 
 2.25.1
 
