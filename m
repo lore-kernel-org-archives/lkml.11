@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA20C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9CBC352A7
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354252AbiDLIFQ (ORCPT
+        id S1354127AbiDLIFE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        Tue, 12 Apr 2022 04:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353709AbiDLHZw (ORCPT
+        with ESMTP id S1353730AbiDLHZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E3327B0C;
-        Tue, 12 Apr 2022 00:03:59 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772A12195;
+        Tue, 12 Apr 2022 00:04:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74A5560B2B;
-        Tue, 12 Apr 2022 07:03:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86FFCC385A1;
-        Tue, 12 Apr 2022 07:03:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE43F60B2E;
+        Tue, 12 Apr 2022 07:04:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA35EC385A1;
+        Tue, 12 Apr 2022 07:04:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747038;
-        bh=ZE0SPjc+O4SDdCybQMxqSDYtYnTmByEmCyRM9DcJuWs=;
+        s=korg; t=1649747050;
+        bh=LvsIbZWiQq3EcdnIA0wcPyjQDT9TXZZOvdWMqNYjvRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TrJytjOCnsaj+oX/V7JRjW6GOQ6i8lXjFH2PRujuOeccpIb5E4Jyg/bABhJqyJwuP
-         8EFIXtbSCtyQeyy4Yi2yDQmUaDTtM1W8uXUqV3Nn372+6rQfVS1Q2JWJ9x5/yOp2ED
-         cGsiAhRZEz98JJ/XnMbiefhRvjIPd4yvlrl4Zsdk=
+        b=Y3ZiBnPwoUcDiwYx4Irvf3CD9gPLOLV4o1R3lwOpY123d+RePdbqef2Her40wSKAS
+         JfIoyH9KLlvA0Wq0dDqYx5oU2aKsPaL1rG0CRsc0q6VAbN8nuDejArxhzmrDxMqXlh
+         /nhy+yEBxaeulWiQvBSzLrmB1F6fHInVajx/R03k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 221/285] highmem: fix checks in __kmap_local_sched_{in,out}
-Date:   Tue, 12 Apr 2022 08:31:18 +0200
-Message-Id: <20220412062950.035975238@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 225/285] io_uring: defer splice/tee file validity check until command issue
+Date:   Tue, 12 Apr 2022 08:31:22 +0200
+Message-Id: <20220412062950.152331915@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,81 +48,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 66f133ceab7456c789f70a242991ed1b27ba1c3d upstream.
+commit a3e4bc23d5470b2beb7cc42a86b6a3e75b704c15 upstream.
 
-When CONFIG_DEBUG_KMAP_LOCAL is enabled __kmap_local_sched_{in,out} check
-that even slots in the tsk->kmap_ctrl.pteval are unmapped.  The slots are
-initialized with 0 value, but the check is done with pte_none.  0 pte
-however does not necessarily mean that pte_none will return true.  e.g.
-on xtensa it returns false, resulting in the following runtime warnings:
+In preparation for not using the file at prep time, defer checking if this
+file refers to a valid io_uring instance until issue time.
 
- WARNING: CPU: 0 PID: 101 at mm/highmem.c:627 __kmap_local_sched_out+0x51/0x108
- CPU: 0 PID: 101 Comm: touch Not tainted 5.17.0-rc7-00010-gd3a1cdde80d2-dirty #13
- Call Trace:
-   dump_stack+0xc/0x40
-   __warn+0x8f/0x174
-   warn_slowpath_fmt+0x48/0xac
-   __kmap_local_sched_out+0x51/0x108
-   __schedule+0x71a/0x9c4
-   preempt_schedule_irq+0xa0/0xe0
-   common_exception_return+0x5c/0x93
-   do_wp_page+0x30e/0x330
-   handle_mm_fault+0xa70/0xc3c
-   do_page_fault+0x1d8/0x3c4
-   common_exception+0x7f/0x7f
+This also means we can get rid of the cleanup flag for splice and tee.
 
- WARNING: CPU: 0 PID: 101 at mm/highmem.c:664 __kmap_local_sched_in+0x50/0xe0
- CPU: 0 PID: 101 Comm: touch Tainted: G        W         5.17.0-rc7-00010-gd3a1cdde80d2-dirty #13
- Call Trace:
-   dump_stack+0xc/0x40
-   __warn+0x8f/0x174
-   warn_slowpath_fmt+0x48/0xac
-   __kmap_local_sched_in+0x50/0xe0
-   finish_task_switch$isra$0+0x1ce/0x2f8
-   __schedule+0x86e/0x9c4
-   preempt_schedule_irq+0xa0/0xe0
-   common_exception_return+0x5c/0x93
-   do_wp_page+0x30e/0x330
-   handle_mm_fault+0xa70/0xc3c
-   do_page_fault+0x1d8/0x3c4
-   common_exception+0x7f/0x7f
-
-Fix it by replacing !pte_none(pteval) with pte_val(pteval) != 0.
-
-Link: https://lkml.kernel.org/r/20220403235159.3498065-1-jcmvbkbc@gmail.com
-Fixes: 5fbda3ecd14a ("sched: highmem: Store local kmaps in task struct")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/highmem.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/io_uring.c |   49 +++++++++++++++++++++----------------------------
+ 1 file changed, 21 insertions(+), 28 deletions(-)
 
---- a/mm/highmem.c
-+++ b/mm/highmem.c
-@@ -624,7 +624,7 @@ void __kmap_local_sched_out(void)
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -619,10 +619,10 @@ struct io_epoll {
  
- 		/* With debug all even slots are unmapped and act as guard */
- 		if (IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL) && !(i & 0x01)) {
--			WARN_ON_ONCE(!pte_none(pteval));
-+			WARN_ON_ONCE(pte_val(pteval) != 0);
- 			continue;
- 		}
- 		if (WARN_ON_ONCE(pte_none(pteval)))
-@@ -661,7 +661,7 @@ void __kmap_local_sched_in(void)
+ struct io_splice {
+ 	struct file			*file_out;
+-	struct file			*file_in;
+ 	loff_t				off_out;
+ 	loff_t				off_in;
+ 	u64				len;
++	int				splice_fd_in;
+ 	unsigned int			flags;
+ };
  
- 		/* With debug all even slots are unmapped and act as guard */
- 		if (IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL) && !(i & 0x01)) {
--			WARN_ON_ONCE(!pte_none(pteval));
-+			WARN_ON_ONCE(pte_val(pteval) != 0);
- 			continue;
- 		}
- 		if (WARN_ON_ONCE(pte_none(pteval)))
+@@ -1524,14 +1524,6 @@ static void io_prep_async_work(struct io
+ 		if (def->unbound_nonreg_file)
+ 			req->work.flags |= IO_WQ_WORK_UNBOUND;
+ 	}
+-
+-	switch (req->opcode) {
+-	case IORING_OP_SPLICE:
+-	case IORING_OP_TEE:
+-		if (!S_ISREG(file_inode(req->splice.file_in)->i_mode))
+-			req->work.flags |= IO_WQ_WORK_UNBOUND;
+-		break;
+-	}
+ }
+ 
+ static void io_prep_async_link(struct io_kiocb *req)
+@@ -4054,18 +4046,11 @@ static int __io_splice_prep(struct io_ki
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
+ 
+-	sp->file_in = NULL;
+ 	sp->len = READ_ONCE(sqe->len);
+ 	sp->flags = READ_ONCE(sqe->splice_flags);
+-
+ 	if (unlikely(sp->flags & ~valid_flags))
+ 		return -EINVAL;
+-
+-	sp->file_in = io_file_get(req->ctx, req, READ_ONCE(sqe->splice_fd_in),
+-				  (sp->flags & SPLICE_F_FD_IN_FIXED));
+-	if (!sp->file_in)
+-		return -EBADF;
+-	req->flags |= REQ_F_NEED_CLEANUP;
++	sp->splice_fd_in = READ_ONCE(sqe->splice_fd_in);
+ 	return 0;
+ }
+ 
+@@ -4080,20 +4065,27 @@ static int io_tee_prep(struct io_kiocb *
+ static int io_tee(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_splice *sp = &req->splice;
+-	struct file *in = sp->file_in;
+ 	struct file *out = sp->file_out;
+ 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
++	struct file *in;
+ 	long ret = 0;
+ 
+ 	if (issue_flags & IO_URING_F_NONBLOCK)
+ 		return -EAGAIN;
++
++	in = io_file_get(req->ctx, req, sp->splice_fd_in,
++				  (sp->flags & SPLICE_F_FD_IN_FIXED));
++	if (!in) {
++		ret = -EBADF;
++		goto done;
++	}
++
+ 	if (sp->len)
+ 		ret = do_tee(in, out, sp->len, flags);
+ 
+ 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
+ 		io_put_file(in);
+-	req->flags &= ~REQ_F_NEED_CLEANUP;
+-
++done:
+ 	if (ret != sp->len)
+ 		req_set_fail(req);
+ 	io_req_complete(req, ret);
+@@ -4112,15 +4104,22 @@ static int io_splice_prep(struct io_kioc
+ static int io_splice(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_splice *sp = &req->splice;
+-	struct file *in = sp->file_in;
+ 	struct file *out = sp->file_out;
+ 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
+ 	loff_t *poff_in, *poff_out;
++	struct file *in;
+ 	long ret = 0;
+ 
+ 	if (issue_flags & IO_URING_F_NONBLOCK)
+ 		return -EAGAIN;
+ 
++	in = io_file_get(req->ctx, req, sp->splice_fd_in,
++				  (sp->flags & SPLICE_F_FD_IN_FIXED));
++	if (!in) {
++		ret = -EBADF;
++		goto done;
++	}
++
+ 	poff_in = (sp->off_in == -1) ? NULL : &sp->off_in;
+ 	poff_out = (sp->off_out == -1) ? NULL : &sp->off_out;
+ 
+@@ -4129,8 +4128,7 @@ static int io_splice(struct io_kiocb *re
+ 
+ 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
+ 		io_put_file(in);
+-	req->flags &= ~REQ_F_NEED_CLEANUP;
+-
++done:
+ 	if (ret != sp->len)
+ 		req_set_fail(req);
+ 	io_req_complete(req, ret);
+@@ -6630,11 +6628,6 @@ static void io_clean_op(struct io_kiocb
+ 			kfree(io->free_iov);
+ 			break;
+ 			}
+-		case IORING_OP_SPLICE:
+-		case IORING_OP_TEE:
+-			if (!(req->splice.flags & SPLICE_F_FD_IN_FIXED))
+-				io_put_file(req->splice.file_in);
+-			break;
+ 		case IORING_OP_OPENAT:
+ 		case IORING_OP_OPENAT2:
+ 			if (req->open.filename)
 
 
