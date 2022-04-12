@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B095C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49369C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345328AbiDLI2E (ORCPT
+        id S1358226AbiDLI2g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55944 "EHLO
+        Tue, 12 Apr 2022 04:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353130AbiDLHdk (ORCPT
+        with ESMTP id S1353651AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:33:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381C849F05;
-        Tue, 12 Apr 2022 00:08:57 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CB843EC5;
+        Tue, 12 Apr 2022 00:02:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A82CC6153F;
-        Tue, 12 Apr 2022 07:08:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFEF2C385A1;
-        Tue, 12 Apr 2022 07:08:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8AE615B4;
+        Tue, 12 Apr 2022 07:02:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C97C385A6;
+        Tue, 12 Apr 2022 07:02:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747336;
-        bh=nFWpWCPbOaoMAwUpLix+4mXkQpbORA6GkI7rlenqrL8=;
+        s=korg; t=1649746973;
+        bh=WxC4Ck1eDrzF3juXXdTjdPr+pCGCfmE7AGQzZwZ9QB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vwot+Ao/sKdz2BreXJqDj1tX4r8HP4VMf83JSszmYG2i5Ql22kPwJ59V0YjKvizrf
-         dB4Vxg3rwqh1EbaLAza4jLOzc6bOU32YtbtelDSNUbmYZWLZKQF0fGZs6hcdnvMhlZ
-         RQ08EWHXNCeBhpYZNP2YKt/Jf7huKqjAsYDPq+K0=
+        b=I8vElABA6pPZQSviUxYPl4j2mcwG42hDtDTB36+cf6IhMVwhW31yJJP4QuwnDKA3h
+         20F2YkBkmLH4yOnqNhoQEcfu4JlkFBTj0D00P8xIH9Por3/HwJgFqaYHPrzjrNRziX
+         4cVW+gjL/mOhy0NJD2MOPu6aYWS2Za+SVykiaD0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 042/343] drm/bridge: Add missing pm_runtime_put_sync
-Date:   Tue, 12 Apr 2022 08:27:40 +0200
-Message-Id: <20220412062952.321103313@linuxfoundation.org>
+Subject: [PATCH 5.16 196/285] net: phy: mscc-miim: reject clause 45 register accesses
+Date:   Tue, 12 Apr 2022 08:30:53 +0200
+Message-Id: <20220412062949.318744997@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,75 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 46f47807738441e354873546dde0b000106c068a ]
+[ Upstream commit 8d90991e5bf7fdb9f264f5f579d18969913054b7 ]
 
-pm_runtime_get_sync() will increase the rumtime PM counter
-even when it returns an error. Thus a pairing decrement is needed
-to prevent refcount leak. Fix this by replacing this API with
-pm_runtime_resume_and_get(), which will not change the runtime
-PM counter on error. Besides, a matching decrement is needed
-on the error handling path to keep the counter balanced.
+The driver doesn't support clause 45 register access yet, but doesn't
+check if the access is a c45 one either. This leads to spurious register
+reads and writes. Add the check.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/1643008835-73961-1-git-send-email-lyz_cs@pku.edu.cn
+Fixes: 542671fe4d86 ("net: phy: mscc-miim: Add MDIO driver")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/nwl-dsi.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/net/mdio/mdio-mscc-miim.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
-index 6e484d836cfe..691039aba87f 100644
---- a/drivers/gpu/drm/bridge/nwl-dsi.c
-+++ b/drivers/gpu/drm/bridge/nwl-dsi.c
-@@ -861,18 +861,19 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	memcpy(&dsi->mode, adjusted_mode, sizeof(dsi->mode));
- 	drm_mode_debug_printmodeline(adjusted_mode);
+diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+index 17f98f609ec8..5070ca2f2637 100644
+--- a/drivers/net/mdio/mdio-mscc-miim.c
++++ b/drivers/net/mdio/mdio-mscc-miim.c
+@@ -76,6 +76,9 @@ static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
+ 	u32 val;
+ 	int ret;
  
--	pm_runtime_get_sync(dev);
-+	if (pm_runtime_resume_and_get(dev) < 0)
-+		return;
- 
- 	if (clk_prepare_enable(dsi->lcdif_clk) < 0)
--		return;
-+		goto runtime_put;
- 	if (clk_prepare_enable(dsi->core_clk) < 0)
--		return;
-+		goto runtime_put;
- 
- 	/* Step 1 from DSI reset-out instructions */
- 	ret = reset_control_deassert(dsi->rst_pclk);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert PCLK: %d\n", ret);
--		return;
-+		goto runtime_put;
- 	}
- 
- 	/* Step 2 from DSI reset-out instructions */
-@@ -882,13 +883,18 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	ret = reset_control_deassert(dsi->rst_esc);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert ESC: %d\n", ret);
--		return;
-+		goto runtime_put;
- 	}
- 	ret = reset_control_deassert(dsi->rst_byte);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert BYTE: %d\n", ret);
--		return;
-+		goto runtime_put;
- 	}
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
 +
-+	return;
-+
-+runtime_put:
-+	pm_runtime_put_sync(dev);
- }
+ 	ret = mscc_miim_wait_pending(bus);
+ 	if (ret)
+ 		goto out;
+@@ -105,6 +108,9 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
+ 	struct mscc_miim_dev *miim = bus->priv;
+ 	int ret;
  
- static void
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
+ 	ret = mscc_miim_wait_pending(bus);
+ 	if (ret < 0)
+ 		goto out;
 -- 
 2.35.1
 
