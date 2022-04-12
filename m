@@ -2,133 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B012C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38668C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359860AbiDLJUo (ORCPT
+        id S1378135AbiDLJVG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        Tue, 12 Apr 2022 05:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356949AbiDLHjg (ORCPT
+        with ESMTP id S1356678AbiDLHjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4A74B1C4;
-        Tue, 12 Apr 2022 00:10:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B222E616AB;
-        Tue, 12 Apr 2022 07:10:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFCACC385A1;
-        Tue, 12 Apr 2022 07:10:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747435;
-        bh=CBy5DzSt/DDqfNIg2zikiyymZmnWiRhZbtSG9wmBV8s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PW3gbfiS4SEcNbvqVmItBM3FPJYlrv/qyU3lCE8gAWxppcZh8fs/cu/eCQQMDwisq
-         6jTicJu+vYV4KI4LmDMAk3649Wlt5PdZYVuWOWz3xvg7B7gpIi9z3m84RVyFs0G11V
-         EzaaRkNd765T+8zEFOVrrrW4aQY8dfR+HgAczAMw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 079/343] power: supply: axp288-charger: Set Vhold to 4.4V
-Date:   Tue, 12 Apr 2022 08:28:17 +0200
-Message-Id: <20220412062953.380604209@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:39:13 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91937527D7;
+        Tue, 12 Apr 2022 00:09:59 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id x20so6206857qvl.10;
+        Tue, 12 Apr 2022 00:09:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YYsKfoGqtSHG7ncqqXsmjssryH5B9bgQ3YJHMg/wmuE=;
+        b=QwBDdndai0tHYI8OV/Ip9QYF6T4RV900qy1HIIeJzWQNOf8+SSUQGhtUdJC1ZhkXn/
+         PKIqCEKeJ9PSo/gMIYsj1AMK+l3XvGfdG5JVPtMEC9ehRqStvb3iyPJQtq7mscCUg7Ly
+         seZ68CyLmRp0Bf9hQGi8QMDLMpWTa4EoznfeGzSX/fChsLWaoY1+tjlzhoRxSYOtcgOn
+         bL6vDdOE5b9u8VvD04vAPkJQ3Dq+HMFSikrmGAwemVEDsIxek9lFVGHe/IvKIymk+b93
+         ZEiRMXLsAm/M00k7TbMYXGHMbhIdYrmsSsfrpjAkFVY15T+2VK4SImqlVnwoCTK7Dbxp
+         eLoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YYsKfoGqtSHG7ncqqXsmjssryH5B9bgQ3YJHMg/wmuE=;
+        b=KxOpgrIqWrlde4w6rh/KNB6CE79BOq6BFbzswe8A7Qbht3MzzMERyc7UFyme6v4e9N
+         JOco/Mt/qqroPyLnPfPY4hpbwH/rH/gzOsmQ9d5jHoKngmKjT2z1J6gqLrBUtvppuwqr
+         5DRLYxg1IG82D7QhTCoWgxLKoV6/jFDe2bUd574Pt2KmEB5qJj+NeXt7PaPP/kGnLGoA
+         rQgq05MupMjIBigwd5cxaqrKQkIDDKEXeEFx5kpEQpFszA+QVGukdrPTW+Spf260hcAr
+         5kq9Cm14IWyCXhopYBYxGW338kY4IB29oJOeoH9njDR5NiEY2X5Dtw9skB8synBIXXci
+         v4fg==
+X-Gm-Message-State: AOAM5318iC+LxTonk2b6oN3YuqfyA4RtpyTLO4D/6TxMth8ykGFmTYuR
+        N6ydE1Ogm2B8uQtyl+RAukY=
+X-Google-Smtp-Source: ABdhPJxD82QyXzIXC49kCu0uQhNuZRAkgzW0/Y+DmjAjzd5Op7VFc9g/56donMlX6v9f4IhUqwGMdQ==
+X-Received: by 2002:a05:6214:2301:b0:435:38af:2f87 with SMTP id gc1-20020a056214230100b0043538af2f87mr30014186qvb.83.1649747398424;
+        Tue, 12 Apr 2022 00:09:58 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id t3-20020a05622a148300b002ef8ff7afa1sm2317660qtx.21.2022.04.12.00.09.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 00:09:58 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     ldewangan@nvidia.com
+Cc:     broonie@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] spi: spi-tegra114: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Tue, 12 Apr 2022 07:09:51 +0000
+Message-Id: <20220412070951.2532157-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit 5ac121b81b4051e7fc83d5b3456a5e499d5bd147 ]
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-The AXP288's recommended and factory default Vhold value (minimum
-input voltage below which the input current draw will be reduced)
-is 4.4V. This lines up with other charger IC's such as the TI
-bq2419x/bq2429x series which use 4.36V or 4.44V.
-
-For some reason some BIOS-es initialize Vhold to 4.6V or even 4.7V
-which combined with the typical voltage drop over typically low
-wire gauge micro-USB cables leads to the input-current getting
-capped below 1A (with a 2A capable dedicated charger) based on Vhold.
-
-This leads to slow charging, or even to the device slowly discharging
-if the device is in heavy use.
-
-As the Linux AXP288 drivers use the builtin BC1.2 charger detection
-and send the input-current-limit according to the detected charger
-there really is no reason not to use the recommended 4.4V Vhold.
-
-Set Vhold to 4.4V to fix the slow charging issue on various devices.
-
-There is one exception, the special-case of the HP X2 2-in-1s which
-combine this BC1.2 capable PMIC with a Type-C port and a 5V/3A factory
-provided charger with a Type-C plug which does not do BC1.2. These
-have their input-current-limit hardcoded to 3A (like under Windows)
-and use a higher Vhold on purpose to limit the current when used
-with other chargers. To avoid touching Vhold on these HP X2 laptops
-the code setting Vhold is added to an else branch of the if checking
-for these models.
-
-Note this also fixes the sofar unused VBUS_ISPOUT_VHOLD_SET_MASK
-define, which was wrong.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/power/supply/axp288_charger.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/spi/spi-tegra114.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
-index ec41f6cd3f93..c498e62ab4e2 100644
---- a/drivers/power/supply/axp288_charger.c
-+++ b/drivers/power/supply/axp288_charger.c
-@@ -42,11 +42,11 @@
- #define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
- #define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
- #define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
--#define VBUS_ISPOUT_VHOLD_SET_MASK	0x31
-+#define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
- #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
- #define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
- #define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
--#define VBUS_ISPOUT_VHOLD_SET_4300MV	0x3	/* 4300mV */
-+#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
- #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
- 
- #define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
-@@ -769,6 +769,16 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
- 		ret = axp288_charger_vbus_path_select(info, true);
- 		if (ret < 0)
- 			return ret;
-+	} else {
-+		/* Set Vhold to the factory default / recommended 4.4V */
-+		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
-+		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
-+					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
-+		if (ret < 0) {
-+			dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
-+				AXP20X_VBUS_IPSOUT_MGMT, ret);
-+			return ret;
-+		}
+diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
+index 8f345247a8c3..d9be80e3e1bc 100644
+--- a/drivers/spi/spi-tegra114.c
++++ b/drivers/spi/spi-tegra114.c
+@@ -964,9 +964,8 @@ static int tegra_spi_setup(struct spi_device *spi)
+ 		spi->controller_data = cdata;
  	}
  
- 	/* Read current charge voltage and current limit */
+-	ret = pm_runtime_get_sync(tspi->dev);
++	ret = pm_runtime_resume_and_get(tspi->dev);
+ 	if (ret < 0) {
+-		pm_runtime_put_noidle(tspi->dev);
+ 		dev_err(tspi->dev, "pm runtime failed, e = %d\n", ret);
+ 		if (cdata)
+ 			tegra_spi_cleanup(spi);
+@@ -1394,10 +1393,9 @@ static int tegra_spi_probe(struct platform_device *pdev)
+ 			goto exit_pm_disable;
+ 	}
+ 
+-	ret = pm_runtime_get_sync(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "pm runtime get failed, e = %d\n", ret);
+-		pm_runtime_put_noidle(&pdev->dev);
+ 		goto exit_pm_disable;
+ 	}
+ 
+@@ -1476,9 +1474,8 @@ static int tegra_spi_resume(struct device *dev)
+ 	struct tegra_spi_data *tspi = spi_master_get_devdata(master);
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0) {
+-		pm_runtime_put_noidle(dev);
+ 		dev_err(dev, "pm runtime failed, e = %d\n", ret);
+ 		return ret;
+ 	}
 -- 
-2.35.1
-
-
+2.25.1
 
