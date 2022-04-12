@@ -2,94 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3092DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233395AbiDLBTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
+        id S234569AbiDLBTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241921AbiDLBRa (ORCPT
+        with ESMTP id S1348746AbiDLBSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 21:17:30 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715E7387B5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 18:12:31 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso1135434pjh.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 18:12:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Q/Xg6ga80J/OVjhLPewSy7w7ND5AlRAN7OUXJQ4TYtA=;
-        b=HHldRoUblJBfsJVN4QNVPrznetchzYAfkycaQUL6nBM2bArvEdxJ+6F2fsFwaNTOtf
-         uJA3H15AnKBtrC4G9I4eTGnyaQzjIphF+l+sPnRzVHuCAfR6JJq+qfvHFRkk3jgBthAk
-         0RmkjJxXiSUCNu99kAogukrPk9HpGgAMxKaAO3Ejud8u1R1UILDnYgitsyUmD2LW8aeM
-         aAKX9wOBI4ZeX+KYelGD0OyymiVtFt4ZiD8WgZ37N6QYa+2aFVrj7opXubFBcEtoDC65
-         sHeGpNOJnkoKhzhRhOZxt1S/OmpkXdeiN4vnJ2GxBCtEbllFbHIyi6+siodBhIxVHquW
-         A4iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Q/Xg6ga80J/OVjhLPewSy7w7ND5AlRAN7OUXJQ4TYtA=;
-        b=pKOMf6rP60AewAmZ4wdDR15VZzrHJzrX6VOakHOdujLwLW2qM6e3CqbdCRV2fwpuAh
-         gZL+jj/1T0aXFQLKq4GgeZD/JawKRYN0Z5B8U1OvI3q/BdA8rxCaSMEpQvgF4rBhp3jm
-         cgjBRoZ8VF+M2vdLTg23tHnQN1QnYnbRjbDgHYV9cVow/8XFRRI+NoLXyKQhqUwAzPMf
-         Y2CLlVyzffszQ+qDi6DmlYn6L+edBBNn9vT31trOfRqoMK0hEOZvaASq9pO5joQ/kv2h
-         enttFKYuopbikPNlzp2iT/LhhebzvgLdZj7vjB4R4hWtIPdkJRsY2NxN2+UAJazQKapA
-         2dvQ==
-X-Gm-Message-State: AOAM532e4Jjl2GuPCSZ5s8TFjbhEYG2EWljzXpcI6dHIOs/BT5f51Gmb
-        48gCl4CbQqh5degmnCo82XCZCIIBjZLFdQ==
-X-Google-Smtp-Source: ABdhPJx3HLMcm4CPuIJjAy9/1D40rZdTsVlxqtwNr6sg0Yv4f5XEyOq5sCWeeFg4nczVPVotgUqQlg==
-X-Received: by 2002:a17:90b:2248:b0:1cb:be19:822e with SMTP id hk8-20020a17090b224800b001cbbe19822emr2148730pjb.22.1649725950479;
-        Mon, 11 Apr 2022 18:12:30 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id u206-20020a6279d7000000b00505fdc42bf9sm217263pfc.101.2022.04.11.18.12.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 18:12:30 -0700 (PDT)
-Message-ID: <01626f93-e982-8631-4196-112a8bb4a01a@kernel.dk>
-Date:   Mon, 11 Apr 2022 19:12:28 -0600
+        Mon, 11 Apr 2022 21:18:18 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11ABBBE1E;
+        Mon, 11 Apr 2022 18:14:49 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 12 Apr
+ 2022 09:14:49 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 12 Apr
+ 2022 09:14:47 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Vinod Koul <vkoul@kernel.org>
+CC:     Haowen Bai <baihaowen@meizu.com>, <dmaengine@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH V2] dmaengine: pl08x: drop the useless function "NULL"
+Date:   Tue, 12 Apr 2022 09:14:45 +0800
+Message-ID: <1649726086-12889-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <YlQ1i3DFqoFFFszO@matsya>
+References: <YlQ1i3DFqoFFFszO@matsya>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 1/2] block: add sync_blockdev_range()
-Content-Language: en-US
-To:     Namjae Jeon <linkinjeon@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     "Yuezhang.Mo@sony.com" <Yuezhang.Mo@sony.com>,
-        "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "Andy.Wu@sony.com" <Andy.Wu@sony.com>,
-        "Wataru.Aoyama@sony.com" <Wataru.Aoyama@sony.com>
-References: <HK2PR04MB3891FCECADD7AECEEF5DD63081E99@HK2PR04MB3891.apcprd04.prod.outlook.com>
- <Yk/DpSwR8kGKWJYl@infradead.org>
- <CAKYAXd9NAUjdxT2GOWGoPvH5nOXSFtD7u0t_9rCiZx7hSGC0PA@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <CAKYAXd9NAUjdxT2GOWGoPvH5nOXSFtD7u0t_9rCiZx7hSGC0PA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-123.meizu.com (172.16.1.123) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/10/22 8:08 PM, Namjae Jeon wrote:
-> 2022-04-08 14:09 GMT+09:00, Christoph Hellwig <hch@infradead.org>:
->> Looks good:
->>
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Thanks for your review!
-> 
-> Hi Jens,
-> 
-> Can I apply this patch with your Ack to exfat #dev ?
+Unneeded variable: "retval". Return "NULL" , so we have to make code clear.
+better way, drop the function.
 
-Yes go ahead:
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+V1->V2: drop the useless function.
 
-Reviewed-by: Jens Axboe <axboe@kernel.dk>
+ drivers/dma/amba-pl08x.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
+diff --git a/drivers/dma/amba-pl08x.c b/drivers/dma/amba-pl08x.c
+index a24882ba3764..a4a794e62ac2 100644
+--- a/drivers/dma/amba-pl08x.c
++++ b/drivers/dma/amba-pl08x.c
+@@ -1535,14 +1535,6 @@ static void pl08x_free_chan_resources(struct dma_chan *chan)
+ 	vchan_free_chan_resources(to_virt_chan(chan));
+ }
+ 
+-static struct dma_async_tx_descriptor *pl08x_prep_dma_interrupt(
+-		struct dma_chan *chan, unsigned long flags)
+-{
+-	struct dma_async_tx_descriptor *retval = NULL;
+-
+-	return retval;
+-}
+-
+ /*
+  * Code accessing dma_async_is_complete() in a tight loop may give problems.
+  * If slaves are relying on interrupts to signal completion this function
+@@ -2760,7 +2752,6 @@ static int pl08x_probe(struct amba_device *adev, const struct amba_id *id)
+ 	pl08x->memcpy.dev = &adev->dev;
+ 	pl08x->memcpy.device_free_chan_resources = pl08x_free_chan_resources;
+ 	pl08x->memcpy.device_prep_dma_memcpy = pl08x_prep_dma_memcpy;
+-	pl08x->memcpy.device_prep_dma_interrupt = pl08x_prep_dma_interrupt;
+ 	pl08x->memcpy.device_tx_status = pl08x_dma_tx_status;
+ 	pl08x->memcpy.device_issue_pending = pl08x_issue_pending;
+ 	pl08x->memcpy.device_config = pl08x_config;
+@@ -2787,8 +2778,6 @@ static int pl08x_probe(struct amba_device *adev, const struct amba_id *id)
+ 		pl08x->slave.dev = &adev->dev;
+ 		pl08x->slave.device_free_chan_resources =
+ 			pl08x_free_chan_resources;
+-		pl08x->slave.device_prep_dma_interrupt =
+-			pl08x_prep_dma_interrupt;
+ 		pl08x->slave.device_tx_status = pl08x_dma_tx_status;
+ 		pl08x->slave.device_issue_pending = pl08x_issue_pending;
+ 		pl08x->slave.device_prep_slave_sg = pl08x_prep_slave_sg;
 -- 
-Jens Axboe
+2.7.4
 
