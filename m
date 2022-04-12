@@ -2,93 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14EFEC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85293C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbiDLXai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        id S230267AbiDLXal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiDLXaX (ORCPT
+        with ESMTP id S230271AbiDLX3b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:30:23 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A84167FAB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:30:28 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-de3eda6b5dso284513fac.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:30:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5vBKcvDi6CIJKmNgGiKzG9IDKFs6HRQ+M0y0opPEzec=;
-        b=Li42pSPRBDwh9favf8mNAZvTLje+On/JwkP/+OkECysra18UerCG0iIB2XDh6JVqiU
-         jmHnNYDHsmopxQG1ludXIudO6v+BLLSBZ9w+vKH/sFMIk5kfzmhMMttwkI/S6X3RDm64
-         TP2UQiA73N3VGZyUsbZoJJ8Jt0tyxooZcC0qlOMLpOTtw3kFFMjX2PPey54G6xP1uXSn
-         Ah9hpaB6GC44trmgk9v0U9cq0/AT30l/UHc1hhTWiIyWYOVZJz7Q7D06hVV9Ihsy+9qS
-         58kiEa3SIjBP6ei0ry4olhrjFfkUGpVIVUNF7qlONjjjoHoQfOcY6b/8aqOLQBY3GYmz
-         SlmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5vBKcvDi6CIJKmNgGiKzG9IDKFs6HRQ+M0y0opPEzec=;
-        b=buDmuJDeIQaTHEUVIG5UYOW1J3pgIlQMDAaxZ4X71EL9Mvpz9YIL34OsmqnR97rD6u
-         G+xN/LYoaun2GVCSui6nQRx6F2VMeIKMu8zJ9L2Dix3MZn7J7cdCha3aaMkT1MgIZVtn
-         KuSNmCZI9MQZy6cLSyXypxZKs1S9ErDl1Njdpr9xJZu+PsUnevsd7x0lGexGRA9KP+gw
-         ynIq7OaVD7zsDKkXVbxiGCUuz8FvE14dKqoaYvIYHbHL0Fy4KouTlWotqV7LHioZEtam
-         mK55ddiBnCg+jpDBp/xa1zYM6rG/gEjH+/bLKTOJQr42AF2Bc5h3NM6gG2jurmaauJwI
-         4AnA==
-X-Gm-Message-State: AOAM533yr56K/YiaMm6sJcJnNBZWBvS5GSOvsG9lVw0QmaUa2u9PemCv
-        ntmXk1yA7/90cWv9weDwSfePx1272qy4LyhU
-X-Google-Smtp-Source: ABdhPJzMZS37Sds0GvVpxuJms6iJZvO26UMhJ/hWzaU1vUUqhCZLPnero3oTtvR+hPFtihCNtsI35A==
-X-Received: by 2002:a05:6870:b417:b0:d4:547c:7a76 with SMTP id x23-20020a056870b41700b000d4547c7a76mr3035145oap.65.1649798626829;
-        Tue, 12 Apr 2022 14:23:46 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id i15-20020a056870a68f00b000e2f50df070sm1024747oam.36.2022.04.12.14.23.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 14:23:46 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] i2c: qcom-geni: Use dev_err_probe() for GPI DMA error
-Date:   Tue, 12 Apr 2022 14:26:01 -0700
-Message-Id: <20220412212601.2384274-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 12 Apr 2022 19:29:31 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021CC1689CA;
+        Tue, 12 Apr 2022 15:31:31 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KdJ9N0RBTz4xQq;
+        Wed, 13 Apr 2022 07:03:36 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649797416;
+        bh=43F2n8ZF8f0D66CEZPb3P5tM901K5nloVPs1SCTfIvA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=aq9STt5Ug3eFGkQ9HqCAnBixDZyW6JnY3UNwVaH+OTgyePOizASFml2S+qRIt1yzo
+         QC8K5PyxWVEtDbkeRLGTPVEeIs03hOgaa/eROVr/cg1KlZg3JRctj0JRFU/5zCzLkx
+         COoDl4/rII+KacbbNOQMPTQIqMr66KFKKlAixnlCBSaZjsuAktf182jScadlXlbBX+
+         EBtdil13sBu22T5pDU4XlMv8YPbxS8D8INxfCbQnJvqwpp/mUshHsnal1w9MYjIO3q
+         k67L7Ly0dd8J8yHhtwdfelzpH2X41rFO2bBMgMHwlwVvVzfuAypQ1RFuT1cUpOgm+0
+         OR0u+7iR3+hfg==
+Date:   Wed, 13 Apr 2022 07:03:35 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     KVM <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the kvm-fixes tree
+Message-ID: <20220413070335.22d5a7cc@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/_kPAQOkQiQTxX+u6CIbB2MN";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The GPI DMA engine driver can be compiled as a module, in which case the
-likely probe deferral "error" shows up in the kernel log. Switch to
-using dev_err_probe() to silence this warning and to ensure that
-"devices_deferred" in debugfs carries this information.
+--Sig_/_kPAQOkQiQTxX+u6CIbB2MN
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/i2c/busses/i2c-qcom-geni.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Hi all,
 
-diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
-index fc1dcc19f2a1..5b920f0fc7dd 100644
---- a/drivers/i2c/busses/i2c-qcom-geni.c
-+++ b/drivers/i2c/busses/i2c-qcom-geni.c
-@@ -843,10 +843,8 @@ static int geni_i2c_probe(struct platform_device *pdev)
- 		/* FIFO is disabled, so we can only use GPI DMA */
- 		gi2c->gpi_mode = true;
- 		ret = setup_gpi_dma(gi2c);
--		if (ret) {
--			dev_err(dev, "Failed to setup GPI DMA mode:%d ret\n", ret);
--			return ret;
--		}
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Failed to setup GPI DMA mode\n");
- 
- 		dev_dbg(dev, "Using GPI DMA mode for I2C\n");
- 	} else {
--- 
-2.35.1
+Commit
 
+  42dcbe7d8bac ("KVM: x86: hyper-v: Avoid writing to TSC page without an ac=
+tive vCPU")
+
+is missing a Signed-off-by from its committer.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/_kPAQOkQiQTxX+u6CIbB2MN
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJV6ScACgkQAVBC80lX
+0GwBDAf+PDRiVDJB31puKlpHDwl76t1PAgh/T6OgSmL/LFKcFZdqtNE8EhizkLMn
+RUtZgsqOArIa6jSWF32ANOHmtEg6aZYB0UJp9EOKxOtFcEHtztJzIcxTb8W6VVRl
+2SwkVCS3aNx4EUTyobAAcsbkbZqgf9cSSSA0/gdJVVrac6iRcQWEnSBGEuhI0K3G
+3+47vom2FlqoBJnYQH5KgHnBEHgfVHtJBtr4lqWzl7Ty6JMHtjNPNBG8P2czxBrp
+mN1ZQzDwtiZ8kWecHOCGl1+K4xJFzbz53pNEpuc8pnYsnqAaMH56y8LIC9cJOCea
+ixG4HSdWhx/OToua1Fo9s4l9lRe62g==
+=fBwR
+-----END PGP SIGNATURE-----
+
+--Sig_/_kPAQOkQiQTxX+u6CIbB2MN--
