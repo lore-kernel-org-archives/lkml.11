@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FEC6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46856C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237209AbiDLIbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42824 "EHLO
+        id S1358714AbiDLIcI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353575AbiDLHZr (ORCPT
+        with ESMTP id S1353544AbiDLHZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:47 -0400
+        Tue, 12 Apr 2022 03:25:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22D543ACB;
-        Tue, 12 Apr 2022 00:01:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D192656C;
+        Tue, 12 Apr 2022 00:01:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DCAC60B65;
-        Tue, 12 Apr 2022 07:01:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26ADAC385A1;
-        Tue, 12 Apr 2022 07:01:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7D3960B65;
+        Tue, 12 Apr 2022 07:01:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBE21C385A1;
+        Tue, 12 Apr 2022 07:01:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746899;
-        bh=dvOuvkLBEN4EUP6zEmDLAeop9VeIEiE+x9OuTkj65Xc=;
+        s=korg; t=1649746877;
+        bh=0+xvbaE1I0/8b+wbY9uFiN56VFJGLSH7zHl8KdntBK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aBhbH6f/iChIXsnt8ixi8MDzpjZ8Iz1BaIUSq/dRvMb/AV6hfAJkbC7NokX9dz8dP
-         eefp53PfsItMmV1RxhZzl8rWl5r/csPRIPvtGDSlgqN1u940mfKJx8+Ljk4+smO8c7
-         FpnakphqBeDLysSp/8wS7fgmLGMOiKHnLraXujkE=
+        b=nWIsjPGLUyjQ7TJrUnUtc2DE4mv2sHR4y1EY45cuzJTZei8JkOpPle/XWRvcPJ4SS
+         u/CQkMq1Wy7TwaAerVTWz5kr3Aw9+oUV2z33ln1wS4tR4rtxWOOsNnG0I19RoSsya2
+         iv+Rm7C+K4RT6gHCvDILUc4CUGOvgE8IeuaoYPW4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 171/285] drm/imx: dw_hdmi-imx: Fix bailout in error cases of probe
-Date:   Tue, 12 Apr 2022 08:30:28 +0200
-Message-Id: <20220412062948.603954297@linuxfoundation.org>
+        stable@vger.kernel.org, Lukasz Luba <lukasz.luba@arm.com>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Pierre Gondois <Pierre.Gondois@arm.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 122/285] cpufreq: CPPC: Fix performance/frequency conversion
+Date:   Tue, 12 Apr 2022 08:29:39 +0200
+Message-Id: <20220412062947.187059812@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -55,60 +52,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Ying <victor.liu@nxp.com>
+From: Pierre Gondois <Pierre.Gondois@arm.com>
 
-[ Upstream commit e8083acc3f8cc2097917018e947fd4c857f60454 ]
+[ Upstream commit ec1c7ad47664f964c1101fe555b6fde0cb124b38 ]
 
-In dw_hdmi_imx_probe(), if error happens after dw_hdmi_probe() returns
-successfully, dw_hdmi_remove() should be called where necessary as
-bailout.
+CPUfreq governors request CPU frequencies using information
+on current CPU usage. The CPPC driver converts them to
+performance requests. Frequency targets are computed as:
+	target_freq = (util / cpu_capacity) * max_freq
+target_freq is then clamped between [policy->min, policy->max].
 
-Fixes: c805ec7eb210 ("drm/imx: dw_hdmi-imx: move initialization into probe")
-Cc: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220128091944.3831256-1-victor.liu@nxp.com
+The CPPC driver converts performance values to frequencies
+(and vice-versa) using cppc_cpufreq_perf_to_khz() and
+cppc_cpufreq_khz_to_perf(). These functions both use two different
+factors depending on the range of the input value. For
+cppc_cpufreq_khz_to_perf():
+- (NOMINAL_PERF / NOMINAL_FREQ) or
+- (LOWEST_PERF / LOWEST_FREQ)
+and for cppc_cpufreq_perf_to_khz():
+- (NOMINAL_FREQ / NOMINAL_PERF) or
+- ((NOMINAL_PERF - LOWEST_FREQ) / (NOMINAL_PERF - LOWEST_PERF))
+
+This means:
+1- the functions are not inverse for some values:
+   (perf_to_khz(khz_to_perf(x)) != x)
+2- cppc_cpufreq_perf_to_khz(LOWEST_PERF) can sometimes give
+   a different value from LOWEST_FREQ due to integer approximation
+3- it is implied that performance and frequency are proportional
+   (NOMINAL_FREQ / NOMINAL_PERF) == (LOWEST_PERF / LOWEST_FREQ)
+
+This patch changes the conversion functions to an affine function.
+This fixes the 3 points above.
+
+Suggested-by: Lukasz Luba <lukasz.luba@arm.com>
+Suggested-by: Morten Rasmussen <morten.rasmussen@arm.com>
+Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/dw_hdmi-imx.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/cpufreq/cppc_cpufreq.c | 43 +++++++++++++++++-----------------
+ 1 file changed, 21 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/gpu/drm/imx/dw_hdmi-imx.c b/drivers/gpu/drm/imx/dw_hdmi-imx.c
-index 87428fb23d9f..a2277a0d6d06 100644
---- a/drivers/gpu/drm/imx/dw_hdmi-imx.c
-+++ b/drivers/gpu/drm/imx/dw_hdmi-imx.c
-@@ -222,6 +222,7 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
- 	struct device_node *np = pdev->dev.of_node;
- 	const struct of_device_id *match = of_match_node(dw_hdmi_imx_dt_ids, np);
- 	struct imx_hdmi *hdmi;
-+	int ret;
+diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+index db17196266e4..82d370ae6a4a 100644
+--- a/drivers/cpufreq/cppc_cpufreq.c
++++ b/drivers/cpufreq/cppc_cpufreq.c
+@@ -303,52 +303,48 @@ static u64 cppc_get_dmi_max_khz(void)
  
- 	hdmi = devm_kzalloc(&pdev->dev, sizeof(*hdmi), GFP_KERNEL);
- 	if (!hdmi)
-@@ -243,10 +244,15 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
- 	hdmi->bridge = of_drm_find_bridge(np);
- 	if (!hdmi->bridge) {
- 		dev_err(hdmi->dev, "Unable to find bridge\n");
-+		dw_hdmi_remove(hdmi->hdmi);
- 		return -ENODEV;
+ /*
+  * If CPPC lowest_freq and nominal_freq registers are exposed then we can
+- * use them to convert perf to freq and vice versa
+- *
+- * If the perf/freq point lies between Nominal and Lowest, we can treat
+- * (Low perf, Low freq) and (Nom Perf, Nom freq) as 2D co-ordinates of a line
+- * and extrapolate the rest
+- * For perf/freq > Nominal, we use the ratio perf:freq at Nominal for conversion
++ * use them to convert perf to freq and vice versa. The conversion is
++ * extrapolated as an affine function passing by the 2 points:
++ *  - (Low perf, Low freq)
++ *  - (Nominal perf, Nominal perf)
+  */
+ static unsigned int cppc_cpufreq_perf_to_khz(struct cppc_cpudata *cpu_data,
+ 					     unsigned int perf)
+ {
+ 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
++	s64 retval, offset = 0;
+ 	static u64 max_khz;
+ 	u64 mul, div;
+ 
+ 	if (caps->lowest_freq && caps->nominal_freq) {
+-		if (perf >= caps->nominal_perf) {
+-			mul = caps->nominal_freq;
+-			div = caps->nominal_perf;
+-		} else {
+-			mul = caps->nominal_freq - caps->lowest_freq;
+-			div = caps->nominal_perf - caps->lowest_perf;
+-		}
++		mul = caps->nominal_freq - caps->lowest_freq;
++		div = caps->nominal_perf - caps->lowest_perf;
++		offset = caps->nominal_freq - div64_u64(caps->nominal_perf * mul, div);
+ 	} else {
+ 		if (!max_khz)
+ 			max_khz = cppc_get_dmi_max_khz();
+ 		mul = max_khz;
+ 		div = caps->highest_perf;
  	}
- 
--	return component_add(&pdev->dev, &dw_hdmi_imx_ops);
-+	ret = component_add(&pdev->dev, &dw_hdmi_imx_ops);
-+	if (ret)
-+		dw_hdmi_remove(hdmi->hdmi);
+-	return (u64)perf * mul / div;
 +
-+	return ret;
++	retval = offset + div64_u64(perf * mul, div);
++	if (retval >= 0)
++		return retval;
++	return 0;
  }
  
- static int dw_hdmi_imx_remove(struct platform_device *pdev)
+ static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
+ 					     unsigned int freq)
+ {
+ 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
++	s64 retval, offset = 0;
+ 	static u64 max_khz;
+ 	u64  mul, div;
+ 
+ 	if (caps->lowest_freq && caps->nominal_freq) {
+-		if (freq >= caps->nominal_freq) {
+-			mul = caps->nominal_perf;
+-			div = caps->nominal_freq;
+-		} else {
+-			mul = caps->lowest_perf;
+-			div = caps->lowest_freq;
+-		}
++		mul = caps->nominal_perf - caps->lowest_perf;
++		div = caps->nominal_freq - caps->lowest_freq;
++		offset = caps->nominal_perf - div64_u64(caps->nominal_freq * mul, div);
+ 	} else {
+ 		if (!max_khz)
+ 			max_khz = cppc_get_dmi_max_khz();
+@@ -356,7 +352,10 @@ static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
+ 		div = max_khz;
+ 	}
+ 
+-	return (u64)freq * mul / div;
++	retval = offset + div64_u64(freq * mul, div);
++	if (retval >= 0)
++		return retval;
++	return 0;
+ }
+ 
+ static int cppc_cpufreq_set_target(struct cpufreq_policy *policy,
 -- 
 2.35.1
 
