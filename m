@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EACBC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86393C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386743AbiDLJCK (ORCPT
+        id S1353122AbiDLJCY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
+        Tue, 12 Apr 2022 05:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357184AbiDLHjv (ORCPT
+        with ESMTP id S1357249AbiDLHjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:51 -0400
+        Tue, 12 Apr 2022 03:39:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FE613F9A;
-        Tue, 12 Apr 2022 00:13:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CE6F15;
+        Tue, 12 Apr 2022 00:14:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 235606153F;
-        Tue, 12 Apr 2022 07:13:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 302A2C385A5;
-        Tue, 12 Apr 2022 07:13:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C7A96171C;
+        Tue, 12 Apr 2022 07:14:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37597C385A1;
+        Tue, 12 Apr 2022 07:14:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747611;
-        bh=Ueb/n5/degKcP/u90rkPTK409N1+OCvbJpRbir3mBN4=;
+        s=korg; t=1649747655;
+        bh=2kkz2HUea5hGrLe3sIdjMljDa9VPFb9vQcDZSKUWuuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nd6hfCDYiPKQ2D/MEtcn1oXcKUlU0+xa0e4s0yQQTsYXxwBshk2awAwX68gTEX8A+
-         UxgoyZklI4ohAYf5SuqqslTERo7XnGNmD5/jETmAurZ/FlVm56gi3mHYXt6TrHF81r
-         /jwx3DMxK7UgrgEy4stji0aMZKGqki52PH1NOr24=
+        b=r+Mz38X1iy2i7dwYYS5qHn3z51afrOex7ljTT8Pfo09J2QYD363wRBNntNb8yEtVo
+         WDyCzHfunUoMWmRAoeS14QL2DPtnJHnrAy7eRuga8OpRsPOMlBqI0nHO/PH4qDvzJS
+         4WeE9QaCVJNqIbv4oTAHxGOhsZKBm53nmQoxg5lo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 141/343] net: sfp: add 2500base-X quirk for Lantech SFP module
-Date:   Tue, 12 Apr 2022 08:29:19 +0200
-Message-Id: <20220412062955.455501564@linuxfoundation.org>
+Subject: [PATCH 5.17 159/343] staging: vchiq_core: handle NULL result of find_service_by_handle
+Date:   Tue, 12 Apr 2022 08:29:37 +0200
+Message-Id: <20220412062955.964487496@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,51 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
+[ Upstream commit ca225857faf237234d2fffe5d1919467dfadd822 ]
 
-The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
-nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
-module.
+In case of an invalid handle the function find_servive_by_handle
+returns NULL. So take care of this and avoid a NULL pointer dereference.
 
-The following in an EEPROM dump of such a SFP with the serial number
-redacted:
-
-00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
-10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
-20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
-30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
-40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
-50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
-60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
-70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
-
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Link: https://lore.kernel.org/r/1642968143-19281-18-git-send-email-stefan.wahren@i2se.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/sfp-bus.c | 6 ++++++
+ .../staging/vc04_services/interface/vchiq_arm/vchiq_core.c  | 6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index c1512c9925a6..15aa5ac1ff49 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		// Lantech 8330-262D-E can operate at 2500base-X, but
-+		// incorrectly report 2500MBd NRZ in their EEPROM
-+		.vendor = "Lantech",
-+		.part = "8330-262D-E",
-+		.modes = sfp_quirk_2500basex,
- 	}, {
- 		.vendor = "UBNT",
- 		.part = "UF-INSTANT",
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+index 7fe20d4b7ba2..b7295236671c 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
+@@ -2306,6 +2306,9 @@ void vchiq_msg_queue_push(unsigned int handle, struct vchiq_header *header)
+ 	struct vchiq_service *service = find_service_by_handle(handle);
+ 	int pos;
+ 
++	if (!service)
++		return;
++
+ 	while (service->msg_queue_write == service->msg_queue_read +
+ 		VCHIQ_MAX_SLOTS) {
+ 		if (wait_for_completion_interruptible(&service->msg_queue_pop))
+@@ -2326,6 +2329,9 @@ struct vchiq_header *vchiq_msg_hold(unsigned int handle)
+ 	struct vchiq_header *header;
+ 	int pos;
+ 
++	if (!service)
++		return NULL;
++
+ 	if (service->msg_queue_write == service->msg_queue_read)
+ 		return NULL;
+ 
 -- 
 2.35.1
 
