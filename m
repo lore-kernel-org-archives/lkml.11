@@ -2,43 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E89C3525B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6BAC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343858AbiDLHca (ORCPT
+        id S1347911AbiDLHcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
+        Tue, 12 Apr 2022 03:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351857AbiDLHNB (ORCPT
+        with ESMTP id S1351847AbiDLHNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:13:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BECDC8;
-        Mon, 11 Apr 2022 23:53:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A98386;
+        Mon, 11 Apr 2022 23:53:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0037DB81B35;
-        Tue, 12 Apr 2022 06:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D054C385A1;
-        Tue, 12 Apr 2022 06:53:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 527F3B81B47;
+        Tue, 12 Apr 2022 06:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F4D9C385A6;
+        Tue, 12 Apr 2022 06:53:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746422;
-        bh=x51UV5VOPeaHL0AME3MQUuSQK78drrrzIIMbVhno/eE=;
+        s=korg; t=1649746414;
+        bh=dTR6SfiSLtwiyxMdwW4U/3rWA7waMXIis8gdthuGMos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rsw/qHZnBLF/eyXikQ2almWTvHomLPW9zeCdb/pqF1wjHPnT/IQVuMQtn90aOVI8x
-         H1AFOVLnB8fsYQRRBKphPwps5b21H7xmYyYloQ6iw5PnhFDVQui5w4Q0RSqyFTKRyz
-         p8ZRnrAO9S/CYinKW3Okf/i7zjqyxxfbsZ02/Y8o=
+        b=knel5eCdo+9KV9yr6UtQIg9Y8IPIFeTuLZ1metKOj3iBr+of2EBjTX6NLiDDtfRNf
+         SJVupeiES1m4tsZvnoL8iBYnEveqFSFUfQRoFuc9g6uhrsd7VSNIo9CA8hiOCGwvtq
+         tX4ZJRGpicZeSHiOSacy+Ly+HqxQcalpTwzW09/M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>
-Subject: [PATCH 5.15 268/277] Drivers: hv: vmbus: Replace smp_store_mb() with virt_store_mb()
-Date:   Tue, 12 Apr 2022 08:31:11 +0200
-Message-Id: <20220412062949.799111130@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 267/277] mm: dont skip swap entry even if zap_details specified
+Date:   Tue, 12 Apr 2022 08:31:10 +0200
+Message-Id: <20220412062949.770315294@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,49 +59,178 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+From: Peter Xu <peterx@redhat.com>
 
-commit eaa03d34535872d29004cb5cf77dc9dec1ba9a25 upstream.
+commit 5abfd71d936a8aefd9f9ccd299dea7a164a5d455 upstream.
 
-Following the recommendation in Documentation/memory-barriers.txt for
-virtual machine guests.
+Patch series "mm: Rework zap ptes on swap entries", v5.
 
-Fixes: 8b6a877c060ed ("Drivers: hv: vmbus: Replace the per-CPU channel lists with a global array of channels")
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Link: https://lore.kernel.org/r/20220328154457.100872-1-parri.andrea@gmail.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Patch 1 should fix a long standing bug for zap_pte_range() on
+zap_details usage.  The risk is we could have some swap entries skipped
+while we should have zapped them.
+
+Migration entries are not the major concern because file backed memory
+always zap in the pattern that "first time without page lock, then
+re-zap with page lock" hence the 2nd zap will always make sure all
+migration entries are already recovered.
+
+However there can be issues with real swap entries got skipped
+errornoously.  There's a reproducer provided in commit message of patch
+1 for that.
+
+Patch 2-4 are cleanups that are based on patch 1.  After the whole
+patchset applied, we should have a very clean view of zap_pte_range().
+
+Only patch 1 needs to be backported to stable if necessary.
+
+This patch (of 4):
+
+The "details" pointer shouldn't be the token to decide whether we should
+skip swap entries.
+
+For example, when the callers specified details->zap_mapping==NULL, it
+means the user wants to zap all the pages (including COWed pages), then
+we need to look into swap entries because there can be private COWed
+pages that was swapped out.
+
+Skipping some swap entries when details is non-NULL may lead to wrongly
+leaving some of the swap entries while we should have zapped them.
+
+A reproducer of the problem:
+
+===8<===
+        #define _GNU_SOURCE         /* See feature_test_macros(7) */
+        #include <stdio.h>
+        #include <assert.h>
+        #include <unistd.h>
+        #include <sys/mman.h>
+        #include <sys/types.h>
+
+        int page_size;
+        int shmem_fd;
+        char *buffer;
+
+        void main(void)
+        {
+                int ret;
+                char val;
+
+                page_size = getpagesize();
+                shmem_fd = memfd_create("test", 0);
+                assert(shmem_fd >= 0);
+
+                ret = ftruncate(shmem_fd, page_size * 2);
+                assert(ret == 0);
+
+                buffer = mmap(NULL, page_size * 2, PROT_READ | PROT_WRITE,
+                                MAP_PRIVATE, shmem_fd, 0);
+                assert(buffer != MAP_FAILED);
+
+                /* Write private page, swap it out */
+                buffer[page_size] = 1;
+                madvise(buffer, page_size * 2, MADV_PAGEOUT);
+
+                /* This should drop private buffer[page_size] already */
+                ret = ftruncate(shmem_fd, page_size);
+                assert(ret == 0);
+                /* Recover the size */
+                ret = ftruncate(shmem_fd, page_size * 2);
+                assert(ret == 0);
+
+                /* Re-read the data, it should be all zero */
+                val = buffer[page_size];
+                if (val == 0)
+                        printf("Good\n");
+                else
+                        printf("BUG\n");
+        }
+===8<===
+
+We don't need to touch up the pmd path, because pmd never had a issue with
+swap entries.  For example, shmem pmd migration will always be split into
+pte level, and same to swapping on anonymous.
+
+Add another helper should_zap_cows() so that we can also check whether we
+should zap private mappings when there's no page pointer specified.
+
+This patch drops that trick, so we handle swap ptes coherently.  Meanwhile
+we should do the same check upon migration entry, hwpoison entry and
+genuine swap entries too.
+
+To be explicit, we should still remember to keep the private entries if
+even_cows==false, and always zap them when even_cows==true.
+
+The issue seems to exist starting from the initial commit of git.
+
+[peterx@redhat.com: comment tweaks]
+  Link: https://lkml.kernel.org/r/20220217060746.71256-2-peterx@redhat.com
+
+Link: https://lkml.kernel.org/r/20220217060746.71256-1-peterx@redhat.com
+Link: https://lkml.kernel.org/r/20220216094810.60572-1-peterx@redhat.com
+Link: https://lkml.kernel.org/r/20220216094810.60572-2-peterx@redhat.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Peter Xu <peterx@redhat.com>
+Reviewed-by: John Hubbard <jhubbard@nvidia.com>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: "Kirill A . Shutemov" <kirill@shutemov.name>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Yang Shi <shy828301@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hv/channel_mgmt.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ mm/memory.c |   25 +++++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
 
---- a/drivers/hv/channel_mgmt.c
-+++ b/drivers/hv/channel_mgmt.c
-@@ -380,7 +380,7 @@ void vmbus_channel_map_relid(struct vmbu
- 	 * execute:
- 	 *
- 	 *  (a) In the "normal (i.e., not resuming from hibernation)" path,
--	 *      the full barrier in smp_store_mb() guarantees that the store
-+	 *      the full barrier in virt_store_mb() guarantees that the store
- 	 *      is propagated to all CPUs before the add_channel_work work
- 	 *      is queued.  In turn, add_channel_work is queued before the
- 	 *      channel's ring buffer is allocated/initialized and the
-@@ -392,14 +392,14 @@ void vmbus_channel_map_relid(struct vmbu
- 	 *      recv_int_page before retrieving the channel pointer from the
- 	 *      array of channels.
- 	 *
--	 *  (b) In the "resuming from hibernation" path, the smp_store_mb()
-+	 *  (b) In the "resuming from hibernation" path, the virt_store_mb()
- 	 *      guarantees that the store is propagated to all CPUs before
- 	 *      the VMBus connection is marked as ready for the resume event
- 	 *      (cf. check_ready_for_resume_event()).  The interrupt handler
- 	 *      of the VMBus driver and vmbus_chan_sched() can not run before
- 	 *      vmbus_bus_resume() has completed execution (cf. resume_noirq).
- 	 */
--	smp_store_mb(
-+	virt_store_mb(
- 		vmbus_connection.channels[channel->offermsg.child_relid],
- 		channel);
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -1301,6 +1301,17 @@ copy_page_range(struct vm_area_struct *d
+ 	return ret;
  }
+ 
++/* Whether we should zap all COWed (private) pages too */
++static inline bool should_zap_cows(struct zap_details *details)
++{
++	/* By default, zap all pages */
++	if (!details)
++		return true;
++
++	/* Or, we zap COWed pages only if the caller wants to */
++	return !details->check_mapping;
++}
++
+ static unsigned long zap_pte_range(struct mmu_gather *tlb,
+ 				struct vm_area_struct *vma, pmd_t *pmd,
+ 				unsigned long addr, unsigned long end,
+@@ -1396,16 +1407,18 @@ again:
+ 			continue;
+ 		}
+ 
+-		/* If details->check_mapping, we leave swap entries. */
+-		if (unlikely(details))
+-			continue;
+-
+-		if (!non_swap_entry(entry))
++		if (!non_swap_entry(entry)) {
++			/* Genuine swap entry, hence a private anon page */
++			if (!should_zap_cows(details))
++				continue;
+ 			rss[MM_SWAPENTS]--;
+-		else if (is_migration_entry(entry)) {
++		} else if (is_migration_entry(entry)) {
+ 			struct page *page;
+ 
+ 			page = pfn_swap_entry_to_page(entry);
++			if (details && details->check_mapping &&
++			    details->check_mapping != page_rmapping(page))
++				continue;
+ 			rss[mm_counter(page)]--;
+ 		}
+ 		if (unlikely(!free_swap_and_cache(entry)))
 
 
