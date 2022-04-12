@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 060BFC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB63AC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355774AbiDLNIH (ORCPT
+        id S1355640AbiDLNIE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
+        Tue, 12 Apr 2022 09:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356333AbiDLND0 (ORCPT
+        with ESMTP id S1356399AbiDLND1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:26 -0400
+        Tue, 12 Apr 2022 09:03:27 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE1926C97F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08989DF1F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:32 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 71342153B;
-        Tue, 12 Apr 2022 05:45:03 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD8F61516;
+        Tue, 12 Apr 2022 05:45:31 -0700 (PDT)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1EB633F70D;
-        Tue, 12 Apr 2022 05:45:01 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C38D3F70D;
+        Tue, 12 Apr 2022 05:45:29 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -38,9 +38,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 06/21] x86/resctrl: Remove set_mba_sc()s control array re-initialisation
-Date:   Tue, 12 Apr 2022 12:44:04 +0000
-Message-Id: <20220412124419.30689-7-james.morse@arm.com>
+Subject: [PATCH v4 17/21] x86/resctrl: Move mbm_overflow_count() into resctrl_arch_rmid_read()
+Date:   Tue, 12 Apr 2022 12:44:15 +0000
+Message-Id: <20220412124419.30689-18-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
 References: <20220412124419.30689-1-james.morse@arm.com>
@@ -50,23 +50,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-set_mba_sc() enables the 'software controller' to regulate the
-bandwidth based on the byte counters. This can be managed entirely
-in the parts of resctrl that move to /fs/, without any extra
-support from the architecture specific code.
-set_mba_sc() is called by rdt_enable_ctx() during mount and
-umount. It currently resets the arch code's ctrl_val[] and mbps_val[]
-arrays.
+resctrl_arch_rmid_read() is intended as the function that an
+architecture agnostic resctrl filesystem driver can use to
+read a value in bytes from a counter. Currently the function returns
+the MBM values in chunks directly from hardware. When reading a bandwidth
+counter, mbm_overflow_count() must be used to correct for any possible
+overflow.
 
-The ctrl_val[] was already reset when the domain was created,
-and by reset_all_ctrls() when the filesystem was last umounted.
-Doing the work in set_mba_sc() is not necessary as the values are
-already at their defaults due to the creation of the domain, or were
-previously reset during umount(), or are about to reset during umount().
+mbm_overflow_count() is architecture specific, its behaviour should
+be part of resctrl_arch_rmid_read().
 
-Add a reset of the mbps_val[] in reset_all_ctrls(), allowing the
-code in set_mba_sc() that reaches in to the architecture specific
-structures to be removed.
+Move the mbm_overflow_count() calls into resctrl_arch_rmid_read().
+This allows the resctrl filesystems's prev_msr to be removed in
+favour of the architecture private version.
 
 Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
 Tested-by: Xin Hao <xhao@linux.alibaba.com>
@@ -75,51 +71,106 @@ Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
-Changes since v3:
- * Spelling mistakes in commit message.
+ arch/x86/kernel/cpu/resctrl/internal.h |  2 --
+ arch/x86/kernel/cpu/resctrl/monitor.c  | 35 +++++++++++++++-----------
+ 2 files changed, 20 insertions(+), 17 deletions(-)
 
-Changes since v2:
- * Moved earlier in the series, added the reset in reset_all_ctrls().
- * Rephrased commit message.
----
- arch/x86/kernel/cpu/resctrl/rdtgroup.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index 00d7164a7441..1bca7b250c71 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -1898,18 +1898,12 @@ void rdt_domain_reconfigure_cdp(struct rdt_resource *r)
- static int set_mba_sc(bool mba_sc)
- {
- 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
--	struct rdt_hw_domain *hw_dom;
--	struct rdt_domain *d;
+diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
+index 1d2e7bd6305f..8039e8aba7de 100644
+--- a/arch/x86/kernel/cpu/resctrl/internal.h
++++ b/arch/x86/kernel/cpu/resctrl/internal.h
+@@ -281,7 +281,6 @@ struct rftype {
+ /**
+  * struct mbm_state - status for each MBM counter in each domain
+  * @chunks:	Total data moved (multiply by rdt_group.mon_scale to get bytes)
+- * @prev_msr:	Value of IA32_QM_CTR for this RMID last time we read it
+  * @prev_bw_chunks: Previous chunks value read for bandwidth calculation
+  * @prev_bw:	The most recent bandwidth in MBps
+  * @delta_bw:	Difference between the current and previous bandwidth
+@@ -289,7 +288,6 @@ struct rftype {
+  */
+ struct mbm_state {
+ 	u64	chunks;
+-	u64	prev_msr;
+ 	u64	prev_bw_chunks;
+ 	u32	prev_bw;
+ 	u32	delta_bw;
+diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+index 81cc7587b598..e727a795388b 100644
+--- a/arch/x86/kernel/cpu/resctrl/monitor.c
++++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+@@ -167,9 +167,20 @@ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
+ 		memset(am, 0, sizeof(*am));
+ }
  
- 	if (!is_mbm_enabled() || !is_mba_linear() ||
- 	    mba_sc == is_mba_sc(r))
++static u64 mbm_overflow_count(u64 prev_msr, u64 cur_msr, unsigned int width)
++{
++	u64 shift = 64 - width, chunks;
++
++	chunks = (cur_msr << shift) - (prev_msr << shift);
++	return chunks >> shift;
++}
++
+ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+ 			   u32 rmid, enum resctrl_event_id eventid, u64 *val)
+ {
++	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
++	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
++	struct arch_mbm_state *am;
+ 	u64 msr_val;
+ 
+ 	if (!cpumask_test_cpu(smp_processor_id(), &d->cpu_mask))
+@@ -191,7 +202,13 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+ 	if (msr_val & RMID_VAL_UNAVAIL)
  		return -EINVAL;
  
- 	r->membw.mba_sc = mba_sc;
--	list_for_each_entry(d, &r->domains, list) {
--		hw_dom = resctrl_to_arch_dom(d);
--		setup_default_ctrlval(r, hw_dom->ctrl_val, hw_dom->mbps_val);
--	}
+-	*val = msr_val;
++	am = get_arch_mbm_state(hw_dom, rmid, eventid);
++	if (am) {
++		*val = mbm_overflow_count(am->prev_msr, msr_val, hw_res->mbm_width);
++		am->prev_msr = msr_val;
++	} else {
++		*val = msr_val;
++	}
  
  	return 0;
  }
-@@ -2327,8 +2321,10 @@ static int reset_all_ctrls(struct rdt_resource *r)
- 		hw_dom = resctrl_to_arch_dom(d);
- 		cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
+@@ -322,19 +339,10 @@ void free_rmid(u32 rmid)
+ 		list_add_tail(&entry->list, &rmid_free_lru);
+ }
  
--		for (i = 0; i < hw_res->num_closid; i++)
-+		for (i = 0; i < hw_res->num_closid; i++) {
- 			hw_dom->ctrl_val[i] = r->default_ctrl;
-+			hw_dom->mbps_val[i] = MBA_MAX_MBPS;
-+		}
+-static u64 mbm_overflow_count(u64 prev_msr, u64 cur_msr, unsigned int width)
+-{
+-	u64 shift = 64 - width, chunks;
+-
+-	chunks = (cur_msr << shift) - (prev_msr << shift);
+-	return chunks >> shift;
+-}
+-
+ static int __mon_event_count(u32 rmid, struct rmid_read *rr)
+ {
+-	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
+ 	struct mbm_state *m;
+-	u64 chunks, tval = 0;
++	u64 tval = 0;
+ 
+ 	if (rr->first)
+ 		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
+@@ -363,13 +371,10 @@ static int __mon_event_count(u32 rmid, struct rmid_read *rr)
+ 
+ 	if (rr->first) {
+ 		memset(m, 0, sizeof(struct mbm_state));
+-		m->prev_msr = tval;
+ 		return 0;
  	}
- 	cpu = get_cpu();
- 	/* Update CBM on this cpu if it's in cpu_mask. */
+ 
+-	chunks = mbm_overflow_count(m->prev_msr, tval, hw_res->mbm_width);
+-	m->chunks += chunks;
+-	m->prev_msr = tval;
++	m->chunks += tval;
+ 
+ 	rr->val += get_corrected_mbm_count(rmid, m->chunks);
+ 
 -- 
 2.30.2
 
