@@ -2,86 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA384C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C08FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348401AbiDLKSQ (ORCPT
+        id S1351202AbiDLKSX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48368 "EHLO
+        Tue, 12 Apr 2022 06:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356814AbiDLJzS (ORCPT
+        with ESMTP id S1356896AbiDLJzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:55:18 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B4ED11C08
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:58:43 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9DAED1570;
-        Tue, 12 Apr 2022 01:58:43 -0700 (PDT)
-Received: from bogus (unknown [10.57.41.152])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4EF7A3F5A1;
-        Tue, 12 Apr 2022 01:58:42 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 09:58:39 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Qing Wang <wangqing@vivo.com>, Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] arch_topology: Do not set llc_sibling if llc_id is
- invalid
-Message-ID: <20220412085839.hkpyookqdl6bcjbn@bogus>
-References: <1649644580-54626-1-git-send-email-wangqing@vivo.com>
- <CAHp75Vc-frdJSAMxK1YpHwmPa_-0fTpRxq=QObcux3Jt=5+9kw@mail.gmail.com>
+        Tue, 12 Apr 2022 05:55:19 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CF32AE2C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:59:05 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-e2fa360f6dso541377fac.2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
+         :subject:to:cc;
+        bh=61Zhp6cmoUliim9YwiwcZpLzWn635tX3xmuezZ/XE1Q=;
+        b=i+E8+24eJSPuwFpWwnhwRcMosCQtTEQoU0qVumPFd1B/5vOrb43OnnM06scRAF73Yq
+         oMByED8vyfj7h/juyKz0L3ed4WqHpCgSlskOcx+kVCwtlWgCiSRQA57g1AuGyhRftLkn
+         PMcblX+TbX+MHeKj3cpATLc7zfvBTrR1JonUwOgFtW9kUMKobrEyLRFKbEi6WgtAtS6n
+         FCB8ilN1nAxUZedW0P+Azc/J+6dpMpBO/s4qN2MMBBKOQNBC+cNRVDAa2Xi5cUNXXxIm
+         UJfzvicRT62Wq64zodMNVExN+Gzy0MnFtlZGEVwjmhUqQKDk5bd3GuHqulcLVnv1AYsL
+         SMSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:user-agent:references:in-reply-to
+         :mime-version:date:message-id:subject:to:cc;
+        bh=61Zhp6cmoUliim9YwiwcZpLzWn635tX3xmuezZ/XE1Q=;
+        b=EaILETg9ZgRXOFbE3kBa2SisBWy9WXWF5pJZcm4vJYEDkvkID/rdjftCaLSHCuy3YS
+         zW5fhIkI4XnlFzOTp3hZVJE6RaC9DuvPGGJxO/Fp5XQPBA4HT2zYD722CtibpNwB+EtC
+         Apfz+9mlfW6zUfNFnSPiqJCWqOkQkBWPAOVuH8gBtNCkw1j22igSwEjmcclq/r/NPFDp
+         kJiwbGws4KpOa23Qj3HsqHlxOOC8y84uagryUz3Ktps3ULLYqyTKCRxZ32UZRrZ+9fTw
+         7SUIP7SwJzk+VZfa7zWIbI0qHaW+1hXAnDIzadtste4SLQwu8IWXQDtOMYkZtUtxFl5g
+         RjXQ==
+X-Gm-Message-State: AOAM530OqKbzUbAktZuwy2fwcanHh+4Kj6CGxyuYea8QOirDRuQaWIwC
+        +h0I97IHHXLeEN0O4jQzfGWqoSsba4KJQgqsF8mkrw==
+X-Google-Smtp-Source: ABdhPJzgcHEvPZCp6gdbg7kDhJKlxditkMSAtxr85wga0tldVXhcDC3GVMdHj7CuZ6MWQrtRrZ1EySnMvRiS1vE8OqA=
+X-Received: by 2002:a05:6870:f21a:b0:dd:9bec:caf8 with SMTP id
+ t26-20020a056870f21a00b000dd9beccaf8mr1592268oao.78.1649753944968; Tue, 12
+ Apr 2022 01:59:04 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 12 Apr 2022 01:59:04 -0700
+From:   Guillaume Ranquet <granquet@baylibre.com>
+User-Agent: meli 0.7.2
+References: <20220327223927.20848-1-granquet@baylibre.com> <20220327223927.20848-7-granquet@baylibre.com>
+ <33212024-ae93-32c3-7890-09006057ff49@collabora.com>
+In-Reply-To: <33212024-ae93-32c3-7890-09006057ff49@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vc-frdJSAMxK1YpHwmPa_-0fTpRxq=QObcux3Jt=5+9kw@mail.gmail.com>
+Date:   Tue, 12 Apr 2022 01:59:04 -0700
+Message-ID: <CABnWg9sckU58Ga-qUgd+pk2M75H4=XZyAyP69e5QJP0+dvsusg@mail.gmail.com>
+Subject: Re: [PATCH v9 06/22] video/hdmi: Add audio_infoframe packing for DP
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, vkoul@kernel.org,
+        airlied@linux.ie, chunfeng.yun@mediatek.com,
+        chunkuang.hu@kernel.org, ck.hu@mediatek.com, daniel@ffwll.ch,
+        deller@gmx.de, jitao.shi@mediatek.com, kishon@ti.com,
+        krzk+dt@kernel.org, maarten.lankhorst@linux.intel.com,
+        matthias.bgg@gmail.com, mripard@kernel.org, p.zabel@pengutronix.de,
+        robh+dt@kernel.org, tzimmermann@suse.de
+Cc:     devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-phy@lists.infradead.org, markyacoub@google.com,
+        Markus Schneider-Pargmann <msp@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 06:07:45PM +0300, Andy Shevchenko wrote:
-> On Mon, Apr 11, 2022 at 12:10 PM Qing Wang <wangqing@vivo.com> wrote:
-> >
-> > From: Wang Qing <wangqing@vivo.com>
-> >
-> > When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
-> > will set llc_sibling 0xff(...), this is misleading.
-> 
-> Shouldn't it be a Fixes tag then?
+On Mon, 28 Mar 2022 10:09, AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>Il 28/03/22 00:39, Guillaume Ranquet ha scritto:
+>> From: Markus Schneider-Pargmann <msp@baylibre.com>
+>>
+>> Similar to HDMI, DP uses audio infoframes as well which are structured
+>> very similar to the HDMI ones.
+>>
+>> This patch adds a helper function to pack the HDMI audio infoframe for
+>> DP, called hdmi_audio_infoframe_pack_for_dp().
+>> hdmi_audio_infoframe_pack_only() is split into two parts. One of them
+>> packs the payload only and can be used for HDMI and DP.
+>>
+>> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+>> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+>> ---
+>>   drivers/video/hdmi.c           | 82 ++++++++++++++++++++++++++--------
+>>   include/drm/dp/drm_dp_helper.h |  2 +
+>>   include/linux/hdmi.h           |  7 ++-
+>>   3 files changed, 71 insertions(+), 20 deletions(-)
+>>
+>> diff --git a/drivers/video/hdmi.c b/drivers/video/hdmi.c
+>> index 947be761dfa4..5f50237554ed 100644
+>> --- a/drivers/video/hdmi.c
+>> +++ b/drivers/video/hdmi.c
+>> @@ -21,6 +21,7 @@
+>>    * DEALINGS IN THE SOFTWARE.
+>>    */
+>>
+>> +#include <drm/dp/drm_dp_helper.h>
+>>   #include <linux/bitops.h>
+>>   #include <linux/bug.h>
+>>   #include <linux/errno.h>
+>> @@ -381,12 +382,34 @@ static int hdmi_audio_infoframe_check_only(const struct hdmi_audio_infoframe *fr
+>>    *
+>>    * Returns 0 on success or a negative error code on failure.
+>>    */
+>> -int hdmi_audio_infoframe_check(struct hdmi_audio_infoframe *frame)
+>> +int hdmi_audio_infoframe_check(const struct hdmi_audio_infoframe *frame)
 >
-
-I thought about that. One the file has moved and lot of refactoring before the
-move after the code was first introduced. Since no one has seen any issues as
-the mask matches all the CPUs on a single chip SoC and this is not user visible,
-I didn't push for the fixes tag.
-
-Anyways the original commit introducing the feature is
-Commit 37c3ec2d810f ("arm64: topology: divorce MC scheduling domain from core_siblings")
-which was merged in v4.18 if I read git log correctly.
-
-I am happy to backport if needed.
-
-> > Don't set llc_sibling(default 0) if we don't know the cache topology.
-> 
-> ...
-> 
-> > -               if (cpuid_topo->llc_id == cpu_topo->llc_id) {
-> > +               if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
-> 
-> I'm wondering if more strict check is better here, i.e.
-> 
->                if (cpu_topo->llc_id >= 0 && cpuid_topo->llc_id ==
-> cpu_topo->llc_id) {
+>I agree with this change, as hdmi_audio_infoframe_check_only()'s param is a const,
+>but you really should mention that you're constifying this one in your commit
+>description, or do that in a separate commit.
 >
+>Either of the two is fine.
+>
+>Regards,
+>Angelo
 
-Yes I would agree. But I think Qing is just following other similar checks in
-the file. All such ids are initialised to -1 and are assigned only valid
-values >= 0. I am OK to keep it as is to keep it aligned with other similar
-checks.
+Noted, I'll add it to the commit message.
 
--- 
-Regards,
-Sudeep
+Thx,
+Guillaume.
