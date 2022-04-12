@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 838ACC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C62C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234425AbiDLJOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
+        id S237190AbiDLJO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358208AbiDLHlK (ORCPT
+        with ESMTP id S1358021AbiDLHk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991CD427EB;
-        Tue, 12 Apr 2022 00:17:34 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5463D49F;
+        Tue, 12 Apr 2022 00:17:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CCD0B81B6B;
-        Tue, 12 Apr 2022 07:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3513C385A1;
-        Tue, 12 Apr 2022 07:17:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E8D46183C;
+        Tue, 12 Apr 2022 07:17:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F83BC385AE;
+        Tue, 12 Apr 2022 07:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747852;
-        bh=aYjbmozvRP0Y6GF6WshL6ZK6wocwCPdx4W6SMiYjpFk=;
+        s=korg; t=1649747833;
+        bh=kShmUKhk7LeU0JYZ+RZnv3yHp8XfKe090h2Ncf9GveQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LyCOaXJ9BTjFJxhRF4/eWT4KjcNOmDPreN/X9+/bSmkGmMkNiPQtp9AiBOGEHt0T1
-         cmNcTXiMecvZdDyi/aCmzL4whl6+Ab3FGZr8vEFcQa3DmS3QKTwlRkyvwaV98ZD7O6
-         GDJjnquSJ3AqsEBK1YSGU3fb6axbjxYQqJGt3MAM=
+        b=RQ/0G5VyVOHwbSKw9TXBgiSQa/sNRKbj7iS2GN0x39s9rTYCO0maf/7n1jfIJDsK3
+         Cng8jI39fM82Fl7ZmBFvHzhzVrGg/6y4npVZn346cNUwp2hJ4hXzbXBXYvXXRy7VGY
+         SvX+bSA8PacUAZZXllBiYCMhu5aWWYqTqFBTOs18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 228/343] IB/cm: Cancel mad on the DREQ event when the state is MRA_REP_RCVD
-Date:   Tue, 12 Apr 2022 08:30:46 +0200
-Message-Id: <20220412062957.918468994@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 195/343] Drivers: hv: vmbus: Fix potential crash on module unload
+Date:   Tue, 12 Apr 2022 08:30:13 +0200
+Message-Id: <20220412062956.986128622@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,47 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Zhang <markzhang@nvidia.com>
+From: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-[ Upstream commit 107dd7beba403a363adfeb3ffe3734fe38a05cce ]
+[ Upstream commit 792f232d57ff28bbd5f9c4abe0466b23d5879dc8 ]
 
-On the passive side when the disconnectReq event comes, if the current
-state is MRA_REP_RCVD, it needs to cancel the MAD before entering the
-DREQ_RCVD and TIMEWAIT states, otherwise the destroy_id may block until
-this mad will reach timeout.
+The vmbus driver relies on the panic notifier infrastructure to perform
+some operations when a panic event is detected. Since vmbus can be built
+as module, it is required that the driver handles both registering and
+unregistering such panic notifier callback.
 
-Fixes: a977049dacde ("[PATCH] IB: Add the kernel CM implementation")
-Link: https://lore.kernel.org/r/75261c00c1d82128b1d981af9ff46e994186e621.1649062436.git.leonro@nvidia.com
-Signed-off-by: Mark Zhang <markzhang@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+After commit 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
+though, the panic notifier registration is done unconditionally in the module
+initialization routine whereas the unregistering procedure is conditionally
+guarded and executes only if HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE capability
+is set.
+
+This patch fixes that by unconditionally unregistering the panic notifier
+in the module's exit routine as well.
+
+Fixes: 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220315203535.682306-1-gpiccoli@igalia.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/cm.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/hv/vmbus_drv.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/core/cm.c b/drivers/infiniband/core/cm.c
-index 35f0d5e7533d..1c107d6d03b9 100644
---- a/drivers/infiniband/core/cm.c
-+++ b/drivers/infiniband/core/cm.c
-@@ -2824,6 +2824,7 @@ static int cm_dreq_handler(struct cm_work *work)
- 	switch (cm_id_priv->id.state) {
- 	case IB_CM_REP_SENT:
- 	case IB_CM_DREQ_SENT:
-+	case IB_CM_MRA_REP_RCVD:
- 		ib_cancel_mad(cm_id_priv->msg);
- 		break;
- 	case IB_CM_ESTABLISHED:
-@@ -2831,8 +2832,6 @@ static int cm_dreq_handler(struct cm_work *work)
- 		    cm_id_priv->id.lap_state == IB_CM_MRA_LAP_RCVD)
- 			ib_cancel_mad(cm_id_priv->msg);
- 		break;
--	case IB_CM_MRA_REP_RCVD:
--		break;
- 	case IB_CM_TIMEWAIT:
- 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
- 						     [CM_DREQ_COUNTER]);
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index 0a05e10ab36c..4bea1dfa41cd 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -2781,10 +2781,15 @@ static void __exit vmbus_exit(void)
+ 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
+ 		kmsg_dump_unregister(&hv_kmsg_dumper);
+ 		unregister_die_notifier(&hyperv_die_block);
+-		atomic_notifier_chain_unregister(&panic_notifier_list,
+-						 &hyperv_panic_block);
+ 	}
+ 
++	/*
++	 * The panic notifier is always registered, hence we should
++	 * also unconditionally unregister it here as well.
++	 */
++	atomic_notifier_chain_unregister(&panic_notifier_list,
++					 &hyperv_panic_block);
++
+ 	free_page((unsigned long)hv_panic_page);
+ 	unregister_sysctl_table(hv_ctl_table_hdr);
+ 	hv_ctl_table_hdr = NULL;
 -- 
 2.35.1
 
