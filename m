@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0FDBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C485EC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230296AbiDLX3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
+        id S229900AbiDLX3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbiDLX2K (ORCPT
+        with ESMTP id S231139AbiDLX2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:28:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7927DFFA7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:33:34 -0700 (PDT)
+        Tue, 12 Apr 2022 19:28:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9AF619C27
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:34:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649802813;
+        s=mimecast20190719; t=1649802855;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fVvyj7UT2RLX5Fjubi2oetumHl0CrI2Ol/3tyXbUefQ=;
-        b=XZGZOq2mA5t8Xp6D+4WeGIaAmR/cO9WTqakx8i8OkP1wNF6OKn3bepxSIYIQInTCrLOZb2
-        ZvK6L3/ht4MthzfG0mkRjPZ+bS8qBuw/pBY4KPfgjKLaHPwy/9PgOWnuh4QodCaSMYqYnh
-        SJ/T4Y9VfAizhN4uKnuNZzw1HFqZFUk=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z+ent/yy95aJOm6DnI9kx/1sJTBsC05TLsSw4BZBHzs=;
+        b=SeC0Mk7HbI8AUy0rgdAO4pUfy759ub4kmNn8RfMv4zk2dtjON/fgv7jmh3DGkewVjh5VUc
+        0PLJjPyyydwrKb+PrSzBV3KsxSS8uTjDgKKsD9CsOZdKJ3xQUpWuurtnJE2y5X6AwHBi4b
+        2C6XMa2237kRq3jVuuEMoUO502AZ5Ck=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-90-FxgtqUHaOa6c2QWSgC6JEA-1; Tue, 12 Apr 2022 16:14:11 -0400
-X-MC-Unique: FxgtqUHaOa6c2QWSgC6JEA-1
+ us-mta-413-jV2QJMBaNQm-JZsySZMRTA-1; Tue, 12 Apr 2022 16:14:14 -0400
+X-MC-Unique: jV2QJMBaNQm-JZsySZMRTA-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A1D76833959;
-        Tue, 12 Apr 2022 20:14:10 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6C51D85A5BE;
+        Tue, 12 Apr 2022 20:14:13 +0000 (UTC)
 Received: from cmirabil.remote.csb (unknown [10.22.32.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 10CFB401DAC;
-        Tue, 12 Apr 2022 20:14:10 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BA279416363;
+        Tue, 12 Apr 2022 20:14:12 +0000 (UTC)
 From:   Charles Mirabile <cmirabil@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Charles Mirabile <cmirabil@redhat.com>,
@@ -46,12 +47,18 @@ Cc:     Charles Mirabile <cmirabil@redhat.com>,
         Mattias Brugger <mbrugger@suse.com>,
         linux-rpi-kernel@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
-        Daniel Bauman <dbauman@redhat.com>,
-        Mwesigwa Guma <mguma@redhat.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
+        linux-input@vger.kernel.org, Mwesigwa Guma <mguma@redhat.com>,
         Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH v8 0/6] Raspberry Pi Sense HAT driver
-Date:   Tue, 12 Apr 2022 16:13:37 -0400
-Message-Id: <20220412201343.8074-1-cmirabil@redhat.com>
+Subject: [PATCH v8 4/6] dt-bindings: mfd: sensehat: Add Raspberry Pi Sense HAT schema
+Date:   Tue, 12 Apr 2022 16:13:41 -0400
+Message-Id: <20220412201343.8074-5-cmirabil@redhat.com>
+In-Reply-To: <20220412201343.8074-1-cmirabil@redhat.com>
+References: <20220412201343.8074-1-cmirabil@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
@@ -59,83 +66,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series adds a set of drivers for operating the Sense HAT
-peripheral device. This board is an add on for the Raspberry Pi that is
-designed to connect using the GPIO connector and communicate via I2C.
+This patch adds the device tree bindings for the Sense HAT
+and each of its children devices in yaml form.
 
-It features:
-	- a joystick
-	- an 8x8 RGB LED matrix display
-	- a whole bunch of environmental sensors with their own drivers
-	  (those are already in upstream Linux)
-
-This is a refactor of the work of Serge Schneider, the author of a
-version of this driver that is currently in the Raspberry Pi downstream
-kernel. We modified his code to make it suitable for upstream Linux.
-
-A couple of tests are available for the driver in the test folder in
-this repo: https://github.com/underground-software/sensehat.git
-	- sensehat_joystick_test logs the input events from the
-	  joystick to the console
-	- sensehat_display_test displays various solid colors on
-	  the LED panel.
-	- full_sensehat_test displays a single lit cell that can be
-	  moved with the joystick. Pressing the joystick ends the
-	  program.
-
-For more information about the Sense HAT, visit:
-https://www.raspberrypi.org/products/sense-hat/
-
-Changes since v7:
-	- Added missing error checks to sensehat-display and
-	  sensehat-joystick probe functions (allocation failure,
-	  and failure to get regmap)
-	- Propogated potential error from regmap write out of
-	  the update display function so that an innability to
-	  connect with hardware can be detected during probe
-	- Changed the userspace format back to individual bytes
-	  one per color channel, three per pixel. They are now
-	  arranged as rgb triples instead of the native format
-	  for the hardware.
-	- Thanks to Miguel Ojeda for these suggestions.
-
-Co-developed-by: Daniel Bauman <dbauman@redhat.com>
-Signed-off-by: Daniel Bauman <dbauman@redhat.com>
 Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
 Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
 Co-developed-by: Joel Savitz <jsavitz@redhat.com>
 Signed-off-by: Joel Savitz <jsavitz@redhat.com>
 Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
-
-Charles Mirabile (6):
-  drivers/mfd: sensehat: Add Raspberry Pi Sense HAT to simple_mfd_i2c
-  drivers/input/joystick: sensehat: Raspberry Pi Sense HAT joystick
-    driver
-  drivers/auxdisplay: sensehat: Raspberry Pi Sense HAT display driver
-  dt-bindings: mfd: sensehat: Add Raspberry Pi Sense HAT schema
-  MAINTAINERS: Add sensehat driver authors to MAINTAINERS
-  DO NOT MERGE: full sensehat device tree overlay for raspberry pi 4
-
- .../raspberrypi,sensehat-display.yaml         |  27 +++
- .../input/raspberrypi,sensehat-joystick.yaml  |  33 +++
- .../bindings/mfd/raspberrypi,sensehat.yaml    |  69 ++++++
- MAINTAINERS                                   |  11 +
- drivers/auxdisplay/Kconfig                    |   8 +
- drivers/auxdisplay/Makefile                   |   1 +
- drivers/auxdisplay/sensehat-display.c         | 205 ++++++++++++++++++
- drivers/input/joystick/Kconfig                |  11 +
- drivers/input/joystick/Makefile               |   1 +
- drivers/input/joystick/sensehat-joystick.c    | 137 ++++++++++++
- drivers/mfd/simple-mfd-i2c.c                  |   1 +
- sensehat.dtbs                                 |  54 +++++
- 12 files changed, 558 insertions(+)
+---
+ .../raspberrypi,sensehat-display.yaml         | 27 ++++++++
+ .../input/raspberrypi,sensehat-joystick.yaml  | 33 +++++++++
+ .../bindings/mfd/raspberrypi,sensehat.yaml    | 69 +++++++++++++++++++
+ 3 files changed, 129 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
  create mode 100644 Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
  create mode 100644 Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
- create mode 100644 drivers/auxdisplay/sensehat-display.c
- create mode 100644 drivers/input/joystick/sensehat-joystick.c
- create mode 100644 sensehat.dtbs
 
+diff --git a/Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml b/Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
+new file mode 100644
+index 000000000000..5e41d6b7817d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
+@@ -0,0 +1,27 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/auxdisplay/raspberrypi,sensehat-display.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Raspberry Pi Sensehat Display
++
++maintainers:
++  - Charles Mirabile <cmirabil@redhat.com>
++  - Mwesigwa Guma <mguma@redhat.com>
++  - Joel Savitz <jsavitz@redhat.com>
++
++description:
++  This device is part of the sensehat multi function device.
++  For more information see ../mfd/raspberrypi,sensehat.yaml.
++
++  This device features a programmable 8x8 RGB LED matrix.
++
++properties:
++  compatible:
++    const: raspberrypi,sensehat-display
++
++required:
++  - compatible
++
++additionalProperties: false
+diff --git a/Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml b/Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
+new file mode 100644
+index 000000000000..c97cd1d8eac6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
+@@ -0,0 +1,33 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/raspberrypi,sensehat-joystick.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Raspberry Pi Sensehat Joystick
++
++maintainers:
++  - Charles Mirabile <cmirabil@redhat.com>
++  - Mwesigwa Guma <mguma@redhat.com>
++  - Joel Savitz <jsavitz@redhat.com>
++
++description:
++  This device is part of the sensehat multi function device.
++  For more information see ../mfd/raspberrypi,sensehat.yaml.
++
++  This device features a five button joystick (up, down,left,
++  right, click)
++
++properties:
++  compatible:
++    const: raspberrypi,sensehat-joystick
++
++  interrupts:
++    items:
++      - description: pin number for joystick interrupt
++
++required:
++  - compatible
++  - interrupts
++
++additionalProperties: false
+diff --git a/Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml b/Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
+new file mode 100644
+index 000000000000..2484ec91b430
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
+@@ -0,0 +1,69 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/raspberrypi,sensehat.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Raspberry Pi Sensehat
++
++maintainers:
++  - Charles Mirabile <cmirabil@redhat.com>
++  - Mwesigwa Guma <mguma@redhat.com>
++  - Joel Savitz <jsavitz@redhat.com>
++
++description:
++  The Raspberry Pi Sensehat is an addon board originally developed
++  for the Raspberry Pi that has a joystick and an 8x8 RGB LED display
++  as well as several environmental sensors. It connects via i2c and
++  a gpio for irq.
++
++properties:
++  compatible:
++    const: raspberrypi,sensehat
++
++  reg:
++    items:
++      - description: i2c device address
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  "joystick":
++    $ref: ../input/raspberrypi,sensehat-joystick.yaml
++
++  "display":
++    $ref: ../auxdisplay/raspberrypi,sensehat-display.yaml
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++  - joystick
++  - display
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      sensehat@46 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        compatible = "raspberrypi,sensehat";
++        reg = <0x46>;
++        display {
++          compatible = "raspberrypi,sensehat-display";
++        };
++        joystick {
++          compatible = "raspberrypi,sensehat-joystick";
++          interrupts = <23 GPIO_ACTIVE_HIGH>;
++        };
++      };
++    };
 -- 
 2.31.1
 
