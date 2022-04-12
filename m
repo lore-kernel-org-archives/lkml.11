@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B76C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F78C47080
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354831AbiDLH54 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
+        id S237695AbiDLH6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353627AbiDLHZv (ORCPT
+        with ESMTP id S1353628AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9883E2654C;
-        Tue, 12 Apr 2022 00:02:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD4425EB6;
+        Tue, 12 Apr 2022 00:02:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3668B60B2B;
-        Tue, 12 Apr 2022 07:02:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CD75C385A6;
-        Tue, 12 Apr 2022 07:02:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B09DB60B2B;
+        Tue, 12 Apr 2022 07:02:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7A18C385A6;
+        Tue, 12 Apr 2022 07:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746937;
-        bh=AY9XliJqhQHz3+D1GqTzQinJSnUeCbZ2PTPqsNyVaYY=;
+        s=korg; t=1649746943;
+        bh=0IsMixcYoYir+0I2ktsvoJUilZLmNIeGvWPRRfGijNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UkN+G21YRqEApqCqfzhXmgDtJ/uNY9VkG5wFrmiE+ZCn8vE2lyN4KZcLrVzl0R6lU
-         MKhKLMStRjW2292cTJZJqn7Ub1AcxY4dgy/1rHa1KpbVr4fd5lI8nAt8DVPWO0RJAM
-         EgIoRS2fQMlFGwL7njwmWDhPKQocWUMOefcUMnH0=
+        b=mZA2gYS3AnN5qZjlyBhd8dIanLrCUdG7BhMo2EGghTevnPNna6+xIQDjc/QZGzM+d
+         H404MHFx7W0kOyTQmVb4Y9QLkZqJbl90yHzvV6haWfsxVm8u28EjAbBnH4MkAaPIfu
+         jwnFrFIao167E6yhA+WfDyBeOFOosUczWq2KHIXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Alice Michael <alice.michael@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 184/285] dpaa2-ptp: Fix refcount leak in dpaa2_ptp_probe
-Date:   Tue, 12 Apr 2022 08:30:41 +0200
-Message-Id: <20220412062948.975026606@linuxfoundation.org>
+Subject: [PATCH 5.16 186/285] ice: Do not skip not enabled queues in ice_vc_dis_qs_msg
+Date:   Tue, 12 Apr 2022 08:30:43 +0200
+Message-Id: <20220412062949.031574197@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,44 +53,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
 
-[ Upstream commit 2b04bd4f03bba021959ca339314f6739710f0954 ]
+[ Upstream commit 05ef6813b234db3196f083b91db3963f040b65bb ]
 
-This node pointer is returned by of_find_compatible_node() with
-refcount incremented. Calling of_node_put() to aovid the refcount leak.
+Disable check for queue being enabled in ice_vc_dis_qs_msg, because
+there could be a case when queues were created, but were not enabled.
+We still need to delete those queues.
 
-Fixes: d346c9e86d86 ("dpaa2-ptp: reuse ptp_qoriq driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220404125336.13427-1-linmq006@gmail.com
+Normal workflow for VF looks like:
+Enable path:
+VIRTCHNL_OP_ADD_ETH_ADDR (opcode 10)
+VIRTCHNL_OP_CONFIG_VSI_QUEUES (opcode 6)
+VIRTCHNL_OP_ENABLE_QUEUES (opcode 8)
+
+Disable path:
+VIRTCHNL_OP_DISABLE_QUEUES (opcode 9)
+VIRTCHNL_OP_DEL_ETH_ADDR (opcode 11)
+
+The issue appears only in stress conditions when VF is enabled and
+disabled very fast.
+Eventually there will be a case, when queues are created by
+VIRTCHNL_OP_CONFIG_VSI_QUEUES, but are not enabled by
+VIRTCHNL_OP_ENABLE_QUEUES.
+In turn, these queues are not deleted by VIRTCHNL_OP_DISABLE_QUEUES,
+because there is a check whether queues are enabled in
+ice_vc_dis_qs_msg.
+
+When we bring up the VF again, we will see the "Failed to set LAN Tx queue
+context" error during VIRTCHNL_OP_CONFIG_VSI_QUEUES step. This
+happens because old 16 queues were not deleted and VF requests to create
+16 more, but ice_sched_get_free_qparent in ice_ena_vsi_txq would fail to
+find a parent node for first newly requested queue (because all nodes
+are allocated to 16 old queues).
+
+Testing Hints:
+
+Just enable and disable VF fast enough, so it would be disabled before
+reaching VIRTCHNL_OP_ENABLE_QUEUES.
+
+while true; do
+        ip link set dev ens785f0v0 up
+        sleep 0.065 # adjust delay value for you machine
+        ip link set dev ens785f0v0 down
+done
+
+Fixes: 77ca27c41705 ("ice: add support for virtchnl_queue_select.[tx|rx]_queues bitmap")
+Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Alice Michael <alice.michael@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-index 32b5faa87bb8..208a3459f2e2 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-@@ -168,7 +168,7 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
- 	base = of_iomap(node, 0);
- 	if (!base) {
- 		err = -ENOMEM;
--		goto err_close;
-+		goto err_put;
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index e17813fb71a1..91182a6bc137 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -3383,9 +3383,9 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
+ 				goto error_param;
+ 			}
  
- 	err = fsl_mc_allocate_irqs(mc_dev);
-@@ -212,6 +212,8 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
- 	fsl_mc_free_irqs(mc_dev);
- err_unmap:
- 	iounmap(base);
-+err_put:
-+	of_node_put(node);
- err_close:
- 	dprtc_close(mc_dev->mc_io, 0, mc_dev->mc_handle);
- err_free_mcp:
+-			/* Skip queue if not enabled */
+ 			if (!test_bit(vf_q_id, vf->txq_ena))
+-				continue;
++				dev_dbg(ice_pf_to_dev(vsi->back), "Queue %u on VSI %u is not enabled, but stopping it anyway\n",
++					vf_q_id, vsi->vsi_num);
+ 
+ 			ice_fill_txq_meta(vsi, ring, &txq_meta);
+ 
 -- 
 2.35.1
 
