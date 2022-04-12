@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 259A6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 630EBC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379260AbiDLIUR (ORCPT
+        id S1378842AbiDLITX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
+        Tue, 12 Apr 2022 04:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355096AbiDLH1I (ORCPT
+        with ESMTP id S1354812AbiDLH0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:08 -0400
+        Tue, 12 Apr 2022 03:26:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDA448305;
-        Tue, 12 Apr 2022 00:07:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854BC4705D;
+        Tue, 12 Apr 2022 00:06:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B96F616B2;
-        Tue, 12 Apr 2022 07:07:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23786C385A8;
-        Tue, 12 Apr 2022 07:07:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 643AA616BF;
+        Tue, 12 Apr 2022 07:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 740F8C385A6;
+        Tue, 12 Apr 2022 07:06:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747225;
-        bh=Jh0HxlaHDCPkrzXaR6A0TjXlWJhTiro1dmjnLAkCRbA=;
+        s=korg; t=1649747200;
+        bh=jdSrlme+ldB8gp5g95tgqulfRXTKB43uz9/V2NDGTck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y5ZfqjvSXX2/VDfmP6lEupoM/U5CwsXlV7cbFtwDn/Q7EtpdlKrbntFmVerIzOy2R
-         LI/Plp/pp4g7CnVIx5HHdzj7QDsEddSElRQ7rlSmnJpOQ2wmOMRKmcZvclqrOHOk8E
-         HS/aEAKkT01hVudY6sMwOaR3QVfmZ78r/20PzwSs=
+        b=aouW95+RvvvonF+iYDVrLYEC1hfOTFkA59+SOExMEW85wgxSnavx7nnLoJkYBk+2g
+         87cZ3niyXN+eTtrin+x8ip/9pUcg3bAkVy60OA0yHHEAHn27ZKFlxFfHD0qcZDvkuL
+         pD9nAPK+wirHRBK3kVmskl5qFqHAHt73S+Dfbn1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.16 248/285] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
-Date:   Tue, 12 Apr 2022 08:31:45 +0200
-Message-Id: <20220412062950.816356188@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH 5.16 278/285] x86/bug: Prevent shadowing in __WARN_FLAGS
+Date:   Tue, 12 Apr 2022 08:32:15 +0200
+Message-Id: <20220412062951.677686561@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,61 +52,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-commit 0df6664531a12cdd8fc873f0cac0dcb40243d3e9 upstream.
+commit 9ce02f0fc68326dd1f87a0a3a4c6ae7fdd39e6f6 upstream.
 
-It turns out that our polling of RWP is totally wrong when checking
-for it in the redistributors, as we test the *distributor* bit index,
-whereas it is a different bit number in the RDs... Oopsie boo.
+The macro __WARN_FLAGS() uses a local variable named "f". This being a
+common name, there is a risk of shadowing other variables.
 
-This is embarassing. Not only because it is wrong, but also because
-it took *8 years* to notice the blunder...
+For example, GCC would yield:
 
-Just fix the damn thing.
+| In file included from ./include/linux/bug.h:5,
+|                  from ./include/linux/cpumask.h:14,
+|                  from ./arch/x86/include/asm/cpumask.h:5,
+|                  from ./arch/x86/include/asm/msr.h:11,
+|                  from ./arch/x86/include/asm/processor.h:22,
+|                  from ./arch/x86/include/asm/timex.h:5,
+|                  from ./include/linux/timex.h:65,
+|                  from ./include/linux/time32.h:13,
+|                  from ./include/linux/time.h:60,
+|                  from ./include/linux/stat.h:19,
+|                  from ./include/linux/module.h:13,
+|                  from virt/lib/irqbypass.mod.c:1:
+| ./include/linux/rcupdate.h: In function 'rcu_head_after_call_rcu':
+| ./arch/x86/include/asm/bug.h:80:21: warning: declaration of 'f' shadows a parameter [-Wshadow]
+|    80 |         __auto_type f = BUGFLAG_WARNING|(flags);                \
+|       |                     ^
+| ./include/asm-generic/bug.h:106:17: note: in expansion of macro '__WARN_FLAGS'
+|   106 |                 __WARN_FLAGS(BUGFLAG_ONCE |                     \
+|       |                 ^~~~~~~~~~~~
+| ./include/linux/rcupdate.h:1007:9: note: in expansion of macro 'WARN_ON_ONCE'
+|  1007 |         WARN_ON_ONCE(func != (rcu_callback_t)~0L);
+|       |         ^~~~~~~~~~~~
+| In file included from ./include/linux/rbtree.h:24,
+|                  from ./include/linux/mm_types.h:11,
+|                  from ./include/linux/buildid.h:5,
+|                  from ./include/linux/module.h:14,
+|                  from virt/lib/irqbypass.mod.c:1:
+| ./include/linux/rcupdate.h:1001:62: note: shadowed declaration is here
+|  1001 | rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
+|       |                                               ~~~~~~~~~~~~~~~^
 
-Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
+For reference, sparse also warns about it, c.f. [1].
+
+This patch renames the variable from f to __flags (with two underscore
+prefixes as suggested in the Linux kernel coding style [2]) in order
+to prevent collisions.
+
+[1] https://lore.kernel.org/all/CAFGhKbyifH1a+nAMCvWM88TK6fpNPdzFtUXPmRGnnQeePV+1sw@mail.gmail.com/
+
+[2] Linux kernel coding style, section 12) Macros, Enums and RTL,
+paragraph 5) namespace collisions when defining local variables in
+macros resembling functions
+https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
+
+Fixes: bfb1a7c91fb7 ("x86/bug: Merge annotate_reachable() into_BUG_FLAGS() asm")
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/20220324023742.106546-1-mailhol.vincent@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/include/asm/bug.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -206,11 +206,11 @@ static inline void __iomem *gic_dist_bas
- 	}
- }
+--- a/arch/x86/include/asm/bug.h
++++ b/arch/x86/include/asm/bug.h
+@@ -77,9 +77,9 @@ do {								\
+  */
+ #define __WARN_FLAGS(flags)					\
+ do {								\
+-	__auto_type f = BUGFLAG_WARNING|(flags);		\
++	__auto_type __flags = BUGFLAG_WARNING|(flags);		\
+ 	instrumentation_begin();				\
+-	_BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);			\
++	_BUG_FLAGS(ASM_UD2, __flags, ASM_REACHABLE);		\
+ 	instrumentation_end();					\
+ } while (0)
  
--static void gic_do_wait_for_rwp(void __iomem *base)
-+static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
- {
- 	u32 count = 1000000;	/* 1s! */
- 
--	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
-+	while (readl_relaxed(base + GICD_CTLR) & bit) {
- 		count--;
- 		if (!count) {
- 			pr_err_ratelimited("RWP timeout, gone fishing\n");
-@@ -224,13 +224,13 @@ static void gic_do_wait_for_rwp(void __i
- /* Wait for completion of a distributor change */
- static void gic_dist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data.dist_base);
-+	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
- }
- 
- /* Wait for completion of a redistributor change */
- static void gic_redist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
-+	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
- }
- 
- #ifdef CONFIG_ARM64
 
 
