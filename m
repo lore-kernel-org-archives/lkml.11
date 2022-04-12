@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE794C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFE1C352AA
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359158AbiDLIdS (ORCPT
+        id S1353839AbiDLIkd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
+        Tue, 12 Apr 2022 04:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353533AbiDLHZo (ORCPT
+        with ESMTP id S1357222AbiDLHjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC23D42EFF;
-        Tue, 12 Apr 2022 00:01:06 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF58BF6;
+        Tue, 12 Apr 2022 00:14:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 592BA615B4;
-        Tue, 12 Apr 2022 07:01:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66825C385A1;
-        Tue, 12 Apr 2022 07:01:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A8F36171C;
+        Tue, 12 Apr 2022 07:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58414C385A5;
+        Tue, 12 Apr 2022 07:14:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746865;
-        bh=hUN9yw1tKUHXlZHF50cIZfu/c6O6GRL/XpekaWNpOQM=;
+        s=korg; t=1649747641;
+        bh=fEaYpuKnP4mDHD7HHYhCWcISb75U1FDjOghhvQZ4igY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oemTtePxwN2ddsEUQ3q4/cZW/GP7ZcCRkcYdoBJsZt2O4YYyYz34DM1DIhfYTVTwK
-         O+Xytdw6DB8GlHZJe/G5uvNBHJyiL/iq2+FSzZxowIjokZ8M9P/Mseq/GYoNJ62OvW
-         U6qt5Z/OPRQ0xasRBoc3EDSGXufZ2OzeyOnRnwJQ=
+        b=XQm7l7ASfn8iEAxaUHkF2abXkFrAaqv2vVeUKnKqRRmhjuW+7fxQDVj5VLU54qLoN
+         dHvUZWnCQOXCVqmSYS5efbwb63Z95RGOYV/zoGnCd1DFVqu/K4CysUevh5UsNaaa5f
+         +bxlVM5yPyf41ivAzEWDBXbUZs453rfn/7PyQv+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Kevin Groeneveld <kgroeneveld@lenbrook.com>,
+        stable@vger.kernel.org, "Juergen E. Fischer" <fischer@norbit.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 156/285] scsi: sr: Fix typo in CDROM(CLOSETRAY|EJECT) handling
-Date:   Tue, 12 Apr 2022 08:30:13 +0200
-Message-Id: <20220412062948.173744187@linuxfoundation.org>
+Subject: [PATCH 5.17 113/343] scsi: aha152x: Fix aha152x_setup() __setup handler return value
+Date:   Tue, 12 Apr 2022 08:28:51 +0200
+Message-Id: <20220412062954.652829312@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Groeneveld <kgroeneveld@lenbrook.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit bc5519c18a32ce855bb51b9f5eceb77a9489d080 ]
+[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
 
-Commit 2e27f576abc6 ("scsi: scsi_ioctl: Call scsi_cmd_ioctl() from
-scsi_ioctl()") seems to have a typo as it is checking ret instead of cmd in
-the if statement checking for CDROMCLOSETRAY and CDROMEJECT.  This changes
-the behaviour of these ioctls as the cdrom_ioctl handling of these is more
-restrictive than the scsi_ioctl version.
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; doing so just pollutes init's
+environment with strings that are not init arguments/parameters).
 
-Link: https://lore.kernel.org/r/20220323002242.21157-1-kgroeneveld@lenbrook.com
-Fixes: 2e27f576abc6 ("scsi: scsi_ioctl: Call scsi_cmd_ioctl() from scsi_ioctl()")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Kevin Groeneveld <kgroeneveld@lenbrook.com>
+Return 1 from aha152x_setup() to indicate that the boot option has been
+handled.
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
+Cc: "Juergen E. Fischer" <fischer@norbit.de>
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/aha152x.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index f5a2eed54345..9f683fed8f2c 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -579,7 +579,7 @@ static int sr_block_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd,
+diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
+index d17880b57d17..2449b4215b32 100644
+--- a/drivers/scsi/aha152x.c
++++ b/drivers/scsi/aha152x.c
+@@ -3375,13 +3375,11 @@ static int __init aha152x_setup(char *str)
+ 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
+ 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
+ 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
+-	if (ints[0] > 8) {                                                /*}*/
++	if (ints[0] > 8)
+ 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
+ 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
+-	} else {
++	else
+ 		setup_count++;
+-		return 0;
+-	}
  
- 	scsi_autopm_get_device(sdev);
- 
--	if (ret != CDROMCLOSETRAY && ret != CDROMEJECT) {
-+	if (cmd != CDROMCLOSETRAY && cmd != CDROMEJECT) {
- 		ret = cdrom_ioctl(&cd->cdi, bdev, mode, cmd, arg);
- 		if (ret != -ENOSYS)
- 			goto put;
+ 	return 1;
+ }
 -- 
 2.35.1
 
