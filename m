@@ -2,51 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD72C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F094C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349171AbiDLMbN (ORCPT
+        id S1351752AbiDLMbV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        Tue, 12 Apr 2022 08:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345421AbiDLM1W (ORCPT
+        with ESMTP id S1355538AbiDLM3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:27:22 -0400
-X-Greylist: delayed 561 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 04:34:08 PDT
-Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52A931200;
-        Tue, 12 Apr 2022 04:34:08 -0700 (PDT)
-Received: by sym2.noone.org (Postfix, from userid 1002)
-        id 4Kd3KT2lSTzvjfn; Tue, 12 Apr 2022 13:24:45 +0200 (CEST)
-Date:   Tue, 12 Apr 2022 13:24:45 +0200
-From:   Tobias Klauser <tklauser@distanz.ch>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        Tue, 12 Apr 2022 08:29:30 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A627353A46
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:43:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649763820; x=1681299820;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/CXkkOa1Qb1zYpVNyIs99QKNPxZBdARfFd4I1EE/yEY=;
+  b=GsbkOgSzplfKZwBD3YXZXsUmk6vm4beGJ1DdOyi6+Hw3I4C/4lW+TG3h
+   Qnx2dGRtQrw/mzfrAdRNIUxHBSJO22FaQPzUTOi6hJAdXP1QBQXYr28TM
+   jenVvXDLiz2ZFi2YyIoJezyUNaFmRa1QBV8lYJyCD5O/xQj8tJEPWjb32
+   XyC3uxm1DNhC2yJMz2B62b0rKYTvxTYht/LFJVlniKOIONpVIaUWnGIXA
+   RcFm+Cm46VaQ7iqw0JgeBJnXgv9WpTxA0LWzwRBhvkXz8SsuNE3fKka2L
+   RbvBsoGSx1cItdTv9CxWEOcsVI9R8jeI18SbVr501lfojhjEIgOAQAG0E
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262536050"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="262536050"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:43:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="724417241"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 04:43:31 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neEvi-0002ou-NZ;
+        Tue, 12 Apr 2022 11:43:30 +0000
+Date:   Tue, 12 Apr 2022 19:43:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] tty: serial: altera: use altera_jtaguart_stop_tx()
-Message-ID: <20220412112444.ovep2442cybue5nu@distanz.ch>
-References: <20220411104506.8990-1-jslaby@suse.cz>
- <20220411104506.8990-4-jslaby@suse.cz>
+Subject: [ammarfaizi2-block:crng/random/jd/not-zero-entropy 6/12] ERROR:
+ modpost: "random_get_entropy_fallback" [crypto/jitterentropy_rng.ko]
+ undefined!
+Message-ID: <202204121911.NhZSbyFC-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220411104506.8990-4-jslaby@suse.cz>
-User-Agent: NeoMutt/20170113 (1.7.2)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-11 at 12:45:06 +0200, Jiri Slaby <jslaby@suse.cz> wrote:
-> altera_jtaguart_tx_chars() duplicates what altera_jtaguart_stop_tx()
-> already does. So instead of the duplication, call the helper instead.
-> 
-> Not only it makes the code cleaner, but it also says what the "if"
-> really does.
-> 
-> Cc: Tobias Klauser <tklauser@distanz.ch>
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/not-zero-entropy
+head:   4ee3bf173a552cd996e048d57f65bb5b471ab577
+commit: 223939a5e0da931df37ab6bcd3e84bd74d931f35 [6/12] mips: use fallback for random_get_entropy() instead of zero
+config: mips-decstation_64_defconfig (https://download.01.org/0day-ci/archive/20220412/202204121911.NhZSbyFC-lkp@intel.com/config)
+compiler: mips64el-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/223939a5e0da931df37ab6bcd3e84bd74d931f35
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block crng/random/jd/not-zero-entropy
+        git checkout 223939a5e0da931df37ab6bcd3e84bd74d931f35
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
 
-Acked-by: Tobias Klauser <tklauser@distanz.ch>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "random_get_entropy_fallback" [crypto/jitterentropy_rng.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
