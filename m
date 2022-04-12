@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E08C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbiDLLve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
+        id S232795AbiDLLvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355015AbiDLLtJ (ORCPT
+        with ESMTP id S1354998AbiDLLtI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:49:09 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A645D266D;
-        Tue, 12 Apr 2022 03:32:36 -0700 (PDT)
+        Tue, 12 Apr 2022 07:49:08 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E1EB39;
+        Tue, 12 Apr 2022 03:32:31 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so2427096pjb.0;
+        Tue, 12 Apr 2022 03:32:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649759556; x=1681295556;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=clIj3R6JMBSbxgmYP1hLjcuHnj7icvDJL9Mcr68ohps=;
-  b=Bztc4ARMF1eHXZMWrSZLf9GYLpGV8hmzYh34u8N8mOmfssqmNzp6luv+
-   mKyHzXdVh1r1jny9Wcva9IYRZ3LJtdYJC6HlYHnPDySDgAfKK61NlKt0R
-   3T6LOCGbW0uPwKRNc2sh+1kno1hMu+TYOKP7RSpJ/SqChpbnkN1jKTEyH
-   M=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 12 Apr 2022 03:32:36 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 12 Apr 2022 03:32:34 -0700
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 12 Apr 2022 16:02:12 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 1EE915A26; Tue, 12 Apr 2022 16:02:12 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org
-Cc:     quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
-        quic_sartgarg@quicinc.com, quic_nitirawa@quicinc.com,
-        quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Subject: [PATCH V4 1/2] dt-bindings: mmc: sdhci-msm: Add gcc resets strings
-Date:   Tue, 12 Apr 2022 16:02:07 +0530
-Message-Id: <1649759528-15125-2-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649759528-15125-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1649759528-15125-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j/diUgJ6on6fJMFNZB8r5qR9Df3QD60+s0BeH3kCZZE=;
+        b=eqPtoZXzQy7EibLkilIePwxil9cDXhi/222u6HQ2xkHFy75qv8m1UEp+2XcV9YhqkW
+         p3je/XJIODmDyyGCDBKS9Jmn0dg4o/PFO1+1Azg+eluYxdUV8KxfEtNsJ7svBi/TOwKM
+         sSPcvpjYZx7RQbfeQ4IBRkNzDn4OpDRwFmftZTa9dzB6IO8cFYhXR7GcQQYbVkorRwBP
+         5uU+FN9jHnKI/bTKHafONRvng3twc2hF1FQWmeUptt4Z+SnkXExC3M+4EdC3k3K52iXU
+         MdUp3TckFSJDchBbp6Mb8NH7d2wVL3T1DEHoxVExopqRIurj5lML/4Fz3Vy9CHzNpFYq
+         VUwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j/diUgJ6on6fJMFNZB8r5qR9Df3QD60+s0BeH3kCZZE=;
+        b=w1SUXwDPaifQYAvkxkKi0+u59K1kz8FNtxNr4pXEm0UDwWuPhjqEZkDe36DFhipVVw
+         /pcC0X2HFdTVWikl/784UkdjpKVDN2FXFophoGoDoNCyVvzpNBDmQODm+zKfD5FzPWJg
+         wQ3EBls8MnzOdSIyb2jXzDRKBBuSQk2CIZYln0w7k0KZsFbgYCS38/rLlMHkaNu1t46z
+         JghvXpU2dFclKTm3fnNc6ZiIB+6+FpKhNc6jItGSRQmnErFIBpSR+fJ2/YlkN9QkmOc6
+         /dnNMyM8kA6H+29aZQ7Z5+8WYfojpnxgJ0tmQtLJQe8g2Y37K+zLb1cahgcCelJlh5Zj
+         It0A==
+X-Gm-Message-State: AOAM532rIcTcpyu3dGO8DuRaiva457raAXnSG7LGYWPahWRdSTKzsxse
+        mPrBvc0kWz1nwTeZjpoeQ1ghNqB/mdcTrZMqwC4=
+X-Google-Smtp-Source: ABdhPJxJgTuTm/K4D0Rn0JofYXhgZEIj20GsEhgefL/eIQuy+S3UNBl/Ih83/Cuo5UxX8n90jH9/N/sU99mGf9nIj20=
+X-Received: by 2002:a17:902:edc5:b0:156:68e4:416 with SMTP id
+ q5-20020a170902edc500b0015668e40416mr36483483plk.87.1649759551356; Tue, 12
+ Apr 2022 03:32:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220411133428.42165-1-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20220411133428.42165-1-manivannan.sadhasivam@linaro.org>
+From:   Daniele Palmas <dnlplm@gmail.com>
+Date:   Tue, 12 Apr 2022 12:30:18 +0200
+Message-ID: <CAGRyCJEFjx6unWLavitXzyWU9G7vLnW9=b+xU-sLLq6LwU3Aow@mail.gmail.com>
+Subject: Re: [PATCH v2] bus: mhi: host: pci_generic: Sort mhi_pci_id_table
+ based on the PID
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add gcc hardware reset supported strings for qcom-sdhci controller.
+Hi Mani,
 
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
----
- Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 5 +++++
- 1 file changed, 5 insertions(+)
+Il giorno lun 11 apr 2022 alle ore 15:34 Manivannan Sadhasivam
+<manivannan.sadhasivam@linaro.org> ha scritto:
+>
+> Sorting this way helps in identifying the products of vendors. There is no
+> sorting required for VID and the new VID should be added as the last entry.
+>
+> Let's also add a note clarifying this.
+>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>
 
-diff --git a/Documentation/devicetree/bindings/mmc/sdhci-msm.txt b/Documentation/devicetree/bindings/mmc/sdhci-msm.txt
-index 6216ed7..9f02461 100644
---- a/Documentation/devicetree/bindings/mmc/sdhci-msm.txt
-+++ b/Documentation/devicetree/bindings/mmc/sdhci-msm.txt
-@@ -76,6 +76,7 @@ Optional Properties:
- 		"cpu-sdhc".
- 		Please refer to Documentation/devicetree/bindings/
- 		interconnect/ for more details.
-+- resets: Phandle and reset specifier for the device's reset.
- 
- Example:
- 
-@@ -98,6 +99,8 @@ Example:
- 				<&qnoc MASTER_CPU_ID &qnoc SLAVE_SDCC_ID>;
- 		interconnect-names = "sdhc-ddr","cpu-sdhc";
- 
-+		resets = <&gcc GCC_SDCC1_BCR>;
-+
- 		qcom,dll-config = <0x000f642c>;
- 		qcom,ddr-config = <0x80040868>;
- 	};
-@@ -118,6 +121,8 @@ Example:
- 		clocks = <&gcc GCC_SDCC2_APPS_CLK>, <&gcc GCC_SDCC2_AHB_CLK>;
- 		clock-names = "core", "iface";
- 
-+		resets = <&gcc GCC_SDCC2_BCR>;
-+
- 		qcom,dll-config = <0x0007642c>;
- 		qcom,ddr-config = <0x80040868>;
- 	};
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+Reviewed-by: Daniele Palmas <dnlplm@gmail.com>
 
+I will wait for this change to be merged, then rebase the FN980 one.
+
+Thanks,
+Daniele
+
+> Changes in v2:
+>
+> * Fixup the 0x0306 entry by moving it after subid
+>
+>  drivers/bus/mhi/host/pci_generic.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
+> index 541ced27d941..8858f3bf4f04 100644
+> --- a/drivers/bus/mhi/host/pci_generic.c
+> +++ b/drivers/bus/mhi/host/pci_generic.c
+> @@ -446,20 +446,21 @@ static const struct mhi_pci_dev_info mhi_sierra_em919x_info = {
+>         .sideband_wake = false,
+>  };
+>
+> +/* Keep the list sorted based on the PID. New VID should be added as the last entry */
+>  static const struct pci_device_id mhi_pci_id_table[] = {
+> +       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
+> +               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx24_info },
+>         /* EM919x (sdx55), use the same vid:pid as qcom-sdx55m */
+>         { PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0306, 0x18d7, 0x0200),
+>                 .driver_data = (kernel_ulong_t) &mhi_sierra_em919x_info },
+>         { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0306),
+>                 .driver_data = (kernel_ulong_t) &mhi_qcom_sdx55_info },
+> -       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
+> -               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx24_info },
+> +       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0308),
+> +               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx65_info },
+>         { PCI_DEVICE(0x1eac, 0x1001), /* EM120R-GL (sdx24) */
+>                 .driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
+>         { PCI_DEVICE(0x1eac, 0x1002), /* EM160R-GL (sdx24) */
+>                 .driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
+> -       { PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0308),
+> -               .driver_data = (kernel_ulong_t) &mhi_qcom_sdx65_info },
+>         /* T99W175 (sdx55), Both for eSIM and Non-eSIM */
+>         { PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
+>                 .driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
+> --
+> 2.25.1
+>
