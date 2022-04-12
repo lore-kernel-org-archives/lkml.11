@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A213AC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF9DC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350784AbiDLGr7 (ORCPT
+        id S1350737AbiDLGrp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
+        Tue, 12 Apr 2022 02:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351085AbiDLGn6 (ORCPT
+        with ESMTP id S1351027AbiDLGnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:43:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD25D393DB;
-        Mon, 11 Apr 2022 23:37:19 -0700 (PDT)
+        Tue, 12 Apr 2022 02:43:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F202938783;
+        Mon, 11 Apr 2022 23:37:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62BF9B81B43;
-        Tue, 12 Apr 2022 06:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B50D2C385A6;
-        Tue, 12 Apr 2022 06:37:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC046B81B46;
+        Tue, 12 Apr 2022 06:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11945C385A6;
+        Tue, 12 Apr 2022 06:37:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745437;
-        bh=mR2O/g+rjFObtLuc8qXfsCZ+aho+SVwU90zDb6t0Px0=;
+        s=korg; t=1649745431;
+        bh=BFL7ivdBXp6i5bRDuaTWh+xhj4naoqFOswKoDjPtYV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dZg5o6Ppr1coTi5fkWBbbvD2xbIIQnKIaUhpdXY7RNo3JD0yHziXN0Xnq7RFtS2V5
-         oHeME7ZADzk+I9PvfjTsShLLpBWnBD9TSiHrSIbIKMPJTKtJC7zniVkT2NiJ+WzU30
-         ZAhzcGXVU2/+wpQ2BmrjjcR9aSLWIjHrqBCeSX9s=
+        b=AqwYTLaAOTN5Ztaxba8bgfUdhTrSL0S9oYrhgsvB0Dn6eSa8oYt9sdz3DuUlds9zE
+         Ghdpg1TkC3QCLYJMA9iQ30c5m1Gg/2xF6bFDc8go0AjtIcJZcYOhqt7RIe0YTTV7E+
+         R20zNc+fuOjDZ8JkimzVyB7kY4AFaDO7bZ5LazEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 095/171] parisc: Fix patch code locking and flushing
-Date:   Tue, 12 Apr 2022 08:29:46 +0200
-Message-Id: <20220412062930.633266177@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 093/171] NFS: Avoid writeback threads getting stuck in mempool_alloc()
+Date:   Tue, 12 Apr 2022 08:29:44 +0200
+Message-Id: <20220412062930.575293698@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -49,95 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit a9fe7fa7d874a536e0540469f314772c054a0323 ]
+[ Upstream commit 0bae835b63c53f86cdc524f5962e39409585b22c ]
 
-This change fixes the following:
+In a low memory situation, allow the NFS writeback code to fail without
+getting stuck in infinite loops in mempool_alloc().
 
-1) The flags variable is not initialized. Always use raw_spin_lock_irqsave
-and raw_spin_unlock_irqrestore to serialize patching.
-
-2) flush_kernel_vmap_range is primarily intended for DMA flushes. Since
-__patch_text_multiple is often called with interrupts disabled, it is
-better to directly call flush_kernel_dcache_range_asm and
-flush_kernel_icache_range_asm. This avoids an extra call.
-
-3) The final call to flush_icache_range is unnecessary.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/patch.c | 25 +++++++++++--------------
- 1 file changed, 11 insertions(+), 14 deletions(-)
+ fs/nfs/pagelist.c | 10 +++++-----
+ fs/nfs/write.c    | 10 ++++++++--
+ 2 files changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
-index 80a0ab372802..e59574f65e64 100644
---- a/arch/parisc/kernel/patch.c
-+++ b/arch/parisc/kernel/patch.c
-@@ -40,10 +40,7 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags,
- 
- 	*need_unmap = 1;
- 	set_fixmap(fixmap, page_to_phys(page));
--	if (flags)
--		raw_spin_lock_irqsave(&patch_lock, *flags);
--	else
--		__acquire(&patch_lock);
-+	raw_spin_lock_irqsave(&patch_lock, *flags);
- 
- 	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
- }
-@@ -52,10 +49,7 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
- {
- 	clear_fixmap(fixmap);
- 
--	if (flags)
--		raw_spin_unlock_irqrestore(&patch_lock, *flags);
--	else
--		__release(&patch_lock);
-+	raw_spin_unlock_irqrestore(&patch_lock, *flags);
- }
- 
- void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
-@@ -67,8 +61,9 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
- 	int mapped;
- 
- 	/* Make sure we don't have any aliases in cache */
--	flush_kernel_vmap_range(addr, len);
--	flush_icache_range(start, end);
-+	flush_kernel_dcache_range_asm(start, end);
-+	flush_kernel_icache_range_asm(start, end);
-+	flush_tlb_kernel_range(start, end);
- 
- 	p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
- 
-@@ -81,8 +76,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
- 			 * We're crossing a page boundary, so
- 			 * need to remap
- 			 */
--			flush_kernel_vmap_range((void *)fixmap,
--						(p-fixmap) * sizeof(*p));
-+			flush_kernel_dcache_range_asm((unsigned long)fixmap,
-+						      (unsigned long)p);
-+			flush_tlb_kernel_range((unsigned long)fixmap,
-+					       (unsigned long)p);
- 			if (mapped)
- 				patch_unmap(FIX_TEXT_POKE0, &flags);
- 			p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags,
-@@ -90,10 +87,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
- 		}
+diff --git a/fs/nfs/pagelist.c b/fs/nfs/pagelist.c
+index 98b9c1ed366e..17fef6eb490c 100644
+--- a/fs/nfs/pagelist.c
++++ b/fs/nfs/pagelist.c
+@@ -90,10 +90,10 @@ void nfs_set_pgio_error(struct nfs_pgio_header *hdr, int error, loff_t pos)
  	}
- 
--	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
-+	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p);
-+	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
- 	if (mapped)
- 		patch_unmap(FIX_TEXT_POKE0, &flags);
--	flush_icache_range(start, end);
  }
  
- void __kprobes __patch_text(void *addr, u32 insn)
+-static inline struct nfs_page *
+-nfs_page_alloc(void)
++static inline struct nfs_page *nfs_page_alloc(void)
+ {
+-	struct nfs_page	*p = kmem_cache_zalloc(nfs_page_cachep, GFP_KERNEL);
++	struct nfs_page *p =
++		kmem_cache_zalloc(nfs_page_cachep, nfs_io_gfp_mask());
+ 	if (p)
+ 		INIT_LIST_HEAD(&p->wb_list);
+ 	return p;
+@@ -901,7 +901,7 @@ int nfs_generic_pgio(struct nfs_pageio_descriptor *desc,
+ 	struct nfs_commit_info cinfo;
+ 	struct nfs_page_array *pg_array = &hdr->page_array;
+ 	unsigned int pagecount, pageused;
+-	gfp_t gfp_flags = GFP_KERNEL;
++	gfp_t gfp_flags = nfs_io_gfp_mask();
+ 
+ 	pagecount = nfs_page_array_len(mirror->pg_base, mirror->pg_count);
+ 	pg_array->npages = pagecount;
+@@ -984,7 +984,7 @@ nfs_pageio_alloc_mirrors(struct nfs_pageio_descriptor *desc,
+ 	desc->pg_mirrors_dynamic = NULL;
+ 	if (mirror_count == 1)
+ 		return desc->pg_mirrors_static;
+-	ret = kmalloc_array(mirror_count, sizeof(*ret), GFP_KERNEL);
++	ret = kmalloc_array(mirror_count, sizeof(*ret), nfs_io_gfp_mask());
+ 	if (ret != NULL) {
+ 		for (i = 0; i < mirror_count; i++)
+ 			nfs_pageio_mirror_init(&ret[i], desc->pg_bsize);
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index a97eaf4e813c..5d07799513a6 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -94,9 +94,15 @@ EXPORT_SYMBOL_GPL(nfs_commit_free);
+ 
+ static struct nfs_pgio_header *nfs_writehdr_alloc(void)
+ {
+-	struct nfs_pgio_header *p = mempool_alloc(nfs_wdata_mempool, GFP_KERNEL);
++	struct nfs_pgio_header *p;
+ 
+-	memset(p, 0, sizeof(*p));
++	p = kmem_cache_zalloc(nfs_wdata_cachep, nfs_io_gfp_mask());
++	if (!p) {
++		p = mempool_alloc(nfs_wdata_mempool, GFP_NOWAIT);
++		if (!p)
++			return NULL;
++		memset(p, 0, sizeof(*p));
++	}
+ 	p->rw_mode = FMODE_WRITE;
+ 	return p;
+ }
 -- 
 2.35.1
 
