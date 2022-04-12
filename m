@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F220DC46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D971AC3527E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351837AbiDLHEU (ORCPT
+        id S1352025AbiDLHEg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
+        Tue, 12 Apr 2022 03:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351552AbiDLGx5 (ORCPT
+        with ESMTP id S1351563AbiDLGx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02222186F1;
-        Mon, 11 Apr 2022 23:42:39 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A465518B0F;
+        Mon, 11 Apr 2022 23:43:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9434560A6A;
-        Tue, 12 Apr 2022 06:42:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FB6FC385A6;
-        Tue, 12 Apr 2022 06:42:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E365B818BD;
+        Tue, 12 Apr 2022 06:43:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B12AAC385A6;
+        Tue, 12 Apr 2022 06:42:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745758;
-        bh=MXv3i1pr2GX2Y7HTpAUICBuVKQpGt1lq5seKbn+0k2o=;
+        s=korg; t=1649745780;
+        bh=SaQ5DwnW2tp4Y5ik6tomkdrStt8HxRtHUUmO/NqTM4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xyv7y04gP0JQksOwipQTpnwQDeK3nQDdYbEhnwODmT+na2CLFyR2Y39Eyk87I43fi
-         YK75TNodLvjUAhvqT4QrObdXjhgVyC58Um5hq/1og67EiiI2rhiXlCmYf666L4M8q4
-         YNwcar1prKgjzPozj1NRiOpFtDlr2ZmaF7irt6ws=
+        b=ypfeAQxBBZe4aDYm9foJkc9oDvOgM8A30pobAsBNRnu5penA6SbYOoq0vHn5KtBjj
+         30/cB7Xxg2lqbIwdN89ZS7eKjGqvsuvSJsD3jAVCYA9fW1FaSkbruMtRjweEnq1Ful
+         U5sqz1nY9TmBhMupZQy8xor4xUcWPNf4HiUjqXt4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jann Horn <jannh@google.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Abdul haleem <abdhalee@linux.vnet.ibm.com>,
+        Sourabh Jain <sourabhjain@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 010/277] kfence: limit currently covered allocations when pool nearly full
-Date:   Tue, 12 Apr 2022 08:26:53 +0200
-Message-Id: <20220412062942.333129269@linuxfoundation.org>
+Subject: [PATCH 5.15 044/277] powerpc: Set crashkernel offset to mid of RMA region
+Date:   Tue, 12 Apr 2022 08:27:27 +0200
+Message-Id: <20220412062943.325575963@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -56,288 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Elver <elver@google.com>
+From: Sourabh Jain <sourabhjain@linux.ibm.com>
 
-[ Upstream commit 08f6b10630f284755087f58aa393402e15b92977 ]
+[ Upstream commit 7c5ed82b800d8615cdda00729e7b62e5899f0b13 ]
 
-One of KFENCE's main design principles is that with increasing uptime,
-allocation coverage increases sufficiently to detect previously
-undetected bugs.
+On large config LPARs (having 192 and more cores), Linux fails to boot
+due to insufficient memory in the first memblock. It is due to the
+memory reservation for the crash kernel which starts at 128MB offset of
+the first memblock. This memory reservation for the crash kernel doesn't
+leave enough space in the first memblock to accommodate other essential
+system resources.
 
-We have observed that frequent long-lived allocations of the same source
-(e.g.  pagecache) tend to permanently fill up the KFENCE pool with
-increasing system uptime, thus breaking the above requirement.  The
-workaround thus far had been increasing the sample interval and/or
-increasing the KFENCE pool size, but is no reliable solution.
+The crash kernel start address was set to 128MB offset by default to
+ensure that the crash kernel get some memory below the RMA region which
+is used to be of size 256MB. But given that the RMA region size can be
+512MB or more, setting the crash kernel offset to mid of RMA size will
+leave enough space for the kernel to allocate memory for other system
+resources.
 
-To ensure diverse coverage of allocations, limit currently covered
-allocations of the same source once pool utilization reaches 75%
-(configurable via `kfence.skip_covered_thresh`) or above.  The effect is
-retaining reasonable allocation coverage when the pool is close to full.
+Since the above crash kernel offset change is only applicable to the LPAR
+platform, the LPAR feature detection is pushed before the crash kernel
+reservation. The rest of LPAR specific initialization will still
+be done during pseries_probe_fw_features as usual.
 
-A side-effect is that this also limits frequent long-lived allocations
-of the same source filling up the pool permanently.
+This patch is dependent on changes to paca allocation for boot CPU. It
+expect boot CPU to discover 1T segment support which is introduced by
+the patch posted here:
+https://lists.ozlabs.org/pipermail/linuxppc-dev/2022-January/239175.html
 
-Uniqueness of an allocation for coverage purposes is based on its
-(partial) allocation stack trace (the source).  A Counting Bloom filter
-is used to check if an allocation is covered; if the allocation is
-currently covered, the allocation is skipped by KFENCE.
-
-Testing was done using:
-
-	(a) a synthetic workload that performs frequent long-lived
-	    allocations (default config values; sample_interval=1;
-	    num_objects=63), and
-
-	(b) normal desktop workloads on an otherwise idle machine where
-	    the problem was first reported after a few days of uptime
-	    (default config values).
-
-In both test cases the sampled allocation rate no longer drops to zero
-at any point.  In the case of (b) we observe (after 2 days uptime) 15%
-unique allocations in the pool, 77% pool utilization, with 20% "skipped
-allocations (covered)".
-
-[elver@google.com: simplify and just use hash_32(), use more random stack_hash_seed]
-  Link: https://lkml.kernel.org/r/YU3MRGaCaJiYht5g@elver.google.com
-[elver@google.com: fix 32 bit]
-
-Link: https://lkml.kernel.org/r/20210923104803.2620285-4-elver@google.com
-Signed-off-by: Marco Elver <elver@google.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Acked-by: Alexander Potapenko <glider@google.com>
-Cc: Aleksandr Nogikh <nogikh@google.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: Taras Madan <tarasmadan@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Abdul haleem <abdhalee@linux.vnet.ibm.com>
+Signed-off-by: Sourabh Jain <sourabhjain@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220204085601.107257-1-sourabhjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kfence/core.c   | 109 ++++++++++++++++++++++++++++++++++++++++++++-
- mm/kfence/kfence.h |   2 +
- 2 files changed, 109 insertions(+), 2 deletions(-)
+ arch/powerpc/kernel/rtas.c |  6 ++++++
+ arch/powerpc/kexec/core.c  | 15 +++++++++++----
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-index 4eec0c5d32b5..51ea9193cecb 100644
---- a/mm/kfence/core.c
-+++ b/mm/kfence/core.c
-@@ -10,12 +10,15 @@
- #include <linux/atomic.h>
- #include <linux/bug.h>
- #include <linux/debugfs.h>
-+#include <linux/hash.h>
- #include <linux/irq_work.h>
-+#include <linux/jhash.h>
- #include <linux/kcsan-checks.h>
- #include <linux/kfence.h>
- #include <linux/kmemleak.h>
- #include <linux/list.h>
- #include <linux/lockdep.h>
-+#include <linux/log2.h>
- #include <linux/memblock.h>
- #include <linux/moduleparam.h>
- #include <linux/random.h>
-@@ -82,6 +85,10 @@ static const struct kernel_param_ops sample_interval_param_ops = {
- };
- module_param_cb(sample_interval, &sample_interval_param_ops, &kfence_sample_interval, 0600);
+diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
+index ff80bbad22a5..e18a725a8e5d 100644
+--- a/arch/powerpc/kernel/rtas.c
++++ b/arch/powerpc/kernel/rtas.c
+@@ -1235,6 +1235,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
+ 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
+ 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
  
-+/* Pool usage% threshold when currently covered allocations are skipped. */
-+static unsigned long kfence_skip_covered_thresh __read_mostly = 75;
-+module_param_named(skip_covered_thresh, kfence_skip_covered_thresh, ulong, 0644);
++#ifdef CONFIG_PPC64
++	/* need this feature to decide the crashkernel offset */
++	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
++		powerpc_firmware_features |= FW_FEATURE_LPAR;
++#endif
 +
- /* The pool of pages used for guard pages and objects. */
- char *__kfence_pool __ro_after_init;
- EXPORT_SYMBOL(__kfence_pool); /* Export for test modules. */
-@@ -106,6 +113,32 @@ DEFINE_STATIC_KEY_FALSE(kfence_allocation_key);
- /* Gates the allocation, ensuring only one succeeds in a given period. */
- atomic_t kfence_allocation_gate = ATOMIC_INIT(1);
- 
-+/*
-+ * A Counting Bloom filter of allocation coverage: limits currently covered
-+ * allocations of the same source filling up the pool.
-+ *
-+ * Assuming a range of 15%-85% unique allocations in the pool at any point in
-+ * time, the below parameters provide a probablity of 0.02-0.33 for false
-+ * positive hits respectively:
-+ *
-+ *	P(alloc_traces) = (1 - e^(-HNUM * (alloc_traces / SIZE)) ^ HNUM
-+ */
-+#define ALLOC_COVERED_HNUM	2
-+#define ALLOC_COVERED_ORDER	(const_ilog2(CONFIG_KFENCE_NUM_OBJECTS) + 2)
-+#define ALLOC_COVERED_SIZE	(1 << ALLOC_COVERED_ORDER)
-+#define ALLOC_COVERED_HNEXT(h)	hash_32(h, ALLOC_COVERED_ORDER)
-+#define ALLOC_COVERED_MASK	(ALLOC_COVERED_SIZE - 1)
-+static atomic_t alloc_covered[ALLOC_COVERED_SIZE];
-+
-+/* Stack depth used to determine uniqueness of an allocation. */
-+#define UNIQUE_ALLOC_STACK_DEPTH ((size_t)8)
-+
-+/*
-+ * Randomness for stack hashes, making the same collisions across reboots and
-+ * different machines less likely.
-+ */
-+static u32 stack_hash_seed __ro_after_init;
-+
- /* Statistics counters for debugfs. */
- enum kfence_counter_id {
- 	KFENCE_COUNTER_ALLOCATED,
-@@ -115,6 +148,7 @@ enum kfence_counter_id {
- 	KFENCE_COUNTER_BUGS,
- 	KFENCE_COUNTER_SKIP_INCOMPAT,
- 	KFENCE_COUNTER_SKIP_CAPACITY,
-+	KFENCE_COUNTER_SKIP_COVERED,
- 	KFENCE_COUNTER_COUNT,
- };
- static atomic_long_t counters[KFENCE_COUNTER_COUNT];
-@@ -126,11 +160,57 @@ static const char *const counter_names[] = {
- 	[KFENCE_COUNTER_BUGS]		= "total bugs",
- 	[KFENCE_COUNTER_SKIP_INCOMPAT]	= "skipped allocations (incompatible)",
- 	[KFENCE_COUNTER_SKIP_CAPACITY]	= "skipped allocations (capacity)",
-+	[KFENCE_COUNTER_SKIP_COVERED]	= "skipped allocations (covered)",
- };
- static_assert(ARRAY_SIZE(counter_names) == KFENCE_COUNTER_COUNT);
- 
- /* === Internals ============================================================ */
- 
-+static inline bool should_skip_covered(void)
-+{
-+	unsigned long thresh = (CONFIG_KFENCE_NUM_OBJECTS * kfence_skip_covered_thresh) / 100;
-+
-+	return atomic_long_read(&counters[KFENCE_COUNTER_ALLOCATED]) > thresh;
-+}
-+
-+static u32 get_alloc_stack_hash(unsigned long *stack_entries, size_t num_entries)
-+{
-+	num_entries = min(num_entries, UNIQUE_ALLOC_STACK_DEPTH);
-+	num_entries = filter_irq_stacks(stack_entries, num_entries);
-+	return jhash(stack_entries, num_entries * sizeof(stack_entries[0]), stack_hash_seed);
-+}
-+
-+/*
-+ * Adds (or subtracts) count @val for allocation stack trace hash
-+ * @alloc_stack_hash from Counting Bloom filter.
-+ */
-+static void alloc_covered_add(u32 alloc_stack_hash, int val)
-+{
-+	int i;
-+
-+	for (i = 0; i < ALLOC_COVERED_HNUM; i++) {
-+		atomic_add(val, &alloc_covered[alloc_stack_hash & ALLOC_COVERED_MASK]);
-+		alloc_stack_hash = ALLOC_COVERED_HNEXT(alloc_stack_hash);
-+	}
-+}
-+
-+/*
-+ * Returns true if the allocation stack trace hash @alloc_stack_hash is
-+ * currently contained (non-zero count) in Counting Bloom filter.
-+ */
-+static bool alloc_covered_contains(u32 alloc_stack_hash)
-+{
-+	int i;
-+
-+	for (i = 0; i < ALLOC_COVERED_HNUM; i++) {
-+		if (!atomic_read(&alloc_covered[alloc_stack_hash & ALLOC_COVERED_MASK]))
-+			return false;
-+		alloc_stack_hash = ALLOC_COVERED_HNEXT(alloc_stack_hash);
-+	}
-+
-+	return true;
-+}
-+
- static bool kfence_protect(unsigned long addr)
- {
- 	return !KFENCE_WARN_ON(!kfence_protect_page(ALIGN_DOWN(addr, PAGE_SIZE), true));
-@@ -270,7 +350,8 @@ static __always_inline void for_each_canary(const struct kfence_metadata *meta,
- }
- 
- static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t gfp,
--				  unsigned long *stack_entries, size_t num_stack_entries)
-+				  unsigned long *stack_entries, size_t num_stack_entries,
-+				  u32 alloc_stack_hash)
- {
- 	struct kfence_metadata *meta = NULL;
- 	unsigned long flags;
-@@ -333,6 +414,8 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
- 	/* Pairs with READ_ONCE() in kfence_shutdown_cache(). */
- 	WRITE_ONCE(meta->cache, cache);
- 	meta->size = size;
-+	meta->alloc_stack_hash = alloc_stack_hash;
-+
- 	for_each_canary(meta, set_canary_byte);
- 
- 	/* Set required struct page fields. */
-@@ -345,6 +428,8 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
- 
- 	raw_spin_unlock_irqrestore(&meta->lock, flags);
- 
-+	alloc_covered_add(alloc_stack_hash, 1);
-+
- 	/* Memory initialization. */
- 
- 	/*
-@@ -413,6 +498,8 @@ static void kfence_guarded_free(void *addr, struct kfence_metadata *meta, bool z
- 
- 	raw_spin_unlock_irqrestore(&meta->lock, flags);
- 
-+	alloc_covered_add(meta->alloc_stack_hash, -1);
-+
- 	/* Protect to detect use-after-frees. */
- 	kfence_protect((unsigned long)addr);
- 
-@@ -679,6 +766,7 @@ void __init kfence_init(void)
- 	if (!kfence_sample_interval)
- 		return;
- 
-+	stack_hash_seed = (u32)random_get_entropy();
- 	if (!kfence_init_pool()) {
- 		pr_err("%s failed\n", __func__);
- 		return;
-@@ -756,6 +844,7 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
- {
- 	unsigned long stack_entries[KFENCE_STACK_DEPTH];
- 	size_t num_stack_entries;
-+	u32 alloc_stack_hash;
- 
- 	/*
- 	 * Perform size check before switching kfence_allocation_gate, so that
-@@ -798,7 +887,23 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
- 
- 	num_stack_entries = stack_trace_save(stack_entries, KFENCE_STACK_DEPTH, 0);
- 
--	return kfence_guarded_alloc(s, size, flags, stack_entries, num_stack_entries);
-+	/*
-+	 * Do expensive check for coverage of allocation in slow-path after
-+	 * allocation_gate has already become non-zero, even though it might
-+	 * mean not making any allocation within a given sample interval.
-+	 *
-+	 * This ensures reasonable allocation coverage when the pool is almost
-+	 * full, including avoiding long-lived allocations of the same source
-+	 * filling up the pool (e.g. pagecache allocations).
-+	 */
-+	alloc_stack_hash = get_alloc_stack_hash(stack_entries, num_stack_entries);
-+	if (should_skip_covered() && alloc_covered_contains(alloc_stack_hash)) {
-+		atomic_long_inc(&counters[KFENCE_COUNTER_SKIP_COVERED]);
-+		return NULL;
-+	}
-+
-+	return kfence_guarded_alloc(s, size, flags, stack_entries, num_stack_entries,
-+				    alloc_stack_hash);
- }
- 
- size_t kfence_ksize(const void *addr)
-diff --git a/mm/kfence/kfence.h b/mm/kfence/kfence.h
-index c1f23c61e5f9..2a2d5de9d379 100644
---- a/mm/kfence/kfence.h
-+++ b/mm/kfence/kfence.h
-@@ -87,6 +87,8 @@ struct kfence_metadata {
- 	/* Allocation and free stack information. */
- 	struct kfence_track alloc_track;
- 	struct kfence_track free_track;
-+	/* For updating alloc_covered on frees. */
-+	u32 alloc_stack_hash;
- };
- 
- extern struct kfence_metadata kfence_metadata[CONFIG_KFENCE_NUM_OBJECTS];
+ 	if (basep && entryp && sizep) {
+ 		rtas.base = *basep;
+ 		rtas.entry = *entryp;
+diff --git a/arch/powerpc/kexec/core.c b/arch/powerpc/kexec/core.c
+index 48525e8b5730..71b1bfdadd76 100644
+--- a/arch/powerpc/kexec/core.c
++++ b/arch/powerpc/kexec/core.c
+@@ -147,11 +147,18 @@ void __init reserve_crashkernel(void)
+ 	if (!crashk_res.start) {
+ #ifdef CONFIG_PPC64
+ 		/*
+-		 * On 64bit we split the RMO in half but cap it at half of
+-		 * a small SLB (128MB) since the crash kernel needs to place
+-		 * itself and some stacks to be in the first segment.
++		 * On the LPAR platform place the crash kernel to mid of
++		 * RMA size (512MB or more) to ensure the crash kernel
++		 * gets enough space to place itself and some stack to be
++		 * in the first segment. At the same time normal kernel
++		 * also get enough space to allocate memory for essential
++		 * system resource in the first segment. Keep the crash
++		 * kernel starts at 128MB offset on other platforms.
+ 		 */
+-		crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
++		if (firmware_has_feature(FW_FEATURE_LPAR))
++			crashk_res.start = ppc64_rma_size / 2;
++		else
++			crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
+ #else
+ 		crashk_res.start = KDUMP_KERNELBASE;
+ #endif
 -- 
 2.35.1
 
