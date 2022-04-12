@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D596BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8775DC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240746AbiDLHbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57808 "EHLO
+        id S1351108AbiDLHb3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351834AbiDLHNA (ORCPT
+        with ESMTP id S1351835AbiDLHNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:13:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492DE17E0B;
-        Mon, 11 Apr 2022 23:53:21 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBDC17E15;
+        Mon, 11 Apr 2022 23:53:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8AB461451;
-        Tue, 12 Apr 2022 06:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA341C385A1;
-        Tue, 12 Apr 2022 06:53:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A96D461451;
+        Tue, 12 Apr 2022 06:53:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B74F2C385A6;
+        Tue, 12 Apr 2022 06:53:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746400;
-        bh=U2/FILndl4co+BlYvc00C3mSRpRj6SmZahSvs4PQbsE=;
+        s=korg; t=1649746403;
+        bh=fVdkxmCtnyf65DVQLtRAYKbRtUaCnvLBuvET/NqA9Bw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iCqlllpr6VHdSbND+KY95c4E1QO+YbIaEaERB1IefuXR32vjBBUlqpw8EV+eamm01
-         OFjAgtq1JB5iKz2VBHnZBlph3AeL0OrjFcqoAINKV9gcyF9nsvbrBSh2dfh5eDE3C/
-         gCu1sLsPOTnRVXca+6U0r/DO+SZmJ8N+fc9DRXYE=
+        b=vO3W9Hvgt3oZqcE9eR2mgoG+aAq7+ak3g/rkfPlMjnYEDt1k4nw+U3YIBwBIlFTNH
+         SV3bDnJAX0pwncVPvNTlPQFRcvKHXd4n94SdfgzlT6l0qs2SiVZLJUt1MkceRd+NFO
+         nMus/InulibMHOyNHKAJBaFzZ74EKxvgwzHSce5U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 229/277] RDMA/hfi1: Fix use-after-free bug for mm struct
-Date:   Tue, 12 Apr 2022 08:30:32 +0200
-Message-Id: <20220412062948.671402880@linuxfoundation.org>
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.15 230/277] gpio: Restrict usage of GPIO chip irq members before initialization
+Date:   Tue, 12 Apr 2022 08:30:33 +0200
+Message-Id: <20220412062948.700437683@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,51 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Shreeya Patel <shreeya.patel@collabora.com>
 
-commit 2bbac98d0930e8161b1957dc0ec99de39ade1b3c upstream.
+commit 5467801f1fcbdc46bc7298a84dbf3ca1ff2a7320 upstream.
 
-Under certain conditions, such as MPI_Abort, the hfi1 cleanup code may
-represent the last reference held on the task mm.
-hfi1_mmu_rb_unregister() then drops the last reference and the mm is freed
-before the final use in hfi1_release_user_pages().  A new task may
-allocate the mm structure while it is still being used, resulting in
-problems. One manifestation is corruption of the mmap_sem counter leading
-to a hang in down_write().  Another is corruption of an mm struct that is
-in use by another task.
+GPIO chip irq members are exposed before they could be completely
+initialized and this leads to race conditions.
 
-Fixes: 3d2a9d642512 ("IB/hfi1: Ensure correct mm is used at all times")
-Link: https://lore.kernel.org/r/20220408133523.122165.72975.stgit@awfm-01.cornelisnetworks.com
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+One such issue was observed for the gc->irq.domain variable which
+was accessed through the I2C interface in gpiochip_to_irq() before
+it could be initialized by gpiochip_add_irqchip(). This resulted in
+Kernel NULL pointer dereference.
+
+Following are the logs for reference :-
+
+kernel: Call Trace:
+kernel:  gpiod_to_irq+0x53/0x70
+kernel:  acpi_dev_gpio_irq_get_by+0x113/0x1f0
+kernel:  i2c_acpi_get_irq+0xc0/0xd0
+kernel:  i2c_device_probe+0x28a/0x2a0
+kernel:  really_probe+0xf2/0x460
+kernel: RIP: 0010:gpiochip_to_irq+0x47/0xc0
+
+To avoid such scenarios, restrict usage of GPIO chip irq members before
+they are completely initialized.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/mmu_rb.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpio/gpiolib.c      |   19 +++++++++++++++++++
+ include/linux/gpio/driver.h |    9 +++++++++
+ 2 files changed, 28 insertions(+)
 
---- a/drivers/infiniband/hw/hfi1/mmu_rb.c
-+++ b/drivers/infiniband/hw/hfi1/mmu_rb.c
-@@ -80,6 +80,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
- 	unsigned long flags;
- 	struct list_head del_list;
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1368,6 +1368,16 @@ static int gpiochip_to_irq(struct gpio_c
+ {
+ 	struct irq_domain *domain = gc->irq.domain;
  
-+	/* Prevent freeing of mm until we are completely finished. */
-+	mmgrab(handler->mn.mm);
++#ifdef CONFIG_GPIOLIB_IRQCHIP
++	/*
++	 * Avoid race condition with other code, which tries to lookup
++	 * an IRQ before the irqchip has been properly registered,
++	 * i.e. while gpiochip is still being brought up.
++	 */
++	if (!gc->irq.initialized)
++		return -EPROBE_DEFER;
++#endif
 +
- 	/* Unregister first so we don't get any more notifications. */
- 	mmu_notifier_unregister(&handler->mn, handler->mn.mm);
+ 	if (!gpiochip_irqchip_irq_valid(gc, offset))
+ 		return -ENXIO;
  
-@@ -102,6 +105,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
+@@ -1552,6 +1562,15 @@ static int gpiochip_add_irqchip(struct g
  
- 	do_remove(handler, &del_list);
+ 	acpi_gpiochip_request_interrupts(gc);
  
-+	/* Now the mm may be freed. */
-+	mmdrop(handler->mn.mm);
++	/*
++	 * Using barrier() here to prevent compiler from reordering
++	 * gc->irq.initialized before initialization of above
++	 * GPIO chip irq members.
++	 */
++	barrier();
 +
- 	kfree(handler);
++	gc->irq.initialized = true;
++
+ 	return 0;
  }
  
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -225,6 +225,15 @@ struct gpio_irq_chip {
+ 				unsigned int ngpios);
+ 
+ 	/**
++	 * @initialized:
++	 *
++	 * Flag to track GPIO chip irq member's initialization.
++	 * This flag will make sure GPIO chip irq members are not used
++	 * before they are initialized.
++	 */
++	bool initialized;
++
++	/**
+ 	 * @valid_mask:
+ 	 *
+ 	 * If not %NULL, holds bitmask of GPIOs which are valid to be included
 
 
