@@ -2,122 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA2A1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7759BC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359803AbiDLKTY (ORCPT
+        id S1358658AbiDLKTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
+        Tue, 12 Apr 2022 06:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359459AbiDLJ7T (ORCPT
+        with ESMTP id S1378007AbiDLJ7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:59:19 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8671FCFC;
-        Tue, 12 Apr 2022 02:03:46 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id l7so30543765ejn.2;
-        Tue, 12 Apr 2022 02:03:46 -0700 (PDT)
+        Tue, 12 Apr 2022 05:59:32 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01083201A9;
+        Tue, 12 Apr 2022 02:05:21 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id c12so940875plr.6;
+        Tue, 12 Apr 2022 02:05:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=70TMPjs2G4Sxbi1aiGiAsrrAufNW6Ksdkcybh7WxoB8=;
-        b=GEzmKtdFUICh2CcidOrecNvoQEhsKuI67kkEbuc2hczZVN+u1r9PUNfPWi92xi92F+
-         xSJvwV7bQQZCXInvJ2F0nu6byEHBsLzHS69h85zYV34uRkWAk7NTodkr36aBYKXnA0aq
-         VI2Sel8DvstfsyD+ocJToMyCcp4jCIBtHHouJRHQmjQgMmigUEgZtPiJglCKIL2dYqRI
-         ruo2jsuVfnUG/ocsSOY+crhkjsOJpAxwT2xbVekJ6iV6ZSrljy3vFwvDagpwiGpOpLiw
-         k9dI4sZ97e1nJrjFKwMTu9OMVeMMIhQzZZvSkSmOY7r8lcx6o8ULmVrsIW1Bp+wLpJ9a
-         9cxA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j7ppuC3URMizB5XFqgyAtRw7E3pD1kAwpnxOQKvDpfM=;
+        b=Yp+hzfoFrODCzPRTOYkDNU0hM9THaMgdSejic6PlcnWGIiVhEjLDUHNffu8OhGkTi8
+         X/F+BMKJ6l2kkbvOJMkgRizhld2bwAiQbbRNVcMWkhBaNKfUQfW0lHiD2eYv4L8Ti8vL
+         lAswnosa+5CuRlBovLf2xb4Ixpm1CVXbIWZ0nn9qjQC9ZbpMPyzKsXIMVw6O/RiydDAh
+         r9KbAQCLRm/KrIHXhR+3aefO8fHZYgQQIS0WeWdCRMywn7iHZEnWtNCpkbyB0vhCnH2V
+         m4773Dnzs439V0GI0Ul7iXMjxktIR+bWpLWIirUz0AqYMMcnI63VXyJVrglxXH7bnlad
+         WEoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=70TMPjs2G4Sxbi1aiGiAsrrAufNW6Ksdkcybh7WxoB8=;
-        b=zPV1NN0SiWNuzjemTzFSrrmxI85Zcy6q9fiNUKxwJlmhXbumEHgRPitov1rFxY8U55
-         9ewuKugrqOymdmzmvtv7M1zxVDcHNhJxDweS0x/F4qpMi1ZrDlg/5eWToC9BZzQnQ3xR
-         jskIwKEtpA6EX0QIwvG74Z9x++Dk9mmTA96Gg0sfjxvtP1mH93c2eIZKGGBbQgTwZuLx
-         uU42m+F9quje4GpgWtSr5gVic/FAc++LQWTeKCVSLO+XQ0DLaSI4thtCgPMP3otGEwti
-         dFx2CCI4Gl9mNLYVp1mzo1szGc4x+NNDnX1k/6heKLLtIIPf3Gep+X5l+g6lLZrgGmsV
-         jNLw==
-X-Gm-Message-State: AOAM533rZpxE0BhmsyTCW/YxTbnjuGKqtp5qneHC/Vc/6eLU7Iye9ngH
-        Wyldp11+oyFGSOqFsXNcMl9h2CJPw8WzW9LN0Rs=
-X-Google-Smtp-Source: ABdhPJzLoY7VZJrAuBDBL4jnbvvPHu5VHjiARPtktQLW6/PHvVE7xQZqjuQStZkyjWLmt6MSRGiK/7kVLjioOAqxfOw=
-X-Received: by 2002:a17:907:8a05:b0:6e8:441c:358d with SMTP id
- sc5-20020a1709078a0500b006e8441c358dmr20635472ejc.77.1649754224895; Tue, 12
- Apr 2022 02:03:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j7ppuC3URMizB5XFqgyAtRw7E3pD1kAwpnxOQKvDpfM=;
+        b=ea8GUwgJTjYFzWB68+bWZiyI5rsBRu6AGLFaQFu0Dz7hsCvnoIl331znqwfKDmi344
+         PL0Pib+VzwMDvXEU3gZtH8Ez1garRSXI3zC/dhLpiqviupKlFOzy5JvCfPixttGzLqa7
+         KYO6sDeKsmUuLBOOuyV7IzfSWyKvpoC9UK7MPeONoPwO1ggMLIOulEWnETc3qaLtlqef
+         W2TWtgZzH7sYezWviXcarpn8YMdVmviqD/cPktCr1+GGLocPyJEo/NxBwpWiyJbHpXPS
+         nDw4h+yyeTj8NUUE7itO1LZ0TVpNCOCUdP8T1iqoexPoxS4+8znMDGSZAT4LPu6jaMlT
+         01mA==
+X-Gm-Message-State: AOAM5328nsxbuHGE0HUirHegQ/iJ1qM3iGgYBeRN1hfP3Kdzr97/cnOK
+        DOP2F0O5KuOZPcLbxFTl8x8=
+X-Google-Smtp-Source: ABdhPJzJ/XGTHvvcT9TYVA+nunyEBCeRUmpbJy1yEQsPfvse+ugyB7veRg3wsWRs9nu3VvVvs8CCtQ==
+X-Received: by 2002:a17:90a:5407:b0:1bf:43ce:f11b with SMTP id z7-20020a17090a540700b001bf43cef11bmr3837133pjh.31.1649754320558;
+        Tue, 12 Apr 2022 02:05:20 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id nh11-20020a17090b364b00b001cb65949c66sm2184364pjb.37.2022.04.12.02.05.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 02:05:20 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, pabeni@redhat.com, vladimir.oltean@nxp.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net: ethernet: ti: am65-cpsw-nuss: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Tue, 12 Apr 2022 09:05:15 +0000
+Message-Id: <20220412090515.2533397-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220411203133.19929-1-jagathjog1996@gmail.com> <20220411203133.19929-2-jagathjog1996@gmail.com>
-In-Reply-To: <20220411203133.19929-2-jagathjog1996@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Apr 2022 11:59:32 +0300
-Message-ID: <CAHp75Vf8X4b2jeNKFcOLP+0XGcFbk0aS-_iN5vqAQOBf+e1VqQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/9] iio: accel: bma400: Fix the scale min and max
- macro values
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 11:31 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
->
-> Changing the scale macro values to match the bma400 sensitivity
-> for 1 LSB of all the available ranges.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Shouldn't this carry a Fixes tag?
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-> ---
->  drivers/iio/accel/bma400.h | 23 +++++++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-> index c4c8d74155c2..5d6a1976503f 100644
-> --- a/drivers/iio/accel/bma400.h
-> +++ b/drivers/iio/accel/bma400.h
-> @@ -83,8 +83,27 @@
->  #define BMA400_ACC_ODR_MIN_WHOLE_HZ 25
->  #define BMA400_ACC_ODR_MIN_HZ       12
->
-> -#define BMA400_SCALE_MIN            38357
-> -#define BMA400_SCALE_MAX            306864
-> +/*
-> + * BMA400_SCALE_MIN macro value represents m/s^2 for 1 LSB before
-> + * converting to micro values for +-2g range.
-> + *
-> + * For +-2g - 1 LSB = 0.976562 milli g = 0.009576 m/s^2
-> + * For +-4g - 1 LSB = 1.953125 milli g = 0.019153 m/s^2
-> + * For +-16g - 1 LSB = 7.8125 milli g = 0.076614 m/s^2
-> + *
-> + * The raw value which is used to select the different ranges is determined
-> + * by the first bit set position from the scale value, so BMA400_SCALE_MIN
-> + * should be odd.
-> + *
-> + * Scale values for +-2g, +-4g, +-8g and +-16g is populated into bma400_scales
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 33 ++++++++----------------
+ 1 file changed, 11 insertions(+), 22 deletions(-)
 
-are populated
-
-> + * array by left shifting BMA400_SCALE_MIN.
-> + * eg:
-
-e.g.:
-
-> + * To select +-2g = 9577 << 0 = raw value to write is 0.
-> + * To select +-8g = 9577 << 2 = raw value to write is 2.
-> + * To select +-16g = 9577 << 3 = raw value to write is 3.
-> + */
-> +#define BMA400_SCALE_MIN            9577
-> +#define BMA400_SCALE_MAX            76617
->
->  #define BMA400_NUM_REGULATORS       2
->  #define BMA400_VDD_REGULATOR        0
-
-
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index d2747e9db286..b7ebd741f284 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -173,11 +173,9 @@ static int am65_cpsw_nuss_ndo_slave_add_vid(struct net_device *ndev,
+ 	if (!netif_running(ndev) || !vid)
+ 		return 0;
+ 
+-	ret = pm_runtime_get_sync(common->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(common->dev);
++	ret = pm_runtime_resume_and_get(common->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	port_mask = BIT(port->port_id) | ALE_PORT_HOST;
+ 	if (!vid)
+@@ -203,11 +201,9 @@ static int am65_cpsw_nuss_ndo_slave_kill_vid(struct net_device *ndev,
+ 	if (!netif_running(ndev) || !vid)
+ 		return 0;
+ 
+-	ret = pm_runtime_get_sync(common->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(common->dev);
++	ret = pm_runtime_resume_and_get(common->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	dev_info(common->dev, "Removing vlan %d from vlan filter\n", vid);
+ 	ret = cpsw_ale_del_vlan(common->ale, vid,
+@@ -557,11 +553,9 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
+ 	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
+ 	int ret, i;
+ 
+-	ret = pm_runtime_get_sync(common->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(common->dev);
++	ret = pm_runtime_resume_and_get(common->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	/* Notify the stack of the actual queue counts. */
+ 	ret = netif_set_real_num_tx_queues(ndev, common->tx_ch_num);
+@@ -1214,11 +1208,9 @@ static int am65_cpsw_nuss_ndo_slave_set_mac_address(struct net_device *ndev,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = pm_runtime_get_sync(common->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(common->dev);
++	ret = pm_runtime_resume_and_get(common->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	cpsw_ale_del_ucast(common->ale, ndev->dev_addr,
+ 			   HOST_PORT_NUM, 0, 0);
+@@ -2692,9 +2684,8 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ 	common->bus_freq = clk_get_rate(clk);
+ 
+ 	pm_runtime_enable(dev);
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0) {
+-		pm_runtime_put_noidle(dev);
+ 		pm_runtime_disable(dev);
+ 		return ret;
+ 	}
+@@ -2789,11 +2780,9 @@ static int am65_cpsw_nuss_remove(struct platform_device *pdev)
+ 
+ 	common = dev_get_drvdata(dev);
+ 
+-	ret = pm_runtime_get_sync(&pdev->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	am65_cpsw_nuss_phylink_cleanup(common);
+ 	am65_cpsw_unregister_devlink(common);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
