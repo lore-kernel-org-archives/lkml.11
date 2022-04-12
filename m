@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E56CC35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F674C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379592AbiDLIUk (ORCPT
+        id S1379386AbiDLIU0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
+        Tue, 12 Apr 2022 04:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354132AbiDLH0F (ORCPT
+        with ESMTP id S1356022AbiDLHaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:05 -0400
+        Tue, 12 Apr 2022 03:30:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F05D44A14;
-        Tue, 12 Apr 2022 00:05:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF044FC6F;
+        Tue, 12 Apr 2022 00:08:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1AAF616B2;
-        Tue, 12 Apr 2022 07:05:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF3CC385CA;
-        Tue, 12 Apr 2022 07:05:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0084616A9;
+        Tue, 12 Apr 2022 07:08:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE465C385A8;
+        Tue, 12 Apr 2022 07:08:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747158;
-        bh=2q29pr8mEm+erOMqO2aLbkxAV4h0guqZaTZONc0j35o=;
+        s=korg; t=1649747306;
+        bh=e4Q/swAJT5i/cd9ObonPjAQOyqAx6WFs2Yug5hfJQ+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E42xJuCbNWO2aLHVxvg91TuMFf2VcIK9T5elNhH3dFUK69xWnViIilAORcqnyYb0o
-         xh1AhmxUVaBlli1ZmUpKhfehSG0M/STzmZsyb+FEXoCigwxmVb8OvgALy+hYxYhlFJ
-         yZdoP7X7rsp6/K8DA2JJom1zPfEnxZdLA3PHq0O8=
+        b=ChTcI1CP8hoS45uUu5p9SQrEScY/4dfCRglilhYp0g4u5gkqdteAEyxniQvxeOWIq
+         p+ML6z0Up3MeUqxZXRROz4AMX0Rg1sSjrSPYSEitlvF0Jl1Sgc1NIstLAZEeu9D6WQ
+         EP6aXu/nvpx9VDnIyahDEnynAnCEcJ8anM/0vXQw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [PATCH 5.16 264/285] bpf: Make remote_port field in struct bpf_sk_lookup 16-bit wide
-Date:   Tue, 12 Apr 2022 08:32:01 +0200
-Message-Id: <20220412062951.279798638@linuxfoundation.org>
+        stable@vger.kernel.org, Philip Yang <Philip.Yang@amd.com>,
+        Ruili Ji <ruili.ji@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 032/343] drm/amdkfd: svm range restore work deadlock when process exit
+Date:   Tue, 12 Apr 2022 08:27:30 +0200
+Message-Id: <20220412062952.033715124@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,79 +52,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-commit 9a69e2b385f443f244a7e8b8bcafe5ccfb0866b4 upstream.
+[ Upstream commit 6225bb3a88d22594aacea2485dc28ca12d596721 ]
 
-remote_port is another case of a BPF context field documented as a 32-bit
-value in network byte order for which the BPF context access converter
-generates a load of a zero-padded 16-bit integer in network byte order.
+kfd_process_notifier_release flush svm_range_restore_work
+which calls svm_range_list_lock_and_flush_work to flush deferred_list
+work, but if deferred_list work mmput release the last user, it will
+call exit_mmap -> notifier_release, it is deadlock with below backtrace.
 
-First such case was dst_port in bpf_sock which got addressed in commit
-4421a582718a ("bpf: Make dst_port field in struct bpf_sock 16-bit wide").
+Move flush svm_range_restore_work to kfd_process_wq_release to avoid
+deadlock. Then svm_range_restore_work take task->mm ref to avoid mm is
+gone while validating and mapping ranges to GPU.
 
-Loading 4-bytes from the remote_port offset and converting the value with
-bpf_ntohl() leads to surprising results, as the expected value is shifted
-by 16 bits.
+Workqueue: events svm_range_deferred_list_work [amdgpu]
+Call Trace:
+ wait_for_completion+0x94/0x100
+ __flush_work+0x12a/0x1e0
+ __cancel_work_timer+0x10e/0x190
+ cancel_delayed_work_sync+0x13/0x20
+ kfd_process_notifier_release+0x98/0x2a0 [amdgpu]
+ __mmu_notifier_release+0x74/0x1f0
+ exit_mmap+0x170/0x200
+ mmput+0x5d/0x130
+ svm_range_deferred_list_work+0x104/0x230 [amdgpu]
+ process_one_work+0x220/0x3c0
 
-Reduce the confusion by splitting the field in two - a 16-bit field holding
-a big-endian integer, and a 16-bit zero-padding anonymous field that
-follows it.
-
-Suggested-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220209184333.654927-2-jakub@cloudflare.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reported-by: Ruili Ji <ruili.ji@amd.com>
+Tested-by: Ruili Ji <ruili.ji@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/bpf.h |    3 ++-
- net/bpf/test_run.c       |    4 ++--
- net/core/filter.c        |    3 ++-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_process.c |  1 -
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c     | 15 +++++++++------
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -6293,7 +6293,8 @@ struct bpf_sk_lookup {
- 	__u32 protocol;		/* IP protocol (IPPROTO_TCP, IPPROTO_UDP) */
- 	__u32 remote_ip4;	/* Network byte order */
- 	__u32 remote_ip6[4];	/* Network byte order */
--	__u32 remote_port;	/* Network byte order */
-+	__be16 remote_port;	/* Network byte order */
-+	__u16 :16;		/* Zero padding */
- 	__u32 local_ip4;	/* Network byte order */
- 	__u32 local_ip6[4];	/* Network byte order */
- 	__u32 local_port;	/* Host byte order */
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -960,7 +960,7 @@ int bpf_prog_test_run_sk_lookup(struct b
- 	if (!range_is_zero(user_ctx, offsetofend(typeof(*user_ctx), local_port), sizeof(*user_ctx)))
- 		goto out;
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_process.c b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
+index d1145da5348f..74f162887d3b 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_process.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_process.c
+@@ -1150,7 +1150,6 @@ static void kfd_process_notifier_release(struct mmu_notifier *mn,
  
--	if (user_ctx->local_port > U16_MAX || user_ctx->remote_port > U16_MAX) {
-+	if (user_ctx->local_port > U16_MAX) {
- 		ret = -ERANGE;
- 		goto out;
- 	}
-@@ -968,7 +968,7 @@ int bpf_prog_test_run_sk_lookup(struct b
- 	ctx.family = (u16)user_ctx->family;
- 	ctx.protocol = (u16)user_ctx->protocol;
- 	ctx.dport = (u16)user_ctx->local_port;
--	ctx.sport = (__force __be16)user_ctx->remote_port;
-+	ctx.sport = user_ctx->remote_port;
+ 	cancel_delayed_work_sync(&p->eviction_work);
+ 	cancel_delayed_work_sync(&p->restore_work);
+-	cancel_delayed_work_sync(&p->svms.restore_work);
  
- 	switch (ctx.family) {
- 	case AF_INET:
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -10563,7 +10563,8 @@ static bool sk_lookup_is_valid_access(in
- 	case bpf_ctx_range(struct bpf_sk_lookup, local_ip4):
- 	case bpf_ctx_range_till(struct bpf_sk_lookup, remote_ip6[0], remote_ip6[3]):
- 	case bpf_ctx_range_till(struct bpf_sk_lookup, local_ip6[0], local_ip6[3]):
--	case bpf_ctx_range(struct bpf_sk_lookup, remote_port):
-+	case offsetof(struct bpf_sk_lookup, remote_port) ...
-+	     offsetof(struct bpf_sk_lookup, local_ip4) - 1:
- 	case bpf_ctx_range(struct bpf_sk_lookup, local_port):
- 		bpf_ctx_record_field_size(info, sizeof(__u32));
- 		return bpf_ctx_narrow_access_ok(off, size, sizeof(__u32));
+ 	mutex_lock(&p->mutex);
+ 
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index 225affcddbc1..1cf9041c9727 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -1643,13 +1643,14 @@ static void svm_range_restore_work(struct work_struct *work)
+ 
+ 	pr_debug("restore svm ranges\n");
+ 
+-	/* kfd_process_notifier_release destroys this worker thread. So during
+-	 * the lifetime of this thread, kfd_process and mm will be valid.
+-	 */
+ 	p = container_of(svms, struct kfd_process, svms);
+-	mm = p->mm;
+-	if (!mm)
++
++	/* Keep mm reference when svm_range_validate_and_map ranges */
++	mm = get_task_mm(p->lead_thread);
++	if (!mm) {
++		pr_debug("svms 0x%p process mm gone\n", svms);
+ 		return;
++	}
+ 
+ 	svm_range_list_lock_and_flush_work(svms, mm);
+ 	mutex_lock(&svms->lock);
+@@ -1703,6 +1704,7 @@ static void svm_range_restore_work(struct work_struct *work)
+ out_reschedule:
+ 	mutex_unlock(&svms->lock);
+ 	mmap_write_unlock(mm);
++	mmput(mm);
+ 
+ 	/* If validation failed, reschedule another attempt */
+ 	if (evicted_ranges) {
+@@ -2840,6 +2842,8 @@ void svm_range_list_fini(struct kfd_process *p)
+ 
+ 	pr_debug("pasid 0x%x svms 0x%p\n", p->pasid, &p->svms);
+ 
++	cancel_delayed_work_sync(&p->svms.restore_work);
++
+ 	/* Ensure list work is finished before process is destroyed */
+ 	flush_work(&p->svms.deferred_list_work);
+ 
+@@ -2850,7 +2854,6 @@ void svm_range_list_fini(struct kfd_process *p)
+ 	atomic_inc(&p->svms.drain_pagefaults);
+ 	svm_range_drain_retry_fault(&p->svms);
+ 
+-
+ 	list_for_each_entry_safe(prange, next, &p->svms.list, list) {
+ 		svm_range_unlink(prange);
+ 		svm_range_remove_notifier(prange);
+-- 
+2.35.1
+
 
 
