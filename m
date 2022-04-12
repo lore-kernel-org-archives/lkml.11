@@ -2,92 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D985FC352B6
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB82C38A05
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388352AbiDLJWF (ORCPT
+        id S1389124AbiDLJXY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        Tue, 12 Apr 2022 05:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377937AbiDLHym (ORCPT
+        with ESMTP id S1357316AbiDLHj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:54:42 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724B456215;
-        Tue, 12 Apr 2022 00:32:13 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C7W0sa012289;
-        Tue, 12 Apr 2022 02:32:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649748720;
-        bh=eW8lzeaakM005YYC3nGUxibHVtMvgv2QH/HoZA6ps4E=;
-        h=From:To:CC:Subject:Date;
-        b=oF19xDgtVjIvwawiV9/9oOl8Z6RHs+gMb4E+lAbens7ksRIfxlDSWugU4rMAqCP+P
-         jljOSKtihdAP76ebpxpNkAGBgkypGW71rMpnqZD/MldHVP3QmF6apqnWx614A99GTN
-         EnqkDnr00Lk5kqxrqPkEmnoBbxPfxfSbHLd9m21c=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C7W0SZ031891
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 Apr 2022 02:32:00 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
- Apr 2022 02:31:39 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 12 Apr 2022 02:31:39 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C7Vd4X112001;
-        Tue, 12 Apr 2022 02:31:39 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 0/2] rtc: Introduce rtc-ti-k3
-Date:   Tue, 12 Apr 2022 02:31:36 -0500
-Message-ID: <20220412073138.25027-1-nm@ti.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 12 Apr 2022 03:39:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEEB245A0;
+        Tue, 12 Apr 2022 00:15:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B36761708;
+        Tue, 12 Apr 2022 07:15:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB27C385A6;
+        Tue, 12 Apr 2022 07:14:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747699;
+        bh=ucfA2C2SWIQgzh8yu0sdw5aNdUWtqQHKO/aIHM0aMUo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=C3OV+OpGyqLp5V2is4b3M+FtozUeex+n7ighfLk0yjcR1ArmZlmFF4/wtDWTTv07X
+         DTcnJgqH6nU6HM/QSuvaLGRTfCgSMHZlkKMMr6SbHui/7/jQF0xEcKxS4YK8Szd78D
+         28+qHo1ztTo7vCIKtpc0jw096CgyNn6+7dtwRcQc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Joe Jin <joe.jin@oracle.com>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 174/343] xen: delay xen_hvm_init_time_ops() if kdump is boot on vcpu>=32
+Date:   Tue, 12 Apr 2022 08:29:52 +0200
+Message-Id: <20220412062956.389082244@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Dongli Zhang <dongli.zhang@oracle.com>
 
-This series adds support for TI K3 RTC as instantiated on TI's AM625
-SoC.
+[ Upstream commit eed05744322da07dd7e419432dcedf3c2e017179 ]
 
-Documentation in the current early release version of Technical
-Reference Manual is incomplete at the moment, but due to be updated
-later this year.
-https://www.ti.com/lit/pdf/spruiv7
+The sched_clock() can be used very early since commit 857baa87b642
+("sched/clock: Enable sched clock early"). In addition, with commit
+38669ba205d1 ("x86/xen/time: Output xen sched_clock time from 0"), kdump
+kernel in Xen HVM guest may panic at very early stage when accessing
+&__this_cpu_read(xen_vcpu)->time as in below:
 
-Testing log can be found here (20220411 + additional patch to get mmc
-root fs): https://gist.github.com/nmenon/88c56d63c2e163e7ba1e06f30eee52cc
+setup_arch()
+ -> init_hypervisor_platform()
+     -> x86_init.hyper.init_platform = xen_hvm_guest_init()
+         -> xen_hvm_init_time_ops()
+             -> xen_clocksource_read()
+                 -> src = &__this_cpu_read(xen_vcpu)->time;
 
-Nishanth Menon (2):
-  dt-bindings: rtc: Add TI K3 RTC devicetree bindings documentation
-  rtc: Introduce ti-k3-rtc
+This is because Xen HVM supports at most MAX_VIRT_CPUS=32 'vcpu_info'
+embedded inside 'shared_info' during early stage until xen_vcpu_setup() is
+used to allocate/relocate 'vcpu_info' for boot cpu at arbitrary address.
 
- .../devicetree/bindings/rtc/ti,k3-rtc.yaml    |  87 +++
- drivers/rtc/Kconfig                           |  10 +
- drivers/rtc/Makefile                          |   1 +
- drivers/rtc/rtc-ti-k3.c                       | 687 ++++++++++++++++++
- 4 files changed, 785 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/rtc/ti,k3-rtc.yaml
- create mode 100644 drivers/rtc/rtc-ti-k3.c
+However, when Xen HVM guest panic on vcpu >= 32, since
+xen_vcpu_info_reset(0) would set per_cpu(xen_vcpu, cpu) = NULL when
+vcpu >= 32, xen_clocksource_read() on vcpu >= 32 would panic.
 
+This patch calls xen_hvm_init_time_ops() again later in
+xen_hvm_smp_prepare_boot_cpu() after the 'vcpu_info' for boot vcpu is
+registered when the boot vcpu is >= 32.
+
+This issue can be reproduced on purpose via below command at the guest
+side when kdump/kexec is enabled:
+
+"taskset -c 33 echo c > /proc/sysrq-trigger"
+
+The bugfix for PVM is not implemented due to the lack of testing
+environment.
+
+[boris: xen_hvm_init_time_ops() returns on errors instead of jumping to end]
+
+Cc: Joe Jin <joe.jin@oracle.com>
+Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Link: https://lore.kernel.org/r/20220302164032.14569-3-dongli.zhang@oracle.com
+Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/xen/smp_hvm.c |  6 ++++++
+ arch/x86/xen/time.c    | 24 +++++++++++++++++++++++-
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/xen/smp_hvm.c b/arch/x86/xen/smp_hvm.c
+index 6ff3c887e0b9..b70afdff419c 100644
+--- a/arch/x86/xen/smp_hvm.c
++++ b/arch/x86/xen/smp_hvm.c
+@@ -19,6 +19,12 @@ static void __init xen_hvm_smp_prepare_boot_cpu(void)
+ 	 */
+ 	xen_vcpu_setup(0);
+ 
++	/*
++	 * Called again in case the kernel boots on vcpu >= MAX_VIRT_CPUS.
++	 * Refer to comments in xen_hvm_init_time_ops().
++	 */
++	xen_hvm_init_time_ops();
++
+ 	/*
+ 	 * The alternative logic (which patches the unlock/lock) runs before
+ 	 * the smp bootup up code is activated. Hence we need to set this up
+diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
+index d9c945ee1100..9ef0a5cca96e 100644
+--- a/arch/x86/xen/time.c
++++ b/arch/x86/xen/time.c
+@@ -558,6 +558,11 @@ static void xen_hvm_setup_cpu_clockevents(void)
+ 
+ void __init xen_hvm_init_time_ops(void)
+ {
++	static bool hvm_time_initialized;
++
++	if (hvm_time_initialized)
++		return;
++
+ 	/*
+ 	 * vector callback is needed otherwise we cannot receive interrupts
+ 	 * on cpu > 0 and at this point we don't know how many cpus are
+@@ -567,7 +572,22 @@ void __init xen_hvm_init_time_ops(void)
+ 		return;
+ 
+ 	if (!xen_feature(XENFEAT_hvm_safe_pvclock)) {
+-		pr_info("Xen doesn't support pvclock on HVM, disable pv timer");
++		pr_info_once("Xen doesn't support pvclock on HVM, disable pv timer");
++		return;
++	}
++
++	/*
++	 * Only MAX_VIRT_CPUS 'vcpu_info' are embedded inside 'shared_info'.
++	 * The __this_cpu_read(xen_vcpu) is still NULL when Xen HVM guest
++	 * boots on vcpu >= MAX_VIRT_CPUS (e.g., kexec), To access
++	 * __this_cpu_read(xen_vcpu) via xen_clocksource_read() will panic.
++	 *
++	 * The xen_hvm_init_time_ops() should be called again later after
++	 * __this_cpu_read(xen_vcpu) is available.
++	 */
++	if (!__this_cpu_read(xen_vcpu)) {
++		pr_info("Delay xen_init_time_common() as kernel is running on vcpu=%d\n",
++			xen_vcpu_nr(0));
+ 		return;
+ 	}
+ 
+@@ -577,6 +597,8 @@ void __init xen_hvm_init_time_ops(void)
+ 	x86_cpuinit.setup_percpu_clockev = xen_hvm_setup_cpu_clockevents;
+ 
+ 	x86_platform.set_wallclock = xen_set_wallclock;
++
++	hvm_time_initialized = true;
+ }
+ #endif
+ 
 -- 
-2.31.1
+2.35.1
+
+
 
