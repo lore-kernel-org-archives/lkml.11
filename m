@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A74C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B39B1C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345015AbiDLIm4 (ORCPT
+        id S1384778AbiDLImU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
+        Tue, 12 Apr 2022 04:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357125AbiDLHjs (ORCPT
+        with ESMTP id S1357257AbiDLHjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:48 -0400
+        Tue, 12 Apr 2022 03:39:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BD8E00A;
-        Tue, 12 Apr 2022 00:12:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC2D657C;
+        Tue, 12 Apr 2022 00:14:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E933A61708;
-        Tue, 12 Apr 2022 07:12:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E9DC385A1;
-        Tue, 12 Apr 2022 07:12:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFDE96171D;
+        Tue, 12 Apr 2022 07:14:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E28C385A1;
+        Tue, 12 Apr 2022 07:14:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747548;
-        bh=58NZpBGE/MdScoZVVTaWzcGrj8gsOfoLzLtXdcoy4iM=;
+        s=korg; t=1649747664;
+        bh=+YTNds+8z0t2zHdYuIfAV4xXR8U6PjwOkzvV2rN7NGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g+1jCzdlrrQwiNCVCZeWXslZC5cuCoqpkoQSzOmcojymYDeoCZdDnE+Vj/OifdD1W
-         X5yYbeU6p3Vbf6dC9fB7sb6XxVn4PZf9RFPptE8fb9W0IMr2wmjQy+oieJABUOl2Me
-         eVZSeJwq7kHT3NpVUtfCtIAnFEU4xEPxdbmVTvcQ=
+        b=2EOy1y7cIxiAeJnyBUU9ztV/jD5Dowz/7Ll5N6uS6DBKuv1IJ1pQmL1xMc/1gQ7c8
+         sK8v7YZ1BX8v7KlCV4HtyvQEMU2zw0kY3BwMSWOstcwyjmpjm35q/weq3YN7fBHbCX
+         NXgS/Aen1Qs6925oGkFPVNhznld0eRKFfKhkq5Cg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Pearson <markpearson@lenovo.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 120/343] platform/x86: thinkpad_acpi: Add dual fan probe
-Date:   Tue, 12 Apr 2022 08:28:58 +0200
-Message-Id: <20220412062954.851180854@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 162/343] phy: amlogic: meson8b-usb2: fix shared reset control use
+Date:   Tue, 12 Apr 2022 08:29:40 +0200
+Message-Id: <20220412062956.050167011@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,79 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Pearson <markpearson@lenovo.com>
+From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
 
-[ Upstream commit bf779aaf56ea23864e39e9862b3b3a8436236e07 ]
+[ Upstream commit 6f1dedf089ab1a4f03ea7aadc3c4a99885b4b4a0 ]
 
-Instead of having quirks for systems that have a second fan it would
-be nice to detect this setup.
-Unfortunately, confirmed by the Lenovo FW team, there is no way to
-retrieve this information from the EC or BIOS. Recommendation was to
-attempt to read the fan and if successful then assume a 2nd fan is
-present.
+Use reset_control_rearm() call if an error occurs in case
+phy_meson8b_usb2_power_on() fails after reset() has been called, or in
+case phy_meson8b_usb2_power_off() is called i.e the resource is no longer
+used and the reset line may be triggered again by other devices.
 
-The fans are also supposed to spin up on boot for some time, so in
-theory we could check for a speed > 0. In testing this seems to hold
-true but as I couldn't test on all platforms I've avoided implementing
-this. It also breaks for the corner case where you load the module
-once the fans are idle.
+reset_control_rearm() keeps use of triggered_count sane in the reset
+framework, use of reset_control_reset() on shared reset line should
+be balanced with reset_control_rearm().
 
-Tested on P1G4, P1G3, X1C9 and T14 (no fans) and it works correctly.
-For the platforms with dual fans where it was confirmed to work I have
-removed the quirks. Potentially this could be done for all platforms
-but I've left untested platforms in for now. On these platforms the
-fans will be enabled and then detected - so no impact.
-
-Signed-off-by: Mark Pearson <markpearson@lenovo.com>
-Link: https://lore.kernel.org/r/20220222185137.4325-1-markpearson@lenovo.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Reported-by: Jerome Brunet <jbrunet@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220111095255.176141-4-aouledameur@baylibre.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/thinkpad_acpi.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/phy/amlogic/phy-meson8b-usb2.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index 3424b080db77..3fb8cda31eb9 100644
---- a/drivers/platform/x86/thinkpad_acpi.c
-+++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -8699,10 +8699,7 @@ static const struct tpacpi_quirk fan_quirk_table[] __initconst = {
- 	TPACPI_Q_LNV3('N', '2', 'N', TPACPI_FAN_2CTL),	/* P53 / P73 */
- 	TPACPI_Q_LNV3('N', '2', 'E', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (1st gen) */
- 	TPACPI_Q_LNV3('N', '2', 'O', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (2nd gen) */
--	TPACPI_Q_LNV3('N', '2', 'V', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (3nd gen) */
--	TPACPI_Q_LNV3('N', '4', '0', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (4nd gen) */
- 	TPACPI_Q_LNV3('N', '3', '0', TPACPI_FAN_2CTL),	/* P15 (1st gen) / P15v (1st gen) */
--	TPACPI_Q_LNV3('N', '3', '2', TPACPI_FAN_2CTL),	/* X1 Carbon (9th gen) */
- 	TPACPI_Q_LNV3('N', '3', '7', TPACPI_FAN_2CTL),  /* T15g (2nd gen) */
- 	TPACPI_Q_LNV3('N', '1', 'O', TPACPI_FAN_NOFAN),	/* X1 Tablet (2nd gen) */
- };
-@@ -8746,6 +8743,9 @@ static int __init fan_init(struct ibm_init_struct *iibm)
- 		 * ThinkPad ECs supports the fan control register */
- 		if (likely(acpi_ec_read(fan_status_offset,
- 					&fan_control_initial_status))) {
-+			int res;
-+			unsigned int speed;
-+
- 			fan_status_access_mode = TPACPI_FAN_RD_TPEC;
- 			if (quirks & TPACPI_FAN_Q1)
- 				fan_quirk1_setup();
-@@ -8758,6 +8758,15 @@ static int __init fan_init(struct ibm_init_struct *iibm)
- 				tp_features.second_fan_ctl = 1;
- 				pr_info("secondary fan control enabled\n");
+diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
+index 77e7e9b1428c..dd96763911b8 100644
+--- a/drivers/phy/amlogic/phy-meson8b-usb2.c
++++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
+@@ -154,6 +154,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 	ret = clk_prepare_enable(priv->clk_usb_general);
+ 	if (ret) {
+ 		dev_err(&phy->dev, "Failed to enable USB general clock\n");
++		reset_control_rearm(priv->reset);
+ 		return ret;
+ 	}
+ 
+@@ -161,6 +162,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 	if (ret) {
+ 		dev_err(&phy->dev, "Failed to enable USB DDR clock\n");
+ 		clk_disable_unprepare(priv->clk_usb_general);
++		reset_control_rearm(priv->reset);
+ 		return ret;
+ 	}
+ 
+@@ -199,6 +201,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 				dev_warn(&phy->dev, "USB ID detect failed!\n");
+ 				clk_disable_unprepare(priv->clk_usb);
+ 				clk_disable_unprepare(priv->clk_usb_general);
++				reset_control_rearm(priv->reset);
+ 				return -EINVAL;
  			}
-+			/* Try and probe the 2nd fan */
-+			res = fan2_get_speed(&speed);
-+			if (res >= 0) {
-+				/* It responded - so let's assume it's there */
-+				tp_features.second_fan = 1;
-+				tp_features.second_fan_ctl = 1;
-+				pr_info("secondary fan control detected & enabled\n");
-+			}
-+
- 		} else {
- 			pr_err("ThinkPad ACPI EC access misbehaving, fan status and control unavailable\n");
- 			return -ENODEV;
+ 		}
+@@ -218,6 +221,7 @@ static int phy_meson8b_usb2_power_off(struct phy *phy)
+ 
+ 	clk_disable_unprepare(priv->clk_usb);
+ 	clk_disable_unprepare(priv->clk_usb_general);
++	reset_control_rearm(priv->reset);
+ 
+ 	/* power off the PHY by putting it into reset mode */
+ 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_POWER_ON_RESET,
 -- 
 2.35.1
 
