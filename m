@@ -2,176 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561D7C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD0AC3525B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391722AbiDLJgG (ORCPT
+        id S1391709AbiDLJgC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
+        Tue, 12 Apr 2022 05:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389359AbiDLJXm (ORCPT
+        with ESMTP id S1389363AbiDLJXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 05:23:42 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565EE13FBC
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:34:45 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id r64so11459701wmr.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:34:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PLvQK6u8X6MxfdwfZzKW+9KXgJVePbdHxyWV6mszZ8g=;
-        b=th4EwU35I/WC+kzFgnRoRVuC+hKI7r5MJPm20JcujjTPKrbF3S3gnRKb95FPMWRIKg
-         ljAxbCLqbmuWFCSAWRgTGgDxFDmCVyNYTPWjo4XfZLnpH2nzQx5y4BtVUhIZiHkRFi+2
-         bVRiA2UGJi3oAUaNttTb2RwBOZxzvbC4h0vqPeLQyUNDeg+p/e+OWK9lcL96OxpwG8Wy
-         xdvmxwI1NJbomJYlyAlFNCxafqaextmBQXpA344trYnChiW0MFaLCaX8uha6Ij+0g/79
-         9Gqu1HoPgM7v+C/SHeQt89Pfx0hlIIKdOV3Y7OskdJiJbRMXPVsfzHjvHCatGhq5Ou5b
-         iaRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PLvQK6u8X6MxfdwfZzKW+9KXgJVePbdHxyWV6mszZ8g=;
-        b=XLr/YzA/ZI25nx1J8B4QCPPyhSERX9U0+o+2zCXkjI9LfVYNdPWkCyR+upmakhw6rg
-         WbHxr7XEFxZzTWDQsmEBugKCybryl5i8+6rEL2PfkggY5ywFS79ARXfo/fOh6zRa6zX3
-         5P60bNNOuFdG3tz1R8zT1Jd1qO8gBxldItGVRGvmUebaM8Wa/aJfkkfaQd1rBO7uJbkI
-         R2nffS6V5zmPPWN9vUqOt0+yR8g02fXmsJ5nRpx6SCuI866QE1yKzoFlR8sqBfaepBjq
-         gHecbfJqHI344vZgaznGGaOHk+HrmM41zr3PwmmKmWtI4oP8g/NKGAYBAb+0LAzbnm1L
-         pLtQ==
-X-Gm-Message-State: AOAM531ctW2AcfiQxSu/pa6EBPKMzndtWvqgku7y0L3KSGWxcH8g8Nnr
-        JEzepyAR7CnB4XQ56sI+ECQgzWFBC0U4sCD20nhUUQ==
-X-Google-Smtp-Source: ABdhPJw8zmRDxrpZAdkBdzVjqtih7cNCZUz/vPFDsylF1MB9TPzx3d4cMoyMoVwr/UPzvdzSxcj5zDYUAA1FPpNrn1I=
-X-Received: by 2002:a05:600c:2b8d:b0:38e:9cb8:5d24 with SMTP id
- j13-20020a05600c2b8d00b0038e9cb85d24mr2975294wmc.149.1649752483914; Tue, 12
- Apr 2022 01:34:43 -0700 (PDT)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766AEFFD
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:37:17 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 083B81F857;
+        Tue, 12 Apr 2022 08:37:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649752636; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G4ao738LLtWqNZgjmUvHl2wQE4C+ip35g2Uztgp8uAo=;
+        b=Hod7n3879Pt5Km1ei/HV+w94yTgZ+//8QZg+AaD5zVU52g2b1/ITGOJcaK92n7K01T29tV
+        ZsEcUVgZ9Z0wam2sxQQH03bix+5wGkdPRZMokBrj8cNfgWm7TvgDpR+6pkA1UK0r375SiM
+        1pMjMyvvmd6RoBUeXVWn09Av3YWH8JU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649752636;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G4ao738LLtWqNZgjmUvHl2wQE4C+ip35g2Uztgp8uAo=;
+        b=rvt1sOBwqRU9RHohtoNx1tvQvk2VX8ObxsOJGVZg+2a5Wl0nRNcuvmUQ1eaH4/zM1Rke8m
+        sajVXI7I3VVxVzBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 855C513780;
+        Tue, 12 Apr 2022 08:37:15 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xi3rHzs6VWIHGAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 12 Apr 2022 08:37:15 +0000
+Message-ID: <b43366d3-2235-36f9-75df-a33575b68db2@suse.cz>
+Date:   Tue, 12 Apr 2022 10:37:15 +0200
 MIME-Version: 1.0
-References: <20220304171913.2292458-1-james.clark@arm.com> <20220304171913.2292458-4-james.clark@arm.com>
-In-Reply-To: <20220304171913.2292458-4-james.clark@arm.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Tue, 12 Apr 2022 09:34:32 +0100
-Message-ID: <CAJ9a7Vi-u75aoNXwFf75JfZhkJk5M0emiuFRXL8RfywqEX+gWQ@mail.gmail.com>
-Subject: Re: [PATCH v3 03/15] coresight: etm4x: Cleanup TRCIDR3 register accesses
-To:     James Clark <James.Clark@arm.com>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        Anshuman.Khandual@arm.com, mathieu.poirier@linaro.org,
-        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 07/16] mm/rmap: pass rmap flags to
+ hugepage_add_anon_rmap()
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220329160440.193848-1-david@redhat.com>
+ <20220329160440.193848-8-david@redhat.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220329160440.193848-8-david@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 at 17:19, James Clark <james.clark@arm.com> wrote:
->
-> This is a no-op change for style and consistency and has no effect on
-> the binary output by the compiler. In sysreg.h fields are defined as
-> the register name followed by the field name and then _MASK. This
-> allows for grepping for fields by name rather than using magic numbers.
->
-> Signed-off-by: James Clark <james.clark@arm.com>
+On 3/29/22 18:04, David Hildenbrand wrote:
+> Let's prepare for passing RMAP_EXCLUSIVE, similarly as we do for
+> page_add_anon_rmap() now. RMAP_COMPOUND is implicit for hugetlb
+> pages and ignored.
+> 
+> Signed-off-by: David Hildenbrand <david@redhat.com>
+
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+
 > ---
->  .../coresight/coresight-etm4x-core.c          | 40 +++++--------------
->  drivers/hwtracing/coresight/coresight-etm4x.h | 10 +++++
->  2 files changed, 20 insertions(+), 30 deletions(-)
->
-> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> index fd44231e9d8a..1b377f6b31bf 100644
-> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-> @@ -1124,53 +1124,33 @@ static void etm4_init_arch_data(void *info)
->
->         etmidr3 = etm4x_relaxed_read32(csa, TRCIDR3);
->         /* CCITMIN, bits[11:0] minimum threshold value that can be programmed */
-> -       drvdata->ccitmin = BMVAL(etmidr3, 0, 11);
-> +       drvdata->ccitmin = FIELD_GET(TRCIDR3_CCITMIN_MASK, etmidr3);
->         /* EXLEVEL_S, bits[19:16] Secure state instruction tracing */
-> -       drvdata->s_ex_level = BMVAL(etmidr3, 16, 19);
-> +       drvdata->s_ex_level = FIELD_GET(TRCIDR3_EXLEVEL_S_MASK, etmidr3);
->         drvdata->config.s_ex_level = drvdata->s_ex_level;
->         /* EXLEVEL_NS, bits[23:20] Non-secure state instruction tracing */
-> -       drvdata->ns_ex_level = BMVAL(etmidr3, 20, 23);
-> -
-> +       drvdata->ns_ex_level = FIELD_GET(TRCIDR3_EXLEVEL_NS_MASK, etmidr3);
->         /*
->          * TRCERR, bit[24] whether a trace unit can trace a
->          * system error exception.
->          */
-> -       if (BMVAL(etmidr3, 24, 24))
-> -               drvdata->trc_error = true;
-> -       else
-> -               drvdata->trc_error = false;
-> -
-> +       drvdata->trc_error = !!(etmidr3 & TRCIDR3_TRCERR);
->         /* SYNCPR, bit[25] implementation has a fixed synchronization period? */
-> -       if (BMVAL(etmidr3, 25, 25))
-> -               drvdata->syncpr = true;
-> -       else
-> -               drvdata->syncpr = false;
-> -
-> +       drvdata->syncpr = !!(etmidr3 & TRCIDR3_SYNCPR);
->         /* STALLCTL, bit[26] is stall control implemented? */
-> -       if (BMVAL(etmidr3, 26, 26))
-> -               drvdata->stallctl = true;
-> -       else
-> -               drvdata->stallctl = false;
-> -
-> +       drvdata->stallctl = !!(etmidr3 & TRCIDR3_STALLCTL);
->         /* SYSSTALL, bit[27] implementation can support stall control? */
-> -       if (BMVAL(etmidr3, 27, 27))
-> -               drvdata->sysstall = true;
-> -       else
-> -               drvdata->sysstall = false;
-> -
-> +       drvdata->sysstall = !!(etmidr3 & TRCIDR3_SYSSTALL);
->         /*
->          * NUMPROC - the number of PEs available for tracing, 5bits
->          *         = TRCIDR3.bits[13:12]bits[30:28]
->          *  bits[4:3] = TRCIDR3.bits[13:12] (since etm-v4.2, otherwise RES0)
->          *  bits[3:0] = TRCIDR3.bits[30:28]
->          */
-> -       drvdata->nr_pe = (BMVAL(etmidr3, 12, 13) << 3) | BMVAL(etmidr3, 28, 30);
-> -
-> +       drvdata->nr_pe =  (FIELD_GET(TRCIDR3_NUMPROC_HI_MASK, etmidr3) << 3) |
-> +                          FIELD_GET(TRCIDR3_NUMPROC_LO_MASK, etmidr3);
->         /* NOOVERFLOW, bit[31] is trace overflow prevention supported */
-> -       if (BMVAL(etmidr3, 31, 31))
-> -               drvdata->nooverflow = true;
-> -       else
-> -               drvdata->nooverflow = false;
-> +       drvdata->nooverflow = !!(etmidr3 & TRCIDR3_NOOVERFLOW);
->
->         /* number of resources trace unit supports */
->         etmidr4 = etm4x_relaxed_read32(csa, TRCIDR4);
-> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
-> index cfdf966016b7..1b95c63938f0 100644
-> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
-> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
-> @@ -147,6 +147,16 @@
->  #define TRCIDR2_VMIDSIZE_MASK                  GENMASK(14, 10)
->  #define TRCIDR2_CCSIZE_MASK                    GENMASK(28, 25)
->
-> +#define TRCIDR3_CCITMIN_MASK                   GENMASK(11, 0)
-> +#define TRCIDR3_EXLEVEL_S_MASK                 GENMASK(19, 16)
-> +#define TRCIDR3_EXLEVEL_NS_MASK                        GENMASK(23, 20)
-> +#define TRCIDR3_TRCERR                         BIT(24)
-> +#define TRCIDR3_SYNCPR                         BIT(25)
-> +#define TRCIDR3_STALLCTL                       BIT(26)
-> +#define TRCIDR3_SYSSTALL                       BIT(27)
-> +#define TRCIDR3_NUMPROC_LO_MASK                        GENMASK(30, 28)
-> +#define TRCIDR3_NUMPROC_HI_MASK                        GENMASK(13, 12)
-> +#define TRCIDR3_NOOVERFLOW                     BIT(31)
->  /*
->   * System instructions to access ETM registers.
->   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
-> --
-> 2.28.0
->
+>  include/linux/rmap.h | 2 +-
+>  mm/migrate.c         | 3 ++-
+>  mm/rmap.c            | 9 ++++++---
+>  3 files changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+> index aa734d2e2b01..f47bc937c383 100644
+> --- a/include/linux/rmap.h
+> +++ b/include/linux/rmap.h
+> @@ -191,7 +191,7 @@ void page_add_file_rmap(struct page *, struct vm_area_struct *,
+>  void page_remove_rmap(struct page *, struct vm_area_struct *,
+>  		bool compound);
+>  void hugepage_add_anon_rmap(struct page *, struct vm_area_struct *,
+> -		unsigned long address);
+> +		unsigned long address, rmap_t flags);
+>  void hugepage_add_new_anon_rmap(struct page *, struct vm_area_struct *,
+>  		unsigned long address);
+>  
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index 436f0ec2da03..48db9500d20e 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -232,7 +232,8 @@ static bool remove_migration_pte(struct folio *folio,
+>  			pte = pte_mkhuge(pte);
+>  			pte = arch_make_huge_pte(pte, shift, vma->vm_flags);
+>  			if (folio_test_anon(folio))
+> -				hugepage_add_anon_rmap(new, vma, pvmw.address);
+> +				hugepage_add_anon_rmap(new, vma, pvmw.address,
+> +						       RMAP_NONE);
+>  			else
+>  				page_dup_file_rmap(new, true);
+>  			set_huge_pte_at(vma->vm_mm, pvmw.address, pvmw.pte, pte);
+> diff --git a/mm/rmap.c b/mm/rmap.c
+> index 71bf881da2a6..b972eb8f351b 100644
+> --- a/mm/rmap.c
+> +++ b/mm/rmap.c
+> @@ -2347,9 +2347,11 @@ void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc)
+>   * The following two functions are for anonymous (private mapped) hugepages.
+>   * Unlike common anonymous pages, anonymous hugepages have no accounting code
+>   * and no lru code, because we handle hugepages differently from common pages.
+> + *
+> + * RMAP_COMPOUND is ignored.
+>   */
+> -void hugepage_add_anon_rmap(struct page *page,
+> -			    struct vm_area_struct *vma, unsigned long address)
+> +void hugepage_add_anon_rmap(struct page *page, struct vm_area_struct *vma,
+> +			    unsigned long address, rmap_t flags)
+>  {
+>  	struct anon_vma *anon_vma = vma->anon_vma;
+>  	int first;
+> @@ -2359,7 +2361,8 @@ void hugepage_add_anon_rmap(struct page *page,
+>  	/* address might be in next vma when migration races vma_adjust */
+>  	first = atomic_inc_and_test(compound_mapcount_ptr(page));
+>  	if (first)
+> -		__page_set_anon_rmap(page, vma, address, 0);
+> +		__page_set_anon_rmap(page, vma, address,
+> +				     !!(flags & RMAP_EXCLUSIVE));
+>  }
+>  
+>  void hugepage_add_new_anon_rmap(struct page *page,
 
-
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
--- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
