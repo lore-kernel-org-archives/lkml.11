@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 379C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 287E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241045AbiDLP6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
+        id S1357444AbiDLQAS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 12:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357469AbiDLP5R (ORCPT
+        with ESMTP id S1354266AbiDLQAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:57:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB18388
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:54:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 40D2ACE1F65
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:54:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0B4C385A1;
-        Tue, 12 Apr 2022 15:54:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649778889;
-        bh=dbQHjtWTndQ3IhJbJ7Bf8ue3XoQqen/tZP8psUGBdro=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=D0Flk52zzKTiOJtrDbgYOw3HQZfvDWYR5IKWnmBiBv05GWrNgJEFRwVa7lDxf2EDo
-         SZIZG3XhBYGNiBN8PR23PBJWk6w73PpfhJ23BSXmSq0vypF4dM+TRah0cQD6APe0xP
-         zZBeatO+KMyPwMoUvG1R1aTl//Qvq68wnbq4gPXw=
-Date:   Tue, 12 Apr 2022 17:54:46 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bruno Moreira-Guedes <codeagain@codeagain.dev>
-Cc:     Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: Re: [PATCH] staging: vme: Adjusted VME_USER in Kconfig
-Message-ID: <YlWgxjZk8kiwARtL@kroah.com>
-References: <20220401050045.3686663-1-codeagain@codeagain.dev>
- <YkaW0ThT8Ah3z0wW@kroah.com>
- <YkaXRpIElW1BwKGb@kroah.com>
- <37e5203d1efd310ea82cf91c18c6a07eea743ac7.camel@codeagain.dev>
- <Ykl/iBR+pDaaLImA@kroah.com>
- <20220412151432.zsdxrag7myyzgv6o@AN5Bruno>
+        Tue, 12 Apr 2022 12:00:15 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E272CE3B
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:57:55 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id r13so28343365wrr.9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:57:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oXU3hwiMfKY80GD9UAyVjvKh2iumJni0metDCTcR0Zs=;
+        b=gyITdjS2U9I7emTve761Mhyp4rm1MvbYmGDM5K/9Gdw3Sh21Hakr6ivPa8gXU0wDAC
+         a4ZbjQmq0C7UU8g1ejYaBfbE0RV1tuhBAtEhgm4wY7b8WBO/IosxZImvbSEmXPt65t9/
+         G8EcZFQOlfN4oD+mTSgYBJkiJD9Xv10UQPABA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oXU3hwiMfKY80GD9UAyVjvKh2iumJni0metDCTcR0Zs=;
+        b=SXwq+CvcU6tlbxN5O8beXi2rQBXao+ZqN/HCUB5KHFRBfwvpRL8w7ew9doce1gRnkY
+         mjA7e82NWlyJonOWw1Hg/VQ8lRDXfF9wd30jds3bE3cKN3IVGE9hXxZD1zjSkWrcMpRu
+         Y43UaspdRVCYzylZ0ys3TvZxLGUgt+XCSps1myJJueI4duYaPgmHJjEOvofzdqGlY34o
+         pbKRK2bCisxFmmkx5UjXU15Hd4wjr2bN5RZzmqW41p0YnWsxUGd7CrVKP4pRGwRWYCnr
+         QxmrYq7g1YEc5AgYLE2L2vpylIJ/yla1y1Mc8kzSXelk9kH/vSSmJCuT7kuJKPMZfCNd
+         LVpg==
+X-Gm-Message-State: AOAM5333LpQE3dX6YJpsR7Qhv6hGjYVg33guUO/mOq46Iu71W2tHhFhk
+        dbVNT8tz8wDU/xQl2ztZ1fKhMg==
+X-Google-Smtp-Source: ABdhPJzvB91kCZ6vPMivEWQNfWetW2FsTs2voeYmQzoe8Ic2OtqbXJZBPqn5lmO8qcT4wpU+wAv99Q==
+X-Received: by 2002:a05:6000:118f:b0:206:81d:c030 with SMTP id g15-20020a056000118f00b00206081dc030mr29130004wrx.169.1649779074464;
+        Tue, 12 Apr 2022 08:57:54 -0700 (PDT)
+Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id n15-20020a5d6b8f000000b00207ab69284csm3497155wrx.23.2022.04.12.08.57.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 08:57:53 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: dsa: realtek: don't parse compatible string for RTL8366S
+Date:   Tue, 12 Apr 2022 17:57:49 +0200
+Message-Id: <20220412155749.1835519-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412151432.zsdxrag7myyzgv6o@AN5Bruno>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 12:14:32PM -0300, Bruno Moreira-Guedes wrote:
-> On Sun, Apr 03, 2022 at 01:05:44PM +0200, Greg Kroah-Hartman wrote:
-> > 
-> >On Fri, Apr 01, 2022 at 03:21:50PM -0300, Bruno wrote:
-> >> With my tests in my, I have found two other things that I think are
-> >> remarkable to mention. First one is a missing `depends on` line for
-> >> `VME_BRIDGE` in drivers/staging/vme/devices/Kconfig, not visible
-> >> because they were in the same tree, but now unveiled. I'm fixing it,
-> >> do you think it's best to add it in the same patch?
-> > 
-> > Make that a second patch, and resend it as part of a patch series since
-> > your first patch here is gone from my queue.
-> 
-> This patch is already sent, so I'll trim most of this message to avoid
-> duplicating the discussions. There's only one thing I'd like some input
-> first, if you don't mind.
-> 
-> >> Do you think it would be interesting for a future patch to provide
-> >> some output when drivers from the staging tree are present in the
-> >> running kernel image?
-> > 
-> > If you can figure out how to do so, that would be interesting to see.
-> I think I might have figured out. In "include/modules.h" and
-> "include/init.h" I happened to notice the driver initialization is
-> handled by some macros. After some inspection through gcc -E and looking
-> how they are defined, I figured out a scenario (when MODULE is not
-> defined) where the module_init() macro is defined as (among other
-> things) an inline initcall function that wraps the driver initialization
-> function.
-> 
-> So I thought about implementing it by creating a -DSTAGING flag in 
-> drivers/staging/Makefile, and then using this macro to make an #ifdef
-> STAGING to add a similar inline wrapping function, except that in this
-> case the function makes a pr_warning() before calling the initialization
-> function.
-> 
-> Do you think it would be a good way of solving that?
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Yes, that would be a possible way, try it and see!
+This switch is not even supported, but if someone were to actually put
+this compatible string "realtek,rtl8366s" in their device tree, they
+would be greeted with a kernel panic because the probe function would
+dereference NULL. So let's just remove it.
 
-greg k-h
+Link: https://lore.kernel.org/all/CACRpkdYdKZs0WExXc3=0yPNOwP+oOV60HRz7SRoGjZvYHaT=1g@mail.gmail.com/
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+ drivers/net/dsa/realtek/realtek-smi.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
+index 2243d3da55b2..6cec559c90ce 100644
+--- a/drivers/net/dsa/realtek/realtek-smi.c
++++ b/drivers/net/dsa/realtek/realtek-smi.c
+@@ -546,11 +546,6 @@ static const struct of_device_id realtek_smi_of_match[] = {
+ 		.data = &rtl8366rb_variant,
+ 	},
+ #endif
+-	{
+-		/* FIXME: add support for RTL8366S and more */
+-		.compatible = "realtek,rtl8366s",
+-		.data = NULL,
+-	},
+ #if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
+ 	{
+ 		.compatible = "realtek,rtl8365mb",
+-- 
+2.35.1
+
