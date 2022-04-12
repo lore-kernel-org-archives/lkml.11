@@ -2,107 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB826C3527B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A7C8C4707E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359051AbiDLIdF (ORCPT
+        id S1359286AbiDLIdW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
+        Tue, 12 Apr 2022 04:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353521AbiDLHZn (ORCPT
+        with ESMTP id S1353477AbiDLHZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C482434BB;
-        Tue, 12 Apr 2022 00:01:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CDFA615BB;
-        Tue, 12 Apr 2022 07:01:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF32FC385A6;
-        Tue, 12 Apr 2022 07:00:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746860;
-        bh=Zygt8MRYFsVO8DaTiGJs09gQRp/2MWgpUr27wSNwVnU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qzCQaHEDH+AFOt2Fx6Z/bhANomXE9DtBXZ5np4/dGN4waMnon4g5CVezGpjK/66cg
-         +zeN4m3LyKY8pT7CB/NC96ru9lNaQD6+p3zl6I9jr/xL49Pf/ZIHO5wqBw/TtLKqfP
-         w+fZ0eSmQlDA1KtnwkcFHNMRyL9QvNXS1Gslqn10=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
-        ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 154/285] Revert "NFSv4: Handle the special Linux file open access mode"
-Date:   Tue, 12 Apr 2022 08:30:11 +0200
-Message-Id: <20220412062948.117828131@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6008D434A2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649746838; x=1681282838;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7ylCwKVWNSXBLS3JnfvV528nX7gUEq87FZmfPhU2/a8=;
+  b=B1Ttb5BJmUHedTDMGhvV6Q3qB/5xixOaHErOaLolk+OheSnxX4aeDpoe
+   UNkKZN4o2VL0dJF6aw/XpJwtlOkW8+RlDBJ3hzyP9pMQLFZQthHWo5YO+
+   D/2iI6xyfcIH487W1sHT5duKAmIOHu/GlxMkvvxFk/dKTHTVPZ+SS66Y5
+   4l13K4I5zA05g9y8zdup4gUqGP0zwZ+8NGwo0rNsdg47uCqRJ3H4U4o6D
+   fA1LIis0SLE0b+uGnL3xLyQ6crMS/goEmk/keFctSl7cLBcxNQx+IzK6Y
+   pP9cqVrAfrtRzXOJOgynRWIm/Ak4VFjvnWB438+Ob5XFOcPJLxLsGUkOm
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242880124"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="242880124"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:00:36 -0700
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="572619329"
+Received: from joliu-mobl2.ccr.corp.intel.com ([10.254.214.243])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:00:25 -0700
+Message-ID: <c4e871721f43af56eba3addb510a98c7d9560e2f.camel@intel.com>
+Subject: Re: [PATCH 0/4] A few cleanup and fixup patches for migration
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     mike.kravetz@oracle.com, shy828301@gmail.com, willy@infradead.org,
+        ziy@nvidia.com, minchan@kernel.org, apopple@nvidia.com,
+        dave.hansen@linux.intel.com, o451686892@gmail.com,
+        jhubbard@nvidia.com, peterx@redhat.com, naoya.horiguchi@nec.com,
+        mhocko@suse.com, riel@redhat.com, osalvador@suse.de,
+        david@redhat.com, sfr@canb.auug.org.au, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Date:   Tue, 12 Apr 2022 15:00:22 +0800
+In-Reply-To: <880376f0-f480-979b-261f-72cf9475474c@huawei.com>
+References: <20220409073846.22286-1-linmiaohe@huawei.com>
+         <e268117b314817ecd4c07ac48b0a6dcaf680ed69.camel@intel.com>
+         <880376f0-f480-979b-261f-72cf9475474c@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+On Tue, 2022-04-12 at 11:29 +0800, Miaohe Lin wrote:
+> On 2022/4/12 10:25, ying.huang@intel.com wrote:
+> > On Sat, 2022-04-09 at 15:38 +0800, Miaohe Lin wrote:
+> > > Hi everyone,
+> > > This series contains a few patches to remove unneeded lock page and
+> > > PageMovable check, reduce the rcu lock duration. Also we fix potential
+> > > pte_unmap on an not mapped pte. More details can be found in the
+> > > respective changelogs. Thanks!
+> > 
+> > It appears that you ignored my comments for the previous version.  Can
+> > you check it?
+> 
+> I do remember [1] and I tried to make isolate_huge_page consistent with isolate_lru_page.
+> But their return value conventions are different. isolate_huge_page return 0 when
+> success while isolate_huge_page returns true in this case. So make them consistent
+> would lead to many code change. I should have added this in my changelog.
 
-[ Upstream commit ab0fc21bc7105b54bafd85bd8b82742f9e68898a ]
+I found that there are only 7 callers of isolate_huge_page().  It sounds
+like something that is still doable.
 
-This reverts commit 44942b4e457beda00981f616402a1a791e8c616e.
+Best Regards,
+Huang, Ying
 
-After secondly opening a file with O_ACCMODE|O_DIRECT flags,
-nfs4_valid_open_stateid() will dereference NULL nfs4_state when lseek().
-
-Reproducer:
-  1. mount -t nfs -o vers=4.2 $server_ip:/ /mnt/
-  2. fd = open("/mnt/file", O_ACCMODE|O_DIRECT|O_CREAT)
-  3. close(fd)
-  4. fd = open("/mnt/file", O_ACCMODE|O_DIRECT)
-  5. lseek(fd)
-
-Reported-by: Lyu Tao <tao.lyu@epfl.ch>
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/nfs/inode.c    | 1 -
- fs/nfs/nfs4file.c | 2 +-
- 2 files changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
-index a09d3ff627c2..4da8a4a7bad7 100644
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -1180,7 +1180,6 @@ int nfs_open(struct inode *inode, struct file *filp)
- 	nfs_fscache_open_file(inode, filp);
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(nfs_open);
- 
- /*
-  * This function is called whenever some part of NFS notices that
-diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
-index e79ae4cbc395..c178db86a6e8 100644
---- a/fs/nfs/nfs4file.c
-+++ b/fs/nfs/nfs4file.c
-@@ -51,7 +51,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
- 		return err;
- 
- 	if ((openflags & O_ACCMODE) == 3)
--		return nfs_open(inode, filp);
-+		openflags--;
- 
- 	/* We can't create new files here */
- 	openflags &= ~(O_CREAT|O_EXCL);
--- 
-2.35.1
-
+> Thanks.
+> 
+> [1] https://lore.kernel.org/linux-mm/8735jsgctq.fsf@yhuang6-desk2.ccr.corp.intel.com/
+> 
+> 
+> > 
+> > Best Regards,
+> > Huang, Ying
+> > 
+> > > ---
+> > > v1:
+> > >   rebase [1] on mainline.
+> > > 
+> > > [1] https://lore.kernel.org/lkml/20220304093409.25829-2-linmiaohe@huawei.com/T/
+> > > ---
+> > > Miaohe Lin (4):
+> > >   mm/migration: reduce the rcu lock duration
+> > >   mm/migration: remove unneeded lock page and PageMovable check
+> > >   mm/migration: return errno when isolate_huge_page failed
+> > >   mm/migration: fix potential pte_unmap on an not mapped pte
+> > > 
+> > >  include/linux/migrate.h |  2 +-
+> > >  include/linux/swapops.h |  4 ++--
+> > >  mm/filemap.c            | 10 +++++-----
+> > >  mm/hugetlb.c            |  2 +-
+> > >  mm/migrate.c            | 31 +++++++++++++------------------
+> > >  5 files changed, 22 insertions(+), 27 deletions(-)
+> > > 
+> > 
+> > 
+> > 
+> > .
+> > 
+> 
 
 
