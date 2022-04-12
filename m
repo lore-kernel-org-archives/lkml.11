@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B71EEC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D596BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355986AbiDLHaM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
+        id S240746AbiDLHbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351827AbiDLHM7 (ORCPT
+        with ESMTP id S1351834AbiDLHNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:59 -0400
+        Tue, 12 Apr 2022 03:13:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEBA1705E;
-        Mon, 11 Apr 2022 23:53:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492DE17E0B;
+        Mon, 11 Apr 2022 23:53:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48AD061451;
-        Tue, 12 Apr 2022 06:53:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52A14C385A6;
-        Tue, 12 Apr 2022 06:53:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8AB461451;
+        Tue, 12 Apr 2022 06:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA341C385A1;
+        Tue, 12 Apr 2022 06:53:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746394;
-        bh=OhkQB/YB9JwzoHdchmhfRn/xWsDTrD2yFnyvdWKmG7M=;
+        s=korg; t=1649746400;
+        bh=U2/FILndl4co+BlYvc00C3mSRpRj6SmZahSvs4PQbsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PVuLBiJNDIdw7OYarTFnGpOcMn/HB/0dSZ8p1XoQ+2VizIlm442G0TM7zTzp25cEg
-         zdYyPmNs6u8alnnng8mN39yMZtuf5LJwpOae/wdSB6d9p+Pb6QSxUlUtnvPKT0YUJo
-         0idSzO5KMkSZG0fqsopfrIU9LqyDkNdqcFWuDCr4=
+        b=iCqlllpr6VHdSbND+KY95c4E1QO+YbIaEaERB1IefuXR32vjBBUlqpw8EV+eamm01
+         OFjAgtq1JB5iKz2VBHnZBlph3AeL0OrjFcqoAINKV9gcyF9nsvbrBSh2dfh5eDE3C/
+         gCu1sLsPOTnRVXca+6U0r/DO+SZmJ8N+fc9DRXYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.15 265/277] selftests: cgroup: Test open-time credential usage for migration checks
-Date:   Tue, 12 Apr 2022 08:31:08 +0200
-Message-Id: <20220412062949.713088117@linuxfoundation.org>
+        Douglas Miller <doug.miller@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.15 229/277] RDMA/hfi1: Fix use-after-free bug for mm struct
+Date:   Tue, 12 Apr 2022 08:30:32 +0200
+Message-Id: <20220412062948.671402880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,104 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Douglas Miller <doug.miller@cornelisnetworks.com>
 
-commit 613e040e4dc285367bff0f8f75ea59839bc10947 upstream.
+commit 2bbac98d0930e8161b1957dc0ec99de39ade1b3c upstream.
 
-When a task is writing to an fd opened by a different task, the perm check
-should use the credentials of the latter task. Add a test for it.
+Under certain conditions, such as MPI_Abort, the hfi1 cleanup code may
+represent the last reference held on the task mm.
+hfi1_mmu_rb_unregister() then drops the last reference and the mm is freed
+before the final use in hfi1_release_user_pages().  A new task may
+allocate the mm structure while it is still being used, resulting in
+problems. One manifestation is corruption of the mmap_sem counter leading
+to a hang in down_write().  Another is corruption of an mm struct that is
+in use by another task.
 
-Tested-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Fixes: 3d2a9d642512 ("IB/hfi1: Ensure correct mm is used at all times")
+Link: https://lore.kernel.org/r/20220408133523.122165.72975.stgit@awfm-01.cornelisnetworks.com
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/cgroup/test_core.c |   68 +++++++++++++++++++++++++++++
- 1 file changed, 68 insertions(+)
+ drivers/infiniband/hw/hfi1/mmu_rb.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/tools/testing/selftests/cgroup/test_core.c
-+++ b/tools/testing/selftests/cgroup/test_core.c
-@@ -674,6 +674,73 @@ cleanup:
- 	return ret;
- }
+--- a/drivers/infiniband/hw/hfi1/mmu_rb.c
++++ b/drivers/infiniband/hw/hfi1/mmu_rb.c
+@@ -80,6 +80,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
+ 	unsigned long flags;
+ 	struct list_head del_list;
  
-+/*
-+ * cgroup migration permission check should be performed based on the
-+ * credentials at the time of open instead of write.
-+ */
-+static int test_cgcore_lesser_euid_open(const char *root)
-+{
-+	const uid_t test_euid = 65534;	/* usually nobody, any !root is fine */
-+	int ret = KSFT_FAIL;
-+	char *cg_test_a = NULL, *cg_test_b = NULL;
-+	char *cg_test_a_procs = NULL, *cg_test_b_procs = NULL;
-+	int cg_test_b_procs_fd = -1;
-+	uid_t saved_uid;
++	/* Prevent freeing of mm until we are completely finished. */
++	mmgrab(handler->mn.mm);
 +
-+	cg_test_a = cg_name(root, "cg_test_a");
-+	cg_test_b = cg_name(root, "cg_test_b");
+ 	/* Unregister first so we don't get any more notifications. */
+ 	mmu_notifier_unregister(&handler->mn, handler->mn.mm);
+ 
+@@ -102,6 +105,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
+ 
+ 	do_remove(handler, &del_list);
+ 
++	/* Now the mm may be freed. */
++	mmdrop(handler->mn.mm);
 +
-+	if (!cg_test_a || !cg_test_b)
-+		goto cleanup;
-+
-+	cg_test_a_procs = cg_name(cg_test_a, "cgroup.procs");
-+	cg_test_b_procs = cg_name(cg_test_b, "cgroup.procs");
-+
-+	if (!cg_test_a_procs || !cg_test_b_procs)
-+		goto cleanup;
-+
-+	if (cg_create(cg_test_a) || cg_create(cg_test_b))
-+		goto cleanup;
-+
-+	if (cg_enter_current(cg_test_a))
-+		goto cleanup;
-+
-+	if (chown(cg_test_a_procs, test_euid, -1) ||
-+	    chown(cg_test_b_procs, test_euid, -1))
-+		goto cleanup;
-+
-+	saved_uid = geteuid();
-+	if (seteuid(test_euid))
-+		goto cleanup;
-+
-+	cg_test_b_procs_fd = open(cg_test_b_procs, O_RDWR);
-+
-+	if (seteuid(saved_uid))
-+		goto cleanup;
-+
-+	if (cg_test_b_procs_fd < 0)
-+		goto cleanup;
-+
-+	if (write(cg_test_b_procs_fd, "0", 1) >= 0 || errno != EACCES)
-+		goto cleanup;
-+
-+	ret = KSFT_PASS;
-+
-+cleanup:
-+	cg_enter_current(root);
-+	if (cg_test_b_procs_fd >= 0)
-+		close(cg_test_b_procs_fd);
-+	if (cg_test_b)
-+		cg_destroy(cg_test_b);
-+	if (cg_test_a)
-+		cg_destroy(cg_test_a);
-+	free(cg_test_b_procs);
-+	free(cg_test_a_procs);
-+	free(cg_test_b);
-+	free(cg_test_a);
-+	return ret;
-+}
-+
- #define T(x) { x, #x }
- struct corecg_test {
- 	int (*fn)(const char *root);
-@@ -689,6 +756,7 @@ struct corecg_test {
- 	T(test_cgcore_proc_migration),
- 	T(test_cgcore_thread_migration),
- 	T(test_cgcore_destroy),
-+	T(test_cgcore_lesser_euid_open),
- };
- #undef T
+ 	kfree(handler);
+ }
  
 
 
