@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8451C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8F7C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353433AbiDLHqh (ORCPT
+        id S1353767AbiDLHqo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
+        Tue, 12 Apr 2022 03:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351676AbiDLHMs (ORCPT
+        with ESMTP id S1351623AbiDLHMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAF213D4F;
-        Mon, 11 Apr 2022 23:50:43 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D012513D57;
+        Mon, 11 Apr 2022 23:50:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 749CBB81B47;
-        Tue, 12 Apr 2022 06:50:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C25FAC385A6;
-        Tue, 12 Apr 2022 06:50:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E7146103A;
+        Tue, 12 Apr 2022 06:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 838C2C385A1;
+        Tue, 12 Apr 2022 06:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746241;
-        bh=bWuNbO3Fbvl23uTLrLPtZAQFj3dcCqzwr4PEGeLC0wM=;
+        s=korg; t=1649746243;
+        bh=QhsvxtWGhK5wtgUU105j/Ut1BdLJxJR/yoBWlg8U0ts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UPyJc1PqEPkpZh6XT42BBCc7wWiVf+Ndq9h45y5qxeafWeTuSG9dKIAeHJbebb1Kt
-         Erq5JuOIeoOC677M3MyJFIDlovDjkPto+H9LR2k/X+o2wEgRIgRrZJNZqXqm4fNb7w
-         cWgRi8CoPsxmIY0ScTS070Zw2O2IQYKA6b+FED4I=
+        b=t83h1Jsxkb6IQUqlHJ8emFD92GLklLZ1y//WLU8bUYLzTFvqbQcNIyN+WVNW+gCl2
+         S0x0djpsmTXQP6coIiQJLVqS6njK8F1DByvEiFCLe+l9WJT+Dxdm1hZHJfFZaciEda
+         ffkt7nElHpqXakW2GlEcLIEBvBjQ4ilw4AcWVu3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Loehle <cloehle@hyperstone.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Yann Gautier <yann.gautier@foss.st.com>,
         Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 210/277] mmc: block: Check for errors after write on SPI
-Date:   Tue, 12 Apr 2022 08:30:13 +0200
-Message-Id: <20220412062948.119143130@linuxfoundation.org>
+Subject: [PATCH 5.15 211/277] mmc: mmci: stm32: correctly check all elements of sg list
+Date:   Tue, 12 Apr 2022 08:30:14 +0200
+Message-Id: <20220412062948.147725878@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,93 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Löhle <CLoehle@hyperstone.com>
+From: Yann Gautier <yann.gautier@foss.st.com>
 
-commit 5d435933376962b107bd76970912e7e80247dcc7 upstream.
+commit 0d319dd5a27183b75d984e3dc495248e59f99334 upstream.
 
-Introduce a SEND_STATUS check for writes through SPI to not mark
-an unsuccessful write as successful.
+Use sg and not data->sg when checking sg list elements. Else only the
+first element alignment is checked.
+The last element should be checked the same way, for_each_sg already set
+sg to sg_next(sg).
 
-Since SPI SD/MMC does not have states, after a write, the card will
-just hold the line LOW until it is ready again. The driver marks the
-write therefore as completed as soon as it reads something other than
-all zeroes.
-The driver does not distinguish from a card no longer signalling busy
-and it being disconnected (and the line being pulled-up by the host).
-This lead to writes being marked as successful when disconnecting
-a busy card.
-Now the card is ensured to be still connected by an additional CMD13,
-just like non-SPI is ensured to go back to TRAN state.
-
-While at it and since we already poll for the post-write status anyway,
-we might as well check for SPIs error bits (any of them).
-
-The disconnecting card problem is reproducable for me after continuous
-write activity and randomly disconnecting, around every 20-50 tries
-on SPI DS for some card.
-
-Fixes: 7213d175e3b6f ("MMC/SD card driver learns SPI")
+Fixes: 46b723dd867d ("mmc: mmci: add stm32 sdmmc variant")
 Cc: stable@vger.kernel.org
-Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/76f6f5d2b35543bab3dfe438f268609c@hyperstone.com
+Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
+Link: https://lore.kernel.org/r/20220317111944.116148-2-yann.gautier@foss.st.com
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/block.c |   34 +++++++++++++++++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
+ drivers/mmc/host/mmci_stm32_sdmmc.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1880,6 +1880,31 @@ static inline bool mmc_blk_rq_error(stru
- 	       brq->data.error || brq->cmd.resp[0] & CMD_ERRORS;
- }
+--- a/drivers/mmc/host/mmci_stm32_sdmmc.c
++++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
+@@ -62,8 +62,8 @@ static int sdmmc_idma_validate_data(stru
+ 	 * excepted the last element which has no constraint on idmasize
+ 	 */
+ 	for_each_sg(data->sg, sg, data->sg_len - 1, i) {
+-		if (!IS_ALIGNED(data->sg->offset, sizeof(u32)) ||
+-		    !IS_ALIGNED(data->sg->length, SDMMC_IDMA_BURST)) {
++		if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
++		    !IS_ALIGNED(sg->length, SDMMC_IDMA_BURST)) {
+ 			dev_err(mmc_dev(host->mmc),
+ 				"unaligned scatterlist: ofst:%x length:%d\n",
+ 				data->sg->offset, data->sg->length);
+@@ -71,7 +71,7 @@ static int sdmmc_idma_validate_data(stru
+ 		}
+ 	}
  
-+static int mmc_spi_err_check(struct mmc_card *card)
-+{
-+	u32 status = 0;
-+	int err;
-+
-+	/*
-+	 * SPI does not have a TRAN state we have to wait on, instead the
-+	 * card is ready again when it no longer holds the line LOW.
-+	 * We still have to ensure two things here before we know the write
-+	 * was successful:
-+	 * 1. The card has not disconnected during busy and we actually read our
-+	 * own pull-up, thinking it was still connected, so ensure it
-+	 * still responds.
-+	 * 2. Check for any error bits, in particular R1_SPI_IDLE to catch a
-+	 * just reconnected card after being disconnected during busy.
-+	 */
-+	err = __mmc_send_status(card, &status, 0);
-+	if (err)
-+		return err;
-+	/* All R1 and R2 bits of SPI are errors in our case */
-+	if (status)
-+		return -EIO;
-+	return 0;
-+}
-+
- static int mmc_blk_busy_cb(void *cb_data, bool *busy)
- {
- 	struct mmc_blk_busy_data *data = cb_data;
-@@ -1903,9 +1928,16 @@ static int mmc_blk_card_busy(struct mmc_
- 	struct mmc_blk_busy_data cb_data;
- 	int err;
- 
--	if (mmc_host_is_spi(card->host) || rq_data_dir(req) == READ)
-+	if (rq_data_dir(req) == READ)
- 		return 0;
- 
-+	if (mmc_host_is_spi(card->host)) {
-+		err = mmc_spi_err_check(card);
-+		if (err)
-+			mqrq->brq.data.bytes_xfered = 0;
-+		return err;
-+	}
-+
- 	cb_data.card = card;
- 	cb_data.status = 0;
- 	err = __mmc_poll_for_busy(card, MMC_BLK_TIMEOUT_MS, &mmc_blk_busy_cb,
+-	if (!IS_ALIGNED(data->sg->offset, sizeof(u32))) {
++	if (!IS_ALIGNED(sg->offset, sizeof(u32))) {
+ 		dev_err(mmc_dev(host->mmc),
+ 			"unaligned last scatterlist: ofst:%x length:%d\n",
+ 			data->sg->offset, data->sg->length);
 
 
