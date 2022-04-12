@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C44DC3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E65C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359344AbiDLId0 (ORCPT
+        id S1382757AbiDLIdp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
+        Tue, 12 Apr 2022 04:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354788AbiDLHeG (ORCPT
+        with ESMTP id S1353480AbiDLHZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:34:06 -0400
+        Tue, 12 Apr 2022 03:25:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF9B49F9B;
-        Tue, 12 Apr 2022 00:09:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D58434AC;
+        Tue, 12 Apr 2022 00:00:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FD93616AB;
-        Tue, 12 Apr 2022 07:08:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F2C3C385A5;
-        Tue, 12 Apr 2022 07:08:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70C8060B2B;
+        Tue, 12 Apr 2022 07:00:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F71C385A6;
+        Tue, 12 Apr 2022 07:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747338;
-        bh=544pZh+MuYtqKjVkhTsjQTV5ihsjgTsy4DhO/PGIKcc=;
+        s=korg; t=1649746843;
+        bh=owrRxY8cSiGya61jUO0X4zrPASoREzU4RoHqg/WmKWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o1RE26BYuXQKef0skNaYjAnP+rXWleHv4eAo3rZZcpGSytXax73wPx1qVDz5A4NUl
-         nuRRiMWsmsnzb5A6teX9HQFAZ5KOFiL8jkmO5+nwNZB/L+0Nw4XCcGXObI05gqFGm/
-         H17qOIsKHff50nrL4q2lGThiq83NCdjCakmYjZa4=
+        b=nL936WRjLLqPOg2ZP2LpDrn3zIN8e41mUfyzKm2T7SJeySLlkSH5YLLcb0wmzyAyI
+         qxG4C8CktMCCyX783K8z2jKTuyOBybke47NJUEJUL1gyDg8rP7Aw7JcxjDptIthWyh
+         duENmJANoBpRbrB7A93WFVuY3jA1bQdQu/F+qsrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 043/343] bpf: Make dst_port field in struct bpf_sock 16-bit wide
-Date:   Tue, 12 Apr 2022 08:27:41 +0200
-Message-Id: <20220412062952.349558761@linuxfoundation.org>
+Subject: [PATCH 5.16 149/285] rtc: mc146818-lib: change return values of mc146818_get_time()
+Date:   Tue, 12 Apr 2022 08:30:06 +0200
+Message-Id: <20220412062947.973897539@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,92 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-[ Upstream commit 4421a582718ab81608d8486734c18083b822390d ]
+[ Upstream commit d35786b3a28dee20b12962ae2dd365892a99ed1a ]
 
-Menglong Dong reports that the documentation for the dst_port field in
-struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
-field is a zero-padded 16-bit integer in network byte order. The value
-appears to the BPF user as if laid out in memory as so:
+No function is checking mc146818_get_time() return values yet, so
+correct them to make them more customary.
 
-  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
-                                      + 8  <port LSB>
-                                      +16  0x00
-                                      +24  0x00
-
-32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
-the offset into the field is 0.
-
-32-bit wide loads from dst_port are especially confusing. The loaded value,
-after converting to host byte order with bpf_ntohl(dst_port), contains the
-port number in the upper 16-bits.
-
-Remove the confusion by splitting the field into two 16-bit fields. For
-backward compatibility, allow 32-bit wide loads from offsetof(struct
-bpf_sock, dst_port).
-
-While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
-
-Reported-by: Menglong Dong <imagedong@tencent.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Link: https://lore.kernel.org/r/20220130115518.213259-2-jakub@cloudflare.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20211210200131.153887-3-mat.jonczyk@o2.pl
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/bpf.h |  3 ++-
- net/core/filter.c        | 10 +++++++++-
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/rtc/rtc-mc146818-lib.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 015bfec0dbfd..51b0f899424a 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5500,7 +5500,8 @@ struct bpf_sock {
- 	__u32 src_ip4;
- 	__u32 src_ip6[4];
- 	__u32 src_port;		/* host byte order */
--	__u32 dst_port;		/* network byte order */
-+	__be16 dst_port;	/* network byte order */
-+	__u16 :16;		/* zero padding */
- 	__u32 dst_ip4;
- 	__u32 dst_ip6[4];
- 	__u32 state;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 9eb785842258..82fcb7533663 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8033,6 +8033,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 			      struct bpf_insn_access_aux *info)
- {
- 	const int size_default = sizeof(__u32);
-+	int field_size;
- 
- 	if (off < 0 || off >= sizeof(struct bpf_sock))
- 		return false;
-@@ -8044,7 +8045,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case offsetof(struct bpf_sock, family):
- 	case offsetof(struct bpf_sock, type):
- 	case offsetof(struct bpf_sock, protocol):
--	case offsetof(struct bpf_sock, dst_port):
- 	case offsetof(struct bpf_sock, src_port):
- 	case offsetof(struct bpf_sock, rx_queue_mapping):
- 	case bpf_ctx_range(struct bpf_sock, src_ip4):
-@@ -8053,6 +8053,14 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
- 		bpf_ctx_record_field_size(info, size_default);
- 		return bpf_ctx_narrow_access_ok(off, size, size_default);
-+	case bpf_ctx_range(struct bpf_sock, dst_port):
-+		field_size = size == size_default ?
-+			size_default : sizeof_field(struct bpf_sock, dst_port);
-+		bpf_ctx_record_field_size(info, field_size);
-+		return bpf_ctx_narrow_access_ok(off, size, field_size);
-+	case offsetofend(struct bpf_sock, dst_port) ...
-+	     offsetof(struct bpf_sock, dst_ip4) - 1:
-+		return false;
+diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
+index 04b05e3b68cb..bd48cee3027e 100644
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -25,7 +25,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
+ 	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
+ 		spin_unlock_irqrestore(&rtc_lock, flags);
+ 		memset(time, 0xff, sizeof(*time));
+-		return 0;
++		return -EIO;
  	}
  
- 	return size == size_default;
+ 	/*
+@@ -116,7 +116,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
+ 
+ 	time->tm_mon--;
+ 
+-	return RTC_24H;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(mc146818_get_time);
+ 
 -- 
 2.35.1
 
