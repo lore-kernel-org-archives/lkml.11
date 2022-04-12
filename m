@@ -2,102 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0275FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231446AbiDLXhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58596 "EHLO
+        id S231322AbiDLXh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231678AbiDLXd0 (ORCPT
+        with ESMTP id S231433AbiDLXc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:33:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B6C52B24
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:22:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE6761B74
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 21:22:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28B34C385A1;
-        Tue, 12 Apr 2022 21:22:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1649798559;
-        bh=c/Bsdvokirgu31USN90XM/QAQckJDOY6WxAtFbseFUI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2EH85EKs9Vt8PFzqWMQA4N8GKNtH7P1OK3fhtS36nW2eQYYLTD8+XeW4QV6doYBjc
-         NGmySNJe0BWz0xx9Xl6RdMoCPZBooEkutWGP8AsQi7svaschKGlLPUC7j6FrDmeWtw
-         sWaBk2xckdV9/DUk2+R0d8jABGrU3rF07+sJwp9E=
-Date:   Tue, 12 Apr 2022 14:22:38 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     lipeifeng@oppo.com
-Cc:     michel@lespinasse.org, hughd@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, 21cnbao@gmail.com,
-        zhangshiming@oppo.com
-Subject: Re: [PATCH] mm: fix align-error when get_addr in
- unmapped_area_topdown
-Message-Id: <20220412142238.93e36cc4095e4e0b362db348@linux-foundation.org>
-In-Reply-To: <20220412081014.399-1-lipeifeng@oppo.com>
-References: <20220412081014.399-1-lipeifeng@oppo.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Tue, 12 Apr 2022 19:32:58 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB64A13D0E
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:21:18 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id z6so9464iot.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:21:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Gl+YqMB1WW3Ib7L+XCeBKpWla23lkdhnXW3bHwJTMT8=;
+        b=GMeyzwBOf1UAQTAdYkU+w+Eotzg30VU1F93bzVm6GfCm7eayvv3TNG7IIq45+Nif1H
+         KGpz5BrMhxviT5dQr+6JO/ZUfpiD/rhS80XRWgW5163Rbw2lZXgyRjQMrBkjXXSojjWC
+         GyDCa5J/3ofiaDTSpfp8EeW5krJ28cxf2h38s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Gl+YqMB1WW3Ib7L+XCeBKpWla23lkdhnXW3bHwJTMT8=;
+        b=7Ph2Al6ie+W+pde36BGR2kBEgzswVsy4X8Jku4ElSZyIUuL8v6mRcx+O41wTndyxlx
+         EkxNlTwJi5QhlnJCICeZAiaghgEiUjOM14XBdtLaN0Jakt2aA7W/dC6r4pbTlyYNX9cT
+         oARmxcr/StmfLhNMTMMZz4G+XAF4bWdfAD1EM6FkkoTsBTsfNB3nhiRUCjASAX4U+dUz
+         5KH5U9s9fimY71WYWuWyzuLymdXY6bnCsFb79/Qa6aHHvvjT3zocwQ0RbyOXkmBQB4Y9
+         wnjU7sNSVeJd/7/IIrZ1jSX0nOoEtww/A20Kh3+QCbnWkzrN19u+eTeimOgVl64SfVm0
+         gUsw==
+X-Gm-Message-State: AOAM533UmvHVXZJ5FXWxewSlwjF24UhPNtkWrN0H7PYthvPVRp9417FG
+        k2Ce5xughAZ2Hdp260Ke701G2g==
+X-Google-Smtp-Source: ABdhPJzDTgRjGvzK8TyuYVbOVCUWj1YHnTHkPHES9mbxla3byGwlb/0PhwCjf8NjNKAvW0Vpevu3Gw==
+X-Received: by 2002:a05:6638:3049:b0:317:9a63:ec26 with SMTP id u9-20020a056638304900b003179a63ec26mr19674690jak.273.1649802078223;
+        Tue, 12 Apr 2022 15:21:18 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id n12-20020a92dd0c000000b002cac22690b6sm2908668ilm.0.2022.04.12.15.21.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 15:21:17 -0700 (PDT)
+Subject: Re: [PATCH 5.15 000/277] 5.15.34-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220412173836.126811734@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <9c5405fc-432c-e45e-98a4-3ce252a5210e@linuxfoundation.org>
+Date:   Tue, 12 Apr 2022 16:21:17 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <20220412173836.126811734@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 16:10:14 +0800 lipeifeng@oppo.com wrote:
-
-> From: lipeifeng <lipeifeng@oppo.com>
+On 4/12/22 11:47 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.34 release.
+> There are 277 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> when we found a suitable gap_end(> info->high_limit), gap_end
-> must be set to info->high_limit. And we will get the gap_end
-> after computing highest gap address at the desired alignment.
+> Responses should be made by Thu, 14 Apr 2022 17:37:56 +0000.
+> Anything received after that time might be too late.
 > 
-> 2096 found:
-> 2097         if (gap_end > info->high_limit)
-> 2098                 gap_end = info->high_limit;
-> 2099
-> 2100 found_highest:
-> 2101         gap_end -= info->length;
-> 2102         gap_end -= (gap_end - info->align_offset) & info->align_mask;
-> 2103
-> 2104         VM_BUG_ON(gap_end < info->low_limit);
-> 2105         VM_BUG_ON(gap_end < gap_start);
-> 2106         return gap_end;
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.34-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
 > 
-> so we must promise: info->high_limit - info->low_limit >=
-> info->length + info->align_mask.
-> Or in rare cases(info->high_limit - info->low_limit <
-> info->length + info->align_mask) we will get the addr in
-> align-error if found suitable gap_end(> info->high_limit).
+> thanks,
+> 
+> greg k-h
 > 
 
-Thanks.
+Compiled and booted on my test system. No dmesg regressions.
 
-What are the runtime affects of this bug, and how are you able to
-trigger it?
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -2009,7 +2009,6 @@ static unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info)
->  	if (length < info->length)
->  		return -ENOMEM;
->  
-> -	length = info->length;
->  	/*
->  	 * Adjust search limits by the desired length.
->  	 * See implementation comment at top of unmapped_area().
-> @@ -2021,6 +2020,8 @@ static unsigned long unmapped_area_topdown(struct vm_unmapped_area_info *info)
->  
->  	if (info->low_limit > high_limit)
->  		return -ENOMEM;
-> +
-> +	length = info->length;
->  	low_limit = info->low_limit + length;
->  
->  	/* Check highest gap, which does not precede any rbtree node */
-> -- 
-> 2.7.4
+thanks,
+-- Shuah
