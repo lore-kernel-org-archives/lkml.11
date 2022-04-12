@@ -2,140 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CED0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D70C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbiDLXa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
+        id S230252AbiDLXae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbiDLX3b (ORCPT
+        with ESMTP id S230092AbiDLXaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:29:31 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F151689C6;
-        Tue, 12 Apr 2022 15:31:20 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id h11so122132ljb.2;
-        Tue, 12 Apr 2022 15:31:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ek4T6vnTw/2O/5QQJAOuKhoFnn5jZ3f6le2GCuIyXjk=;
-        b=j6KGdkSl3cIn6bacAOdblh5T3zZZ6ohSSFnHENHTtg+M+ODqT1XRwevMtoa3zrWn1y
-         pvNl7Z6nb/KDqvLRe3LdEbVvYHvFWKqv9EZpR6fXH7/8nzLypBD8Z7IbeyKNMGZCQmsM
-         CYECVsfrY2Xta7NqYI6DMpQSQTof2D8DX7As48EytCsZfDKFRg3Tmi99MlrJGI1AvlRp
-         Wko4sfZgBiSAUoIuNMg1h872IlvkFhxI1z0UKjQm13AEafz/Y2FHKRoWSGoWYPEQRj6J
-         rS3EQgLdWTZbk+R4ieRoM2yNOQuc6NG3W+FFQPym1Of0xcgwzqT5ce2EgKp/23SBfN2o
-         GI/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ek4T6vnTw/2O/5QQJAOuKhoFnn5jZ3f6le2GCuIyXjk=;
-        b=OKQy8OKyOwJEpTuJEJJwOIhZspmx3DbdZ3b+Rbqzw4hhLPjScvchrzhAcIVnjFw0rS
-         CaBnpEPoQIBzZUXDSW2aJMc1mWyT/ychIXke4mgfI4o4AuLTTJ09deymjRgW+/GeybT5
-         ebALDz5pmqY4VGy9y1hXb2LfCy6jxPqOXbMkKxAJvd8sd0yyQ0NNdny9jK3vnvtfXLXc
-         oasFk5ooLUavQWPkQrSX3LheeUc1AcxRi6LPLBKzFIE7Wm43m1AUuKRX2rNThaQO0Fxf
-         7o/CU9ZTONnKYSiCj751Sxd2oTjPm4+3H20+CdEq78p11m0zxtTd9V5y6HT62Vn1CY7q
-         Si5g==
-X-Gm-Message-State: AOAM531/bE2bL3LWh1GfTe/ZFStB1eJZ+9j6JYAZEf35nbgVhJpC4WZw
-        rEatZLQalVGk8QH07NyA7uP7fty6TlrR/yUEdCk=
-X-Google-Smtp-Source: ABdhPJwuJ2RMINhAb80dMlHreZNjXIcoSfhZZXEJkIWiUrkditbyn7wUmHib1CO/+UlJR8jIrT3RnZnUgj9D6zq+aiw=
-X-Received: by 2002:a2e:bc08:0:b0:24b:c0f6:b271 with SMTP id
- b8-20020a2ebc08000000b0024bc0f6b271mr3078247ljf.180.1649802678777; Tue, 12
- Apr 2022 15:31:18 -0700 (PDT)
+        Tue, 12 Apr 2022 19:30:03 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED98AC0540
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:14:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649801689; x=1681337689;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=X/cRMn1yUyCDO+ggS8EbXLT8u15dGYu0SlcSAPYTWQo=;
+  b=DCkN42LuTqFu2sjqHOYJJlwTyaKlXVh3biPv+L5jUcoqc1Cb5Xvjyb4Y
+   yTUa5/1yO81QGR5/Ht2sujRFDfFIILaY05mhEoy1KO40v1PtgffAmR20A
+   sXjuTQB3MpH51vnIcttl7NG39wtQI8uocwEtkM7gHqiAr8tcQVsRrOiKs
+   NtzGakPN11UCnp8n/AUk+2XSDl7j5CE9gmxeWF18i42n+qVhrshq47tHm
+   eVICEzWQlJJ6bEhRwseysdC8awlkaaTklJiL7JNyynxTsa4aSjW+O2aQw
+   RoMrEMp1ejneCi8GLtBxWuwMhasI3x1vpr5v+13+I9xZRb8ew7gVk7NLv
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="287526899"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="287526899"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 14:12:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="507719745"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga003.jf.intel.com with ESMTP; 12 Apr 2022 14:12:41 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 12 Apr 2022 14:12:40 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 12 Apr 2022 14:12:40 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 12 Apr 2022 14:12:40 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 12 Apr 2022 14:12:40 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WWKPOeoqJqMiI3UKPe/4FsBp7/1ln9Hkl2vlVSSrJQ6ZKxqwhq2bdYabB+azVLFt13Px73/ea1DbvTwRuuwBfFVImMpEFaIbgwyYmyHszzMGjiID4WZ9qDscsY2tXo3XYiK7yQ5RE0Sp3cHpO796HXP6IAQ6ev+nN14eNyYV/F3MInmRZ2hwR7nmCCDq6obQzFQH3MnmxApYmwzoSeRsag7naondDHdMTnxe3Nbkbwi4QxVVnTv0nlg+rkr876oVc+/FBbyYPe4iB+LBd1l/Os6lWXgAR2qcmPKJGSMF/e5JTtZXvv4c1b5Zuv4h5ParL44T8olib41XQk/1qMkElA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=X/cRMn1yUyCDO+ggS8EbXLT8u15dGYu0SlcSAPYTWQo=;
+ b=Qj13TiaCWMM7hspg9dp4dr7HjDsgWR7qE1IoR9OBVjfzErFYTCPYWuVkFfj8Wt98P5bgQTCElKbD0eJ6Cj7y0m3foZRws53/CYg1tz7Cb8rz0RXIZ2EpJ8rGLX4xR2qAghZ7iKV4rdCMB+y9YCqgi7WLC7b2P+MIGPkkHY5Qi2KGNP8NJSQwCOybG54Mf9MjaxKWKIf/bFWLc+3GZBgiwCy+13XQmNkHrrjdrHl4ZkIfOg8D7UdCwu7YDyvTUQQvcXNrM5OdoCleMtIo9aezqNNLWGMxUei+aPQFH+jtgootKakrlvpUtWJJkifE1dOqrAHCgHbuMgxHgEcDWYLbOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW4PR11MB5823.namprd11.prod.outlook.com (2603:10b6:303:186::12)
+ by MN2PR11MB3917.namprd11.prod.outlook.com (2603:10b6:208:135::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Tue, 12 Apr
+ 2022 21:12:36 +0000
+Received: from MW4PR11MB5823.namprd11.prod.outlook.com
+ ([fe80::d87b:eb8b:b755:c336]) by MW4PR11MB5823.namprd11.prod.outlook.com
+ ([fe80::d87b:eb8b:b755:c336%9]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
+ 21:12:36 +0000
+From:   "Winiarska, Iwona" <iwona.winiarska@intel.com>
+To:     "andrew@aj.id.au" <andrew@aj.id.au>,
+        "cgel.zte@gmail.com" <cgel.zte@gmail.com>,
+        "joel@jms.id.au" <joel@jms.id.au>
+CC:     "lv.ruyi@zte.com.cn" <lv.ruyi@zte.com.cn>,
+        "jae.hyun.yoo@linux.intel.com" <jae.hyun.yoo@linux.intel.com>,
+        "zealci@zte.com.cn" <zealci@zte.com.cn>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
+Subject: Re: [PATCH] peci: fix error check return value of platform_get_irq()
+Thread-Topic: [PATCH] peci: fix error check return value of platform_get_irq()
+Thread-Index: AQHYTkv6Gt0PlPxOG0KKXS5Je2+nnazsx3eA
+Date:   Tue, 12 Apr 2022 21:12:36 +0000
+Message-ID: <d09484f7cda13de3f156bd1bcba8c2671495dcd1.camel@intel.com>
+References: <20220412090148.2533219-1-lv.ruyi@zte.com.cn>
+In-Reply-To: <20220412090148.2533219-1-lv.ruyi@zte.com.cn>
+Accept-Language: en-US, pl-PL
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.40.4 (3.40.4-3.fc34) 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5ee4b7b2-d774-4709-f1de-08da1cc92b3c
+x-ms-traffictypediagnostic: MN2PR11MB3917:EE_
+x-microsoft-antispam-prvs: <MN2PR11MB39170F00D6352FA96B453D63ECED9@MN2PR11MB3917.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VhPVT2pCDZ0XCtTCUMg7R70Oy8JTOtdxSEgRwZWgUlqzPzXKvE+/aWj4e5H1QWYCQCO3SOWpl+IE2YkWF8MfESqVTIPxLuVOUSZY0Bs5qN8sfSy5AxSA98uztCq5wTDAlOcU3VezYmdGpTUvlFDiTkl3C0fZIZhiMuyPCkEjZjAPmFSJZzYP0M6O+5Mg2oYeOC1xE/M0ZfWPTVNF6Oky1hbY6myktWsn4eS00qE7iI1J2aI/du91N5vPrL269HZP5tacRR0eqzQs8vC1/bsu+DWVfJ83Wm/KXVJg+Z7uo3p94DQ0JVATA2EUM8qmRV7TFpdkdWV/zVCjpiymLCjj/fNy3X61EtPd/pSG4cdA4PhB6EFjIB4oyBg8mXsR3sf2nhGHJZOw1Soo2iAbfqwNXgfSS8paIq7SLhxWPWxvL9xP+GVr9b1aM4UpAJG6oDT9ZiYA+0T00jYv/6Jeoe0atLhklo/MIKoUxkpCjygR4T988/XxyxzCaG34JnYbZp4gTmtdnEKobmbh8K3GStctBKuX7dYaQLZCa716QC7X4FXItswG+qEDam+7SaF51hWIgaNTFd7shGIJCr9+puFgpX0m2Qnxf6Ysg0jSkIKITN8p70iAJSvkv03kJ8itX2fxE+Nvzqa27UzebN4Qs4SZRicLf7k2um9EmfHdeDA9cCFGuCI9uYWXUSOAF6UsQrU9+DMuU1Hz0nAn9m66E2wbkg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5823.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(86362001)(71200400001)(26005)(6512007)(186003)(2616005)(6506007)(7416002)(8936002)(4326008)(8676002)(38070700005)(82960400001)(5660300002)(2906002)(64756008)(66446008)(122000001)(36756003)(66476007)(38100700002)(54906003)(110136005)(6486002)(508600001)(66556008)(91956017)(66946007)(76116006)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cVVDeStoQTUvejR0Y3V0OE1sQmFlZEFVOTNTNzhrVXN0VHpOM3BmN1p3L1k5?=
+ =?utf-8?B?WWowdGNtU0dobXp4ZUdzUEV3RlZXYmRBa3dZVFV0MDZsMEZzaUJ6d2EzZ0J3?=
+ =?utf-8?B?MWp3MnI4NmVEQ0VhM0hCblRHb0xUM3M1NnN2ckxacmUxa3UrYkFQM1hEem9E?=
+ =?utf-8?B?VTFkMithS1djTHlKR1kzdXJrS21KWVF5cFYzbHZJU2g1N2NsNjJVYWNlbk10?=
+ =?utf-8?B?VjhybitRSXVrR1MzM25KVkY5SVhWNnRqeEdYdDFQZDhocVBaZE95L1JMSmFk?=
+ =?utf-8?B?UldRWUt3Ri9UbERReDBUT2ZmWDkvM0ZCWUFRVnc3VE00cDhSNFdEa0daM1Vm?=
+ =?utf-8?B?VXgwMy9SZllGdnRzb1hMN2hYQlpzMWZqU3N2MEFZYWF3c0pOYjFVcnd4eDJ0?=
+ =?utf-8?B?a3o4bVdRVEdnb1pGZjlBZklUQldCQUZiMWZJTmNOWjZlRG1Nek10aDh4ajJ3?=
+ =?utf-8?B?R1kvZmNoOWNNQUo4NHNHby9sV2hYV0JUN2V5cjYrbXlJcS96cXgwbElpc0Ju?=
+ =?utf-8?B?KzdnRnV5MnZtNTdHbTBNRVNySW5QZXhXT1JPOUd3czBkQTBYa0JKOTFsWjI2?=
+ =?utf-8?B?OTcxU1hRUGVMUHlWb1JacnM2cldTUmthdkpVelBLQkdtODdCd3NVNS9wVmtw?=
+ =?utf-8?B?M2xxaXg3bFpyRXgzd1M5RFdsQ2ZHM1phZnBzM2ljV0JQaHM0NDVRcngyZmJ0?=
+ =?utf-8?B?bzdWcmxFb0JYSzJoVkszaEdIV1daOGc5Qlh0UmRKaFJ1bnc5NGZrTVZYblBo?=
+ =?utf-8?B?OWlYKzg3TnBNc1FPaUJJVGpVUTlDK3dpc0VtSUdkTVlKR1YzREZ2Sk5DR0Fv?=
+ =?utf-8?B?cUdLcFJlK2o0ekNZVDJkNkdRSnFEOVQzVHVrTkZPQTVIdHlMeXFsaHcvZ3Fh?=
+ =?utf-8?B?TnhGOGRGZ3l0SWhHS0FHZFRPTVNwTGFrc3dDeXlBYlFoSTV4YThNWEZSOWVw?=
+ =?utf-8?B?OTN1QXVpVUtmdXR0UE5XYU1BampFcHd5czEzUldERzZBNGVyUnZWKzBHLzlP?=
+ =?utf-8?B?TkRPa3pQeWdzRGp2aHlkT2ROVWNVMWZCcVJpZ3BWdmZSdEpUQXY1YjAwamVx?=
+ =?utf-8?B?WlI5a2p6bkI2Z2daaVMrTjF1cnVrVTVqVjkyYnRVbXBuMUZQL0xsOUd6eDhJ?=
+ =?utf-8?B?Sy9ubzdac3BlZkowM05Ydkx1dDNFbmI0TWMrSzg2SkxTck5uVmdnckdWWGpM?=
+ =?utf-8?B?cnY1Y0lRWXdpQUViMXJ2TmgyUWs3d0NrMEFwaHhNY2lOVW1iVWJuM1dPSWR0?=
+ =?utf-8?B?SDR4dEhmR2VzSnFGUHVNZ1c5SFNPMkwyM2MyWEhtdDU4ditRVzYweVJpZjA5?=
+ =?utf-8?B?dGM5RGYvdnhRTzBZeU5DZzNEdHhvenpjWjJqK2NtZVF4OHhwRFVNN3ZxRHln?=
+ =?utf-8?B?TnJVaXBVVnVQWVZoeGRrWVd1ZWZrM29HdjZEb3lZcFJvMFdIQnBQbnRrNDV5?=
+ =?utf-8?B?VjVzSVhBKzRMVVdGUnVJaThKV0dSYTlKTGFMSlhiZllZRTF0VDc0U3dJMU1F?=
+ =?utf-8?B?L01CVVQ2RlJrYnoyc2toekRxcFRxTWlsdldGeWxLMjR0N1R1K1E5NURlaWUx?=
+ =?utf-8?B?Z3FTTkRvT0JYbVlGVzd6UzA1WWxSUWwrSGpPWUZOSFcxYUJ1QzZVSWRwRzlN?=
+ =?utf-8?B?dDNSS3lUSW1rWGZScFhoWFpEZS95K1BGS2dDV2FmNE1uOGVZSUxDa3hrdGVQ?=
+ =?utf-8?B?OGF6aU53cDUwY3hoMVZhc1ZOZUVMN1RLbnppV0Jlc1U3VXBIeTVSZVprMW4z?=
+ =?utf-8?B?VWlwUGVRUmo4QjQyL1VMc3plWWlsdE5YbHBGQkZub1I1SUgrZk9ja3NSUGIy?=
+ =?utf-8?B?UmV5OUVWaVpReWV6WVdYd1hURGRTWWo1bFpjMGdOMzV4TWc0MzhXcXkwT0ZU?=
+ =?utf-8?B?eDloRVBheXBwbUVydnAvK1RvNTl6RFVqRHZ6RDBQK0JBNjMzVGprN2tCU3px?=
+ =?utf-8?B?WG9lRzlKZCtFVGs5cnZ6ckdsbG9sdmc1SFFvNk92Mkt5MVZPNVFlWDYrclZT?=
+ =?utf-8?B?R1poNVZScUp0VGNqY2x2UlE1bzBKQ00zZ21aVC9aTDhzai80a3pTUVMwSEha?=
+ =?utf-8?B?RFpTWmdRUy9UMGxrdUt4eHNxbXJsV0hGSEhtMG4xdE9IOWJuNENBWEM5UjdH?=
+ =?utf-8?B?RzNmVjZzLzdhQktSQkIyQTUzVzI4OUU0QkM2dktRSlh4WFE3Zzl0ekJ2U2Rw?=
+ =?utf-8?B?WGUvMXVKejJEZ1UycUJVdTRBMXVVcDMrWHJZblMvQXBpK21TbW43azhBbWUz?=
+ =?utf-8?B?VHBpcUMrOUdsQWlsMlBNaGtKdXhKZkdCdHZQenRhb0dhdXBDVGQ5UW9PNkZH?=
+ =?utf-8?B?ZTZmaEtoQ1Q5M3FqVnl6T2ZRaXZzMFhtb0pNZlBoME1TeDNxaml2MHg5TUxx?=
+ =?utf-8?Q?31+K0nJlI1iizejs=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C6A9105924FFA9468BBAEB83EC90A1FC@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <69656438-8b9a-000b-0702-02dc480639f9@linux.intel.com>
- <20220407085721.3289414-1-florian.fischer@muhq.space> <20220407085721.3289414-3-florian.fischer@muhq.space>
- <CAP-5=fWC5e9PTs9PVttVDdNbCzYQVeqyuf95q181Vkg4NqJxqg@mail.gmail.com>
- <20220410164136.bxqtpbrmfbqxdx4n@pasture> <CAP-5=fXuR2tK_4FDnRA88a9wQkndbqyeN6G2muppaMhV5mAQ=A@mail.gmail.com>
-In-Reply-To: <CAP-5=fXuR2tK_4FDnRA88a9wQkndbqyeN6G2muppaMhV5mAQ=A@mail.gmail.com>
-From:   Namhyung Kim <namhyung@gmail.com>
-Date:   Tue, 12 Apr 2022 15:31:07 -0700
-Message-ID: <CAM9d7ci2vKMXopBwnWxebzkqsz+ySvhqqFb6_rkk=XE1fd1RnQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] perf stat: add rusage utime and stime events
-To:     Ian Rogers <irogers@google.com>
-Cc:     Florian Fischer <florian.fischer@muhq.space>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Florian Schmaus <flow@cs.fau.de>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5823.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ee4b7b2-d774-4709-f1de-08da1cc92b3c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2022 21:12:36.5452
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cld+ku744YEEjbgn69npe3r1pBG7hKV1Sz+jW2pr4OKcEi5/eBZNSgi5hyh6yOhq+LZBtjL8h/R3dTFTOs9w1qIcKNPf0ugxr25rYxFBPdU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3917
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Tue, Apr 12, 2022 at 2:36 AM Ian Rogers <irogers@google.com> wrote:
->
-> On Sun, Apr 10, 2022 at 9:41 AM Florian Fischer
-> <florian.fischer@muhq.space> wrote:
-> >
-> > > > This patch adds two new tool internal events 'rusage_user_time'
-> > > > and 'rusage_system_time' as well as their aliases 'ru_utime' and
-> > > > 'ru_stime', similarly to the already present 'duration_time' event.
-> > > >
-> > > > Both events use the already collected rusage information obtained by wait4
-> > > > and tracked in the global ru_stats.
-> > > >
-> > > > Examples presenting cache-misses and rusage information in both human and
-> > > > machine-readable form:
-> > > >
-> > > > $ ./perf stat -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-> > > >
-> > > >  Performance counter stats for 'grep -q -r duration_time .':
-> > > >
-> > > >         67,422,542 ns   duration_time:u
-> > > >         50,517,000 ns   ru_utime:u
-> > > >         16,839,000 ns   ru_stime:u
-> > > >             30,937      cache-misses:u
-> > > >
-> > > >        0.067422542 seconds time elapsed
-> > > >
-> > > >        0.050517000 seconds user
-> > > >        0.016839000 seconds sys
-> > > >
-> > > > $ ./perf stat -x, -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-> > > > 72134524,ns,duration_time:u,72134524,100.00,,
-> > > > 65225000,ns,ru_utime:u,65225000,100.00,,
-> > > > 6865000,ns,ru_stime:u,6865000,100.00,,
-> > > > 38705,,cache-misses:u,71189328,100.00,,
-> > >
-> > > This is really nice. For metric code we currently handle duration_time
-> > > in a special way, for example:
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/util/metricgroup.c?h=perf/core#n745
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/util/metricgroup.c?h=perf/core#n1131
-> > > We will need to do something similar with these tool events, but I'm
-> > > happy that it can be follow-up work.
-> > >
-> > > I'm not a huge fan of the names ru_utime and ru_stime, two thoughts
-> > > here we could do duration_time:u and duration_time:k but I don't think
-> > > that really makes sense. My preference would be to just call ru_utime
-> > > user_time and ru_stime system_time.
-> >
-> > I considered ru_{u,s}_time only as aliases because those are the field names in
-> > the rusage struct filled by wait4 and are probably known by perf users.
-> > The "official" names are currently rusage_{user,system}_time.
-> > I could change them to only {user,system}_time because those names are more in line
-> > with the already present duration_time and are independent of the rusage
-> > implementation detail.
-> >
-> > What do you think of?
->
-> I like user_time and system_time, short and to the point [1] while
-> satisfying being intention-revealing. The aliases, ru_utime and
-> ru_stime, are fine but a bit of an acronym soup. They mean we need to
-> special case more names in the metric code. I don't know how others
-> feel but I'd stick to just user_time and system_time.
-
-Maybe I missed something but could we just use cpu/task-clock?
-I'm not sure the rusage-base events work for cpu events and for
-existing tasks.
-
-Thanks,
-Namhyung
+T24gVHVlLCAyMDIyLTA0LTEyIGF0IDA5OjAxICswMDAwLCBjZ2VsLnp0ZUBnbWFpbC5jb20gd3Jv
+dGU6DQo+IEZyb206IEx2IFJ1eWkgPGx2LnJ1eWlAenRlLmNvbS5jbj4NCg0KVGhhbmtzIGZvciB0
+aGUgZml4LiBDYW4gd2UgcHJlZml4IHRoZSBzdWJqZWN0IHdpdGggInBlY2k6IGFzcGVlZDoiPyBK
+dXN0IHRvDQpkaXN0aW5ndWlzaCBjaGFuZ2VzIHJlbGF0ZWQgdG8gc3BlY2lmaWMgY29udHJvbGxl
+ciBmcm9tIHRoZSBvbmVzIHRvdWNoaW5nIHBlY2ktDQpjb3JlLg0KDQo+IA0KPiBwbGF0Zm9ybV9n
+ZXRfaXJxKCkgcmV0dXJuIG5lZ2F0aXZlIHZhbHVlIG9uIGZhaWx1cmUsIHNvIG51bGwgY2hlY2sg
+b2YNCj4gcHJpdi0+aXJxIGlzIGluY29ycmVjdC4gRml4IGl0IGJ5IGNvbXBhcmluZyB3aGV0aGVy
+IGl0IGlzIGxlc3MgdGhhbiB6ZXJvLg0KPiANCj4gRml4ZXM6IGE4NWU0YzUyMDg2YyAoInBlY2k6
+IEFkZCBwZWNpLWFzcGVlZCBjb250cm9sbGVyIGRyaXZlciIpDQo+IFJlcG9ydGVkLWJ5OiBaZWFs
+IFJvYm90IDx6ZWFsY2lAenRlLmNvbS5jbj4NCj4gU2lnbmVkLW9mZi1ieTogTHYgUnV5aSA8bHYu
+cnV5aUB6dGUuY29tLmNuPg0KDQpSZXZpZXdlZC1ieTogSXdvbmEgV2luaWFyc2thIDxpd29uYS53
+aW5pYXJza2FAaW50ZWwuY29tPg0KDQotSXdvbmENCg0KPiAtLS0NCj4gwqBkcml2ZXJzL3BlY2kv
+Y29udHJvbGxlci9wZWNpLWFzcGVlZC5jIHwgMiArLQ0KPiDCoDEgZmlsZSBjaGFuZ2VkLCAxIGlu
+c2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGVj
+aS9jb250cm9sbGVyL3BlY2ktYXNwZWVkLmMNCj4gYi9kcml2ZXJzL3BlY2kvY29udHJvbGxlci9w
+ZWNpLWFzcGVlZC5jDQo+IGluZGV4IDE5MjVkZGMxM2YwMC4uNzMxYzVkOGY3NWM2IDEwMDY0NA0K
+PiAtLS0gYS9kcml2ZXJzL3BlY2kvY29udHJvbGxlci9wZWNpLWFzcGVlZC5jDQo+ICsrKyBiL2Ry
+aXZlcnMvcGVjaS9jb250cm9sbGVyL3BlY2ktYXNwZWVkLmMNCj4gQEAgLTUyMyw3ICs1MjMsNyBA
+QCBzdGF0aWMgaW50IGFzcGVlZF9wZWNpX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBk
+ZXYpDQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIFBUUl9FUlIocHJp
+di0+YmFzZSk7DQo+IMKgDQo+IMKgwqDCoMKgwqDCoMKgwqBwcml2LT5pcnEgPSBwbGF0Zm9ybV9n
+ZXRfaXJxKHBkZXYsIDApOw0KPiAtwqDCoMKgwqDCoMKgwqBpZiAoIXByaXYtPmlycSkNCj4gK8Kg
+wqDCoMKgwqDCoMKgaWYgKHByaXYtPmlycSA8IDApDQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgcmV0dXJuIHByaXYtPmlycTsNCj4gwqANCj4gwqDCoMKgwqDCoMKgwqDCoHJldCA9
+IGRldm1fcmVxdWVzdF9pcnEoJnBkZXYtPmRldiwgcHJpdi0+aXJxLCBhc3BlZWRfcGVjaV9pcnFf
+aGFuZGxlciwNCg==
