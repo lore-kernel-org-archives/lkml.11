@@ -2,77 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE11C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9477CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352647AbiDLMMT (ORCPT
+        id S1352842AbiDLMMa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56682 "EHLO
+        Tue, 12 Apr 2022 08:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354697AbiDLMKT (ORCPT
+        with ESMTP id S1354707AbiDLMKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:10:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AF48231A;
-        Tue, 12 Apr 2022 04:11:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9021CB81CBE;
-        Tue, 12 Apr 2022 11:11:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD212C385A1;
-        Tue, 12 Apr 2022 11:11:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649761884;
-        bh=rxkqqddj2wf2wpr9MG7q5XqAbvwAmdG114YomNsJoo0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=OfXeYIbotUzNK7AcLLwOpWG0vO94hKXXiWHJIpTppGfzws/zl2noLezWD7gVwIVUZ
-         8DxVcuOWVIZSGZs0s4b/VyQSrQ7O1RwxYVwpVMY6RG9DmgDw3TxkK3hnthDKdA2d4Y
-         LoXUw0n2Jls3N+gfLwkDAeZTj27b94Ml9SagtAoKMXNHG0QRQYMAu/Z1SSR5Vk5Y9e
-         EimEZjk05JQjnKBCW4rEo6pcHrh8GHn9bTGT6FfnBG0A+kBhGlGCM0LyaYVpnC7aF9
-         wFpxlaY6lmD1CAg7ZLqLeAj/xToek+bvAXmIAkEh55Lx65/ZrQ/zkVmYIiAtTkPS0+
-         ldHCAeqLX32PQ==
-Message-ID: <9f8b1586-d0ad-5aac-455a-85f09587ce2f@kernel.org>
-Date:   Tue, 12 Apr 2022 13:11:18 +0200
+        Tue, 12 Apr 2022 08:10:20 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A099C82D35
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:12:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649761947; x=1681297947;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Jel9Ue/TUnUIFCH7U+XPws+iEu8CN+HTDU/wDhRAkhw=;
+  b=mvvEXoEdeBygC2CK9gwz47d9P0whc0zLfwE7rvmUKo2cYZyKu/Bxft+2
+   rpdPVeAhKfBAaWEuiyT0DRDKNTKgqY0Z0WPQ9Xpb9hE5bfinRMlQEij0c
+   tSNun0u/FZhT1PDa3c9ddKhHZ+JyveTGZzNu7s10xH1vSpgCCxg/A1mDk
+   9kkAWSyL/FvScEfdPeo05DHwmoRZzsCUFuA+gHa1DHeIPGRGfsqapbAd3
+   U8eYftrL6hKJvxewAzOTFbCfDIFD9nhggNNY/qCJlDFnpzF1aSfQm2Jzu
+   S3izTKN5Cr6qtY88lSrST8KvAt3u1ujKKluR2zBD3rUWRGagcWSK6WV4C
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="249632850"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="249632850"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:12:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="724404539"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 04:12:26 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neERd-0002nY-Ec;
+        Tue, 12 Apr 2022 11:12:25 +0000
+Date:   Tue, 12 Apr 2022 19:12:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:crng/random/jd/not-zero-entropy 3/12]
+ kernel/time/timekeeping.c:2388: warning: expecting prototype for
+ random_read_entropy_fallback(). Prototype was for
+ random_get_entropy_fallback() instead
+Message-ID: <202204121944.p7MPjuCv-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] arm: dts: Add device tree for bosch acc board
-Content-Language: en-US
-To:     Philip Oberfichtner <pro@denx.de>, devicetree@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Winker Matthias <Matthias.Winker@de.bosch.com>
-References: <20220412101905.514310-1-pro@denx.de>
- <20220412101905.514310-3-pro@denx.de>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220412101905.514310-3-pro@denx.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/04/2022 12:19, Philip Oberfichtner wrote:
-> Add device tree for the Bosch ACC board, based on i.MX6 Dual.
-> 
-> Signed-off-by: Philip Oberfichtner <pro@denx.de>
-> ---
->  arch/arm/boot/dts/Makefile            |    1 +
->  arch/arm/boot/dts/imx6q-bosch-acc.dts | 1048 +++++++++++++++++++++++++
->  2 files changed, 1049 insertions(+)
->  create mode 100644 arch/arm/boot/dts/imx6q-bosch-acc.dts
-> 
+tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/not-zero-entropy
+head:   4ee3bf173a552cd996e048d57f65bb5b471ab577
+commit: aeeed98e20910aeafd5db8c56b449810b60bad9f [3/12] timekeeping: add raw clock fallback for random_get_entropy()
+config: arc-buildonly-randconfig-r003-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121944.p7MPjuCv-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/aeeed98e20910aeafd5db8c56b449810b60bad9f
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block crng/random/jd/not-zero-entropy
+        git checkout aeeed98e20910aeafd5db8c56b449810b60bad9f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash kernel/time/
 
-One more point - wrong subject prefix.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   kernel/time/timekeeping.c:1684: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * We have three kinds of time sources to use for sleep time
+   kernel/time/timekeeping.c:1705: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * 1) can be determined whether to use or not only when doing
+>> kernel/time/timekeeping.c:2388: warning: expecting prototype for random_read_entropy_fallback(). Prototype was for random_get_entropy_fallback() instead
+   kernel/time/timekeeping.c:2396: warning: Function parameter or member 'txc' not described in 'do_adjtimex'
+   kernel/time/timekeeping.c:2462: warning: Function parameter or member 'phase_ts' not described in 'hardpps'
+   kernel/time/timekeeping.c:2462: warning: Function parameter or member 'raw_ts' not described in 'hardpps'
 
 
-Best regards,
-Krzysztof
+vim +2388 kernel/time/timekeeping.c
+
+  2382	
+  2383	/**
+  2384	 * random_read_entropy_fallback - Returns the raw clock source value,
+  2385	 * used by random.c for platforms with no valid random_get_entropy().
+  2386	 */
+  2387	unsigned long random_get_entropy_fallback(void)
+> 2388	{
+  2389		return tk_clock_read(&tk_core.timekeeper.tkr_mono);
+  2390	}
+  2391	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
