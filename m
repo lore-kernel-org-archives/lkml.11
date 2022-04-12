@@ -2,84 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B347C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05755C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349361AbiDLGhB (ORCPT
+        id S1346308AbiDLGhG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:37:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
+        Tue, 12 Apr 2022 02:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349319AbiDLGgH (ORCPT
+        with ESMTP id S1349359AbiDLGgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:36:07 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD8135DD0;
-        Mon, 11 Apr 2022 23:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649745218; x=1681281218;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mq3h1yyGxNGjLIox7hCoYlBU0GvesA0gIlk/iL9J+Ac=;
-  b=xlcVY3vuqAP/1KahK/gFvzKh2pFeVhE5OX8XIi/KPQQSz/uRAR3+aeul
-   OqUsGvT/n9XsPS4mvpCRY8cSJzxAiyLBa+cUnQeHmicxTqXL3WV4ITmiA
-   u8yabzO/VCd/Pnk+QHl3r4dqMirmDDiDM/9jo9tQA09ze8M2n460N8DBm
-   gltW7q+qFiow7Wm9KGOfVLempPq0C5+1OMAvcLwHWS6QzmtPzqsc93xm2
-   PgHj228aJiJBUE4s7hesgsBJCay07956vX5RhrbF3ymOgXcl+AW8NbFar
-   jMv23BsEkJ+us+v0BVtgBjGrFlBSJUo9g7q5JKQ0rwaJFIWvTYurFszga
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,253,1643698800"; 
-   d="scan'208";a="159767808"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 23:33:38 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Apr 2022 23:33:36 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 23:33:33 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>
-Subject: [Patch net-next 1/3] net: phy: LAN937x: added PHY_POLL_CABLE_TEST flag
-Date:   Tue, 12 Apr 2022 12:03:15 +0530
-Message-ID: <20220412063317.4173-2-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220412063317.4173-1-arun.ramadoss@microchip.com>
-References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
+        Tue, 12 Apr 2022 02:36:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293F035DEB;
+        Mon, 11 Apr 2022 23:33:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A857D618D7;
+        Tue, 12 Apr 2022 06:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0E7C385A1;
+        Tue, 12 Apr 2022 06:33:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649745222;
+        bh=dvPcYCzevFs+1/jJSvQNJgim5I2zaaED6vtbihtMvF4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GJtn6kBxBiXse8aFfPrx61y9xU6Ite4aAo/rj8WwKiHFqKAtdoTMTzpdJO93Czx8D
+         2j7+MpAA/pDq7LkC+D1ovJOSD+A0GXrEcbRWzyeGhD7lup3QMpUc1PO3/rmoSiPoLB
+         vqtmh7vLS7m2rSWXwsx4f7k7roPR4inRvz5wfpcU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 021/171] power: supply: axp20x_battery: properly report current when discharging
+Date:   Tue, 12 Apr 2022 08:28:32 +0200
+Message-Id: <20220412062928.497619703@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
+References: <20220412062927.870347203@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added the phy_poll_cable_test flag for the lan937x phy driver.
-Tested using command -  ethtool --cable-test <dev>
+From: Evgeny Boger <boger@wirenboard.com>
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+
+As stated in [1], negative current values are used for discharging
+batteries.
+
+AXP PMICs internally have two different ADC channels for shunt current
+measurement: one used during charging and one during discharging.
+The values reported by these ADCs are unsigned.
+While the driver properly selects ADC channel to get the data from,
+it doesn't apply negative sign when reporting discharging current.
+
+[1] Documentation/ABI/testing/sysfs-class-power
+
+Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/microchip_t1.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/power/supply/axp20x_battery.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-index 389df3f4293c..363bfbfa182b 100644
---- a/drivers/net/phy/microchip_t1.c
-+++ b/drivers/net/phy/microchip_t1.c
-@@ -748,6 +748,7 @@ static struct phy_driver microchip_t1_phy_driver[] = {
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_LAN937X),
- 		.name		= "Microchip LAN937x T1",
-+		.flags          = PHY_POLL_CABLE_TEST,
- 		.features	= PHY_BASIC_T1_FEATURES,
- 		.config_init	= lan87xx_config_init,
- 		.suspend	= genphy_suspend,
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index e84b6e4da14a..9fda98b950ba 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -185,7 +185,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
+ {
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	struct iio_channel *chan;
+ 	int ret = 0, reg, val1;
+ 
+ 	switch (psp) {
+@@ -265,12 +264,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 		if (ret)
+ 			return ret;
+ 
+-		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+-			chan = axp20x_batt->batt_chrg_i;
+-		else
+-			chan = axp20x_batt->batt_dischrg_i;
+-
+-		ret = iio_read_channel_processed(chan, &val->intval);
++		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
++			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
++		} else {
++			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
++			val->intval = -val1;
++		}
+ 		if (ret)
+ 			return ret;
+ 
 -- 
-2.33.0
+2.35.1
+
+
 
