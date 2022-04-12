@@ -2,141 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E143AC35280
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB7CC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386642AbiDLI6v (ORCPT
+        id S1386598AbiDLI6n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
+        Tue, 12 Apr 2022 04:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356826AbiDLHjX (ORCPT
+        with ESMTP id S1359802AbiDLHnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587B452E69;
-        Tue, 12 Apr 2022 00:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 851DC616B2;
-        Tue, 12 Apr 2022 07:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 961D1C385A5;
-        Tue, 12 Apr 2022 07:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747416;
-        bh=/w61AelEsbUjYwIL6ru1+o8XctAGMaB5iEznL38kFIM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RdUVsh661K5zz1unvhDrMu7KU+wuKK7tXdAaCxm8ZA6iNHnxC5p+1AdYchXc6xSzv
-         3NTYlzONclVW6RRLkin3o3ZFeyo2+og45czQqiBZxztGFaPelVEYlqPCDVOyXW3ENz
-         c4EpgUs6HNQEx0+vFREPjVwOaalpdgdvnfBJO5uc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 072/343] PCI: endpoint: Fix alignment fault error in copy tests
-Date:   Tue, 12 Apr 2022 08:28:10 +0200
-Message-Id: <20220412062953.179936107@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:43:42 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACB3434AA
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649748380; x=1681284380;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=G7L8YOlj6LR17aw3DxvsUkt4nUXPEbDep2GdA0mNRfg=;
+  b=HOd4kcWkq2SmJszXndlin+qzdnLKb7iPN6aU34RV/NxnGXhxE82IXarW
+   +TP/aXf0yQUb1WPGku6tDl9/kcAIFsu6l7I0T8HzDH3rHaR9Ql7Ga0gF8
+   9brabcXqBqTSUCCSn+VOTq6borjtCUDVQ/7Dkl948jBvhMuNfUL8nxXai
+   xGpFQvOD6cHvZnzJCcUCy4b1MctoFolxpeohe6Uu2ZdvQ+g+nunuHaNF0
+   k0NYFm5yzmY0ZiCijIBbaPK/hwqNY/f/HTXOSwI6gHFqeRDSdrCdbUTPe
+   FSUlZ5lyLZbFCC0Vzek3wQQwl9CeOW7GcJD8TapQDkh7R5ZdFz+Phjivb
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="348736565"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="348736565"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:26:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="699706997"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2022 00:26:17 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neAum-0002co-Sc;
+        Tue, 12 Apr 2022 07:26:16 +0000
+Date:   Tue, 12 Apr 2022 15:25:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 4/5] drm/solomon: Move device info from ssd130x-i2c to
+ the core driver
+Message-ID: <202204121542.aU2BiYXN-lkp@intel.com>
+References: <20220411211243.11121-5-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411211243.11121-5-javierm@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+Hi Javier,
 
-[ Upstream commit 829cc0e2ea2d61fb6c54bc3f8a17f86c56e11864 ]
+I love your patch! Perhaps something to improve:
 
-The copy test uses the memcpy() to copy data between IO memory spaces.
-This can trigger an alignment fault error (pasted the error logs below)
-because memcpy() may use unaligned accesses on a mapped memory that is
-just IO, which does not support unaligned memory accesses.
+[auto build test WARNING on drm-tip/drm-tip]
+[also build test WARNING on next-20220411]
+[cannot apply to drm/drm-next drm-exynos/exynos-drm-next drm-intel/for-linux-next tegra-drm/drm/tegra/for-next linus/master linux/master v5.18-rc2]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Fix it by using the correct memcpy API to copy from/to IO memory.
+url:    https://github.com/intel-lab-lkp/linux/commits/Javier-Martinez-Canillas/drm-solomon-Add-SSD130x-OLED-displays-SPI-support/20220412-051518
+base:   git://anongit.freedesktop.org/drm/drm-tip drm-tip
+config: x86_64-randconfig-a001-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121542.aU2BiYXN-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/ac5a07cda8a0f8d4948e6a01d0b3bb6ce9fe7830
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Javier-Martinez-Canillas/drm-solomon-Add-SSD130x-OLED-displays-SPI-support/20220412-051518
+        git checkout ac5a07cda8a0f8d4948e6a01d0b3bb6ce9fe7830
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/solomon/
 
-Alignment fault error logs:
-   Unable to handle kernel paging request at virtual address ffff8000101cd3c1
-   Mem abort info:
-     ESR = 0x96000021
-     EC = 0x25: DABT (current EL), IL = 32 bits
-     SET = 0, FnV = 0
-     EA = 0, S1PTW = 0
-     FSC = 0x21: alignment fault
-   Data abort info:
-     ISV = 0, ISS = 0x00000021
-     CM = 0, WnR = 0
-   swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000081773000
-   [ffff8000101cd3c1] pgd=1000000082410003, p4d=1000000082410003, pud=1000000082411003, pmd=1000000082412003, pte=0068004000001f13
-   Internal error: Oops: 96000021 [#1] PREEMPT SMP
-   Modules linked in:
-   CPU: 0 PID: 6 Comm: kworker/0:0H Not tainted 5.15.0-rc1-next-20210914-dirty #2
-   Hardware name: LS1012A RDB Board (DT)
-   Workqueue: kpcitest pci_epf_test_cmd_handler
-   pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-   pc : __memcpy+0x168/0x230
-   lr : pci_epf_test_cmd_handler+0x6f0/0xa68
-   sp : ffff80001003bce0
-   x29: ffff80001003bce0 x28: ffff800010135000 x27: ffff8000101e5000
-   x26: ffff8000101cd000 x25: ffff6cda941cf6c8 x24: 0000000000000000
-   x23: ffff6cda863f2000 x22: ffff6cda9096c800 x21: ffff800010135000
-   x20: ffff6cda941cf680 x19: ffffaf39fd999000 x18: 0000000000000000
-   x17: 0000000000000000 x16: 0000000000000000 x15: ffffaf39fd2b6000
-   x14: 0000000000000000 x13: 15f5c8fa2f984d57 x12: 604d132b60275454
-   x11: 065cee5e5fb428b6 x10: aae662eb17d0cf3e x9 : 1d97c9a1b4ddef37
-   x8 : 7541b65edebf928c x7 : e71937c4fc595de0 x6 : b8a0e09562430d1c
-   x5 : ffff8000101e5401 x4 : ffff8000101cd401 x3 : ffff8000101e5380
-   x2 : fffffffffffffff1 x1 : ffff8000101cd3c0 x0 : ffff8000101e5000
-   Call trace:
-    __memcpy+0x168/0x230
-    process_one_work+0x1ec/0x370
-    worker_thread+0x44/0x478
-    kthread+0x154/0x160
-    ret_from_fork+0x10/0x20
-   Code: a984346c a9c4342c f1010042 54fffee8 (a97c3c8e)
-   ---[ end trace 568c28c7b6336335 ]---
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Link: https://lore.kernel.org/r/20211217094708.28678-1-Zhiqiang.Hou@nxp.com
-Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pci/endpoint/functions/pci-epf-test.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-index 90d84d3bc868..c7e45633beaf 100644
---- a/drivers/pci/endpoint/functions/pci-epf-test.c
-+++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-@@ -285,7 +285,17 @@ static int pci_epf_test_copy(struct pci_epf_test *epf_test)
- 		if (ret)
- 			dev_err(dev, "Data transfer failed\n");
- 	} else {
--		memcpy(dst_addr, src_addr, reg->size);
-+		void *buf;
-+
-+		buf = kzalloc(reg->size, GFP_KERNEL);
-+		if (!buf) {
-+			ret = -ENOMEM;
-+			goto err_map_addr;
-+		}
-+
-+		memcpy_fromio(buf, src_addr, reg->size);
-+		memcpy_toio(dst_addr, buf, reg->size);
-+		kfree(buf);
- 	}
- 	ktime_get_ts64(&end);
- 	pci_epf_test_print_rate("COPY", reg->size, &start, &end, use_dma);
+>> drivers/gpu/drm/solomon/ssd130x.c:894:12: warning: cast to smaller integer type 'enum ssd130x_variants' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+           variant = (enum ssd130x_variants)device_get_match_data(dev);
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
+
+
+vim +894 drivers/gpu/drm/solomon/ssd130x.c
+
+   874	
+   875	struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
+   876	{
+   877		struct ssd130x_device *ssd130x;
+   878		enum ssd130x_variants variant;
+   879		struct backlight_device *bl;
+   880		struct drm_device *drm;
+   881		int ret;
+   882	
+   883		ssd130x = devm_drm_dev_alloc(dev, &ssd130x_drm_driver,
+   884					     struct ssd130x_device, drm);
+   885		if (IS_ERR(ssd130x))
+   886			return ERR_PTR(dev_err_probe(dev, PTR_ERR(ssd130x),
+   887						     "Failed to allocate DRM device\n"));
+   888	
+   889		drm = &ssd130x->drm;
+   890	
+   891		ssd130x->dev = dev;
+   892		ssd130x->regmap = regmap;
+   893	
+ > 894		variant = (enum ssd130x_variants)device_get_match_data(dev);
+   895	
+   896		if (variant >= NR_SSD130X_VARIANTS)
+   897			return ERR_PTR(dev_err_probe(dev, -EINVAL,
+   898						     "Invalid SSD130x variant\n"));
+   899	
+   900		ssd130x->device_info = &ssd130x_variants[variant];
+   901	
+   902		if (ssd130x->device_info->page_mode_only)
+   903			ssd130x->page_address_mode = 1;
+   904	
+   905		ssd130x_parse_properties(ssd130x);
+   906	
+   907		ret = ssd130x_get_resources(ssd130x);
+   908		if (ret)
+   909			return ERR_PTR(ret);
+   910	
+   911		bl = devm_backlight_device_register(dev, dev_name(dev), dev, ssd130x,
+   912						    &ssd130xfb_bl_ops, NULL);
+   913		if (IS_ERR(bl))
+   914			return ERR_PTR(dev_err_probe(dev, PTR_ERR(bl),
+   915						     "Unable to register backlight device\n"));
+   916	
+   917		bl->props.brightness = ssd130x->contrast;
+   918		bl->props.max_brightness = MAX_CONTRAST;
+   919		ssd130x->bl_dev = bl;
+   920	
+   921		ret = ssd130x_init_modeset(ssd130x);
+   922		if (ret)
+   923			return ERR_PTR(ret);
+   924	
+   925		ret = drm_dev_register(drm, 0);
+   926		if (ret)
+   927			return ERR_PTR(dev_err_probe(dev, ret, "DRM device register failed\n"));
+   928	
+   929		drm_fbdev_generic_setup(drm, 0);
+   930	
+   931		return ssd130x;
+   932	}
+   933	EXPORT_SYMBOL_GPL(ssd130x_probe);
+   934	
+
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
