@@ -2,116 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3899C47092
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E20C38A02
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391091AbiDLJZm (ORCPT
+        id S1388885AbiDLJWy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
+        Tue, 12 Apr 2022 05:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354361AbiDLIKQ (ORCPT
+        with ESMTP id S1357338AbiDLHkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:10:16 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2039238A8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:19 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB8A-0007gG-Lm; Tue, 12 Apr 2022 09:40:06 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB89-00AQZc-Cj; Tue, 12 Apr 2022 09:40:05 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
-Cc:     David Jander <david@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v1 07/17] arm: dts: imx6qdl-vicut1.dtsi: Update GPIO line names
-Date:   Tue, 12 Apr 2022 09:39:54 +0200
-Message-Id: <20220412074004.2485264-8-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
-References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+        Tue, 12 Apr 2022 03:40:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D1A24F29;
+        Tue, 12 Apr 2022 00:15:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FF15B81B60;
+        Tue, 12 Apr 2022 07:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6250BC385A1;
+        Tue, 12 Apr 2022 07:15:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747730;
+        bh=nx/TWIU0HuF/BcME479M9j/gXDlBWROJsyjyROKFzQY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cl3a6DIvzsGBYIsN5pj4Z+r+0TxRZ5kS9JK3KntZERvGDQHwoBbZHbzlhNjGTsQy6
+         mD3PtMmP8Iae41OkvOEABNl0sQspvfl4E0q9MxEPb3/KFdr2mLQu8IpyWbaK9lenxU
+         D0+y7b9a36ir9OkPlAJNuqJurPV68Xwy0wH4TRFA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Amit Shah <amit@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 184/343] virtio_console: eliminate anonymous module_init & module_exit
+Date:   Tue, 12 Apr 2022 08:30:02 +0200
+Message-Id: <20220412062956.671343374@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Jander <david@protonic.nl>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Add some missing names and remove names to pins that have never been used
-and/or are not present on any hardware.
+[ Upstream commit fefb8a2a941338d871e2d83fbd65fbfa068857bd ]
 
-Signed-off-by: David Jander <david@protonic.nl>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Eliminate anonymous module_init() and module_exit(), which can lead to
+confusion or ambiguity when reading System.map, crashes/oops/bugs,
+or an initcall_debug log.
+
+Give each of these init and exit functions unique driver-specific
+names to eliminate the anonymous names.
+
+Example 1: (System.map)
+ ffffffff832fc78c t init
+ ffffffff832fc79e t init
+ ffffffff832fc8f8 t init
+
+Example 2: (initcall_debug log)
+ calling  init+0x0/0x12 @ 1
+ initcall init+0x0/0x12 returned 0 after 15 usecs
+ calling  init+0x0/0x60 @ 1
+ initcall init+0x0/0x60 returned 0 after 2 usecs
+ calling  init+0x0/0x9a @ 1
+ initcall init+0x0/0x9a returned 0 after 74 usecs
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Amit Shah <amit@kernel.org>
+Cc: virtualization@lists.linux-foundation.org
+Cc: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220316192010.19001-3-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ drivers/char/virtio_console.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-index a5f962f1028b..a93e7f8302aa 100644
---- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-@@ -257,12 +257,10 @@ &gpio1 {
- 	gpio-line-names =
- 		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
- 			"CAM2_MIRROR", "", "", "SMBALERT",
--		"DEBUG_0", "DEBUG_1", "SDIO_SCK", "SDIO_CMD", "SDIO_D3",
--			"SDIO_D2", "SDIO_D1", "SDIO_D0",
-+		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
- 		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
--			"SD1_DATA3", "", "",
--		"", "ETH_RESET", "WIFI_PD", "WIFI_BT_RST", "ETH_INT", "",
--			"WL_IRQ", "ETH_MDC";
-+			"SD1_DATA3", "ETH_MDIO", "",
-+		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
+diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
+index e3c430539a17..9fa3c76a267f 100644
+--- a/drivers/char/virtio_console.c
++++ b/drivers/char/virtio_console.c
+@@ -2245,7 +2245,7 @@ static struct virtio_driver virtio_rproc_serial = {
+ 	.remove =	virtcons_remove,
  };
  
- &gpio2 {
-@@ -270,8 +268,8 @@ &gpio2 {
- 		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
- 		"", "LED_PWM", "", "", "",
- 			"", "", "",
--		"", "", "", "", "", "", "", "ON_SWITCH",
--		"POWER_LED", "", "ECSPI2_SS0", "", "", "", "", "";
-+		"", "", "", "", "", "ISB_IN2", "ISB_nIN1", "ON_SWITCH",
-+		"POWER_LED", "", "", "", "", "", "", "";
- };
+-static int __init init(void)
++static int __init virtio_console_init(void)
+ {
+ 	int err;
  
- &gpio3 {
-@@ -280,7 +278,8 @@ &gpio3 {
- 		"", "", "", "", "", "", "", "",
- 		"ECSPI1_SCLK", "ECSPI1_MISO", "ECSPI1_MOSI", "ECSPI1_SS1",
- 			"CPU_ON1_FB", "USB_OTG_OC", "USB_OTG_PWR", "YACO_IRQ",
--		"", "", "", "", "", "", "", "";
-+		"TSS_TXD", "TSS_RXD", "", "", "", "", "YACO_BOOT0",
-+			"YACO_RESET";
- };
+@@ -2280,7 +2280,7 @@ static int __init init(void)
+ 	return err;
+ }
  
- &gpio4 {
-@@ -288,8 +287,8 @@ &gpio4 {
- 		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
- 		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
- 			"CAN2_SR", "CAN2_TX", "CAN2_RX",
--		"LED_DI0_DEBUG_0", "LED_DI0_DEBUG_1", "", "", "", "ON1_CTRL",
--			"ON2_CTRL", "HITCH_IN_OUT",
-+		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
-+			"HITCH_IN_OUT",
- 		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
- 			"ISB_LED";
- };
+-static void __exit fini(void)
++static void __exit virtio_console_fini(void)
+ {
+ 	reclaim_dma_bufs();
+ 
+@@ -2290,8 +2290,8 @@ static void __exit fini(void)
+ 	class_destroy(pdrvdata.class);
+ 	debugfs_remove_recursive(pdrvdata.debugfs_dir);
+ }
+-module_init(init);
+-module_exit(fini);
++module_init(virtio_console_init);
++module_exit(virtio_console_fini);
+ 
+ MODULE_DESCRIPTION("Virtio console driver");
+ MODULE_LICENSE("GPL");
 -- 
-2.30.2
+2.35.1
+
+
 
