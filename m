@@ -2,119 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A184C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F27FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354878AbiDLQiw (ORCPT
+        id S1357699AbiDLQkk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        Tue, 12 Apr 2022 12:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351032AbiDLQis (ORCPT
+        with ESMTP id S234647AbiDLQki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:38:48 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C12718B14
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649781390; x=1681317390;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8zmapAeyFTtKr42ftB7igvZstrLdaQa5K0dOWyaPelI=;
-  b=YM1mZUqE8lHoUjx6D2LgEdz24BbamrH1L7GuInh7Tpmz0xQA9AbV7GEr
-   MUpqJTgW96TChZJezH1kdJtRz9JRDm/AX+CU3KXqnYbBw03vGYYybxDEN
-   aIYytz7i3tmYWCIFkpytycL5gTi/lR9pnX/YzpHRkO5+RXygBj3rLGmDj
-   0l8J1Fc5K8bE7jsjPr/hCU1MpWmMiJxvohj7UMDEOpuDv9FpT+HhZPhoe
-   W5c6qHkDVZ4dqHWIJBh4hoT/eXbn0/dY1DUbfw12WYqLvJbBs1kRs0Izd
-   QoCLJ7ef6FH0CoLkSSPjKJsgkvHfbWI8KV5Opg3eqxy5bKSEMHrMZWpam
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="244314849"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="244314849"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:29:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="590393310"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 12 Apr 2022 09:29:27 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neJOQ-0002zk-UN;
-        Tue, 12 Apr 2022 16:29:26 +0000
-Date:   Wed, 13 Apr 2022 00:28:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com, jasowang@redhat.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, si-wei.liu@oracle.com,
-        Eli Cohen <elic@nvidia.com>
-Subject: Re: [PATCH v2 1/2] vdpa: Add support for querying vendor statistics
-Message-ID: <202204130003.fROyiuxA-lkp@intel.com>
-References: <20220412130402.46945-2-elic@nvidia.com>
+        Tue, 12 Apr 2022 12:40:38 -0400
+Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9310C1BEAE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:38:20 -0700 (PDT)
+Received: from omf15.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id B4DED2536E;
+        Tue, 12 Apr 2022 16:38:18 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf15.hostedemail.com (Postfix) with ESMTPA id CB08922;
+        Tue, 12 Apr 2022 16:38:11 +0000 (UTC)
+Message-ID: <38692bbdd535dfe249babd1eb6aca24b2e1070e8.camel@perches.com>
+Subject: Re: [PATCH 4/5] MAINTAINERS: update MAINTAINERS file
+From:   Joe Perches <joe@perches.com>
+To:     William Zhang <william.zhang@broadcom.com>,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>
+Cc:     Samyon Furman <samyon.furman@broadcom.com>,
+        Joel Peshkin <joel.peshkin@broadcom.com>,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Dan Beygelman <dan.beygelman@broadcom.com>,
+        Tomer Yacoby <tomer.yacoby@broadcom.com>,
+        Anand Gore <anand.gore@broadcom.com>,
+        Kursad Oney <kursad.oney@broadcom.com>,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 12 Apr 2022 09:38:09 -0700
+In-Reply-To: <20220411172815.20916-5-william.zhang@broadcom.com>
+References: <20220411172815.20916-1-william.zhang@broadcom.com>
+         <20220411172815.20916-5-william.zhang@broadcom.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412130402.46945-2-elic@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: CB08922
+X-Stat-Signature: 59qrfu693xokzw7ai9f6zsi1gbgxqqed
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1926vEBFWIjUSOwGm9YLGj7cPVOg3NK36c=
+X-HE-Tag: 1649781491-409073
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eli,
+On Mon, 2022-04-11 at 10:28 -0700, William Zhang wrote:
+> Add maintainters, SCM tree, files and directories for the new BCMBCA
 
-Thank you for the patch! Perhaps something to improve:
+typo of maintainers
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.18-rc2 next-20220412]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> arch. Only add 47622 for this change and will update in the future
+> when more SoCs are supported.
+[]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> @@ -3740,6 +3740,20 @@ F:	drivers/net/dsa/bcm_sf2*
+>  F:	include/linux/dsa/brcm.h
+>  F:	include/linux/platform_data/b53.h
+>  
+> +BROADCOM BCMBCA ARM ARCHITECTURE
+> +M:	William Zhang <william.zhang@broadcom.com>
+> +M:	Anand Gore <anand.gore@broadcom.com>
+> +M:	Kursad Oney <kursad.oney@broadcom.com>
+> +M:	bcm-kernel-feedback-list@broadcom.com
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eli-Cohen/Show-statistics-for-a-vdpa-device/20220412-212129
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
-config: i386-randconfig-a004-20220411 (https://download.01.org/0day-ci/archive/20220413/202204130003.fROyiuxA-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/813a1bf827634a8d7e148b133e2849fac37819cd
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eli-Cohen/Show-statistics-for-a-vdpa-device/20220412-212129
-        git checkout 813a1bf827634a8d7e148b133e2849fac37819cd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/usb/typec/ drivers/vdpa/
+Unnamed exploders are not maintainers.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Maybe:
 
-All warnings (new ones prefixed by >>):
+R:	Broadcom BCMBCA reviewers <bcm-kernel-feedback-list@broadcom.com>
 
->> drivers/vdpa/vdpa.c:1122:61: warning: implicit conversion from 'int' to 's16' (aka 'short') changes value from 65535 to -1 [-Wconstant-conversion]
-           [VDPA_ATTR_DEV_QUEUE_INDEX] = NLA_POLICY_RANGE(NLA_U32, 0, 65535),
-                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
-   include/net/netlink.h:396:9: note: expanded from macro 'NLA_POLICY_RANGE'
-           .max = _max                                     \
-                  ^~~~
-   1 warning generated.
+> +L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> +S:	Maintained
+> +T:	git git://github.com/broadcom/stblinux.git
+> +F:	Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+> +F:	arch/arm/boot/dts/bcm47622.dtsi
+> +F:	arch/arm/boot/dts/bcm947622.dts
+> +N:	bcmbca
+> +N:	bcm[9]?47622
+
+bcm9?47622 is simpler, though it doesn't seem this is actually useful.
+Where is it actually used in files other than the ones already listed?
 
 
-vim +1122 drivers/vdpa/vdpa.c
-
-  1114	
-  1115	static const struct nla_policy vdpa_nl_policy[VDPA_ATTR_MAX + 1] = {
-  1116		[VDPA_ATTR_MGMTDEV_BUS_NAME] = { .type = NLA_NUL_STRING },
-  1117		[VDPA_ATTR_MGMTDEV_DEV_NAME] = { .type = NLA_STRING },
-  1118		[VDPA_ATTR_DEV_NAME] = { .type = NLA_STRING },
-  1119		[VDPA_ATTR_DEV_NET_CFG_MACADDR] = NLA_POLICY_ETH_ADDR,
-  1120		/* virtio spec 1.1 section 5.1.4.1 for valid MTU range */
-  1121		[VDPA_ATTR_DEV_NET_CFG_MTU] = NLA_POLICY_MIN(NLA_U16, 68),
-> 1122		[VDPA_ATTR_DEV_QUEUE_INDEX] = NLA_POLICY_RANGE(NLA_U32, 0, 65535),
-  1123	};
-  1124	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
