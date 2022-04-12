@@ -2,79 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D55C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 22:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 22:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbiDLWZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 18:25:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
+        id S229486AbiDLW3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 18:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiDLWZK (ORCPT
+        with ESMTP id S229479AbiDLW3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 18:25:10 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03158195D8B;
-        Tue, 12 Apr 2022 14:11:31 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1709C13D5;
-        Tue, 12 Apr 2022 14:04:22 -0700 (PDT)
-Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E22863F70D;
-        Tue, 12 Apr 2022 14:04:21 -0700 (PDT)
-From:   Jeremy Linton <jeremy.linton@arm.com>
-To:     netdev@vger.kernel.org
-Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, pbrobinson@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>
-Subject: [PATCH] net: bcmgenet: Revert "Use stronger register read/writes to assure ordering"
-Date:   Tue, 12 Apr 2022 16:04:20 -0500
-Message-Id: <20220412210420.1129430-1-jeremy.linton@arm.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 12 Apr 2022 18:29:23 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D9A19EC62;
+        Tue, 12 Apr 2022 14:15:11 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649797072;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w642aWN42zYFGGZD2a2O5goJFKRbh1eHda8TK6sp2vE=;
+        b=ladY7lhIHrXI2k9D7th0Z6+5ep54BOrI0BnbuW//bOpbOmNiY0uhc/fJhnRb6rfFB8G9mY
+        Ze+v0e45IIqUQmchHM6c7WZqQJWMrwLiB6AsoMq3kdFtdXc0H1UEwbXiPHu+zOKLNlV+Rr
+        kBWtTurIIXE+P0wft+z6TjNPM4Fwpx+nPAjOHNCrw2/kzz68fZCYtxlIeP27GP/ppLAWyo
+        sIZ3nWfYuU1N5plsp4tFWAWj5rC4sh75NhHIe9NfkiNN9zP2OWOoPLdXFlzyqHWcUx87xH
+        UeAyFlZEfxHIkB8v/DuJFxXKev9B+PXimtGyFvdnTlAM8lziorbNeXpm0yMh4Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649797072;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w642aWN42zYFGGZD2a2O5goJFKRbh1eHda8TK6sp2vE=;
+        b=97p7ujeYtp/JNITBvGjRAaEaYf/IylcEWqaaB0wlEKegNLYjFko3yLj6d/iRtEo3osYpqD
+        YjBvQAAGxYMpj8Cg==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        arnd@arndb.de
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, x86@kernel.org,
+        linux-xtensa@linux-xtensa.org
+Subject: Re: [PATCH v3 01/10] timekeeping: add raw clock fallback for
+ random_get_entropy()
+In-Reply-To: <20220412172754.149498-2-Jason@zx2c4.com>
+References: <20220412172754.149498-1-Jason@zx2c4.com>
+ <20220412172754.149498-2-Jason@zx2c4.com>
+Date:   Tue, 12 Apr 2022 22:57:52 +0200
+Message-ID: <87bkx6f29b.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It turns out after digging deeper into this bug, that it was being
-triggered by GCC12 failing to call the bcmgenet_enable_dma()
-routine. Given that a gcc12 fix has been merged [1] and the genet
-driver now works properly when built with gcc12, this commit should
-be reverted.
+On Tue, Apr 12 2022 at 19:27, Jason A. Donenfeld wrote:
+> +/**
+> + * random_get_entropy_fallback - Returns the raw clock source value,
+> + * used by random.c for platforms with no valid random_get_entropy().
+> + */
+> +unsigned long random_get_entropy_fallback(void)
+> +{
+> +	return tk_clock_read(&tk_core.timekeeper.tkr_mono);
+> +}
+> +EXPORT_SYMBOL(random_get_entropy_fallback);
 
-[1]
-https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
-https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=aabb9a261ef060cf24fd626713f1d7d9df81aa57
+EXPORT_SYMBOL_GPL() please.
 
-Fixes: 8d3ea3d402db ("net: bcmgenet: "Use stronger register read/writes to assure ordering")
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
----
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks,
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 2dd79af9411b..9a41145dadfc 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		__raw_writel(value, offset);
- 	else
--		writel(value, offset);
-+		writel_relaxed(value, offset);
- }
- 
- static inline u32 bcmgenet_readl(void __iomem *offset)
-@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
- 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
- 		return __raw_readl(offset);
- 	else
--		return readl(offset);
-+		return readl_relaxed(offset);
- }
- 
- static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
--- 
-2.34.1
-
+        tglx
