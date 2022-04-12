@@ -2,135 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5631AC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78073C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352095AbiDLMID (ORCPT
+        id S1352375AbiDLMIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        Tue, 12 Apr 2022 08:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352419AbiDLMC6 (ORCPT
+        with ESMTP id S1352911AbiDLMDo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:02:58 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7B18023F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:00:09 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ebf3746f87so101896377b3.6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:00:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v2zi2giavZdO2HMDfrc7yK4A4aR/ngLsqIJD3W77LNs=;
-        b=b4v6GqYxeJjlJ1RbEQauF9GEIWimtem9DfI/ea+58BboREvflEEq0M6jErAnAoE93B
-         tYuy5mJ/r4ba02CczLRQd8TmQ7CK9KY/1RfIbv6VC/vU5FzAIsre+zMd2kHi6JeMfPOF
-         4fBT0F6bq2XsYtIaWNClXMgBpjhBJ9AS7/1/3qS47r77iP3+bY4fHCX9/uoSi8DAvTqG
-         k/jDnzm69qk4dXs/N7H146ttsPkrszUV5cVSdNFLc0OGWTX1yWcUZvfGu8L3L3E878+9
-         LZbWbMEWL706ypWKJhQXFIcNT9lcoZhbr2KfSuGPorip9ZdCMOWb/sRTFpPLw/dEIfsz
-         NCSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v2zi2giavZdO2HMDfrc7yK4A4aR/ngLsqIJD3W77LNs=;
-        b=giFUnQNUayzIX00N+ht1i8KtG3nhHpfpwHFAapeCM94gDy8nfL7FKJpuT29FfhD9cW
-         AuxHNYRi9wYOo0xC3YM1tHh+Seet3k58l6BSwYemVrKcBQWRMaiwkG2HrMTutA7/PMeC
-         iuxerKLv9Z9r3qIlNyJ6PT1SJRcd8q6NqogOLcnHQN5pjc1sNutRo1TEc4Qr7/5FGrs9
-         Qrjni4SDwdE8JGSgkmuIiEL8ItuIv3hfLJz/WdNJEdhNadFe2LuDatSMVWLAvZZ952IT
-         HtwOFFO6nW5T6LvKIHPpAB1ZdUB2AK+3APA5v4JnJrnSBEKqKygG58Hq7QT+YE6HlSRD
-         qOIw==
-X-Gm-Message-State: AOAM531cp+H5dq4vydWe4zmPSX8uKmXzRDhGSFstf0aP2Jg04soomqNH
-        nrU2yIY+Ttyblvz9M0SOqSGIeL8Mvcla5RCaZhJEKw==
-X-Google-Smtp-Source: ABdhPJwwqPNdGAbIJgV8Tw3Kjk4tMF7wq4HRILrI/52e/kefI6BLXOkH7KMdW6Q3t6UkDG+3QNDDwa3vKedsVrgXFAE=
-X-Received: by 2002:a0d:e743:0:b0:2eb:3106:9b32 with SMTP id
- q64-20020a0de743000000b002eb31069b32mr30496791ywe.512.1649761208158; Tue, 12
- Apr 2022 04:00:08 -0700 (PDT)
+        Tue, 12 Apr 2022 08:03:44 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2062.outbound.protection.outlook.com [40.107.20.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B779B6;
+        Tue, 12 Apr 2022 04:01:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WmDPkc0ro6Ey/nAhl7mrDEZSxUT1iYVGIhLh8+s4qBB3igDz0fs10sHRElYMyJX3bIge32N7puXF2v17rOZ456Y1ude1iPvtSlP3tTYJy1BNd2R+sCejCTlZZ0QsDCCS1wSk8usNXk4qWYiH5B9mqcmS4LLzNF8ADoC+Gd2CwiSrMMvA5d1q3aqdaf0VcsLt23uwTLdMIBQZlooX9sNWgU++dH3cS97R2v5be+q5mH/FdpjZNNxyUD+H3nimugXeQKWlYLCMPt3A1VXQngsWcjmWbrzHriTJi1Noa3hxUTfQo6ifYOg3YjHUXMPRKwDPyMPHV70ZJs6Q8Jq5lwgTvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ApBmchM206ziv6PHdYyademKDkFTVG9QuECmRAu0GVs=;
+ b=JgJ4nHs69j0ZJtJ+b5C7OBW6v1Ct4SP22FEpqWpMh9MwX3vIaTnN25Futw0nqQEJp218B4LW7Z50Ku3taVxSpI7PuXwe9BPLF+t6iWJVj/1RpAipQhmUBCYd2k7dBMsf4ycyUCsHqkuztg/DcB1mWsER45Hop+2HXpsgrBmRHf+3vIcXDVac3tQgp5CjAzXf/PYj0GZoMgV2unpxubSswNa9lRvMWqjKcqYC1m1r0UfgnsbOUYTIXhaQAKFoTZ+Q+E+ztFxWLsgL2F7uJo45PNK9mBOMq4NxXbKoVnYiD3UsyiqcLSnCpCQ7AIJdXsMWX1pQ2Y7BgS1jVjkMibEREA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ApBmchM206ziv6PHdYyademKDkFTVG9QuECmRAu0GVs=;
+ b=VpbEV2/3AkSNzFMcfwpxbrZVIKqJaYP5GwhgqTNXAxN00gDOf3dw+XvKWcj8KKd4R8nS2wPUJHy+DjAHRIFfZGeXv4MKjfkOlXVM7Yz4WO/kKsQ4gH9q4pl0p5Vc7cTzJ/Fi1lzmaA95JuJU/j1FPaLTlj+MoM/J6zL+itGGpvs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by DB6PR0401MB2567.eurprd04.prod.outlook.com (2603:10a6:4:3b::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 11:01:28 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::a9d1:199:574b:502f]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::a9d1:199:574b:502f%6]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
+ 11:01:28 +0000
+Date:   Tue, 12 Apr 2022 14:01:26 +0300
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] clk: imx: Add check for kcalloc
+Message-ID: <YlVcBviIvBBId9WV@abelvesa>
+References: <20220310080257.1988412-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310080257.1988412-1-jiasheng@iscas.ac.cn>
+X-ClientProxiedBy: VI1PR04CA0116.eurprd04.prod.outlook.com
+ (2603:10a6:803:f0::14) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
 MIME-Version: 1.0
-References: <20220404111204.935357-1-elver@google.com> <CACT4Y+YiDhmKokuqD3dhtj67HxZpTumiQvvRp35X-sR735qjqQ@mail.gmail.com>
-In-Reply-To: <CACT4Y+YiDhmKokuqD3dhtj67HxZpTumiQvvRp35X-sR735qjqQ@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Tue, 12 Apr 2022 13:00:00 +0200
-Message-ID: <CANpmjNPQ9DWzPRx4QWDnZatKGU96xLhb2qN-wgbD84zyZ6_Mig@mail.gmail.com>
-Subject: Re: [PATCH] signal: Deliver SIGTRAP on perf event asynchronously if blocked
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e50d1fb0-b6fe-40d8-ef03-08da1c73cb64
+X-MS-TrafficTypeDiagnostic: DB6PR0401MB2567:EE_
+X-Microsoft-Antispam-PRVS: <DB6PR0401MB2567213DF0D6B5FD360B591AF6ED9@DB6PR0401MB2567.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Dm1PddQsj2UZnyc3Ra+4j2UVqRDhDXMKMPaw2WW2k6MREn2REoEPmx6gIYGuFqxlCR/0lEh2QB8YxJOO46q5xVoHjFf+QDudW81wgpZTdKLdhnUI/ELR0Q2FoWqLtZ5PLdru1ZYbxa8fL347p+vdzaYNYJflza+cupeTv75YylVrJIX98MKoCbj50DBp7AO4hhfshUpxvR8/tsIskYlU1L5/T/NKaTs9dKVnun+Hes7nA12eblxs1Ihd3MT3NeuTi3uSe17n0f5xvhZMKzDb4v766ovgz0MqWrk/Q4t1zR7caSpJSl9h71fRA0izKsuYvu+x8mC9K5wTlXs9fwlbORj6v/oBR/geVIAWzG3zpJ2G8ZQvWhTMQZ0rx3qiZ71pqIQA/A7jJxUpq7slEhm3VJR1Lbr7yrg08piHhQImtO8pLokZz2Dz2dBnGKWSKb/IMEygQqH5mrTaxRKagrTnn5ULSPmBbxICdx2bIn50ISObDVMM1fJS/KhkF17iVNV20wVFOuh2oVrwK/rL/ab6CEFb1xz9YWGJSicy/sZLl7g8+pUr79Hc2jWT3xceQoevjWTEVEVGQbQjxoiwqjSxN6Ma11e3OEg5+az0ZlqSXOydBd7d+ed2os8sApZTk7mZ8jMuENG6t62tFFwLw8h746870LFXvS3vsOCn7dKeaef5oVn4TJr2h0V4k5TWmG6EsXt2NGYOpo029ulcwQpIHg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(4326008)(508600001)(8676002)(6916009)(5660300002)(7416002)(186003)(2906002)(83380400001)(6486002)(316002)(8936002)(86362001)(26005)(6506007)(52116002)(53546011)(66476007)(9686003)(66556008)(33716001)(44832011)(38350700002)(38100700002)(6512007)(66946007)(4744005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y8gsynWZwlOraSkBX3N6MtCwmtosgLo0nwJGtNP/HtzIKdTeyjaMuNy/MBtt?=
+ =?us-ascii?Q?ZQgWtIdEC9GIiNfxNOVr8ZE128QhC4GcO7vwKtaMUljuSvc3ijBsQB+v1zUz?=
+ =?us-ascii?Q?XgXzoMdpyn0Yj/Nj2ZGDHYsunWwU/qF12sQh0z31SweRPWSLW9DSSkrgZRI8?=
+ =?us-ascii?Q?SepdpFKaXqL4ZuJ5ag32VT27ZMIt75HMLQ4t21uHrHEaxR0BIjnj/fevcT0G?=
+ =?us-ascii?Q?92Nh9aolCypeg4dRZxRD8Ul4p9aoLNxrJKeDIaPNJ9cHur863m069urj0Xwo?=
+ =?us-ascii?Q?apGRmCLRzIawfDYU/7tOfMs+KC9xoCOO5EPtxNCfJ9Bf/EXmm7VJGQFZVBK1?=
+ =?us-ascii?Q?rTef4Hpg1t7AxKQbWWFJQmSh0sJT1emKq/0N+88dzl8jQRN/9Uvyfj5ZAJVO?=
+ =?us-ascii?Q?aHCG0B8/x5zucuyLfEqRJ4orl+Ua+vBGuh+OxDJmVkh1McG9553Aep8B1dQ9?=
+ =?us-ascii?Q?r34PC6fYFrT4hKRAP3f2FUeM/PA2RJjVwxRVBxhx3Giq7OSxOb1Aa+UTYo7C?=
+ =?us-ascii?Q?tw5QGnskEEcyykHAfBtkWQw4pJ38ly/7zLVMK3eMIfKShq+DC4VjeFkOFlcU?=
+ =?us-ascii?Q?VwuaTZY5Ku3+9JkUABk+SdRWRb2WevcB+ymmq3+eFxEanmSysfqzpKqec0QL?=
+ =?us-ascii?Q?YnpLVBGKcGlI57l80p5X5C1MGE75z/x5buioXj53l7+kB2PvXLXGErT4T0on?=
+ =?us-ascii?Q?lFQ1qIb9qe8cYIK4I5pACXJqT2HxHKuOV2f0Z14/oQie+Q4EyAaiofGQ/zol?=
+ =?us-ascii?Q?uGtQ1ySTu6YMTsrnWZKE/ErhVdCRmDN7DNwmhDQPidnComMcxHNHyaiU5Grj?=
+ =?us-ascii?Q?rE1rpiifmjonHMM2qqUJGT1b79a5ObrQhkiep9ItRYGqTjumc+vKQhgYaSEV?=
+ =?us-ascii?Q?XyBLWpIx0xWa9dRrlA950tneet+MvAG60zVj36Nf5JgCqd+Qwy8NV+vZtgTA?=
+ =?us-ascii?Q?IAjN96p2MsYwPor9oNt4u3HDJuIMlfe+TsMWLZQ+hoJil6vO/rSV+kSDdXIs?=
+ =?us-ascii?Q?qRMBjZveHHfUkw+NBjdvm8O+iXwShHBte7nvdbJssLNQHF8QB/7sFNCFbvQR?=
+ =?us-ascii?Q?JPgEToGYkCcrLejwjMLNjXEhK1R9PYuWMAxDBf46dgecQMAq4TEBY0ymviYg?=
+ =?us-ascii?Q?bKRPO1OAbKifa9Ysxb8vZmrIZEK6RG3ihByYKClGlR3/WwFVItIAj9Uv3YJm?=
+ =?us-ascii?Q?YbN23aPAdUMNI5yFRdkf3vj6MmpWHyyiB9JvLnWPL2QqhAgqg0JAR6CCk/P+?=
+ =?us-ascii?Q?JqX/3XO3/Qw7L/RbC5g332jYPa/EYwIoJ7kAyP4Z3+ge9Im+Uf9b0Rzam0Yy?=
+ =?us-ascii?Q?E4Hvyp76laUzMBdzY/SaNtJrH7mT6Ret/w1o/5QRtw2MvjHHcVM4aIVcOyIH?=
+ =?us-ascii?Q?b9Ou7iVZ6PeVD3sUVsfnwfEqEOClwGYKXkCPtCTi/VVoapf0ewpwP9q1WCqe?=
+ =?us-ascii?Q?BWiK+ZqtMylnSyiiaLrRKqnhBIJOx+Ay14CME/RhbZ+BBACc/nbB/eQ3CNfl?=
+ =?us-ascii?Q?vZ61Ra3ieLwRuc7qfm2xQA5DjXg6Fz8f/moll8+9Z/9Fe9Spdwq/kfRM2p6D?=
+ =?us-ascii?Q?FVQBPWffMsCgpyeJvaJkBNawUoA3OCdNRM6AnUWyvEBZGECm7EL9r0/M4//E?=
+ =?us-ascii?Q?MNsnBDteV2Sl0ph3Fp+Z3g7a5GwC7jvgqfg9DSGr3UYnHUyOJ+wR39cx1kkw?=
+ =?us-ascii?Q?nJVP2CbugmrMryj2dV6WP9MhaihoQTNKWhn5TKJpAHH5A35vRrpE+09Y7pfU?=
+ =?us-ascii?Q?T1AM7EHFxA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e50d1fb0-b6fe-40d8-ef03-08da1c73cb64
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 11:01:28.6959
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IuNJ8kvEQv9KKRj94tKGGVNf72yUmA+WSGnM/75F7tH+bOt0A53RFUOlY6Emen3bGQkNGvDh87M+wtpWEYlauQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2567
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 at 15:30, Dmitry Vyukov <dvyukov@google.com> wrote:
-> On Mon, 4 Apr 2022 at 13:12, Marco Elver <elver@google.com> wrote:
-> > With SIGTRAP on perf events, we have encountered termination of
-> > processes due to user space attempting to block delivery of SIGTRAP.
-> > Consider this case:
-> >
-> >     <set up SIGTRAP on a perf event>
-> >     ...
-> >     sigset_t s;
-> >     sigemptyset(&s);
-> >     sigaddset(&s, SIGTRAP | <and others>);
-> >     sigprocmask(SIG_BLOCK, &s, ...);
-> >     ...
-> >     <perf event triggers>
-> >
-> > When the perf event triggers, while SIGTRAP is blocked, force_sig_perf()
-> > will force the signal, but revert back to the default handler, thus
-> > terminating the task.
-> >
-> > This makes sense for error conditions, but not so much for explicitly
-> > requested monitoring. However, the expectation is still that signals
-> > generated by perf events are synchronous, which will no longer be the
-> > case if the signal is blocked and delivered later.
-> >
-> > To give user space the ability to clearly distinguish synchronous from
-> > asynchronous signals, introduce siginfo_t::si_perf_flags and
-> > TRAP_PERF_FLAG_ASYNC (opted for flags in case more binary information is
-> > required in future).
-> >
-> > The resolution to the problem is then to (a) no longer force the signal
-> > (avoiding the terminations), but (b) tell user space via si_perf_flags
-> > if the signal was synchronous or not, so that such signals can be
-> > handled differently (e.g. let user space decide to ignore or consider
-> > the data imprecise).
-> >
-> > The alternative of making the kernel ignore SIGTRAP on perf events if
-> > the signal is blocked may work for some usecases, but likely causes
-> > issues in others that then have to revert back to interception of
-> > sigprocmask() (which we want to avoid). [ A concrete example: when using
-> > breakpoint perf events to track data-flow, in a region of code where
-> > signals are blocked, data-flow can no longer be tracked accurately.
-> > When a relevant asynchronous signal is received after unblocking the
-> > signal, the data-flow tracking logic needs to know its state is
-> > imprecise. ]
-> >
-> > Link: https://lore.kernel.org/all/Yjmn%2FkVblV3TdoAq@elver.google.com/
-> > Fixes: 97ba62b27867 ("perf: Add support for SIGTRAP on perf events")
-> > Reported-by: Dmitry Vyukov <dvyukov@google.com>
-> > Signed-off-by: Marco Elver <elver@google.com>
+On 22-03-10 16:02:57, Jiasheng Jiang wrote:
+> As the potential failure of the kcalloc(),
+> it should be better to check it in order to
+> avoid the dereference of the NULL pointer.
 >
-> Tested-by: Dmitry Vyukov <dvyukov@google.com>
+> Fixes: 379c9a24cc23 ("clk: imx: Fix reparenting of UARTs not associated with stdout")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+
+Applied, thanks!
+
+> ---
+>  drivers/clk/imx/clk.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> I've tested delivery of SIGTRAPs when it's blocked with sigprocmask,
-> it does not kill the process now.
+> diff --git a/drivers/clk/imx/clk.c b/drivers/clk/imx/clk.c
+> index 7cc669934253..99249ab361d2 100644
+> --- a/drivers/clk/imx/clk.c
+> +++ b/drivers/clk/imx/clk.c
+> @@ -173,6 +173,8 @@ void imx_register_uart_clocks(unsigned int clk_count)
+>  		int i;
 >
-> And tested the case where previously I was getting infinite recursion
-> and stack overflow (SIGTRAP handler causes another SIGTRAP recursively
-> before being able to detect recursion and return). With this patch it
-> can be handled by blocking recursive SIGTRAPs (!SA_NODEFER).
-
-Thanks!
-
-
-Should there be any further comments, please shout.
-
-Thanks,
--- Marco
+>  		imx_uart_clocks = kcalloc(clk_count, sizeof(struct clk *), GFP_KERNEL);
+> +		if (!imx_uart_clocks)
+> +			return;
+>
+>  		if (!of_stdout)
+>  			return;
+> --
+> 2.25.1
+>
