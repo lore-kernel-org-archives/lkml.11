@@ -2,84 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBB2C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1885C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239212AbiDLK5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
+        id S1352859AbiDLK5t (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356630AbiDLKpc (ORCPT
+        with ESMTP id S1355763AbiDLKpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:45:32 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5812684EE4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:41:24 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1neD17-001sqd-Uh; Tue, 12 Apr 2022 19:40:59 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 12 Apr 2022 17:40:58 +0800
-Date:   Tue, 12 Apr 2022 17:40:58 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
-References: <CAMj1kXEXhFmGc4VTTcJU1YFsHJhZN44OdJ5Suf2ONG5=LR29HQ@mail.gmail.com>
- <Yk1UJs6eZMoIp3Eh@arm.com>
- <Yk5o/lNTyiJWD4Ae@gondor.apana.org.au>
- <Yk7EbvYhwnQy+pAf@arm.com>
- <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
- <Yk8RGvF6ik34C6BO@arm.com>
- <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
- <Yk/6ts5sVDMDpKj3@arm.com>
- <Yk/8QExHlggU8KgC@gondor.apana.org.au>
- <YlVHSvkyUBXZPUr2@arm.com>
+        Tue, 12 Apr 2022 06:45:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9492382314
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:40:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B214C617E6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:40:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6226C385A5;
+        Tue, 12 Apr 2022 09:40:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649756433;
+        bh=jVAiChky5XX869hnpykLtLDYrh8c1aa/BDWMt3amk14=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=g8d6E3SHmnIbwDRuBR0k95nVWyQ+FaHlxYfPG31jWnLLSolp05CdsBP9e9VpmBYRM
+         4K+plM2+vmPAGGDIy89SkpCtCoQ/5AW2324yq2wX+hwKMT45FRslo8TCK0z6qPFsXu
+         efFdZrGUb/fd+OQpIfZ8XP5dG+jR8yadnBc4PNMfP4iU+A8RrFdPePlYK93lsg0sZk
+         7HCyXWDBtRLfP6cBrGEWdiwItYBcyp1N0dbjeXMH1WBe/CEOn0gJK524UOqSIEAbzW
+         dpC4ITvNriWYnrx8wBxrTmNfIY92/jT4zJiXF0MlmdZtwHosy660VsV52GpMgdxJav
+         RagKazrobyMag==
+Message-ID: <4d54f494-b143-8885-a31e-924a83409e2d@kernel.org>
+Date:   Tue, 12 Apr 2022 17:40:27 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlVHSvkyUBXZPUr2@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] f2fs: use separate list iterator variable to call
+ list_move_tail()
+Content-Language: en-US
+To:     Jakob Koschel <jakobkoschel@gmail.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+References: <20220331221650.891790-1-jakobkoschel@gmail.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220331221650.891790-1-jakobkoschel@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:32:58AM +0100, Catalin Marinas wrote:
->
-> At a quick grep, most cra_alignmask values are currently 15 or smaller.
-> I'm not convinced the driver needs to know about the CPU cache
-> alignment. We could set cra_alignmask to CRYPTO_MINALIGN but that would
-> incur unnecessary overhead via function like setkey_unaligned() when the
-> arch_kmalloc_minalign() was already sufficient for DMA safety.
+On 2022/4/1 6:16, Jakob Koschel wrote:
+> In preparation to limit the scope of a list iterator to the list
+> traversal loop, use a dedicated pointer to point to the found element
+> [1].
 > 
-> Maybe I miss some use-cases or I focus too much on DMA safety.
+> If no break is hit or the list is empty, 'next' will be NULL and
+> list_move_tail() should be called explicitly on the head directly.
+> 
+> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> ---
+>   fs/f2fs/segment.c | 12 ++++++++----
+>   1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+> index 22dfeb991529..81ef2c3d08e5 100644
+> --- a/fs/f2fs/segment.c
+> +++ b/fs/f2fs/segment.c
+> @@ -4175,16 +4175,20 @@ static void release_sit_entry_set(struct sit_entry_set *ses)
+>   static void adjust_sit_entry_set(struct sit_entry_set *ses,
+>   						struct list_head *head)
+>   {
+> -	struct sit_entry_set *next = ses;
+> +	struct sit_entry_set *next = NULL, *iter = ses;
+>   
+>   	if (list_is_last(&ses->set_list, head))
+>   		return;
+>   
+> -	list_for_each_entry_continue(next, head, set_list)
+> -		if (ses->entry_cnt <= next->entry_cnt)
+> +	list_for_each_entry_continue(iter, head, set_list)
+> +		if (ses->entry_cnt <= iter->entry_cnt) {
+> +			next = iter;
+> +			list_move_tail(&ses->set_list, &iter->set_list);
+>   			break;
 
-The alignment was never designed for DMA.  It's mainly for CPUs
-that provide accelerated instructions that require a certain
-amount of alignment, most commonly 16 bytes.
+return;
 
-Therefore CRYPTO_MINALIGN was never meant to be a guarantee for
-DMA alignment.  Any drivers relying on this is simply broken.
+> +		}
+>   
+> -	list_move_tail(&ses->set_list, &next->set_list);
+> +	if (!next)
+> +		list_move_tail(&ses->set_list, head);
 
-I understand that on ARM for historical reasons you have had a
-situation that CRYPTO_MINALIGN happened to be large enough to
-guarantee DMA alignment.  I totally agree with your patch to
-try to fix this but it should not penalise other architectures
-and raise the CRYPTO_MINALIGN unnecessarily.
+list_move_tail(&ses->set_list, head);
 
-I think if CRYPTO_MINALIGN makes those drivers work then so
-should cra_alignmask.  And that would be a relatively easy
-patch to do.
+Then we don't need @next variable, right?
 
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Thanks,
+
+>   }
+>   
+>   static void add_sit_entry(unsigned int segno, struct list_head *head)
+> 
+> base-commit: d888c83fcec75194a8a48ccd283953bdba7b2550
