@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC06C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350493AbiDLGpl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40342 "EHLO
+        id S244230AbiDLGpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349876AbiDLGlr (ORCPT
+        with ESMTP id S233269AbiDLGmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:41:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5A4167C0;
-        Mon, 11 Apr 2022 23:36:20 -0700 (PDT)
+        Tue, 12 Apr 2022 02:42:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8646317E28;
+        Mon, 11 Apr 2022 23:36:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F0C2618C8;
-        Tue, 12 Apr 2022 06:36:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC806C385A6;
-        Tue, 12 Apr 2022 06:36:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21CDEB81B41;
+        Tue, 12 Apr 2022 06:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CFCEC385A6;
+        Tue, 12 Apr 2022 06:36:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745379;
-        bh=QY4kv2XVS0BxmcE/hGWOj2tDEp7EWkcYggDdRGYPwjM=;
+        s=korg; t=1649745381;
+        bh=h6heFhVXDtbOcbAa04Vmbo7xUjcXq9qwC/VUUP9Pslo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wv+BmlxBCmLxzr55QwqCkl42foEFcT0vSMdlIzubjtpz3nffyvfPAKzwTjM5NGiFT
-         q8ikz3FN2cCE7yRLYQPooFoLthGfYZuPazidZai63Ty0ZGqb8U0XhTq1nzMuaRGWYN
-         ICUmUqDAey0l7TauTX5mCiRT/qm7m209WQDFgh/A=
+        b=hXck/GTheWCP6jSm5i0Fm+pjV+F308jWHG2aNs9ODnaWiMjND57C0Y/9zzcbvs38f
+         b/4pn8LCJhvy/NIFCm53p2XJZFAaG0Rz+Wjs5T9FUnfGVsPhnVzDK2gxJ+65prpxIT
+         dpCo/JJR6+dbe3ZVua+BakRUwovwWCuJLbX97Fw4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Hai <wanghai38@huawei.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <Alexander.Deucher@amd.com>,
+        Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 036/171] ipv4: Invalidate neighbour for broadcast address upon address addition
-Date:   Tue, 12 Apr 2022 08:28:47 +0200
-Message-Id: <20220412062928.931730716@linuxfoundation.org>
+Subject: [PATCH 5.10 027/171] drm/amdgpu: Fix recursive locking warning
+Date:   Tue, 12 Apr 2022 08:28:38 +0200
+Message-Id: <20220412062928.671099594@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,115 +53,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
 
-[ Upstream commit 0c51e12e218f20b7d976158fdc18019627326f7a ]
+[ Upstream commit 447c7997b62a5115ba4da846dcdee4fc12298a6a ]
 
-In case user space sends a packet destined to a broadcast address when a
-matching broadcast route is not configured, the kernel will create a
-unicast neighbour entry that will never be resolved [1].
+Noticed the below warning while running a pytorch workload on vega10
+GPUs. Change to trylock to avoid conflicts with already held reservation
+locks.
 
-When the broadcast route is configured, the unicast neighbour entry will
-not be invalidated and continue to linger, resulting in packets being
-dropped.
+[  +0.000003] WARNING: possible recursive locking detected
+[  +0.000003] 5.13.0-kfd-rajneesh #1030 Not tainted
+[  +0.000004] --------------------------------------------
+[  +0.000002] python/4822 is trying to acquire lock:
+[  +0.000004] ffff932cd9a259f8 (reservation_ww_class_mutex){+.+.}-{3:3},
+at: amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000203]
+              but task is already holding lock:
+[  +0.000003] ffff932cbb7181f8 (reservation_ww_class_mutex){+.+.}-{3:3},
+at: ttm_eu_reserve_buffers+0x270/0x470 [ttm]
+[  +0.000017]
+              other info that might help us debug this:
+[  +0.000002]  Possible unsafe locking scenario:
 
-Solve this by invalidating unresolved neighbour entries for broadcast
-addresses after routes for these addresses are internally configured by
-the kernel. This allows the kernel to create a broadcast neighbour entry
-following the next route lookup.
+[  +0.000003]        CPU0
+[  +0.000002]        ----
+[  +0.000002]   lock(reservation_ww_class_mutex);
+[  +0.000004]   lock(reservation_ww_class_mutex);
+[  +0.000003]
+               *** DEADLOCK ***
 
-Another possible solution that is more generic but also more complex is
-to have the ARP code register a listener to the FIB notification chain
-and invalidate matching neighbour entries upon the addition of broadcast
-routes.
+[  +0.000002]  May be due to missing lock nesting notation
 
-It is also possible to wave off the issue as a user space problem, but
-it seems a bit excessive to expect user space to be that intimately
-familiar with the inner workings of the FIB/neighbour kernel code.
+[  +0.000003] 7 locks held by python/4822:
+[  +0.000003]  #0: ffff932c4ac028d0 (&process->mutex){+.+.}-{3:3}, at:
+kfd_ioctl_map_memory_to_gpu+0x10b/0x320 [amdgpu]
+[  +0.000232]  #1: ffff932c55e830a8 (&info->lock#2){+.+.}-{3:3}, at:
+amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x64/0xf60 [amdgpu]
+[  +0.000241]  #2: ffff932cc45b5e68 (&(*mem)->lock){+.+.}-{3:3}, at:
+amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0xdf/0xf60 [amdgpu]
+[  +0.000236]  #3: ffffb2b35606fd28
+(reservation_ww_class_acquire){+.+.}-{0:0}, at:
+amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x232/0xf60 [amdgpu]
+[  +0.000235]  #4: ffff932cbb7181f8
+(reservation_ww_class_mutex){+.+.}-{3:3}, at:
+ttm_eu_reserve_buffers+0x270/0x470 [ttm]
+[  +0.000015]  #5: ffffffffc045f700 (*(sspp++)){....}-{0:0}, at:
+drm_dev_enter+0x5/0xa0 [drm]
+[  +0.000038]  #6: ffff932c52da7078 (&vm->eviction_lock){+.+.}-{3:3},
+at: amdgpu_vm_bo_update_mapping+0xd5/0x4f0 [amdgpu]
+[  +0.000195]
+              stack backtrace:
+[  +0.000003] CPU: 11 PID: 4822 Comm: python Not tainted
+5.13.0-kfd-rajneesh #1030
+[  +0.000005] Hardware name: GIGABYTE MZ01-CE0-00/MZ01-CE0-00, BIOS F02
+08/29/2018
+[  +0.000003] Call Trace:
+[  +0.000003]  dump_stack+0x6d/0x89
+[  +0.000010]  __lock_acquire+0xb93/0x1a90
+[  +0.000009]  lock_acquire+0x25d/0x2d0
+[  +0.000005]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000184]  ? lock_is_held_type+0xa2/0x110
+[  +0.000006]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000184]  __ww_mutex_lock.constprop.17+0xca/0x1060
+[  +0.000007]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000183]  ? lock_release+0x13f/0x270
+[  +0.000005]  ? lock_is_held_type+0xa2/0x110
+[  +0.000006]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000183]  amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000185]  ttm_bo_release+0x4c6/0x580 [ttm]
+[  +0.000010]  amdgpu_bo_unref+0x1a/0x30 [amdgpu]
+[  +0.000183]  amdgpu_vm_free_table+0x76/0xa0 [amdgpu]
+[  +0.000189]  amdgpu_vm_free_pts+0xb8/0xf0 [amdgpu]
+[  +0.000189]  amdgpu_vm_update_ptes+0x411/0x770 [amdgpu]
+[  +0.000191]  amdgpu_vm_bo_update_mapping+0x324/0x4f0 [amdgpu]
+[  +0.000191]  amdgpu_vm_bo_update+0x251/0x610 [amdgpu]
+[  +0.000191]  update_gpuvm_pte+0xcc/0x290 [amdgpu]
+[  +0.000229]  ? amdgpu_vm_bo_map+0xd7/0x130 [amdgpu]
+[  +0.000190]  amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x912/0xf60
+[amdgpu]
+[  +0.000234]  kfd_ioctl_map_memory_to_gpu+0x182/0x320 [amdgpu]
+[  +0.000218]  kfd_ioctl+0x2b9/0x600 [amdgpu]
+[  +0.000216]  ? kfd_ioctl_unmap_memory_from_gpu+0x270/0x270 [amdgpu]
+[  +0.000216]  ? lock_release+0x13f/0x270
+[  +0.000006]  ? __fget_files+0x107/0x1e0
+[  +0.000007]  __x64_sys_ioctl+0x8b/0xd0
+[  +0.000007]  do_syscall_64+0x36/0x70
+[  +0.000004]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  +0.000007] RIP: 0033:0x7fbff90a7317
+[  +0.000004] Code: b3 66 90 48 8b 05 71 4b 2d 00 64 c7 00 26 00 00 00
+48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f
+05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 41 4b 2d 00 f7 d8 64 89 01 48
+[  +0.000005] RSP: 002b:00007fbe301fe648 EFLAGS: 00000246 ORIG_RAX:
+0000000000000010
+[  +0.000006] RAX: ffffffffffffffda RBX: 00007fbcc402d820 RCX:
+00007fbff90a7317
+[  +0.000003] RDX: 00007fbe301fe690 RSI: 00000000c0184b18 RDI:
+0000000000000004
+[  +0.000003] RBP: 00007fbe301fe690 R08: 0000000000000000 R09:
+00007fbcc402d880
+[  +0.000003] R10: 0000000002001000 R11: 0000000000000246 R12:
+00000000c0184b18
+[  +0.000003] R13: 0000000000000004 R14: 00007fbf689593a0 R15:
+00007fbcc402d820
 
-[1] https://lore.kernel.org/netdev/55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com/
+Cc: Christian König <christian.koenig@amd.com>
+Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: Alex Deucher <Alexander.Deucher@amd.com>
 
-Reported-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/arp.h       | 1 +
- net/ipv4/arp.c          | 9 +++++++--
- net/ipv4/fib_frontend.c | 5 ++++-
- 3 files changed, 12 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/arp.h b/include/net/arp.h
-index 4950191f6b2b..4a23a97195f3 100644
---- a/include/net/arp.h
-+++ b/include/net/arp.h
-@@ -71,6 +71,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
- 	      const unsigned char *src_hw, const unsigned char *th);
- int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
- void arp_ifdown(struct net_device *dev);
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force);
- 
- struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
- 			   struct net_device *dev, __be32 src_ip,
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 922dd73e5740..83a47998c4b1 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1116,13 +1116,18 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
- 	return err;
- }
- 
--static int arp_invalidate(struct net_device *dev, __be32 ip)
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
- {
- 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
- 	int err = -ENXIO;
- 	struct neigh_table *tbl = &arp_tbl;
- 
- 	if (neigh) {
-+		if ((neigh->nud_state & NUD_VALID) && !force) {
-+			neigh_release(neigh);
-+			return 0;
-+		}
-+
- 		if (neigh->nud_state & ~NUD_NOARP)
- 			err = neigh_update(neigh, NULL, NUD_FAILED,
- 					   NEIGH_UPDATE_F_OVERRIDE|
-@@ -1169,7 +1174,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
- 		if (!dev)
- 			return -EINVAL;
- 	}
--	return arp_invalidate(dev, ip);
-+	return arp_invalidate(dev, ip, true);
- }
- 
- /*
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 917ea953dfad..0df4594b49c7 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1112,9 +1112,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+index ad9863b84f1f..f615ecc06a22 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+@@ -1338,7 +1338,8 @@ void amdgpu_bo_release_notify(struct ttm_buffer_object *bo)
+ 	    !(abo->flags & AMDGPU_GEM_CREATE_VRAM_WIPE_ON_RELEASE))
  		return;
  
- 	/* Add broadcast address, if it is explicitly assigned. */
--	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
-+	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
- 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
- 			  prim, 0);
-+		arp_invalidate(dev, ifa->ifa_broadcast, false);
-+	}
+-	dma_resv_lock(bo->base.resv, NULL);
++	if (WARN_ON_ONCE(!dma_resv_trylock(bo->base.resv)))
++		return;
  
- 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
- 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
-@@ -1130,6 +1132,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 				  prim, 0);
- 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
- 				  32, prim, 0);
-+			arp_invalidate(dev, prefix | ~mask, false);
- 		}
- 	}
- }
+ 	r = amdgpu_fill_buffer(abo, AMDGPU_POISON, bo->base.resv, &fence);
+ 	if (!WARN_ON(r)) {
 -- 
 2.35.1
 
