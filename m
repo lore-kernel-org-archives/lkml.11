@@ -2,120 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F902C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF1BC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357815AbiDLITO (ORCPT
+        id S1356767AbiDLIPn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44288 "EHLO
+        Tue, 12 Apr 2022 04:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354953AbiDLH1A (ORCPT
+        with ESMTP id S1355309AbiDLH1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:00 -0400
-Received: from m228-62.mailgun.net (m228-62.mailgun.net [159.135.228.62])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id D139247553
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:06:55 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1649747215; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Subject: Cc: To: To: From: From: Date:
- Sender: Sender; bh=fvgEOeU8QI1dhGiQvK+nRA/UPCGXfJKOpsdVofoakIo=; b=NvGv8dEjAAp3+VikOfUObAxYtrnLW9QAOOGMeh/7ELD/XyzyaKSNVHMn0CATTdFo76WVcK5F
- u9wE02pYhBY8/XWTK6F846LO3zgn7wIvmlyEZsLgctaLPYn6w9TX3TWgZS69ZaI3XrE968qv
- 8oKDBGa99Hyrmw+lOyc8yQTX7qATSRxUX2SRLpl0AukHcM0HrRYcnOpVcoEhg+XBW9Gg8XLf
- guUPLpQTfhqAERLhzrqrRMP2K04yuZ8UztSOAxKyxK5CWvjGRWd90eqzFaIMCW2hXqZ4TgOQ
- rOTnEAZLAGJRtzG+Y3B+c/l+uEgFtfR/9cDyaAQYGJ27Kn/YhwB8FQ==
-X-Mailgun-Sending-Ip: 159.135.228.62
-X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
-Received: from AN5Bruno (186-250-90-1.mhnet.com.br [186.250.90.1]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 625522b5487c9ee854845f89 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Tue, 12 Apr 2022 06:56:53 GMT
-Sender: codeagain@codeagain.dev
-Date:   Tue, 12 Apr 2022 03:56:43 -0300
-From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Cc:     Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: [PATCH v2 2/3] staging: vme: Fix missing `depends on` at KConfig
-Message-ID: <aab0591ac73a54059621c722a63635d43a446fd2.1649721450.git.codeagain@codeagain.dev>
-References: <cover.1649721450.git.codeagain@codeagain.dev>
+        Tue, 12 Apr 2022 03:27:25 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA624924E
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:07:27 -0700 (PDT)
+Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kcxbv1gXmzdZLM;
+        Tue, 12 Apr 2022 15:06:51 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 15:07:25 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 15:07:24 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Mark Rutland <mark.rutland@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [RFC PATCH -next V3 4/6] arm64: add copy_{to, from}_user to machine check safe
+Date:   Tue, 12 Apr 2022 07:25:50 +0000
+Message-ID: <20220412072552.2526871-5-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
+In-Reply-To: <20220412072552.2526871-1-tongtiangen@huawei.com>
+References: <20220412072552.2526871-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="r67e4p532boyyctc"
-Content-Disposition: inline
-In-Reply-To: <cover.1649721450.git.codeagain@codeagain.dev>
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add copy_{to, from}_user() to machine check safe.
 
---r67e4p532boyyctc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+If copy fail due to hardware memory error, only the relevant processes are
+affected, so killing the user process and isolate the user page with
+hardware memory errors is a more reasonable choice than kernel panic.
 
-Originally, the KConfig file for VME_USER
-("drivers/staging/vme/devices/Kconfig") was sourced at
-"drivers/vme/boards/KConfig". It misses a `depends on` line for VME_BUS,
-which went unnoticeable for a menuconfig user who wouldn't be able to
-select it through this interface without selecting the CONFIG_VME_BUS
-option because it was nested on its menu.
+Add new extable type EX_TYPE_UACCESS_MC which can be used for uaccess that
+can be recovered from hardware memory errors.
 
-A patch to move appropriately this driver to the "Staging" submenu[1],
-however, unveiled this missing `depends on` line, since it moved the
-`source` line for VME_USER's KConfig to somewhere else, allowing it to
-be compiled without the support for VME_BRIDGE. While it compiles fine
-and seems to initialize the driver fine[2], it seems to make no sense
-having VME_USER without VME_BUS.
-
-This patches addresses it by adding the VME_BUS to the `depends on` line
-at "drivers/staging/vme/devices/Kconfig".
-
-CHANGELOG:
-v2:
-- Added this patch to the patchset
-
-REFERENCES AND NOTES
-[1] First commit in this patch, originally submitted at
-https://lore.kernel.org/linux-staging/3fbc5325e94b9ae0666a1f5a56a4e5372bfce=
-a1d.camel@codeagain.dev/T/#t
-[2] Tested both as module and as built-in.
-
-Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
 ---
- drivers/staging/vme/devices/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/include/asm/asm-extable.h | 11 +++++++++++
+ arch/arm64/include/asm/asm-uaccess.h | 16 ++++++++++++++++
+ arch/arm64/lib/copy_from_user.S      | 15 ++++++++++-----
+ arch/arm64/lib/copy_to_user.S        | 25 +++++++++++++++++--------
+ 4 files changed, 54 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/staging/vme/devices/Kconfig b/drivers/staging/vme/devi=
-ces/Kconfig
-index 5651bb16b28b..e8b4461bf27f 100644
---- a/drivers/staging/vme/devices/Kconfig
-+++ b/drivers/staging/vme/devices/Kconfig
-@@ -3,7 +3,7 @@ comment "VME Device Drivers"
-=20
- config VME_USER
- 	tristate "VME user space access driver"
--	depends on STAGING
-+	depends on STAGING && VME_BUS
- 	help
- 	  If you say Y here you want to be able to access a limited number of
- 	  VME windows in a manner at least semi-compatible with the interface
---=20
-2.35.1
+diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
+index c39f2437e08e..8af4e7cc9578 100644
+--- a/arch/arm64/include/asm/asm-extable.h
++++ b/arch/arm64/include/asm/asm-extable.h
+@@ -8,6 +8,9 @@
+ #define EX_TYPE_UACCESS_ERR_ZERO	3
+ #define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	4
+ 
++/* _MC indicates that can fixup from machine check errors */
++#define EX_TYPE_UACCESS_MC		5
++
+ #ifdef __ASSEMBLY__
+ 
+ #define __ASM_EXTABLE_RAW(insn, fixup, type, data)	\
+@@ -27,6 +30,14 @@
+ 	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
+ 	.endm
+ 
++/*
++ * Create an exception table entry for `insn`, which will branch to `fixup`
++ * when an unhandled fault(include sea fault) is taken.
++ */
++	.macro          _asm_extable_uaccess_mc, insn, fixup
++	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_UACCESS_MC, 0)
++	.endm
++
+ /*
+  * Create an exception table entry for `insn` if `fixup` is provided. Otherwise
+  * do nothing.
+diff --git a/arch/arm64/include/asm/asm-uaccess.h b/arch/arm64/include/asm/asm-uaccess.h
+index 0557af834e03..bb17f0829042 100644
+--- a/arch/arm64/include/asm/asm-uaccess.h
++++ b/arch/arm64/include/asm/asm-uaccess.h
+@@ -92,4 +92,20 @@ alternative_else_nop_endif
+ 
+ 		_asm_extable	8888b,\l;
+ 	.endm
++
++	.macro user_ldp_mc l, reg1, reg2, addr, post_inc
++8888:		ldtr	\reg1, [\addr];
++8889:		ldtr	\reg2, [\addr, #8];
++		add	\addr, \addr, \post_inc;
++
++		_asm_extable_uaccess_mc	8888b, \l;
++		_asm_extable_uaccess_mc	8889b, \l;
++	.endm
++
++	.macro user_ldst_mc l, inst, reg, addr, post_inc
++8888:		\inst		\reg, [\addr];
++		add		\addr, \addr, \post_inc;
++
++		_asm_extable_uaccess_mc	8888b, \l;
++	.endm
+ #endif
+diff --git a/arch/arm64/lib/copy_from_user.S b/arch/arm64/lib/copy_from_user.S
+index 34e317907524..e32c0747a5f1 100644
+--- a/arch/arm64/lib/copy_from_user.S
++++ b/arch/arm64/lib/copy_from_user.S
+@@ -21,7 +21,7 @@
+  */
+ 
+ 	.macro ldrb1 reg, ptr, val
+-	user_ldst 9998f, ldtrb, \reg, \ptr, \val
++	user_ldst_mc 9998f, ldtrb, \reg, \ptr, \val
+ 	.endm
+ 
+ 	.macro strb1 reg, ptr, val
+@@ -29,7 +29,7 @@
+ 	.endm
+ 
+ 	.macro ldrh1 reg, ptr, val
+-	user_ldst 9997f, ldtrh, \reg, \ptr, \val
++	user_ldst_mc 9997f, ldtrh, \reg, \ptr, \val
+ 	.endm
+ 
+ 	.macro strh1 reg, ptr, val
+@@ -37,7 +37,7 @@
+ 	.endm
+ 
+ 	.macro ldr1 reg, ptr, val
+-	user_ldst 9997f, ldtr, \reg, \ptr, \val
++	user_ldst_mc 9997f, ldtr, \reg, \ptr, \val
+ 	.endm
+ 
+ 	.macro str1 reg, ptr, val
+@@ -45,7 +45,7 @@
+ 	.endm
+ 
+ 	.macro ldp1 reg1, reg2, ptr, val
+-	user_ldp 9997f, \reg1, \reg2, \ptr, \val
++	user_ldp_mc 9997f, \reg1, \reg2, \ptr, \val
+ 	.endm
+ 
+ 	.macro stp1 reg1, reg2, ptr, val
+@@ -54,6 +54,7 @@
+ 
+ end	.req	x5
+ srcin	.req	x15
++esr	.req	x16
+ SYM_FUNC_START(__arch_copy_from_user)
+ 	add	end, x0, x2
+ 	mov	srcin, x1
+@@ -62,7 +63,11 @@ SYM_FUNC_START(__arch_copy_from_user)
+ 	ret
+ 
+ 	// Exception fixups
+-9997:	cmp	dst, dstin
++9997:	mrs esr, esr_el1			// Check exception first
++	and esr, esr, #ESR_ELx_FSC
++	cmp esr, #ESR_ELx_FSC_EXTABT
++	b.eq 9998f
++	cmp	dst, dstin
+ 	b.ne	9998f
+ 	// Before being absolutely sure we couldn't copy anything, try harder
+ USER(9998f, ldtrb tmp1w, [srcin])
+diff --git a/arch/arm64/lib/copy_to_user.S b/arch/arm64/lib/copy_to_user.S
+index 802231772608..afb53e45a21f 100644
+--- a/arch/arm64/lib/copy_to_user.S
++++ b/arch/arm64/lib/copy_to_user.S
+@@ -20,31 +20,35 @@
+  *	x0 - bytes not copied
+  */
+ 	.macro ldrb1 reg, ptr, val
+-	ldrb  \reg, [\ptr], \val
++	1000:	ldrb  \reg, [\ptr], \val
++	_asm_extable_uaccess_mc 1000b, 9998f;
+ 	.endm
+ 
+ 	.macro strb1 reg, ptr, val
+-	user_ldst 9998f, sttrb, \reg, \ptr, \val
++	user_ldst_mc 9998f, sttrb, \reg, \ptr, \val
+ 	.endm
+ 
+ 	.macro ldrh1 reg, ptr, val
+-	ldrh  \reg, [\ptr], \val
++	1001:	ldrh  \reg, [\ptr], \val
++	_asm_extable_uaccess_mc 1001b, 9998f;
+ 	.endm
+ 
+ 	.macro strh1 reg, ptr, val
+-	user_ldst 9997f, sttrh, \reg, \ptr, \val
++	user_ldst_mc 9997f, sttrh, \reg, \ptr, \val
+ 	.endm
+ 
+ 	.macro ldr1 reg, ptr, val
+-	ldr \reg, [\ptr], \val
++	1002:	ldr \reg, [\ptr], \val
++	_asm_extable_uaccess_mc 1002b, 9998f;
+ 	.endm
+ 
+ 	.macro str1 reg, ptr, val
+-	user_ldst 9997f, sttr, \reg, \ptr, \val
++	user_ldst_mc 9997f, sttr, \reg, \ptr, \val
+ 	.endm
+ 
+ 	.macro ldp1 reg1, reg2, ptr, val
+-	ldp \reg1, \reg2, [\ptr], \val
++	1003:	ldp \reg1, \reg2, [\ptr], \val
++	_asm_extable_uaccess_mc 1003b, 9998f;
+ 	.endm
+ 
+ 	.macro stp1 reg1, reg2, ptr, val
+@@ -53,6 +57,7 @@
+ 
+ end	.req	x5
+ srcin	.req	x15
++esr	.req	x16
+ SYM_FUNC_START(__arch_copy_to_user)
+ 	add	end, x0, x2
+ 	mov	srcin, x1
+@@ -61,7 +66,11 @@ SYM_FUNC_START(__arch_copy_to_user)
+ 	ret
+ 
+ 	// Exception fixups
+-9997:	cmp	dst, dstin
++9997:	mrs esr, esr_el1			// Check exception first
++	and esr, esr, #ESR_ELx_FSC
++	cmp esr, #ESR_ELx_FSC_EXTABT
++	b.eq 9998f
++	cmp	dst, dstin
+ 	b.ne	9998f
+ 	// Before being absolutely sure we couldn't copy anything, try harder
+ 	ldrb	tmp1w, [srcin]
+-- 
+2.18.0.huawei.25
 
-
---r67e4p532boyyctc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYlUiqwAKCRAZtd3tyEY2
-kh7WAQDnPJNUjIPGKOS6iN5nijD+bLt8dlNylHDXGzcDp/x21QEAttFRYM5TnNEi
-Wn7P5NtTX55JavXFp1wmv2lUDtDWZww=
-=So4f
------END PGP SIGNATURE-----
-
---r67e4p532boyyctc--
