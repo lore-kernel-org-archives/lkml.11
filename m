@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8A6C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F054DC3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355665AbiDLH2z (ORCPT
+        id S1355692AbiDLH3B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
+        Tue, 12 Apr 2022 03:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351769AbiDLHMz (ORCPT
+        with ESMTP id S1351773AbiDLHMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7189CBD3;
-        Mon, 11 Apr 2022 23:52:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831E0BEA;
+        Mon, 11 Apr 2022 23:52:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CA4B9CE1C0E;
-        Tue, 12 Apr 2022 06:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA13CC385A1;
-        Tue, 12 Apr 2022 06:52:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4442AB81B4D;
+        Tue, 12 Apr 2022 06:52:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A891FC385AA;
+        Tue, 12 Apr 2022 06:52:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746342;
-        bh=sdnn5fQjqVbaEFiK/DlrlMulGua9dBH2cjFJP+cUzLs=;
+        s=korg; t=1649746345;
+        bh=NfeNvJW7Ua+DZevPzPJ9NzsiwccHYeffGmFmilqXX3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P1/51qwEevrT+wihaXSXBxEQ7a3yQR9TfaKTRn6TZTAbnZtGQfgfRmovixEBiTd9B
-         3+C9I0bUsYHzUuKHOW7/BMKFJP3gZ1UU7mODDYPz7k9y/pK/2fy0oIA+sLvNF4Elaq
-         It38aWDzI1+D5J9Pl5AD19punGzB8acHxFBN9DfQ=
+        b=u+SUpXzlXeQt4rgjp81NpP9fDrKyGOUkSjV8eaIrezXIWWlI/dnZpEmTkI4MulUg7
+         34dtCjHCmmIpZhICjVx/xNqVtFeDVSk6Af5tD6NHCaeCEzu/2tKVndcDpStUkWIcVy
+         UY7gqTRs8ptodZvUPQggMDMQIl8/VeD/tgbOlo5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 248/277] KVM: SVM: Allow AVIC support on system w/ physical APIC ID > 255
-Date:   Tue, 12 Apr 2022 08:30:51 +0200
-Message-Id: <20220412062949.220816252@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 249/277] net/smc: send directly on setting TCP_NODELAY
+Date:   Tue, 12 Apr 2022 08:30:52 +0200
+Message-Id: <20220412062949.248838414@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,69 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-commit 4a204f7895878363ca8211f50ec610408c8c70aa upstream.
+commit b70a5cc045197aad9c159042621baf3c015f6cc7 upstream.
 
-Expand KVM's mask for the AVIC host physical ID to the full 12 bits defined
-by the architecture.  The number of bits consumed by hardware is model
-specific, e.g. early CPUs ignored bits 11:8, but there is no way for KVM
-to enumerate the "true" size.  So, KVM must allow using all bits, else it
-risks rejecting completely legal x2APIC IDs on newer CPUs.
+In commit ea785a1a573b("net/smc: Send directly when
+TCP_CORK is cleared"), we don't use delayed work
+to implement cork.
 
-This means KVM relies on hardware to not assign x2APIC IDs that exceed the
-"true" width of the field, but presumably hardware is smart enough to tie
-the width to the max x2APIC ID.  KVM also relies on hardware to support at
-least 8 bits, as the legacy xAPIC ID is writable by software.  But, those
-assumptions are unavoidable due to the lack of any way to enumerate the
-"true" width.
+This patch use the same algorithm, removes the
+delayed work when setting TCP_NODELAY and send
+directly in setsockopt(). This also makes the
+TCP_NODELAY the same as TCP.
 
-Cc: stable@vger.kernel.org
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Fixes: 44a95dae1d22 ("KVM: x86: Detect and Initialize AVIC support")
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Message-Id: <20220211000851.185799-1-suravee.suthikulpanit@amd.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-[modified due to the conflict caused by the commit 391503528257 ("KVM:
-x86: SVM: move avic definitions from AMD's spec to svm.h")]
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/avic.c |    7 +------
- arch/x86/kvm/svm/svm.h  |    2 +-
- 2 files changed, 2 insertions(+), 7 deletions(-)
+ net/smc/af_smc.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -947,15 +947,10 @@ out:
- void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- {
- 	u64 entry;
--	/* ID = 0xff (broadcast), ID > 0xff (reserved) */
- 	int h_physical_id = kvm_cpu_get_apicid(cpu);
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
--	/*
--	 * Since the host physical APIC id is 8 bits,
--	 * we can support host APIC ID upto 255.
--	 */
--	if (WARN_ON(h_physical_id > AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
-+	if (WARN_ON(h_physical_id & ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
- 		return;
- 
- 	entry = READ_ONCE(*(svm->avic_physical_id_cache));
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -499,7 +499,7 @@ extern struct kvm_x86_nested_ops svm_nes
- #define AVIC_LOGICAL_ID_ENTRY_VALID_BIT			31
- #define AVIC_LOGICAL_ID_ENTRY_VALID_MASK		(1 << 31)
- 
--#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	(0xFFULL)
-+#define AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK	GENMASK_ULL(11, 0)
- #define AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK	(0xFFFFFFFFFFULL << 12)
- #define AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK		(1ULL << 62)
- #define AVIC_PHYSICAL_ID_ENTRY_VALID_MASK		(1ULL << 63)
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2419,8 +2419,8 @@ static int smc_setsockopt(struct socket
+ 		    sk->sk_state != SMC_CLOSED) {
+ 			if (val) {
+ 				SMC_STAT_INC(smc, ndly_cnt);
+-				mod_delayed_work(smc->conn.lgr->tx_wq,
+-						 &smc->conn.tx_work, 0);
++				smc_tx_pending(&smc->conn);
++				cancel_delayed_work(&smc->conn.tx_work);
+ 			}
+ 		}
+ 		break;
 
 
