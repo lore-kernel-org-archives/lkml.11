@@ -2,162 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 700B2C41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC87C47093
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378635AbiDLIMB (ORCPT
+        id S1378800AbiDLINO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        Tue, 12 Apr 2022 04:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354103AbiDLH0D (ORCPT
+        with ESMTP id S1355641AbiDLH1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1931ADB3;
-        Tue, 12 Apr 2022 00:05:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0D14B81A8F;
-        Tue, 12 Apr 2022 07:05:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D5AC385A1;
-        Tue, 12 Apr 2022 07:05:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747141;
-        bh=YqH2uWEzBP0AykzB1czDFbzQoBm9Rmcb8KMg9FN416s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SuzZdn87BZtf4aiW1XqOP4D26cMYMXUalmrLGbnUG4QTH2MQS3BAbsWbAAw1uf6o4
-         1MTmlt/8D0gLDR1JweinQsM589Smpj2pcGaLq2rbUxtr8nDX6YRHgD1JbmwBUFk+pY
-         9rhXJ1U3olZR0NZY5Q4lit94MpMHI9Cy+Ju35ttc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fu <foyjog@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.16 259/285] SUNRPC: Ensure we flush any closed sockets before xs_xprt_free()
-Date:   Tue, 12 Apr 2022 08:31:56 +0200
-Message-Id: <20220412062951.136328432@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:27:52 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805344EDD5;
+        Tue, 12 Apr 2022 00:07:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=C3gL28B3Gc2aOWbp9TEABQMn0ckE3NlAT3ZMfiId2yM=; b=NX/1HLFCyl0vrt8Ykxe6Lw8tiL
+        ibR3HLppnOGAHLzmEZvRQ/ps/npWEuslAuQ2wxMgrPuhsEQkGaiMW2OiO1XheO1U3zr16ITSbJ8Y+
+        Ae9IZrmFSo1ePtVSKuXbWenTKQO/im6/8EfYem0M57zrvOvDuysy2DB2JtTtAHbPS0gJvq3rTLGCn
+        JABlC1yiyKBFK2laSPj5AeOq1wFEjyTxA5jmTRL8kbQ6/qmVUwnY4arjso2s6ilmC/rusTxHmZQPf
+        mW1ZsqDJP4bqkJcpLqsI2kQVkPz/MBRWHAqfCiikArrTB2F6+jnEO3oGsTxbLbckXcGPgQ4wZQLg5
+        o54RZ5SQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1neAbS-004F4r-Tz; Tue, 12 Apr 2022 07:06:19 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 6172F98619A; Tue, 12 Apr 2022 09:06:16 +0200 (CEST)
+Date:   Tue, 12 Apr 2022 09:06:16 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Yu Zhao <yuzhao@google.com>, Stephen Rothwell <sfr@rothwell.id.au>,
+        linux-mm@kvack.org, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, page-reclaim@google.com,
+        x86@kernel.org, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Subject: Re: [PATCH v10 05/14] mm: multi-gen LRU: groundwork
+Message-ID: <20220412070616.GT2731@worktop.programming.kicks-ass.net>
+References: <20220407031525.2368067-1-yuzhao@google.com>
+ <20220407031525.2368067-6-yuzhao@google.com>
+ <20220411191615.a34959bdcc25ef3f9c16a7ce@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411191615.a34959bdcc25ef3f9c16a7ce@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+On Mon, Apr 11, 2022 at 07:16:15PM -0700, Andrew Morton wrote:
 
-commit f00432063db1a0db484e85193eccc6845435b80e upstream.
+> > +{
+> > +	int gen;
+> > +	unsigned long old_flags, new_flags;
+> > +
+> > +	do {
+> > +		new_flags = old_flags = READ_ONCE(folio->flags);
+> > +		if (!(new_flags & LRU_GEN_MASK))
+> > +			return false;
+> > +
+> > +		VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
+> > +		VM_BUG_ON_FOLIO(folio_test_unevictable(folio), folio);
+> > +
+> > +		gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
+> > +
+> > +		new_flags &= ~LRU_GEN_MASK;
+> > +		/* for shrink_page_list() */
+> > +		if (reclaiming)
+> > +			new_flags &= ~(BIT(PG_referenced) | BIT(PG_reclaim));
+> > +		else if (lru_gen_is_active(lruvec, gen))
+> > +			new_flags |= BIT(PG_active);
+> > +	} while (cmpxchg(&folio->flags, old_flags, new_flags) != old_flags);
 
-We must ensure that all sockets are closed before we call xprt_free()
-and release the reference to the net namespace. The problem is that
-calling fput() will defer closing the socket until delayed_fput() gets
-called.
-Let's fix the situation by allowing rpciod and the transport teardown
-code (which runs on the system wq) to call __fput_sync(), and directly
-close the socket.
+Also; please use the form:
 
-Reported-by: Felix Fu <foyjog@gmail.com>
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: a73881c96d73 ("SUNRPC: Fix an Oops in udp_poll()")
-Cc: stable@vger.kernel.org # 5.1.x: 3be232f11a3c: SUNRPC: Prevent immediate close+reconnect
-Cc: stable@vger.kernel.org # 5.1.x: 89f42494f92f: SUNRPC: Don't call connect() more than once on a TCP socket
-Cc: stable@vger.kernel.org # 5.1.x
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/file_table.c               |    1 +
- include/trace/events/sunrpc.h |    1 -
- net/sunrpc/xprt.c             |    7 +------
- net/sunrpc/xprtsock.c         |   16 +++++++++++++---
- 4 files changed, 15 insertions(+), 10 deletions(-)
+	unsigned long new, old = READ_ONCE(folio->flags);
 
---- a/fs/file_table.c
-+++ b/fs/file_table.c
-@@ -375,6 +375,7 @@ void __fput_sync(struct file *file)
- }
- 
- EXPORT_SYMBOL(fput);
-+EXPORT_SYMBOL(__fput_sync);
- 
- void __init files_init(void)
- {
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -993,7 +993,6 @@ DEFINE_RPC_XPRT_LIFETIME_EVENT(connect);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_auto);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_done);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_force);
--DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_cleanup);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(destroy);
- 
- DECLARE_EVENT_CLASS(rpc_xprt_event,
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -929,12 +929,7 @@ void xprt_connect(struct rpc_task *task)
- 	if (!xprt_lock_write(xprt, task))
- 		return;
- 
--	if (test_and_clear_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
--		trace_xprt_disconnect_cleanup(xprt);
--		xprt->ops->close(xprt);
--	}
--
--	if (!xprt_connected(xprt)) {
-+	if (!xprt_connected(xprt) && !test_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
- 		task->tk_rqstp->rq_connect_cookie = xprt->connect_cookie;
- 		rpc_sleep_on_timeout(&xprt->pending, task, NULL,
- 				xprt_request_timeout(task->tk_rqstp));
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -880,7 +880,7 @@ static int xs_local_send_request(struct
- 
- 	/* Close the stream if the previous transmission was incomplete */
- 	if (xs_send_request_was_aborted(transport, req)) {
--		xs_close(xprt);
-+		xprt_force_disconnect(xprt);
- 		return -ENOTCONN;
- 	}
- 
-@@ -918,7 +918,7 @@ static int xs_local_send_request(struct
- 			-status);
- 		fallthrough;
- 	case -EPIPE:
--		xs_close(xprt);
-+		xprt_force_disconnect(xprt);
- 		status = -ENOTCONN;
- 	}
- 
-@@ -1203,6 +1203,16 @@ static void xs_reset_transport(struct so
- 
- 	if (sk == NULL)
- 		return;
-+	/*
-+	 * Make sure we're calling this in a context from which it is safe
-+	 * to call __fput_sync(). In practice that means rpciod and the
-+	 * system workqueue.
-+	 */
-+	if (!(current->flags & PF_WQ_WORKER)) {
-+		WARN_ON_ONCE(1);
-+		set_bit(XPRT_CLOSE_WAIT, &xprt->state);
-+		return;
-+	}
- 
- 	if (atomic_read(&transport->xprt.swapper))
- 		sk_clear_memalloc(sk);
-@@ -1226,7 +1236,7 @@ static void xs_reset_transport(struct so
- 	mutex_unlock(&transport->recv_mutex);
- 
- 	trace_rpc_socket_close(xprt, sock);
--	fput(filp);
-+	__fput_sync(filp);
- 
- 	xprt_disconnect_done(xprt);
- }
-
+	do {
+		new = /* something */ old;
+	} while (!try_cmpxchg(&folio->flags, &old, new))
 
