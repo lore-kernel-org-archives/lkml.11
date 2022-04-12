@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 997CCC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A9E6C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352264AbiDLHNm (ORCPT
+        id S1352143AbiDLHNd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
+        Tue, 12 Apr 2022 03:13:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351974AbiDLGys (ORCPT
+        with ESMTP id S1351728AbiDLGyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A9F31353;
-        Mon, 11 Apr 2022 23:44:25 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AA8387B6;
+        Mon, 11 Apr 2022 23:43:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C859B81B43;
-        Tue, 12 Apr 2022 06:44:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E79CFC385A6;
-        Tue, 12 Apr 2022 06:44:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9837860B5E;
+        Tue, 12 Apr 2022 06:43:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA4FAC385A6;
+        Tue, 12 Apr 2022 06:43:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745863;
-        bh=9dzdi/k5ISnlvYXYzbjOpKDAR0nm3JH/54K7ACu0hRE=;
+        s=korg; t=1649745824;
+        bh=tgXZ+T0V+L8EBmfKx+TgIYJSgQuX+mpqJd2hK9Yv/4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aPBjI6QAy6MfXAXkoOTE3JHq4CfuyqW8tydM946FdSHR3CLmQqw9GSJUcGA2+f/wr
-         E/DQ7L/mNww+C6b1NB2vheA6HWZXE1xSvFKSexx/R6i7Sex4Wdkx+bYirVyepMkA1Q
-         SM6u9Rj53Ty3MjXF57cE6ojHmCpQCmXmEg+8cOA0=
+        b=y9o7zYfOgmGkopBTOc8LrmHOcVMQnt37EvuzCUcdvBMXAalxBPbfTcmq7Ghp9dNs9
+         54451lKXh9oyhomyqEkQiS+X9Zt88It2hTEr5qLREK5kudaXZ+6XufRrn6p03USS5B
+         1mogH6//6Kk1gAhWMN2kU7qJgLyiTc5Fc+/MQHXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Juergen E. Fischer" <fischer@norbit.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Wang Hai <wanghai38@huawei.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/277] scsi: aha152x: Fix aha152x_setup() __setup handler return value
-Date:   Tue, 12 Apr 2022 08:27:58 +0200
-Message-Id: <20220412062944.218919031@linuxfoundation.org>
+Subject: [PATCH 5.15 062/277] ipv4: Invalidate neighbour for broadcast address upon address addition
+Date:   Tue, 12 Apr 2022 08:27:45 +0200
+Message-Id: <20220412062943.843611618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -53,49 +51,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Ido Schimmel <idosch@nvidia.com>
 
-[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
+[ Upstream commit 0c51e12e218f20b7d976158fdc18019627326f7a ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; doing so just pollutes init's
-environment with strings that are not init arguments/parameters).
+In case user space sends a packet destined to a broadcast address when a
+matching broadcast route is not configured, the kernel will create a
+unicast neighbour entry that will never be resolved [1].
 
-Return 1 from aha152x_setup() to indicate that the boot option has been
-handled.
+When the broadcast route is configured, the unicast neighbour entry will
+not be invalidated and continue to linger, resulting in packets being
+dropped.
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
-Cc: "Juergen E. Fischer" <fischer@norbit.de>
-Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Solve this by invalidating unresolved neighbour entries for broadcast
+addresses after routes for these addresses are internally configured by
+the kernel. This allows the kernel to create a broadcast neighbour entry
+following the next route lookup.
+
+Another possible solution that is more generic but also more complex is
+to have the ARP code register a listener to the FIB notification chain
+and invalidate matching neighbour entries upon the addition of broadcast
+routes.
+
+It is also possible to wave off the issue as a user space problem, but
+it seems a bit excessive to expect user space to be that intimately
+familiar with the inner workings of the FIB/neighbour kernel code.
+
+[1] https://lore.kernel.org/netdev/55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com/
+
+Reported-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/aha152x.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/net/arp.h       | 1 +
+ net/ipv4/arp.c          | 9 +++++++--
+ net/ipv4/fib_frontend.c | 5 ++++-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
-index b13b5c85f3de..75a5a4765f42 100644
---- a/drivers/scsi/aha152x.c
-+++ b/drivers/scsi/aha152x.c
-@@ -3370,13 +3370,11 @@ static int __init aha152x_setup(char *str)
- 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
- 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
- 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
--	if (ints[0] > 8) {                                                /*}*/
-+	if (ints[0] > 8)
- 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
- 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
--	} else {
-+	else
- 		setup_count++;
--		return 0;
--	}
+diff --git a/include/net/arp.h b/include/net/arp.h
+index 4950191f6b2b..4a23a97195f3 100644
+--- a/include/net/arp.h
++++ b/include/net/arp.h
+@@ -71,6 +71,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
+ 	      const unsigned char *src_hw, const unsigned char *th);
+ int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
+ void arp_ifdown(struct net_device *dev);
++int arp_invalidate(struct net_device *dev, __be32 ip, bool force);
  
- 	return 1;
+ struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
+ 			   struct net_device *dev, __be32 src_ip,
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index 922dd73e5740..83a47998c4b1 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -1116,13 +1116,18 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
+ 	return err;
+ }
+ 
+-static int arp_invalidate(struct net_device *dev, __be32 ip)
++int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
+ {
+ 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
+ 	int err = -ENXIO;
+ 	struct neigh_table *tbl = &arp_tbl;
+ 
+ 	if (neigh) {
++		if ((neigh->nud_state & NUD_VALID) && !force) {
++			neigh_release(neigh);
++			return 0;
++		}
++
+ 		if (neigh->nud_state & ~NUD_NOARP)
+ 			err = neigh_update(neigh, NULL, NUD_FAILED,
+ 					   NEIGH_UPDATE_F_OVERRIDE|
+@@ -1169,7 +1174,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
+ 		if (!dev)
+ 			return -EINVAL;
+ 	}
+-	return arp_invalidate(dev, ip);
++	return arp_invalidate(dev, ip, true);
+ }
+ 
+ /*
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 4d61ddd8a0ec..1eb7795edb9d 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -1112,9 +1112,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
+ 		return;
+ 
+ 	/* Add broadcast address, if it is explicitly assigned. */
+-	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
++	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
+ 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
+ 			  prim, 0);
++		arp_invalidate(dev, ifa->ifa_broadcast, false);
++	}
+ 
+ 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
+ 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
+@@ -1128,6 +1130,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
+ 		if (ifa->ifa_prefixlen < 31) {
+ 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
+ 				  32, prim, 0);
++			arp_invalidate(dev, prefix | ~mask, false);
+ 		}
+ 	}
  }
 -- 
 2.35.1
