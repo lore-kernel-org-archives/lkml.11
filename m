@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C762DC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F10C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354517AbiDLH00 (ORCPT
+        id S1354388AbiDLH0V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
+        Tue, 12 Apr 2022 03:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351655AbiDLHMu (ORCPT
+        with ESMTP id S1351658AbiDLHMu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161E015708;
-        Mon, 11 Apr 2022 23:51:00 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2739129829;
+        Mon, 11 Apr 2022 23:51:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA985B81B35;
-        Tue, 12 Apr 2022 06:50:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205DCC385A6;
-        Tue, 12 Apr 2022 06:50:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B98636149D;
+        Tue, 12 Apr 2022 06:51:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBBE6C385A8;
+        Tue, 12 Apr 2022 06:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746257;
-        bh=NwKPkCap+dw1eHh5siCsbaMYWMopuS5/YjbGJCk9bjU=;
+        s=korg; t=1649746260;
+        bh=PYLZrxg0aezzpobDXdHRgrI8u0w+vJG252MHRYdhv/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1O9yb8C1YvNloXmOLVOalZd+lTRVSQK1XSCK/4QyDryCQJbGmep5FQBh8EWEVu1i0
-         o2EAln0PRfau0+LJK2Mq07PhU2GE3s1tqsKimJCPwNvC6D1xjJiKuOUvptv2JFy/aT
-         BA1Lp9tNETWyc3MCbQqJVgJNQHqitbnIYYzq7QAI=
+        b=w5IWT7Q2Kg+g8Wt3BqVGEVsaM30h6ofoSfdkKGf49zC5DsP3XMZynXvFU+8AbXukJ
+         dxhBTMp21ClHJrMqiy83KxDS+ZtftzXoyL8ZXr4teKGmfCRkiSEOua7b/iOV0t5J4A
+         JV/NcToHWNzcCINvok8oShV6UHE8V9rdeZjDPU6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6bde52d89cfdf9f61425@syzkaller.appspotmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Michal Hocko <mhocko@suse.com>,
+        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+        Mel Gorman <mgorman@suse.de>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 216/277] mmmremap.c: avoid pointless invalidate_range_start/end on mremap(old_size=0)
-Date:   Tue, 12 Apr 2022 08:30:19 +0200
-Message-Id: <20220412062948.291822180@linuxfoundation.org>
+Subject: [PATCH 5.15 217/277] mm/mempolicy: fix mpol_new leak in shared_policy_replace
+Date:   Tue, 12 Apr 2022 08:30:20 +0200
+Message-Id: <20220412062948.320606515@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -53,45 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit 01e67e04c28170c47700c2c226d732bbfedb1ad0 upstream.
+commit 4ad099559b00ac01c3726e5c95dc3108ef47d03e upstream.
 
-If an mremap() syscall with old_size=0 ends up in move_page_tables(), it
-will call invalidate_range_start()/invalidate_range_end() unnecessarily,
-i.e.  with an empty range.
+If mpol_new is allocated but not used in restart loop, mpol_new will be
+freed via mpol_put before returning to the caller.  But refcnt is not
+initialized yet, so mpol_put could not do the right things and might
+leak the unused mpol_new.  This would happen if mempolicy was updated on
+the shared shmem file while the sp->lock has been dropped during the
+memory allocation.
 
-This causes a WARN in KVM's mmu_notifier.  In the past, empty ranges
-have been diagnosed to be off-by-one bugs, hence the WARNing.  Given the
-low (so far) number of unique reports, the benefits of detecting more
-buggy callers seem to outweigh the cost of having to fix cases such as
-this one, where userspace is doing something silly.  In this particular
-case, an early return from move_page_tables() is enough to fix the
-issue.
+This issue could be triggered easily with the below code snippet if
+there are many processes doing the below work at the same time:
 
-Link: https://lkml.kernel.org/r/20220329173155.172439-1-pbonzini@redhat.com
-Reported-by: syzbot+6bde52d89cfdf9f61425@syzkaller.appspotmail.com
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: <stable@vger.kernel.org>
+  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
+  shm = shmat(shmid, 0, 0);
+  loop many times {
+    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
+    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
+          maxnode, 0);
+  }
+
+Link: https://lkml.kernel.org/r/20220329111416.27954-1-linmiaohe@huawei.com
+Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: <stable@vger.kernel.org>	[3.8]
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mremap.c |    3 +++
- 1 file changed, 3 insertions(+)
+ mm/mempolicy.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/mm/mremap.c
-+++ b/mm/mremap.c
-@@ -486,6 +486,9 @@ unsigned long move_page_tables(struct vm
- 	pmd_t *old_pmd, *new_pmd;
- 	pud_t *old_pud, *new_pud;
- 
-+	if (!len)
-+		return 0;
-+
- 	old_end = old_addr + len;
- 	flush_cache_range(vma, old_addr, old_end);
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -2561,6 +2561,7 @@ alloc_new:
+ 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+ 	if (!mpol_new)
+ 		goto err_out;
++	atomic_set(&mpol_new->refcnt, 1);
+ 	goto restart;
+ }
  
 
 
