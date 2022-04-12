@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E52C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCF1C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376463AbiDLItd (ORCPT
+        id S1376411AbiDLItZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
+        Tue, 12 Apr 2022 04:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357675AbiDLHkh (ORCPT
+        with ESMTP id S1357678AbiDLHkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:40:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661D237A19;
-        Tue, 12 Apr 2022 00:16:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E8637A3F;
+        Tue, 12 Apr 2022 00:16:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AF94B81B4F;
-        Tue, 12 Apr 2022 07:16:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71421C385A5;
-        Tue, 12 Apr 2022 07:16:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8454B81B62;
+        Tue, 12 Apr 2022 07:16:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F77BC385A5;
+        Tue, 12 Apr 2022 07:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747791;
-        bh=VZVvP87MYgzbE+UjduvwsVvKXx0jKM82k2v4eWM5gAM=;
+        s=korg; t=1649747794;
+        bh=6Gj3u1l9n/DaLADElMNFEcYCcb3QHToLKpQJMhKKuwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w8uVWziAO6Thcmz0Thlu8gWgjxnfL0SoEyztoOYoBfn+MlEa61DmEEjpQ3S8uDtOv
-         yekPOexG0IWYloGpZo9Lalrdv+OaAewpOOZt7p63Skel7sn+NPjIRK27dBjnhtoTtk
-         7GBzpnoo8p3ShY6P+I2PSkJQz39bBYUA0zuvRJ4A=
+        b=s6iKZB91Ve+saFj6wHXOAGDOR9BrYCj5n48jgNUeATEF41xiq1gops8FDxiJYrSTM
+         nfkZaY0Fx/6EYtTXcPCKThT1LIsBtxOil9d5G9zjdqwD7Cj1KGvZEv/y8/a//hHHW2
+         RyVfug/WrCNN+fvU+FAAoaep9o9+PYde2aMOW14Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alice Michael <alice.michael@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 208/343] Revert "net: dsa: stop updating master MTU from master.c"
-Date:   Tue, 12 Apr 2022 08:30:26 +0200
-Message-Id: <20220412062957.353260366@linuxfoundation.org>
+Subject: [PATCH 5.17 209/343] ice: Clear default forwarding VSI during VSI release
+Date:   Tue, 12 Apr 2022 08:30:27 +0200
+Message-Id: <20220412062957.381340949@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,86 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Ivan Vecera <ivecera@redhat.com>
 
-[ Upstream commit 066dfc4290406b1b0b014ae3267d4266a344efd1 ]
+[ Upstream commit bd8c624c0cd59de0032752ba3001c107bba97f7b ]
 
-This reverts commit a1ff94c2973c43bc1e2677ac63ebb15b1d1ff846.
+VSI is set as default forwarding one when promisc mode is set for
+PF interface, when PF is switched to switchdev mode or when VF
+driver asks to enable allmulticast or promisc mode for the VF
+interface (when vf-true-promisc-support priv flag is off).
+The third case is buggy because in that case VSI associated with
+VF remains as default one after VF removal.
 
-Switch drivers that don't implement ->port_change_mtu() will cause the
-DSA master to remain with an MTU of 1500, since we've deleted the other
-code path. In turn, this causes a regression for those systems, where
-MTU-sized traffic can no longer be terminated.
+Reproducer:
+1. Create VF
+   echo 1 > sys/class/net/ens7f0/device/sriov_numvfs
+2. Enable allmulticast or promisc mode on VF
+   ip link set ens7f0v0 allmulticast on
+   ip link set ens7f0v0 promisc on
+3. Delete VF
+   echo 0 > sys/class/net/ens7f0/device/sriov_numvfs
+4. Try to enable promisc mode on PF
+   ip link set ens7f0 promisc on
 
-Revert the change taking into account the fact that rtnl_lock() is now
-taken top-level from the callers of dsa_master_setup() and
-dsa_master_teardown(). Also add a comment in order for it to be
-absolutely clear why it is still needed.
+Although it looks that promisc mode on PF is enabled the opposite
+is true because ice_vsi_sync_fltr() responsible for IFF_PROMISC
+handling first checks if any other VSI is set as default forwarding
+one and if so the function does not do anything. At this point
+it is not possible to enable promisc mode on PF without re-probe
+device.
 
-Fixes: a1ff94c2973c ("net: dsa: stop updating master MTU from master.c")
-Reported-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+To resolve the issue this patch clear default forwarding VSI
+during ice_vsi_release() when the VSI to be released is the default
+one.
+
+Fixes: 01b5e89aab49 ("ice: Add VF promiscuous support")
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Alice Michael <alice.michael@intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/master.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index 880f910b23a9..10b51ffbb6f4 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -337,11 +337,24 @@ static const struct attribute_group dsa_group = {
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 53256aca27c7..20d755822d43 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -3147,6 +3147,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ 		}
+ 	}
  
- static struct lock_class_key dsa_master_addr_list_lock_key;
- 
-+static void dsa_master_reset_mtu(struct net_device *dev)
-+{
-+	int err;
-+
-+	err = dev_set_mtu(dev, ETH_DATA_LEN);
-+	if (err)
-+		netdev_dbg(dev,
-+			   "Unable to reset MTU to exclude DSA overheads\n");
-+}
-+
- int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- {
-+	const struct dsa_device_ops *tag_ops = cpu_dp->tag_ops;
- 	struct dsa_switch *ds = cpu_dp->ds;
- 	struct device_link *consumer_link;
--	int ret;
-+	int mtu, ret;
-+
-+	mtu = ETH_DATA_LEN + dsa_tag_protocol_overhead(tag_ops);
- 
- 	/* The DSA master must use SET_NETDEV_DEV for this to work. */
- 	consumer_link = device_link_add(ds->dev, dev->dev.parent,
-@@ -351,6 +364,15 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- 			   "Failed to create a device link to DSA switch %s\n",
- 			   dev_name(ds->dev));
- 
-+	/* The switch driver may not implement ->port_change_mtu(), case in
-+	 * which dsa_slave_change_mtu() will not update the master MTU either,
-+	 * so we need to do that here.
-+	 */
-+	ret = dev_set_mtu(dev, mtu);
-+	if (ret)
-+		netdev_warn(dev, "error %d setting MTU to %d to include DSA overhead\n",
-+			    ret, mtu);
-+
- 	/* If we use a tagging format that doesn't have an ethertype
- 	 * field, make sure that all packets from this point on get
- 	 * sent to the tag format's receive function.
-@@ -388,6 +410,7 @@ void dsa_master_teardown(struct net_device *dev)
- 	sysfs_remove_group(&dev->dev.kobj, &dsa_group);
- 	dsa_netdev_ops_set(dev, NULL);
- 	dsa_master_ethtool_teardown(dev);
-+	dsa_master_reset_mtu(dev);
- 	dsa_master_set_promiscuity(dev, -1);
- 
- 	dev->dsa_ptr = NULL;
++	if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
++		ice_clear_dflt_vsi(pf->first_sw);
+ 	ice_fltr_remove_all(vsi);
+ 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
+ 	err = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
 -- 
 2.35.1
 
