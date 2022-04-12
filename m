@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE9EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59168C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345847AbiDLBHh (ORCPT
+        id S1346297AbiDLBHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
+        Mon, 11 Apr 2022 21:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346432AbiDLA64 (ORCPT
+        with ESMTP id S1346950AbiDLA7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17242340F7;
-        Mon, 11 Apr 2022 17:51:56 -0700 (PDT)
+        Mon, 11 Apr 2022 20:59:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B811C36308;
+        Mon, 11 Apr 2022 17:52:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE8ABB819D5;
-        Tue, 12 Apr 2022 00:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E03C385AA;
-        Tue, 12 Apr 2022 00:51:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5947B819A7;
+        Tue, 12 Apr 2022 00:52:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2861C385AE;
+        Tue, 12 Apr 2022 00:51:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724714;
-        bh=h7wCG4XjaYle+ieR3ESj44+7lHbRR0+fYce5PBuCF8I=;
+        s=k20201202; t=1649724720;
+        bh=cYzXXg1Vy1q7vvQEVY1rET2xsZpGFJS5PCjsVVvLFiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oVa45DlrAIOIvYUfhnq2rpVcrzz3VudfY4QjjXSklUkcibRu73H3sx6ukSuBndNvy
-         LYFZYkn2kzqSoADGOdkzi4UyJwxyZmAJavhUcZisDCUMmgCng3M7nbTA1OXgroDue4
-         CHp1y6YXqnpbSJPW8R/aYoLuYKZpojlbpCmRfn3EkBEEpjysIWQgnK48hXxn0oD09I
-         teXZL+tWL7TY9s9qNdxM0RcAhFrpHT3tbIrUWaPvwLpORjx9+XxdyphKWhM5KZ7Qd5
-         80H9ppzwUvLCgAY7IZ3Q6GN3LNZ2+vGyBqk3URx1TgPD7XVndFTvm4MwrSYAppO0YM
-         FmV1Bi0tnzxKA==
+        b=Jb6ZZWm8nOsPjobWvWCslzs5OmyqfyLudCdg23wlHMc5N9E9zTXNb9N2UfrsmMzgr
+         G3mg4ICFqr4+Q0paDDNAm+K5swMhuLpHfjxVIDI0E6Ci42er2lBChtvhFmMyTKNmw+
+         IYKkMQuXEwYS1fshiwt/tVnuIkk+Cy3ZDaZddTahBGJc2htru9mHNHxMP4Uu2UoHXD
+         wLmIpsmeTVYOJQFd5ZJHUC9WGcqbd9TzBIUyXL5dA71iFW+VMEMWhIDbQGJtWFuZ8T
+         hHFM9iK997hlh36ZzrjCN74imIBaplgQXL9DfIYJviIJtqZ1JHX1QZS3y7MR6zDV2x
+         XJQTL36T256zw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Kelley <mikelley@microsoft.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        decui@microsoft.com, linux-hyperv@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 03/12] Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
-Date:   Mon, 11 Apr 2022 20:51:36 -0400
-Message-Id: <20220412005148.351391-3-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, horatiu.vultur@microchip.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 06/12] net: micrel: fix KS8851_MLL Kconfig
+Date:   Mon, 11 Apr 2022 20:51:39 -0400
+Message-Id: <20220412005148.351391-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412005148.351391-1-sashal@kernel.org>
 References: <20220412005148.351391-1-sashal@kernel.org>
@@ -54,55 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit b6cae15b5710c8097aad26a2e5e752c323ee5348 ]
+[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
 
-When reading a packet from a host-to-guest ring buffer, there is no
-memory barrier between reading the write index (to see if there is
-a packet to read) and reading the contents of the packet. The Hyper-V
-host uses store-release when updating the write index to ensure that
-writes of the packet data are completed first. On the guest side,
-the processor can reorder and read the packet data before the write
-index, and sometimes get stale packet data. Getting such stale packet
-data has been observed in a reproducible case in a VM on ARM64.
+KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
+so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
+'select' does not follow any dependency chains.
 
-Fix this by using virt_load_acquire() to read the write index,
-ensuring that reads of the packet data cannot be reordered
-before it. Preventing such reordering is logically correct, and
-with this change, getting stale data can no longer be reproduced.
+Fixes kconfig warning and build errors:
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Link: https://lore.kernel.org/r/1648394710-33480-1-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+WARNING: unmet direct dependencies detected for MICREL_PHY
+  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
+  Selected by [y]:
+  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
+
+ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
+micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
+ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
+micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/ring_buffer.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/micrel/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
-index 6cb45f256107..d97b30af9e03 100644
---- a/drivers/hv/ring_buffer.c
-+++ b/drivers/hv/ring_buffer.c
-@@ -365,7 +365,16 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
- static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
- {
- 	u32 priv_read_loc = rbi->priv_read_index;
--	u32 write_loc = READ_ONCE(rbi->ring_buffer->write_index);
-+	u32 write_loc;
-+
-+	/*
-+	 * The Hyper-V host writes the packet data, then uses
-+	 * store_release() to update the write_index.  Use load_acquire()
-+	 * here to prevent loads of the packet data from being re-ordered
-+	 * before the read of the write_index and potentially getting
-+	 * stale data.
-+	 */
-+	write_loc = virt_load_acquire(&rbi->ring_buffer->write_index);
- 
- 	if (write_loc >= priv_read_loc)
- 		return write_loc - priv_read_loc;
+diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+index b7e2f49696b7..aa12bace8673 100644
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -45,6 +45,7 @@ config KS8851
+ config KS8851_MLL
+ 	tristate "Micrel KS8851 MLL"
+ 	depends on HAS_IOMEM
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MII
+ 	---help---
+ 	  This platform driver is for Micrel KS8851 Address/data bus
 -- 
 2.35.1
 
