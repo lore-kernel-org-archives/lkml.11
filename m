@@ -2,95 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42368C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 653A0C47082
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359584AbiDLJUb (ORCPT
+        id S1388026AbiDLJVb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        Tue, 12 Apr 2022 05:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356998AbiDLHjj (ORCPT
+        with ESMTP id S1356581AbiDLHi7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4925E13D7E;
-        Tue, 12 Apr 2022 00:10:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD48CB81B5D;
-        Tue, 12 Apr 2022 07:10:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E891C385A8;
-        Tue, 12 Apr 2022 07:10:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747440;
-        bh=X3zK7TOo5YU38lUQfqqw5eqP95X751iVUWcD1uQ09Fs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DoPyGBgsGbM8uqL8BInylp+IoNIMKe6Zgmcs/txuirbflAZHPuv3CeFc2k7TwO3C4
-         T8mzr8wHIGCIH1N8lAZ8q3Qc9FePvSFUNumcDFhbD76622SMxtX5HogI7pSG8UgIt4
-         +vbtJV9oVeC5cPS4mpZS5IGUrCi6EtU8yFgxK7AI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricardo Koller <ricarkol@google.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Andrew Jones <drjones@redhat.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 063/343] kvm: selftests: aarch64: fix the failure check in kvm_set_gsi_routing_irqchip_check
-Date:   Tue, 12 Apr 2022 08:28:01 +0200
-Message-Id: <20220412062952.921289965@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:38:59 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C9551E5D;
+        Tue, 12 Apr 2022 00:09:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649747389; x=1681283389;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=N4ulgrYlIfenBw7Hm6+VMNDmIviNdtjf6yJOdqnjax0=;
+  b=pwKd5NL3CjRgKRD1FGYF8TrJqmOxKscs4VQVKtU0LsvOUUMjQzqUBE+X
+   NC5pdNOj6j26l+mhTXajMW8tKkc6yZQ2J64lPC8dZcEhcp7gxMcGYAqDO
+   3slKCbOk0kVYmezTT0amYsPu4QoEGODffSnTfG6oNM7HzivvLms/RhvJ6
+   Y=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Apr 2022 00:09:48 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:09:48 -0700
+Received: from hu-vgarodia-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 12 Apr 2022 00:09:46 -0700
+From:   Vikash Garodia <quic_vgarodia@quicinc.com>
+To:     <linux-media@vger.kernel.org>, <stanimir.varbanov@linaro.org>
+CC:     <linux-kernel@vger.kernel.org>, <quic_vgarodia@quicinc.com>
+Subject: [PATCH 1/2] media: venus: do not queue internal buffers from previous sequence
+Date:   Tue, 12 Apr 2022 12:39:15 +0530
+Message-ID: <1649747356-3207-2-git-send-email-quic_vgarodia@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649747356-3207-1-git-send-email-quic_vgarodia@quicinc.com>
+References: <1649747356-3207-1-git-send-email-quic_vgarodia@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricardo Koller <ricarkol@google.com>
-
-[ Upstream commit 5b7898648f02083012900e48d063e51ccbdad165 ]
-
-kvm_set_gsi_routing_irqchip_check(expect_failure=true) is used to check
-the error code returned by the kernel when trying to setup an invalid
-gsi routing table. The ioctl fails if "pin >= KVM_IRQCHIP_NUM_PINS", so
-kvm_set_gsi_routing_irqchip_check() should test the error only when
-"intid >= KVM_IRQCHIP_NUM_PINS+32". The issue is that the test check is
-"intid >= KVM_IRQCHIP_NUM_PINS", so for a case like "intid =
-KVM_IRQCHIP_NUM_PINS" the test wrongly assumes that the kernel will
-return an error.  Fix this by using the right check.
-
-Signed-off-by: Ricardo Koller <ricarkol@google.com>
-Reported-by: Reiji Watanabe <reijiw@google.com>
-Cc: Andrew Jones <drjones@redhat.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220127030858.3269036-4-ricarkol@google.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+During reconfig (DRC) event from firmware, it is not guaranteed that
+all the DPB(internal) buffers would be released by the firmware. Some
+buffers might be released gradually while processing frames from the
+new sequence. These buffers now stay idle in the dpblist.
+In subsequent call to queue the DPBs to firmware, these idle buffers
+should not be queued. The fix identifies those buffers and free them.
 ---
- tools/testing/selftests/kvm/aarch64/vgic_irq.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/platform/qcom/venus/helpers.c | 37 ++++++++++++++++++++++-------
+ 1 file changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/vgic_irq.c b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-index 7f3afee5cc00..48e43e24d240 100644
---- a/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-+++ b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-@@ -573,8 +573,8 @@ static void kvm_set_gsi_routing_irqchip_check(struct kvm_vm *vm,
- 		kvm_gsi_routing_write(vm, routing);
- 	} else {
- 		ret = _kvm_gsi_routing_write(vm, routing);
--		/* The kernel only checks for KVM_IRQCHIP_NUM_PINS. */
--		if (intid >= KVM_IRQCHIP_NUM_PINS)
-+		/* The kernel only checks e->irqchip.pin >= KVM_IRQCHIP_NUM_PINS */
-+		if (((uint64_t)intid + num - 1 - MIN_SPI) >= KVM_IRQCHIP_NUM_PINS)
- 			TEST_ASSERT(ret != 0 && errno == EINVAL,
- 				"Bad intid %u did not cause KVM_SET_GSI_ROUTING "
- 				"error: rc: %i errno: %i", intid, ret, errno);
+diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
+index 0bca95d..0602f03 100644
+--- a/drivers/media/platform/qcom/venus/helpers.c
++++ b/drivers/media/platform/qcom/venus/helpers.c
+@@ -90,12 +90,31 @@ bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt)
+ }
+ EXPORT_SYMBOL_GPL(venus_helper_check_codec);
+ 
++static int venus_helper_free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
++{
++	ida_free(&inst->dpb_ids, buf->dpb_out_tag);
++
++	list_del_init(&buf->list);
++	dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
++		       buf->attrs);
++	kfree(buf);
++
++	return 0;
++}
++
+ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
+ {
+-	struct intbuf *buf;
++	struct intbuf *buf, *next;
++	unsigned int dpb_size = 0;
+ 	int ret = 0;
+ 
+-	list_for_each_entry(buf, &inst->dpbbufs, list) {
++	if (inst->dpb_buftype == HFI_BUFFER_OUTPUT)
++		dpb_size = inst->output_buf_size;
++	else if (inst->dpb_buftype == HFI_BUFFER_OUTPUT2)
++		dpb_size = inst->output2_buf_size;
++
++
++	list_for_each_entry_safe(buf, next, &inst->dpbbufs, list) {
+ 		struct hfi_frame_data fdata;
+ 
+ 		memset(&fdata, 0, sizeof(fdata));
+@@ -106,6 +125,12 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
+ 		if (buf->owned_by == FIRMWARE)
+ 			continue;
+ 
++		/* free buffer from previous sequence which was released later */
++		if (dpb_size > buf->size) {
++			venus_helper_free_dpb_buf(inst, buf);
++			continue;
++		}
++
+ 		fdata.clnt_data = buf->dpb_out_tag;
+ 
+ 		ret = hfi_session_process_buf(inst, &fdata);
+@@ -127,13 +152,7 @@ int venus_helper_free_dpb_bufs(struct venus_inst *inst)
+ 	list_for_each_entry_safe(buf, n, &inst->dpbbufs, list) {
+ 		if (buf->owned_by == FIRMWARE)
+ 			continue;
+-
+-		ida_free(&inst->dpb_ids, buf->dpb_out_tag);
+-
+-		list_del_init(&buf->list);
+-		dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
+-			       buf->attrs);
+-		kfree(buf);
++		venus_helper_free_dpb_buf(inst, buf);
+ 	}
+ 
+ 	if (list_empty(&inst->dpbbufs))
 -- 
-2.35.1
-
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
