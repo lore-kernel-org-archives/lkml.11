@@ -2,78 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD0FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D089C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354952AbiDLRIG (ORCPT
+        id S1357966AbiDLRIY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
+        Tue, 12 Apr 2022 13:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358037AbiDLRHw (ORCPT
+        with ESMTP id S1350498AbiDLRIV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:07:52 -0400
-Received: from smtp-8fab.mail.infomaniak.ch (smtp-8fab.mail.infomaniak.ch [83.166.143.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17256005C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:05:34 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KdBtj1VTxzMqLVJ;
-        Tue, 12 Apr 2022 19:05:33 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KdBth2cV3zlhMBP;
-        Tue, 12 Apr 2022 19:05:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1649783133;
-        bh=WIAqrTnf62NAS0tQGLe8JoQbbvgbUmacFvHp891JW6g=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=DWeNvZZDbPHmTCU+9PS7yiMNtuL8zaK+RZuoWGZjGUtOH8YoFj1gspSKJa5STgn/F
-         PxF7DDMrIHUTeYcm1arziMgGg0ELlv58gJWKuZk4iz5C/OkD6FqY7SW/PN7qlBEDeU
-         FstuiSvjT6tLhSKKFm+MzEXz1OcHnz0+qZDvtVeQ=
-Message-ID: <acdf5af3-f256-8d53-ec44-fcef4022ec62@digikod.net>
-Date:   Tue, 12 Apr 2022 19:05:49 +0200
+        Tue, 12 Apr 2022 13:08:21 -0400
+X-Greylist: delayed 278 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 10:06:04 PDT
+Received: from pb-smtp20.pobox.com (pb-smtp20.pobox.com [173.228.157.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FE760A93
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:06:04 -0700 (PDT)
+Received: from pb-smtp20.pobox.com (unknown [127.0.0.1])
+        by pb-smtp20.pobox.com (Postfix) with ESMTP id 8518B191BC5;
+        Tue, 12 Apr 2022 13:01:25 -0400 (EDT)
+        (envelope-from junio@pobox.com)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-type
+        :content-transfer-encoding; s=sasl; bh=mqhcnNmvbiavmed0HQ+JoUMz9
+        1tXynEc2wCcXEDjYZ0=; b=I3Yut4rCQdHmDqiniA1K2iX8kdrNG6j6IPB0FEY88
+        gELdv8cmBUFD39AQtPN6XuJ70c7j/vX91HQ5ZxXDPZJzJgtsiS8yEabnRDQ83p3i
+        un3YAjlSODL2krLsHKVB8ebq5hzIN0TtDFiDrmY8hn+HuX3rGHAKZld1kapi6/Mn
+        s0=
+Received: from pb-smtp20.sea.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp20.pobox.com (Postfix) with ESMTP id 7CE8D191BC4;
+        Tue, 12 Apr 2022 13:01:25 -0400 (EDT)
+        (envelope-from junio@pobox.com)
+Received: from pobox.com (unknown [35.185.214.157])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pb-smtp20.pobox.com (Postfix) with ESMTPSA id 69962191BC3;
+        Tue, 12 Apr 2022 13:01:22 -0400 (EDT)
+        (envelope-from junio@pobox.com)
+From:   Junio C Hamano <gitster@pobox.com>
+To:     git@vger.kernel.org
+Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        git-packagers@googlegroups.com
+Subject: [ANNOUNCE] Git v2.35.2 and below for CVE-2022-24765
+Date:   Tue, 12 Apr 2022 10:01:21 -0700
+Message-ID: <xmqqv8veb5i6.fsf@gitster.g>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, bpf <bpf@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-References: <20220412153906.428179-1-mic@digikod.net>
- <CANiq72=ogSxwz8iJLZaYD4nSkE71sBhT4dZyDv1HYyo5R43=pw@mail.gmail.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v1] clang-format: Update and extend the for_each list with
- tools/
-In-Reply-To: <CANiq72=ogSxwz8iJLZaYD4nSkE71sBhT4dZyDv1HYyo5R43=pw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+X-Pobox-Relay-ID: 2E276376-BA82-11EC-9FE1-C85A9F429DF0-77302942!pb-smtp20.pobox.com
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm wondering about the ASSERT_* and EXPECT_* macros from 
-tools/testing/selftests/kselftest_harness.h
-Do you think we should treat them as "for macros" as well? They can 
-either be used with or without a following code block.
+The latest maintenance release Git v2.35.2, together with releases
+for older maintenance tracks v2.30.3, v2.31.2, v2.32.1, v2.33.2, and
+v2.34.2, are now available at the usual places.
 
+These maintenance releases are to address the security issues
+described in CVE-2022-24765.  Please update at your earliest
+opportunity.
 
-On 12/04/2022 17:58, Miguel Ojeda wrote:
-> Hi Mickaël,
-> 
-> On Tue, Apr 12, 2022 at 5:39 PM Mickaël Salaün <mic@digikod.net> wrote:
->>
->> Add tools/ to the shell fragment generating the for_each list and update
->> it.  This is useful to format files in the tools directory (e.g.
->> selftests) with the same coding style as the kernel.
-> 
-> Sounds good to me. There have been discussions about doing it for the
-> entire tree too, so we can start with this.
-> 
-> Cheers,
-> Miguel
+The tarballs are found at:
+
+    https://www.kernel.org/pub/software/scm/git/
+
+The following public repositories all have a copy of the 'v2.35.2',
+'v2.34.2', 'v2.33.2', 'v2.32.1', 'v2.31.2', and 'v2.30.3' tags.
+
+  url =3D https://git.kernel.org/pub/scm/git/git
+  url =3D https://kernel.googlesource.com/pub/scm/git/git
+  url =3D https://github.com/gitster/git
+
+CVE-2022-24765:
+   On multi-user machines, Git users might find themselves
+   unexpectedly in a Git worktree, e.g. when another user created a
+   repository in `C:\.git`, in a mounted network drive or in a
+   scratch space. Merely having a Git-aware prompt that runs `git
+   status` (or `git diff`) and navigating to a directory which is
+   supposedly not a Git worktree, or opening such a directory in an
+   editor or IDE such as VS Code or Atom, will potentially run
+   commands defined by that other user.
+
+Credit for finding this vulnerability goes to =E4=BF=9E=E6=99=A8=E4=B8=9C=
+; the fix was
+authored by Johannes Schindelin.
