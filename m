@@ -2,144 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EE5C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ABFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391736AbiDLJgJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
+        id S240787AbiDLJiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389894AbiDLJYS (ORCPT
+        with ESMTP id S1389342AbiDLJXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:24:18 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB7E022BC4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:39:32 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-405-oOBMiDLNNWyHBgOE2vxNfQ-1; Tue, 12 Apr 2022 09:39:29 +0100
-X-MC-Unique: oOBMiDLNNWyHBgOE2vxNfQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Tue, 12 Apr 2022 09:39:28 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Tue, 12 Apr 2022 09:39:28 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Qais Yousef' <qais.yousef@arm.com>
-CC:     Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "bsegall@google.com" <bsegall@google.com>,
-        "mgorman@suse.de" <mgorman@suse.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "parth@linux.ibm.com" <parth@linux.ibm.com>,
-        "chris.hyser@oracle.com" <chris.hyser@oracle.com>,
-        "pkondeti@codeaurora.org" <pkondeti@codeaurora.org>,
-        "Valentin.Schneider@arm.com" <Valentin.Schneider@arm.com>,
-        "patrick.bellasi@matbug.net" <patrick.bellasi@matbug.net>,
-        "pjt@google.com" <pjt@google.com>, "pavel@ucw.cz" <pavel@ucw.cz>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "qperret@google.com" <qperret@google.com>,
-        "tim.c.chen@linux.intel.com" <tim.c.chen@linux.intel.com>,
-        Wei Wang <wvw@google.com>
-Subject: RE: Scheduling tasks on idle cpu
-Thread-Topic: Scheduling tasks on idle cpu
-Thread-Index: AdhNfEgLjonPVH3ESQeb3O9OCn/HMQAeBEWAABN1gYA=
-Date:   Tue, 12 Apr 2022 08:39:28 +0000
-Message-ID: <4ca5cd70904d47bea0df93f7c0979c66@AcuMS.aculab.com>
-References: <030aacb0c1304e43ab917924dcf4f138@AcuMS.aculab.com>
- <20220411233447.rcencjivkhyltyxm@airbuntu>
-In-Reply-To: <20220411233447.rcencjivkhyltyxm@airbuntu>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 12 Apr 2022 05:23:41 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D1B541B4;
+        Tue, 12 Apr 2022 01:32:29 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KczRw0cnqzFpX4;
+        Tue, 12 Apr 2022 16:30:04 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 16:32:28 +0800
+Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Apr
+ 2022 16:32:27 +0800
+Message-ID: <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
+Date:   Tue, 12 Apr 2022 16:32:22 +0800
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
+ Information for frame pointer validation
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+CC:     <mark.rutland@arm.com>, <broonie@kernel.org>, <ardb@kernel.org>,
+        <nobuta.keiya@fujitsu.com>, <sjitindarsingh@gmail.com>,
+        <catalin.marinas@arm.com>, <will@kernel.org>, <jmorris@namei.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220407202518.19780-1-madvenka@linux.microsoft.com>
+ <20220408002147.pk7clzruj6sawj7z@treble>
+ <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogUWFpcyBZb3VzZWYNCj4gU2VudDogMTIgQXByaWwgMjAyMiAwMDozNQ0KPiANCj4gT24g
-MDQvMTEvMjIgMDg6MjYsIERhdmlkIExhaWdodCB3cm90ZToNCj4gPiBGcm9tOiBRYWlzIFlvdXNl
-Zg0KPiA+ID4gU2VudDogMDkgQXByaWwgMjAyMiAxODowOQ0KPiA+IC4uLg0KPiA+ID4gUlQgc2No
-ZWR1bGVyIHdpbGwgcHVzaC9wdWxsIHRhc2tzIHRvIGVuc3VyZSB0aGUgdGFzayB3aWxsIGdldCB0
-byBydW4gQVNBUCBpZg0KPiA+ID4gdGhlcmUncyBhbm90aGVyIGNwdSBhdCBsb3dlciBwcmlvcml0
-eSBpcyBhdmFpbGFibGUNCj4gPg0KPiA+IERvZXMgdGhhdCBhY3R1YWxseSBoYXBwZW4/DQo+IA0K
-PiBGb3IgUlQgdGFza3MsIHllcy4gVGhleSBzaG91bGQgZ2V0IGRpc3RyaWJ1dGVkLg0KDQpPaywg
-dGhhdCBpcyBzb21ldGhpbmcgc2xpZ2h0bHkgZGlmZmVyZW50IGZyb20gd2hhdCBJJ20gc2VlaW5n
-Lg0KDQo+ID4gSSd2ZSBzZWVuIHRoZSBmb2xsb3dpbmc6DQo+ID4gICAzNDUzMyBbMDE3XTogc3lz
-X2Z1dGV4KHVhZGRyOiAxMDQ5MTA0LCBvcDogODUsIHZhbDogMSwgdXRpbWU6IDEsIHVhZGRyMjog
-MTA0OTEwMCwgdmFsMzogNDAwMDAwMSkNCj4gPiAgIDM0NTMzIFswMTddOiBzY2hlZF9taWdyYXRl
-X3Rhc2s6IHBpZD0zNDUxMiBwcmlvPTEyMCBvcmlnX2NwdT0xNCBkZXN0X2NwdT0xNw0KPiA+ICAg
-MzQ1MzMgWzAxN106IHNjaGVkX3dha2V1cDogcGlkPTM0NTEyIHByaW89MTIwIHN1Y2Nlc3M9MSB0
-YXJnZXRfY3B1PTAxNw0KPiANCj4gcHJpbz0xMjAgaXMgYSBDRlMgdGFzaywgbm8/DQoNCkNGUyA9
-ICdub3JtYWwgdGltZS1zbGljZSBwcm9jZXNzZXMgPyBUaGVuIHllcy4NCg0KPiA+IGFuZCBwaWQg
-MzQ1MTIgZG9lc24ndCBnZXQgc2NoZWR1bGVkIHVudGlsIHBpZCAzNDUzMyBmaW5hbGx5IHNsZWVw
-cy4NCj4gPiBUaGlzIGlzIGluIHNwaXRlIG9mIHRoZXJlIGJlaW5nIDUgaWRsZSBjcHUuDQo+ID4g
-Y3B1IDE0IGlzIGJ1c3kgcnVubmluZyBhIFJUIHRocmVhZCwgYnV0IG1pZ3JhdGluZyB0byBjcHUg
-MTcgc2VlbXMgd3JvbmcuDQo+ID4NCj4gPiBUaGlzIGlzIG9uIGEgUkhFTDcga2VybmVsLCBJJ3Zl
-IG5vdCByZXBsaWNhdGVkIGl0IG9uIGFueXRoaW5nIHJlY2VudC4NCj4gPiBCdXQgSSd2ZSB2ZXJ5
-IG11Y2ggbGlrZSBhIFJUIHRocmVhZCB0byBiZSBhYmxlIHRvIHNjaGVkdWxlIGEgbm9uLVJUDQo+
-ID4gdGhyZWFkIHRvIHJ1biBvbiBhbiBpZGxlIGNwdS4NCj4gDQo+IE9oLCB5b3Ugd2FudCBDRlMg
-dG8gYXZvaWQgQ1BVcyB0aGF0IGFyZSBydW5uaW5nIFJUIHRhc2tzLg0KPiANCj4gV2UgaGFkIGEg
-cHJvcG9zYWwgaW4gdGhlIHBhc3QsIGJ1dCBpdCB3YXNuJ3QgZ29vZCBlbm91Z2gNCj4gDQo+IAlo
-dHRwczovL2xvcmUua2VybmVsLm9yZy9sa21sLzE1NjcwNDg1MDItNjA2NC0xLWdpdC1zZW5kLWVt
-YWlsLWppbmctdGluZy53dUBtZWRpYXRlay5jb20vDQoNClRoYXQgc2VlbXMgdG8gYmUgc29tZXRo
-aW5nIGRpZmZlcmVudC4NClJlbGF0ZWQgdG8gc29tZXRoaW5nIGVsc2UgSSd2ZSBzZWVuIHdoZXJl
-IGEgUlQgcHJvY2VzcyBpcyBzY2hlZHVsZWQNCm9uIGl0cyBvbGQgY3B1ICh0byBnZXQgdGhlIGhv
-dCBjYWNoZSkgYnV0IHRoZSBwcm9jZXNzIHJ1bm5pbmcgb24NCnRoYXQgY3B1IGlzIGxvb3Bpbmcg
-aW4ga2VybmVsIC0gc28gdGhlIFJUIHByb2Nlc3MgZG9lc24ndCBzdGFydC4NCg0KSSd2ZSBhdm9p
-ZGVkIG1vc3Qgb2YgdGhlIHBhaW4gdGhhdCBjYXVzZWQgYnkgbm90IHVzaW5nIGEgc2luZ2xlDQpj
-dl9icm9hZGNhc3QoKSB0byB3YWtlIHVwIHRoZSAzNCBSVCB0aHJlYWRzIChpbiB0aGlzIGNvbmZp
-ZykuDQooRWFjaCBrZXJuZWwgdGhyZWFkIHNlZW1lZCB0byB3YWtlIHVwIHRoZSBuZXh0IG9uZSwg
-c28gdGhlDQpkZWxheXMgd2VyZSBjdW11bGF0aXZlLikNCkluc3RlYWQgdGhlcmUgaXMgYSBzZXBh
-cmF0ZSBjdiBmb3IgZWFjaCBSVCB0aHJlYWQuDQpJIGFjdHVhbGx5IHdhbnQgdGhlICdoZXJkIG9m
-IHdpbGRlYmVlc3QnIDotKQ0KDQo+IFRoZSBhcHByb2FjaCBpbiB0aGF0IHBhdGNoIG1vZGlmaWVk
-IFJUIHRvIGF2b2lkIENGUyBhY3R1YWxseS4NCg0KWWVzIEkgd2FudCB0aGUgQ0ZTIHNjaGVkdWxl
-ciB0byBwaWNrIGFuIGlkbGUgY3B1IGluIHByZWZlcmVuY2UNCnRvIGFuIGFjdGl2ZSBSVCBvbmUu
-DQoNCj4gQ2FuIHlvdSB2ZXJpZnkgd2hldGhlciB0aGUgUlQgdGFzayB3b2tlIHVwIGFmdGVyIHRh
-c2sgMzQ1MTIgd2FzIG1pZ3JhdGVkIHRvIENQVQ0KPiAxNz8gTG9va2luZyBhdCB0aGUgZGVmaW5p
-dGlvbiBvZiBhdmFpbGFibGVfaWRsZV9jcHUoKSB3ZSBzaG91bGQgaGF2ZSBhdm9pZGVkDQo+IHRo
-YXQgQ1BVIGlmIHRoZSBSVCB0YXNrIHdhcyBhbHJlYWR5IHJ1bm5pbmcuIEJvdGggd2FraW5nIHVw
-IGF0IHRoZSBzYW1lIHRpbWUNCj4gd291bGQgZXhwbGFpbiB3aGF0IHlvdSBzZWUuIE90aGVyd2lz
-ZSBJJ20gbm90IHN1cmUgd2h5IGl0IHBpY2tlZCBDUFUgMTcuDQoNCkFsbCAzNSBSVCB0YXNrcyBh
-cmUgcnVubmluZyB3aGVuIHRoZSByZXF1ZXN0IHRvIHNjaGVkdWxlIHRhc2sgMzQ1MTIgaXMgbWFk
-ZS4NCihUaGV5IHdha2UgZXZlcnkgMTBtcyB0byBwcm9jZXNzIFVEUC9SVFAgYXVkaW8gcGFja2V0
-cy4pDQpUaGUgUlQgdGFzayBvbiBjcHUgMTcgY2FycmllZCBvbiBydW5uaW5nIHVudGlsIGl0IHJh
-biBvdXQgb2Ygd29yayAoYWZ0ZXIgYWJvdXQgMW1zKS4NClRhc2sgMzQ1MTIgdGhlbiByYW4gb24g
-Y3B1IDE3Lg0KDQpJbiB0aGlzIGNhc2UgdGFzayAzNDUxMiBhY3R1YWxseSBmaW5pc2hlZCBxdWl0
-ZSBxdWlja2x5Lg0KKEl0IGlzIGNyZWF0aW5nIGFuZCBiaW5kaW5nIG1vcmUgVURQIHNvY2tldHMu
-KQ0KQnV0IGl0IGxvb2tzIGxpa2UgaWYgaXQgd2VyZSBzdGlsbCBydW5uaW5nIG9uIHRoZSBuZXh0
-IDEwbXMgJ3RpY2snDQppdCB3b3VsZCBiZSBwcmUtZW1wdGVkIGJ5IHRoZSBSVCB0YXNrIGFuZCBi
-ZSBpZGxlLg0KTm90IGlkZWFsIHdoZW4gSSdtIHRyeWluZyB0byBzY2hlZHVsZSBhIGJhY2tncm91
-bmQgYWN0aXZpdHkuDQoNCkkgZG9uJ3QgdGhpbmsgdGhlIGxvYWQtYmFsYW5jZXIgd2lsbCBldmVy
-IHBpY2sgaXQgdXAuDQpBbGwgdGhlIHByb2Nlc3Mgc2NoZWR1bGluZyBpcyBoYXBwZW5pbmcgZmFy
-IHRvbyBmYXN0Lg0KDQpXaGF0IEkgdGhpbmsgbWlnaHQgYmUgaGFwcGVuaW5nIGlzIHRoYXQgdGhl
-IGZ1dGV4KCkgY29kZSBpcyByZXF1ZXN0aW5nDQp0aGUgd29rZW4gdXAgdGhyZWFkIHJ1biBvbiB0
-aGUgY3VycmVudCBjcHUuDQpUaGlzIGNhbiBiZSBhZHZhbnRhZ2VvdXMgaW4gc29tZSBjaXJjdW1z
-dGFuY2VzIC0gdXN1YWxseSBpZiB5b3UNCmtub3cgdGhlIGN1cnJlbnQgdGhyZWFkIGlzIGFib3V0
-IHRvIHNsZWVwLg0KKEkgcmVtZW1iZXIgYW5vdGhlciBzY2hlZHVsZXIgZG9pbmcgdGhhdCwgYnV0
-IEkgY2FuJ3QgcmVtZW1iZXIgd2h5IQ0KVGhlIG9ubHkgc2VxdWVuY2UgSSBjYW4gdGhpbmsgb2Yg
-aXMgYSBzaGVsbCBkb2luZyBmb3JrK2V4ZWMrd2FpdC4pDQpCdXQgaXQgc2VlbXMgbGlrZSBhIGJh
-ZCBpZGVhIHdoZW4gYSBSVCB0aHJlYWQgaXMgd2FraW5nIGEgQ0ZTIG9uZS4NCihPciBhbnkgY2Fz
-ZSB3aGVyZSB0aGUgb25lIGJlaW5nIHdva2VuIGlzIGxvd2VyIHByaW9yaXR5LikNCg0KSSBtaWdo
-dCBoYXZlIHRvIHJ1biB0aGUgJ2JhY2tncm91bmQgdGFza3MnIGF0IGxvdyBSVCBwcmlvcml0eQ0K
-anVzdCB0byBnZXQgdGhlbSBzY2hlZHVsZWQgb24gaWRsZSBjcHUuDQoNCglEYXZpZA0KDQotDQpS
-ZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWls
-dG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMp
-DQo=
+Hi Madhaven,
+
+Sorry I sent the last email as HTML. This is a plain text resend.
+
+On 2022/4/12 1:18, Madhavan T. Venkataraman wrote:
+
+>> In a general sense, I've never looked at DWARF's reliability, even for
+>> just normal C code.  It would be good to have some way of knowing that
+>> DWARF looks mostly sane for both GCC and Clang.  For example, maybe
+>> somehow cross-checking it with objtool's knowledge.  And then of course
+>> we'd have to hope that it stays bug-free in future compilers.
+>>
+> 
+> This is a valid point. So far, I find that gcc generates reliable DWARF information.
+> But there are two bugs in what Clang generates. I have added workarounds in my
+> parser to compensate.
+> 
+> So, I think a DWARF verifier is an option that architectures can use. At this point,
+> I don't want to mandate a verifier on every architecture. But that is a discussion
+> that we can have once I have a verifier ready.
+>
+I'm concerning that depending on compilers to generate correct 
+information can become a trouble because we linux kernel side can rarely 
+fix what compilers make. That's also why the gcc plugin idea was 
+objected in the objtool migration.
+
+If your parser can solve this it sounds more doable.
+
+>> I'd also be somewhat concerned about assembly.  Since there's nothing
+>> ensuring the unwind hints are valid, and will stay valid over time, I
+>> wonder how likely it would be for that to break, and what the
+>> implications would be.  Most likely I guess it would break silently, but
+>> then get caught by the frame pointer cross-checking.  So a broken hint
+>> might not get noticed for a long time, but at least it (hopefully)
+>> wouldn't break reliable unwinding.
+>>
+> 
+> Yes. That is my thinking as well. When the unwinder checks the actual FP with the
+> computed FP, any mismatch will be treated as unreliable code for unwind. So,
+> apart from some retries during the livepatch process, this is most probably not
+> a problem.
+> 
+> Now,  I set a flag for an unwind hint so that the unwinder knows that it is
+> processing an unwind hint. I could generate a warning if an unwind hint does not
+> result in a reliable unwind of the frame. This would bring the broken hint
+> to people's attention.
+> 
+> 
+>> Also, inline asm can sometimes do stack hacks like
+>> "push;do_something;pop" which isn't visible to the toolchain.  But
+>> again, hopefully the frame pointer checking would fail and mark it
+>> unreliable.
+>>
+>> So I do have some worries about DWARF, but the fact that it's getting
+>> "fact checked" by frame pointers might be sufficient.
+>>
+> 
+> Exactly.
+> 
+I'm wondering how much functions will give a unreliable result because 
+any unreliable function shows in stack trace will cause livepatch 
+fail/retry. IIUC all unmarked assembly functions will considered 
+unreliable and cause problem. It can be a burden to mark all of them.
+
+> - No software is bug free. So, even if static analysis is implemented for an architecture,
+>    it would be good to have another method of verifying the unwind rules generated from
+>    the static analysis. DWARF can provide that additional verification.
+> 
+I'm wondering how much functions will give a unreliable result because 
+any unreliable function shows in stack trace will cause livepatch 
+fail/retry. IIUC all unmarked assembly functions will considered 
+unreliable and cause problem. It can be a burden to mark all of them.
+
+> 
+> So, it is just frame pointer validation for livepatch I am trying to look at.
+> 
+My support reason for FP with validation is that it provides a guarantee 
+for FP unwinder. FP and ORC use absolute and relative for stack unwind 
+to unwind stack respectively, however FP has been considered unreliable. 
+Is there any feature depends on FP? If so it can be more persuasive.
+
+
+Also this patch is much more completed than migration for objtool. It 
+would be nice if this could be put into use quickly. The objtool-arm64 
+is less than half done, but I'm going to relies as much as possible on 
+current objtool components, so no more feasibility validation is required.
+
+By the way, I was thinking about a corner case, because arm64 CALL 
+instruction won't push LR onto stack atomically as x86. Before push LR, 
+FP to save frame there still can be some instructions such as bti, 
+paciasp. If an irq happens here, the stack frame is not constructed so 
+the FP unwinder will omit this function and provides a wrong stack trace 
+to livepatch.
+
+It's just a guess and I have not built the test case. But I think it's a 
+defect on arm64 that FP unwinder can't work properly on prologue and 
+epilogue. Do you have any idea about this?
+
+Thanks for your time,
+Chen
 
