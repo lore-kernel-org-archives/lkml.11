@@ -2,107 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22547C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 23:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D91C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237827AbiDKX62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 19:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56166 "EHLO
+        id S238840AbiDLAEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233251AbiDKX6Z (ORCPT
+        with ESMTP id S236437AbiDLAEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 19:58:25 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D452B271
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 16:56:09 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id 2so16720656pjw.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 16:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u4J7Bf/GotxjJfY4hYTghw/TTioM2LYvPTAkJWjY17E=;
-        b=HQ+2vciUuGFcRUAADBBBewhLLxx/n8IwutVwi9bDSH5UBx/sMIz11gFenVTKEO5i2V
-         Z3KkkM9CsYrzCcapeOzqAPFCFARrC/nGi7vHH0YUZMEyTwShG2fVEKyBuJ+b4TCzPDd6
-         szbu08LY1PXwGtFdjtHzkI48ZOaN1iB6bh793hvWxqcO0deFyRSoPQt9LUnPAXwTeeVl
-         Tb/JasLYg9PNiFlSaZ65haBXwam6yS94qYrcv5vEzr4MKjqx1+yFqkfPGe4cwK/rfrsj
-         +9U3IHhasFilk7p3D90KspNTXQykty6L7GEhgqlF9JxHABSU3bCtlbzBEt8Xnh/InXLg
-         0JMQ==
+        Mon, 11 Apr 2022 20:04:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6AA12ED40
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:02:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649721725;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8c5EjZJFWQjGO0KtsK/b2yAf9oKCDamxmuxgZSqrg+g=;
+        b=I0b79ZgvMO/f0ryG08CpWrW8AGXtFSuRzQFEXKtxEUKmIkZaGrLMyX6FVn5RYUaeMRHz3O
+        9YznV8VA0xiT61ObqUASqVN+wxZUJyyTfUOIWt+RxJQjJr27VQEwTv+c4q+KnJMRkPEIIk
+        wPm3G5vFnCKerAd/MNVliWnwHOEaur4=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-323-yL1V72xtNfaBypn9qcQ3PQ-1; Mon, 11 Apr 2022 20:02:03 -0400
+X-MC-Unique: yL1V72xtNfaBypn9qcQ3PQ-1
+Received: by mail-qt1-f198.google.com with SMTP id d18-20020ac81192000000b002ebdd6ef307so8346994qtj.20
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:02:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u4J7Bf/GotxjJfY4hYTghw/TTioM2LYvPTAkJWjY17E=;
-        b=7vLYqmF8RbWm+fAaYYARn+2vRYvfJI7liJ+ZGPrzIuaIpWmmc44CMoum7gPKhFLmjB
-         UWJbrT+jRnTE22OueW+xmbejjhrPtkuKyk0IkcbHho2/mNqTqMg3jtd/JtZOwyciOkOc
-         jm8cE44VDW2PowjQ1eCV02Yq7bpMgoejJFx+suxgnezxbRvAq/MEOhE1D4YP4owgKurh
-         zVTsohRaxKxtJe4MOjrHy4IcjzMBycQV6Hwxl1Xl5xlBl/NbORYqZz3iSIUcJLQF4Lss
-         QqRm0g++22BvPxSbsTm5LIFAeVr0MZCS4GFdsZXIqvvDJr0WODQt2td6qJ5Gs7plWdso
-         2hFg==
-X-Gm-Message-State: AOAM530+hnqtrU/ZvxKGFF0aw2YAdl2kmCV8pqtnF6nNXZeLn26cmnF+
-        XhLB1dn2LaW2KUje6WJn679hVc/pZkQoD+CtfwprOA==
-X-Google-Smtp-Source: ABdhPJwz526LJSdeFPj6/c7PsF49maypY+wjW8NyQ8pIICoB0k38/TF9Lk5dkB3kd2++yFgVX8lzKCKbNtcxf9v/5dw=
-X-Received: by 2002:a17:902:7296:b0:14b:4bc6:e81 with SMTP id
- d22-20020a170902729600b0014b4bc60e81mr34383349pll.132.1649721368525; Mon, 11
- Apr 2022 16:56:08 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8c5EjZJFWQjGO0KtsK/b2yAf9oKCDamxmuxgZSqrg+g=;
+        b=ygYJ66fu4TMTJ0DjncPkCEMcx6ljHxHU/d1sE9F6YG/XwzuM+i4G0KR/o9kRGqxbQ7
+         6hCdsx2poKoZn2uuhHRzC7AoKB0n1qzGs0wfLcu2EBPOQxv9nYQD2rYROnmBfpb9/LCK
+         n53/Yi9WyYHVAjZU8fTtX6G/+aBqBQ2m5ff92/qtqddYyVPepA5kn1OPlm8OD3f4cP5Q
+         XDtLinm0eVqsZTwwQ0KDaCMrAmWA7AAHnQIv1yMt8+0ATPuRKoDXTgyFgSjW8aCtKBC/
+         zYehLZGeMTTDxvn+CWJSSIcuyvyRjsut7bnGrpx54YuvjAxJ04duTeD7Hgplmnb2FHZ9
+         hI6A==
+X-Gm-Message-State: AOAM531OVotAnxuXDTnXuFgU8Ef+iaP07bYscJLPIKHXIivgS066KGaL
+        WU6wpYe0dhKUcu8zxsBECGwH+AMfst8lZuTNZG2HZ5egJJrMe0+OLqTKui1s0w45VaRToAmW8k5
+        gUZCa1au8pY8rSpm2dYNeT+Ht
+X-Received: by 2002:ac8:58c5:0:b0:2e1:cca9:b3f3 with SMTP id u5-20020ac858c5000000b002e1cca9b3f3mr1521228qta.100.1649721723344;
+        Mon, 11 Apr 2022 17:02:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyRyGmd8uhOz3BleD/jMRXTkNltGHNdY2kfh6XYh8L18wcb9jFXAm4k21+nuZ3n/yFAlENfPA==
+X-Received: by 2002:ac8:58c5:0:b0:2e1:cca9:b3f3 with SMTP id u5-20020ac858c5000000b002e1cca9b3f3mr1521196qta.100.1649721723101;
+        Mon, 11 Apr 2022 17:02:03 -0700 (PDT)
+Received: from [192.168.0.188] ([24.48.139.231])
+        by smtp.gmail.com with ESMTPSA id i62-20020a37b841000000b0069c10d27571sm3770984qkf.70.2022.04.11.17.02.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 17:02:02 -0700 (PDT)
+Message-ID: <a8c8c25b-1b20-88d7-38ad-8a1f6f95ff41@redhat.com>
+Date:   Mon, 11 Apr 2022 20:02:00 -0400
 MIME-Version: 1.0
-References: <20220405194747.2386619-1-jane.chu@oracle.com> <20220405194747.2386619-5-jane.chu@oracle.com>
- <Yk0i/pODntZ7lbDo@infradead.org> <196d51a3-b3cc-02ae-0d7d-ee6fbb4d50e4@oracle.com>
- <Yk52415cnFa39qil@infradead.org>
-In-Reply-To: <Yk52415cnFa39qil@infradead.org>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Mon, 11 Apr 2022 16:55:58 -0700
-Message-ID: <CAPcyv4gfF4AhxD_vqCS9CTRraj8GAMDYQ7Zb411+FvxhF4ccOw@mail.gmail.com>
-Subject: Re: [PATCH v7 4/6] dax: add DAX_RECOVERY flag and .recovery_write dev_pgmap_ops
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Jane Chu <jane.chu@oracle.com>,
-        "david@fromorbit.com" <david@fromorbit.com>,
-        "djwong@kernel.org" <djwong@kernel.org>,
-        "vishal.l.verma@intel.com" <vishal.l.verma@intel.com>,
-        "dave.jiang@intel.com" <dave.jiang@intel.com>,
-        "agk@redhat.com" <agk@redhat.com>,
-        "snitzer@redhat.com" <snitzer@redhat.com>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        "ira.weiny@intel.com" <ira.weiny@intel.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v8] oom_kill.c: futex: Don't OOM reap the VMA containing
+ the robust_list_head
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Joel Savitz <jsavitz@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, linux-mm@kvack.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Darren Hart <dvhart@infradead.org>, stable@kernel.org
+References: <20220408032809.3696798-1-npache@redhat.com>
+ <20220408081549.GM2731@worktop.programming.kicks-ass.net>
+ <ee07a31c-c514-4a88-599f-14a30e93f32e@redhat.com> <87k0bzk7e5.ffs@tglx>
+ <CAL1p7m4ukBQdQihkeSTjGHTM+HAF-GVf=QSnNPhRmetC213ANg@mail.gmail.com>
+ <87sfqni77s.ffs@tglx> <YlPPRrGrX2ECe8QY@dhcp22.suse.cz> <87wnfwf4e5.ffs@tglx>
+ <YlPv8elVxqa4XZnd@dhcp22.suse.cz>
+From:   Nico Pache <npache@redhat.com>
+In-Reply-To: <YlPv8elVxqa4XZnd@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 10:31 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Wed, Apr 06, 2022 at 05:32:31PM +0000, Jane Chu wrote:
-> > Yes, I believe Dan was motivated by avoiding the dm dance as a result of
-> > adding .recovery_write to dax_operations.
-> >
-> > I understand your point about .recovery_write is device specific and
-> > thus not something appropriate for device agnostic ops.
-> >
-> > I can see 2 options so far -
-> >
-> > 1)  add .recovery_write to dax_operations and do the dm dance to hunt
-> > down to the base device that actually provides the recovery action
->
-> That would be my preference.  But I'll wait for Dan to chime in.
 
-Yeah, so the motivation was avoiding plumbing recovery through stacked
-lookups when the recovery is specific to a pfn and the provider of
-that pfn, but I also see it from Christoph's perspective that the only
-agent that cares about recovery is the fsdax I/O path. Certainly
-having ->dax_direct_access() take a DAX_RECOVERY flag and the op
-itself go through the pgmap is a confusing split that I did not
-anticipate when I made the suggestion. Since that flag must be there,
-then the ->recovery_write() should also stay relative to a dax device.
 
-Apologies for the thrash Jane.
+On 4/11/22 05:08, Michal Hocko wrote:
+> On Mon 11-04-22 09:47:14, Thomas Gleixner wrote:
+>> Michal,
+>>
+>> On Mon, Apr 11 2022 at 08:48, Michal Hocko wrote:
+>>> On Fri 08-04-22 23:41:11, Thomas Gleixner wrote:
+>>>> So why would a process private robust mutex be any different from a
+>>>> process shared one?
+>>>
+>>> Purely from the OOM POV they are slightly different because the OOM
+>>> killer always kills all threads which share the mm with the selected
+>>> victim (with an exception of the global init - see __oom_kill_process).
+>>> Note that this is including those threads which are not sharing signals
+>>> handling.
+>>> So clobbering private locks shouldn't be observable to an alive thread
+>>> unless I am missing something.
+>>
+>> Yes, it kills everything, but the reaper also reaps non-shared VMAs. So
+>> if the process private futex sits in a reaped VMA the shared one becomes
+>> unreachable.
+>>
+>>> On the other hand I do agree that delayed oom_reaper execution is a
+>>> reasonable workaround and the most simplistic one.
+>>
+>> I think it's more than a workaround. It's a reasonable expectation that
+>> the kernel side of the user space threads can mop up the mess the user
+>> space part created. So even if one of of N threads is stuck in a place
+>> where it can't, then N-1 can still reach do_exit() and mop their mess
+>> up.
+>>
+>> The oom reaper is the last resort to resolve the situation in case of a
+>> stuck task. No?
+> 
+> Yes, I keep saying workaround because it really doesn't address the
+> underlying issue which is that the oom_reaper clobbers something it
+> shouldn't be. A full fix from my POV would be making oom_reaper code
+> more aware of the futex usage. But this is something nore really viable.
+This is *kinda* what this approach is doing, but as Thomas has pointed out, it
+has its shortcoming. Additionally, it has just come to my attention, that this
+solution does not cover the compat robust list... So there is yet another
+shortcoming.
+> 
+> Btw. this is what I've in my local tree. It hasn't seen any testing but
+> it might be a good start to make it a full patch. I have decided to use
+> a timer rather than juggling tasks on the oom_reaper list because
+> initial implementation looked uglier. I will try to find some time to
+> finish that but if Nico or others beat me to it I won't complain.
+> Also I absolutely do not insist on the timer approach.
+> [...]
 
-One ask though, please separate plumbing the new flag argument to
-->dax_direct_access() and plumbing the new operation into preparation
-patches before filling them in with the new goodness.
+I will spend tomorrow working the delay solution and testing it. Thanks for
+starting it :)
+
+I appreciate the comments and help from everyone that has participated! I'm
+sorry if any misunderstanding were had, its not our intention to upset anyone,
+but rather to learn and work a solution for the problem we are facing.
+
+Best,
+-- Nico
+
