@@ -2,250 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F00C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86432C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351409AbiDLRRY (ORCPT
+        id S1358023AbiDLRTZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        Tue, 12 Apr 2022 13:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241845AbiDLRRW (ORCPT
+        with ESMTP id S232588AbiDLRTU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:17:22 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD833B543
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:15:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649783703; x=1681319703;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NV8VN9IiHyiIWysazEs9Ul1t5DZqEtxyomRkbpXMdDk=;
-  b=Q+4dvr5o9Yi+u2Uxr/akZ0h7fl7hZZNvS+JDuL+IroWXA0xDiqoCei42
-   RTwzg2ACRFUd/usI81TJonX4bgv6ob2VSPqbORWImTuVffYSL3vsR6sEh
-   /GD/q+ynyb4vmQ/cFEhM2g/FbZfAj2CQkg7IB6f851F3HMVlimvN+mM8c
-   1kVpIQSwymTNpgxDic5693MIm60y6dIR5TDv8A4NdTxSDS7iwP7HieCmn
-   AAyOAMOkQjL+hZ/9jxitx0ZiJC9rdq60BecR7n5sYFU9bIN/2V3EtOIKm
-   SyOtC3nFDw+BUHytFK8+I8bI+TPWwquBHoxOWqDOEKwCGc2y8kil+DuXE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="261295549"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="261295549"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 10:15:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="507639342"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 12 Apr 2022 10:15:00 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neK6W-00031Q-7s;
-        Tue, 12 Apr 2022 17:15:00 +0000
-Date:   Wed, 13 Apr 2022 01:14:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: drivers/char/ipmi/ipmi_msghandler.c:5283:17: warning: 'strncpy'
- specified bound 11 equals destination size
-Message-ID: <202204130109.hJ8G1iNz-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 12 Apr 2022 13:19:20 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540DD517EE;
+        Tue, 12 Apr 2022 10:17:00 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CEn26n024425;
+        Tue, 12 Apr 2022 17:16:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=VpPiPdJueworOs7vPPFQzle2AMcIoQ96/wEqZJ/Dp6Y=;
+ b=gjfgzbUIe0psKkRn2yzGaMfUNKG1BGq/8a6kwi+yO0Zcng8mN4c6IkLjcSGNTdMA9vz5
+ CPRiird4eKc4H2l6shgbtpthwDZRBAIUH1Tq3mIfobY5ODRiEpfw9VtGfYF1jb1mkcaV
+ pXkh/1RbNR4Wpg4kK8812b3yFs0jp3pb93qcqjD+C4ajTEekGcLXjKtoHNKAIi1JHe+T
+ c1rwnNPZzk7Z9eLYOWO0VXov2R0hJ95+Wrz452nAPMMu05phjpcwAf7zOQ6xjO7Bno1c
+ N4bMENj7UOezQeW0pYyV4EDNb4ESRiTyKJmitV72G7opp5SQ/k95tYP06uDFNl2JGzrg +w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fdaqkvngv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 17:16:40 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CGtBZ4032351;
+        Tue, 12 Apr 2022 17:16:39 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fdaqkvnga-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 17:16:39 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CHGM9W015738;
+        Tue, 12 Apr 2022 17:16:36 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03fra.de.ibm.com with ESMTP id 3fb1s8m8tk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 17:16:36 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CHGY4426411336
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 17:16:34 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 22863A4054;
+        Tue, 12 Apr 2022 17:16:34 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F34A1A4062;
+        Tue, 12 Apr 2022 17:16:30 +0000 (GMT)
+Received: from sig-9-65-64-123.ibm.com (unknown [9.65.64.123])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Apr 2022 17:16:30 +0000 (GMT)
+Message-ID: <6545f8241f3d41dd0f55997bfb85ad0de9f1c3e3.camel@linux.ibm.com>
+Subject: Re: [PATCH v4 RESEND] efi: Do not import certificates from UEFI
+ Secure Boot for T2 Macs
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Aditya Garg <gargaditya08@live.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        "admin@kodeit.net" <admin@kodeit.net>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Date:   Tue, 12 Apr 2022 13:16:30 -0400
+In-Reply-To: <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
+References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
+         <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
+         <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: YAIrI7YKZQk-OE0GoS9uQU3Mjgf1WVgT
+X-Proofpoint-ORIG-GUID: azcNPx-bwu6g0GOenyLWoALybZvGeW3a
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 spamscore=0 clxscore=1011 priorityscore=1501
+ mlxlogscore=999 adultscore=0 phishscore=0 suspectscore=0
+ lowpriorityscore=0 mlxscore=0 bulkscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204120081
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kefeng,
+On Tue, 2022-04-12 at 16:44 +0000, Aditya Garg wrote:
+> From: Aditya Garg <gargaditya08@live.com>
+> 
+> On T2 Macs, the secure boot is handled by the T2 Chip. If enabled, only
+> macOS and Windows are allowed to boot on these machines. Moreover, loading
+> UEFI Secure Boot certificates is not supported on these machines on Linux.
+> An attempt to do so causes a crash with the following logs :-
+> 
+> Call Trace:
+>  <TASK>
+>  page_fault_oops+0x4f/0x2c0
+>  ? search_bpf_extables+0x6b/0x80
+>  ? search_module_extables+0x50/0x80
+>  ? search_exception_tables+0x5b/0x60
+>  kernelmode_fixup_or_oops+0x9e/0x110
+>  __bad_area_nosemaphore+0x155/0x190
+>  bad_area_nosemaphore+0x16/0x20
+>  do_kern_addr_fault+0x8c/0xa0
+>  exc_page_fault+0xd8/0x180
+>  asm_exc_page_fault+0x1e/0x30
+> (Removed some logs from here)
+>  ? __efi_call+0x28/0x30
+>  ? switch_mm+0x20/0x30
+>  ? efi_call_rts+0x19a/0x8e0
+>  ? process_one_work+0x222/0x3f0
+>  ? worker_thread+0x4a/0x3d0
+>  ? kthread+0x17a/0x1a0
+>  ? process_one_work+0x3f0/0x3f0
+>  ? set_kthread_struct+0x40/0x40
+>  ? ret_from_fork+0x22/0x30
+>  </TASK>
+> ---[ end trace 1f82023595a5927f ]---
+> efi: Froze efi_rts_wq and disabled EFI Runtime Services
+> integrity: Couldn't get size: 0x8000000000000015
+> integrity: MODSIGN: Couldn't get UEFI db list
+> efi: EFI Runtime Services are disabled!
+> integrity: Couldn't get size: 0x8000000000000015
+> integrity: Couldn't get UEFI dbx list
+> integrity: Couldn't get size: 0x8000000000000015
+> integrity: Couldn't get mokx list
+> integrity: Couldn't get size: 0x80000000
+> 
+> As a result of not being able to read or load certificates, secure boot
+> cannot be enabled. This patch prevents querying of these UEFI variables,
+> since these Macs seem to use a non-standard EFI hardware.
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Aditya Garg <gargaditya08@live.com>
+> ---
+> v2 :- Reduce code size of the table.
+> v3 :- Close the brackets which were left open by mistake.
+> v4 :- Fix comment style issues, remove blank spaces and limit use of dmi_first_match()
+> v4 RESEND :- Add stable to cc
+>  .../platform_certs/keyring_handler.h          |  8 +++++
+>  security/integrity/platform_certs/load_uefi.c | 35 +++++++++++++++++++
+>  2 files changed, 43 insertions(+)
+> 
+> diff --git a/security/integrity/platform_certs/keyring_handler.h b/security/integrity/platform_certs/keyring_handler.h
+> index 284558f30..212d894a8 100644
+> --- a/security/integrity/platform_certs/keyring_handler.h
+> +++ b/security/integrity/platform_certs/keyring_handler.h
+> @@ -35,3 +35,11 @@ efi_element_handler_t get_handler_for_mok(const efi_guid_t *sig_type);
+>  efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
+>  
+>  #endif
+> +
+> +#ifndef UEFI_QUIRK_SKIP_CERT
+> +#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
+> +		 .matches = { \
+> +			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
+> +			DMI_MATCH(DMI_PRODUCT_NAME, product), \
+> +		},
+> +#endif
+> diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
+> index 5f45c3c07..c3393b2b1 100644
+> --- a/security/integrity/platform_certs/load_uefi.c
+> +++ b/security/integrity/platform_certs/load_uefi.c
+> @@ -3,6 +3,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/sched.h>
+>  #include <linux/cred.h>
+> +#include <linux/dmi.h>
+>  #include <linux/err.h>
+>  #include <linux/efi.h>
+>  #include <linux/slab.h>
+> @@ -12,6 +13,33 @@
+>  #include "../integrity.h"
+>  #include "keyring_handler.h"
+>  
+> +/*
+> + * Apple Macs with T2 Security chip seem to be using a non standard
+> + * implementation of Secure Boot. For Linux to run on these machines
+> + * Secure Boot needs to be turned off, since the T2 Chip manages
+> + * Secure Boot and doesn't allow OS other than macOS or Windows to
+> + * boot. If turned off, an attempt to get certificates causes a crash,
+> + * so we simply prevent doing the same.
+> + */
 
-FYI, the error/warning still remains.
+Both the comment here and the patch description above still needs to be
+improved.  Perhaps something along these lines.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
-commit: dd03762ab608e058c8f390ad9cf667e490089796 arm64: Enable KCSAN
-date:   4 months ago
-config: arm64-buildonly-randconfig-r003-20220412 (https://download.01.org/0day-ci/archive/20220413/202204130109.hJ8G1iNz-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dd03762ab608e058c8f390ad9cf667e490089796
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout dd03762ab608e058c8f390ad9cf667e490089796
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+Secure boot on Apple Macs with a T2 Security chip cannot read either
+the EFI variables or the certificates stored in different db's (e.g.
+db, dbx, MokListXRT).  Attempting to read them causes ...   
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Avoid reading the EFI variables or the certificates stored in different
+dbs.  As a result, without certificates secure boot signature
+verification fails.
 
-All warnings (new ones prefixed by >>):
+thanks,
 
-   drivers/char/ipmi/ipmi_msghandler.c: In function 'send_panic_events':
->> drivers/char/ipmi/ipmi_msghandler.c:5283:17: warning: 'strncpy' specified bound 11 equals destination size [-Wstringop-truncation]
-    5283 |                 strncpy(data+5, p, 11);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~
+Mimi
 
 
-vim +/strncpy +5283 drivers/char/ipmi/ipmi_msghandler.c
+> +static const struct dmi_system_id uefi_skip_cert[] = {
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
+> +	{ }
+> +};
+> +
+>  /*
+>   * Look to see if a UEFI variable called MokIgnoreDB exists and return true if
+>   * it does.
+> @@ -138,6 +166,13 @@ static int __init load_uefi_certs(void)
+>  	unsigned long dbsize = 0, dbxsize = 0, mokxsize = 0;
+>  	efi_status_t status;
+>  	int rc = 0;
+> +	const struct dmi_system_id *dmi_id;
+> +
+> +	dmi_id = dmi_first_match(uefi_skip_cert);
+> +	if (dmi_id) {
+> +		pr_err("Getting UEFI Secure Boot Certs is not supported on T2 Macs.\n");
+> +		return false;
+> +	}
+>  
+>  	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
+>  		return false;
 
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5143  
-a567b6230066e3 Corey Minyard  2018-04-05  5144  static void send_panic_events(struct ipmi_smi *intf, char *str)
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5145  {
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5146  	struct kernel_ipmi_msg msg;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5147  	unsigned char data[16];
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5148  	struct ipmi_system_interface_addr *si;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5149  	struct ipmi_addr addr;
-91e2dd0a47bae1 Corey Minyard  2018-03-28  5150  	char *p = str;
-91e2dd0a47bae1 Corey Minyard  2018-03-28  5151  	struct ipmi_ipmb_addr *ipmb;
-91e2dd0a47bae1 Corey Minyard  2018-03-28  5152  	int j;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5153  
-1c9f98d1bfbd06 Corey Minyard  2017-08-18  5154  	if (ipmi_send_panic_event == IPMI_SEND_PANIC_EVENT_NONE)
-1c9f98d1bfbd06 Corey Minyard  2017-08-18  5155  		return;
-1c9f98d1bfbd06 Corey Minyard  2017-08-18  5156  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5157  	si = (struct ipmi_system_interface_addr *) &addr;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5158  	si->addr_type = IPMI_SYSTEM_INTERFACE_ADDR_TYPE;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5159  	si->channel = IPMI_BMC_CHANNEL;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5160  	si->lun = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5161  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5162  	/* Fill in an event telling that we have failed. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5163  	msg.netfn = 0x04; /* Sensor or Event. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5164  	msg.cmd = 2; /* Platform event command. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5165  	msg.data = data;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5166  	msg.data_len = 8;
-cda315aba34ff4 Matt Domsch    2005-12-12  5167  	data[0] = 0x41; /* Kernel generator ID, IPMI table 5-4 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5168  	data[1] = 0x03; /* This is for IPMI 1.0. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5169  	data[2] = 0x20; /* OS Critical Stop, IPMI table 36-3 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5170  	data[4] = 0x6f; /* Sensor specific, IPMI table 36-1 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5171  	data[5] = 0xa1; /* Runtime stop OEM bytes 2 & 3. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5172  
-c70d749986f6f1 Corey Minyard  2008-04-29  5173  	/*
-c70d749986f6f1 Corey Minyard  2008-04-29  5174  	 * Put a few breadcrumbs in.  Hopefully later we can add more things
-c70d749986f6f1 Corey Minyard  2008-04-29  5175  	 * to make the panic events more useful.
-c70d749986f6f1 Corey Minyard  2008-04-29  5176  	 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5177  	if (str) {
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5178  		data[3] = str[0];
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5179  		data[6] = str[1];
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5180  		data[7] = str[2];
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5181  	}
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5182  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5183  	/* Send the event announcing the panic. */
-895dcfd1cab84d Corey Minyard  2012-03-28  5184  	ipmi_panic_request_and_wait(intf, &addr, &msg);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5185  
-c70d749986f6f1 Corey Minyard  2008-04-29  5186  	/*
-c70d749986f6f1 Corey Minyard  2008-04-29  5187  	 * On every interface, dump a bunch of OEM event holding the
-c70d749986f6f1 Corey Minyard  2008-04-29  5188  	 * string.
-c70d749986f6f1 Corey Minyard  2008-04-29  5189  	 */
-1c9f98d1bfbd06 Corey Minyard  2017-08-18  5190  	if (ipmi_send_panic_event != IPMI_SEND_PANIC_EVENT_STRING || !str)
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5191  		return;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5192  
-78ba2faf71c639 Corey Minyard  2007-02-10  5193  	/*
-78ba2faf71c639 Corey Minyard  2007-02-10  5194  	 * intf_num is used as an marker to tell if the
-78ba2faf71c639 Corey Minyard  2007-02-10  5195  	 * interface is valid.  Thus we need a read barrier to
-78ba2faf71c639 Corey Minyard  2007-02-10  5196  	 * make sure data fetched before checking intf_num
-78ba2faf71c639 Corey Minyard  2007-02-10  5197  	 * won't be used.
-78ba2faf71c639 Corey Minyard  2007-02-10  5198  	 */
-78ba2faf71c639 Corey Minyard  2007-02-10  5199  	smp_rmb();
-78ba2faf71c639 Corey Minyard  2007-02-10  5200  
-c70d749986f6f1 Corey Minyard  2008-04-29  5201  	/*
-c70d749986f6f1 Corey Minyard  2008-04-29  5202  	 * First job here is to figure out where to send the
-c70d749986f6f1 Corey Minyard  2008-04-29  5203  	 * OEM events.  There's no way in IPMI to send OEM
-c70d749986f6f1 Corey Minyard  2008-04-29  5204  	 * events using an event send command, so we have to
-c70d749986f6f1 Corey Minyard  2008-04-29  5205  	 * find the SEL to put them in and stick them in
-c70d749986f6f1 Corey Minyard  2008-04-29  5206  	 * there.
-c70d749986f6f1 Corey Minyard  2008-04-29  5207  	 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5208  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5209  	/* Get capabilities from the get device id. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5210  	intf->local_sel_device = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5211  	intf->local_event_generator = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5212  	intf->event_receiver = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5213  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5214  	/* Request the device info from the local MC. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5215  	msg.netfn = IPMI_NETFN_APP_REQUEST;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5216  	msg.cmd = IPMI_GET_DEVICE_ID_CMD;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5217  	msg.data = NULL;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5218  	msg.data_len = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5219  	intf->null_user_handler = device_id_fetcher;
-895dcfd1cab84d Corey Minyard  2012-03-28  5220  	ipmi_panic_request_and_wait(intf, &addr, &msg);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5221  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5222  	if (intf->local_event_generator) {
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5223  		/* Request the event receiver from the local MC. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5224  		msg.netfn = IPMI_NETFN_SENSOR_EVENT_REQUEST;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5225  		msg.cmd = IPMI_GET_EVENT_RECEIVER_CMD;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5226  		msg.data = NULL;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5227  		msg.data_len = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5228  		intf->null_user_handler = event_receiver_fetcher;
-895dcfd1cab84d Corey Minyard  2012-03-28  5229  		ipmi_panic_request_and_wait(intf, &addr, &msg);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5230  	}
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5231  	intf->null_user_handler = NULL;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5232  
-c70d749986f6f1 Corey Minyard  2008-04-29  5233  	/*
-c70d749986f6f1 Corey Minyard  2008-04-29  5234  	 * Validate the event receiver.  The low bit must not
-c70d749986f6f1 Corey Minyard  2008-04-29  5235  	 * be 1 (it must be a valid IPMB address), it cannot
-c70d749986f6f1 Corey Minyard  2008-04-29  5236  	 * be zero, and it must not be my address.
-c70d749986f6f1 Corey Minyard  2008-04-29  5237  	 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5238  	if (((intf->event_receiver & 1) == 0)
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5239  	    && (intf->event_receiver != 0)
-5fdb1fb2abe647 Corey Minyard  2017-09-05  5240  	    && (intf->event_receiver != intf->addrinfo[0].address)) {
-c70d749986f6f1 Corey Minyard  2008-04-29  5241  		/*
-c70d749986f6f1 Corey Minyard  2008-04-29  5242  		 * The event receiver is valid, send an IPMB
-c70d749986f6f1 Corey Minyard  2008-04-29  5243  		 * message.
-c70d749986f6f1 Corey Minyard  2008-04-29  5244  		 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5245  		ipmb = (struct ipmi_ipmb_addr *) &addr;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5246  		ipmb->addr_type = IPMI_IPMB_ADDR_TYPE;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5247  		ipmb->channel = 0; /* FIXME - is this right? */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5248  		ipmb->lun = intf->event_receiver_lun;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5249  		ipmb->slave_addr = intf->event_receiver;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5250  	} else if (intf->local_sel_device) {
-c70d749986f6f1 Corey Minyard  2008-04-29  5251  		/*
-c70d749986f6f1 Corey Minyard  2008-04-29  5252  		 * The event receiver was not valid (or was
-c70d749986f6f1 Corey Minyard  2008-04-29  5253  		 * me), but I am an SEL device, just dump it
-c70d749986f6f1 Corey Minyard  2008-04-29  5254  		 * in my SEL.
-c70d749986f6f1 Corey Minyard  2008-04-29  5255  		 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5256  		si = (struct ipmi_system_interface_addr *) &addr;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5257  		si->addr_type = IPMI_SYSTEM_INTERFACE_ADDR_TYPE;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5258  		si->channel = IPMI_BMC_CHANNEL;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5259  		si->lun = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5260  	} else
-91e2dd0a47bae1 Corey Minyard  2018-03-28  5261  		return; /* No where to send the event. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5262  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5263  	msg.netfn = IPMI_NETFN_STORAGE_REQUEST; /* Storage. */
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5264  	msg.cmd = IPMI_ADD_SEL_ENTRY_CMD;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5265  	msg.data = data;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5266  	msg.data_len = 16;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5267  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5268  	j = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5269  	while (*p) {
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5270  		int size = strlen(p);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5271  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5272  		if (size > 11)
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5273  			size = 11;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5274  		data[0] = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5275  		data[1] = 0;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5276  		data[2] = 0xf0; /* OEM event without timestamp. */
-5fdb1fb2abe647 Corey Minyard  2017-09-05  5277  		data[3] = intf->addrinfo[0].address;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5278  		data[4] = j++; /* sequence # */
-c70d749986f6f1 Corey Minyard  2008-04-29  5279  		/*
-c70d749986f6f1 Corey Minyard  2008-04-29  5280  		 * Always give 11 bytes, so strncpy will fill
-c70d749986f6f1 Corey Minyard  2008-04-29  5281  		 * it with zeroes for me.
-c70d749986f6f1 Corey Minyard  2008-04-29  5282  		 */
-^1da177e4c3f41 Linus Torvalds 2005-04-16 @5283  		strncpy(data+5, p, 11);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5284  		p += size;
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5285  
-895dcfd1cab84d Corey Minyard  2012-03-28  5286  		ipmi_panic_request_and_wait(intf, &addr, &msg);
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5287  	}
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5288  }
-^1da177e4c3f41 Linus Torvalds 2005-04-16  5289  
 
-:::::: The code at line 5283 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
-
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
