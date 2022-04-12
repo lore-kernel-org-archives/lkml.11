@@ -2,54 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FF8C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8451C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:48:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353269AbiDLHqZ (ORCPT
+        id S1353433AbiDLHqh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
+        Tue, 12 Apr 2022 03:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351592AbiDLHMS (ORCPT
+        with ESMTP id S1351676AbiDLHMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C721F289A6;
-        Mon, 11 Apr 2022 23:50:19 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAF213D4F;
+        Mon, 11 Apr 2022 23:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62DB16146F;
-        Tue, 12 Apr 2022 06:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46337C385A1;
-        Tue, 12 Apr 2022 06:50:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 749CBB81B47;
+        Tue, 12 Apr 2022 06:50:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C25FAC385A6;
+        Tue, 12 Apr 2022 06:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746218;
-        bh=3vYq7p0SM307ePNfx447hxRa5B05AMi0intXuJ+LFrg=;
+        s=korg; t=1649746241;
+        bh=bWuNbO3Fbvl23uTLrLPtZAQFj3dcCqzwr4PEGeLC0wM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wBjpShzNhTfAkNfVrRK4Hwa8UPjj6KUnYW8CZRTS9oG6K8dgIJBgcBwZAMXRCXnMe
-         RgzmhL1r31v1UM2YG1PWWEQJQx6xAf9klmDzWKY+LhzaWUYD+KbVIOsmLtPINdJHnP
-         pz67Vh3upn1Bw5yb51sfdEXsTKtQtWzIb/0nbJos=
+        b=UPyJc1PqEPkpZh6XT42BBCc7wWiVf+Ndq9h45y5qxeafWeTuSG9dKIAeHJbebb1Kt
+         Erq5JuOIeoOC677M3MyJFIDlovDjkPto+H9LR2k/X+o2wEgRIgRrZJNZqXqm4fNb7w
+         cWgRi8CoPsxmIY0ScTS070Zw2O2IQYKA6b+FED4I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        German Gomez <german.gomez@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
-        Will Deacon <will@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 203/277] perf: arm-spe: Fix perf report --mem-mode
-Date:   Tue, 12 Apr 2022 08:30:06 +0200
-Message-Id: <20220412062947.914959037@linuxfoundation.org>
+        stable@vger.kernel.org, Christian Loehle <cloehle@hyperstone.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.15 210/277] mmc: block: Check for errors after write on SPI
+Date:   Tue, 12 Apr 2022 08:30:13 +0200
+Message-Id: <20220412062948.119143130@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -61,60 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: Christian Löhle <CLoehle@hyperstone.com>
 
-[ Upstream commit ffab487052054162b3b6c9c6005777ec6cfcea05 ]
+commit 5d435933376962b107bd76970912e7e80247dcc7 upstream.
 
-Since commit bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem
-info is not available") "perf mem report" and "perf report --mem-mode"
-don't allow opening the file unless one of the events has
-PERF_SAMPLE_DATA_SRC set.
+Introduce a SEND_STATUS check for writes through SPI to not mark
+an unsuccessful write as successful.
 
-SPE doesn't have this set even though synthetic memory data is generated
-after it is decoded. Fix this issue by setting DATA_SRC on SPE events.
-This has no effect on the data collected because the SPE driver doesn't
-do anything with that flag and doesn't generate samples.
+Since SPI SD/MMC does not have states, after a write, the card will
+just hold the line LOW until it is ready again. The driver marks the
+write therefore as completed as soon as it reads something other than
+all zeroes.
+The driver does not distinguish from a card no longer signalling busy
+and it being disconnected (and the line being pulled-up by the host).
+This lead to writes being marked as successful when disconnecting
+a busy card.
+Now the card is ensured to be still connected by an additional CMD13,
+just like non-SPI is ensured to go back to TRAN state.
 
-Fixes: bb30acae4c4dacfa ("perf report: Bail out --mem-mode if mem info is not available")
-Signed-off-by: James Clark <james.clark@arm.com>
-Tested-by: Leo Yan <leo.yan@linaro.org>
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: German Gomez <german.gomez@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220408144056.1955535-1-james.clark@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+While at it and since we already poll for the post-write status anyway,
+we might as well check for SPIs error bits (any of them).
+
+The disconnecting card problem is reproducable for me after continuous
+write activity and randomly disconnecting, around every 20-50 tries
+on SPI DS for some card.
+
+Fixes: 7213d175e3b6f ("MMC/SD card driver learns SPI")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/76f6f5d2b35543bab3dfe438f268609c@hyperstone.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/arch/arm64/util/arm-spe.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/mmc/core/block.c |   34 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/arch/arm64/util/arm-spe.c b/tools/perf/arch/arm64/util/arm-spe.c
-index a4420d4df503..7d589a705fc8 100644
---- a/tools/perf/arch/arm64/util/arm-spe.c
-+++ b/tools/perf/arch/arm64/util/arm-spe.c
-@@ -154,6 +154,12 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
- 		arm_spe_set_timestamp(itr, arm_spe_evsel);
- 	}
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -1880,6 +1880,31 @@ static inline bool mmc_blk_rq_error(stru
+ 	       brq->data.error || brq->cmd.resp[0] & CMD_ERRORS;
+ }
  
-+	/*
-+	 * Set this only so that perf report knows that SPE generates memory info. It has no effect
-+	 * on the opening of the event or the SPE data produced.
-+	 */
-+	evsel__set_sample_bit(arm_spe_evsel, DATA_SRC);
++static int mmc_spi_err_check(struct mmc_card *card)
++{
++	u32 status = 0;
++	int err;
 +
- 	/* Add dummy event to keep tracking */
- 	err = parse_events(evlist, "dummy:u", NULL);
- 	if (err)
--- 
-2.35.1
-
++	/*
++	 * SPI does not have a TRAN state we have to wait on, instead the
++	 * card is ready again when it no longer holds the line LOW.
++	 * We still have to ensure two things here before we know the write
++	 * was successful:
++	 * 1. The card has not disconnected during busy and we actually read our
++	 * own pull-up, thinking it was still connected, so ensure it
++	 * still responds.
++	 * 2. Check for any error bits, in particular R1_SPI_IDLE to catch a
++	 * just reconnected card after being disconnected during busy.
++	 */
++	err = __mmc_send_status(card, &status, 0);
++	if (err)
++		return err;
++	/* All R1 and R2 bits of SPI are errors in our case */
++	if (status)
++		return -EIO;
++	return 0;
++}
++
+ static int mmc_blk_busy_cb(void *cb_data, bool *busy)
+ {
+ 	struct mmc_blk_busy_data *data = cb_data;
+@@ -1903,9 +1928,16 @@ static int mmc_blk_card_busy(struct mmc_
+ 	struct mmc_blk_busy_data cb_data;
+ 	int err;
+ 
+-	if (mmc_host_is_spi(card->host) || rq_data_dir(req) == READ)
++	if (rq_data_dir(req) == READ)
+ 		return 0;
+ 
++	if (mmc_host_is_spi(card->host)) {
++		err = mmc_spi_err_check(card);
++		if (err)
++			mqrq->brq.data.bytes_xfered = 0;
++		return err;
++	}
++
+ 	cb_data.card = card;
+ 	cb_data.status = 0;
+ 	err = __mmc_poll_for_busy(card, MMC_BLK_TIMEOUT_MS, &mmc_blk_busy_cb,
 
 
