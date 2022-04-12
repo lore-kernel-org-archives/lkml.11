@@ -2,106 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD750C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF0BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377686AbiDLJuV (ORCPT
+        id S1381016AbiDLJuf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48238 "EHLO
+        Tue, 12 Apr 2022 05:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352326AbiDLJmd (ORCPT
+        with ESMTP id S1348755AbiDLJmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:42:33 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E45A13E0F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:51:32 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id w18so21466387edi.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:51:32 -0700 (PDT)
+        Tue, 12 Apr 2022 05:42:32 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0066307
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:49:17 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id u3so26670611wrg.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:49:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VyKuoVOFtbJpQqYL42DYs7vEqjn6TG+3AG+tuB3ScVs=;
-        b=R4JpCrbTrv7VPod1/4uHIpPG60WwEs6xdg5RD47te/xuroYSMJV17AJ9kTj+IjCRfl
-         1vvR6A9B+eDfXxQpkBMMoUr1qtN8ZykBYccQDCshfgpuJSIW6r2x+qMueE6JZN8/31sv
-         NyxM36AjZiwkWybsHCh+WNLUkZD/m+HTzhkVN5d3GsSnz+TOnW+oZ6DWwlnQHfFNEKt9
-         8gi6kCzc/6dfh+pI59Xll/cqC4SVrUG0AYHSAy1sC30xGWHvUIYFVVrzPJp0NTKtNUrU
-         FC70CNLpMPZ8gckRC69enVnqUIZkm5W9p4O3G3x5WYY7IOVJDDiJcmOAAI8CsfkInQX8
-         5p5w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YLO4zosCA8nE9DvNLF46kus59KF6UMHLO3hA0XUyCu0=;
+        b=Azpijn2rOgdJZGUc0qVJDuSetYwfNNDb1vqJ5+Ql6G21GVtBQFksfp4CV9y9B9B9SC
+         S4eL0SUV1ZH+RB3t1DuWAjGTtbFivC6WT5k8FcufblYh+QP/7IyJHUFBGRBrBIpLkRTW
+         ulRuHeVO5ePiXhTgmul0SZ75dLfAYre/f2zjdQ2qSmHeIATUJjhq6DJA4lE086b1b9eI
+         jJL2va9LhBD1dMVEi7NHherSmH7NGTUs+MnPpwNGe8K7hyA2j6r/s7BjP+QY2zGrAf2K
+         aAVFb8gbiJLxP7gJgCFKY7hSXG7vjfEDimwaUD5MyYKt3nVVXBu6Td6c8v45nemGXaZ4
+         71HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VyKuoVOFtbJpQqYL42DYs7vEqjn6TG+3AG+tuB3ScVs=;
-        b=fddac/QUPp/1Ltpw4zKgcRlnbkSsxyaXrlreejH/8gLs8M/zAkFXsOeDX1W0d5lUcK
-         cJPvvlM3zpso1pG6jUA2PWYk4NtYqg+Bp1wilm9EWfuW2mxlHddI8/MSg6r/qKjI7Ijn
-         Luq6+It2hmsjhLWrOeyKUkya7ih7wowpP2o+72y5wPqc7rT6mfp5km5Y17rPxhdG717a
-         ik2/7BnABVnrUi3hpL6muS7cpTVVxXQqT6aUlgfFZBa2xULz3iH/STJDtkTqiJM0zdsC
-         stPuvETzAhzJC6Jl8pz5qlgjq+bYN3hglBvnmT//OxO0+dlsfJ3zyjv7POLEMQ8r/PJQ
-         sEYA==
-X-Gm-Message-State: AOAM531FCbwF1R8qu8l4AK51PzdYrfMR8gGKkcjFV3XkIhdPr33JloD0
-        CeI2UZpi/FVwK/i/tUeWfAD/4Q==
-X-Google-Smtp-Source: ABdhPJzhgwKUzzSz6he1cnlPJJ1RdVI6ilJSVC2f6gsXEHJNEA9nt9WQDY78OnBYwejeXogZpjSQFA==
-X-Received: by 2002:aa7:cac4:0:b0:418:85b7:adec with SMTP id l4-20020aa7cac4000000b0041885b7adecmr37427381edt.231.1649753490825;
-        Tue, 12 Apr 2022 01:51:30 -0700 (PDT)
-Received: from [192.168.0.194] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id g2-20020a50bf42000000b0041cc5233252sm13505771edk.57.2022.04.12.01.51.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 01:51:30 -0700 (PDT)
-Message-ID: <ad2c72e8-4608-9527-146d-43aa006e1306@linaro.org>
-Date:   Tue, 12 Apr 2022 10:51:29 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YLO4zosCA8nE9DvNLF46kus59KF6UMHLO3hA0XUyCu0=;
+        b=Vw4XyxhfWXZ6e2hvtPVndGYQjPX7+URTxcbc4y7srezDmngPByqIAVZHPo5wgTQzPQ
+         cMkZLyy5fL27J78WvmGoz7s3B+xDgHcbIRl3R9Y3dHzoj31qvjCVOXSorWJMBZ6hnAjN
+         vGu4108EOxxWZoVa5yal9GQ8jiasmudyLk4PALvjYfA1dH4axHXJW3Svpmb0yPgiE3bB
+         nc8KTj4FCCfiNZs7ZpEMbK8v1ypdMPHyMQJZjeJHLYgkWX12XURmDAVW8a4P1brLr3kD
+         mDYR/6YeeeR3QqZb+lw9egCgI3l1NYRtClXPnfeolpVn5H5fERni/bpr+BxG841b1mBa
+         b0PA==
+X-Gm-Message-State: AOAM532ATB2bLP7PR1RbNJ8stvirVgnuqJJ+nB/50AmPB3KmdBawNsji
+        6WpqqyMHN/2t+2Dqigi+0uA9K4+tlPpOpjXDy1dgsw==
+X-Google-Smtp-Source: ABdhPJxF95JCCcN5RhKTviM+y37q4+iL9Eoj2Mx9p2TEwsDmj/5Vlgen4Fx596H3QELIoIR7mjRa0J8WFgNv1+QVWI8=
+X-Received: by 2002:adf:816b:0:b0:203:7fae:a245 with SMTP id
+ 98-20020adf816b000000b002037faea245mr28667247wrm.619.1649753356379; Tue, 12
+ Apr 2022 01:49:16 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
- devfreq driver
-Content-Language: en-US
-To:     Johnson Wang <johnson.wang@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        cw00.choi@samsung.com, krzk+dt@kernel.org, robh+dt@kernel.org,
-        kyungmin.park@samsung.com
-Cc:     khilman@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220408052150.22536-1-johnson.wang@mediatek.com>
- <20220408052150.22536-3-johnson.wang@mediatek.com>
- <76d58182-2f56-32b2-42e9-2ecbdd09ba3d@linaro.org>
- <d900f8181bddb20a56231310d46b9427c40e77b8.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <d900f8181bddb20a56231310d46b9427c40e77b8.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220304171913.2292458-1-james.clark@arm.com> <20220304171913.2292458-7-james.clark@arm.com>
+In-Reply-To: <20220304171913.2292458-7-james.clark@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Tue, 12 Apr 2022 09:49:04 +0100
+Message-ID: <CAJ9a7VjwfoZg6HZfs7obzx2-AGMs0OL-2roTXjez04ik2dU4kA@mail.gmail.com>
+Subject: Re: [PATCH v3 06/15] coresight: etm4x: Cleanup TRCCONFIGR register accesses
+To:     James Clark <James.Clark@arm.com>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        Anshuman.Khandual@arm.com, mathieu.poirier@linaro.org,
+        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/04/2022 10:39, Johnson Wang wrote:
->>> +static struct platform_driver mtk_ccifreq_platdrv = {
->>> +	.probe	= mtk_ccifreq_probe,
->>> +	.remove	= mtk_ccifreq_remove,
->>> +	.driver = {
->>> +		.name = "mtk-ccifreq",
->>> +		.of_match_table = of_match_ptr(mtk_ccifreq_machines),
->>
->> You use of_match_ptr() so is it possible to build it without OF? If
->> so,
->> then mtk_ccifreq_machines needs maybe_unused.
->>
-> 
-> No, this driver must be built with OF due to our CPU arch.
+On Fri, 4 Mar 2022 at 17:19, James Clark <james.clark@arm.com> wrote:
+>
+> This is a no-op change for style and consistency and has no effect on
+> the binary output by the compiler. In sysreg.h fields are defined as
+> the register name followed by the field name and then _MASK. This
+> allows for grepping for fields by name rather than using magic numbers.
+>
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  .../coresight/coresight-etm4x-core.c          | 12 ++---
+>  .../coresight/coresight-etm4x-sysfs.c         | 46 +++++++++----------
+>  drivers/hwtracing/coresight/coresight-etm4x.h | 16 +++++++
+>  3 files changed, 44 insertions(+), 30 deletions(-)
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> index 3f4263117570..445e2057d5ed 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> @@ -633,7 +633,7 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
+>
+>         /* Go from generic option to ETMv4 specifics */
+>         if (attr->config & BIT(ETM_OPT_CYCACC)) {
+> -               config->cfg |= BIT(4);
+> +               config->cfg |= TRCCONFIGR_CCI;
+>                 /* TRM: Must program this for cycacc to work */
+>                 config->ccctlr = ETM_CYC_THRESHOLD_DEFAULT;
+>         }
+> @@ -653,14 +653,14 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
+>                         goto out;
+>
+>                 /* bit[11], Global timestamp tracing bit */
+> -               config->cfg |= BIT(11);
+> +               config->cfg |= TRCCONFIGR_TS;
+>         }
+>
+>         /* Only trace contextID when runs in root PID namespace */
+>         if ((attr->config & BIT(ETM_OPT_CTXTID)) &&
+>             task_is_in_init_pid_ns(current))
+>                 /* bit[6], Context ID tracing bit */
+> -               config->cfg |= BIT(ETM4_CFG_BIT_CTXTID);
+> +               config->cfg |= TRCCONFIGR_CID;
+>
+>         /*
+>          * If set bit ETM_OPT_CTXTID2 in perf config, this asks to trace VMID
+> @@ -672,17 +672,15 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
+>                         ret = -EINVAL;
+>                         goto out;
+>                 }
+> -
+>                 /* Only trace virtual contextID when runs in root PID namespace */
+>                 if (task_is_in_init_pid_ns(current))
+> -                       config->cfg |= BIT(ETM4_CFG_BIT_VMID) |
+> -                                      BIT(ETM4_CFG_BIT_VMID_OPT);
+> +                       config->cfg |= TRCCONFIGR_VMID | TRCCONFIGR_VMIDOPT;
+>         }
+>
+>         /* return stack - enable if selected and supported */
+>         if ((attr->config & BIT(ETM_OPT_RETSTK)) && drvdata->retstack)
+>                 /* bit[12], Return stack enable bit */
+> -               config->cfg |= BIT(12);
+> +               config->cfg |= TRCCONFIGR_RS;
+>
+>         /*
+>          * Set any selected configuration and preset.
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> index 21687cc1e4e2..53f84da3fe44 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> @@ -180,12 +180,12 @@ static ssize_t reset_store(struct device *dev,
+>
+>         /* Disable data tracing: do not trace load and store data transfers */
+>         config->mode &= ~(ETM_MODE_LOAD | ETM_MODE_STORE);
+> -       config->cfg &= ~(BIT(1) | BIT(2));
+> +       config->cfg &= ~(TRCCONFIGR_INSTP0_LOAD | TRCCONFIGR_INSTP0_STORE);
+>
+>         /* Disable data value and data address tracing */
+>         config->mode &= ~(ETM_MODE_DATA_TRACE_ADDR |
+>                            ETM_MODE_DATA_TRACE_VAL);
+> -       config->cfg &= ~(BIT(16) | BIT(17));
+> +       config->cfg &= ~(TRCCONFIGR_DA | TRCCONFIGR_DV);
+>
+>         /* Disable all events tracing */
+>         config->eventctrl0 = 0x0;
+> @@ -304,82 +304,82 @@ static ssize_t mode_store(struct device *dev,
+>
+>         if (drvdata->instrp0 == true) {
+>                 /* start by clearing instruction P0 field */
+> -               config->cfg  &= ~(BIT(1) | BIT(2));
+> +               config->cfg  &= ~TRCCONFIGR_INSTP0_LOAD_STORE;
+>                 if (config->mode & ETM_MODE_LOAD)
+>                         /* 0b01 Trace load instructions as P0 instructions */
+> -                       config->cfg  |= BIT(1);
+> +                       config->cfg  |= TRCCONFIGR_INSTP0_LOAD;
+>                 if (config->mode & ETM_MODE_STORE)
+>                         /* 0b10 Trace store instructions as P0 instructions */
+> -                       config->cfg  |= BIT(2);
+> +                       config->cfg  |= TRCCONFIGR_INSTP0_STORE;
+>                 if (config->mode & ETM_MODE_LOAD_STORE)
+>                         /*
+>                          * 0b11 Trace load and store instructions
+>                          * as P0 instructions
+>                          */
+> -                       config->cfg  |= BIT(1) | BIT(2);
+> +                       config->cfg  |= TRCCONFIGR_INSTP0_LOAD_STORE;
+>         }
+>
+>         /* bit[3], Branch broadcast mode */
+>         if ((config->mode & ETM_MODE_BB) && (drvdata->trcbb == true))
+> -               config->cfg |= BIT(3);
+> +               config->cfg |= TRCCONFIGR_BB;
+>         else
+> -               config->cfg &= ~BIT(3);
+> +               config->cfg &= ~TRCCONFIGR_BB;
+>
+>         /* bit[4], Cycle counting instruction trace bit */
+>         if ((config->mode & ETMv4_MODE_CYCACC) &&
+>                 (drvdata->trccci == true))
+> -               config->cfg |= BIT(4);
+> +               config->cfg |= TRCCONFIGR_CCI;
+>         else
+> -               config->cfg &= ~BIT(4);
+> +               config->cfg &= ~TRCCONFIGR_CCI;
+>
+>         /* bit[6], Context ID tracing bit */
+>         if ((config->mode & ETMv4_MODE_CTXID) && (drvdata->ctxid_size))
+> -               config->cfg |= BIT(6);
+> +               config->cfg |= TRCCONFIGR_CID;
+>         else
+> -               config->cfg &= ~BIT(6);
+> +               config->cfg &= ~TRCCONFIGR_CID;
+>
+>         if ((config->mode & ETM_MODE_VMID) && (drvdata->vmid_size))
+> -               config->cfg |= BIT(7);
+> +               config->cfg |= TRCCONFIGR_VMID;
+>         else
+> -               config->cfg &= ~BIT(7);
+> +               config->cfg &= ~TRCCONFIGR_VMID;
+>
+>         /* bits[10:8], Conditional instruction tracing bit */
+>         mode = ETM_MODE_COND(config->mode);
+>         if (drvdata->trccond == true) {
+> -               config->cfg &= ~(BIT(8) | BIT(9) | BIT(10));
+> -               config->cfg |= mode << 8;
+> +               config->cfg &= ~TRCCONFIGR_COND_MASK;
+> +               config->cfg |= mode << __bf_shf(TRCCONFIGR_COND_MASK);
+>         }
+>
+>         /* bit[11], Global timestamp tracing bit */
+>         if ((config->mode & ETMv4_MODE_TIMESTAMP) && (drvdata->ts_size))
+> -               config->cfg |= BIT(11);
+> +               config->cfg |= TRCCONFIGR_TS;
+>         else
+> -               config->cfg &= ~BIT(11);
+> +               config->cfg &= ~TRCCONFIGR_TS;
+>
+>         /* bit[12], Return stack enable bit */
+>         if ((config->mode & ETM_MODE_RETURNSTACK) &&
+>                                         (drvdata->retstack == true))
+> -               config->cfg |= BIT(12);
+> +               config->cfg |= TRCCONFIGR_RS;
+>         else
+> -               config->cfg &= ~BIT(12);
+> +               config->cfg &= ~TRCCONFIGR_RS;
+>
+>         /* bits[14:13], Q element enable field */
+>         mode = ETM_MODE_QELEM(config->mode);
+>         /* start by clearing QE bits */
+> -       config->cfg &= ~(BIT(13) | BIT(14));
+> +       config->cfg &= ~(TRCCONFIGR_QE_W_COUNTS | TRCCONFIGR_QE_WO_COUNTS);
+>         /*
+>          * if supported, Q elements with instruction counts are enabled.
+>          * Always set the low bit for any requested mode. Valid combos are
+>          * 0b00, 0b01 and 0b11.
+>          */
+>         if (mode && drvdata->q_support)
+> -               config->cfg |= BIT(13);
+> +               config->cfg |= TRCCONFIGR_QE_W_COUNTS;
+>         /*
+>          * if supported, Q elements with and without instruction
+>          * counts are enabled
+>          */
+>         if ((mode & BIT(1)) && (drvdata->q_support & BIT(1)))
+> -               config->cfg |= BIT(14);
+> +               config->cfg |= TRCCONFIGR_QE_WO_COUNTS;
+>
+>         /* bit[11], AMBA Trace Bus (ATB) trigger enable bit */
+>         if ((config->mode & ETM_MODE_ATB_TRIGGER) &&
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x.h b/drivers/hwtracing/coresight/coresight-etm4x.h
+> index 3b604cde668b..4c8d7be3c159 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x.h
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x.h
+> @@ -172,6 +172,22 @@
+>  #define TRCIDR5_NUMSEQSTATE_MASK               GENMASK(27, 25)
+>  #define TRCIDR5_NUMCNTR_MASK                   GENMASK(30, 28)
+>
+> +#define TRCCONFIGR_INSTP0_LOAD                 BIT(1)
+> +#define TRCCONFIGR_INSTP0_STORE                        BIT(2)
+> +#define TRCCONFIGR_INSTP0_LOAD_STORE           (TRCCONFIGR_INSTP0_LOAD | TRCCONFIGR_INSTP0_STORE)
+> +#define TRCCONFIGR_BB                          BIT(3)
+> +#define TRCCONFIGR_CCI                         BIT(4)
+> +#define TRCCONFIGR_CID                         BIT(6)
+> +#define TRCCONFIGR_VMID                                BIT(7)
+> +#define TRCCONFIGR_COND_MASK                   GENMASK(10, 8)
+> +#define TRCCONFIGR_TS                          BIT(11)
+> +#define TRCCONFIGR_RS                          BIT(12)
+> +#define TRCCONFIGR_QE_W_COUNTS                 BIT(13)
+> +#define TRCCONFIGR_QE_WO_COUNTS                        BIT(14)
+> +#define TRCCONFIGR_VMIDOPT                     BIT(15)
+> +#define TRCCONFIGR_DA                          BIT(16)
+> +#define TRCCONFIGR_DV                          BIT(17)
+> +
+>  /*
+>   * System instructions to access ETM registers.
+>   * See ETMv4.4 spec ARM IHI0064F section 4.3.6 System instructions
+> --
+> 2.28.0
+>
 
-COMPILE_TEST does not use your arch... There are stubs for most of
-of-like functions, so !OF should build anyway.
 
-> Should I add some dependencies in Kconfig to ensure OF is enabled?
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
 
-There are different ways to solve it and it depends on what goal do you
-want to achieve? One ways is to use maybe_unused and of_match_ptr. Other
-way is to do not use them (skip both).
-
-Best regards,
-Krzysztof
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
