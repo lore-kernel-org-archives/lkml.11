@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344521AbiDLBLK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47796 "EHLO
+        id S233387AbiDLBLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349945AbiDLA7r (ORCPT
+        with ESMTP id S1349288AbiDLA7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:59:47 -0400
+        Mon, 11 Apr 2022 20:59:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1342387B0;
-        Mon, 11 Apr 2022 17:53:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F8B37BD2;
+        Mon, 11 Apr 2022 17:52:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C5C460B2F;
-        Tue, 12 Apr 2022 00:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC59C385A4;
-        Tue, 12 Apr 2022 00:53:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 689AC60DED;
+        Tue, 12 Apr 2022 00:52:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E8CC385AA;
+        Tue, 12 Apr 2022 00:52:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724788;
-        bh=GEnbYpG+qlLDkKaghPTF8kMswkCQsM5G0G3tZu8Jsos=;
+        s=k20201202; t=1649724774;
+        bh=t7Ek2bfIGx3XDB9l3vX26eAquej9L1q8mFbYIgiCgz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=suj5VRvWEg5JPN9/+GwB/x5PbTDcES3a499AJZ17gN4omj99NxcFDOaQ775vKQ1Oq
-         xUIMhpJTRcglxM9KUGFYgsDJ66nBDCwReMyAq0PNeY/zzh+t1BRejmJOfDzk8Kmt1D
-         wK35GyKA+JiolVVj58oVcB/SxMlV/vwGRV6T4uKmhj2LlGomz7ciNB1GhlKpGpLZSU
-         6RZql8UKnbYpzst+lhx4u5eFUWAje046X/qL9lNmP3SA1fO2lm1172NVuNY+KA9ybo
-         1neEOnXDgBhW3PHTijplm1nbE4l585e7YgTzH7+QmFHhpBi35geEybJpsE2Swax1zh
-         RJ7z2KZP9qOnQ==
+        b=NRtjSLaWocyKriPF2VvcHypkhIhYCRJp8AX93HIWtWl0YVoz8FHX/kXH13bBXKt/+
+         MLM3wWk3mjn18nK8ieMK5QNmmgF0TigP+kkUqP6djf1TJb1W8zZrWabZ86enFpEDz8
+         iYkfOMZrvG0pEWWj+QRL4T7fOQrF8DDk7WeVmY+XuyJgzZcd/Qsj8uVENqcbJAjG5m
+         XWu2EpG50BVc1zGSAtMuW3camLYH7JJya9DO8dQy3xRUsDX7H08qMGSUb4HVb6m9EC
+         iPeYJ4B8ljTNIcRD2K6lW/lDF+vWpb+o+9XaIkmhaLBkOSPdYVXzGrX5XUTGqimW9T
+         uAnWSVIG4Dh0Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, gregkh@linuxfoundation.org, mkl@pengutronix.de,
-        dmitry.torokhov@gmail.com, bigeasy@linutronix.de, arnd@arndb.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 7/7] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Date:   Mon, 11 Apr 2022 20:52:48 -0400
-Message-Id: <20220412005248.351701-7-sashal@kernel.org>
+Cc:     Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, mikecyr@linux.ibm.com,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 3/7] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
+Date:   Mon, 11 Apr 2022 20:52:44 -0400
+Message-Id: <20220412005248.351701-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412005248.351701-1-sashal@kernel.org>
 References: <20220412005248.351701-1-sashal@kernel.org>
@@ -56,58 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Tyrel Datwyler <tyreld@linux.ibm.com>
 
-[ Upstream commit ec4eb8a86ade4d22633e1da2a7d85a846b7d1798 ]
+[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
 
-When a slip driver is detaching, the slip_close() will act to
-cleanup necessary resources and sl->tty is set to NULL in
-slip_close(). Meanwhile, the packet we transmit is blocked,
-sl_tx_timeout() will be called. Although slip_close() and
-sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-whether sl->tty equals to NULL in sl_tx_timeout() and the
-null pointer dereference bug will happen.
+The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
+currently an arbitrary value of 800. Increase this value to 1024 which
+better matches the characteristics of the typical IBMi Initiator that
+supports 32 LUNs and a queue depth of 32.
 
-   (Thread 1)                 |      (Thread 2)
-                              | slip_close()
-                              |   spin_lock_bh(&sl->lock)
-                              |   ...
-...                           |   sl->tty = NULL //(1)
-sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
-  spin_lock(&sl->lock);       |
-  ...                         |   ...
-  tty_chars_in_buffer(sl->tty)|
-    if (tty->ops->..) //(2)   |
-    ...                       |   synchronize_rcu()
+This change also has the secondary benefit of being a power of two as
+required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
+"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
+target has been rounded down to 512 when attempting to kfifo_init() those
+pools with the current request_limit size of 800.
 
-We set NULL to sl->tty in position (1) and dereference sl->tty
-in position (2).
-
-This patch adds check in sl_tx_timeout(). If sl->tty equals to
-NULL, sl_tx_timeout() will goto out.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Link: https://lore.kernel.org/r/20220405132206.55291-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
+Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/slip/slip.c | 2 +-
+ drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index f870396e05e1..ba26fa0ceba8 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -471,7 +471,7 @@ static void sl_tx_timeout(struct net_device *dev)
- 	spin_lock(&sl->lock);
+diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+index 5ed28111c3c3..569b662e19e7 100644
+--- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
++++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+@@ -43,7 +43,7 @@
  
- 	if (netif_queue_stopped(dev)) {
--		if (!netif_running(dev))
-+		if (!netif_running(dev) || !sl->tty)
- 			goto out;
+ #define IBMVSCSIS_VERSION	"v0.2"
  
- 		/* May be we must check transmitter timeout here ?
+-#define	INITIAL_SRP_LIMIT	800
++#define	INITIAL_SRP_LIMIT	1024
+ #define	DEFAULT_MAX_SECTORS	256
+ #define MAX_TXU			1024 * 1024
+ 
 -- 
 2.35.1
 
