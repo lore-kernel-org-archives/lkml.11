@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86393C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CBEC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353122AbiDLJCY (ORCPT
+        id S1356375AbiDLJD3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
+        Tue, 12 Apr 2022 05:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357249AbiDLHjy (ORCPT
+        with ESMTP id S1357123AbiDLHjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CE6F15;
-        Tue, 12 Apr 2022 00:14:16 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486D9E080;
+        Tue, 12 Apr 2022 00:12:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C7A96171C;
-        Tue, 12 Apr 2022 07:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37597C385A1;
-        Tue, 12 Apr 2022 07:14:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03318B81B55;
+        Tue, 12 Apr 2022 07:12:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABF9C385A1;
+        Tue, 12 Apr 2022 07:12:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747655;
-        bh=2kkz2HUea5hGrLe3sIdjMljDa9VPFb9vQcDZSKUWuuM=;
+        s=korg; t=1649747537;
+        bh=uJjfmRLmfVzd8ksjcEl8BYhQjcPtbCrQav23XF1v1rA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r+Mz38X1iy2i7dwYYS5qHn3z51afrOex7ljTT8Pfo09J2QYD363wRBNntNb8yEtVo
-         WDyCzHfunUoMWmRAoeS14QL2DPtnJHnrAy7eRuga8OpRsPOMlBqI0nHO/PH4qDvzJS
-         4WeE9QaCVJNqIbv4oTAHxGOhsZKBm53nmQoxg5lo=
+        b=N7kY6gwzctbXDTMOE5Qhog3vxvYg8lwX/3WNaNaWnVvHrMMFImfyDC11Zi4Rvrxd0
+         TNMgQdjLF2yi/cfoLbQ1k1FF01cJ045XI+99+T/x9C8sepQy0ZmPYWbNGa7LLJ0+A4
+         4HOhEbA6SFQqMO5xeY5YYyzAD6AiY4oK9CrL9u1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
+        stable@vger.kernel.org, Dust Li <dust.li@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 159/343] staging: vchiq_core: handle NULL result of find_service_by_handle
-Date:   Tue, 12 Apr 2022 08:29:37 +0200
-Message-Id: <20220412062955.964487496@linuxfoundation.org>
+Subject: [PATCH 5.17 116/343] net/smc: correct settings of RMB window update limit
+Date:   Tue, 12 Apr 2022 08:28:54 +0200
+Message-Id: <20220412062954.738738746@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,46 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit ca225857faf237234d2fffe5d1919467dfadd822 ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-In case of an invalid handle the function find_servive_by_handle
-returns NULL. So take care of this and avoid a NULL pointer dereference.
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Link: https://lore.kernel.org/r/1642968143-19281-18-git-send-email-stefan.wahren@i2se.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
+
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
+
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
+
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/vc04_services/interface/vchiq_arm/vchiq_core.c  | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/smc/smc_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
-index 7fe20d4b7ba2..b7295236671c 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.c
-@@ -2306,6 +2306,9 @@ void vchiq_msg_queue_push(unsigned int handle, struct vchiq_header *header)
- 	struct vchiq_service *service = find_service_by_handle(handle);
- 	int pos;
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index be7d704976ff..f40f6ed0fbdb 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1989,7 +1989,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
+ {
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+ }
  
-+	if (!service)
-+		return;
-+
- 	while (service->msg_queue_write == service->msg_queue_read +
- 		VCHIQ_MAX_SLOTS) {
- 		if (wait_for_completion_interruptible(&service->msg_queue_pop))
-@@ -2326,6 +2329,9 @@ struct vchiq_header *vchiq_msg_hold(unsigned int handle)
- 	struct vchiq_header *header;
- 	int pos;
- 
-+	if (!service)
-+		return NULL;
-+
- 	if (service->msg_queue_write == service->msg_queue_read)
- 		return NULL;
- 
+ /* map an rmb buf to a link */
 -- 
 2.35.1
 
