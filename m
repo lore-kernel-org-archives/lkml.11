@@ -2,171 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B87C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22311C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353434AbiDLLIY (ORCPT
+        id S1354735AbiDLLI5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
+        Tue, 12 Apr 2022 07:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236023AbiDLLCL (ORCPT
+        with ESMTP id S1353482AbiDLLEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:02:11 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C311B27E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:53:47 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id u18so10994525eda.3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:53:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AkVeS3a8EOgJCI7taXEOSueT1F/9iu1WjMPXVz5t0OM=;
-        b=DXQFxzUBZrSWjyf1SQB0KWaNd5EnJ1CjA7KgQkRSFKh1NG9tM9mlpfhduyc5qGFmn1
-         q8kOK+QdVXfAfuCkMku1nK9WbmGlR1+opEUKDQXMDPtur2fw55c2e//psWPPmjLc83ul
-         WSFRL5RolZqBBasK6HBrOGkUsL7ETOzoVMBN+7NkkOHGSuy8c1n8zuDitpFiJZqEr+cw
-         tkJYea3e6UA5eZYaW7W2a0Rm5qJawXkULzYfDkY6XZXSEA0T9E28uQGNw81F0r8/r3RY
-         V47qqvxvw7kluf4gOxYqksJ/5mwOJUuXetdD8Z1CAdjIoObTRNooxkJG7veYCWm/qL4N
-         zl5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AkVeS3a8EOgJCI7taXEOSueT1F/9iu1WjMPXVz5t0OM=;
-        b=qtm6SWMcFGSsmy66rfYMSZw4L54vCHyeLugtu01uet26kBgKKd9HxppRdDFK6Yp50P
-         Y8o0utsmT3Xu8fWEcbdMpgKDnO1Fsl/cPahWN0z7dvLrmFePyYUemMGmKk1IvR+6knE1
-         O6eXVnMY68NcA+F8gjsl3cw8OTRDwnNKriQJQKNi6Es84TAGaQPsNTZEdALzAq1b3ydV
-         3PsPW9pA60ECW3QZhVQ9k3AfWPKexpXxt9VGvmQBB+FmJTVb2QfSxpOAP54uTOhco2cb
-         c3wrNG0ObayWJei7tPRIUAom0wbUsuLGlwV6pEdCSQxfloUPJFtRVFF32hyKZ1xwdDps
-         58tw==
-X-Gm-Message-State: AOAM530sDvb1PNjR9s2gRV6V0/Y0CMk98r1mDt1ixQGcmUlcrYt8+RXv
-        ShbOGpAhb73XKertkiwqJ1k=
-X-Google-Smtp-Source: ABdhPJzxk/99mygfKqOVg/8e1fwoyQ7REMllcxW5KV8GSfggKkGv6IrNXD9A4XthW/W7HsL0uqyjRA==
-X-Received: by 2002:a05:6402:198:b0:410:83e3:21d7 with SMTP id r24-20020a056402019800b0041083e321d7mr38115046edv.159.1649757226168;
-        Tue, 12 Apr 2022 02:53:46 -0700 (PDT)
-Received: from leap.localnet (host-82-60-208-254.retail.telecomitalia.it. [82.60.208.254])
-        by smtp.gmail.com with ESMTPSA id w1-20020a1709064a0100b006e89334f5dfsm2338416eju.136.2022.04.12.02.53.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 02:53:44 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: Re: [PATCH v2 0/7] drop some unnecessary wrappers
-Date:   Tue, 12 Apr 2022 11:53:42 +0200
-Message-ID: <3484215.R56niFO833@leap>
-In-Reply-To: <20220412050630.GY3293@kadam>
-References: <20220411102136.14937-1-makvihas@gmail.com> <37499399.10thIPus4b@leap> <20220412050630.GY3293@kadam>
+        Tue, 12 Apr 2022 07:04:55 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39CE5FF2A;
+        Tue, 12 Apr 2022 02:55:21 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1neDEx-0005Ez-CY; Tue, 12 Apr 2022 11:55:15 +0200
+Message-ID: <7aa0bbd0-5498-ba74-ad6d-6dacbade8a3d@leemhuis.info>
+Date:   Tue, 12 Apr 2022 11:55:13 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>, Philippe Schenker <dev@pschenker.ch>
+Cc:     linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        "David S. Miller" <davem@davemloft.net>,
+        Deren Wu <deren.wu@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <20220412090415.17541-1-dev@pschenker.ch>
+ <87y20aod5d.fsf@kernel.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+In-Reply-To: <87y20aod5d.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1649757321;4339350e;
+X-HE-SMSGID: 1neDEx-0005Ez-CY
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On marted=EC 12 aprile 2022 07:06:30 CEST Dan Carpenter wrote:
-> On Mon, Apr 11, 2022 at 10:34:44PM +0200, Fabio M. De Francesco wrote:
-> > On luned=EC 11 aprile 2022 12:21:29 CEST Vihas Makwana wrote:
-> > > Drop some unnecessary wrappers and update all the references
-> > > accordingly.
-> > > Tested on Comfast CF-WU810N RTL8188EUS wireless adapter.
-> > >=20
-> > > v1 -> v2:
-> > > Drop the wrapper functions with underscores prefixed.
-> > >=20
-> > > Vihas Makwana (7):
-> > >   staging: r8188eu: drop unnecessary wrapper _rtw_free_cmd_priv
-> > >   staging: r8188eu: drop unnecessary wrapper _rtw_init_cmd_priv
-> > >   staging: r8188eu: drop unnecessary wrapper _rtw_init_evt_priv
-> > >   staging: r8188eu: drop unnecessary wrapper _rtw_init_mlme_priv
-> > >   staging: r8188eu: drop unnecessary wrapper _rtw_free_mlme_priv
-> > >   staging: r8188eu: drop unnecessary wrapper _rtw_alloc_network
-> > >   staging: r8188eu: drop unnecessary wrapper _rtw_dequeue_cmd
-> > >=20
-> > >  drivers/staging/r8188eu/core/rtw_cmd.c     | 145 +++++++----------
-> > >  drivers/staging/r8188eu/core/rtw_mlme.c    | 179 +++++++++----------=
-=2D-
-> > >  drivers/staging/r8188eu/include/rtw_mlme.h |   4 +-
-> > >  3 files changed, 135 insertions(+), 193 deletions(-)
-> > >=20
-> > > --=20
-> > > 2.30.2
-> > >=20
-> > Formally, you are removing the wrapped functions (or helpers, if you=20
-> > prefer) by moving their code into the wrappers. To say that you are=20
-> > removing the wrappers is not correct.
->=20
-> I once had someone make me re-write a commit message four time just as a
-> kind of bullying and then at the end he was like, "You said NULL
-> dereference instead of NULL pointer dereference so I had to re-write the
-> commit message and I added some comment to the kernel git log explaining
-> how you suck." =20
-> So these days I have made it a rule that if you're going
-> to complain about commit messages then you have to write your own for
-> people to cut and paste.  Otherwise people are like, "You're too stupid
-> to read my mind.  LOL.  Do it again."
+On 12.04.22 11:37, Kalle Valo wrote:
+> Philippe Schenker <dev@pschenker.ch> writes:
+> 
+>> This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+>>
+>> This commit introduces a regression on some systems where the kernel is
+>> crashing in different locations after a reboot was issued.
+>>
+>> This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest firmware.
+>>
+>> Link: https://lore.kernel.org/linux-wireless/5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/
+>> Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+> 
+> Can I take this to wireless tree? Felix, ack?
+> 
+> I'll also add:
+> 
+> Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
 
-I'm assuming you don't believe that I attempted some kind of bullying simil=
-ar
-to what you had to face when you sent the above-mentioned patch.
+Sorry, stupid questions from the regression tracker: wouldn't this cause
+a regression for users of kernel versions post-bf3747ae2e25, as the
+power consumption is likely to increase for them? Without having dug
+into the backstory much: would disabling ASPM for this particular
+machine using a quirk be the better approach? Or are we assuming a lot
+of machines are affected?
 
-Nevertheless, I was expecting some sort of reaction from you but I think=20
-that you are misunderstanding what my intentions were.
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-I didn't suggest a re-write of the commit messages. I just pointed out that=
-=20
-those messages are formally inaccurate but that these kinds of small formal=
-=20
-inaccuracies won't ever prevent Vihas' patches from being accepted as they =
-are.
-
-It's only that, IMO, if people start to take care of being formally correct=
-=20
-in drivers/staging, even when they do simple changes, they train their minds
-to improve their abilities to communicate in the future when they eventually
-decide to submit much more complex patches in other subsystems.
-
-> But in this case the commit message is fine.  The key things with a
-> commit message are:
->=20
-> 1) What's the motivation
-> 2) What's the effect for the user
-> 3) Are all the surprising aspects are explained.  Do I have enough
->    information to review it quickly.
->=20
-> Removing wrappers is the motivation.  No need to explain that further.
-> No effects for the user.
-> There were no surprising bits.
->=20
-> It's fine.
-
-I agree with you: "it's fine". I respect your opinion and your pragmatism:
-after all, here, everything is pretty clear, so why bother?
-
-However, writing accurate and formally correct commit messages takes the=20
-same amount of time of writing inaccurate messages. So, why not do better=20
-next time?
-
-Again, I don't suggest to do so now. Not for these patches, because it woul=
-d=20
-only be a loss of precious time.
-
-Thanks,
-
-=46abio M. De Francesco=20
-
->=20
-> regards,
-> dan carpenter
->=20
->=20
-
-
-
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
 
