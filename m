@@ -2,119 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C4A3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A213AC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350682AbiDLGri (ORCPT
+        id S1350784AbiDLGr7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42448 "EHLO
+        Tue, 12 Apr 2022 02:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351017AbiDLGnu (ORCPT
+        with ESMTP id S1351085AbiDLGn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:43:50 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D80739148
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:37:11 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id n18so15933403plg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=z9KCSsSOTorZ297IRaNBlVXKYcv73Yi8iB+F+B3CCNQ=;
-        b=JmmcP1AtLg3fbaMnX+VVeF4cZ4XJEHNbYmBA124tHtTaz7JLrPIaoAmVjTv6WwP1lS
-         yHVzSeQ4kZSs8V8Jqpvqd74EJ1cs7rdj/0KVQI9eTokFX3y+eBfRPtwSckN1oZgHR3Wl
-         RsYgZwIhxmKI3pC0JNARPPOj8y5Vhb9Elxu9Y/nUqFu1dzndBz8f9JSYSC71euSjzFzo
-         UObmYrjsaa/q8LknB3BSu0gZQPRp7nUBwgctAZlhxP02pJkORvNLAolvZ8NONJPWCWQ9
-         k6aUXTmGfmOMBJ4k61QdA/ZWLd18YoiUIgLQYdXxIrgckWETDQ1ZEdkXVe+2PQJZhChW
-         lB0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=z9KCSsSOTorZ297IRaNBlVXKYcv73Yi8iB+F+B3CCNQ=;
-        b=8MJ07pCXAg1M+ZjfJKjhw+W5xWS/v5pPblGgODZVgFFb+vT+o8QI5OUEDL5PdgEM2W
-         d4amsa5yKhX6ikQcUUlpclej/clzJLW7qAAq1/dZWTS8oqNaFhcG54K1eKW2cZg2unA8
-         spTuhNIM9/tMPjdvu+S+Jw8dKcSBsqys++KBdZLraZIsYgVagIcdC6VK8LK5L2mbDO0w
-         EDd/wV2X6bP6WRUrA1et8SIbfDSNCux8PL28yfwvNL/7jKV6KqWWqWAQ+fUTi6qtm/7I
-         MoS+xhHWRMQbF3F3lijBzJ/KYHox0If5piMI3y5+eLjbDcCN4PBzg0cx1h0uxEqk3FTU
-         fjAw==
-X-Gm-Message-State: AOAM531SlejCvEDLeS6fuDmBqaKL4WEQzPxowDaa1Y6Cnp/VwL6OLirn
-        jbjD9KCrXGzX46Jm6h8vSAs=
-X-Google-Smtp-Source: ABdhPJxbRo2HxccOLyjPF69o/uFLKLEC2j4IdcjTAgHfPDXjQ0DQp/HOEXokeWC72a2MvL80rsvHbQ==
-X-Received: by 2002:a17:902:8e82:b0:151:6f68:7088 with SMTP id bg2-20020a1709028e8200b001516f687088mr37030839plb.11.1649745430901;
-        Mon, 11 Apr 2022 23:37:10 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id nv11-20020a17090b1b4b00b001c71b0bf18bsm1618768pjb.11.2022.04.11.23.37.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 23:37:10 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Bastian Hecht <hechtb@googlemail.com>,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
-        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] mtd: rawnand: Fix return value check of wait_for_completion_timeout
-Date:   Tue, 12 Apr 2022 06:36:52 +0000
-Message-Id: <20220412063703.8537-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <202204121253.NcZifMQi-lkp@intel.com>
-References: <202204121253.NcZifMQi-lkp@intel.com>
+        Tue, 12 Apr 2022 02:43:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD25D393DB;
+        Mon, 11 Apr 2022 23:37:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62BF9B81B43;
+        Tue, 12 Apr 2022 06:37:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B50D2C385A6;
+        Tue, 12 Apr 2022 06:37:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649745437;
+        bh=mR2O/g+rjFObtLuc8qXfsCZ+aho+SVwU90zDb6t0Px0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dZg5o6Ppr1coTi5fkWBbbvD2xbIIQnKIaUhpdXY7RNo3JD0yHziXN0Xnq7RFtS2V5
+         oHeME7ZADzk+I9PvfjTsShLLpBWnBD9TSiHrSIbIKMPJTKtJC7zniVkT2NiJ+WzU30
+         ZAhzcGXVU2/+wpQ2BmrjjcR9aSLWIjHrqBCeSX9s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 095/171] parisc: Fix patch code locking and flushing
+Date:   Tue, 12 Apr 2022 08:29:46 +0200
+Message-Id: <20220412062930.633266177@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
+References: <20220412062927.870347203@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+From: John David Anglin <dave.anglin@bell.net>
 
-Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-change in v2:
-- initialize ret to 1.
----
- drivers/mtd/nand/raw/sh_flctl.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+[ Upstream commit a9fe7fa7d874a536e0540469f314772c054a0323 ]
 
-diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh_flctl.c
-index b85b9c6fcc42..2373251f585b 100644
---- a/drivers/mtd/nand/raw/sh_flctl.c
-+++ b/drivers/mtd/nand/raw/sh_flctl.c
-@@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
- 	dma_addr_t dma_addr;
- 	dma_cookie_t cookie;
- 	uint32_t reg;
--	int ret;
-+	int ret = 1;
-+	unsigned long time_left;
+This change fixes the following:
+
+1) The flags variable is not initialized. Always use raw_spin_lock_irqsave
+and raw_spin_unlock_irqrestore to serialize patching.
+
+2) flush_kernel_vmap_range is primarily intended for DMA flushes. Since
+__patch_text_multiple is often called with interrupts disabled, it is
+better to directly call flush_kernel_dcache_range_asm and
+flush_kernel_icache_range_asm. This avoids an extra call.
+
+3) The final call to flush_icache_range is unnecessary.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/parisc/kernel/patch.c | 25 +++++++++++--------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
+
+diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
+index 80a0ab372802..e59574f65e64 100644
+--- a/arch/parisc/kernel/patch.c
++++ b/arch/parisc/kernel/patch.c
+@@ -40,10 +40,7 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags,
  
- 	if (dir == DMA_FROM_DEVICE) {
- 		chan = flctl->chan_fifo0_rx;
-@@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
- 		goto out;
+ 	*need_unmap = 1;
+ 	set_fixmap(fixmap, page_to_phys(page));
+-	if (flags)
+-		raw_spin_lock_irqsave(&patch_lock, *flags);
+-	else
+-		__acquire(&patch_lock);
++	raw_spin_lock_irqsave(&patch_lock, *flags);
+ 
+ 	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
+ }
+@@ -52,10 +49,7 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
+ {
+ 	clear_fixmap(fixmap);
+ 
+-	if (flags)
+-		raw_spin_unlock_irqrestore(&patch_lock, *flags);
+-	else
+-		__release(&patch_lock);
++	raw_spin_unlock_irqrestore(&patch_lock, *flags);
+ }
+ 
+ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+@@ -67,8 +61,9 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 	int mapped;
+ 
+ 	/* Make sure we don't have any aliases in cache */
+-	flush_kernel_vmap_range(addr, len);
+-	flush_icache_range(start, end);
++	flush_kernel_dcache_range_asm(start, end);
++	flush_kernel_icache_range_asm(start, end);
++	flush_tlb_kernel_range(start, end);
+ 
+ 	p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
+ 
+@@ -81,8 +76,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 			 * We're crossing a page boundary, so
+ 			 * need to remap
+ 			 */
+-			flush_kernel_vmap_range((void *)fixmap,
+-						(p-fixmap) * sizeof(*p));
++			flush_kernel_dcache_range_asm((unsigned long)fixmap,
++						      (unsigned long)p);
++			flush_tlb_kernel_range((unsigned long)fixmap,
++					       (unsigned long)p);
+ 			if (mapped)
+ 				patch_unmap(FIX_TEXT_POKE0, &flags);
+ 			p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags,
+@@ -90,10 +87,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 		}
  	}
  
--	ret =
-+	time_left =
- 	wait_for_completion_timeout(&flctl->dma_complete,
- 				msecs_to_jiffies(3000));
+-	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
++	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p);
++	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
+ 	if (mapped)
+ 		patch_unmap(FIX_TEXT_POKE0, &flags);
+-	flush_icache_range(start, end);
+ }
  
--	if (ret <= 0) {
-+	if (time_left == 0) {
- 		dmaengine_terminate_all(chan);
- 		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
-+		ret = -ETIMEDOUT;
- 	}
- 
- out:
+ void __kprobes __patch_text(void *addr, u32 insn)
 -- 
-2.17.1
+2.35.1
+
+
 
