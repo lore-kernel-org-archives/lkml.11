@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26175C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F5BC3527E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385848AbiDLIxQ (ORCPT
+        id S1385805AbiDLIxC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        Tue, 12 Apr 2022 04:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359238AbiDLHmw (ORCPT
+        with ESMTP id S1359092AbiDLHma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A905C55758;
-        Tue, 12 Apr 2022 00:20:38 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015905523C;
+        Tue, 12 Apr 2022 00:20:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ED96B81B62;
-        Tue, 12 Apr 2022 07:20:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A393BC385A5;
-        Tue, 12 Apr 2022 07:20:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A546FB81B6A;
+        Tue, 12 Apr 2022 07:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02CF4C385A5;
+        Tue, 12 Apr 2022 07:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748036;
-        bh=XVofjJ5ibd0lC46pPClYFZWxKn/UrgzU/kZncze9kwU=;
+        s=korg; t=1649748011;
+        bh=xUTyRZPsMXwHoFuxnBfly520MoRrE/Fv7qY+hGuZ+EI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EraJXSbBrRcei3OAVbe/KefoqWNMlItPbfUmZ34M7/lTFZ1nDV/qaijlQeaJTaLV/
-         g8l906csSMsY8BGsCaajrypQT0d3Bt74y81HW+k4OAru3q0q7QJm7ejlS9hHKpoUz1
-         PhdaUg/XJ0Dnl5D2PSsgw2DLZnkTja/Ju9L89qZY=
+        b=O14b2SptY1m/3b9c7Xa2L9toUNGW8HUfSyIUsBLCGuUopANFw/UKysrDA6vva6vHM
+         TTM2PtM2mi9W6FacUU3TipI3OiGusc8sZ30cM3B36J5c/ABlrIghmIYMGOFkXiU3z3
+         y8YhhYVDQTL8tsOTI3pNY1Ygch5pSVB3DEIShWeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.17 297/343] perf/x86/intel: Dont extend the pseudo-encoding to GP counters
-Date:   Tue, 12 Apr 2022 08:31:55 +0200
-Message-Id: <20220412062959.896992705@linuxfoundation.org>
+        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 288/343] spi: core: add dma_map_dev for __spi_unmap_msg()
+Date:   Tue, 12 Apr 2022 08:31:46 +0200
+Message-Id: <20220412062959.640623253@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,73 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Vinod Koul <vkoul@kernel.org>
 
-commit 4a263bf331c512849062805ef1b4ac40301a9829 upstream.
+commit 409543cec01a84610029d6440c480c3fdd7214fb upstream.
 
-The INST_RETIRED.PREC_DIST event (0x0100) doesn't count on SPR.
-perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
+Commit b470e10eb43f ("spi: core: add dma_map_dev for dma device") added
+dma_map_dev for _spi_map_msg() but missed to add for unmap routine,
+__spi_unmap_msg(), so add it now.
 
- Performance counter stats for 'CPU(s) 0':
-
-           607,246      cpu/event=0xc0,umask=0x0/
-                 0      cpu/event=0x0,umask=0x1/
-
-The encoding for INST_RETIRED.PREC_DIST is pseudo-encoding, which
-doesn't work on the generic counters. However, current perf extends its
-mask to the generic counters.
-
-The pseudo event-code for a fixed counter must be 0x00. Check and avoid
-extending the mask for the fixed counter event which using the
-pseudo-encoding, e.g., ref-cycles and PREC_DIST event.
-
-With the patch,
-perf stat -e cpu/event=0xc0,umask=0x0/,cpu/event=0x0,umask=0x1/ -C0
-
- Performance counter stats for 'CPU(s) 0':
-
-           583,184      cpu/event=0xc0,umask=0x0/
-           583,048      cpu/event=0x0,umask=0x1/
-
-Fixes: 2de71ee153ef ("perf/x86/intel: Fix ICL/SPR INST_RETIRED.PREC_DIST encodings")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/1648482543-14923-1-git-send-email-kan.liang@linux.intel.com
+Fixes: b470e10eb43f ("spi: core: add dma_map_dev for dma device")
+Cc: stable@vger.kernel.org # v5.14+
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Link: https://lore.kernel.org/r/20220406132238.1029249-1-vkoul@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/core.c      |    6 +++++-
- arch/x86/include/asm/perf_event.h |    5 +++++
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ drivers/spi/spi.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -5515,7 +5515,11 @@ static void intel_pmu_check_event_constr
- 			/* Disabled fixed counters which are not in CPUID */
- 			c->idxmsk64 &= intel_ctrl;
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -1149,11 +1149,15 @@ static int __spi_unmap_msg(struct spi_co
  
--			if (c->idxmsk64 != INTEL_PMC_MSK_FIXED_REF_CYCLES)
-+			/*
-+			 * Don't extend the pseudo-encoding to the
-+			 * generic counters
-+			 */
-+			if (!use_fixed_pseudo_encoding(c->code))
- 				c->idxmsk64 |= (1ULL << num_counters) - 1;
- 		}
- 		c->idxmsk64 &=
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -241,6 +241,11 @@ struct x86_pmu_capability {
- #define INTEL_PMC_IDX_FIXED_SLOTS	(INTEL_PMC_IDX_FIXED + 3)
- #define INTEL_PMC_MSK_FIXED_SLOTS	(1ULL << INTEL_PMC_IDX_FIXED_SLOTS)
+ 	if (ctlr->dma_tx)
+ 		tx_dev = ctlr->dma_tx->device->dev;
++	else if (ctlr->dma_map_dev)
++		tx_dev = ctlr->dma_map_dev;
+ 	else
+ 		tx_dev = ctlr->dev.parent;
  
-+static inline bool use_fixed_pseudo_encoding(u64 code)
-+{
-+	return !(code & 0xff);
-+}
-+
- /*
-  * We model BTS tracing as another fixed-mode PMC.
-  *
+ 	if (ctlr->dma_rx)
+ 		rx_dev = ctlr->dma_rx->device->dev;
++	else if (ctlr->dma_map_dev)
++		rx_dev = ctlr->dma_map_dev;
+ 	else
+ 		rx_dev = ctlr->dev.parent;
+ 
 
 
