@@ -2,48 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46775C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0433DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:04:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241093AbiDLBGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
+        id S243610AbiDLBGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345210AbiDLA63 (ORCPT
+        with ESMTP id S1345105AbiDLA62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7B631904;
-        Mon, 11 Apr 2022 17:51:15 -0700 (PDT)
+        Mon, 11 Apr 2022 20:58:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3EB30F71;
+        Mon, 11 Apr 2022 17:50:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79ED160B2B;
-        Tue, 12 Apr 2022 00:51:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34EF4C385A9;
-        Tue, 12 Apr 2022 00:51:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A0A9B819B4;
+        Tue, 12 Apr 2022 00:50:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44CE5C385AB;
+        Tue, 12 Apr 2022 00:50:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724674;
-        bh=CbIPikTS98zell/omv2T4yTylZp9j5m2kHpnBAFAYvg=;
+        s=k20201202; t=1649724639;
+        bh=ftcoYDX4lSTjIY+xR9BpC/tIkm4h6JHMIQXWmz8MeKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FKkyDoYNS9tVd++wrCow/Sn3CeDR6mnVWzhNLiK/rX4qyRHukaoGBXv9Oh8UNA+hL
-         xcfAYbToNKnlqD5W17rl4jZNOFkjWDcsbg8ReB8+9NQzPspShJce5x3UmfPCBxhcF8
-         kYxjpkEMdeMAocimuS8egxK9sK5XPW8LcOXjUvZ23Dqz88sxvbkWr5knl/DeRUWnzp
-         +GlElYS8ZqB1LVPcHRKDmYqfGAbG0bKClhMe70uWupBR1Dh4vKnWzehmu1LRmdVFlk
-         4EYDtNUvzd8ShtQxPQgyAnaRczJ67A6blCe/i53qwM21A6X1B9ZO4Bps8514G1vJ4a
-         mdQ6QX62XcDQQ==
+        b=DqwZ63dfEGv42Jlr8+/3Hh+EOFEYtTAm9sZIKPyhwQDeluvgHb+GfOstZX7iH9xrq
+         etFSecncctugWY7AaUx60VsruLF1crs6WSuyqVSuOiQeca3NNS+1La7ThDS1gkphfE
+         1jV8kesE2HK6xgdg8YEhCBVhkjOc66hVquAYZ1bhE5q8Pd8u3q7NyIPMINn3H7Z9n0
+         HCAn/BOsaH1T84x6f1zlHnB7aVHrmh8g+ik5mOvnYwUdjNp1AsKDO6mpbg0ETWUQk8
+         cFuLxmxMexaHj44DY0GP0raMhJq8bHsUtrgif/BKFzqNojkyHrc3Rr9/NXwIeMMbZS
+         soT2aWaWSrMCg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Lamparter <chunkeey@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>, linux-ide@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/21] ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
-Date:   Mon, 11 Apr 2022 20:50:29 -0400
-Message-Id: <20220412005042.351105-10-sashal@kernel.org>
+Cc:     Borislav Petkov <bp@suse.de>, Frank Li <Frank.li@nxp.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 30/30] perf/imx_ddr: Fix undefined behavior due to shift overflowing the constant
+Date:   Mon, 11 Apr 2022 20:49:04 -0400
+Message-Id: <20220412004906.350678-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412005042.351105-1-sashal@kernel.org>
-References: <20220412005042.351105-1-sashal@kernel.org>
+In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
+References: <20220412004906.350678-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,43 +59,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lamparter <chunkeey@gmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 5399752299396a3c9df6617f4b3c907d7aa4ded8 ]
+[ Upstream commit d02b4dd84e1a90f7f1444d027c0289bf355b0d5a ]
 
-Samsung' 840 EVO with the latest firmware (EXT0DB6Q) locks up with
-the a message: "READ LOG DMA EXT failed, trying PIO" during boot.
+Fix:
 
-Initially this was discovered because it caused a crash
-with the sata_dwc_460ex controller on a WD MyBook Live DUO.
+  In file included from <command-line>:0:0:
+  In function ‘ddr_perf_counter_enable’,
+      inlined from ‘ddr_perf_irq_handler’ at drivers/perf/fsl_imx8_ddr_perf.c:651:2:
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_729’ \
+	declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+...
 
-The reporter "Tice Rex" which has the unique opportunity that he
-has two Samsung 840 EVO SSD! One with the older firmware "EXT0BB0Q"
-which booted fine and didn't expose "READ LOG DMA EXT". But the
-newer/latest firmware "EXT0DB6Q" caused the headaches.
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
 
-BugLink: https://github.com/openwrt/openwrt/issues/9505
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Frank Li <Frank.li@nxp.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220405151517.29753-10-bp@alien8.de
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/libata-core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/perf/fsl_imx8_ddr_perf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index dca1590f295d..af8a1bac9345 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -4580,6 +4580,9 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
- 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
- 	{ "Crucial_CT*MX100*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
- 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
-+	{ "Samsung SSD 840 EVO*",	NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
-+						ATA_HORKAGE_NO_DMA_LOG |
-+						ATA_HORKAGE_ZERO_AFTER_TRIM, },
- 	{ "Samsung SSD 840*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
- 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
- 	{ "Samsung SSD 850*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+diff --git a/drivers/perf/fsl_imx8_ddr_perf.c b/drivers/perf/fsl_imx8_ddr_perf.c
+index 7f7bc0993670..e09bbf3890c4 100644
+--- a/drivers/perf/fsl_imx8_ddr_perf.c
++++ b/drivers/perf/fsl_imx8_ddr_perf.c
+@@ -29,7 +29,7 @@
+ #define CNTL_OVER_MASK		0xFFFFFFFE
+ 
+ #define CNTL_CSV_SHIFT		24
+-#define CNTL_CSV_MASK		(0xFF << CNTL_CSV_SHIFT)
++#define CNTL_CSV_MASK		(0xFFU << CNTL_CSV_SHIFT)
+ 
+ #define EVENT_CYCLES_ID		0
+ #define EVENT_CYCLES_COUNTER	0
 -- 
 2.35.1
 
