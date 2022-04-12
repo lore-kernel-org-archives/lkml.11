@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1305C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B05C6C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377419AbiDLHuC (ORCPT
+        id S1377534AbiDLHuU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
+        Tue, 12 Apr 2022 03:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354581AbiDLHS6 (ORCPT
+        with ESMTP id S1351219AbiDLHUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:18:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41D31EEE6;
-        Mon, 11 Apr 2022 23:59:30 -0700 (PDT)
+        Tue, 12 Apr 2022 03:20:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EBD27CED;
+        Mon, 11 Apr 2022 23:59:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1552AB81B50;
-        Tue, 12 Apr 2022 06:59:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 635E9C385A6;
-        Tue, 12 Apr 2022 06:59:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4014B81B50;
+        Tue, 12 Apr 2022 06:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FC02C385A1;
+        Tue, 12 Apr 2022 06:59:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746767;
-        bh=BJU3SoYaAQU5PGAAdKA5dXjOco3AbVhPcyDIW5TSjrA=;
+        s=korg; t=1649746773;
+        bh=U1nB26bqhLB/2eGX203NVkEsnWhVCXP8SKs+/eFK4ac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yABkLnH4ASM+OhcoDh5JYaK0nW8523v/nr7cXM/10I46aAaSkRTQZX23XzQ6PGxu5
-         rVUsdHBk41TGNhUVXh5oYuRCdIJhhdT7gPG4lcpOgRz8jiiyfaaqQot7NnuPVTi03K
-         QPb6tZEGgb3u9t+WOW5NI4cvvXWBV5L/DT1Ko5nY=
+        b=jW/H2FvsKI7ZCb6LirJDwJ/4ABxqrFoVsj2Y8LDKYdziaVADyJSFW6IUqNtC05k/g
+         qCdHvVQPM1B3frimVp6fz14Lk6BMSF5CIwW8Qw+VMVsxnwdr98sR5R5BJT5J6G+5pY
+         NCAqAzI024EPIOmB0CF8au9rT9+l/IJBfc5qF/6g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xiaoke Wang <xkernel.wang@foxmail.com>,
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 124/285] staging: wfx: fix an error handling in wfx_init_common()
-Date:   Tue, 12 Apr 2022 08:29:41 +0200
-Message-Id: <20220412062947.245210572@linuxfoundation.org>
+Subject: [PATCH 5.16 126/285] NFSv4.2: fix reference count leaks in _nfs42_proc_copy_notify()
+Date:   Tue, 12 Apr 2022 08:29:43 +0200
+Message-Id: <20220412062947.303168261@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -53,51 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit 60f1d3c92dc1ef1026e5b917a329a7fa947da036 ]
+[ Upstream commit b7f114edd54326f730a754547e7cfb197b5bc132 ]
 
-One error handler of wfx_init_common() return without calling
-ieee80211_free_hw(hw), which may result in memory leak. And I add
-one err label to unify the error handler, which is useful for the
-subsequent changes.
+[You don't often get email from xiongx18@fudan.edu.cn. Learn why this is important at http://aka.ms/LearnAboutSenderIdentification.]
 
-Suggested-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Link: https://lore.kernel.org/r/tencent_24A24A3EFF61206ECCC4B94B1C5C1454E108@qq.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The reference counting issue happens in two error paths in the
+function _nfs42_proc_copy_notify(). In both error paths, the function
+simply returns the error code and forgets to balance the refcount of
+object `ctx`, bumped by get_nfs_open_context() earlier, which may
+cause refcount leaks.
+
+Fix it by balancing refcount of the `ctx` object before the function
+returns in both error paths.
+
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/wfx/main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ fs/nfs/nfs42proc.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
-index 858d778cc589..e3999e95ce85 100644
---- a/drivers/staging/wfx/main.c
-+++ b/drivers/staging/wfx/main.c
-@@ -322,7 +322,8 @@ struct wfx_dev *wfx_init_common(struct device *dev,
- 	wdev->pdata.gpio_wakeup = devm_gpiod_get_optional(dev, "wakeup",
- 							  GPIOD_OUT_LOW);
- 	if (IS_ERR(wdev->pdata.gpio_wakeup))
--		return NULL;
-+		goto err;
-+
- 	if (wdev->pdata.gpio_wakeup)
- 		gpiod_set_consumer_name(wdev->pdata.gpio_wakeup, "wfx wakeup");
+diff --git a/fs/nfs/nfs42proc.c b/fs/nfs/nfs42proc.c
+index 8b21ff1be717..438de4f93ce7 100644
+--- a/fs/nfs/nfs42proc.c
++++ b/fs/nfs/nfs42proc.c
+@@ -592,8 +592,10 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
  
-@@ -341,6 +342,10 @@ struct wfx_dev *wfx_init_common(struct device *dev,
- 		return NULL;
+ 	ctx = get_nfs_open_context(nfs_file_open_context(src));
+ 	l_ctx = nfs_get_lock_context(ctx);
+-	if (IS_ERR(l_ctx))
+-		return PTR_ERR(l_ctx);
++	if (IS_ERR(l_ctx)) {
++		status = PTR_ERR(l_ctx);
++		goto out;
++	}
  
- 	return wdev;
-+
-+err:
-+	ieee80211_free_hw(hw);
-+	return NULL;
+ 	status = nfs4_set_rw_stateid(&args->cna_src_stateid, ctx, l_ctx,
+ 				     FMODE_READ);
+@@ -601,7 +603,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
+ 	if (status) {
+ 		if (status == -EAGAIN)
+ 			status = -NFS4ERR_BAD_STATEID;
+-		return status;
++		goto out;
+ 	}
+ 
+ 	status = nfs4_call_sync(src_server->client, src_server, &msg,
+@@ -610,6 +612,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
+ 	if (status == -ENOTSUPP)
+ 		src_server->caps &= ~NFS_CAP_COPY_NOTIFY;
+ 
++out:
+ 	put_nfs_open_context(nfs_file_open_context(src));
+ 	return status;
  }
- 
- int wfx_probe(struct wfx_dev *wdev)
 -- 
 2.35.1
 
