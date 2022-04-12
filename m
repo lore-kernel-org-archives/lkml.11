@@ -2,56 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 766C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7740C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245124AbiDLA5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34902 "EHLO
+        id S1343589AbiDLA5Y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:57:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245722AbiDLAyh (ORCPT
+        with ESMTP id S245256AbiDLAzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:54:37 -0400
+        Mon, 11 Apr 2022 20:55:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2751B20BD7;
-        Mon, 11 Apr 2022 17:49:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCF8E031;
+        Mon, 11 Apr 2022 17:49:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 073B76184B;
-        Tue, 12 Apr 2022 00:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25844C385A3;
-        Tue, 12 Apr 2022 00:49:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80816617E9;
+        Tue, 12 Apr 2022 00:49:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29DCC385AC;
+        Tue, 12 Apr 2022 00:49:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724543;
-        bh=0w5fkYWRq9t9bwKn/65Gjp/8xhsgA6n0+Ym3YnpIS4k=;
+        s=k20201202; t=1649724550;
+        bh=nqTocmM82ERuIyMTNxXt0a1iqomNj0dglld3fwjcjPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tH+jA/JxqYBkfthGjOeGB2T21nVZNF23W5Id+bFuSviUrEdTT9kbhQjvzZ9cDic9v
-         tbriKq11uJCq9vqpH/ZnSTh9dKE0SC9c+r6Uj4xDcj5Mxewd7sy/lrEWaKpzu3PNRU
-         2Hw/MprrXyHO25md64eUlWBeeFbQYwFNJAx/gbOcwxRDhbIkVUVTfF2uvSFZ5jFKgx
-         dcS1t22QPjLVF+lXb7NkwhD4L0Z5vowczDOZZu5gzGWcn1lWaLMMKcg2hpWmWJSOiv
-         drGGzLkcLRop0hqYMCJsMf1VgluWOwpI2wHJmX+lCm29sF6OPyaZguC51Q3PJK1gz1
-         hMODTwuhY0VFw==
+        b=BFfX2MCMw/shnnQjUHQEseuY/6UjUWxrRJZIl+HYEfPySFSBp/W+4elrklwFxP4Qu
+         8xt5RLm2UsCcza6R5ZMJBmWVfLplU9EPmdlkMUrv6n826F4qU3ARE2zxITwi/Tm39t
+         YxhF77GVLUGfLEAZMgC61X4ebDC4mF1UjYKK+ZBMWYJ7B80JjVr+tNRCboSNPxlON7
+         dCPhTn0PTWlTEBwleTimNJNtVjDmClyz63Kc+41erBHkdRd9mlMx7guxcuAzq21j2o
+         b6FfG+FQmRdbRwcAKsMcqR2Xh9ixm9f12bWz0agNSMrJKcSl6sq42YasPHrZQQKOgr
+         dR0h7UMl8HAGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Frank Li <Frank.li@nxp.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 41/41] perf/imx_ddr: Fix undefined behavior due to shift overflowing the constant
-Date:   Mon, 11 Apr 2022 20:46:53 -0400
-Message-Id: <20220412004656.350101-41-sashal@kernel.org>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 02/30] btrfs: fix fallocate to use file_modified to update permissions consistently
+Date:   Mon, 11 Apr 2022 20:48:36 -0400
+Message-Id: <20220412004906.350678-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412004656.350101-1-sashal@kernel.org>
-References: <20220412004656.350101-1-sashal@kernel.org>
+In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
+References: <20220412004906.350678-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,54 +54,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-[ Upstream commit d02b4dd84e1a90f7f1444d027c0289bf355b0d5a ]
+[ Upstream commit 05fd9564e9faf0f23b4676385e27d9405cef6637 ]
 
-Fix:
+Since the initial introduction of (posix) fallocate back at the turn of
+the century, it has been possible to use this syscall to change the
+user-visible contents of files.  This can happen by extending the file
+size during a preallocation, or through any of the newer modes (punch,
+zero range).  Because the call can be used to change file contents, we
+should treat it like we do any other modification to a file -- update
+the mtime, and drop set[ug]id privileges/capabilities.
 
-  In file included from <command-line>:0:0:
-  In function ‘ddr_perf_counter_enable’,
-      inlined from ‘ddr_perf_irq_handler’ at drivers/perf/fsl_imx8_ddr_perf.c:651:2:
-  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_729’ \
-	declared with attribute error: FIELD_PREP: mask is not constant
-    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-...
+The VFS function file_modified() does all this for us if pass it a
+locked inode, so let's make fallocate drop permissions correctly.
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Frank Li <Frank.li@nxp.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Acked-by: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220405151517.29753-10-bp@alien8.de
-Signed-off-by: Will Deacon <will@kernel.org>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/fsl_imx8_ddr_perf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/file.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/perf/fsl_imx8_ddr_perf.c b/drivers/perf/fsl_imx8_ddr_perf.c
-index 94ebc1ecace7..b1b2a55de77f 100644
---- a/drivers/perf/fsl_imx8_ddr_perf.c
-+++ b/drivers/perf/fsl_imx8_ddr_perf.c
-@@ -29,7 +29,7 @@
- #define CNTL_OVER_MASK		0xFFFFFFFE
+diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
+index f59ec55e5feb..416a1b753ff6 100644
+--- a/fs/btrfs/file.c
++++ b/fs/btrfs/file.c
+@@ -2833,8 +2833,9 @@ int btrfs_replace_file_extents(struct inode *inode, struct btrfs_path *path,
+ 	return ret;
+ }
  
- #define CNTL_CSV_SHIFT		24
--#define CNTL_CSV_MASK		(0xFF << CNTL_CSV_SHIFT)
-+#define CNTL_CSV_MASK		(0xFFU << CNTL_CSV_SHIFT)
+-static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
++static int btrfs_punch_hole(struct file *file, loff_t offset, loff_t len)
+ {
++	struct inode *inode = file_inode(file);
+ 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
+ 	struct btrfs_root *root = BTRFS_I(inode)->root;
+ 	struct extent_state *cached_state = NULL;
+@@ -2866,6 +2867,10 @@ static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
+ 		goto out_only_mutex;
+ 	}
  
- #define EVENT_CYCLES_ID		0
- #define EVENT_CYCLES_COUNTER	0
++	ret = file_modified(file);
++	if (ret)
++		goto out_only_mutex;
++
+ 	lockstart = round_up(offset, btrfs_inode_sectorsize(BTRFS_I(inode)));
+ 	lockend = round_down(offset + len,
+ 			     btrfs_inode_sectorsize(BTRFS_I(inode))) - 1;
+@@ -3301,7 +3306,7 @@ static long btrfs_fallocate(struct file *file, int mode,
+ 		return -EOPNOTSUPP;
+ 
+ 	if (mode & FALLOC_FL_PUNCH_HOLE)
+-		return btrfs_punch_hole(inode, offset, len);
++		return btrfs_punch_hole(file, offset, len);
+ 
+ 	/*
+ 	 * Only trigger disk allocation, don't trigger qgroup reserve
+@@ -3323,6 +3328,10 @@ static long btrfs_fallocate(struct file *file, int mode,
+ 			goto out;
+ 	}
+ 
++	ret = file_modified(file);
++	if (ret)
++		goto out;
++
+ 	/*
+ 	 * TODO: Move these two operations after we have checked
+ 	 * accurate reserved space, or fallocate can still fail but
 -- 
 2.35.1
 
