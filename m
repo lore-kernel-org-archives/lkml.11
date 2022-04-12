@@ -2,92 +2,609 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D2D2C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10E6C3E8A8
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389385AbiDLJXo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
+        id S229767AbiDLJZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357089AbiDLHjq (ORCPT
+        with ESMTP id S1356476AbiDLIKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7F67641;
-        Tue, 12 Apr 2022 00:11:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15388B81B5D;
-        Tue, 12 Apr 2022 07:11:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82F67C385A5;
-        Tue, 12 Apr 2022 07:11:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747490;
-        bh=tghxGsbaqHcpP6pV6vKAw/1Th5K64SKUYwOYUvBJVKU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ekrHwtemNyq0AAtSrJsQqqqtwWIwAahhr1YKZwvMKFuQwGCIjOp4QhHyrJWcTiTiy
-         66zUZtBjHXnJ/i1l2SVJeT9oGshRAErIMYcWhWNiKMmt6WHPOeIiE7usDt3V9JO636
-         HVoQZafDewAV1ZnAntxH6SUoic7t6qMciUuaaOLQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 097/343] dm ioctl: prevent potential spectre v1 gadget
-Date:   Tue, 12 Apr 2022 08:28:35 +0200
-Message-Id: <20220412062953.901053788@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 04:10:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A607E080
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:24 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB8A-0007gN-Lq; Tue, 12 Apr 2022 09:40:06 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB89-00AQae-Og; Tue, 12 Apr 2022 09:40:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
+Cc:     David Jander <david@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>
+Subject: [PATCH v1 14/17] arm: dts: imx6qdl-vicut1: Factor out common parts of 12inch board variants
+Date:   Tue, 12 Apr 2022 09:40:01 +0200
+Message-Id: <20220412074004.2485264-15-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jordy Zomer <jordy@jordyzomer.github.io>
+From: David Jander <david@protonic.nl>
 
-[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
+Factor out common parts of vicut1 and vicutp to reduce maintenance
+overhead.
 
-It appears like cmd could be a Spectre v1 gadget as it's supplied by a
-user and used as an array index. Prevent the contents of kernel memory
-from being leaked to userspace via speculative execution by using
-array_index_nospec.
-
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: David Jander <david@protonic.nl>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/md/dm-ioctl.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/imx6dl-vicut1.dts          | 123 +-----------------
+ arch/arm/boot/dts/imx6q-vicut1.dts           | 123 +-----------------
+ arch/arm/boot/dts/imx6qdl-vicut1-12inch.dtsi | 128 +++++++++++++++++++
+ arch/arm/boot/dts/imx6qp-vicutp.dts          | 123 +-----------------
+ 4 files changed, 131 insertions(+), 366 deletions(-)
+ create mode 100644 arch/arm/boot/dts/imx6qdl-vicut1-12inch.dtsi
 
-diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-index 21fe8652b095..901abd6dea41 100644
---- a/drivers/md/dm-ioctl.c
-+++ b/drivers/md/dm-ioctl.c
-@@ -18,6 +18,7 @@
- #include <linux/dm-ioctl.h>
- #include <linux/hdreg.h>
- #include <linux/compat.h>
-+#include <linux/nospec.h>
+diff --git a/arch/arm/boot/dts/imx6dl-vicut1.dts b/arch/arm/boot/dts/imx6dl-vicut1.dts
+index c6a904bbed01..5035d303447d 100644
+--- a/arch/arm/boot/dts/imx6dl-vicut1.dts
++++ b/arch/arm/boot/dts/imx6dl-vicut1.dts
+@@ -6,130 +6,9 @@
+ /dts-v1/;
+ #include "imx6dl.dtsi"
+ #include "imx6qdl-vicut1.dtsi"
++#include "imx6qdl-vicut1-12inch.dtsi"
  
- #include <linux/uaccess.h>
- #include <linux/ima.h>
-@@ -1788,6 +1789,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
- 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
- 		return NULL;
+ / {
+ 	model = "Kverneland UT1 Board";
+ 	compatible = "kvg,vicut1", "fsl,imx6dl";
+-
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_gpiokeys>;
+-		autorepeat;
+-
+-		power {
+-			label = "Power Button";
+-			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
+-			linux,code = <KEY_POWER>;
+-			wakeup-source;
+-		};
+-	};
+-
+-	panel {
+-		compatible = "kyo,tcg121xglp";
+-		backlight = <&backlight_lcd>;
+-		power-supply = <&reg_3v3>;
+-
+-		port {
+-			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
+-			};
+-		};
+-	};
+-};
+-
+-&fec {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_enet>;
+-	phy-mode = "rgmii-id";
+-	phy-handle = <&rgmii_phy>;
+-	status = "okay";
+-
+-	mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		/* Microchip KSZ9031RNX PHY */
+-		rgmii_phy: ethernet-phy@0 {
+-			reg = <0>;
+-			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
+-			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
+-			reset-assert-us = <10000>;
+-			reset-deassert-us = <300>;
+-		};
+-	};
+-};
+-
+-&gpio1 {
+-	gpio-line-names =
+-		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
+-			"CAM2_MIRROR", "", "", "SMBALERT",
+-		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
+-		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
+-			"SD1_DATA3", "ETH_MDIO", "",
+-		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
+-};
+-
+-&gpio4 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
+-		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
+-			"CAN2_SR", "CAN2_TX", "CAN2_RX",
+-		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
+-			"HITCH_IN_OUT",
+-		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
+-			"ISB_LED";
+-};
+-
+-&gpio5 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
+-			"I2S_BITCLK", "I2S_DOUT",
+-		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
+-			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
+-};
+-
+-&gpio6 {
+-	gpio-line-names =
+-		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
+-			"ITU656_D6", "ITU656_D7", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
+-			"RGMII_TD3",
+-		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
+-			"RGMII_RD2", "RGMII_RD3", "", "";
+-};
+-
+-&iomuxc {
+-	pinctrl_enet: enetgrp {
+-		fsl,pins = <
+-			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
+-			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
+-			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
+-			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
+-			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
+-			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
+-			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
+-			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
+-			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
+-			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
+-			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
+-			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
+-			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
+-			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
+-			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
+-			/* Phy reset */
+-			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
+-			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
+-		>;
+-	};
+-
+-	pinctrl_gpiokeys: gpiokeygrp {
+-		fsl,pins = <
+-			/* nON_SWITCH */
+-			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
+-		>;
+-	};
+ };
+diff --git a/arch/arm/boot/dts/imx6q-vicut1.dts b/arch/arm/boot/dts/imx6q-vicut1.dts
+index 8b228d5fc4a3..dd91aff3f9e2 100644
+--- a/arch/arm/boot/dts/imx6q-vicut1.dts
++++ b/arch/arm/boot/dts/imx6q-vicut1.dts
+@@ -6,130 +6,9 @@
+ /dts-v1/;
+ #include "imx6q.dtsi"
+ #include "imx6qdl-vicut1.dtsi"
++#include "imx6qdl-vicut1-12inch.dtsi"
  
-+	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
- 	*ioctl_flags = _ioctls[cmd].flags;
- 	return _ioctls[cmd].fn;
- }
+ / {
+ 	model = "Kverneland UT1Q Board";
+ 	compatible = "kvg,vicut1q", "fsl,imx6q";
+-
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_gpiokeys>;
+-		autorepeat;
+-
+-		power {
+-			label = "Power Button";
+-			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
+-			linux,code = <KEY_POWER>;
+-			wakeup-source;
+-		};
+-	};
+-
+-	panel {
+-		compatible = "kyo,tcg121xglp";
+-		backlight = <&backlight_lcd>;
+-		power-supply = <&reg_3v3>;
+-
+-		port {
+-			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
+-			};
+-		};
+-	};
+-};
+-
+-&fec {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_enet>;
+-	phy-mode = "rgmii-id";
+-	phy-handle = <&rgmii_phy>;
+-	status = "okay";
+-
+-	mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		/* Microchip KSZ9031RNX PHY */
+-		rgmii_phy: ethernet-phy@0 {
+-			reg = <0>;
+-			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
+-			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
+-			reset-assert-us = <10000>;
+-			reset-deassert-us = <300>;
+-		};
+-	};
+-};
+-
+-&gpio1 {
+-	gpio-line-names =
+-		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
+-			"CAM2_MIRROR", "", "", "SMBALERT",
+-		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
+-		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
+-			"SD1_DATA3", "ETH_MDIO", "",
+-		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
+-};
+-
+-&gpio4 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
+-		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
+-			"CAN2_SR", "CAN2_TX", "CAN2_RX",
+-		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
+-			"HITCH_IN_OUT",
+-		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
+-			"ISB_LED";
+-};
+-
+-&gpio5 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
+-			"I2S_BITCLK", "I2S_DOUT",
+-		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
+-			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
+-};
+-
+-&gpio6 {
+-	gpio-line-names =
+-		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
+-			"ITU656_D6", "ITU656_D7", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
+-			"RGMII_TD3",
+-		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
+-			"RGMII_RD2", "RGMII_RD3", "", "";
+-};
+-
+-&iomuxc {
+-	pinctrl_enet: enetgrp {
+-		fsl,pins = <
+-			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
+-			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
+-			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
+-			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
+-			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
+-			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
+-			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
+-			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
+-			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
+-			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
+-			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
+-			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
+-			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
+-			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
+-			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
+-			/* Phy reset */
+-			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
+-			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
+-		>;
+-	};
+-
+-	pinctrl_gpiokeys: gpiokeygrp {
+-		fsl,pins = <
+-			/* nON_SWITCH */
+-			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
+-		>;
+-	};
+ };
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1-12inch.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1-12inch.dtsi
+new file mode 100644
+index 000000000000..f505f2704530
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6qdl-vicut1-12inch.dtsi
+@@ -0,0 +1,128 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright (c) 2021 Protonic Holland
++ */
++
++/ {
++	gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpiokeys>;
++		autorepeat;
++
++		power {
++			label = "Power Button";
++			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_POWER>;
++			wakeup-source;
++		};
++	};
++
++	panel {
++		compatible = "kyo,tcg121xglp";
++		backlight = <&backlight_lcd>;
++		power-supply = <&reg_3v3>;
++
++		port {
++			panel_in: endpoint {
++				remote-endpoint = <&lvds0_out>;
++			};
++		};
++	};
++};
++
++&fec {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&rgmii_phy>;
++	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* Microchip KSZ9031RNX PHY */
++		rgmii_phy: ethernet-phy@0 {
++			reg = <0>;
++			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
++			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
++			reset-assert-us = <10000>;
++			reset-deassert-us = <300>;
++		};
++	};
++};
++
++&gpio1 {
++	gpio-line-names =
++		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
++			"CAM2_MIRROR", "", "", "SMBALERT",
++		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
++		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
++			"SD1_DATA3", "ETH_MDIO", "",
++		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
++};
++
++&gpio4 {
++	gpio-line-names =
++		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
++		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
++			"CAN2_SR", "CAN2_TX", "CAN2_RX",
++		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
++			"HITCH_IN_OUT",
++		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
++			"ISB_LED";
++};
++
++&gpio5 {
++	gpio-line-names =
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
++			"I2S_BITCLK", "I2S_DOUT",
++		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
++			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
++};
++
++&gpio6 {
++	gpio-line-names =
++		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
++			"ITU656_D6", "ITU656_D7", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
++			"RGMII_TD3",
++		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
++			"RGMII_RD2", "RGMII_RD3", "", "";
++};
++
++&iomuxc {
++	pinctrl_enet: enetgrp {
++		fsl,pins = <
++			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
++			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
++			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
++			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
++			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
++			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
++			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
++			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
++			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
++			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
++			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
++			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
++			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
++			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
++			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
++			/* Phy reset */
++			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
++			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
++		>;
++	};
++
++	pinctrl_gpiokeys: gpiokeygrp {
++		fsl,pins = <
++			/* nON_SWITCH */
++			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
++		>;
++	};
++};
+diff --git a/arch/arm/boot/dts/imx6qp-vicutp.dts b/arch/arm/boot/dts/imx6qp-vicutp.dts
+index 31c748e9d92f..49ff145fffe5 100644
+--- a/arch/arm/boot/dts/imx6qp-vicutp.dts
++++ b/arch/arm/boot/dts/imx6qp-vicutp.dts
+@@ -6,130 +6,9 @@
+ /dts-v1/;
+ #include "imx6qp.dtsi"
+ #include "imx6qdl-vicut1.dtsi"
++#include "imx6qdl-vicut1-12inch.dtsi"
+ 
+ / {
+ 	model = "Kverneland UT1P Board";
+ 	compatible = "kvg,vicutp", "fsl,imx6qp";
+-
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_gpiokeys>;
+-		autorepeat;
+-
+-		power {
+-			label = "Power Button";
+-			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
+-			linux,code = <KEY_POWER>;
+-			wakeup-source;
+-		};
+-	};
+-
+-	panel {
+-		compatible = "kyo,tcg121xglp";
+-		backlight = <&backlight_lcd>;
+-		power-supply = <&reg_3v3>;
+-
+-		port {
+-			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
+-			};
+-		};
+-	};
+-};
+-
+-&fec {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_enet>;
+-	phy-mode = "rgmii-id";
+-	phy-handle = <&rgmii_phy>;
+-	status = "okay";
+-
+-	mdio {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		/* Microchip KSZ9031RNX PHY */
+-		rgmii_phy: ethernet-phy@0 {
+-			reg = <0>;
+-			interrupts-extended = <&gpio1 28 IRQ_TYPE_LEVEL_LOW>;
+-			reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
+-			reset-assert-us = <10000>;
+-			reset-deassert-us = <300>;
+-		};
+-	};
+-};
+-
+-&gpio1 {
+-	gpio-line-names =
+-		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
+-			"CAM2_MIRROR", "", "", "SMBALERT",
+-		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
+-		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
+-			"SD1_DATA3", "ETH_MDIO", "",
+-		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
+-};
+-
+-&gpio4 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
+-		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
+-			"CAN2_SR", "CAN2_TX", "CAN2_RX",
+-		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
+-			"HITCH_IN_OUT",
+-		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
+-			"ISB_LED";
+-};
+-
+-&gpio5 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "ITU656_CLK", "I2S_MCLK", "ITU656_PDN", "AUDIO_RESET",
+-			"I2S_BITCLK", "I2S_DOUT",
+-		"I2S_LRCLK", "I2S_DIN", "I2C1_SDA", "I2C1_SCL", "YACO_AUX_RX",
+-			"YACO_AUX_TX", "ITU656_D0", "ITU656_D1";
+-};
+-
+-&gpio6 {
+-	gpio-line-names =
+-		"ITU656_D2", "ITU656_D3", "ITU656_D4", "ITU656_D5",
+-			"ITU656_D6", "ITU656_D7", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "RGMII_TXC", "RGMII_TD0", "RGMII_TD1", "RGMII_TD2",
+-			"RGMII_TD3",
+-		"RGMII_RX_CTL", "RGMII_RD0", "RGMII_TX_CTL", "RGMII_RD1",
+-			"RGMII_RD2", "RGMII_RD3", "", "";
+-};
+-
+-&iomuxc {
+-	pinctrl_enet: enetgrp {
+-		fsl,pins = <
+-			MX6QDL_PAD_RGMII_RXC__RGMII_RXC			0x1b030
+-			MX6QDL_PAD_RGMII_RD0__RGMII_RD0			0x1b030
+-			MX6QDL_PAD_RGMII_RD1__RGMII_RD1			0x1b030
+-			MX6QDL_PAD_RGMII_RD2__RGMII_RD2			0x1b030
+-			MX6QDL_PAD_RGMII_RD3__RGMII_RD3			0x1b030
+-			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL		0x1b030
+-			MX6QDL_PAD_RGMII_TXC__RGMII_TXC			0x10030
+-			MX6QDL_PAD_RGMII_TD0__RGMII_TD0			0x10030
+-			MX6QDL_PAD_RGMII_TD1__RGMII_TD1			0x10030
+-			MX6QDL_PAD_RGMII_TD2__RGMII_TD2			0x10030
+-			MX6QDL_PAD_RGMII_TD3__RGMII_TD3			0x10030
+-			MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL		0x10030
+-			MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK		0x10030
+-			MX6QDL_PAD_ENET_MDIO__ENET_MDIO			0x10030
+-			MX6QDL_PAD_ENET_MDC__ENET_MDC			0x10030
+-			/* Phy reset */
+-			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25		0x1b0b0
+-			MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28		0x1b0b1
+-		>;
+-	};
+-
+-	pinctrl_gpiokeys: gpiokeygrp {
+-		fsl,pins = <
+-			/* nON_SWITCH */
+-			MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
+-		>;
+-	};
+ };
 -- 
-2.35.1
-
-
+2.30.2
 
