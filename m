@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B76FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF8CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376847AbiDLIu3 (ORCPT
+        id S1376935AbiDLIug (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
+        Tue, 12 Apr 2022 04:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358261AbiDLHlN (ORCPT
+        with ESMTP id S1358312AbiDLHlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9FA424A3;
-        Tue, 12 Apr 2022 00:17:41 -0700 (PDT)
+        Tue, 12 Apr 2022 03:41:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A93B45AF0;
+        Tue, 12 Apr 2022 00:17:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C6FB6153F;
-        Tue, 12 Apr 2022 07:17:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4408CC385A6;
-        Tue, 12 Apr 2022 07:17:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F01FD616B2;
+        Tue, 12 Apr 2022 07:17:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A45C385A5;
+        Tue, 12 Apr 2022 07:17:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747860;
-        bh=sB3ctKJpeWozzwijECZo6jSzehzrqz0vt3jr47udbag=;
+        s=korg; t=1649747863;
+        bh=elrvW3bnbgmA8t2/Ex3dnVBXPkdDaZXV0P4AvBUOFSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GfE+22lkoNrx8NTnyYffPW/G754CCwj7Ku1jjwx4TiJps231SLYkZ6S91V2y2523k
-         danR6VqCweqDOagS8OsvIFLkomlRAnww8ptxmZRGrBMrZXqZXm6oy97HBhMifSjHeU
-         jbg/N61RHocOixFli35vCw2662PRnW8dg8Satb54=
+        b=csHy5PLqwFSR3rp75KDz5UWKpxODg8a4zWdrtUV0UnClCYbAeRFBGnUL6BPGYUaSH
+         sfmZbY3Y0n9wGmUoZbWnE8zEcShWPCtIl2A+UUO7bCTt/Eez3/Alnq0IhOA6WE+txp
+         cbg4Neu4NhJvRzf4VhFnUNkkCGsydZ/tjTFNsfJY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Jeremy Sowden <jeremy@azazel.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 231/343] sctp: count singleton chunks in assoc user stats
-Date:   Tue, 12 Apr 2022 08:30:49 +0200
-Message-Id: <20220412062958.004460356@linuxfoundation.org>
+Subject: [PATCH 5.17 196/343] netfilter: bitwise: fix reduce comparisons
+Date:   Tue, 12 Apr 2022 08:30:14 +0200
+Message-Id: <20220412062957.013993867@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,52 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+From: Jeremy Sowden <jeremy@azazel.net>
 
-[ Upstream commit e3d37210df5c41c51147a2d5d465de1a4d77be7a ]
+[ Upstream commit 31818213170caa51d116eb5dc1167b88523b4fe1 ]
 
-Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
-COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
-counter available to the assoc owner.
+The `nft_bitwise_reduce` and `nft_bitwise_fast_reduce` functions should
+compare the bitwise operation in `expr` with the tracked operation
+associated with the destination register of `expr`.  However, instead of
+being called on `expr` and `track->regs[priv->dreg].selector`,
+`nft_expr_priv` is called on `expr` twice, so both reduce functions
+return true even when the operations differ.
 
-These are all control chunks so they should be counted as such.
-
-Add counting of singleton chunks so they are properly accounted for.
-
-Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Link: https://lore.kernel.org/r/c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: be5650f8f47e ("netfilter: nft_bitwise: track register operations")
+Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/outqueue.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/netfilter/nft_bitwise.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
-index a18609f608fb..e213aaf45d67 100644
---- a/net/sctp/outqueue.c
-+++ b/net/sctp/outqueue.c
-@@ -914,6 +914,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
- 				ctx->asoc->base.sk->sk_err = -error;
- 				return;
- 			}
-+			ctx->asoc->stats.octrlchunks++;
- 			break;
+diff --git a/net/netfilter/nft_bitwise.c b/net/netfilter/nft_bitwise.c
+index 7b727d3ebf9d..04bd2f89afe8 100644
+--- a/net/netfilter/nft_bitwise.c
++++ b/net/netfilter/nft_bitwise.c
+@@ -287,7 +287,7 @@ static bool nft_bitwise_reduce(struct nft_regs_track *track,
+ 	if (!track->regs[priv->sreg].selector)
+ 		return false;
  
- 		case SCTP_CID_ABORT:
-@@ -938,7 +939,10 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
+-	bitwise = nft_expr_priv(expr);
++	bitwise = nft_expr_priv(track->regs[priv->dreg].selector);
+ 	if (track->regs[priv->sreg].selector == track->regs[priv->dreg].selector &&
+ 	    track->regs[priv->dreg].bitwise &&
+ 	    track->regs[priv->dreg].bitwise->ops == expr->ops &&
+@@ -434,7 +434,7 @@ static bool nft_bitwise_fast_reduce(struct nft_regs_track *track,
+ 	if (!track->regs[priv->sreg].selector)
+ 		return false;
  
- 		case SCTP_CID_HEARTBEAT:
- 			if (chunk->pmtu_probe) {
--				sctp_packet_singleton(ctx->transport, chunk, ctx->gfp);
-+				error = sctp_packet_singleton(ctx->transport,
-+							      chunk, ctx->gfp);
-+				if (!error)
-+					ctx->asoc->stats.octrlchunks++;
- 				break;
- 			}
- 			fallthrough;
+-	bitwise = nft_expr_priv(expr);
++	bitwise = nft_expr_priv(track->regs[priv->dreg].selector);
+ 	if (track->regs[priv->sreg].selector == track->regs[priv->dreg].selector &&
+ 	    track->regs[priv->dreg].bitwise &&
+ 	    track->regs[priv->dreg].bitwise->ops == expr->ops &&
 -- 
 2.35.1
 
