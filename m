@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E65C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB826C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382757AbiDLIdp (ORCPT
+        id S1359051AbiDLIdF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
+        Tue, 12 Apr 2022 04:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353480AbiDLHZn (ORCPT
+        with ESMTP id S1353521AbiDLHZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D58434AC;
-        Tue, 12 Apr 2022 00:00:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C482434BB;
+        Tue, 12 Apr 2022 00:01:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70C8060B2B;
-        Tue, 12 Apr 2022 07:00:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F71C385A6;
-        Tue, 12 Apr 2022 07:00:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CDFA615BB;
+        Tue, 12 Apr 2022 07:01:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF32FC385A6;
+        Tue, 12 Apr 2022 07:00:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746843;
-        bh=owrRxY8cSiGya61jUO0X4zrPASoREzU4RoHqg/WmKWY=;
+        s=korg; t=1649746860;
+        bh=Zygt8MRYFsVO8DaTiGJs09gQRp/2MWgpUr27wSNwVnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nL936WRjLLqPOg2ZP2LpDrn3zIN8e41mUfyzKm2T7SJeySLlkSH5YLLcb0wmzyAyI
-         qxG4C8CktMCCyX783K8z2jKTuyOBybke47NJUEJUL1gyDg8rP7Aw7JcxjDptIthWyh
-         duENmJANoBpRbrB7A93WFVuY3jA1bQdQu/F+qsrM=
+        b=qzCQaHEDH+AFOt2Fx6Z/bhANomXE9DtBXZ5np4/dGN4waMnon4g5CVezGpjK/66cg
+         +zeN4m3LyKY8pT7CB/NC96ru9lNaQD6+p3zl6I9jr/xL49Pf/ZIHO5wqBw/TtLKqfP
+         w+fZ0eSmQlDA1KtnwkcFHNMRyL9QvNXS1Gslqn10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org, Lyu Tao <tao.lyu@epfl.ch>,
+        ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 149/285] rtc: mc146818-lib: change return values of mc146818_get_time()
-Date:   Tue, 12 Apr 2022 08:30:06 +0200
-Message-Id: <20220412062947.973897539@linuxfoundation.org>
+Subject: [PATCH 5.16 154/285] Revert "NFSv4: Handle the special Linux file open access mode"
+Date:   Tue, 12 Apr 2022 08:30:11 +0200
+Message-Id: <20220412062948.117828131@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,45 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: ChenXiaoSong <chenxiaosong2@huawei.com>
 
-[ Upstream commit d35786b3a28dee20b12962ae2dd365892a99ed1a ]
+[ Upstream commit ab0fc21bc7105b54bafd85bd8b82742f9e68898a ]
 
-No function is checking mc146818_get_time() return values yet, so
-correct them to make them more customary.
+This reverts commit 44942b4e457beda00981f616402a1a791e8c616e.
 
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-3-mat.jonczyk@o2.pl
+After secondly opening a file with O_ACCMODE|O_DIRECT flags,
+nfs4_valid_open_stateid() will dereference NULL nfs4_state when lseek().
+
+Reproducer:
+  1. mount -t nfs -o vers=4.2 $server_ip:/ /mnt/
+  2. fd = open("/mnt/file", O_ACCMODE|O_DIRECT|O_CREAT)
+  3. close(fd)
+  4. fd = open("/mnt/file", O_ACCMODE|O_DIRECT)
+  5. lseek(fd)
+
+Reported-by: Lyu Tao <tao.lyu@epfl.ch>
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-mc146818-lib.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/nfs/inode.c    | 1 -
+ fs/nfs/nfs4file.c | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
-index 04b05e3b68cb..bd48cee3027e 100644
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -25,7 +25,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
- 	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
- 		spin_unlock_irqrestore(&rtc_lock, flags);
- 		memset(time, 0xff, sizeof(*time));
--		return 0;
-+		return -EIO;
- 	}
- 
- 	/*
-@@ -116,7 +116,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
- 
- 	time->tm_mon--;
- 
--	return RTC_24H;
-+	return 0;
+diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
+index a09d3ff627c2..4da8a4a7bad7 100644
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -1180,7 +1180,6 @@ int nfs_open(struct inode *inode, struct file *filp)
+ 	nfs_fscache_open_file(inode, filp);
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(mc146818_get_time);
+-EXPORT_SYMBOL_GPL(nfs_open);
  
+ /*
+  * This function is called whenever some part of NFS notices that
+diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
+index e79ae4cbc395..c178db86a6e8 100644
+--- a/fs/nfs/nfs4file.c
++++ b/fs/nfs/nfs4file.c
+@@ -51,7 +51,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
+ 		return err;
+ 
+ 	if ((openflags & O_ACCMODE) == 3)
+-		return nfs_open(inode, filp);
++		openflags--;
+ 
+ 	/* We can't create new files here */
+ 	openflags &= ~(O_CREAT|O_EXCL);
 -- 
 2.35.1
 
