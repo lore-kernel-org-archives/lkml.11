@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA2B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 357E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350721AbiDLGvO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39530 "EHLO
+        id S241931AbiDLGvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351617AbiDLGpY (ORCPT
+        with ESMTP id S1351616AbiDLGpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:45:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885FC3B2AB;
-        Mon, 11 Apr 2022 23:38:48 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DE43B2A3;
+        Mon, 11 Apr 2022 23:38:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2449C6190F;
-        Tue, 12 Apr 2022 06:38:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A283C385AA;
-        Tue, 12 Apr 2022 06:38:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 188C5B818C8;
+        Tue, 12 Apr 2022 06:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBC5C385A8;
+        Tue, 12 Apr 2022 06:38:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745527;
-        bh=xAgepn/GSiqZbXlSZ8+acp+hIg20I4xs5CckCdn+aBY=;
+        s=korg; t=1649745524;
+        bh=D944uUbc/6izxyPltKm9CFJmV8F0UltJQMAc2SdL3hU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=keuAjxr9e0OLqRwhMZK/E597quXrxtqn4dw+SQ1PW20/UNjtjfF6oJNOy6opYOwsv
-         9WDHZTjKusWRKGgR4e3d640P0ivDVOJbZpeIbenMqfFUrLmI/F6H8grRWVADFsoJuP
-         a7LbMVrQlqooDY86S2haVJOP8zp507MP6V6x00nI=
+        b=v0I6uaZ3qQbNGAu0MMoLx/8y4CFJtQ/+rqoTV34+L3SlSr/zfPex3FMGEI/a+BP/v
+         sWsH59hu3TQCMFbQW49dpWtfIfA4kIHW+sRyB2VXH5QCaNvqqZ0AoOncZO1IVsXTFL
+         gYnFX21VlrjQYJwwOhs6FEd4u6lJyZA126SNiMm4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 127/171] SUNRPC: Handle ENOMEM in call_transmit_status()
-Date:   Tue, 12 Apr 2022 08:30:18 +0200
-Message-Id: <20220412062931.559098054@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 126/171] io_uring: dont touch scm_fp_list after queueing skb
+Date:   Tue, 12 Apr 2022 08:30:17 +0200
+Message-Id: <20220412062931.529569593@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -50,40 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit d3c15033b240767d0287f1c4a529cbbe2d5ded8a ]
+[ Upstream commit a07211e3001435fe8591b992464cd8d5e3c98c5a ]
 
-Both call_transmit() and call_bc_transmit() can now return ENOMEM, so
-let's make sure that we handle the errors gracefully.
+It's safer to not touch scm_fp_list after we queued an skb to which it
+was assigned, there might be races lurking if we screw subtle sync
+guarantees on the io_uring side.
 
-Fixes: 0472e4766049 ("SUNRPC: Convert socket page send code to use iov_iter()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: 6b06314c47e14 ("io_uring: add file set registration")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/clnt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/io_uring.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 84c8a534029c..bae42ada8c10 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2175,6 +2175,7 @@ call_transmit_status(struct rpc_task *task)
- 		 * socket just returned a connection error,
- 		 * then hold onto the transport lock.
- 		 */
-+	case -ENOMEM:
- 	case -ENOBUFS:
- 		rpc_delay(task, HZ>>2);
- 		fallthrough;
-@@ -2258,6 +2259,7 @@ call_bc_transmit_status(struct rpc_task *task)
- 	case -ENOTCONN:
- 	case -EPIPE:
- 		break;
-+	case -ENOMEM:
- 	case -ENOBUFS:
- 		rpc_delay(task, HZ>>2);
- 		fallthrough;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 5959b0359524..3580fa2dabc8 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -7346,8 +7346,12 @@ static int __io_sqe_files_scm(struct io_ring_ctx *ctx, int nr, int offset)
+ 		refcount_add(skb->truesize, &sk->sk_wmem_alloc);
+ 		skb_queue_head(&sk->sk_receive_queue, skb);
+ 
+-		for (i = 0; i < nr_files; i++)
+-			fput(fpl->fp[i]);
++		for (i = 0; i < nr; i++) {
++			struct file *file = io_file_from_index(ctx, i + offset);
++
++			if (file)
++				fput(file);
++		}
+ 	} else {
+ 		kfree_skb(skb);
+ 		free_uid(fpl->user);
 -- 
 2.35.1
 
