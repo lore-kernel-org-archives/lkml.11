@@ -2,153 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B783FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbiDLJmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        id S1352342AbiDLJmg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389431AbiDLJXp (ORCPT
+        with ESMTP id S1388441AbiDLJWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:23:45 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8A2546A4;
-        Tue, 12 Apr 2022 01:38:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649752685; x=1681288685;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QLFnvFZjCBbBm1WrCuQHfneVU5wUafBRZqi1LfvDPoE=;
-  b=mOSYN6HK4TTZts/UuOsNetTBcqvyjMVC1a0D+ojBhnMOq+qp/DfZzFbe
-   SZZd0R1XMKE2AVTGwe71xb776qGNwb/JKHiu8u5R3Gg6NEINTVeNp2nzt
-   zog34OBxVUkcZ1DyXbXlT+mGV/V5CVcd/2YY8PDelPgu0Lw9Jo+AAHdnC
-   gUKeiMmpQlNva+a/hI3RvUr84VXxCQUiecuMIMWU5fzHkZPZJev6RAIvr
-   tQDWapMylYMEFsk7JrduTu7s4GKFMcV3PPEwWbI5pAJNftVT89bqqzKc5
-   Pto7hwxOyz42XkMACv/eRIM8pxvmoe+JdGVY2NhOP5OJoScakqnP3KW07
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242257568"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="242257568"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 01:38:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="611341789"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 12 Apr 2022 01:38:03 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neC2E-0002fc-Oa;
-        Tue, 12 Apr 2022 08:38:02 +0000
-Date:   Tue, 12 Apr 2022 16:37:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Patrick Wang <patrick.wang.shcn@gmail.com>, robh+dt@kernel.org,
-        frowand.list@gmail.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        patrick.wang.shcn@gmail.com
-Subject: Re: [PATCH] of: fdt: do not reserve memory below MIN_MEMBLOCK_ADDR
-Message-ID: <202204121637.4ZHpTqwT-lkp@intel.com>
-References: <20220412045228.35306-1-patrick.wang.shcn@gmail.com>
+        Tue, 12 Apr 2022 05:22:12 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E23B46B12
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:28:40 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id l7so30367224ejn.2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:28:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9pLWiODOOZL178tpEqwofl1D5ualPXQ/vBRW34AkTuA=;
+        b=NLdpRY6W7VSJdqN39swR+EnBSwHzc9yMPP1ohdf7r0qw+XUE7KvlliFNmr3MeKW3kt
+         dvSzsH6RjuFfwZdsXywZafFmY615056s45UlxPo/DLsKb5GaLPPZQEVhKS67laqmN5dc
+         zRoMg6letP7zOsScx2XLGC7wQDLnxbTQ79cm2PXG0qGPW0cPqHMUqnWBkrRzm6xHdNPQ
+         IiPiUPT8luzGcJtxkW3d7Qr0D7Z/VPvvg+zkMl5hO/TDGjU7eeAHYipDJz3TxtiGRU9o
+         MqQO5b9mHqr9UPU7do3V8AI5C/eHpwhSBraqDS7m3soKgWke88QHaSrEZHEpKn3WsWfi
+         sfpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9pLWiODOOZL178tpEqwofl1D5ualPXQ/vBRW34AkTuA=;
+        b=50asldSq1IH6XTp0QTN19c6e9KH6CIDIM9v9bR/hizuVWokis+mS9i2g7P6RXU/8LU
+         19+d/t+Pl3EDuifUk1J9PLSlDe6+xkbVhJVEVHUApmH1tTGO98QEpXydMba4PMdXdLB0
+         7CJxXGH9sVDP/rjBgNzRzgYjEvuvoU3Drfm4RY6KmsEZkvmmgv9KsW+f91ykAQXyKBoq
+         yzLZYy3der8O2jxuUj/gaiWw+VJOFhlqs713TWWhuMA7zSJhzFvJ6n0qFnW2XGUwNdvL
+         AmggL20CqCIzpP4wwOv0RHsoM6hmtAWjfyMDFXT8JkD1CqRc6/g6VcYxUtZBw8h4Urat
+         heUg==
+X-Gm-Message-State: AOAM531LzMBDRQmPxmN7OuwVW7xW3bkuuOrsgWkAIC1YDS4NxMVKCtOv
+        BLOrLfdh2KQwn7ap7ZBMQOUOMPjNRHvC0401UeBrgQ==
+X-Google-Smtp-Source: ABdhPJxg+bgJzY8ifzgACdhMELmjNhIE8OEjtXI7cTUfeZE1bYvbbpw+kl1uin2SHTd4z5vkUunyd3PCDRmh10FCRgk=
+X-Received: by 2002:a17:907:97cf:b0:6df:846f:ad0a with SMTP id
+ js15-20020a17090797cf00b006df846fad0amr34382832ejc.286.1649752118772; Tue, 12
+ Apr 2022 01:28:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412045228.35306-1-patrick.wang.shcn@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220411063324.98542-1-andrei.lalaev@emlid.com> <CAHp75VfyxspOScEt1qffshdrDYuQp50O5HFbr2cUV7MYsg=JdQ@mail.gmail.com>
+In-Reply-To: <CAHp75VfyxspOScEt1qffshdrDYuQp50O5HFbr2cUV7MYsg=JdQ@mail.gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 12 Apr 2022 10:28:27 +0200
+Message-ID: <CAMRc=MfakYvQUW4NLWCrm5yVA185X4t__aB3r4-9xTh8YJaq8g@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: of: fix bounds check for valid mask
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Andrei Lalaev <andrei.lalaev@emlid.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Patrick,
+On Mon, Apr 11, 2022 at 2:17 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Mon, Apr 11, 2022 at 12:57 PM Andrei Lalaev <andrei.lalaev@emlid.com> wrote:
+> >
+> > Use "greater" instead of "greater or equal" when performs bounds check
+> > to make sure that GPIOS are in available range. Previous implementation
+>
+> the available
+>
+> > skipped ranges which include last GPIO in range.
+>
+> the last
+>
+> Should it have a Fixes tag?
+>
+> OTOH, the current implementation suggests that we have start,end
+> rather than start,count. What does documentation tell about it? Does
+> it need to be fixed?
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
 
-Thank you for the patch! Perhaps something to improve:
+Thanks Andy, I rushed this one. Backing it out.
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on v5.18-rc2 next-20220412]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Patrick-Wang/of-fdt-do-not-reserve-memory-below-MIN_MEMBLOCK_ADDR/20220412-125309
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arm-buildonly-randconfig-r006-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121637.4ZHpTqwT-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/d362274832c02bb7812c13eff968322a76f10ed3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Patrick-Wang/of-fdt-do-not-reserve-memory-below-MIN_MEMBLOCK_ADDR/20220412-125309
-        git checkout d362274832c02bb7812c13eff968322a76f10ed3
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/of/fdt.c:494:4: warning: format specifies type 'unsigned long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
-                           base, phys_offset);
-                           ^~~~
-   include/linux/printk.h:499:37: note: expanded from macro 'pr_warn'
-           printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
-                                      ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   1 warning generated.
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
-   Depends on HAS_IOMEM && DRM && MMU
-   Selected by
-   - DRM_SSD130X && HAS_IOMEM && DRM
-
-
-vim +494 drivers/of/fdt.c
-
-   486	
-   487	static int __init early_init_dt_reserve_memory_arch(phys_addr_t base,
-   488						phys_addr_t size, bool nomap)
-   489	{
-   490		const u64 phys_offset = MIN_MEMBLOCK_ADDR;
-   491	
-   492		if (base < phys_offset) {
-   493			pr_warn("Ignoring reserved memory range 0x%llx - 0x%llx\n",
- > 494				base, phys_offset);
-   495			size = (phys_offset - base) < size ?
-   496				size - (phys_offset - base) : 0;
-   497			base = phys_offset;
-   498	
-   499			if (!size)
-   500				return -EFAULT;
-   501		}
-   502	
-   503		if (nomap) {
-   504			/*
-   505			 * If the memory is already reserved (by another region), we
-   506			 * should not allow it to be marked nomap, but don't worry
-   507			 * if the region isn't memory as it won't be mapped.
-   508			 */
-   509			if (memblock_overlaps_region(&memblock.memory, base, size) &&
-   510			    memblock_is_region_reserved(base, size))
-   511				return -EBUSY;
-   512	
-   513			return memblock_mark_nomap(base, size);
-   514		}
-   515		return memblock_reserve(base, size);
-   516	}
-   517	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Bart
