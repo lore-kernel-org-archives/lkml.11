@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9854DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DA2C47096
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351134AbiDLG6y (ORCPT
+        id S1351622AbiDLG6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48362 "EHLO
+        Tue, 12 Apr 2022 02:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351436AbiDLGxg (ORCPT
+        with ESMTP id S1351403AbiDLGxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4090E3C4B6;
-        Mon, 11 Apr 2022 23:40:36 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B703BA5D;
+        Mon, 11 Apr 2022 23:40:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF45AB81B44;
-        Tue, 12 Apr 2022 06:40:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF284C385A1;
-        Tue, 12 Apr 2022 06:40:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85EAA60A6A;
+        Tue, 12 Apr 2022 06:40:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D14CC385A6;
+        Tue, 12 Apr 2022 06:40:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745633;
-        bh=0IXQ6QemGf4rPKgwHxSljZs/91uRJZG3i97fWEykBOc=;
+        s=korg; t=1649745627;
+        bh=ceuZB43P3gznOIMJ1ac94fowj66kFvngyDn8duaS0J0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sBpUZw/OpJLvscOug6+vmaR+mvjeDj6FhE3/8iTkdJz8aDT26XmG0JvOr/1Pc0E3u
-         5x6oV95G2vVaLEgJxaebnaD+jZmG3GfLMfiRJSnYoYDVl7vqMg+3KdQJZ1NuwcbZ8r
-         H/3DX/0Gp4IuO8joiD6O3eF9tOpcHQvRONJ2FjHI=
+        b=NrTzcxH5CKA6A9Ml5j0v1IgvXVs7iMYvk8NDAmRUJJNlDPKzSHBh3J7A8B9Ze3F7X
+         ePkVX7DkoZFsmVL29alNCnhEGDkmLGOHW5wTZFmBLxucqzo3FhkA7Gf2FA2L3klcal
+         lioooI1zbALkpGYdUhVSGVsPedwwbsulzkUeBYKw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 5.10 157/171] tools build: Filter out options and warnings not supported by clang
-Date:   Tue, 12 Apr 2022 08:30:48 +0200
-Message-Id: <20220412062932.439648839@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 122/171] qede: confirm skb is allocated before using
+Date:   Tue, 12 Apr 2022 08:30:13 +0200
+Message-Id: <20220412062931.415031684@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -58,133 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
 
-commit 41caff459a5b956b3e23ba9ca759dd0629ad3dda upstream.
+[ Upstream commit 4e910dbe36508654a896d5735b318c0b88172570 ]
 
-These make the feature check fail when using clang, so remove them just
-like is done in tools/perf/Makefile.config to build perf itself.
+qede_build_skb() assumes build_skb() always works and goes straight
+to skb_reserve(). However, build_skb() can fail under memory pressure.
+This results in a kernel panic because the skb to reserve is NULL.
 
-Adding -Wno-compound-token-split-by-macro to tools/perf/Makefile.config
-when building with clang is also necessary to avoid these warnings
-turned into errors (-Werror):
+Add a check in case build_skb() failed to allocate and return NULL.
 
-    CC      /tmp/build/perf/util/scripting-engines/trace-event-perl.o
-  In file included from util/scripting-engines/trace-event-perl.c:35:
-  In file included from /usr/lib64/perl5/CORE/perl.h:4085:
-  In file included from /usr/lib64/perl5/CORE/hv.h:659:
-  In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
-  In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '(' and '{' tokens introducing statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
-                                       ^~~~~~~~~~
-  /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_START'
-  #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
-                                ^
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: '{' token is here
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
-                                                  ^
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '}' and ')' tokens terminating statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-      v ^= (v>>23);                       \
-                                          ^
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: ')' token is here
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-  } STMT_END
-    ^~~~~~~~
-  /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_END'
-  #   define STMT_END     )
-                          ^
+The NULL return is handled correctly in callers to qede_build_skb().
 
-Please refer to the discussion on the Link: tag below, where Nathan
-clarifies the situation:
-
-<quote>
-acme> And then get to the problems at the end of this message, which seem
-acme> similar to the problem described here:
-acme>
-acme> From  Nathan Chancellor <>
-acme> Subject	[PATCH] mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
-acme>
-acme> https://lkml.org/lkml/2020/9/1/135
-acme>
-acme> So perhaps in this case its better to disable that
-acme> -Werror,-Wcompound-token-split-by-macro when building with clang?
-
-Yes, I think that is probably the best solution. As far as I can tell,
-at least in this file and context, the warning appears harmless, as the
-"create a GNU C statement expression from two different macros" is very
-much intentional, based on the presence of PERL_USE_GCC_BRACE_GROUPS.
-The warning is fixed in upstream Perl by just avoiding creating GNU C
-statement expressions using STMT_START and STMT_END:
-
-  https://github.com/Perl/perl5/issues/18780
-  https://github.com/Perl/perl5/pull/18984
-
-If I am reading the source code correctly, an alternative to disabling
-the warning would be specifying -DPERL_GCC_BRACE_GROUPS_FORBIDDEN but it
-seems like that might end up impacting more than just this site,
-according to the issue discussion above.
-</quote>
-
-Based-on-a-patch-by: Sedat Dilek <sedat.dilek@gmail.com>
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YkxWcYzph5pC1EK8@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
+Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/build/feature/Makefile |    7 +++++++
- tools/perf/Makefile.config   |    3 +++
- 2 files changed, 10 insertions(+)
+ drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -213,6 +213,13 @@ PERL_EMBED_LIBADD = $(call grep-libs,$(P
- PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index 21c906200e79..d210632676d3 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -752,6 +752,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
+ 	buf = page_address(bd->data) + bd->page_offset;
+ 	skb = build_skb(buf, rxq->rx_buf_seg_size);
  
-+ifeq ($(CC_NO_CLANG), 0)
-+  PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
-+  PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
-+  PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
-+  FLAGS_PERL_EMBED += -Wno-compound-token-split-by-macro
-+endif
++	if (unlikely(!skb))
++		return NULL;
 +
- $(OUTPUT)test-libperl.bin:
- 	$(BUILD) $(FLAGS_PERL_EMBED)
+ 	skb_reserve(skb, pad);
+ 	skb_put(skb, len);
  
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -763,6 +763,9 @@ else
-     LDFLAGS += $(PERL_EMBED_LDFLAGS)
-     EXTLIBS += $(PERL_EMBED_LIBADD)
-     CFLAGS += -DHAVE_LIBPERL_SUPPORT
-+    ifeq ($(CC_NO_CLANG), 0)
-+      CFLAGS += -Wno-compound-token-split-by-macro
-+    endif
-     $(call detected,CONFIG_LIBPERL)
-   endif
- endif
+-- 
+2.35.1
+
 
 
