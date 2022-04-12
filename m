@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B1DC352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E596C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353956AbiDLIEm (ORCPT
+        id S1353864AbiDLIEZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
+        Tue, 12 Apr 2022 04:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353684AbiDLHZv (ORCPT
+        with ESMTP id S1353683AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814EB275E7;
-        Tue, 12 Apr 2022 00:03:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C5C27B0E;
+        Tue, 12 Apr 2022 00:03:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40AAAB81B4F;
-        Tue, 12 Apr 2022 07:03:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE6AC385A6;
-        Tue, 12 Apr 2022 07:03:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D13F60B2B;
+        Tue, 12 Apr 2022 07:03:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B870C385A1;
+        Tue, 12 Apr 2022 07:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747016;
-        bh=XAj7FCfm0M/jy4rFK9gDsnIs+X5IJ8/MZGnWY/bFg0Q=;
+        s=korg; t=1649747019;
+        bh=OTYaN9cEFJk3+s8Bk6TF+yOQ9yew98O3/jc7PDaRvlI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bzWojVxqGa33efcml94VqSxxkRoWjwJD2lANT9nrDPNIKgYALWy/HVnO9Id0dhOdl
-         6InCBt1WzwJlajctcyk2NuG1U4IzoqIzis8bvYk/f6EAbMK4Eo3sMwej+mCUgyqfVv
-         lBOACpSIX8OaBQFcnZc27czJf659cLNBoD0dip9g=
+        b=KImNTywr9TaoBqK3Sax2FEVbjvBgLmwdC0ySk4y+WCdHw6zfGHtl0CnochwTcZlqH
+         fIZCJIM1QXvcU/5byOKlfc8fs0eO1xSe0OXTv8vGVYBdAGZ0axz10wQkJ12PH/Rru0
+         /EqNyctdECUwA12v0IxAYyd2hiZvPj2xh5UQIBsY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 214/285] scsi: ufs: ufs-pci: Add support for Intel MTL
-Date:   Tue, 12 Apr 2022 08:31:11 +0200
-Message-Id: <20220412062949.834426664@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.16 215/285] Revert "mmc: sdhci-xenon: fix annoying 1.8V regulator warning"
+Date:   Tue, 12 Apr 2022 08:31:12 +0200
+Message-Id: <20220412062949.864350881@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,62 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit 4049f7acef3eb37c1ea0df45f3ffc29404f4e708 upstream.
+commit 7e2646ed47542123168d43916b84b954532e5386 upstream.
 
-Add PCI ID and callbacks to support Intel Meteor Lake (MTL).
+This reverts commit bb32e1987bc55ce1db400faf47d85891da3c9b9f.
 
-Link: https://lore.kernel.org/r/20220404055038.2208051-1-adrian.hunter@intel.com
-Cc: stable@vger.kernel.org # v5.15+
-Reviewed-by: Avri Altman <avri.altman@wdc.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Commit 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
+contains proper fix for the issue described in commit bb32e1987bc5 ("mmc:
+sdhci-xenon: fix annoying 1.8V regulator warning").
+
+Fixes: 8d876bf472db ("mmc: sdhci-xenon: wait 5ms after set 1.8V signal enable")
+Cc: stable@vger.kernel.org # 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Marcin Wojtas <mw@semihalf.com>
+Link: https://lore.kernel.org/r/20220318141441.32329-1-pali@kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshcd-pci.c |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/mmc/host/sdhci-xenon.c |   10 ----------
+ 1 file changed, 10 deletions(-)
 
---- a/drivers/scsi/ufs/ufshcd-pci.c
-+++ b/drivers/scsi/ufs/ufshcd-pci.c
-@@ -428,6 +428,12 @@ static int ufs_intel_adl_init(struct ufs
- 	return ufs_intel_common_init(hba);
+--- a/drivers/mmc/host/sdhci-xenon.c
++++ b/drivers/mmc/host/sdhci-xenon.c
+@@ -241,16 +241,6 @@ static void xenon_voltage_switch(struct
+ {
+ 	/* Wait for 5ms after set 1.8V signal enable bit */
+ 	usleep_range(5000, 5500);
+-
+-	/*
+-	 * For some reason the controller's Host Control2 register reports
+-	 * the bit representing 1.8V signaling as 0 when read after it was
+-	 * written as 1. Subsequent read reports 1.
+-	 *
+-	 * Since this may cause some issues, do an empty read of the Host
+-	 * Control2 register here to circumvent this.
+-	 */
+-	sdhci_readw(host, SDHCI_HOST_CONTROL2);
  }
  
-+static int ufs_intel_mtl_init(struct ufs_hba *hba)
-+{
-+	hba->caps |= UFSHCD_CAP_CRYPTO | UFSHCD_CAP_WB_EN;
-+	return ufs_intel_common_init(hba);
-+}
-+
- static struct ufs_hba_variant_ops ufs_intel_cnl_hba_vops = {
- 	.name                   = "intel-pci",
- 	.init			= ufs_intel_common_init,
-@@ -465,6 +471,16 @@ static struct ufs_hba_variant_ops ufs_in
- 	.device_reset		= ufs_intel_device_reset,
- };
- 
-+static struct ufs_hba_variant_ops ufs_intel_mtl_hba_vops = {
-+	.name                   = "intel-pci",
-+	.init			= ufs_intel_mtl_init,
-+	.exit			= ufs_intel_common_exit,
-+	.hce_enable_notify	= ufs_intel_hce_enable_notify,
-+	.link_startup_notify	= ufs_intel_link_startup_notify,
-+	.resume			= ufs_intel_resume,
-+	.device_reset		= ufs_intel_device_reset,
-+};
-+
- #ifdef CONFIG_PM_SLEEP
- static int ufshcd_pci_restore(struct device *dev)
- {
-@@ -579,6 +595,7 @@ static const struct pci_device_id ufshcd
- 	{ PCI_VDEVICE(INTEL, 0x98FA), (kernel_ulong_t)&ufs_intel_lkf_hba_vops },
- 	{ PCI_VDEVICE(INTEL, 0x51FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
- 	{ PCI_VDEVICE(INTEL, 0x54FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
-+	{ PCI_VDEVICE(INTEL, 0x7E47), (kernel_ulong_t)&ufs_intel_mtl_hba_vops },
- 	{ }	/* terminate list */
- };
- 
+ static unsigned int xenon_get_max_clock(struct sdhci_host *host)
 
 
