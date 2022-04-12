@@ -2,99 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF147C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B49C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbiDLXfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
+        id S230492AbiDLXfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbiDLXbz (ORCPT
+        with ESMTP id S230438AbiDLXcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:31:55 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E558B15B98E;
-        Tue, 12 Apr 2022 15:27:14 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-df02f7e2c9so210636fac.10;
-        Tue, 12 Apr 2022 15:27:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=S/S1o5ASOF7/8+YPA6CC4QojK42QqA6NiYVB93lMJDo=;
-        b=oRi4haQUGRGrCQh0wYV3BTazqTC9XUUIzyDmdDu+lbC33wLWEXwwhbfO+OTmtE2RrZ
-         PKIpW+KI8mY5P9iwPUlEz4kKk2gGp0Hr61zWNYyG2SjVkJvlYx+x6b90RBAgAR5ukspr
-         rwQhkMMf5kbd0QGhX7spm0uUQkwFgwe7Ow9+K1LbRqSQGT7Wl8TK/APP8momOXboN/xL
-         YT6Apj+ng06gbfwWVqy27zjgasEmFJycm4jnAPvHJClAChLrIeDadfVHhqJj2Z+vKISL
-         E/x0/Z9ocwAl1I3Kizj7o81ue/r04P1TSJ37Zl9MvLN9Wj4wdh/+f1yTZ8aZWEsEXHhl
-         CR3Q==
-X-Gm-Message-State: AOAM530B2nZK1CmQNY5NPt8pRiNGE7jdO2who1j3mkR+2S+VW50elW/0
-        Tnx6UcPczMoz0EuJnVfmY4h7ufi35w==
-X-Google-Smtp-Source: ABdhPJyu7Bikhshe6ov3GObcYk/5A9g9nL4qq8yl2XXXI+kqjY71yYo8BHWvINy+xvK8bsm7vZ/l1A==
-X-Received: by 2002:a05:6870:1793:b0:de:a69a:118d with SMTP id r19-20020a056870179300b000dea69a118dmr3115029oae.163.1649798562760;
-        Tue, 12 Apr 2022 14:22:42 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x24-20020a056870a79800b000e2e53716fbsm2218502oao.31.2022.04.12.14.22.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 14:22:42 -0700 (PDT)
-Received: (nullmailer pid 965665 invoked by uid 1000);
-        Tue, 12 Apr 2022 21:22:41 -0000
-Date:   Tue, 12 Apr 2022 16:22:41 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     wsa@kernel.org, kernel@axis.com, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, krzk+dt@kernel.org,
+        Tue, 12 Apr 2022 19:32:04 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989A391ADE;
+        Tue, 12 Apr 2022 15:18:25 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CK0PfS018947;
+        Tue, 12 Apr 2022 21:21:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=6prYB34XhZtG0rGfev99u9tw3F5T7PMd0UICG29Tl4A=;
+ b=lhSzaW9QJfxdlxHq/Ic752sXUIdg/+ltmXrki+UDl62nPxUlG/Sh0mUvxHu2DHqApaiE
+ GPvWQcO8WXZ6dDk0J6V8vepw9FnE2yVUdqte0GHeaLnqs5f0tiI5FNo334nIWWwsXu+Q
+ GavdqfgnOXgI71IK09uAdJmgLlHXTUbWzOU6HWo/KapF3UZw0QY1OpBjChXNRlIr/XrE
+ +X3SXPdDiVkclPfSdQ17vaI0+2wNOxMavjy9pB2sgeX4NOmgClLGeaSB97oR2y0EBMzW
+ lyhZv0y3BKz9YAwVcp1pwjqJFYrAReEe2NKq7kbDMUWFMRjzxOL2eU48WWZSmH43mic8 VQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3fdd6mwbh1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 21:21:38 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CLFG81027863;
+        Tue, 12 Apr 2022 21:21:37 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3fdd6mwbgm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 21:21:37 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CLDiWB010702;
+        Tue, 12 Apr 2022 21:21:37 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma04dal.us.ibm.com with ESMTP id 3fb1sa9u3m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 21:21:37 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CLLZ5434079106
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 21:21:35 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 73EBF13604F;
+        Tue, 12 Apr 2022 21:21:35 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 89455136059;
+        Tue, 12 Apr 2022 21:21:33 +0000 (GMT)
+Received: from amdrome3.watson.ibm.com (unknown [9.2.130.16])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Apr 2022 21:21:33 +0000 (GMT)
+From:   Dov Murik <dovmurik@linux.ibm.com>
+To:     linux-efi@vger.kernel.org
+Cc:     Dov Murik <dovmurik@linux.ibm.com>, Borislav Petkov <bp@suse.de>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Peter Gonda <pgonda@google.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: i2c: add property to avoid device
- detection
-Message-ID: <YlXtobiXIyObF/7+@robh.at.kernel.org>
-References: <20220412085046.1110127-1-vincent.whitchurch@axis.com>
- <20220412085046.1110127-2-vincent.whitchurch@axis.com>
+Subject: [PATCH v10 0/4] Allow guest access to EFI confidential computing secret area
+Date:   Tue, 12 Apr 2022 21:21:23 +0000
+Message-Id: <20220412212127.154182-1-dovmurik@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: QRF_lLqLaE5tzV929T0NWJoKs8m24jtX
+X-Proofpoint-GUID: 3SQKBKd09vb-zfIk6s1ns16NEiCIIL7A
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412085046.1110127-2-vincent.whitchurch@axis.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ bulkscore=0 adultscore=0 priorityscore=1501 malwarescore=0
+ lowpriorityscore=0 phishscore=0 impostorscore=0 mlxlogscore=999
+ spamscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204120097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:50:45AM +0200, Vincent Whitchurch wrote:
-> When drivers with ->detect callbacks are loaded, the I2C core does a
-> bunch of transactions to try to probe for these devices, regardless of
-> whether they are specified in the devicetree or not.  (This only happens
-> on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
-> is the case for generic drivers like i2c-gpio.)
-> 
-> These kinds of transactions are unnecessary on systems where the
-> devicetree specifies all the devices on the I2C bus, so add a property
-> to indicate that the devicetree description of the hardware is complete
-> and thus allow this discovery to be disabled.
-> 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
-> 
-> Notes:
->     v2:
->     - Change subject prefix
->     - Reword description of property
-> 
->  Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
-> index fc3dd7ec0445..960d1d5c9362 100644
-> --- a/Documentation/devicetree/bindings/i2c/i2c.txt
-> +++ b/Documentation/devicetree/bindings/i2c/i2c.txt
-> @@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
->  	this information to adapt power management to keep the arbitration awake
->  	all the time, for example. Can not be combined with 'single-master'.
->  
-> +- no-detect
-> +	states that no other devices are present on this bus other than the
-> +	ones listed in the devicetree.
+Confidential computing (coco) hardware such as AMD SEV (Secure Encrypted
+Virtualization) allows guest owners to inject secrets into the VMs
+memory without the host/hypervisor being able to read them.  In SEV,
+secret injection is performed early in the VM launch process, before the
+guest starts running.
 
-This belongs in the schema instead:
+OVMF already reserves designated area for secret injection (in its
+AmdSev package; see edk2 commit 01726b6d23d4 "OvmfPkg/AmdSev: Expose the
+Sev Secret area using a configuration table" [1]), but the secrets were
+not available in the guest kernel.
 
-https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/i2c/i2c-controller.yaml
+The patch series keeps the address of the EFI-provided memory for
+injected secrets, and exposes the secrets to userspace via securityfs
+using a new efi_secret kernel module.  The module is autoloaded (by the
+EFI driver) if the secret area is populated.
 
-Rob
+The first patch in EFI keeps the address of the secret area as passed in
+the EFI configuration table.  The second patch introduces the new
+efi_secret module that exposes the content of the secret entries as
+securityfs files, and allows clearing out secrets with a file unlink
+interface.  The third patch auto-loads the efi_secret module during
+startup if the injected secrets area is populated.  The last patch
+documents the data flow of confidential computing secret injection.
+
+As a usage example, consider a guest performing computations on
+encrypted files.  The Guest Owner provides the decryption key (= secret)
+using the secret injection mechanism.  The guest application reads the
+secret from the efi_secret filesystem and proceeds to decrypt the files
+into memory and then performs the needed computations on the content.
+
+In this example, the host can't read the files from the disk image
+because they are encrypted.  Host can't read the decryption key because
+it is passed using the secret injection mechanism (= secure channel).
+Host can't read the decrypted content from memory because it's a
+confidential (memory-encrypted) guest.
+
+This has been tested with AMD SEV and SEV-ES guests, but the kernel side
+of handling the secret area has no SEV-specific dependencies, and
+therefore might be usable (perhaps with minor changes) for any
+confidential computing hardware that can publish the secret area via the
+standard EFI config table entry.
+
+To enable this functionality, set CONFIG_EFI_SECRET=m when building the
+guest kernel.
+
+Here is a simple example for usage of the efi_secret module in a guest
+to which an EFI secret area with 4 secrets was injected during launch:
+
+...
+[    0.000000] efi: EFI v2.70 by EDK II
+[    0.000000] efi: CocoSecret=0x7f222680 SMBIOS=0x7f541000 ACPI=0x7f77e000 ACPI 2.0=0x7f77e014 MEMATTR=0x7ea16418
+...
+[    1.127627] Run /init as init process
+Loading, please wait...
+Starting version 245.4-4ubuntu3.15
+...
+[    0.763204] efi_secret efi_secret.0: Created 4 entries in securityfs secrets/coco
+...
+
+# ls -la /sys/kernel/security/secrets/coco
+total 0
+drwxr-xr-x 2 root root 0 Jun 28 11:54 .
+drwxr-xr-x 3 root root 0 Jun 28 11:54 ..
+-r--r----- 1 root root 0 Jun 28 11:54 736870e5-84f0-4973-92ec-06879ce3da0b
+-r--r----- 1 root root 0 Jun 28 11:54 83c83f7f-1356-4975-8b7e-d3a0b54312c6
+-r--r----- 1 root root 0 Jun 28 11:54 9553f55d-3da2-43ee-ab5d-ff17f78864d2
+-r--r----- 1 root root 0 Jun 28 11:54 e6f5a162-d67f-4750-a67c-5d065f2a9910
+
+# hd /sys/kernel/security/secrets/coco/e6f5a162-d67f-4750-a67c-5d065f2a9910
+00000000  74 68 65 73 65 2d 61 72  65 2d 74 68 65 2d 6b 61  |these-are-the-ka|
+00000010  74 61 2d 73 65 63 72 65  74 73 00 01 02 03 04 05  |ta-secrets......|
+00000020  06 07                                             |..|
+00000022
+
+# rm /sys/kernel/security/secrets/coco/e6f5a162-d67f-4750-a67c-5d065f2a9910
+
+# ls -la /sys/kernel/security/secrets/coco
+total 0
+drwxr-xr-x 2 root root 0 Jun 28 11:55 .
+drwxr-xr-x 3 root root 0 Jun 28 11:54 ..
+-r--r----- 1 root root 0 Jun 28 11:54 736870e5-84f0-4973-92ec-06879ce3da0b
+-r--r----- 1 root root 0 Jun 28 11:54 83c83f7f-1356-4975-8b7e-d3a0b54312c6
+-r--r----- 1 root root 0 Jun 28 11:54 9553f55d-3da2-43ee-ab5d-ff17f78864d2
+
+
+[1] https://github.com/tianocore/edk2/commit/01726b6d23d4
+
+
+---
+
+v10 changes:
+- Add #ifdef CONFIG_EFI_COCO_SECRET to platform device registration in
+  patch 3.
+
+v9: https://lore.kernel.org/linux-coco/20220331215607.3182232-1-dovmurik@linux.ibm.com/
+v9 changes:
+- Change the module into a platform driver (thanks Ard)
+- Remove special auto-loading code in efi; instead register a platform
+  device (udev will load the efi_secret module) (thanks Ard)
+- Change logging in the efi_secret module to dev_err() etc.
+- efi_secret: first check that the secret area header is valid; only then start
+  creating securityfs dirs.
+
+v8: https://lore.kernel.org/linux-coco/20220228114254.1099945-1-dovmurik@linux.ibm.com/
+v8 changes:
+ - Change path of filesystem to <securityfs>/secrets/coco and fix the
+   documentation accordingly (Thanks Gerd, Matthew)
+ - Remove patch 2/5 (of v7) because the latest OVMF release (edk2-stable202202)
+   already contains the fix to mark the launch secret page as EFI_RESERVED_TYPE.
+
+v7: https://lore.kernel.org/linux-coco/20220201124413.1093099-1-dovmurik@linux.ibm.com/
+v7 changes:
+ - Improve description of efi_secret module in Kconfig.
+ - Fix sparse warnings on pointer address space mismatch
+   (Reported-by: kernel test robot <lkp@intel.com>)
+
+v6: https://lore.kernel.org/linux-coco/20211129114251.3741721-1-dovmurik@linux.ibm.com/
+v6 changes:
+ - Autoload the efi_secret module if the secret area is populated
+   (thanks Greg KH).
+ - efi_secret: Depend on X86_64 because we use ioremap_encrypted() which
+   is only defined for this arch.
+ - efi_secret.c: Remove unneeded tableheader_guid local variable.
+ - Documentation fixes.
+
+v5: https://lore.kernel.org/linux-coco/20211118113359.642571-1-dovmurik@linux.ibm.com/
+v5 changes:
+ - Simplify EFI code: instead of copying the secret area, the firmware
+   marks the secret area as EFI_RESERVED_TYPE, and then the uefi_init()
+   code just keeps the pointer as it appears in the EFI configuration
+   table.  The use of reserved pages is similar to the AMD SEV-SNP
+   patches for handling SNP-Secrets and SNP-CPUID pages.
+ - In order to handle OVMF releases out there which mark the
+   confidential computing secrets page as EFI_BOOT_SERVICES_DATA, add
+   efi/libstub code that detects this and fixes the E820 map to reserve
+   this page.
+ - In the efi_secret module code, map the secrets page using
+   ioremap_encrypted (again, similar to the AMD SEV-SNP guest patches
+   for accessing SNP-Secrets and SNP-CPUID pages).
+ - Add documentation in Documentation/security/coco/efi_secret.
+
+v4: https://lore.kernel.org/linux-coco/20211020061408.3447533-1-dovmurik@linux.ibm.com/
+v4 changes:
+ - Guard all the new EFI and efi-stub code (patches 1+2) with #ifdef
+   CONFIG_EFI_COCO_SECRET (thanks Greg KH).  Selecting
+   CONFIG_EFI_SECRET=m (patch 3) will enable the EFI parts as well.
+ - Guard call to clflush_cache_range() with #ifdef CONFIG_X86
+   (Reported-by: kernel test robot <lkp@intel.com>)
+
+v3: https://lore.kernel.org/linux-coco/20211014130848.592611-1-dovmurik@linux.ibm.com/
+v3 changes:
+ - Rename the module to efi_secret
+ - Remove the exporting of clean_cache_range
+ - Use clflush_cache_range in wipe_memory
+ - Document function wipe_memory
+ - Initialize efi.coco_secret to EFI_INVALID_TABLE_ADDR to correctly detect
+   when there's no secret area published in the EFI configuration tables
+
+v2: https://lore.kernel.org/linux-coco/20211007061838.1381129-1-dovmurik@linux.ibm.com
+v2 changes:
+ - Export clean_cache_range()
+ - When deleteing a secret, call clean_cache_range() after explicit_memzero
+ - Add Documentation/ABI/testing/securityfs-coco-sev_secret
+
+v1: https://lore.kernel.org/linux-coco/20210809190157.279332-1-dovmurik@linux.ibm.com/
+
+RFC: https://lore.kernel.org/linux-coco/20210628183431.953934-1-dovmurik@linux.ibm.com/
+
+
+
+
+Dov Murik (4):
+  efi: Save location of EFI confidential computing area
+  virt: Add efi_secret module to expose confidential computing secrets
+  efi: Register efi_secret platform device if EFI secret area is
+    declared
+  docs: security: Add secrets/coco documentation
+
+ Documentation/ABI/testing/securityfs-secrets-coco |  51 +++
+ Documentation/security/index.rst                  |   1 +
+ Documentation/security/secrets/coco.rst           | 103 ++++++
+ Documentation/security/secrets/index.rst          |   9 +
+ arch/x86/platform/efi/efi.c                       |   3 +
+ drivers/firmware/efi/Kconfig                      |  16 +
+ drivers/firmware/efi/efi.c                        |  11 +
+ drivers/virt/Kconfig                              |   3 +
+ drivers/virt/Makefile                             |   1 +
+ drivers/virt/coco/efi_secret/Kconfig              |  16 +
+ drivers/virt/coco/efi_secret/Makefile             |   2 +
+ drivers/virt/coco/efi_secret/efi_secret.c         | 349 ++++++++++++++++++++
+ include/linux/efi.h                               |  10 +
+ 13 files changed, 575 insertions(+)
+ create mode 100644 Documentation/ABI/testing/securityfs-secrets-coco
+ create mode 100644 Documentation/security/secrets/coco.rst
+ create mode 100644 Documentation/security/secrets/index.rst
+ create mode 100644 drivers/virt/coco/efi_secret/Kconfig
+ create mode 100644 drivers/virt/coco/efi_secret/Makefile
+ create mode 100644 drivers/virt/coco/efi_secret/efi_secret.c
+
+
+base-commit: 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
+-- 
+2.25.1
+
