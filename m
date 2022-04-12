@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC73C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4ABBC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376954AbiDLJL6 (ORCPT
+        id S1382170AbiDLJMG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
+        Tue, 12 Apr 2022 05:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358787AbiDLHmM (ORCPT
+        with ESMTP id S1358769AbiDLHmL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3137E28E29;
-        Tue, 12 Apr 2022 00:19:18 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FB812ADB;
+        Tue, 12 Apr 2022 00:19:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83845616E7;
-        Tue, 12 Apr 2022 07:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C32C385A5;
-        Tue, 12 Apr 2022 07:19:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B7BBB81B62;
+        Tue, 12 Apr 2022 07:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0592CC385A1;
+        Tue, 12 Apr 2022 07:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747957;
-        bh=OTYaN9cEFJk3+s8Bk6TF+yOQ9yew98O3/jc7PDaRvlI=;
+        s=korg; t=1649747951;
+        bh=xQWayGB+6f6hpATCzHMRRQ/8HztQFzBaPi4TXBjj1bo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n6PzGmdrXQmQSeF4T0Urojqwrfbg9c7q9WmiQ2tgviXKzbDf7UzpPxbAjftJ2L7Q0
-         2/kyWyBqTEmG88f4us7Rdh31pueqJYQKJAhusjiqsLowwuT7NzXkn9nhum2PUU36B2
-         Ww5NulnfXuqYYwitih5/gXIP3/zxHwMyLo35JHzY=
+        b=mV40kF5JrxJ39W8b0qg3mp0BK0/wQLUo02iXEuPFxlioswdT/jIZzo2Njk9dxx8vR
+         MnI6XQW5JjSVhltKwzVX6TifCd1LrBftUB/y2FxsxqxNvxWkQhGkM1taCNvLjC2CEO
+         yssuOQ8TX/8KXcdE0WzdXycAxiEdVCGlAo6nrOMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.17 266/343] Revert "mmc: sdhci-xenon: fix annoying 1.8V regulator warning"
-Date:   Tue, 12 Apr 2022 08:31:24 +0200
-Message-Id: <20220412062959.001178456@linuxfoundation.org>
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Shwetha Nagaraju <shwetha.nagaraju@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 238/343] ice: clear cmd_type_offset_bsz for TX rings
+Date:   Tue, 12 Apr 2022 08:30:56 +0200
+Message-Id: <20220412062958.203119397@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,46 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-commit 7e2646ed47542123168d43916b84b954532e5386 upstream.
+[ Upstream commit e19778e6c911691856447c3bf9617f00b3e1347f ]
 
-This reverts commit bb32e1987bc55ce1db400faf47d85891da3c9b9f.
+Currently when XDP rings are created, each descriptor gets its DD bit
+set, which turns out to be the wrong approach as it can lead to a
+situation where more descriptors get cleaned than it was supposed to,
+e.g. when AF_XDP busy poll is run with a large batch size. In this
+situation, the driver would request for more buffers than it is able to
+handle.
 
-Commit 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
-contains proper fix for the issue described in commit bb32e1987bc5 ("mmc:
-sdhci-xenon: fix annoying 1.8V regulator warning").
+Fix this by not setting the DD bits in ice_xdp_alloc_setup_rings(). They
+should be initialized to zero instead.
 
-Fixes: 8d876bf472db ("mmc: sdhci-xenon: wait 5ms after set 1.8V signal enable")
-Cc: stable@vger.kernel.org # 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Marcin Wojtas <mw@semihalf.com>
-Link: https://lore.kernel.org/r/20220318141441.32329-1-pali@kernel.org
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9610bd988df9 ("ice: optimize XDP_TX workloads")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: Shwetha Nagaraju <shwetha.nagaraju@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-xenon.c |   10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/mmc/host/sdhci-xenon.c
-+++ b/drivers/mmc/host/sdhci-xenon.c
-@@ -241,16 +241,6 @@ static void xenon_voltage_switch(struct
- {
- 	/* Wait for 5ms after set 1.8V signal enable bit */
- 	usleep_range(5000, 5500);
--
--	/*
--	 * For some reason the controller's Host Control2 register reports
--	 * the bit representing 1.8V signaling as 0 when read after it was
--	 * written as 1. Subsequent read reports 1.
--	 *
--	 * Since this may cause some issues, do an empty read of the Host
--	 * Control2 register here to circumvent this.
--	 */
--	sdhci_readw(host, SDHCI_HOST_CONTROL2);
- }
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 5229bce1a4ab..db2e02e673a7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2546,7 +2546,7 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
+ 		spin_lock_init(&xdp_ring->tx_lock);
+ 		for (j = 0; j < xdp_ring->count; j++) {
+ 			tx_desc = ICE_TX_DESC(xdp_ring, j);
+-			tx_desc->cmd_type_offset_bsz = cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE);
++			tx_desc->cmd_type_offset_bsz = 0;
+ 		}
+ 	}
  
- static unsigned int xenon_get_max_clock(struct sdhci_host *host)
+-- 
+2.35.1
+
 
 
