@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B25AC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70273C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357019AbiDLHjl (ORCPT
+        id S1357142AbiDLHjt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45716 "EHLO
+        Tue, 12 Apr 2022 03:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352996AbiDLHOo (ORCPT
+        with ESMTP id S1353030AbiDLHOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1811A326E4;
-        Mon, 11 Apr 2022 23:55:36 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C819326F0;
+        Mon, 11 Apr 2022 23:55:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9280860B2E;
-        Tue, 12 Apr 2022 06:55:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A067CC385A6;
-        Tue, 12 Apr 2022 06:55:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1991DB81B35;
+        Tue, 12 Apr 2022 06:55:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A73C385A6;
+        Tue, 12 Apr 2022 06:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746535;
-        bh=h4uSfY9INpPXUqgYSJ/2rq3gryC+/atjzzc+2MPpzak=;
+        s=korg; t=1649746540;
+        bh=yuHZhhzpSY21ExQdAyuQtKGbATTd7Ft2sniUxKBSb3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TnyQSbt4ADtXBrE+DQUc027omjJiKOr/pXMQZ8z4K9O1klLpfsAQhPwtDAU8kR67e
-         Ab11Z9Epkai81Pn1m+7SHA5Mj6K+fdaYE+bSwKzIsIDGgcSV7uTMYrbnaPsAJAIVIJ
-         7/fUZ5+p3vF0hLYmKGl1nLZNvzxL4Knb+V/0Dzlk=
+        b=VSkc5e+16jwFuyQG104S+cb5Th81xb3tyxv2ERQeXRyeZAsTA5UQs+w5oCIA1WMqV
+         oIWyEB62OSAb68iMiDl6OUmzOFeNJy7ytLH9CQtmz5NaEHhsJqhco5lOxyR+Khd5Eb
+         d7sAVyLmhn5bxHpSnl/VrwUv4NhrGnFsCT9SpczM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <Alexander.Deucher@amd.com>,
+        Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 041/285] net: initialize init_net earlier
-Date:   Tue, 12 Apr 2022 08:28:18 +0200
-Message-Id: <20220412062944.860853402@linuxfoundation.org>
+Subject: [PATCH 5.16 043/285] drm/amdgpu: Fix recursive locking warning
+Date:   Tue, 12 Apr 2022 08:28:20 +0200
+Message-Id: <20220412062944.918984440@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,150 +54,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
 
-[ Upstream commit 9c1be1935fb68b2413796cdc03d019b8cf35ab51 ]
+[ Upstream commit 447c7997b62a5115ba4da846dcdee4fc12298a6a ]
 
-While testing a patch that will follow later
-("net: add netns refcount tracker to struct nsproxy")
-I found that devtmpfs_init() was called before init_net
-was initialized.
+Noticed the below warning while running a pytorch workload on vega10
+GPUs. Change to trylock to avoid conflicts with already held reservation
+locks.
 
-This is a bug, because devtmpfs_setup() calls
-ksys_unshare(CLONE_NEWNS);
+[  +0.000003] WARNING: possible recursive locking detected
+[  +0.000003] 5.13.0-kfd-rajneesh #1030 Not tainted
+[  +0.000004] --------------------------------------------
+[  +0.000002] python/4822 is trying to acquire lock:
+[  +0.000004] ffff932cd9a259f8 (reservation_ww_class_mutex){+.+.}-{3:3},
+at: amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000203]
+              but task is already holding lock:
+[  +0.000003] ffff932cbb7181f8 (reservation_ww_class_mutex){+.+.}-{3:3},
+at: ttm_eu_reserve_buffers+0x270/0x470 [ttm]
+[  +0.000017]
+              other info that might help us debug this:
+[  +0.000002]  Possible unsafe locking scenario:
 
-This has the effect of increasing init_net refcount,
-which will be later overwritten to 1, as part of setup_net(&init_net)
+[  +0.000003]        CPU0
+[  +0.000002]        ----
+[  +0.000002]   lock(reservation_ww_class_mutex);
+[  +0.000004]   lock(reservation_ww_class_mutex);
+[  +0.000003]
+               *** DEADLOCK ***
 
-We had too many prior patches [1] trying to work around the root cause.
+[  +0.000002]  May be due to missing lock nesting notation
 
-Really, make sure init_net is in BSS section, and that net_ns_init()
-is called earlier at boot time.
+[  +0.000003] 7 locks held by python/4822:
+[  +0.000003]  #0: ffff932c4ac028d0 (&process->mutex){+.+.}-{3:3}, at:
+kfd_ioctl_map_memory_to_gpu+0x10b/0x320 [amdgpu]
+[  +0.000232]  #1: ffff932c55e830a8 (&info->lock#2){+.+.}-{3:3}, at:
+amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x64/0xf60 [amdgpu]
+[  +0.000241]  #2: ffff932cc45b5e68 (&(*mem)->lock){+.+.}-{3:3}, at:
+amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0xdf/0xf60 [amdgpu]
+[  +0.000236]  #3: ffffb2b35606fd28
+(reservation_ww_class_acquire){+.+.}-{0:0}, at:
+amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x232/0xf60 [amdgpu]
+[  +0.000235]  #4: ffff932cbb7181f8
+(reservation_ww_class_mutex){+.+.}-{3:3}, at:
+ttm_eu_reserve_buffers+0x270/0x470 [ttm]
+[  +0.000015]  #5: ffffffffc045f700 (*(sspp++)){....}-{0:0}, at:
+drm_dev_enter+0x5/0xa0 [drm]
+[  +0.000038]  #6: ffff932c52da7078 (&vm->eviction_lock){+.+.}-{3:3},
+at: amdgpu_vm_bo_update_mapping+0xd5/0x4f0 [amdgpu]
+[  +0.000195]
+              stack backtrace:
+[  +0.000003] CPU: 11 PID: 4822 Comm: python Not tainted
+5.13.0-kfd-rajneesh #1030
+[  +0.000005] Hardware name: GIGABYTE MZ01-CE0-00/MZ01-CE0-00, BIOS F02
+08/29/2018
+[  +0.000003] Call Trace:
+[  +0.000003]  dump_stack+0x6d/0x89
+[  +0.000010]  __lock_acquire+0xb93/0x1a90
+[  +0.000009]  lock_acquire+0x25d/0x2d0
+[  +0.000005]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000184]  ? lock_is_held_type+0xa2/0x110
+[  +0.000006]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000184]  __ww_mutex_lock.constprop.17+0xca/0x1060
+[  +0.000007]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000183]  ? lock_release+0x13f/0x270
+[  +0.000005]  ? lock_is_held_type+0xa2/0x110
+[  +0.000006]  ? amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000183]  amdgpu_bo_release_notify+0xc4/0x160 [amdgpu]
+[  +0.000185]  ttm_bo_release+0x4c6/0x580 [ttm]
+[  +0.000010]  amdgpu_bo_unref+0x1a/0x30 [amdgpu]
+[  +0.000183]  amdgpu_vm_free_table+0x76/0xa0 [amdgpu]
+[  +0.000189]  amdgpu_vm_free_pts+0xb8/0xf0 [amdgpu]
+[  +0.000189]  amdgpu_vm_update_ptes+0x411/0x770 [amdgpu]
+[  +0.000191]  amdgpu_vm_bo_update_mapping+0x324/0x4f0 [amdgpu]
+[  +0.000191]  amdgpu_vm_bo_update+0x251/0x610 [amdgpu]
+[  +0.000191]  update_gpuvm_pte+0xcc/0x290 [amdgpu]
+[  +0.000229]  ? amdgpu_vm_bo_map+0xd7/0x130 [amdgpu]
+[  +0.000190]  amdgpu_amdkfd_gpuvm_map_memory_to_gpu+0x912/0xf60
+[amdgpu]
+[  +0.000234]  kfd_ioctl_map_memory_to_gpu+0x182/0x320 [amdgpu]
+[  +0.000218]  kfd_ioctl+0x2b9/0x600 [amdgpu]
+[  +0.000216]  ? kfd_ioctl_unmap_memory_from_gpu+0x270/0x270 [amdgpu]
+[  +0.000216]  ? lock_release+0x13f/0x270
+[  +0.000006]  ? __fget_files+0x107/0x1e0
+[  +0.000007]  __x64_sys_ioctl+0x8b/0xd0
+[  +0.000007]  do_syscall_64+0x36/0x70
+[  +0.000004]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  +0.000007] RIP: 0033:0x7fbff90a7317
+[  +0.000004] Code: b3 66 90 48 8b 05 71 4b 2d 00 64 c7 00 26 00 00 00
+48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f
+05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 41 4b 2d 00 f7 d8 64 89 01 48
+[  +0.000005] RSP: 002b:00007fbe301fe648 EFLAGS: 00000246 ORIG_RAX:
+0000000000000010
+[  +0.000006] RAX: ffffffffffffffda RBX: 00007fbcc402d820 RCX:
+00007fbff90a7317
+[  +0.000003] RDX: 00007fbe301fe690 RSI: 00000000c0184b18 RDI:
+0000000000000004
+[  +0.000003] RBP: 00007fbe301fe690 R08: 0000000000000000 R09:
+00007fbcc402d880
+[  +0.000003] R10: 0000000002001000 R11: 0000000000000246 R12:
+00000000c0184b18
+[  +0.000003] R13: 0000000000000004 R14: 00007fbf689593a0 R15:
+00007fbcc402d820
 
-Note that another patch ("vfs: add netns refcount tracker
-to struct fs_context") also will need net_ns_init() being called
-before vfs_caches_init()
+Cc: Christian König <christian.koenig@amd.com>
+Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: Alex Deucher <Alexander.Deucher@amd.com>
 
-As a bonus, this patch saves around 4KB in .data section.
-
-[1]
-
-f8c46cb39079 ("netns: do not call pernet ops for not yet set up init_net namespace")
-b5082df8019a ("net: Initialise init_net.count to 1")
-734b65417b24 ("net: Statically initialize init_net.dev_base_head")
-
-v2: fixed a build error reported by kernel build bots (CONFIG_NET=n)
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/net_namespace.h |  6 ++++++
- init/main.c                 |  2 ++
- net/core/dev.c              |  3 +--
- net/core/net_namespace.c    | 17 +++++------------
- 4 files changed, 14 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index bb5fa5914032..2ba326f9e004 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -479,4 +479,10 @@ static inline void fnhe_genid_bump(struct net *net)
- 	atomic_inc(&net->fnhe_genid);
- }
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+index 4fcfc2313b8c..ea792b6a1c0f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+@@ -1286,7 +1286,8 @@ void amdgpu_bo_release_notify(struct ttm_buffer_object *bo)
+ 	    !(abo->flags & AMDGPU_GEM_CREATE_VRAM_WIPE_ON_RELEASE))
+ 		return;
  
-+#ifdef CONFIG_NET
-+void net_ns_init(void);
-+#else
-+static inline void net_ns_init(void) {}
-+#endif
-+
- #endif /* __NET_NET_NAMESPACE_H */
-diff --git a/init/main.c b/init/main.c
-index bb984ed79de0..cb68bc48a682 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -99,6 +99,7 @@
- #include <linux/kcsan.h>
- #include <linux/init_syscalls.h>
- #include <linux/stackdepot.h>
-+#include <net/net_namespace.h>
+-	dma_resv_lock(bo->base.resv, NULL);
++	if (WARN_ON_ONCE(!dma_resv_trylock(bo->base.resv)))
++		return;
  
- #include <asm/io.h>
- #include <asm/bugs.h>
-@@ -1113,6 +1114,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	key_init();
- 	security_init();
- 	dbg_late_init();
-+	net_ns_init();
- 	vfs_caches_init();
- 	pagecache_init();
- 	signals_init();
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 2078d04c6482..8c47e0f2075d 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -11403,8 +11403,7 @@ static int __net_init netdev_init(struct net *net)
- 	BUILD_BUG_ON(GRO_HASH_BUCKETS >
- 		     8 * sizeof_field(struct napi_struct, gro_bitmask));
- 
--	if (net != &init_net)
--		INIT_LIST_HEAD(&net->dev_base_head);
-+	INIT_LIST_HEAD(&net->dev_base_head);
- 
- 	net->dev_name_head = netdev_create_hash();
- 	if (net->dev_name_head == NULL)
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 9702d2b0d920..9745cb6fdf51 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -44,13 +44,7 @@ EXPORT_SYMBOL_GPL(net_rwsem);
- static struct key_tag init_net_key_domain = { .usage = REFCOUNT_INIT(1) };
- #endif
- 
--struct net init_net = {
--	.ns.count	= REFCOUNT_INIT(1),
--	.dev_base_head	= LIST_HEAD_INIT(init_net.dev_base_head),
--#ifdef CONFIG_KEYS
--	.key_domain	= &init_net_key_domain,
--#endif
--};
-+struct net init_net;
- EXPORT_SYMBOL(init_net);
- 
- static bool init_net_initialized;
-@@ -1081,7 +1075,7 @@ static void rtnl_net_notifyid(struct net *net, int cmd, int id, u32 portid,
- 	rtnl_set_sk_err(net, RTNLGRP_NSID, err);
- }
- 
--static int __init net_ns_init(void)
-+void __init net_ns_init(void)
- {
- 	struct net_generic *ng;
- 
-@@ -1102,6 +1096,9 @@ static int __init net_ns_init(void)
- 
- 	rcu_assign_pointer(init_net.gen, ng);
- 
-+#ifdef CONFIG_KEYS
-+	init_net.key_domain = &init_net_key_domain;
-+#endif
- 	down_write(&pernet_ops_rwsem);
- 	if (setup_net(&init_net, &init_user_ns))
- 		panic("Could not setup the initial network namespace");
-@@ -1116,12 +1113,8 @@ static int __init net_ns_init(void)
- 		      RTNL_FLAG_DOIT_UNLOCKED);
- 	rtnl_register(PF_UNSPEC, RTM_GETNSID, rtnl_net_getid, rtnl_net_dumpid,
- 		      RTNL_FLAG_DOIT_UNLOCKED);
--
--	return 0;
- }
- 
--pure_initcall(net_ns_init);
--
- static void free_exit_list(struct pernet_operations *ops, struct list_head *net_exit_list)
- {
- 	ops_pre_exit_list(ops, net_exit_list);
+ 	r = amdgpu_fill_buffer(abo, AMDGPU_POISON, bo->base.resv, &fence);
+ 	if (!WARN_ON(r)) {
 -- 
 2.35.1
 
