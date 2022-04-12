@@ -2,121 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C23ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D498C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbiDLX35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
+        id S230344AbiDLXaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231479AbiDLX20 (ORCPT
+        with ESMTP id S230104AbiDLX2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:28:26 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EA5A0BDE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:32:16 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id b21so114200ljf.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:32:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FsJYLxOhIxt3rQLA+O/P6SUgZEOQeFz25qq7q/fcHi8=;
-        b=lTexwf1HxdZGAcVTWoD0ugTlac61PvCWW3F8HQtXKOmX3JezT10nb4HZtZdWAwyAwK
-         JAdEJHFK9RQ/adANwbDQRAaFvoWqugCSX+rmZpNxYgLLIvBDFcubPsVUTYWzT2US476a
-         Kn4Syv5auhCIo1tQNRvXnWTtVK/P4WbvG+TOUgy5Q2N1L1Wfqdfw5uxG1aLNJA2OceYV
-         8aIWX1aPlJcZRtT6uyUE55A1cT1nC1sNHsziyzGUCqvrktoKiX14f2a20EX+erSlVdie
-         Ho4JypLz4jjjI+vJwFUGBiYcsPyGkJJC2E13XFQoTGMcO9aL6gUabeo6bomqYDjTn/XL
-         MfdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FsJYLxOhIxt3rQLA+O/P6SUgZEOQeFz25qq7q/fcHi8=;
-        b=6zwdPRWrWLK9+5oQRRs8IhALXvlc3PZwsZuRI+VtLuYqGMbkb3kQCY/1SEsMXc+4no
-         EVF+zZCFxwi2I+vBrUUWFzRJtl6/VAkbtDrtn2vkkppEvbNUCxn5ej2+o5PmUuonBuxa
-         pyFj2AOAouK0TPgAjnqhesVlOshxGjRaGrt3aVBvEDSP1wKevA/foQiXYpZ9audtl8pi
-         st9gOEMxGmvHeE3kY4zkmrpJSbB+7dPWCQmAGFGaQ/LVGWYVdryvZV3AYVBYZvm3eUQz
-         SCFh+Thphu70mbgKtP+L6zT+0QKnZJ+13XHKFf0dK6Ob/H+4NpSDUQtGILEzv5YaPujs
-         e1Dg==
-X-Gm-Message-State: AOAM532pGGeGuf2P7lexUTAqFuHjTMNrWuxe72Qyp/uqhkj+VMKrAcU9
-        h5DtiiupJ0MTo0zT48ViQcMkUNJYyHcbCFziXQ8=
-X-Google-Smtp-Source: ABdhPJyotQc5lx8nzjPYQvWzHV1dNOIG+D0mdNU459MdDr2om1lc6UhX9ewBqaAIaX3WVyEVwQZVknBGkIfV+hqY9gg=
-X-Received: by 2002:a05:651c:ba0:b0:24b:6046:3f24 with SMTP id
- bg32-20020a05651c0ba000b0024b60463f24mr8499467ljb.460.1649802734687; Tue, 12
- Apr 2022 15:32:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220412043823.57037-1-harshit.m.mogalapalli@oracle.com>
-In-Reply-To: <20220412043823.57037-1-harshit.m.mogalapalli@oracle.com>
-From:   Steve French <smfrench@gmail.com>
-Date:   Tue, 12 Apr 2022 17:32:03 -0500
-Message-ID: <CAH2r5mvBH8wO9rS2UwCpgjbhcLp89-RLbr1wxK76Pj=OprKwOA@mail.gmail.com>
-Subject: Re: [PATCH] cifs: potential buffer overflow in handling symlinks
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Steve French <sfrench@samba.org>,
-        Stefan Metzmacher <metze@samba.org>,
-        samba-technical <samba-technical@lists.samba.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        ronnie sahlberg <ronniesahlberg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 12 Apr 2022 19:28:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE1ADE0A0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:31:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9864161CAC
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:31:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EB42C385A1;
+        Tue, 12 Apr 2022 22:31:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649802663;
+        bh=2jF5yQBTQuAeU0sIAjlvtCV8brbLDPSWeE65/+EM/fA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WeWso9pR2D03KngfPz3S0DnZHAR7yIHe09D7nHgudcPt4MuOZq6WM8+F1JY1Y0eOr
+         mV2TLJmJx6kaJaHLj2NcOdKvty9a6YGtHp+yjXznFavaaRCBx9FuUdg7m+0K84+dsh
+         9H63yXZjICmkAaTzKjYoHLCJjhoT7U6vwEneEqco=
+Date:   Tue, 12 Apr 2022 15:31:01 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     <seanga2@gmail.com>, <sfr@canb.auug.org.au>,
+        <linux-kernel@vger.kernel.org>,
+        Jiajian Ye <yejiajian2018@email.szu.edu.cn>,
+        Shenghong Han <hanshenghong2019@email.szu.edu.cn>,
+        Yixuan Cao <caoyixuan2019@email.szu.edu.cn>,
+        Yinan Zhang <zhangyinan2019@email.szu.edu.cn>,
+        Chongxi Zhao <zhaochongxi2019@email.szu.edu.cn>,
+        Yuhong Feng <yuhongf@szu.edu.cn>,
+        Yongqiang Liu <liuyongqiang13@huawei.com>
+Subject: Re: [PATCH] tools/vm/page_owner: support debug log to avoid huge
+ log print
+Message-Id: <20220412153101.1c05e00ed994982555d2fd9e@linux-foundation.org>
+In-Reply-To: <1649672446-5685-1-git-send-email-baihaowen@meizu.com>
+References: <1649672446-5685-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wouldn't it be easier and clearer to do the compare vs the maximum len ie
+On Mon, 11 Apr 2022 18:20:46 +0800 Haowen Bai <baihaowen@meizu.com> wrote:
 
-if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
+> As normal usage, tool will print huge parser log and spend a lot of
+> time printing, so it would be preferable add "-d" debug control to avoid
+> this problem.
+> 
 
-instead of
+Seems sensible.
 
-if (link_len > buf_len - CIFS_MF_SYMLINK_LINK_OFFSET)
-
-since buf_len is  CIFS_MF_SYMLINK_FILE_SIZE and looking at link.c line
-26 and 27 this means we can use CIFS_MF_SYMLINK_LINK_OFFSET for the
-comparison:
-
-#define CIFS_MF_SYMLINK_LINK_MAXLEN (1024)
-#define CIFS_MF_SYMLINK_FILE_SIZE \
-        (CIFS_MF_SYMLINK_LINK_OFFSET + CIFS_MF_SYMLINK_LINK_MAXLEN)
-
-On Tue, Apr 12, 2022 at 1:01 AM Harshit Mogalapalli
-<harshit.m.mogalapalli@oracle.com> wrote:
->
-> Smatch printed a warning:
->         arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
->         __memcpy() 'dctx->buf' too small (16 vs u32max)
->
-> It's caused because Smatch marks 'link_len' as untrusted since it comes
-> from sscanf(). Add a check to ensure that 'link_len' is not larger than
-> the size of the 'link_str' buffer.
->
-> Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
->  fs/cifs/link.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/fs/cifs/link.c b/fs/cifs/link.c
-> index 852e54e..ebfedae 100644
-> --- a/fs/cifs/link.c
-> +++ b/fs/cifs/link.c
-> @@ -85,6 +85,9 @@
->         if (rc != 1)
->                 return -EINVAL;
->
-> +       if (link_len > buf_len - CIFS_MF_SYMLINK_LINK_OFFSET)
-> +               return -EINVAL;
-> +
->         rc = symlink_hash(link_len, link_str, md5_hash);
->         if (rc) {
->                 cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
-> --
-> 1.8.3.1
->
-
-
--- 
-Thanks,
-
-Steve
+Documentation/vm/page_owner.rst is getting out of date.  Sometime could
+someone please go through it and check that everything is correct and
+current?
