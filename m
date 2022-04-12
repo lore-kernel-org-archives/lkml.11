@@ -2,89 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C78FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 03:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A45C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 03:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344441AbiDLDYE (ORCPT
+        id S1344468AbiDLD2W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 23:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
+        Mon, 11 Apr 2022 23:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344490AbiDLDXy (ORCPT
+        with ESMTP id S244664AbiDLD2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 23:23:54 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C01D3335D;
-        Mon, 11 Apr 2022 20:21:35 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axisw28FRiqc8fAA--.39821S2;
-        Tue, 12 Apr 2022 11:21:27 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Christoph Hellwig <hch@infradead.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <dchinner@redhat.com>
-Cc:     linux-xfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: update IOMAP FILESYSTEM LIBRARY and XFS FILESYSTEM
-Date:   Tue, 12 Apr 2022 11:21:26 +0800
-Message-Id: <1649733686-6128-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9Axisw28FRiqc8fAA--.39821S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtryxXrWDJr4UXr47Cry5twb_yoWDCwb_CF
-        48WayfXFyUAFWjk3y0gFy2v34YvF4xGFyxX3Z0qay7Wasrtw1Fy3W5Cr9ay34DW3yrurW5
-        J3W5X3Z2gr1DXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2kYjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwV
-        C2z280aVCY1x0267AKxVWxJr0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_Gr4l42xK
-        82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
-        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48J
-        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
-        IF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU0xOz3UUUUU==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Mon, 11 Apr 2022 23:28:19 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2063F2E9D4;
+        Mon, 11 Apr 2022 20:26:02 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 12 Apr
+ 2022 11:25:53 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 12 Apr
+ 2022 11:25:53 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Alex Shi <alexs@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+Date:   Tue, 12 Apr 2022 11:25:51 +0800
+Message-ID: <1649733951-8827-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the following section entries of IOMAP FILESYSTEM LIBRARY:
+As the tools/vm/page_owner_sort added some feature and original text
+updated, sync the translation of zh_CN.
 
-M:	linux-xfs@vger.kernel.org
-M:	linux-fsdevel@vger.kernel.org
-
-Remove the following section entry of XFS FILESYSTEM:
-
-M:	linux-xfs@vger.kernel.org
-
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- MAINTAINERS | 3 ---
- 1 file changed, 3 deletions(-)
+ Documentation/translations/zh_CN/vm/page_owner.rst | 54 +++++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 61d9f11..726608f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10238,8 +10238,6 @@ F:	drivers/net/ethernet/sgi/ioc3-eth.c
- IOMAP FILESYSTEM LIBRARY
- M:	Christoph Hellwig <hch@infradead.org>
- M:	Darrick J. Wong <djwong@kernel.org>
--M:	linux-xfs@vger.kernel.org
--M:	linux-fsdevel@vger.kernel.org
- L:	linux-xfs@vger.kernel.org
- L:	linux-fsdevel@vger.kernel.org
- S:	Supported
-@@ -21596,7 +21594,6 @@ F:	drivers/xen/*swiotlb*
- XFS FILESYSTEM
- C:	irc://irc.oftc.net/xfs
- M:	Darrick J. Wong <djwong@kernel.org>
--M:	linux-xfs@vger.kernel.org
- L:	linux-xfs@vger.kernel.org
- S:	Supported
- W:	http://xfs.org/
+diff --git a/Documentation/translations/zh_CN/vm/page_owner.rst b/Documentation/translations/zh_CN/vm/page_owner.rst
+index 9e951fabba9d..0d4f94034db6 100644
+--- a/Documentation/translations/zh_CN/vm/page_owner.rst
++++ b/Documentation/translations/zh_CN/vm/page_owner.rst
+@@ -103,14 +103,66 @@ page owner在默认情况下是禁用的。所以，如果你想使用它，你
+ 		-m		按总内存排序
+ 		-p		按pid排序。
+ 		-P		按tgid排序。
++		-n		按任务名称排序。
+ 		-r		按内存释放时间排序。
+ 		-s		按堆栈跟踪排序。
+ 		-t		按时间排序（默认）。
++		--sort <order>	指定排序顺序。排序语法是 [+|-]key[,[+|-]key[,...]]. 从
++						**标准格式说明符**部分选择一个键。"+" 是可选的，因为默认方向是增加数字或字典顺序。
++						允许混合使用缩写键和全称键。
++
++		Examples:
++				./page_owner_sort <input> <output> --sort=n,+pid,-tgid
++				./page_owner_sort <input> <output> --sort=at
+ 
+    其它函数:
+ 
+ 	Cull:
+-		-c		通过比较堆栈跟踪而不是总块来进行剔除。
++		--cull <rules>
++				指定筛选规则。筛选语法是 key[,key[,...]]。在**标准格式说明符**部分选择一个多字母键
++
++		<rules> 是逗号分隔列表形式的单个参数，它提供了一种指定单个筛选规则的方法。下面的**标准格式说明
++				符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的 
++				STANDARD SORT KEYS 部分所述。允许混合使用缩写形式和完整形式的键。
+ 
++		Examples:
++				./page_owner_sort <input> <output> --cull=stacktrace
++				./page_owner_sort <input> <output> --cull=st,pid,name
++				./page_owner_sort <input> <output> --cull=n,f
+ 	Filter:
+ 		-f		过滤掉内存已被释放的块的信息。
++
++	Select:
++		--pid <pidlist>		通过 pid 进行选择。这将选择进程 ID 号出现在 <pidlist> 中的块。
++		--tgid <tgidlist>	通过 tgid 进行选择。这将选择线程组 ID 号出现在 <tgidlist> 中的块。
++		--name <cmdlist>	按任务名称选择。这将选择任务名称出现在 <cmdlist> 中的块。
++
++		<pidlist>、<tgidlist>、<cmdlist>是逗号分隔列表形式的单参数，它提供了一种指定单个选择规则的方法。
++
++
++		Examples:
++				./page_owner_sort <input> <output> --pid=1
++				./page_owner_sort <input> <output> --tgid=1,2,3
++				./page_owner_sort <input> <output> --name name1,name2
++
++		标准格式说明符
++==========================
++--sort 选项:
++
++	缩写键	全称键		描述
++	p		pid			进程 ID
++	tg		tgid		线程组 ID
++	n		name		任务名称
++	st		stacktrace	页面分配的调用栈
++	T		txt			块的全文
++	ft		free_ts		页面被释放的时间戳
++	at		alloc_ts	页面分配的时间戳
++
++--curl 选项:
++
++	缩写键	全称键		描述
++	p		pid			进程 ID
++	tg		tgid		线程组 ID
++	n		name		任务名称
++	f		free		该页面是否已被释放
++	st		stacktrace	页面分配的调用栈
 -- 
-2.1.0
+2.7.4
 
