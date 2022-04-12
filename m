@@ -2,105 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E00AC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6D9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357217AbiDLPnL (ORCPT
+        id S1357218AbiDLPnl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        Tue, 12 Apr 2022 11:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357332AbiDLPnF (ORCPT
+        with ESMTP id S1357205AbiDLPnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:43:05 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 2137D5D661
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:40:47 -0700 (PDT)
-Received: (qmail 377970 invoked by uid 1000); 12 Apr 2022 11:40:46 -0400
-Date:   Tue, 12 Apr 2022 11:40:45 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc:     Evan Green <evgreen@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Rajat Jain <rajatja@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Youngjin Jang <yj84.jang@samsung.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
-Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Message-ID: <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
-References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
- <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
- <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
- <YlDoSY19HYNJGI50@rowland.harvard.edu>
- <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
- <YlRATrMxRWt9gVqt@rowland.harvard.edu>
- <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
+        Tue, 12 Apr 2022 11:43:35 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2071.outbound.protection.outlook.com [40.107.93.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7029B5FF0E;
+        Tue, 12 Apr 2022 08:41:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ji9p3k+DZNSkPSFRD4DA1jqza+5s1gUPzla0dzs1tqGPMolaV8uvDVblnk+XcCxYwm5sIOzBagqMRDd4kS422e507Rdtf+jS061xuZnbj5L6ZJOt7LQw9frYm6kKIEiCE1XhMY2gXrKZ9LxzEOZVOnF17/X8vA5EZFMVQ3H+fvlZ6+B3PGNskvL4ruBdPzkCdwvYDCpLzdnjZeNn24P8AH8ooKn6h+4uzp4Tr49qGSDnQRapdHdbGTjGDwmNkMYVlpdyguF3z1Gr1WWYSynEjGhoanJqniTRTgAAokJcecS/IaZ+5dUmIuKdyppWJoqM/GpRLyQR9zcCTN4p+3mjpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uwS8/y7TLBaZ8jiuFYLOUTUxrfzCDNkakjMKigS8Qqs=;
+ b=iherAi5NAfFKTI2BkSsmtZuAAOswch9C8Zz09KvDHcelpuW99niyf7izIy2x2SY7jjrT++id44i8HN5lFtw3L7wAsmT8YxcT1q88QzEHeYy2JNOdFi1eOwho4zfviVcQhwuZwy6p8EYiOxbn0sxq9g3JYvR89C/vZk6X57xnF75op/nq1Kv2YpsSydPeCQfh3BT36J88wdAHnzzqYAZJX/Dt0x7u82cScfON2dlXGaX/0UZ/ROTuqfPbLCA//ZN8x+1GAod31ib4+Zud+uLd7LGhlXWoJ/QzoyVFtws8anfBfKovWFduFAlz5H8onpryHdSdIVMM5KEgvOQ5z1XMrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uwS8/y7TLBaZ8jiuFYLOUTUxrfzCDNkakjMKigS8Qqs=;
+ b=AaYSB4JvUGRW6SpqKA0KS+MqECYQFde44pjMcmunKem/KFu7HEZVnCkYOhTxjK5YM7dz/f5Co7XO/AwXLfZgSZUODWKglQDWEpuqI6HXu6O9PScirlPwy8+m3BXQuPOyZVCOjeJiyOlO6mBUxyl4x5snZSBmWB9Df4BrQPv39sk=
+Received: from MW4PR04CA0376.namprd04.prod.outlook.com (2603:10b6:303:81::21)
+ by CY4PR12MB1541.namprd12.prod.outlook.com (2603:10b6:910:7::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 15:41:02 +0000
+Received: from CO1NAM11FT051.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:81:cafe::53) by MW4PR04CA0376.outlook.office365.com
+ (2603:10b6:303:81::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18 via Frontend
+ Transport; Tue, 12 Apr 2022 15:41:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT051.mail.protection.outlook.com (10.13.174.114) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5144.20 via Frontend Transport; Tue, 12 Apr 2022 15:41:01 +0000
+Received: from ethanolx50f7host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Apr
+ 2022 10:40:57 -0500
+From:   Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+To:     <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <x86@kernel.org>
+CC:     Tony Luck <tony.luck@intel.com>,
+        Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
+        <hpa@zytor.com>, Yazen Ghannam <yazen.ghannam@amd.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: [PATCH v5 0/2] x86/mce: Support extended MCA_ADDR address on SMCA systems
+Date:   Tue, 12 Apr 2022 10:40:36 -0500
+Message-ID: <20220412154038.261750-1-Smita.KoralahalliChannabasappa@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 454b51a0-977c-46bd-c359-08da1c9ad92b
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1541:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB154151116CFE83BD53AB7A9090ED9@CY4PR12MB1541.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VkpTMFgzQCDTGA4JQbGSPUg3thEU1/R//MoWeMBg/6kMTrzcDEnirHK7m+D/DhFluLPb0BfeDt8aTPIhPDRylrYE2y88LUz2+MquOejTcUKONbmfB5XYaBClduN7NG8b2mHAdX/nTYXBpD9/+0k+8HrM1ACP5MiJXvVr7iDYGCLMkdKg8KraXYUPADYqRxrFtjTD4sOYcCEbw0Lsadiu4I3Zx7GmTfpHS2w5Qh2ql3d4MnADUrezjIKoBrGyYlAI0D2y7qt14mv5QZYZ60zHoFo8ySPeOIJQRelJ+VHr3UMdCodETJr78JJo7WmfJMUo/vrR753GCQ0D91U7OShS0foqAhu5XdvEbRFM1Enk0hm2vA/ivrIzfYQiSJX9lEr8kSSpJKW8ienf/CexpfJ2QAdO69+nQ9ZKH2nfgwlSsjxXnsofJqY+89gawEw595ySvzwPYOMdXkKtSvRztxYeOgaVGHMV82Gc5y5Jz0u23yCFjhu53X+nnuaGNoiQcoOVCzHjF+RoSGbJJVVvbIA3o1+vWmYDUrpo455RtYPYM8usvmYX5Uy030zKnK+XRUHfrZIpStvqkkTYxqYDL3Bq6iGTBYjUTaEU4/yXEyMCvFta66QEqfpJEa3S/emt+d5Ts0xI+xBVtDK5hkZTqKtMI1/B4dqgdTKjh9IaMNZj0a6z//5JCsqmNDP+StMQWx2FXb2y4WCXQB6JN2N+5CfiUnDd1ZQvxE/QdT+9Sd/abKygoYQ2OxyPfYpm684dJnkJ4Ae1dkAHsFIgVS53SI6DBWrjIIEX8flrw25LjUyXzK8=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(1076003)(8676002)(70206006)(70586007)(2616005)(83380400001)(4326008)(16526019)(26005)(47076005)(336012)(426003)(86362001)(5660300002)(36756003)(508600001)(54906003)(966005)(110136005)(8936002)(82310400005)(186003)(4744005)(81166007)(316002)(7696005)(36860700001)(40460700003)(6666004)(2906002)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 15:41:01.8536
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 454b51a0-977c-46bd-c359-08da1c9ad92b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT051.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1541
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 05:56:42PM +0300, Mathias Nyman wrote:
-> On 11.4.2022 17.50, Alan Stern wrote:
-> > For example, what would happen if the user unplugs a device right in the 
-> > middle of the freeze transition, after the root hub has been frozen but 
-> > before the controller is frozen?  We don't want such an unplug event to 
-> > prevent the system from going into hibernation -- especially if the root 
-> > hub was not enabled for wakeup.
-> 
-> We should be able to let system go to hibernate even if we get a disconnect
-> interrupt between roothub and host controller freeze.
-> Host is not yet suspended so no PME# wake is generated, only an interrupt.
-> 
-> From Linux PM point of view it should be ok as well as the actual xhci
-> device that is generating the interrupt is hasnt completer freeze() 
-> 
-> The xhci interrupt handler just needs to make sure that the disconnect
-> isn't propagated if roothub is suspended and wake on disconnect
-> is not set. And definitely make sure xhci doesn't start roothub polling. 
-> 
-> When freeze() is called for the host we should prevent the host from 
-> generating interrupts.
+This series of patches adds support for extended physical address on newer
+AMD CPUs.
 
-I guess that means adding a new callback.  Or we could just suspend the 
-controller, like Evan proposed originally.
+The first patch defines a separate helper function to extract
+MCA_ADDR[ErrorAddr]. And the second patch adds support for extended
+ErrorAddr bits in MCA_ADDR.
 
-> > (If the root hub _is_ enabled for wakeup then it's questionable.  
-> > Unplugging a device would be a wakeup event, so you could easily argue 
-> > that it _should_ prevent the system from going into hibernation.  After 
-> > all, if the unplug happened a few milliseconds later, after the system 
-> > had fully gone into hibernation, then it would cause the system to wake 
-> > up.)
-> > 
-> >> Would it make sense prevent xHCI interrupt generation in the host
-> >> freeze() stage, clearing the xHCI EINT bit in addition to calling 
-> >> check_roothub_suspend()?
-> >> Then enable it back in thaw()
-> > 
-> > That won't fully eliminate the problem mentioned in the preceding 
-> > paragraphs, although I guess it would help somewhat.
-> 
-> Would the following steps solve this?
-> 
-> 1. Disable device initiated resume for connected usb devices in freeze()
-> 
-> 2. Don't propagate connect or OC changes if roothub is suspended and port wake
->    flags are disabled. I.E don't kick roothub polling in xhci interrupt
->    handler here.
+Link:
+https://lkml.kernel.org/r/20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com
 
-I guess you can't just halt the entire host controller when only one of 
-the root hubs is suspended with wakeup disabled.  That does complicate 
-things.  But you could halt it as soon as both of the root hubs are 
-frozen.  Wouldn't that prevent interrupt generation?
+Smita Koralahalli (2):
+  x86/mce: Define function to extract ErrorAddr from MCA_ADDR
+  x86/mce: Add support for Extended Physical Address MCA changes
 
-> 3 Disable host interrupt generation in host freeze(), and re-enable in thaw()
+ arch/x86/kernel/cpu/mce/amd.c      | 21 ++++++++-------
+ arch/x86/kernel/cpu/mce/core.c     | 21 ++++-----------
+ arch/x86/kernel/cpu/mce/internal.h | 41 ++++++++++++++++++++++++++++++
+ 3 files changed, 58 insertions(+), 25 deletions(-)
 
-And then this step wouldn't be necessary, right?
+-- 
+2.17.1
 
-Alan Stern
