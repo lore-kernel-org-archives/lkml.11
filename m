@@ -2,88 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEB4C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D4DC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354427AbiDLMW7 (ORCPT
+        id S1354239AbiDLMWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
+        Tue, 12 Apr 2022 08:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355117AbiDLMSo (ORCPT
+        with ESMTP id S1355890AbiDLMT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:18:44 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF6D3EF17
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:20:05 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id ks6so12012665ejb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:20:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=pff1FHkCzScGhiiEwscLj/w2S5pj9koRwn3saxgH7gk=;
-        b=iMXBoYnS396Cd/Z+uDskKSV6GYGldeE+FiJxAXFy4SMbtEadb6SXLg+SZtCgJFcpwO
-         1PswoQ9HFZw0tcMl83sL4QZCUhUHOK/RKv+ZLhynmhwMDsIX0sR0Q0TGvB+jGLEBA1Yk
-         +D0LJX/1W7OT+dUU8SH6UFl/w7JyLrIw9ehApCD1x3c8BHI+d8SPXrRcC3GLo2B3pZ8W
-         CvLGPPaUnp7Z5e2JvoeyEJOir0Tb8uofelZqeL8wcXDA68yYcj6iaMY3PYZMaTKA6v97
-         BKMbd9FmIcVXAQ+ysfy9+gki/rOeNR/6iPLVjkMBl/KuCpn6hn1AuUoTUTy9gXQtbFzJ
-         Pwrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pff1FHkCzScGhiiEwscLj/w2S5pj9koRwn3saxgH7gk=;
-        b=OD3/Nkamf0a37vPBAZrBeO5apEn1bRi5KlZqeWVoj6atTJAQ6orxPTR5OzcLul+hjD
-         NtMoCNsMJyRDB2MbrSAMFKQ0qDn6TXzSRVDLFYUOcfbw5Fmp6uk/M74Z9mfn64KSWbj9
-         hctw3h9Y7onDJJyfU2GJT9KXwfNm3M3UlQZUG4Uf2a9MdLeyD/EFOueEZjGhvGMoWlem
-         dv4GBd3cHdTEBj708UEM4F7drSpyNaCyuJWx3s/7cI0VPawfrM3dWBqT2stjLPBGRN8e
-         v2f+sP6tJW0/XGI8k/JvjjOEJMzZZT9ut68RC7Sv0qUwlt0VSEd2Wo1hExZa1VoWznvv
-         AqZQ==
-X-Gm-Message-State: AOAM5331i9ESgOEiIxVwDrWvw8UHjEMxMWGV1eO7RaDGdRtB3hiFH3Tx
-        VzJuvCQHCmG89LX8kP6xexneMg==
-X-Google-Smtp-Source: ABdhPJzNuI3Vu8v6VQW4RdewzbUaT+T480WzP+CA3K9YR5xfQbYVRphQElyLFwUwVG6pacJaYioVKA==
-X-Received: by 2002:a17:906:7742:b0:6e8:3f85:4da1 with SMTP id o2-20020a170906774200b006e83f854da1mr22145291ejn.495.1649762404342;
-        Tue, 12 Apr 2022 04:20:04 -0700 (PDT)
-Received: from [192.168.0.194] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id f3-20020a056402004300b004162aa024c0sm16592968edu.76.2022.04.12.04.20.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 04:20:03 -0700 (PDT)
-Message-ID: <8f4714f8-b528-42d9-de55-aedc1bbc11af@linaro.org>
-Date:   Tue, 12 Apr 2022 13:20:03 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/4] dt-bindings: usb: qcom,dwc3: Add binding for SDX65
-Content-Language: en-US
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, gregkh@linuxfoundation.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1649761414-19217-1-git-send-email-quic_rohiagar@quicinc.com>
- <1649761414-19217-3-git-send-email-quic_rohiagar@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1649761414-19217-3-git-send-email-quic_rohiagar@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Tue, 12 Apr 2022 08:19:27 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 158F88CDA6;
+        Tue, 12 Apr 2022 04:23:12 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app2 (Coremail) with SMTP id by_KCgCnHhYUYVViTRWcAQ--.9963S2;
+        Tue, 12 Apr 2022 19:23:03 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     krzk@kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org,
+        akpm@linux-foundation.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH V2 2/2] drivers: nfc: nfcmrvl: fix double free bug in nfc_fw_download_done()
+Date:   Tue, 12 Apr 2022 19:23:00 +0800
+Message-Id: <20220412112300.106640-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgCnHhYUYVViTRWcAQ--.9963S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw1DZFW8KF4ktF15tr43Jrb_yoW8Zry7pr
+        WrGFy7Ar4DAr4YvFW5tFyDWrs8Cw47CryUGFZrG3yfZFn8tFyqy34kGFyrZF4DWr48ta15
+        K39xJayjkanYvr7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9C1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0E
+        n4kS14v26r1q6r43MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJw
+        CFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE
+        14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2
+        IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxK
+        x2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI
+        0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUd-B_UUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgISAVZdtZJyPAADsy
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/04/2022 13:03, Rohit Agarwal wrote:
-> Add devicetree binding for SDX65 USB controller based on
-> Qcom designware IP.
-> 
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
-> ---
->  Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 1 +
->  1 file changed, 1 insertion(+)
+There are potential double free bug in nfc_fw_download_done().
+The timer handler fw_dnld_timeout() and work item fw_dnld_rx_work()
+could both reach in fw_dnld_over() and nfc_fw_download_done() is not
+protected by any lock, which leads to double free.
 
+The race between fw_dnld_rx_work() and fw_dnld_timeout()
+can be shown as below:
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+   (Thread 1)               |      (Thread 2)
+fw_dnld_timeout             |  fw_dnld_rx_work
+                            |   fw_dnld_over
+ fw_dnld_over               |    nfc_fw_download_done
+  nfc_fw_download_done      |     nfc_genl_fw_download_done
+   nfc_genl_fw_download_done|      nlmsg_free(msg)  //(1)
+    nlmsg_free(msg) //(2)   |      ...
+     ...                    |
 
-Best regards,
-Krzysztof
+The nlmsg_free() will deallocate sk_buff in position (1), but
+nlmsg_free will be deallocated again in position (2), which
+leads to double free.
+
+This patch adds spin_lock_irq() and check in fw_dnld_over()
+in order to synchronize among different threads that call
+fw_dnld_over(). So the double free bug could be prevented.
+
+Fixes: 3194c6870158e3 ("NFC: nfcmrvl: add firmware download support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
+---
+Changes in V2:
+  - Fix the check in spin_lock_irq.
+
+ drivers/nfc/nfcmrvl/fw_dnld.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/nfc/nfcmrvl/fw_dnld.c b/drivers/nfc/nfcmrvl/fw_dnld.c
+index c22a4556db5..8188d466a01 100644
+--- a/drivers/nfc/nfcmrvl/fw_dnld.c
++++ b/drivers/nfc/nfcmrvl/fw_dnld.c
+@@ -116,7 +116,10 @@ static void fw_dnld_over(struct nfcmrvl_private *priv, u32 error)
+ 		nfcmrvl_chip_halt(priv);
+ 	}
+ 
+-	nfc_fw_download_done(priv->ndev->nfc_dev, priv->fw_dnld.name, error);
++	spin_lock_irq(&priv->fw_dnld.lock);
++	if (priv->ndev->nfc_dev->fw_download_in_progress)
++		nfc_fw_download_done(priv->ndev->nfc_dev, priv->fw_dnld.name, error);
++	spin_unlock_irq(&priv->fw_dnld.lock);
+ }
+ 
+ static void fw_dnld_timeout(struct timer_list *t)
+-- 
+2.17.1
+
