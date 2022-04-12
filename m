@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B42EC35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37822C352B6
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351350AbiDLHc7 (ORCPT
+        id S1351827AbiDLHdP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
+        Tue, 12 Apr 2022 03:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351866AbiDLHNC (ORCPT
+        with ESMTP id S1351860AbiDLHNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:02 -0400
+        Tue, 12 Apr 2022 03:13:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755A6100A;
-        Mon, 11 Apr 2022 23:53:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF56E04;
+        Mon, 11 Apr 2022 23:53:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28A59B81B43;
-        Tue, 12 Apr 2022 06:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 902EAC385A1;
-        Tue, 12 Apr 2022 06:53:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B31E4B81B43;
+        Tue, 12 Apr 2022 06:53:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E1DC385A1;
+        Tue, 12 Apr 2022 06:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746430;
-        bh=9VK7Q9d8kUXkXOYxC5DYC7ucjglVOtJGawK4c7nKiDA=;
+        s=korg; t=1649746425;
+        bh=jdSrlme+ldB8gp5g95tgqulfRXTKB43uz9/V2NDGTck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VydAOwY2Lr7jZB8PG/zD00mgCOZiofSrd1ptnVCXbHTHvt9lmuOl0AvzJalMF46ga
-         Lp35AZMMm38fXAcjWSfbAUCS3aRY+5CEH9TdoN0I3P6qCz8+h3lQeQ6Vxp920KqyjX
-         VZOWw32gWccLd+WLCP7ftTT/r+vyXWGcPmNJ+exw=
+        b=NHcuyZIjDF385c0FsLIrLMqnMvKGtjduTPrH6WsGAyh/JhbFP/3CITd4O6e6iDnJ1
+         xkUjG80K7D+p58RXg145hGfyg1lhYbZf0gYqWyeBTntR+msM+wNw+GAPIbuivNuNUg
+         RRlH2fz/lH+r2ab2930tRC+7IxNWcaQ2o01X3QQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 271/277] x86,static_call: Fix __static_call_return0 for i386
-Date:   Tue, 12 Apr 2022 08:31:14 +0200
-Message-Id: <20220412062949.883964591@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH 5.15 269/277] x86/bug: Prevent shadowing in __WARN_FLAGS
+Date:   Tue, 12 Apr 2022 08:31:12 +0200
+Message-Id: <20220412062949.827938666@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,54 +52,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-commit 1cd5f059d956e6f614ba6666ecdbcf95db05d5f5 upstream.
+commit 9ce02f0fc68326dd1f87a0a3a4c6ae7fdd39e6f6 upstream.
 
-Paolo reported that the instruction sequence that is used to replace:
+The macro __WARN_FLAGS() uses a local variable named "f". This being a
+common name, there is a risk of shadowing other variables.
 
-    call __static_call_return0
+For example, GCC would yield:
 
-namely:
+| In file included from ./include/linux/bug.h:5,
+|                  from ./include/linux/cpumask.h:14,
+|                  from ./arch/x86/include/asm/cpumask.h:5,
+|                  from ./arch/x86/include/asm/msr.h:11,
+|                  from ./arch/x86/include/asm/processor.h:22,
+|                  from ./arch/x86/include/asm/timex.h:5,
+|                  from ./include/linux/timex.h:65,
+|                  from ./include/linux/time32.h:13,
+|                  from ./include/linux/time.h:60,
+|                  from ./include/linux/stat.h:19,
+|                  from ./include/linux/module.h:13,
+|                  from virt/lib/irqbypass.mod.c:1:
+| ./include/linux/rcupdate.h: In function 'rcu_head_after_call_rcu':
+| ./arch/x86/include/asm/bug.h:80:21: warning: declaration of 'f' shadows a parameter [-Wshadow]
+|    80 |         __auto_type f = BUGFLAG_WARNING|(flags);                \
+|       |                     ^
+| ./include/asm-generic/bug.h:106:17: note: in expansion of macro '__WARN_FLAGS'
+|   106 |                 __WARN_FLAGS(BUGFLAG_ONCE |                     \
+|       |                 ^~~~~~~~~~~~
+| ./include/linux/rcupdate.h:1007:9: note: in expansion of macro 'WARN_ON_ONCE'
+|  1007 |         WARN_ON_ONCE(func != (rcu_callback_t)~0L);
+|       |         ^~~~~~~~~~~~
+| In file included from ./include/linux/rbtree.h:24,
+|                  from ./include/linux/mm_types.h:11,
+|                  from ./include/linux/buildid.h:5,
+|                  from ./include/linux/module.h:14,
+|                  from virt/lib/irqbypass.mod.c:1:
+| ./include/linux/rcupdate.h:1001:62: note: shadowed declaration is here
+|  1001 | rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
+|       |                                               ~~~~~~~~~~~~~~~^
 
-    66 66 48 31 c0	data16 data16 xor %rax,%rax
+For reference, sparse also warns about it, c.f. [1].
 
-decodes to something else on i386, namely:
+This patch renames the variable from f to __flags (with two underscore
+prefixes as suggested in the Linux kernel coding style [2]) in order
+to prevent collisions.
 
-    66 66 48		data16 dec %ax
-    31 c0		xor    %eax,%eax
+[1] https://lore.kernel.org/all/CAFGhKbyifH1a+nAMCvWM88TK6fpNPdzFtUXPmRGnnQeePV+1sw@mail.gmail.com/
 
-Which is a nonsensical sequence that happens to have the same outcome.
-*However* an important distinction is that it consists of 2
-instructions which is a problem when the thing needs to be overwriten
-with a regular call instruction again.
+[2] Linux kernel coding style, section 12) Macros, Enums and RTL,
+paragraph 5) namespace collisions when defining local variables in
+macros resembling functions
+https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
 
-As such, replace the instruction with something that decodes the same
-on both i386 and x86_64.
-
-Fixes: 3f2a8fc4b15d ("static_call/x86: Add __static_call_return0()")
-Reported-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: bfb1a7c91fb7 ("x86/bug: Merge annotate_reachable() into_BUG_FLAGS() asm")
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220318204419.GT8939@worktop.programming.kicks-ass.net
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/20220324023742.106546-1-mailhol.vincent@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/static_call.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/bug.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kernel/static_call.c
-+++ b/arch/x86/kernel/static_call.c
-@@ -12,10 +12,9 @@ enum insn_type {
- };
- 
- /*
-- * data16 data16 xorq %rax, %rax - a single 5 byte instruction that clears %rax
-- * The REX.W cancels the effect of any data16.
-+ * cs cs cs xorl %eax, %eax - a single 5 byte instruction that clears %[er]ax
+--- a/arch/x86/include/asm/bug.h
++++ b/arch/x86/include/asm/bug.h
+@@ -77,9 +77,9 @@ do {								\
   */
--static const u8 xor5rax[] = { 0x66, 0x66, 0x48, 0x31, 0xc0 };
-+static const u8 xor5rax[] = { 0x2e, 0x2e, 0x2e, 0x31, 0xc0 };
+ #define __WARN_FLAGS(flags)					\
+ do {								\
+-	__auto_type f = BUGFLAG_WARNING|(flags);		\
++	__auto_type __flags = BUGFLAG_WARNING|(flags);		\
+ 	instrumentation_begin();				\
+-	_BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);			\
++	_BUG_FLAGS(ASM_UD2, __flags, ASM_REACHABLE);		\
+ 	instrumentation_end();					\
+ } while (0)
  
- static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
- {
 
 
