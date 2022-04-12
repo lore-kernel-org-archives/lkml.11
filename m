@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF40C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A45C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352541AbiDLHFl (ORCPT
+        id S1352610AbiDLHFp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        Tue, 12 Apr 2022 03:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351688AbiDLGyM (ORCPT
+        with ESMTP id S1351693AbiDLGyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:54:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECFC3819C;
-        Mon, 11 Apr 2022 23:43:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBAC381B8;
+        Mon, 11 Apr 2022 23:43:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FBC7B818BD;
-        Tue, 12 Apr 2022 06:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0430BC385A1;
-        Tue, 12 Apr 2022 06:43:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90CEF6066C;
+        Tue, 12 Apr 2022 06:43:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A93D3C385A1;
+        Tue, 12 Apr 2022 06:43:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745810;
-        bh=hlqg9P0tk9dzhD9oMocgyBmlvqdOFAOmODcn6fGLW5I=;
+        s=korg; t=1649745813;
+        bh=1sLZ0yNT1HQT11YNTpxRT/Kai97X1dQ3iApND9rJu4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ooIZ+6IF7kvpLeVa3Kor3RB8NB+ENrNBNHlvVUbj5MtiJ7rTTGVvUYM448+bmKB4M
-         g8Jen8+lw8KG+cUXIcI9rGzu+dUAeSRhAF0MNd1hIqC4O+T8SXOYmY106CUfKwj6Cr
-         6BKVb0yqbhiTjzr5SDFKwqsLrQmx0oK7R4bLnUZc=
+        b=BTfFCVStAgeg1Jc1iJztyWcLBNR3uHDUq89fG42Nvvn811gnXPCUEQqBCVGs9NTi0
+         xfR8U6tRwEprgtBmnYM0i44rkA7HoTRO/O6IbJNUqGFRQbvfaq8mOKOSoJzo05/YeP
+         iTSwzcMSuWd8Js5rkT4cvlV5lrsKMqqrkef8RRFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anisse Astier <anisse@astier.eu>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 016/277] drm: Add orientation quirk for GPD Win Max
-Date:   Tue, 12 Apr 2022 08:26:59 +0200
-Message-Id: <20220412062942.507496593@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 007/277] nbd: fix possible overflow on first_minor in nbd_dev_add()
+Date:   Tue, 12 Apr 2022 08:26:50 +0200
+Message-Id: <20220412062942.244242820@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,38 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anisse Astier <anisse@astier.eu>
+From: Zhang Wensheng <zhangwensheng5@huawei.com>
 
-[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
+[ Upstream commit 6d35d04a9e18990040e87d2bbf72689252669d54 ]
 
-Panel is 800x1280, but mounted on a laptop form factor, sideways.
+When 'index' is a big numbers, it may become negative which forced
+to 'int'. then 'index << part_shift' might overflow to a positive
+value that is not greater than '0xfffff', then sysfs might complains
+about duplicate creation. Because of this, move the 'index' judgment
+to the front will fix it and be better.
 
-Signed-off-by: Anisse Astier <anisse@astier.eu>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
+Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
+Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220310093224.4002895-1-zhangwensheng5@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/block/nbd.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 448c2f2d803a..f5ab891731d0 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -166,6 +166,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
- 		},
- 		.driver_data = (void *)&lcd720x1280_rightside_up,
-+	}, {	/* GPD Win Max */
-+		.matches = {
-+		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
-+		},
-+		.driver_data = (void *)&lcd800x1280_rightside_up,
- 	}, {	/*
- 		 * GPD Pocket, note that the the DMI data is less generic then
- 		 * it seems, devices with a board-vendor of "AMI Corporation"
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 582b23befb5c..1c62262304be 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1744,17 +1744,6 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
+ 	refcount_set(&nbd->refs, 0);
+ 	INIT_LIST_HEAD(&nbd->list);
+ 	disk->major = NBD_MAJOR;
+-
+-	/* Too big first_minor can cause duplicate creation of
+-	 * sysfs files/links, since index << part_shift might overflow, or
+-	 * MKDEV() expect that the max bits of first_minor is 20.
+-	 */
+-	disk->first_minor = index << part_shift;
+-	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
+-		err = -EINVAL;
+-		goto out_free_work;
+-	}
+-
+ 	disk->minors = 1 << part_shift;
+ 	disk->fops = &nbd_fops;
+ 	disk->private_data = nbd;
+@@ -1859,8 +1848,19 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
+ 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+-	if (info->attrs[NBD_ATTR_INDEX])
++	if (info->attrs[NBD_ATTR_INDEX]) {
+ 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
++
++		/*
++		 * Too big first_minor can cause duplicate creation of
++		 * sysfs files/links, since index << part_shift might overflow, or
++		 * MKDEV() expect that the max bits of first_minor is 20.
++		 */
++		if (index < 0 || index > MINORMASK >> part_shift) {
++			printk(KERN_ERR "nbd: illegal input index %d\n", index);
++			return -EINVAL;
++		}
++	}
+ 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
+ 		printk(KERN_ERR "nbd: must specify at least one socket\n");
+ 		return -EINVAL;
 -- 
 2.35.1
 
