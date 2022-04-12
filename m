@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03964C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6FBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245734AbiDLH7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
+        id S1352042AbiDLIAE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353585AbiDLHZr (ORCPT
+        with ESMTP id S1353589AbiDLHZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B4443AE7;
-        Tue, 12 Apr 2022 00:01:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5368D2611F;
+        Tue, 12 Apr 2022 00:02:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9331DB81B4E;
-        Tue, 12 Apr 2022 07:01:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC3C0C385A1;
-        Tue, 12 Apr 2022 07:01:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E1D6B81B4D;
+        Tue, 12 Apr 2022 07:02:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574E2C385A1;
+        Tue, 12 Apr 2022 07:01:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746913;
-        bh=0NnzGvVcTfCHc0iCRCoud8MXWwzj4d12kCfEUzZn0Ic=;
+        s=korg; t=1649746918;
+        bh=2iUMAivM5OcC/XYFeQNoON5q/FeRFZMAPLQB86xdYuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fs1HFF1UmgJRHw316xgeMOzbWZmJS9+g9Ifh/qcBx4sRUMI1W/PvRoRZ3H9rQ/t7/
-         Vo7eDnhPplQta4TYLsDzAuGoiyeKLg+Vx5Pa6qnL/M//ghorjFqNuFIpROQL2KP36a
-         J1n0+rCrGyek/Wns+yOu71sJ3s3pjAzKNBHMtRYg=
+        b=uNjTECMQgRTsNFwpEYWozvy2A8VQhOxfzXttCFTVdxrlkMLbPAWOjJw46G/8OsSDQ
+         5wYmtFT8BzxAzdyYJSnkHiFRLwBiShuJV6TnikGwBMqEGEr6TIR+ZyKSl2XfqQFytY
+         buO0EYtIuSCUplTPAdrthRSOsj3xeDwcMzPPkyAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Andy Gospodarek <gospo@broadcom.com>,
+        stable@vger.kernel.org,
+        Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>,
+        Ray Jui <ray.jui@broadcom.com>,
         Michael Chan <michael.chan@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 176/285] bnxt_en: reserve space inside receive page for skb_shared_info
-Date:   Tue, 12 Apr 2022 08:30:33 +0200
-Message-Id: <20220412062948.746922597@linuxfoundation.org>
+Subject: [PATCH 5.16 177/285] bnxt_en: Prevent XDP redirect from running when stopping TX queue
+Date:   Tue, 12 Apr 2022 08:30:34 +0200
+Message-Id: <20220412062948.776369767@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,43 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Gospodarek <gospo@broadcom.com>
+From: Ray Jui <ray.jui@broadcom.com>
 
-[ Upstream commit facc173cf700e55b2ad249ecbd3a7537f7315691 ]
+[ Upstream commit 27d4073f8d9af0340362554414f4961643a4f4de ]
 
-Insufficient space was being reserved in the page used for packet
-reception, so the interface MTU could be set too large to still have
-room for the contents of the packet when doing XDP redirect.  This
-resulted in the following message when redirecting a packet between
-3520 and 3822 bytes with an MTU of 3822:
+Add checks in the XDP redirect callback to prevent XDP from running when
+the TX ring is undergoing shutdown.
 
-[311815.561880] XDP_WARN: xdp_update_frame_from_buff(line:200): Driver BUG: missing reserved tailroom
+Also remove redundant checks in the XDP redirect callback to validate the
+txr and the flag that indicates the ring supports XDP. The modulo
+arithmetic on 'tx_nr_rings_xdp' already guarantees the derived TX
+ring is an XDP ring.  txr is also guaranteed to be valid after checking
+BNXT_STATE_OPEN and within RCU grace period.
 
 Fixes: f18c2b77b2e4 ("bnxt_en: optimized XDP_REDIRECT support")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
+Signed-off-by: Ray Jui <ray.jui@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 5f4a0bb36af3..bbf93310da1f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -593,7 +593,8 @@ struct nqe_cn {
- #define BNXT_MAX_MTU		9500
- #define BNXT_MAX_PAGE_MODE_MTU	\
- 	((unsigned int)PAGE_SIZE - VLAN_ETH_HLEN - NET_IP_ALIGN -	\
--	 XDP_PACKET_HEADROOM)
-+	 XDP_PACKET_HEADROOM - \
-+	 SKB_DATA_ALIGN((unsigned int)sizeof(struct skb_shared_info)))
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index c59e46c7a1ca..148b58f3468b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -229,14 +229,16 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
+ 	ring = smp_processor_id() % bp->tx_nr_rings_xdp;
+ 	txr = &bp->tx_ring[ring];
  
- #define BNXT_MIN_PKT_SIZE	52
++	if (READ_ONCE(txr->dev_state) == BNXT_DEV_STATE_CLOSING)
++		return -EINVAL;
++
+ 	if (static_branch_unlikely(&bnxt_xdp_locking_key))
+ 		spin_lock(&txr->xdp_tx_lock);
  
+ 	for (i = 0; i < num_frames; i++) {
+ 		struct xdp_frame *xdp = frames[i];
+ 
+-		if (!txr || !bnxt_tx_avail(bp, txr) ||
+-		    !(bp->bnapi[ring]->flags & BNXT_NAPI_FLAG_XDP))
++		if (!bnxt_tx_avail(bp, txr))
+ 			break;
+ 
+ 		mapping = dma_map_single(&pdev->dev, xdp->data, xdp->len,
 -- 
 2.35.1
 
