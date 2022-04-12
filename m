@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FA8C48BD2
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33874C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356274AbiDLHfE (ORCPT
+        id S1356347AbiDLHfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
+        Tue, 12 Apr 2022 03:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350872AbiDLHMB (ORCPT
+        with ESMTP id S1352068AbiDLHN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC164AE29;
-        Mon, 11 Apr 2022 23:50:08 -0700 (PDT)
+        Tue, 12 Apr 2022 03:13:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22DCE0ED;
+        Mon, 11 Apr 2022 23:54:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F24DE61045;
-        Tue, 12 Apr 2022 06:50:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D138C385A1;
-        Tue, 12 Apr 2022 06:50:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F17A9B81B35;
+        Tue, 12 Apr 2022 06:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 413BCC385A6;
+        Tue, 12 Apr 2022 06:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746207;
-        bh=zZFhWFitkae8Zm3UMN7Hy6Ny2tFQ0Om1OfTnnOfRHos=;
+        s=korg; t=1649746455;
+        bh=Jc8pgUnbZ/NjC/Hkh90e39VVKCwDKbAPR4E0Lwf2MiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zSkocZlAi1jitvUuyK8F5rTa2jqZZe3kAXdk4nZoL16S/QyPrOLWzn+9ZA4buVvM4
-         p985G9J/8VXd+jKONJAy4pvtLYTVTU3vN6O1pmnl/c7EfMa8SAzB1OvEXF3yPDreUR
-         BF0m9V5tVeFn+9HEwdlGUYXt1n6jYLlL2zp9r9BE=
+        b=ZYM5maUp7JGF1N98P1N7nuX/bLvb6Sfl3aDejGk3L7O/unxZqJsq8Komzgz0PKEj5
+         ZjhXLAqqBOFzXg/5zqvabf20lCnRUQEPYGNf1EjuqepqbsxAeAgMnhX/E0ym7fnrRb
+         eZpWn/RyetMXjGAnSTJm9QNt05QmeINRs5mVAuc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Philipp Zabel <philipp.zabel@gmail.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 182/277] ice: Do not skip not enabled queues in ice_vc_dis_qs_msg
-Date:   Tue, 12 Apr 2022 08:29:45 +0200
-Message-Id: <20220412062947.302934363@linuxfoundation.org>
+Subject: [PATCH 5.16 012/285] drm/edid: remove non_desktop quirk for HPN-3515 and LEN-B800.
+Date:   Tue, 12 Apr 2022 08:27:49 +0200
+Message-Id: <20220412062944.031549172@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,78 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Philipp Zabel <philipp.zabel@gmail.com>
 
-[ Upstream commit 05ef6813b234db3196f083b91db3963f040b65bb ]
+[ Upstream commit 50dc95d561a2552b0d76a9f91b38005195bf2974 ]
 
-Disable check for queue being enabled in ice_vc_dis_qs_msg, because
-there could be a case when queues were created, but were not enabled.
-We still need to delete those queues.
+Now that there is support for the Microsoft VSDB for HMDs, remove the
+non-desktop quirk for two devices that are verified to contain it in
+their EDID: HPN-3515 and LEN-B800.
+Presumably most of the other Windows Mixed Reality headsets contain it
+as well, but there are ACR-7FCE and SEC-5194 devices without it.
 
-Normal workflow for VF looks like:
-Enable path:
-VIRTCHNL_OP_ADD_ETH_ADDR (opcode 10)
-VIRTCHNL_OP_CONFIG_VSI_QUEUES (opcode 6)
-VIRTCHNL_OP_ENABLE_QUEUES (opcode 8)
+Tested with LEN-B800.
 
-Disable path:
-VIRTCHNL_OP_DISABLE_QUEUES (opcode 9)
-VIRTCHNL_OP_DEL_ETH_ADDR (opcode 11)
-
-The issue appears only in stress conditions when VF is enabled and
-disabled very fast.
-Eventually there will be a case, when queues are created by
-VIRTCHNL_OP_CONFIG_VSI_QUEUES, but are not enabled by
-VIRTCHNL_OP_ENABLE_QUEUES.
-In turn, these queues are not deleted by VIRTCHNL_OP_DISABLE_QUEUES,
-because there is a check whether queues are enabled in
-ice_vc_dis_qs_msg.
-
-When we bring up the VF again, we will see the "Failed to set LAN Tx queue
-context" error during VIRTCHNL_OP_CONFIG_VSI_QUEUES step. This
-happens because old 16 queues were not deleted and VF requests to create
-16 more, but ice_sched_get_free_qparent in ice_ena_vsi_txq would fail to
-find a parent node for first newly requested queue (because all nodes
-are allocated to 16 old queues).
-
-Testing Hints:
-
-Just enable and disable VF fast enough, so it would be disabled before
-reaching VIRTCHNL_OP_ENABLE_QUEUES.
-
-while true; do
-        ip link set dev ens785f0v0 up
-        sleep 0.065 # adjust delay value for you machine
-        ip link set dev ens785f0v0 down
-done
-
-Fixes: 77ca27c41705 ("ice: add support for virtchnl_queue_select.[tx|rx]_queues bitmap")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Philipp Zabel <philipp.zabel@gmail.com>
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220123101653.147333-2-philipp.zabel@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/drm_edid.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 4338e4ff7e85..9d4d58757e04 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -3335,9 +3335,9 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
- 				goto error_param;
- 			}
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index b8f5419e514a..a71b82668a98 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -212,9 +212,7 @@ static const struct edid_quirk {
  
--			/* Skip queue if not enabled */
- 			if (!test_bit(vf_q_id, vf->txq_ena))
--				continue;
-+				dev_dbg(ice_pf_to_dev(vsi->back), "Queue %u on VSI %u is not enabled, but stopping it anyway\n",
-+					vf_q_id, vsi->vsi_num);
- 
- 			ice_fill_txq_meta(vsi, ring, &txq_meta);
- 
+ 	/* Windows Mixed Reality Headsets */
+ 	EDID_QUIRK('A', 'C', 'R', 0x7fce, EDID_QUIRK_NON_DESKTOP),
+-	EDID_QUIRK('H', 'P', 'N', 0x3515, EDID_QUIRK_NON_DESKTOP),
+ 	EDID_QUIRK('L', 'E', 'N', 0x0408, EDID_QUIRK_NON_DESKTOP),
+-	EDID_QUIRK('L', 'E', 'N', 0xb800, EDID_QUIRK_NON_DESKTOP),
+ 	EDID_QUIRK('F', 'U', 'J', 0x1970, EDID_QUIRK_NON_DESKTOP),
+ 	EDID_QUIRK('D', 'E', 'L', 0x7fce, EDID_QUIRK_NON_DESKTOP),
+ 	EDID_QUIRK('S', 'E', 'C', 0x144a, EDID_QUIRK_NON_DESKTOP),
 -- 
 2.35.1
 
