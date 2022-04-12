@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226A4C47085
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 005CAC38A2C
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351333AbiDLG6S (ORCPT
+        id S1351359AbiDLG6Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
+        Tue, 12 Apr 2022 02:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351300AbiDLGxU (ORCPT
+        with ESMTP id S1351342AbiDLGx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:20 -0400
+        Tue, 12 Apr 2022 02:53:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096213056A;
-        Mon, 11 Apr 2022 23:40:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6E43389D;
+        Mon, 11 Apr 2022 23:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75C63B818C8;
-        Tue, 12 Apr 2022 06:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F1CC385A6;
-        Tue, 12 Apr 2022 06:40:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D909B81B46;
+        Tue, 12 Apr 2022 06:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8576C385A1;
+        Tue, 12 Apr 2022 06:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745613;
-        bh=esj8rPlEImg7oy3hYs/Ujs6q3bXrl8nGwJwMX09IwHo=;
+        s=korg; t=1649745616;
+        bh=by4q/htYsz+6xmCsl7T6iuT54wpIZK/nyj79sBkuefM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=My/PT3NZICrtaYCIccSev5hTu6/4LCbGPZZQ7/IZOsxcm4iL/XSWYNcAdk+AYEb1U
-         uy3XN8mZ4PyZQqU7FUEhs4fdBLml/nLhjvV4btlTs2/KZLOgz0QWD7PvpSV0DGGh6h
-         K0YIdOkq8lntRyweF4dk0DAH2dHyeIX8Qh3gvA1Q=
+        b=pGa/9ufVDJzNMbmYfBYQIYkr/e77wsjNjgL4FMkqNdYV6YK7W97wDe/b1GzBAJXpG
+         z4TPvOjwy0vEzIKdftlzLFsagdp74OatXRzfmcGXeB7LiHwiaIhy7amV9w3vXHpImm
+         NbDXaowLwszyqjvYYhPtXyjot1IJYQIoLWtbJfNU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.10 155/171] perf build: Dont use -ffat-lto-objects in the python feature test when building with clang-13
-Date:   Tue, 12 Apr 2022 08:30:46 +0200
-Message-Id: <20220412062932.381281752@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 118/171] net: openvswitch: dont send internal clone attribute to the userspace.
+Date:   Tue, 12 Apr 2022 08:30:09 +0200
+Message-Id: <20220412062931.298959387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -58,61 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-commit 3a8a0475861a443f02e3a9b57d044fe2a0a99291 upstream.
+[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
 
-Using -ffat-lto-objects in the python feature test when building with
-clang-13 results in:
+'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+performance optimization inside the kernel.  It's added by the kernel
+while parsing user-provided actions and should not be sent during the
+flow dump as it's not part of the uAPI.
 
-  clang-13: error: optimization flag '-ffat-lto-objects' is not supported [-Werror,-Wignored-optimization-argument]
-  error: command '/usr/sbin/clang' failed with exit code 1
-  cp: cannot stat '/tmp/build/perf/python_ext_build/lib/perf*.so': No such file or directory
-  make[2]: *** [Makefile.perf:639: /tmp/build/perf/python/perf.so] Error 1
+The issue doesn't cause any significant problems to the ovs-vswitchd
+process, because reported actions are not really used in the
+application lifecycle and only supposed to be shown to a human via
+ovs-dpctl flow dump.  However, the action list is still incorrect
+and causes the following error if the user wants to look at the
+datapath flows:
 
-Noticed when building on a docker.io/library/archlinux:base container.
+  # ovs-dpctl add-dp system@ovs-system
+  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
+                  ct(commit),0)
 
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Sedat Dilek <sedat.dilek@gmail.com>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+With the fix:
+
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(ct(commit),0)
+
+Additionally fixed an incorrect attribute name in the comment.
+
+Fixes: b233504033db ("openvswitch: kernel datapath clone action")
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
+Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/Makefile.config |    3 +++
- tools/perf/util/setup.py   |    2 ++
- 2 files changed, 5 insertions(+)
+ net/openvswitch/actions.c      | 2 +-
+ net/openvswitch/flow_netlink.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -255,6 +255,9 @@ ifdef PYTHON_CONFIG
-   PYTHON_EMBED_LIBADD := $(call grep-libs,$(PYTHON_EMBED_LDOPTS)) -lutil
-   PYTHON_EMBED_CCOPTS := $(shell $(PYTHON_CONFIG_SQ) --includes 2>/dev/null)
-   FLAGS_PYTHON_EMBED := $(PYTHON_EMBED_CCOPTS) $(PYTHON_EMBED_LDOPTS)
-+  ifeq ($(CC_NO_CLANG), 0)
-+    PYTHON_EMBED_CCOPTS := $(filter-out -ffat-lto-objects, $(PYTHON_EMBED_CCOPTS))
-+  endif
- endif
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 525c1540f10e..6d8d70021666 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1044,7 +1044,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
+ 	int rem = nla_len(attr);
+ 	bool dont_clone_flow_key;
  
- FEATURE_CHECK_CFLAGS-libpython := $(PYTHON_EMBED_CCOPTS)
---- a/tools/perf/util/setup.py
-+++ b/tools/perf/util/setup.py
-@@ -23,6 +23,8 @@ if cc_is_clang:
-             vars[var] = sub("-fstack-protector-strong", "", vars[var])
-         if not clang_has_option("-fno-semantic-interposition"):
-             vars[var] = sub("-fno-semantic-interposition", "", vars[var])
-+        if not clang_has_option("-ffat-lto-objects"):
-+            vars[var] = sub("-ffat-lto-objects", "", vars[var])
+-	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
++	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
+ 	clone_arg = nla_data(attr);
+ 	dont_clone_flow_key = nla_get_u32(clone_arg);
+ 	actions = nla_next(clone_arg, &rem);
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 8c4bdfa627ca..c41093540b2f 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -3419,7 +3419,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
+ 	if (!start)
+ 		return -EMSGSIZE;
  
- from distutils.core import setup, Extension
+-	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
++	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
++	attr = nla_next(nla_data(attr), &rem);
++	err = ovs_nla_put_actions(attr, rem, skb);
  
+ 	if (err)
+ 		nla_nest_cancel(skb, start);
+-- 
+2.35.1
+
 
 
