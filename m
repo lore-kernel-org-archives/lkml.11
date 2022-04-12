@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFFC6C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAB6C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358357AbiDLHl1 (ORCPT
+        id S1358554AbiDLHlu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
+        Tue, 12 Apr 2022 03:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353349AbiDLHPO (ORCPT
+        with ESMTP id S1353548AbiDLHPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:15:14 -0400
+        Tue, 12 Apr 2022 03:15:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1FF393C9;
-        Mon, 11 Apr 2022 23:56:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AF839BBA;
+        Mon, 11 Apr 2022 23:57:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A23B6158E;
-        Tue, 12 Apr 2022 06:56:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CBE6C385A1;
-        Tue, 12 Apr 2022 06:56:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE1BD6149D;
+        Tue, 12 Apr 2022 06:57:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9597C385A6;
+        Tue, 12 Apr 2022 06:57:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746612;
-        bh=en1lduSAZMJqlcpjsWnyj4N6Vi7Ju+gSq8fZkkkk1Wo=;
+        s=korg; t=1649746621;
+        bh=nCTmKaY5tqg5mpxtTmdTE1Ti9amTVIWQFxjrQKhEUwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mvA+ndCvM/aY7FMCT83LDaPsm6diEgtmdvOUUrLfyCKpnRc/fBcCorZc3He3A8UBN
-         rrTALsAGrI9H0hCRkgQp30t5nN2ocELK7TQFqsLmJu24S2FhHfrC5DFepaQ+R3QV7H
-         aeD5VjmkYU+gl/Me4fL9LT1iTA1eSugYx53ZNDDg=
+        b=QWUGTLrSeVNDMMPGJ7zgrgTgt9yaopmgUOIUk57GPYFcA0bccRc7jXWv3nBZ5hzuN
+         4MOKePyOKSOQJZhQVly/4+orOTf2ezqTC2kIg2xwfxgGHT9z3I+wJiQqZyRnQu5vO9
+         cExM1sWEOSLeg3LVL8WRBoRtwYfJmmi0UlkrW1TA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 031/285] bpf: Make dst_port field in struct bpf_sock 16-bit wide
-Date:   Tue, 12 Apr 2022 08:28:08 +0200
-Message-Id: <20220412062944.575866124@linuxfoundation.org>
+Subject: [PATCH 5.16 069/285] vfio/pci: Stub vfio_pci_vga_rw when !CONFIG_VFIO_PCI_VGA
+Date:   Tue, 12 Apr 2022 08:28:46 +0200
+Message-Id: <20220412062945.659273761@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,92 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Alex Williamson <alex.williamson@redhat.com>
 
-[ Upstream commit 4421a582718ab81608d8486734c18083b822390d ]
+[ Upstream commit 6e031ec0e5a2dda53e12e0d2a7e9b15b47a3c502 ]
 
-Menglong Dong reports that the documentation for the dst_port field in
-struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
-field is a zero-padded 16-bit integer in network byte order. The value
-appears to the BPF user as if laid out in memory as so:
+Resolve build errors reported against UML build for undefined
+ioport_map() and ioport_unmap() functions.  Without this config
+option a device cannot have vfio_pci_core_device.has_vga set,
+so the existing function would always return -EINVAL anyway.
 
-  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
-                                      + 8  <port LSB>
-                                      +16  0x00
-                                      +24  0x00
-
-32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
-the offset into the field is 0.
-
-32-bit wide loads from dst_port are especially confusing. The loaded value,
-after converting to host byte order with bpf_ntohl(dst_port), contains the
-port number in the upper 16-bits.
-
-Remove the confusion by splitting the field into two 16-bit fields. For
-backward compatibility, allow 32-bit wide loads from offsetof(struct
-bpf_sock, dst_port).
-
-While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
-
-Reported-by: Menglong Dong <imagedong@tencent.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Link: https://lore.kernel.org/r/20220130115518.213259-2-jakub@cloudflare.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Link: https://lore.kernel.org/r/20220123125737.2658758-1-geert@linux-m68k.org
+Link: https://lore.kernel.org/r/164306582968.3758255.15192949639574660648.stgit@omen
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/bpf.h |  3 ++-
- net/core/filter.c        | 10 +++++++++-
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/vfio/pci/vfio_pci_rdwr.c | 2 ++
+ include/linux/vfio_pci_core.h    | 9 +++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 2b3c3f83076c..61bbaf340a89 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5414,7 +5414,8 @@ struct bpf_sock {
- 	__u32 src_ip4;
- 	__u32 src_ip6[4];
- 	__u32 src_port;		/* host byte order */
--	__u32 dst_port;		/* network byte order */
-+	__be16 dst_port;	/* network byte order */
-+	__u16 :16;		/* zero padding */
- 	__u32 dst_ip4;
- 	__u32 dst_ip6[4];
- 	__u32 state;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index d4cdf11656b3..4721ed65bcc5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7975,6 +7975,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 			      struct bpf_insn_access_aux *info)
+diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+index 57d3b2cbbd8e..82ac1569deb0 100644
+--- a/drivers/vfio/pci/vfio_pci_rdwr.c
++++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+@@ -288,6 +288,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 	return done;
+ }
+ 
++#ifdef CONFIG_VFIO_PCI_VGA
+ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite)
  {
- 	const int size_default = sizeof(__u32);
-+	int field_size;
+@@ -355,6 +356,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
  
- 	if (off < 0 || off >= sizeof(struct bpf_sock))
- 		return false;
-@@ -7986,7 +7987,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case offsetof(struct bpf_sock, family):
- 	case offsetof(struct bpf_sock, type):
- 	case offsetof(struct bpf_sock, protocol):
--	case offsetof(struct bpf_sock, dst_port):
- 	case offsetof(struct bpf_sock, src_port):
- 	case offsetof(struct bpf_sock, rx_queue_mapping):
- 	case bpf_ctx_range(struct bpf_sock, src_ip4):
-@@ -7995,6 +7995,14 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
- 		bpf_ctx_record_field_size(info, size_default);
- 		return bpf_ctx_narrow_access_ok(off, size, size_default);
-+	case bpf_ctx_range(struct bpf_sock, dst_port):
-+		field_size = size == size_default ?
-+			size_default : sizeof_field(struct bpf_sock, dst_port);
-+		bpf_ctx_record_field_size(info, field_size);
-+		return bpf_ctx_narrow_access_ok(off, size, field_size);
-+	case offsetofend(struct bpf_sock, dst_port) ...
-+	     offsetof(struct bpf_sock, dst_ip4) - 1:
-+		return false;
- 	}
+ 	return done;
+ }
++#endif
  
- 	return size == size_default;
+ static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
+ 					bool test_mem)
+diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+index ef9a44b6cf5d..ae6f4838ab75 100644
+--- a/include/linux/vfio_pci_core.h
++++ b/include/linux/vfio_pci_core.h
+@@ -159,8 +159,17 @@ extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
+ extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
+ 
++#ifdef CONFIG_VFIO_PCI_VGA
+ extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
++#else
++static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
++				      char __user *buf, size_t count,
++				      loff_t *ppos, bool iswrite)
++{
++	return -EINVAL;
++}
++#endif
+ 
+ extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
+ 			       uint64_t data, int count, int fd);
 -- 
 2.35.1
 
