@@ -2,86 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E697C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349516AbiDLGih (ORCPT
+        id S1349594AbiDLGim (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
+        Tue, 12 Apr 2022 02:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiDLGgh (ORCPT
+        with ESMTP id S1349651AbiDLGg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:36:37 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119A435864;
-        Mon, 11 Apr 2022 23:33:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649745234; x=1681281234;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1LpWZR+Z2lEZmibS9yfT78g4awIUuvEhpUMadNmEaRQ=;
-  b=cHQY++OJ6gxE4oPtW32/3nH30BgUJkFIyuVhw5i3HYJVr5TF0VF8HKEh
-   OzEsBhX/Itkz4vR+0uLaE4t/l/IrfpLmVDCm/X+ElbD3RL31BOwgTntSS
-   KZ6H2GopIjV198qUlCfLV26iIhNCMgiLakIj7EBntJ87FJ4YzS8fUfo9O
-   PN42VUXRFpZQJCKnJ5gLWRkW0khku7YWdmQ7SgWmwVBUBcC69N/OmhC5U
-   67kZyQ1UcEVMEMOrIV3HFZa4klt6AQXFnRGnkMNHO9WfPzOoRci/aZzfv
-   RZpI+Nz6OXepdm82k8s+PxSnbcddLK0pdV5LNFKdJVcRP7TvKEpihREfu
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,253,1643698800"; 
-   d="scan'208";a="152337016"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 23:33:53 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Apr 2022 23:33:52 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 23:33:49 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>
-Subject: [Patch net-next 3/3] MAINTAINERS: Add maintainers for Microchip T1 Phy driver
-Date:   Tue, 12 Apr 2022 12:03:17 +0530
-Message-ID: <20220412063317.4173-4-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220412063317.4173-1-arun.ramadoss@microchip.com>
-References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
+        Tue, 12 Apr 2022 02:36:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5B03630D;
+        Mon, 11 Apr 2022 23:34:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8F0C618EB;
+        Tue, 12 Apr 2022 06:33:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFDB7C385A1;
+        Tue, 12 Apr 2022 06:33:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649745239;
+        bh=Onnr2xvI2lLMpW4tzNMFqwwzy+5AQcvFInA1dz3hgd8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AbDBT/C8t57YfxEvYvBICHw/808Cbx63mDZv8+vgQ2NY8i158TUXGeAqd23ty58lI
+         /J+mbM+5d/B9kwdCgW/cp1VrjMYsv3SdBrCMN04uyU7+J6uK0DkaZ+C1WW+iqn52Yr
+         E8ocnC2rgjDuDoR/s8ZdvmsmczDukgOwvxwCS8fg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 003/171] gfs2: Fix gfs2_release for non-writers regression
+Date:   Tue, 12 Apr 2022 08:28:14 +0200
+Message-Id: <20220412062927.974185618@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
+References: <20220412062927.870347203@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+From: Bob Peterson <rpeterso@redhat.com>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fd768d43e048..cede8ccf19b2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12903,6 +12903,12 @@ F:	drivers/net/dsa/microchip/*
- F:	include/linux/platform_data/microchip-ksz.h
- F:	net/dsa/tag_ksz.c
+[ Upstream commit d3add1a9519dcacd6e644ecac741c56cf18b67f5 ]
+
+When a file is opened for writing, the vfs code (do_dentry_open)
+calls get_write_access for the inode, thus incrementing the inode's write
+count. That writer normally then creates a multi-block reservation for
+the inode (i_res) that can be re-used by other writers, which speeds up
+writes for applications that stupidly loop on open/write/close.
+When the writes are all done, the multi-block reservation should be
+deleted when the file is closed by the last "writer."
+
+Commit 0ec9b9ea4f83 broke that concept when it moved the call to
+gfs2_rs_delete before the check for FMODE_WRITE.  Non-writers have no
+business removing the multi-block reservations of writers. In fact, if
+someone opens and closes the file for RO while a writer has a
+multi-block reservation, the RO closer will delete the reservation
+midway through the write, and this results in:
+
+kernel BUG at fs/gfs2/rgrp.c:677! (or thereabouts) which is:
+BUG_ON(rs->rs_requested); from function gfs2_rs_deltree.
+
+This patch moves the check back inside the check for FMODE_WRITE.
+
+Fixes: 0ec9b9ea4f83 ("gfs2: Check for active reservation in gfs2_release")
+Cc: stable@vger.kernel.org # v5.12+
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/gfs2/file.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index 59318b1eaa60..7bd7581aa682 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -716,10 +716,11 @@ static int gfs2_release(struct inode *inode, struct file *file)
+ 	kfree(file->private_data);
+ 	file->private_data = NULL;
  
-+MICROCHIP LAN87xx/LAN937x T1 PHY DRIVER
-+M:	UNGLinuxDriver@microchip.com
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	drivers/net/phy/microchip_t1.c
-+
- MICROCHIP LAN743X ETHERNET DRIVER
- M:	Bryan Whitehead <bryan.whitehead@microchip.com>
- M:	UNGLinuxDriver@microchip.com
+-	if (gfs2_rs_active(&ip->i_res))
+-		gfs2_rs_delete(ip, &inode->i_writecount);
+-	if (file->f_mode & FMODE_WRITE)
++	if (file->f_mode & FMODE_WRITE) {
++		if (gfs2_rs_active(&ip->i_res))
++			gfs2_rs_delete(ip, &inode->i_writecount);
+ 		gfs2_qa_put(ip);
++	}
+ 	return 0;
+ }
+ 
 -- 
-2.33.0
+2.35.1
+
+
 
