@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E58A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351473AbiDLHLO (ORCPT
+        id S1350926AbiDLHLW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
+        Tue, 12 Apr 2022 03:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352283AbiDLGza (ORCPT
+        with ESMTP id S1352389AbiDLGzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:55:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF7D39BB2;
-        Mon, 11 Apr 2022 23:45:15 -0700 (PDT)
+        Tue, 12 Apr 2022 02:55:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A537E3A196;
+        Mon, 11 Apr 2022 23:45:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C52A560C1B;
-        Tue, 12 Apr 2022 06:45:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5593C385AB;
-        Tue, 12 Apr 2022 06:45:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F8CBB81B44;
+        Tue, 12 Apr 2022 06:45:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67113C385A8;
+        Tue, 12 Apr 2022 06:45:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745914;
-        bh=ZnTZ42DPMBoQ75SCZiE8sntMwYXskuJKw8g3vyalkdQ=;
+        s=korg; t=1649745922;
+        bh=kZypINQFws+l+MwxrIxBH9Y1JTz8p/XrgS3kWjZMPlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JVXkED/38y2RVxFZ1Kysjmfq+5pnawY1ZwhIf8Q28vZbwCPoqAC+Q5UgVDyaDP2ra
-         gEGYpLjgVdnqB1JA/3K9uujC3VWLRSKXbqqCWKh25GlEJQiPpgHjlUmzYDBDQPf3l4
-         moEHdUH8jhMFlAbXhTGAt1bbpymQXffE2jFoNxBA=
+        b=subT64eCCf6PTICn0zOJnITmoyEALKLEDa4HWdU1s3Mv1wDfdxLQcuXJ3+xE/E9dk
+         tqFVGU6pEW+1cutCvW2V9sPX9V1FZ8luQ/u5reWF0cgtxgVrXDzX4kUg+5f001HpGP
+         wwEbb4frogP3cIxub04hvB2xCMib712XH45doCzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/277] can: isotp: set default value for N_As to 50 micro seconds
-Date:   Tue, 12 Apr 2022 08:28:14 +0200
-Message-Id: <20220412062944.677765637@linuxfoundation.org>
+Subject: [PATCH 5.15 056/277] power: supply: axp288-charger: Set Vhold to 4.4V
+Date:   Tue, 12 Apr 2022 08:27:39 +0200
+Message-Id: <20220412062943.671483175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,136 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 530e0d46c61314c59ecfdb8d3bcb87edbc0f85d3 ]
+[ Upstream commit 5ac121b81b4051e7fc83d5b3456a5e499d5bd147 ]
 
-The N_As value describes the time a CAN frame needs on the wire when
-transmitted by the CAN controller. Even very short CAN FD frames need
-arround 100 usecs (bitrate 1Mbit/s, data bitrate 8Mbit/s).
+The AXP288's recommended and factory default Vhold value (minimum
+input voltage below which the input current draw will be reduced)
+is 4.4V. This lines up with other charger IC's such as the TI
+bq2419x/bq2429x series which use 4.36V or 4.44V.
 
-Having N_As to be zero (the former default) leads to 'no CAN frame
-separation' when STmin is set to zero by the receiving node. This 'burst
-mode' should not be enabled by default as it could potentially dump a high
-number of CAN frames into the netdev queue from the soft hrtimer context.
-This does not affect the system stability but is just not nice and
-cooperative.
+For some reason some BIOS-es initialize Vhold to 4.6V or even 4.7V
+which combined with the typical voltage drop over typically low
+wire gauge micro-USB cables leads to the input-current getting
+capped below 1A (with a 2A capable dedicated charger) based on Vhold.
 
-With this N_As/frame_txtime value the 'burst mode' is disabled by default.
+This leads to slow charging, or even to the device slowly discharging
+if the device is in heavy use.
 
-As user space applications usually do not set the frame_txtime element
-of struct can_isotp_options the new in-kernel default is very likely
-overwritten with zero when the sockopt() CAN_ISOTP_OPTS is invoked.
-To make sure that a N_As value of zero is only set intentional the
-value '0' is now interpreted as 'do not change the current value'.
-When a frame_txtime of zero is required for testing purposes this
-CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
+As the Linux AXP288 drivers use the builtin BC1.2 charger detection
+and send the input-current-limit according to the detected charger
+there really is no reason not to use the recommended 4.4V Vhold.
 
-Link: https://lore.kernel.org/all/20220309120416.83514-2-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Set Vhold to 4.4V to fix the slow charging issue on various devices.
+
+There is one exception, the special-case of the HP X2 2-in-1s which
+combine this BC1.2 capable PMIC with a Type-C port and a 5V/3A factory
+provided charger with a Type-C plug which does not do BC1.2. These
+have their input-current-limit hardcoded to 3A (like under Windows)
+and use a higher Vhold on purpose to limit the current when used
+with other chargers. To avoid touching Vhold on these HP X2 laptops
+the code setting Vhold is added to an else branch of the if checking
+for these models.
+
+Note this also fixes the sofar unused VBUS_ISPOUT_VHOLD_SET_MASK
+define, which was wrong.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/can/isotp.h | 28 ++++++++++++++++++++++------
- net/can/isotp.c                | 12 +++++++++++-
- 2 files changed, 33 insertions(+), 7 deletions(-)
+ drivers/power/supply/axp288_charger.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
-index c55935b64ccc..590f8aea2b6d 100644
---- a/include/uapi/linux/can/isotp.h
-+++ b/include/uapi/linux/can/isotp.h
-@@ -137,20 +137,16 @@ struct can_isotp_ll_options {
- #define CAN_ISOTP_WAIT_TX_DONE	0x400	/* wait for tx completion */
- #define CAN_ISOTP_SF_BROADCAST	0x800	/* 1-to-N functional addressing */
+diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
+index b9553be9bed5..fb9db7f43895 100644
+--- a/drivers/power/supply/axp288_charger.c
++++ b/drivers/power/supply/axp288_charger.c
+@@ -41,11 +41,11 @@
+ #define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
+ #define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
+ #define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
+-#define VBUS_ISPOUT_VHOLD_SET_MASK	0x31
++#define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
+ #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
+ #define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
+ #define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
+-#define VBUS_ISPOUT_VHOLD_SET_4300MV	0x3	/* 4300mV */
++#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
+ #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
  
--/* default values */
-+/* protocol machine default values */
- 
- #define CAN_ISOTP_DEFAULT_FLAGS		0
- #define CAN_ISOTP_DEFAULT_EXT_ADDRESS	0x00
- #define CAN_ISOTP_DEFAULT_PAD_CONTENT	0xCC /* prevent bit-stuffing */
--#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	0
-+#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	50000 /* 50 micro seconds */
- #define CAN_ISOTP_DEFAULT_RECV_BS	0
- #define CAN_ISOTP_DEFAULT_RECV_STMIN	0x00
- #define CAN_ISOTP_DEFAULT_RECV_WFTMAX	0
- 
--#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
--#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
--#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
--
- /*
-  * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
-  *
-@@ -162,4 +158,24 @@ struct can_isotp_ll_options {
-  * consistency and copied directly into the flow control (FC) frame.
-  */
- 
-+/* link layer default values => make use of Classical CAN frames */
-+
-+#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
-+#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
-+#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
-+
-+/*
-+ * The CAN_ISOTP_DEFAULT_FRAME_TXTIME has become a non-zero value as
-+ * it only makes sense for isotp implementation tests to run without
-+ * a N_As value. As user space applications usually do not set the
-+ * frame_txtime element of struct can_isotp_options the new in-kernel
-+ * default is very likely overwritten with zero when the sockopt()
-+ * CAN_ISOTP_OPTS is invoked.
-+ * To make sure that a N_As value of zero is only set intentional the
-+ * value '0' is now interpreted as 'do not change the current value'.
-+ * When a frame_txtime of zero is required for testing purposes this
-+ * CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
-+ */
-+#define CAN_ISOTP_FRAME_TXTIME_ZERO	0xFFFFFFFF
-+
- #endif /* !_UAPI_CAN_ISOTP_H */
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index a95d171b3a64..5bce7c66c121 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -141,6 +141,7 @@ struct isotp_sock {
- 	struct can_isotp_options opt;
- 	struct can_isotp_fc_options rxfc, txfc;
- 	struct can_isotp_ll_options ll;
-+	u32 frame_txtime;
- 	u32 force_tx_stmin;
- 	u32 force_rx_stmin;
- 	struct tpcon rx, tx;
-@@ -360,7 +361,7 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
- 
- 		so->tx_gap = ktime_set(0, 0);
- 		/* add transmission time for CAN frame N_As */
--		so->tx_gap = ktime_add_ns(so->tx_gap, so->opt.frame_txtime);
-+		so->tx_gap = ktime_add_ns(so->tx_gap, so->frame_txtime);
- 		/* add waiting time for consecutive frames N_Cs */
- 		if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
- 			so->tx_gap = ktime_add_ns(so->tx_gap,
-@@ -1247,6 +1248,14 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
- 		/* no separate rx_ext_address is given => use ext_address */
- 		if (!(so->opt.flags & CAN_ISOTP_RX_EXT_ADDR))
- 			so->opt.rx_ext_address = so->opt.ext_address;
-+
-+		/* check for frame_txtime changes (0 => no changes) */
-+		if (so->opt.frame_txtime) {
-+			if (so->opt.frame_txtime == CAN_ISOTP_FRAME_TXTIME_ZERO)
-+				so->frame_txtime = 0;
-+			else
-+				so->frame_txtime = so->opt.frame_txtime;
+ #define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
+@@ -744,6 +744,16 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
+ 		ret = axp288_charger_vbus_path_select(info, true);
+ 		if (ret < 0)
+ 			return ret;
++	} else {
++		/* Set Vhold to the factory default / recommended 4.4V */
++		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
++		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
++					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
++		if (ret < 0) {
++			dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
++				AXP20X_VBUS_IPSOUT_MGMT, ret);
++			return ret;
 +		}
- 		break;
+ 	}
  
- 	case CAN_ISOTP_RECV_FC:
-@@ -1448,6 +1457,7 @@ static int isotp_init(struct sock *sk)
- 	so->opt.rxpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
- 	so->opt.txpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
- 	so->opt.frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
-+	so->frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
- 	so->rxfc.bs = CAN_ISOTP_DEFAULT_RECV_BS;
- 	so->rxfc.stmin = CAN_ISOTP_DEFAULT_RECV_STMIN;
- 	so->rxfc.wftmax = CAN_ISOTP_DEFAULT_RECV_WFTMAX;
+ 	/* Read current charge voltage and current limit */
 -- 
 2.35.1
 
