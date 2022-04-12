@@ -2,380 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE155C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbiDLXXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
+        id S229692AbiDLXXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbiDLXW5 (ORCPT
+        with ESMTP id S229870AbiDLXWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:22:57 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCC1CF4B6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:09:22 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id a10so228841qvm.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:09:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs-iitr-ac-in.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=ZPJRBS7EzVsf+onsY2rqgdhw/p5Dje+tIdQ4sGX/NOI=;
-        b=Y/EkMUos4x9/7KMQS9R8H1jARGXB0cGwwmLvqhQTlyTSPT0umiwsD9oZNQLoh/iQHE
-         ddGy2nLcnVT+sVYMKhsQXeSap60GmGZCczgiuU6gaUTIOF77mhyrk2QMBcaUZR8lu5Vi
-         /1VXYzpjWogWKEzPT8dgN6oy5E6u2G/dv/GYZR2T+KssXrBiFbYzMPAfXm0A+0JyJaHu
-         6LuWltlr9TymGhCsoqfUZ4Y4UgA+rBhCkDKs3eUJKsfDubHQIRrrRWaptI7F+ozajn6c
-         bYE4vaWLmIJ1EWRRvQ5tLN59WGebL0+wRMvD6Uk9ee5BHeT3HUSGIWZFphGY+Nysd9FM
-         XXwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ZPJRBS7EzVsf+onsY2rqgdhw/p5Dje+tIdQ4sGX/NOI=;
-        b=4nJWIi0lH5LAXwpYzo0GSkj67UPozrnUIPP2HXuhnytdDiw+Mh9HSfk2HBo/kF9+VL
-         4x1PS0GllGXm8WQw8v+Htx9TUKygrdpM5AkEbYvQ3Eyq1YNNCSE4T6rC4FmFW3JLEZNS
-         C9AAmzGnOP72Skt8+21CA3tMGIGmdcIH4pm11wfq04cC09sqMc5MPHmYW7GHUXxbGWaR
-         GcWDoL1j9xmhQMDTpIQI7T6a4ezni+ePgzyJTTY1q4ULb59yC2g1Fvy7/NPezkzy2SmE
-         8Cf2YBsgHAg+yU9Xd9WEYjmG1xCL4DUU39r/hLRF5+3Y/cLL7OCUJq9Y0BXZlk704iko
-         Xt4g==
-X-Gm-Message-State: AOAM532beyfj4Dzue5ZVttmNctsYdl1BVG+Ywr5IGFFSfwOFBo3azp7C
-        SBjs6b80ADA5BsSPH/abyyNKFUw4wN6IeI10b8M=
-X-Google-Smtp-Source: ABdhPJzGTF8aYsoEDEOTseo8VEd8JLcz6GrPhf+S/G26uiMMWSxX3gykmd+5Y510yUx4T1sxlk093Q==
-X-Received: by 2002:a17:903:110c:b0:14d:8859:5c8 with SMTP id n12-20020a170903110c00b0014d885905c8mr39098969plh.156.1649799380096;
-        Tue, 12 Apr 2022 14:36:20 -0700 (PDT)
-Received: from mahak-Inspiron-7570.iitr.ac.in ([103.37.201.167])
-        by smtp.googlemail.com with ESMTPSA id y3-20020a056a00190300b004fa2411bb92sm41915859pfi.93.2022.04.12.14.36.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 14:36:19 -0700 (PDT)
-From:   Mahak Gupta <mahak_g@cs.iitr.ac.in>
-To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-Cc:     Mahak Gupta <mahak_g@cs.iitr.ac.in>
-Subject: [PATCH v2] staging: r8188eu: correct multiple misspellings in driver r8188eu
-Date:   Wed, 13 Apr 2022 03:05:39 +0530
-Message-Id: <20220412213539.2945-1-mahak_g@cs.iitr.ac.in>
-X-Mailer: git-send-email 2.17.1
+        Tue, 12 Apr 2022 19:22:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E71DC4;
+        Tue, 12 Apr 2022 15:50:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A105161CB6;
+        Tue, 12 Apr 2022 22:50:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBDC8C385A1;
+        Tue, 12 Apr 2022 22:50:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649803849;
+        bh=qT1HHgdYzFd0FlgtfwqtDoefeQb+fd5285v/Cp2+Hwo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=eSLTP/jAO4DSU/9JfWQCq76W+fOxlgqL0DR5qTTz/mu3MAUA9tJScKEUoxknoeETd
+         hKb3gaNKbbuYQZhTI2SjYXA2w/4c5cwIlhODGOh5pVd02JrM5Uw5oxuiqam2snqhPX
+         9XGlOVAE1bfwSdw8Hp4mUN0uJL3T+LwNWZZbijg2AxD6cN1hOLC3PlQU7noEBP0ght
+         7lJ6XGhH/lCvNHsab8MtwWfIjrmdPAa6o96ZxdjuYSx+qzeBCe7jUXt+G2xJX695U7
+         QGDX/ktEK8RD2Hmo5S20z2lLfmF4yu4xWX9FljZllCBEIgRMk82Tg4x+6Z0OUMzoig
+         LwrKABckLltVA==
+Date:   Tue, 12 Apr 2022 17:50:47 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Vidya Sagar <vidyas@nvidia.com>
+Cc:     "Kenneth R. Crudup" <kenny@panix.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, hkallweit1@gmail.com,
+        wangxiongfeng2@huawei.com, mika.westerberg@linux.intel.com,
+        kai.heng.feng@canonical.com, chris.packham@alliedtelesis.co.nz,
+        yangyicong@hisilicon.com, treding@nvidia.com, jonathanh@nvidia.com,
+        abhsahu@nvidia.com, sagupta@nvidia.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kthota@nvidia.com,
+        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
+        Ricky Wu <ricky_wu@realtek.com>,
+        Rajat Jain <rajatja@google.com>,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        Victor Ding <victording@google.com>
+Subject: Re: [PATCH V1] PCI/ASPM: Save/restore L1SS Capability for
+ suspend/resume
+Message-ID: <20220412225047.GA627910@bhelgaas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0d8cc8c0-31a1-0290-5aa5-0c7b16db1edb@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix multiple spelling errors reported by checkpatch.
+[+cc Ricky for rtsx_pci ASPM behavior, Rajat, Prasad for L1 SS stuff,
+Victor for interest in disabling ASPM during save/restore]
 
-Signed-off-by: Mahak Gupta <mahak_g@cs.iitr.ac.in>
----
- drivers/staging/r8188eu/core/rtw_ioctl_set.c |  2 +-
- drivers/staging/r8188eu/core/rtw_mlme.c      | 10 +++---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c  | 36 ++++++++++----------
- drivers/staging/r8188eu/core/rtw_recv.c      |  8 ++---
- drivers/staging/r8188eu/core/rtw_xmit.c      |  8 ++---
- 5 files changed, 32 insertions(+), 32 deletions(-)
+On Wed, Feb 16, 2022 at 06:41:39PM +0530, Vidya Sagar wrote:
+> On 2/16/2022 11:30 AM, Kenneth R. Crudup wrote:
+> > On Wed, 16 Feb 2022, Vidya Sagar wrote:
+> > 
+> > > I see that the ASPM-L1 state of Realtek NIC which was in
+> > > disabled state before hibernate got enabled after hibernate.
+> > 
+> > That's actually my SD-Card reader; there's a good chance the BIOS
+> > does "something" to it at boot time, as it's possible to boot from
+> > SD-Card on my laptop.
+> > 
+> > > This patch doesn't do anything to LnkCtl register which has
+> > > control for ASPM L1 state.
+> > 
+> > > Could you please check why ASPM L1 got enabled post hibernation?
+> > 
+> > I wouldn't know how to do that; if you're still interested in that
+> > let me know what to do to determine that.
 
-diff --git a/drivers/staging/r8188eu/core/rtw_ioctl_set.c b/drivers/staging/r8188eu/core/rtw_ioctl_set.c
-index 4b78e42d180d..9df6fb122bc5 100644
---- a/drivers/staging/r8188eu/core/rtw_ioctl_set.c
-+++ b/drivers/staging/r8188eu/core/rtw_ioctl_set.c
-@@ -290,7 +290,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
- 
- 		if ((*pold_state == Ndis802_11Infrastructure) || (*pold_state == Ndis802_11IBSS)) {
- 			if (check_fwstate(pmlmepriv, _FW_LINKED))
--				rtw_indicate_disconnect(padapter); /* will clr Linked_state; before this function, we must have chked whether  issue dis-assoc_cmd or not */
-+				rtw_indicate_disconnect(padapter); /* will clr Linked_state; before this function, we must have checked whether  issue dis-assoc_cmd or not */
- 	       }
- 
- 		*pold_state = networktype;
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index c90f36dee1ea..a2b42779bc87 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -193,7 +193,7 @@ void _rtw_free_network_nolock(struct	mlme_priv *pmlmepriv, struct wlan_network *
- /*
- 	return the wlan_network with the matching addr
- 
--	Shall be calle under atomic context... to avoid possible racing condition...
-+	Shall be called under atomic context... to avoid possible racing condition...
- */
- struct wlan_network *_rtw_find_network(struct __queue *scanned_queue, u8 *addr)
- {
-@@ -329,7 +329,7 @@ void rtw_free_network_queue(struct adapter *dev, u8 isfreeall)
- /*
- 	return the wlan_network with the matching addr
- 
--	Shall be calle under atomic context... to avoid possible racing condition...
-+	Shall be called under atomic context... to avoid possible racing condition...
- */
- struct	wlan_network *rtw_find_network(struct __queue *scanned_queue, u8 *addr)
- {
-@@ -912,7 +912,7 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct adapter *padapter, str
- 		}
- 		/* 	Commented by Albert 2012/07/21 */
- 		/* 	When doing the WPS, the wps_ie_len won't equal to 0 */
--		/* 	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
-+		/* 	And the Wi-Fi driver shouldn't allow the data packet to be transmitted. */
- 		if (padapter->securitypriv.wps_ie_len != 0) {
- 			psta->ieee8021x_blocked = true;
- 			padapter->securitypriv.wps_ie_len = 0;
-@@ -1304,7 +1304,7 @@ void rtw_stadel_event_callback(struct adapter *adapter, u8 *pbuf)
- }
- 
- /*
--* _rtw_join_timeout_handler - Timeout/faliure handler for CMD JoinBss
-+* _rtw_join_timeout_handler - Timeout/failure handler for CMD JoinBss
- * @adapter: pointer to struct adapter structure
- */
- void _rtw_join_timeout_handler (struct adapter *adapter)
-@@ -1339,7 +1339,7 @@ void _rtw_join_timeout_handler (struct adapter *adapter)
- }
- 
- /*
--* rtw_scan_timeout_handler - Timeout/Faliure handler for CMD SiteSurvey
-+* rtw_scan_timeout_handler - Timeout/Failure handler for CMD SiteSurvey
- * @adapter: pointer to struct adapter structure
- */
- void rtw_scan_timeout_handler (struct adapter *adapter)
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index 474391bf7cb5..fd445aa09377 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -156,7 +156,7 @@ static struct rt_channel_plan_map	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
- 	{0x03},	/* 0x41, RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN_2G */
- };
- 
--static struct rt_channel_plan_map RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03}; /* use the conbination for max channel numbers */
-+static struct rt_channel_plan_map RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03}; /* use the combination for max channel numbers */
- 
- /*
-  * Search the @param channel_num in given @param channel_set
-@@ -1733,7 +1733,7 @@ void issue_p2p_GO_request(struct adapter *padapter, u8 *raddr)
- 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
- 
- 	/*	Commented by Albert 20110306 */
--	/*	According to the P2P Specification, the group negoitation request frame should contain 9 P2P attributes */
-+	/*	According to the P2P Specification, the group negotiation request frame should contain 9 P2P attributes */
- 	/*	1. P2P Capability */
- 	/*	2. Group Owner Intent */
- 	/*	3. Configuration Timeout */
-@@ -2088,7 +2088,7 @@ static void issue_p2p_GO_response(struct adapter *padapter, u8 *raddr, u8 *frame
- 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
- 
- 	/*	Commented by Albert 20100908 */
--	/*	According to the P2P Specification, the group negoitation response frame should contain 9 P2P attributes */
-+	/*	According to the P2P Specification, the group negotiation response frame should contain 9 P2P attributes */
- 	/*	1. Status */
- 	/*	2. P2P Capability */
- 	/*	3. Group Owner Intent */
-@@ -2384,7 +2384,7 @@ static void issue_p2p_GO_confirm(struct adapter *padapter, u8 *raddr, u8 result)
- 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
- 
- 	/*	Commented by Albert 20110306 */
--	/*	According to the P2P Specification, the group negoitation request frame should contain 5 P2P attributes */
-+	/*	According to the P2P Specification, the group negotiation request frame should contain 5 P2P attributes */
- 	/*	1. Status */
- 	/*	2. P2P Capability */
- 	/*	3. Operating Channel */
-@@ -4009,7 +4009,7 @@ struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv)
- 
- /****************************************************************************
- 
--Following are some TX fuctions for WiFi MLME
-+Following are some TX functions for WiFi MLME
- 
- *****************************************************************************/
- 
-@@ -4611,7 +4611,7 @@ int issue_probereq_ex(struct adapter *padapter, struct ndis_802_11_ssid *pssid,
- 	return ret;
- }
- 
--/*  if psta == NULL, indiate we are station(client) now... */
-+/*  if psta == NULL, indicate we are station(client) now... */
- void issue_auth(struct adapter *padapter, struct sta_info *psta, unsigned short status)
- {
- 	struct xmit_frame *pmgntframe;
-@@ -5010,7 +5010,7 @@ void issue_assocreq(struct adapter *padapter)
- 				if (!padapter->registrypriv.wifi_spec) {
- 					/* Commented by Kurt 20110629 */
- 					/* In some older APs, WPS handshake */
--					/* would be fail if we append vender extensions informations to AP */
-+					/* would be fail if we append vender extensions information to AP */
- 					if (!memcmp(pIE->data, WPS_OUI, 4))
- 						pIE->Length = 14;
- 				}
-@@ -5165,7 +5165,7 @@ void issue_assocreq(struct adapter *padapter)
- 		kfree(pmlmepriv->assoc_req);
- }
- 
--/* when wait_ack is ture, this function shoule be called at process context */
-+/* when wait_ack is true, this function should be called at process context */
- static int _issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int power_mode, int wait_ack)
- {
- 	int ret = _FAIL;
-@@ -5234,7 +5234,7 @@ static int _issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned
- 	return ret;
- }
- 
--/* when wait_ms > 0 , this function shoule be called at process context */
-+/* when wait_ms > 0 , this function should be called at process context */
- /* da == NULL for station mode */
- int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms)
- {
-@@ -5243,7 +5243,7 @@ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int pow
- 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
- 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
- 
--	/* da == NULL, assum it's null data for sta to ap*/
-+	/* da == NULL, assume it's null data for sta to ap*/
- 	if (!da)
- 		da = get_my_bssid(&pmlmeinfo->network);
- 
-@@ -5267,7 +5267,7 @@ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int pow
- 	return ret;
- }
- 
--/* when wait_ack is ture, this function shoule be called at process context */
-+/* when wait_ack is true, this function should be called at process context */
- static int _issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int wait_ack)
- {
- 	int ret = _FAIL;
-@@ -5340,7 +5340,7 @@ static int _issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16
- 	return ret;
- }
- 
--/* when wait_ms > 0 , this function shoule be called at process context */
-+/* when wait_ms > 0 , this function should be called at process context */
- /* da == NULL for station mode */
- int issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int try_cnt, int wait_ms)
- {
-@@ -5349,7 +5349,7 @@ int issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int
- 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
- 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
- 
--	/* da == NULL, assum it's null data for sta to ap*/
-+	/* da == NULL, assume it's null data for sta to ap*/
- 	if (!da)
- 		da = get_my_bssid(&pmlmeinfo->network);
- 
-@@ -5790,7 +5790,7 @@ void clear_beacon_valid_bit(struct adapter *adapter)
- 
- /****************************************************************************
- 
--Following are some utitity fuctions for WiFi MLME
-+Following are some utility functions for WiFi MLME
- 
- *****************************************************************************/
- 
-@@ -5888,7 +5888,7 @@ void site_survey(struct adapter *padapter)
- 		} else {
- 			/*  20100721:Interrupt scan operation here. */
- 			/*  For SW antenna diversity before link, it needs to switch to another antenna and scan again. */
--			/*  It compares the scan result and select beter one to do connection. */
-+			/*  It compares the scan result and select better one to do connection. */
- 			if (AntDivBeforeLink8188E(padapter)) {
- 				pmlmeext->sitesurvey_res.bss_cnt = 0;
- 				pmlmeext->sitesurvey_res.channel_idx = -1;
-@@ -6109,7 +6109,7 @@ void start_create_ibss(struct adapter *padapter)
- 	/* update wireless mode */
- 	update_wireless_mode(padapter);
- 
--	/* udpate capability */
-+	/* update capability */
- 	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
- 	update_capinfo(padapter, caps);
- 	if (caps & cap_IBSS) {/* adhoc master */
-@@ -6160,7 +6160,7 @@ void start_clnt_join(struct adapter *padapter)
- 	/* update wireless mode */
- 	update_wireless_mode(padapter);
- 
--	/* udpate capability */
-+	/* update capability */
- 	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
- 	update_capinfo(padapter, caps);
- 	if (caps & cap_ESS) {
-@@ -6740,7 +6740,7 @@ void mlmeext_joinbss_event_callback(struct adapter *padapter, int join_res)
- 	/* BCN interval */
- 	rtw_write16(padapter, REG_BCN_INTERVAL, pmlmeinfo->bcn_interval);
- 
--	/* udpate capability */
-+	/* update capability */
- 	update_capinfo(padapter, pmlmeinfo->capability);
- 
- 	/* WMM, Update EDCA param */
-diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index 91a6e0f035f4..a3f71697f6d7 100644
---- a/drivers/staging/r8188eu/core/rtw_recv.c
-+++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -877,7 +877,7 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
- 			if (psta->sleepq_len == 0) {
- 				pstapriv->tim_bitmap &= ~BIT(psta->aid);
- 
--				/* upate BCN for TIM IE */
-+				/* update BCN for TIM IE */
- 				/* update_BCNTIM(padapter); */
- 				update_beacon(padapter, _TIM_IE_, NULL, false);
- 			}
-@@ -891,7 +891,7 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
- 
- 				pstapriv->tim_bitmap &= ~BIT(psta->aid);
- 
--				/* upate BCN for TIM IE */
-+				/* update BCN for TIM IE */
- 				/* update_BCNTIM(padapter); */
- 				update_beacon(padapter, _TIM_IE_, NULL, false);
- 			}
-@@ -1810,13 +1810,13 @@ void rtw_signal_stat_timer_hdl(struct timer_list *t)
- 	} else {
- 		if (recvpriv->signal_strength_data.update_req == 0) {/*  update_req is clear, means we got rx */
- 			avg_signal_strength = recvpriv->signal_strength_data.avg_val;
--			/*  after avg_vals are accquired, we can re-stat the signal values */
-+			/*  after avg_vals are acquired, we can re-stat the signal values */
- 			recvpriv->signal_strength_data.update_req = 1;
- 		}
- 
- 		if (recvpriv->signal_qual_data.update_req == 0) {/*  update_req is clear, means we got rx */
- 			avg_signal_qual = recvpriv->signal_qual_data.avg_val;
--			/*  after avg_vals are accquired, we can re-stat the signal values */
-+			/*  after avg_vals are acquired, we can re-stat the signal values */
- 			recvpriv->signal_qual_data.update_req = 1;
- 		}
- 
-diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-index 029b994e1b71..2a686b5c65b1 100644
---- a/drivers/staging/r8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-@@ -958,7 +958,7 @@ s32 rtw_xmitframe_coalesce(struct adapter *padapter, struct sk_buff *pkt, struct
- 		}
- 
- 		if (bmcst) {
--			/*  don't do fragment to broadcat/multicast packets */
-+			/*  don't do fragment to broadcast/multicast packets */
- 			mem_sz = _rtw_pktfile_read(&pktfile, pframe, pattrib->pktlen);
- 		} else {
- 			mem_sz = _rtw_pktfile_read(&pktfile, pframe, mpdu_len);
-@@ -1768,7 +1768,7 @@ int xmitframe_enqueue_for_sleeping_sta(struct adapter *padapter, struct xmit_fra
- 			pstapriv->tim_bitmap |= BIT(0);/*  */
- 			pstapriv->sta_dz_bitmap |= BIT(0);
- 
--			update_beacon(padapter, _TIM_IE_, NULL, false);/* tx bc/mc packets after upate bcn */
-+			update_beacon(padapter, _TIM_IE_, NULL, false);/* tx bc/mc packets after update bcn */
- 
- 			ret = true;
- 		}
-@@ -1818,7 +1818,7 @@ int xmitframe_enqueue_for_sleeping_sta(struct adapter *padapter, struct xmit_fra
- 				pstapriv->tim_bitmap |= BIT(psta->aid);
- 
- 				if (psta->sleepq_len == 1) {
--					/* upate BCN for TIM IE */
-+					/* update BCN for TIM IE */
- 					update_beacon(padapter, _TIM_IE_, NULL, false);
- 				}
- 			}
-@@ -2087,7 +2087,7 @@ void xmit_delivery_enabled_frames(struct adapter *padapter, struct sta_info *pst
- 		if ((psta->sleepq_ac_len == 0) && (!psta->has_legacy_ac) && (wmmps_ac)) {
- 			pstapriv->tim_bitmap &= ~BIT(psta->aid);
- 
--			/* upate BCN for TIM IE */
-+			/* update BCN for TIM IE */
- 			update_beacon(padapter, _TIM_IE_, NULL, false);
- 		}
- 	}
--- 
-2.17.1
+> I would like Bjorn to take a call on it.
+> At this point, there are contradictions in observations.
 
+Remind me what contradictions you see?  I know Kenny saw NVMe errors
+on a kernel that included 4257f7e008ea ("PCI/ASPM: Save/restore L1SS
+Capability for suspend/resume") in December 2020 [1], and that he did
+*not* see those errors on 4257f7e008ea in February 2022 [2].  Is that
+what you mean?
+
+> Just to summarize,
+> - The root ports in your laptop don't have support for L1SS
+> - With the same old code base with which the errors were observed plus my
+> patch on top of it, I see that ASPM-L1 state getting enabled for one of the
+> endpoints (Realtek SD-Card reader) after system comes out of hibernation
+> even though ASPM-L1 was disabled before the system enter into hibernation.
+> No errors are reported now.
+
+I assume you refer to [2], where on 4257f7e008ea ("PCI/ASPM:
+Save/restore L1SS Capability for suspend/resume"), Kenny saw ASPM L1
+disabled before hibernate and enabled afterwards:
+
+  --- pre-hibernate
+  +++ post-hibernate
+    00:1d.7 PCI bridge [0604]: Intel [8086:34b7]
+      Bus: primary=00, secondary=58, subordinate=58
+	LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+    58:00.0 RTS525A PCI Express Card Reader [10ec:525a]
+  -     LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk-
+  -             ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+  +     LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk-
+  +             ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt-
+
+Per PCIe r6.0, sec 7.5.3.7, "ASPM L1 must be enabled by software in
+the Upstream component on a Link prior to enabling ASPM L1 in the
+Downstream component on that Link," so this definitely seems broken,
+but wouldn't explain the NVMe issue.
+
+The PCI core (pcie_config_aspm_link()) always enables L1 in the
+upstream component before the downstream one, but 58:00.0 uses the
+rtsx_pci driver, which does a lot of its own ASPM fiddling, so my
+guess is that it's doing something wrong here.
+
+> - With the linux-next top of the tree plus my patch, no change in the ASPM
+> states and no errors also reported.
+
+I don't know which report this refers to.
+
+> This points to BIOS being buggy (both old and new with new one being less
+> problematic)
+
+I agree that a BIOS change between [1] and [2] seems plausible, but I
+don't think we can prove that yet.  I'm slightly queasy because while
+Kenny may have updated his BIOS, most people will not have.
+
+I think we should try this patch again with some changes and maybe
+some debug logging:
+
+  - I wonder if we should integrate the LTR, L1 SS, and Link Control
+    ASPM restore instead of having them spread around through
+    pci_restore_ltr_state(), pci_restore_aspm_l1ss_state(), and
+    pci_restore_pcie_state().  Maybe a new pci_restore_aspm() that
+    would be called from pci_restore_pcie_state()?
+
+  - For L1 PM Substates configuration, sec 5.5.4 says that both ports
+    must be configured while ASPM L1 is disabled, but I don't think we
+    currently guarantee this: we restore all the upstream component
+    state first, and we don't know the ASPM state of the downstream
+    one.  Maybe we need to:
+
+      * When restoring upstream component,
+          + disable its ASPM
+
+      * When restoring downstream component,
+          + disable its ASPM
+	  + restore upstream component's LTR, L1SS
+	  + restore downstream component's LTR, L1SS
+	  + restore upstream component's ASPM
+	  + restore downstream component's ASPM
+
+      This seems pretty messy, but seems like what the spec requires.
+
+    - Add some pci_dbg() logging of all these save/restore values to
+      help debug any issues.
+
+Bjorn
+
+[1] https://lore.kernel.org/r/20201228040513.GA611645@bjorn-Precision-5520
+[2] https://lore.kernel.org/r/3ca14a7-b726-8430-fe61-a3ac183a1088@panix.com
