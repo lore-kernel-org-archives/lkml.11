@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9CBC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2965CC352A8
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354127AbiDLIFE (ORCPT
+        id S1354584AbiDLIF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
+        Tue, 12 Apr 2022 04:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353730AbiDLHZx (ORCPT
+        with ESMTP id S1353760AbiDLHZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:53 -0400
+        Tue, 12 Apr 2022 03:25:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772A12195;
-        Tue, 12 Apr 2022 00:04:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AFB62E5;
+        Tue, 12 Apr 2022 00:04:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE43F60B2E;
-        Tue, 12 Apr 2022 07:04:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA35EC385A1;
-        Tue, 12 Apr 2022 07:04:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BA0360B2E;
+        Tue, 12 Apr 2022 07:04:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD756C385AA;
+        Tue, 12 Apr 2022 07:04:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747050;
-        bh=LvsIbZWiQq3EcdnIA0wcPyjQDT9TXZZOvdWMqNYjvRU=;
+        s=korg; t=1649747061;
+        bh=KXy/IacbeYaGiCa4DIP5MYCW5TZXiRuOhqsi9RysQGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y3ZiBnPwoUcDiwYx4Irvf3CD9gPLOLV4o1R3lwOpY123d+RePdbqef2Her40wSKAS
-         JfIoyH9KLlvA0Wq0dDqYx5oU2aKsPaL1rG0CRsc0q6VAbN8nuDejArxhzmrDxMqXlh
-         /nhy+yEBxaeulWiQvBSzLrmB1F6fHInVajx/R03k=
+        b=lr0YVZKSAXAw3ulTh+NNI0ZGhFJXEA+C4H2ihAHiahsIZausai78dngBO/YmITO2x
+         e46aYIdHX7T1mm0vadfOqUZHcra4wC8jtByBlrY0FR1TFrWHO/ljK0W1JV5L0zQ8sk
+         Ajs56SY57L6j9l7bxCa1QEqGuiNhoIpcF6+nUoEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 225/285] io_uring: defer splice/tee file validity check until command issue
-Date:   Tue, 12 Apr 2022 08:31:22 +0200
-Message-Id: <20220412062950.152331915@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Neelima Krishnan <neelima.krishnan@intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 229/285] x86/speculation: Restore speculation related MSRs during S3 resume
+Date:   Tue, 12 Apr 2022 08:31:26 +0200
+Message-Id: <20220412062950.270270388@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -48,147 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit a3e4bc23d5470b2beb7cc42a86b6a3e75b704c15 upstream.
+commit e2a1256b17b16f9b9adf1b6fea56819e7b68e463 upstream.
 
-In preparation for not using the file at prep time, defer checking if this
-file refers to a valid io_uring instance until issue time.
+After resuming from suspend-to-RAM, the MSRs that control CPU's
+speculative execution behavior are not being restored on the boot CPU.
 
-This also means we can get rid of the cleanup flag for splice and tee.
+These MSRs are used to mitigate speculative execution vulnerabilities.
+Not restoring them correctly may leave the CPU vulnerable.  Secondary
+CPU's MSRs are correctly being restored at S3 resume by
+identify_secondary_cpu().
 
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+During S3 resume, restore these MSRs for boot CPU when restoring its
+processor state.
+
+Fixes: 772439717dbf ("x86/bugs/intel: Set proper CPU features and setup RDS")
+Reported-by: Neelima Krishnan <neelima.krishnan@intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |   49 +++++++++++++++++++++----------------------------
- 1 file changed, 21 insertions(+), 28 deletions(-)
+ arch/x86/power/cpu.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -619,10 +619,10 @@ struct io_epoll {
- 
- struct io_splice {
- 	struct file			*file_out;
--	struct file			*file_in;
- 	loff_t				off_out;
- 	loff_t				off_in;
- 	u64				len;
-+	int				splice_fd_in;
- 	unsigned int			flags;
- };
- 
-@@ -1524,14 +1524,6 @@ static void io_prep_async_work(struct io
- 		if (def->unbound_nonreg_file)
- 			req->work.flags |= IO_WQ_WORK_UNBOUND;
- 	}
--
--	switch (req->opcode) {
--	case IORING_OP_SPLICE:
--	case IORING_OP_TEE:
--		if (!S_ISREG(file_inode(req->splice.file_in)->i_mode))
--			req->work.flags |= IO_WQ_WORK_UNBOUND;
--		break;
--	}
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -503,10 +503,24 @@ static int pm_cpu_check(const struct x86
+ 	return ret;
  }
  
- static void io_prep_async_link(struct io_kiocb *req)
-@@ -4054,18 +4046,11 @@ static int __io_splice_prep(struct io_ki
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
++static void pm_save_spec_msr(void)
++{
++	u32 spec_msr_id[] = {
++		MSR_IA32_SPEC_CTRL,
++		MSR_IA32_TSX_CTRL,
++		MSR_TSX_FORCE_ABORT,
++		MSR_IA32_MCU_OPT_CTRL,
++		MSR_AMD64_LS_CFG,
++	};
++
++	msr_build_context(spec_msr_id, ARRAY_SIZE(spec_msr_id));
++}
++
+ static int pm_check_save_msr(void)
+ {
+ 	dmi_check_system(msr_save_dmi_table);
+ 	pm_cpu_check(msr_save_cpu_table);
++	pm_save_spec_msr();
  
--	sp->file_in = NULL;
- 	sp->len = READ_ONCE(sqe->len);
- 	sp->flags = READ_ONCE(sqe->splice_flags);
--
- 	if (unlikely(sp->flags & ~valid_flags))
- 		return -EINVAL;
--
--	sp->file_in = io_file_get(req->ctx, req, READ_ONCE(sqe->splice_fd_in),
--				  (sp->flags & SPLICE_F_FD_IN_FIXED));
--	if (!sp->file_in)
--		return -EBADF;
--	req->flags |= REQ_F_NEED_CLEANUP;
-+	sp->splice_fd_in = READ_ONCE(sqe->splice_fd_in);
  	return 0;
  }
- 
-@@ -4080,20 +4065,27 @@ static int io_tee_prep(struct io_kiocb *
- static int io_tee(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_splice *sp = &req->splice;
--	struct file *in = sp->file_in;
- 	struct file *out = sp->file_out;
- 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
-+	struct file *in;
- 	long ret = 0;
- 
- 	if (issue_flags & IO_URING_F_NONBLOCK)
- 		return -EAGAIN;
-+
-+	in = io_file_get(req->ctx, req, sp->splice_fd_in,
-+				  (sp->flags & SPLICE_F_FD_IN_FIXED));
-+	if (!in) {
-+		ret = -EBADF;
-+		goto done;
-+	}
-+
- 	if (sp->len)
- 		ret = do_tee(in, out, sp->len, flags);
- 
- 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
- 		io_put_file(in);
--	req->flags &= ~REQ_F_NEED_CLEANUP;
--
-+done:
- 	if (ret != sp->len)
- 		req_set_fail(req);
- 	io_req_complete(req, ret);
-@@ -4112,15 +4104,22 @@ static int io_splice_prep(struct io_kioc
- static int io_splice(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_splice *sp = &req->splice;
--	struct file *in = sp->file_in;
- 	struct file *out = sp->file_out;
- 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
- 	loff_t *poff_in, *poff_out;
-+	struct file *in;
- 	long ret = 0;
- 
- 	if (issue_flags & IO_URING_F_NONBLOCK)
- 		return -EAGAIN;
- 
-+	in = io_file_get(req->ctx, req, sp->splice_fd_in,
-+				  (sp->flags & SPLICE_F_FD_IN_FIXED));
-+	if (!in) {
-+		ret = -EBADF;
-+		goto done;
-+	}
-+
- 	poff_in = (sp->off_in == -1) ? NULL : &sp->off_in;
- 	poff_out = (sp->off_out == -1) ? NULL : &sp->off_out;
- 
-@@ -4129,8 +4128,7 @@ static int io_splice(struct io_kiocb *re
- 
- 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
- 		io_put_file(in);
--	req->flags &= ~REQ_F_NEED_CLEANUP;
--
-+done:
- 	if (ret != sp->len)
- 		req_set_fail(req);
- 	io_req_complete(req, ret);
-@@ -6630,11 +6628,6 @@ static void io_clean_op(struct io_kiocb
- 			kfree(io->free_iov);
- 			break;
- 			}
--		case IORING_OP_SPLICE:
--		case IORING_OP_TEE:
--			if (!(req->splice.flags & SPLICE_F_FD_IN_FIXED))
--				io_put_file(req->splice.file_in);
--			break;
- 		case IORING_OP_OPENAT:
- 		case IORING_OP_OPENAT2:
- 			if (req->open.filename)
 
 
