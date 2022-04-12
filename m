@@ -2,61 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381031AbiDLK1p (ORCPT
+        id S1358945AbiDLK1j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59660 "EHLO
+        Tue, 12 Apr 2022 06:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236843AbiDLKUx (ORCPT
+        with ESMTP id S239068AbiDLKUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:20:53 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6364EA01
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:26:46 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 45B7E21607;
-        Tue, 12 Apr 2022 09:26:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649755605; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Tue, 12 Apr 2022 06:20:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29EEE4F9C2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:28:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649755698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/z3vs/uGK6fYvmeCC8WIfRK8ClbBQCivi/ZueGKwhRg=;
-        b=CCrJGkWfhf6K63aXfS7Jy9M27QPYITldqJDk62cMjm8rShXsPSTfaSbMCd89qcKLPcq/WD
-        ijjxP4UWux1A00vzr3NrHXBek0Dub9htK3YCODbp8WDaJCmMRNlYmiYGeZZJUt5ZdkOoJB
-        VYM1Xtr6rDcVf9p3AJC95woI4H5RGdI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649755605;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/z3vs/uGK6fYvmeCC8WIfRK8ClbBQCivi/ZueGKwhRg=;
-        b=XP+jAGBAXo0qytAx75Y2ByiVQmQcc1SGvd5uN+dQj41CUHsxIj501pYwWjDQ1UfpwsF853
-        7m3Es8sJkdcXLOAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CE71513A99;
-        Tue, 12 Apr 2022 09:26:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id XXqKMdRFVWKDLAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 12 Apr 2022 09:26:44 +0000
-Message-ID: <7225391a-5798-94ae-7a01-9a9dd344e13a@suse.cz>
-Date:   Tue, 12 Apr 2022 11:26:44 +0200
+        bh=BPZL0gQJQGj2dxWVcV/vLfhS55E7VF45Sx/T/CMMfLY=;
+        b=b7ZBoJaiR0gL29zH05AjqKg8+hDmpF1uJtuMeK6Cy7kNit1+DrJ65M9mDZb1eXdxkFd5/8
+        njYw7lXFtZnaAgIlRAB1s2Kj2ANSiHFmx/ghu5mLGZNc+j8+d3uF7zXa36iXS++T0wjN0V
+        GJGG8S+NNwntuXJ19yx960yyGX8s9/M=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-JjHNRyAEMue8vWapjvbMSw-1; Tue, 12 Apr 2022 05:28:17 -0400
+X-MC-Unique: JjHNRyAEMue8vWapjvbMSw-1
+Received: by mail-wm1-f71.google.com with SMTP id z16-20020a05600c0a1000b0038bebbd8548so1036115wmp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:28:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=BPZL0gQJQGj2dxWVcV/vLfhS55E7VF45Sx/T/CMMfLY=;
+        b=5KCT1MZSITwk38d9/6wR2lYTdX9JSylNxeN1mjEzudcCe+kbt+qRTqRu3O682vTTat
+         jsPL2HNbVL/vIxuAu+U+S1LZ0o5wfL5mF/DFYUt+mMsw2HE/XTd3m1st//cuaXcHMetZ
+         rQLzFw+zxRt+epTnzqRlNUFJHRSgV0T03Si72ha2wBQRvA4u44dDHJkiVpny5btQnuKh
+         K9aOXiEOJlBPnaNRLp++TMrTchEOMS/+Gf4+CmO1ueTybYolpRtzzS60S2mdwzrkjmIl
+         Cv7kAavR9OBGQarcbZ4YlvBBDcdFKjt3NKq8s1KrqSn/nDlJfzSXcLYQJ0K2uGjcyUze
+         tegw==
+X-Gm-Message-State: AOAM532nMVCZSEu07XXJDRjv/nGtHHdR9W0FhfTGzwz/5bsawgdW/79W
+        jDvVCQfLKoa6C6yydniLataFZHMUABoqZbEFPdPigUdxNcvqYp89cgirfweL/iMEuRKlNAoIhKc
+        WkyfkFYjwhaokn23C7TLRp1ui
+X-Received: by 2002:a05:600c:2744:b0:38e:b6f7:d548 with SMTP id 4-20020a05600c274400b0038eb6f7d548mr3223427wmw.49.1649755696255;
+        Tue, 12 Apr 2022 02:28:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzPb5RwgNVG0/CMAQXa8th3l2BPON0WeEZdxNgyMhc/eoLviJMQjndKh+kSFR0wgqOPunt1GQ==
+X-Received: by 2002:a05:600c:2744:b0:38e:b6f7:d548 with SMTP id 4-20020a05600c274400b0038eb6f7d548mr3223398wmw.49.1649755696013;
+        Tue, 12 Apr 2022 02:28:16 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:1800:7c14:16cc:5291:a9f3? (p200300cbc70718007c1416cc5291a9f3.dip0.t-ipconnect.de. [2003:cb:c707:1800:7c14:16cc:5291:a9f3])
+        by smtp.gmail.com with ESMTPSA id e14-20020a5d6d0e000000b002078ea4f6bdsm13735358wrq.75.2022.04.12.02.28.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 02:28:15 -0700 (PDT)
+Message-ID: <a1ef20a1-6eda-2350-e5dc-bb32dcff8a1d@redhat.com>
+Date:   Tue, 12 Apr 2022 11:28:13 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v3 09/16] mm/rmap: use page_move_anon_rmap() when reusing
+ a mapped PageAnon() page exclusively
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+To:     Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Hugh Dickins <hughd@google.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
@@ -82,67 +91,36 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
 References: <20220329160440.193848-1-david@redhat.com>
  <20220329160440.193848-10-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v3 09/16] mm/rmap: use page_move_anon_rmap() when reusing
- a mapped PageAnon() page exclusively
-In-Reply-To: <20220329160440.193848-10-david@redhat.com>
+ <7225391a-5798-94ae-7a01-9a9dd344e13a@suse.cz>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <7225391a-5798-94ae-7a01-9a9dd344e13a@suse.cz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 18:04, David Hildenbrand wrote:
-> We want to mark anonymous pages exclusive, and when using
-> page_move_anon_rmap() we know that we are the exclusive user, as
-> properly documented. This is a preparation for marking anonymous pages
-> exclusive in page_move_anon_rmap().
+On 12.04.22 11:26, Vlastimil Babka wrote:
+> On 3/29/22 18:04, David Hildenbrand wrote:
+>> We want to mark anonymous pages exclusive, and when using
+>> page_move_anon_rmap() we know that we are the exclusive user, as
+>> properly documented. This is a preparation for marking anonymous pages
+>> exclusive in page_move_anon_rmap().
+>>
+>> In both instances, we're holding page lock and are sure that we're the
+>> exclusive owner (page_count() == 1). hugetlb already properly uses
+>> page_move_anon_rmap() in the write fault handler.
 > 
-> In both instances, we're holding page lock and are sure that we're the
-> exclusive owner (page_count() == 1). hugetlb already properly uses
-> page_move_anon_rmap() in the write fault handler.
+> Yeah, note that do_wp_page() used to call page_move_anon_rmap() always since
+> the latter was introduced, until commit 09854ba94c6a ("mm: do_wp_page()
+> simplification"). Probably not intended.
 
-Yeah, note that do_wp_page() used to call page_move_anon_rmap() always since
-the latter was introduced, until commit 09854ba94c6a ("mm: do_wp_page()
-simplification"). Probably not intended.
+Yeah, it was buried underneath all that reuse_swap_page() complexity.
 
-> Note that in case of a PTE-mapped THP, we'll only end up calling this
-> function if the whole THP is only referenced by the single PTE mapping
-> a single subpage (page_count() == 1); consequently, it's fine to modify
-> the compound page mapping inside page_move_anon_rmap().
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+-- 
+Thanks,
 
-> ---
->  mm/huge_memory.c | 2 ++
->  mm/memory.c      | 1 +
->  2 files changed, 3 insertions(+)
-> 
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index c4526343565a..dd16819c5edc 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -1317,6 +1317,8 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
->  		try_to_free_swap(page);
->  	if (page_count(page) == 1) {
->  		pmd_t entry;
-> +
-> +		page_move_anon_rmap(page, vma);
->  		entry = pmd_mkyoung(orig_pmd);
->  		entry = maybe_pmd_mkwrite(pmd_mkdirty(entry), vma);
->  		if (pmdp_set_access_flags(vma, haddr, vmf->pmd, entry, 1))
-> diff --git a/mm/memory.c b/mm/memory.c
-> index 03e29c9614e0..4303c0fdcf17 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -3303,6 +3303,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
->  		 * and the page is locked, it's dark out, and we're wearing
->  		 * sunglasses. Hit it.
->  		 */
-> +		page_move_anon_rmap(page, vma);
->  		unlock_page(page);
->  		wp_page_reuse(vmf);
->  		return VM_FAULT_WRITE;
+David / dhildenb
 
