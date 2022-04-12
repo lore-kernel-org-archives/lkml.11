@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F02C3525B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B60C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353907AbiDLI0b (ORCPT
+        id S1354854AbiDLI0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60926 "EHLO
+        Tue, 12 Apr 2022 04:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353667AbiDLHZv (ORCPT
+        with ESMTP id S1353669AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8549626AEB;
-        Tue, 12 Apr 2022 00:03:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BBA10FDF;
+        Tue, 12 Apr 2022 00:03:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2106960B65;
-        Tue, 12 Apr 2022 07:03:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C440C385A6;
-        Tue, 12 Apr 2022 07:03:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DE0F60B65;
+        Tue, 12 Apr 2022 07:03:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26091C385A6;
+        Tue, 12 Apr 2022 07:03:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746989;
-        bh=B7KE0Bwe2HzZ6ljezbk4G1JK+oI+ZuzUzmoWONuuw8g=;
+        s=korg; t=1649747000;
+        bh=QoSKt1QfGOxXJk45hbuvdVdVfyISsG2D2JIrfiPHx8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QGNZPbD2xdXFRhvKIRrvAVjvH3z8c8Y/0Q249/C+18gyLfSUbY81WXDspzqRKSmWS
-         iUDP1zAav+rGHwta7iCb2GbLCwnO3s7/0z/ymT557eGb6q+yZOzsehtzqJEl8JHWmJ
-         tCKRkAWASGVKjhMRoouPTMR3TYHSzgud7GRRHJ/g=
+        b=bLTrcL+NZBjJjN6ZEWtXDRATb3CkF4O5+uGW7opb07UJp2qSjtmy1imTfWUJchNM4
+         VkjRFip49Um2/jTlZ95nybCy4binClzn3t1cuv59gatLlUR0ay2aVJZCHMvc08aVVH
+         6TQT1Nj+15hsNCE0JSfxi8/uDsQbKKuAEpIPlV88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Duyck <alexanderduyck@fb.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Ming Lei <ming.lei@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 163/285] skbuff: fix coalescing for page_pool fragment recycling
-Date:   Tue, 12 Apr 2022 08:30:20 +0200
-Message-Id: <20220412062948.374730117@linuxfoundation.org>
+Subject: [PATCH 5.16 157/285] scsi: core: Fix sbitmap depth in scsi_realloc_sdev_budget_map()
+Date:   Tue, 12 Apr 2022 08:30:14 +0200
+Message-Id: <20220412062948.203087039@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -54,135 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+From: John Garry <john.garry@huawei.com>
 
-[ Upstream commit 1effe8ca4e34c34cdd9318436a4232dcb582ebf4 ]
+[ Upstream commit eaba83b5b8506bbc9ee7ca2f10aeab3fff3719e7 ]
 
-Fix a use-after-free when using page_pool with page fragments. We
-encountered this problem during normal RX in the hns3 driver:
+In commit edb854a3680b ("scsi: core: Reallocate device's budget map on
+queue depth change"), the sbitmap for the device budget map may be
+reallocated after the slave device depth is configured.
 
-(1) Initially we have three descriptors in the RX queue. The first one
-    allocates PAGE1 through page_pool, and the other two allocate one
-    half of PAGE2 each. Page references look like this:
+When the sbitmap is reallocated we use the result from
+scsi_device_max_queue_depth() for the sbitmap size, but don't resize to
+match the actual device queue depth.
 
-                RX_BD1 _______ PAGE1
-                RX_BD2 _______ PAGE2
-                RX_BD3 _________/
+Fix by resizing the sbitmap after reallocating the budget sbitmap. We do
+this instead of init'ing the sbitmap to the device queue depth as the user
+may want to change the queue depth later via sysfs or other.
 
-(2) Handle RX on the first descriptor. Allocate SKB1, eventually added
-    to the receive queue by tcp_queue_rcv().
-
-(3) Handle RX on the second descriptor. Allocate SKB2 and pass it to
-    netif_receive_skb():
-
-    netif_receive_skb(SKB2)
-      ip_rcv(SKB2)
-        SKB3 = skb_clone(SKB2)
-
-    SKB2 and SKB3 share a reference to PAGE2 through
-    skb_shinfo()->dataref. The other ref to PAGE2 is still held by
-    RX_BD3:
-
-                      SKB2 ---+- PAGE2
-                      SKB3 __/   /
-                RX_BD3 _________/
-
- (3b) Now while handling TCP, coalesce SKB3 with SKB1:
-
-      tcp_v4_rcv(SKB3)
-        tcp_try_coalesce(to=SKB1, from=SKB3)    // succeeds
-        kfree_skb_partial(SKB3)
-          skb_release_data(SKB3)                // drops one dataref
-
-                      SKB1 _____ PAGE1
-                           \____
-                      SKB2 _____ PAGE2
-                                 /
-                RX_BD3 _________/
-
-    In skb_try_coalesce(), __skb_frag_ref() takes a page reference to
-    PAGE2, where it should instead have increased the page_pool frag
-    reference, pp_frag_count. Without coalescing, when releasing both
-    SKB2 and SKB3, a single reference to PAGE2 would be dropped. Now
-    when releasing SKB1 and SKB2, two references to PAGE2 will be
-    dropped, resulting in underflow.
-
- (3c) Drop SKB2:
-
-      af_packet_rcv(SKB2)
-        consume_skb(SKB2)
-          skb_release_data(SKB2)                // drops second dataref
-            page_pool_return_skb_page(PAGE2)    // drops one pp_frag_count
-
-                      SKB1 _____ PAGE1
-                           \____
-                                 PAGE2
-                                 /
-                RX_BD3 _________/
-
-(4) Userspace calls recvmsg()
-    Copies SKB1 and releases it. Since SKB3 was coalesced with SKB1, we
-    release the SKB3 page as well:
-
-    tcp_eat_recv_skb(SKB1)
-      skb_release_data(SKB1)
-        page_pool_return_skb_page(PAGE1)
-        page_pool_return_skb_page(PAGE2)        // drops second pp_frag_count
-
-(5) PAGE2 is freed, but the third RX descriptor was still using it!
-    In our case this causes IOMMU faults, but it would silently corrupt
-    memory if the IOMMU was disabled.
-
-Change the logic that checks whether pp_recycle SKBs can be coalesced.
-We still reject differing pp_recycle between 'from' and 'to' SKBs, but
-in order to avoid the situation described above, we also reject
-coalescing when both 'from' and 'to' are pp_recycled and 'from' is
-cloned.
-
-The new logic allows coalescing a cloned pp_recycle SKB into a page
-refcounted one, because in this case the release (4) will drop the right
-reference, the one taken by skb_try_coalesce().
-
-Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
-Suggested-by: Alexander Duyck <alexanderduyck@fb.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/1647423870-143867-1-git-send-email-john.garry@huawei.com
+Fixes: edb854a3680b ("scsi: core: Reallocate device's budget map on queue depth change")
+Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/scsi/scsi_scan.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fdd804120600..001152c8def9 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5369,11 +5369,18 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
- 	if (skb_cloned(to))
- 		return false;
+diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
+index d0ce723299bf..6bc0f5f511e1 100644
+--- a/drivers/scsi/scsi_scan.c
++++ b/drivers/scsi/scsi_scan.c
+@@ -223,6 +223,8 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
+ 	int ret;
+ 	struct sbitmap sb_backup;
  
--	/* The page pool signature of struct page will eventually figure out
--	 * which pages can be recycled or not but for now let's prohibit slab
--	 * allocated and page_pool allocated SKBs from being coalesced.
-+	/* In general, avoid mixing slab allocated and page_pool allocated
-+	 * pages within the same SKB. However when @to is not pp_recycle and
-+	 * @from is cloned, we can transition frag pages from page_pool to
-+	 * reference counted.
-+	 *
-+	 * On the other hand, don't allow coalescing two pp_recycle SKBs if
-+	 * @from is cloned, in case the SKB is using page_pool fragment
-+	 * references (PP_FLAG_PAGE_FRAG). Since we only take full page
-+	 * references for cloned SKBs at the moment that would result in
-+	 * inconsistent reference counts.
- 	 */
--	if (to->pp_recycle != from->pp_recycle)
-+	if (to->pp_recycle != (from->pp_recycle && !skb_cloned(from)))
- 		return false;
- 
- 	if (len <= skb_tailroom(to)) {
++	depth = min_t(unsigned int, depth, scsi_device_max_queue_depth(sdev));
++
+ 	/*
+ 	 * realloc if new shift is calculated, which is caused by setting
+ 	 * up one new default queue depth after calling ->slave_configure
+@@ -245,6 +247,9 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
+ 				scsi_device_max_queue_depth(sdev),
+ 				new_shift, GFP_KERNEL,
+ 				sdev->request_queue->node, false, true);
++	if (!ret)
++		sbitmap_resize(&sdev->budget_map, depth);
++
+ 	if (need_free) {
+ 		if (ret)
+ 			sdev->budget_map = sb_backup;
 -- 
 2.35.1
 
