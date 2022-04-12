@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD7BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C039CC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356985AbiDLJTm (ORCPT
+        id S1354463AbiDLJTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Tue, 12 Apr 2022 05:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357448AbiDLHkU (ORCPT
+        with ESMTP id S1357556AbiDLHk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086C32B277;
-        Tue, 12 Apr 2022 00:15:52 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797EA2B188;
+        Tue, 12 Apr 2022 00:16:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6754CB81B66;
-        Tue, 12 Apr 2022 07:15:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF005C385A5;
-        Tue, 12 Apr 2022 07:15:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7AE76176E;
+        Tue, 12 Apr 2022 07:16:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB33FC385A1;
+        Tue, 12 Apr 2022 07:16:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747750;
-        bh=atbR4RPy9yHB2eufZS3l49htdikvABO9wcWmNNaXj4g=;
+        s=korg; t=1649747761;
+        bh=FuKjtPKoVK7gpsVJPs78/XrHFLnI2blZAVO9LBmv2XM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eHI01Iq3W6z+JXidPBqCWQEBOHYM5bAxB6aB825ANTcbgPCWOIQ4q2R6syuf6SKk1
-         CQbHZ0joUeZ5bxgTiFi3wJL8ZlmVFunMkJjHA0+c6gfG5WaBg5jOjBh0BiNidV/cmz
-         7TeiJibwsDl/L0OTQkYjX1tRbm4PfX2Geq19YwpE=
+        b=eTdVU9+vvtHQ8OH0gZ9w2ltlQrBZVyxwjQBTPFqkhIY2MY75aQsdnMWR+oKrysHwY
+         0Q/c1n6eZJ+IKXF8wcqLkaR1osnT8RnGFzr4eFyMfDRKH+r869K9ROYKCDbiTDCQ1u
+         V1HQwboZARh9d+Z6Y6cfZ2YPKVsEXFYc6T9Ssgqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org, Qinghua Jin <qhjin.dev@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Jan Kara <jack@suse.cz>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 190/343] parisc: Fix CPU affinity for Lasi, WAX and Dino chips
-Date:   Tue, 12 Apr 2022 08:30:08 +0200
-Message-Id: <20220412062956.843352201@linuxfoundation.org>
+Subject: [PATCH 5.17 155/343] minix: fix bug when opening a file with O_DIRECT
+Date:   Tue, 12 Apr 2022 08:29:33 +0200
+Message-Id: <20220412062955.850949267@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,230 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Qinghua Jin <qhjin.dev@gmail.com>
 
-[ Upstream commit 939fc856676c266c3bc347c1c1661872a3725c0f ]
+[ Upstream commit 9ce3c0d26c42d279b6c378a03cd6a61d828f19ca ]
 
-Add the missing logic to allow Lasi, WAX and Dino to set the
-CPU affinity. This fixes IRQ migration to other CPUs when a
-CPU is shutdown which currently holds the IRQs for one of those
-chips.
+Testcase:
+1. create a minix file system and mount it
+2. open a file on the file system with O_RDWR|O_CREAT|O_TRUNC|O_DIRECT
+3. open fails with -EINVAL but leaves an empty file behind. All other
+   open() failures don't leave the failed open files behind.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
+It is hard to check the direct_IO op before creating the inode.  Just as
+ext4 and btrfs do, this patch will resolve the issue by allowing to
+create the file with O_DIRECT but returning error when writing the file.
+
+Link: https://lkml.kernel.org/r/20220107133626.413379-1-qhjin.dev@gmail.com
+Signed-off-by: Qinghua Jin <qhjin.dev@gmail.com>
+Reported-by: Colin Ian King <colin.king@intel.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/parisc/dino.c | 41 +++++++++++++++++++++++++++++++++--------
- drivers/parisc/gsc.c  | 31 +++++++++++++++++++++++++++++++
- drivers/parisc/gsc.h  |  1 +
- drivers/parisc/lasi.c |  7 +++----
- drivers/parisc/wax.c  |  7 +++----
- 5 files changed, 71 insertions(+), 16 deletions(-)
+ fs/minix/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/parisc/dino.c b/drivers/parisc/dino.c
-index 952a92504df6..e33036281327 100644
---- a/drivers/parisc/dino.c
-+++ b/drivers/parisc/dino.c
-@@ -142,9 +142,8 @@ struct dino_device
- {
- 	struct pci_hba_data	hba;	/* 'C' inheritance - must be first */
- 	spinlock_t		dinosaur_pen;
--	unsigned long		txn_addr; /* EIR addr to generate interrupt */ 
--	u32			txn_data; /* EIR data assign to each dino */ 
- 	u32 			imr;	  /* IRQ's which are enabled */ 
-+	struct gsc_irq		gsc_irq;
- 	int			global_irq[DINO_LOCAL_IRQS]; /* map IMR bit to global irq */
- #ifdef DINO_DEBUG
- 	unsigned int		dino_irr0; /* save most recent IRQ line stat */
-@@ -339,14 +338,43 @@ static void dino_unmask_irq(struct irq_data *d)
- 	if (tmp & DINO_MASK_IRQ(local_irq)) {
- 		DBG(KERN_WARNING "%s(): IRQ asserted! (ILR 0x%x)\n",
- 				__func__, tmp);
--		gsc_writel(dino_dev->txn_data, dino_dev->txn_addr);
-+		gsc_writel(dino_dev->gsc_irq.txn_data, dino_dev->gsc_irq.txn_addr);
- 	}
- }
- 
-+#ifdef CONFIG_SMP
-+static int dino_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
-+				bool force)
-+{
-+	struct dino_device *dino_dev = irq_data_get_irq_chip_data(d);
-+	struct cpumask tmask;
-+	int cpu_irq;
-+	u32 eim;
-+
-+	if (!cpumask_and(&tmask, dest, cpu_online_mask))
-+		return -EINVAL;
-+
-+	cpu_irq = cpu_check_affinity(d, &tmask);
-+	if (cpu_irq < 0)
-+		return cpu_irq;
-+
-+	dino_dev->gsc_irq.txn_addr = txn_affinity_addr(d->irq, cpu_irq);
-+	eim = ((u32) dino_dev->gsc_irq.txn_addr) | dino_dev->gsc_irq.txn_data;
-+	__raw_writel(eim, dino_dev->hba.base_addr+DINO_IAR0);
-+
-+	irq_data_update_effective_affinity(d, &tmask);
-+
-+	return IRQ_SET_MASK_OK;
-+}
-+#endif
-+
- static struct irq_chip dino_interrupt_type = {
- 	.name		= "GSC-PCI",
- 	.irq_unmask	= dino_unmask_irq,
- 	.irq_mask	= dino_mask_irq,
-+#ifdef CONFIG_SMP
-+	.irq_set_affinity = dino_set_affinity_irq,
-+#endif
+diff --git a/fs/minix/inode.c b/fs/minix/inode.c
+index a71f1cf894b9..d4bd94234ef7 100644
+--- a/fs/minix/inode.c
++++ b/fs/minix/inode.c
+@@ -447,7 +447,8 @@ static const struct address_space_operations minix_aops = {
+ 	.writepage = minix_writepage,
+ 	.write_begin = minix_write_begin,
+ 	.write_end = generic_write_end,
+-	.bmap = minix_bmap
++	.bmap = minix_bmap,
++	.direct_IO = noop_direct_IO
  };
  
- 
-@@ -806,7 +834,6 @@ static int __init dino_common_init(struct parisc_device *dev,
- {
- 	int status;
- 	u32 eim;
--	struct gsc_irq gsc_irq;
- 	struct resource *res;
- 
- 	pcibios_register_hba(&dino_dev->hba);
-@@ -821,10 +848,8 @@ static int __init dino_common_init(struct parisc_device *dev,
- 	**   still only has 11 IRQ input lines - just map some of them
- 	**   to a different processor.
- 	*/
--	dev->irq = gsc_alloc_irq(&gsc_irq);
--	dino_dev->txn_addr = gsc_irq.txn_addr;
--	dino_dev->txn_data = gsc_irq.txn_data;
--	eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
-+	dev->irq = gsc_alloc_irq(&dino_dev->gsc_irq);
-+	eim = ((u32) dino_dev->gsc_irq.txn_addr) | dino_dev->gsc_irq.txn_data;
- 
- 	/* 
- 	** Dino needs a PA "IRQ" to get a processor's attention.
-diff --git a/drivers/parisc/gsc.c b/drivers/parisc/gsc.c
-index ed9371acf37e..ec175ae99873 100644
---- a/drivers/parisc/gsc.c
-+++ b/drivers/parisc/gsc.c
-@@ -135,10 +135,41 @@ static void gsc_asic_unmask_irq(struct irq_data *d)
- 	 */
- }
- 
-+#ifdef CONFIG_SMP
-+static int gsc_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
-+				bool force)
-+{
-+	struct gsc_asic *gsc_dev = irq_data_get_irq_chip_data(d);
-+	struct cpumask tmask;
-+	int cpu_irq;
-+
-+	if (!cpumask_and(&tmask, dest, cpu_online_mask))
-+		return -EINVAL;
-+
-+	cpu_irq = cpu_check_affinity(d, &tmask);
-+	if (cpu_irq < 0)
-+		return cpu_irq;
-+
-+	gsc_dev->gsc_irq.txn_addr = txn_affinity_addr(d->irq, cpu_irq);
-+	gsc_dev->eim = ((u32) gsc_dev->gsc_irq.txn_addr) | gsc_dev->gsc_irq.txn_data;
-+
-+	/* switch IRQ's for devices below LASI/WAX to other CPU */
-+	gsc_writel(gsc_dev->eim, gsc_dev->hpa + OFFSET_IAR);
-+
-+	irq_data_update_effective_affinity(d, &tmask);
-+
-+	return IRQ_SET_MASK_OK;
-+}
-+#endif
-+
-+
- static struct irq_chip gsc_asic_interrupt_type = {
- 	.name		=	"GSC-ASIC",
- 	.irq_unmask	=	gsc_asic_unmask_irq,
- 	.irq_mask	=	gsc_asic_mask_irq,
-+#ifdef CONFIG_SMP
-+	.irq_set_affinity =	gsc_set_affinity_irq,
-+#endif
- };
- 
- int gsc_assign_irq(struct irq_chip *type, void *data)
-diff --git a/drivers/parisc/gsc.h b/drivers/parisc/gsc.h
-index 86abad3fa215..73cbd0bb1975 100644
---- a/drivers/parisc/gsc.h
-+++ b/drivers/parisc/gsc.h
-@@ -31,6 +31,7 @@ struct gsc_asic {
- 	int version;
- 	int type;
- 	int eim;
-+	struct gsc_irq gsc_irq;
- 	int global_irq[32];
- };
- 
-diff --git a/drivers/parisc/lasi.c b/drivers/parisc/lasi.c
-index 4e4fd12c2112..6ef621adb63a 100644
---- a/drivers/parisc/lasi.c
-+++ b/drivers/parisc/lasi.c
-@@ -163,7 +163,6 @@ static int __init lasi_init_chip(struct parisc_device *dev)
- {
- 	extern void (*chassis_power_off)(void);
- 	struct gsc_asic *lasi;
--	struct gsc_irq gsc_irq;
- 	int ret;
- 
- 	lasi = kzalloc(sizeof(*lasi), GFP_KERNEL);
-@@ -185,7 +184,7 @@ static int __init lasi_init_chip(struct parisc_device *dev)
- 	lasi_init_irq(lasi);
- 
- 	/* the IRQ lasi should use */
--	dev->irq = gsc_alloc_irq(&gsc_irq);
-+	dev->irq = gsc_alloc_irq(&lasi->gsc_irq);
- 	if (dev->irq < 0) {
- 		printk(KERN_ERR "%s(): cannot get GSC irq\n",
- 				__func__);
-@@ -193,9 +192,9 @@ static int __init lasi_init_chip(struct parisc_device *dev)
- 		return -EBUSY;
- 	}
- 
--	lasi->eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
-+	lasi->eim = ((u32) lasi->gsc_irq.txn_addr) | lasi->gsc_irq.txn_data;
- 
--	ret = request_irq(gsc_irq.irq, gsc_asic_intr, 0, "lasi", lasi);
-+	ret = request_irq(lasi->gsc_irq.irq, gsc_asic_intr, 0, "lasi", lasi);
- 	if (ret < 0) {
- 		kfree(lasi);
- 		return ret;
-diff --git a/drivers/parisc/wax.c b/drivers/parisc/wax.c
-index 5b6df1516235..73a2b01f8d9c 100644
---- a/drivers/parisc/wax.c
-+++ b/drivers/parisc/wax.c
-@@ -68,7 +68,6 @@ static int __init wax_init_chip(struct parisc_device *dev)
- {
- 	struct gsc_asic *wax;
- 	struct parisc_device *parent;
--	struct gsc_irq gsc_irq;
- 	int ret;
- 
- 	wax = kzalloc(sizeof(*wax), GFP_KERNEL);
-@@ -85,7 +84,7 @@ static int __init wax_init_chip(struct parisc_device *dev)
- 	wax_init_irq(wax);
- 
- 	/* the IRQ wax should use */
--	dev->irq = gsc_claim_irq(&gsc_irq, WAX_GSC_IRQ);
-+	dev->irq = gsc_claim_irq(&wax->gsc_irq, WAX_GSC_IRQ);
- 	if (dev->irq < 0) {
- 		printk(KERN_ERR "%s(): cannot get GSC irq\n",
- 				__func__);
-@@ -93,9 +92,9 @@ static int __init wax_init_chip(struct parisc_device *dev)
- 		return -EBUSY;
- 	}
- 
--	wax->eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
-+	wax->eim = ((u32) wax->gsc_irq.txn_addr) | wax->gsc_irq.txn_data;
- 
--	ret = request_irq(gsc_irq.irq, gsc_asic_intr, 0, "wax", wax);
-+	ret = request_irq(wax->gsc_irq.irq, gsc_asic_intr, 0, "wax", wax);
- 	if (ret < 0) {
- 		kfree(wax);
- 		return ret;
+ static const struct inode_operations minix_symlink_inode_operations = {
 -- 
 2.35.1
 
