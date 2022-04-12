@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4F8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241925AbiDLICA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42848 "EHLO
+        id S1352733AbiDLICf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353643AbiDLHZv (ORCPT
+        with ESMTP id S1353637AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7B643EC3;
-        Tue, 12 Apr 2022 00:02:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA9043AFF;
+        Tue, 12 Apr 2022 00:02:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98CA5615B4;
-        Tue, 12 Apr 2022 07:02:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1DECC385A1;
-        Tue, 12 Apr 2022 07:02:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C18F60B2B;
+        Tue, 12 Apr 2022 07:02:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F64AC385A6;
+        Tue, 12 Apr 2022 07:02:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746965;
-        bh=cK5XG9/wD9csGt9BDkyE+vq4CVXvZjL5MTLufJbB8FI=;
+        s=korg; t=1649746959;
+        bh=vr7Wo20zHLHWbtiSd/Y1L2t36ZxOiBHBQ+ROACpAYAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WJX1roaY2Cl0Dx+eQlERVOsIgfV+HIqMaut/ql0YbYl+5aaoXJ/x1QLCkKH0AGnxq
-         YJAt9vRJ8+qZ0ITIjeN/9CUUX1axNTIDVxcqKCi3Z7TJHucCzt8mbEQCxEYQmAzwik
-         VBRQtNnzuRfx3xRzsTeZpj279hvqU6dwBsRJ9Yp0=
+        b=gjW87X29xvCqlhXmL8z4SKyVVI0G6SdbTYF6tOrzboi6TyEU0ezh9WaGKX7FqKfvz
+         tsQPdntymVShhDTROanvHWdr1i1hhJXa+2E/gTjL6XAjpu9l0PusPBe7RW7mjXEn6K
+         IfUsDd0JJiQjn/lCgfzYrmcps4Xk12548Xw3t/F8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
+        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
         Aaron Conole <aconole@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 193/285] net: openvswitch: fix leak of nested actions
-Date:   Tue, 12 Apr 2022 08:30:50 +0200
-Message-Id: <20220412062949.231080858@linuxfoundation.org>
+Subject: [PATCH 5.16 191/285] net: openvswitch: dont send internal clone attribute to the userspace.
+Date:   Tue, 12 Apr 2022 08:30:48 +0200
+Message-Id: <20220412062949.174513537@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -54,178 +53,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ilya Maximets <i.maximets@ovn.org>
 
-[ Upstream commit 1f30fb9166d4f15a1aa19449b9da871fe0ed4796 ]
+[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
 
-While parsing user-provided actions, openvswitch module may dynamically
-allocate memory and store pointers in the internal copy of the actions.
-So this memory has to be freed while destroying the actions.
+'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+performance optimization inside the kernel.  It's added by the kernel
+while parsing user-provided actions and should not be sent during the
+flow dump as it's not part of the uAPI.
 
-Currently there are only two such actions: ct() and set().  However,
-there are many actions that can hold nested lists of actions and
-ovs_nla_free_flow_actions() just jumps over them leaking the memory.
+The issue doesn't cause any significant problems to the ovs-vswitchd
+process, because reported actions are not really used in the
+application lifecycle and only supposed to be shown to a human via
+ovs-dpctl flow dump.  However, the action list is still incorrect
+and causes the following error if the user wants to look at the
+datapath flows:
 
-For example, removal of the flow with the following actions will lead
-to a leak of the memory allocated by nf_ct_tmpl_alloc():
+  # ovs-dpctl add-dp system@ovs-system
+  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
+                  ct(commit),0)
 
-  actions:clone(ct(commit),0)
+With the fix:
 
-Non-freed set() action may also leak the 'dst' structure for the
-tunnel info including device references.
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(ct(commit),0)
 
-Under certain conditions with a high rate of flow rotation that may
-cause significant memory leak problem (2MB per second in reporter's
-case).  The problem is also hard to mitigate, because the user doesn't
-have direct control over the datapath flows generated by OVS.
+Additionally fixed an incorrect attribute name in the comment.
 
-Fix that by iterating over all the nested actions and freeing
-everything that needs to be freed recursively.
-
-New build time assertion should protect us from this problem if new
-actions will be added in the future.
-
-Unfortunately, openvswitch module doesn't use NLA_F_NESTED, so all
-attributes has to be explicitly checked.  sample() and clone() actions
-are mixing extra attributes into the user-provided action list.  That
-prevents some code generalization too.
-
-Fixes: 34ae932a4036 ("openvswitch: Make tunnel set action attach a metadata dst")
-Link: https://mail.openvswitch.org/pipermail/ovs-dev/2022-March/392922.html
-Reported-by: Stéphane Graber <stgraber@ubuntu.com>
+Fixes: b233504033db ("openvswitch: kernel datapath clone action")
 Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
 Acked-by: Aaron Conole <aconole@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/openvswitch/flow_netlink.c | 95 ++++++++++++++++++++++++++++++++--
- 1 file changed, 90 insertions(+), 5 deletions(-)
+ net/openvswitch/actions.c      | 2 +-
+ net/openvswitch/flow_netlink.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 780d9e2246f3..8955f31fa47e 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1051,7 +1051,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
+ 	int rem = nla_len(attr);
+ 	bool dont_clone_flow_key;
+ 
+-	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
++	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
+ 	clone_arg = nla_data(attr);
+ 	dont_clone_flow_key = nla_get_u32(clone_arg);
+ 	actions = nla_next(clone_arg, &rem);
 diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index 2679007f8aeb..c591b923016a 100644
+index 0d677c9c2c80..2679007f8aeb 100644
 --- a/net/openvswitch/flow_netlink.c
 +++ b/net/openvswitch/flow_netlink.c
-@@ -2288,6 +2288,62 @@ static struct sw_flow_actions *nla_alloc_flow_actions(int size)
- 	return sfa;
- }
+@@ -3429,7 +3429,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
+ 	if (!start)
+ 		return -EMSGSIZE;
  
-+static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len);
-+
-+static void ovs_nla_free_check_pkt_len_action(const struct nlattr *action)
-+{
-+	const struct nlattr *a;
-+	int rem;
-+
-+	nla_for_each_nested(a, action, rem) {
-+		switch (nla_type(a)) {
-+		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_LESS_EQUAL:
-+		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_GREATER:
-+			ovs_nla_free_nested_actions(nla_data(a), nla_len(a));
-+			break;
-+		}
-+	}
-+}
-+
-+static void ovs_nla_free_clone_action(const struct nlattr *action)
-+{
-+	const struct nlattr *a = nla_data(action);
-+	int rem = nla_len(action);
-+
-+	switch (nla_type(a)) {
-+	case OVS_CLONE_ATTR_EXEC:
-+		/* The real list of actions follows this attribute. */
-+		a = nla_next(a, &rem);
-+		ovs_nla_free_nested_actions(a, rem);
-+		break;
-+	}
-+}
-+
-+static void ovs_nla_free_dec_ttl_action(const struct nlattr *action)
-+{
-+	const struct nlattr *a = nla_data(action);
-+
-+	switch (nla_type(a)) {
-+	case OVS_DEC_TTL_ATTR_ACTION:
-+		ovs_nla_free_nested_actions(nla_data(a), nla_len(a));
-+		break;
-+	}
-+}
-+
-+static void ovs_nla_free_sample_action(const struct nlattr *action)
-+{
-+	const struct nlattr *a = nla_data(action);
-+	int rem = nla_len(action);
-+
-+	switch (nla_type(a)) {
-+	case OVS_SAMPLE_ATTR_ARG:
-+		/* The real list of actions follows this attribute. */
-+		a = nla_next(a, &rem);
-+		ovs_nla_free_nested_actions(a, rem);
-+		break;
-+	}
-+}
-+
- static void ovs_nla_free_set_action(const struct nlattr *a)
- {
- 	const struct nlattr *ovs_key = nla_data(a);
-@@ -2301,25 +2357,54 @@ static void ovs_nla_free_set_action(const struct nlattr *a)
- 	}
- }
+-	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
++	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
++	attr = nla_next(nla_data(attr), &rem);
++	err = ovs_nla_put_actions(attr, rem, skb);
  
--void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
-+static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len)
- {
- 	const struct nlattr *a;
- 	int rem;
- 
--	if (!sf_acts)
-+	/* Whenever new actions are added, the need to update this
-+	 * function should be considered.
-+	 */
-+	BUILD_BUG_ON(OVS_ACTION_ATTR_MAX != 23);
-+
-+	if (!actions)
- 		return;
- 
--	nla_for_each_attr(a, sf_acts->actions, sf_acts->actions_len, rem) {
-+	nla_for_each_attr(a, actions, len, rem) {
- 		switch (nla_type(a)) {
--		case OVS_ACTION_ATTR_SET:
--			ovs_nla_free_set_action(a);
-+		case OVS_ACTION_ATTR_CHECK_PKT_LEN:
-+			ovs_nla_free_check_pkt_len_action(a);
-+			break;
-+
-+		case OVS_ACTION_ATTR_CLONE:
-+			ovs_nla_free_clone_action(a);
- 			break;
-+
- 		case OVS_ACTION_ATTR_CT:
- 			ovs_ct_free_action(a);
- 			break;
-+
-+		case OVS_ACTION_ATTR_DEC_TTL:
-+			ovs_nla_free_dec_ttl_action(a);
-+			break;
-+
-+		case OVS_ACTION_ATTR_SAMPLE:
-+			ovs_nla_free_sample_action(a);
-+			break;
-+
-+		case OVS_ACTION_ATTR_SET:
-+			ovs_nla_free_set_action(a);
-+			break;
- 		}
- 	}
-+}
-+
-+void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
-+{
-+	if (!sf_acts)
-+		return;
- 
-+	ovs_nla_free_nested_actions(sf_acts->actions, sf_acts->actions_len);
- 	kfree(sf_acts);
- }
- 
+ 	if (err)
+ 		nla_nest_cancel(skb, start);
 -- 
 2.35.1
 
