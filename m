@@ -2,41 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BF1C38A2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7101C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355879AbiDLH3g (ORCPT
+        id S1355909AbiDLH3v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
+        Tue, 12 Apr 2022 03:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351779AbiDLHM4 (ORCPT
+        with ESMTP id S1351795AbiDLHM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C7ABFA;
-        Mon, 11 Apr 2022 23:52:28 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C050C10EB;
+        Mon, 11 Apr 2022 23:52:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5109961472;
-        Tue, 12 Apr 2022 06:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68025C385A1;
-        Tue, 12 Apr 2022 06:52:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63D10B81B35;
+        Tue, 12 Apr 2022 06:52:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88289C385A6;
+        Tue, 12 Apr 2022 06:52:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746347;
-        bh=UBKb1sZQqPKobZ0hpdVcRYe0cV7/W6X1LyH5t1+esJc=;
+        s=korg; t=1649746367;
+        bh=SoCb/hdLcNc5aCFlOmgnS1sQDkhgqCLKwaaJREOg48A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QL20hE4+USYC86pBYCNqxlMV4AuJqpTTnDlWGVD/XcAR82ogB9kjwjEPJNa9/vPtH
-         XIgMcKXbQXbJ6XA8dL4qEm4qfihwGLqCxzrGCVCcqqWM8WDTvrXc5l9FquqneXaeTS
-         zwqWTwC4IlhiraD47DgfcgF+vMFVs1E1+CBIVlZY=
+        b=PMn3qxhoRsYtMFBjpJ6vC1uACkJeIkaPKm0KICmXff3kP9h/NgEo2in6yDjGK8qq7
+         nz222yjWEr23LLV+UmdhCyw7EuI0Hfo1F4/QxnUaU8CGBGR53UYXO6+zujVieHMbXc
+         LZH4PUui8/t3zOTejuYUa+gQ8+U0uB6ZN3JnuBmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 250/277] Revert "selftests: net: Add tls config dependency for tls selftests"
-Date:   Tue, 12 Apr 2022 08:30:53 +0200
-Message-Id: <20220412062949.278284606@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 256/277] perf build: Dont use -ffat-lto-objects in the python feature test when building with clang-13
+Date:   Tue, 12 Apr 2022 08:30:59 +0200
+Message-Id: <20220412062949.449788404@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -48,34 +58,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 20695e9a9fd39103d1b0669470ae74030b7aa196 upstream.
+commit 3a8a0475861a443f02e3a9b57d044fe2a0a99291 upstream.
 
-This reverts commit d9142e1cf3bbdaf21337767114ecab26fe702d47.
+Using -ffat-lto-objects in the python feature test when building with
+clang-13 results in:
 
-The test is supposed to run cleanly with TLS is disabled,
-to test compatibility with TCP behavior. I can't repro
-the failure [1], the problem should be debugged rather
-than papered over.
+  clang-13: error: optimization flag '-ffat-lto-objects' is not supported [-Werror,-Wignored-optimization-argument]
+  error: command '/usr/sbin/clang' failed with exit code 1
+  cp: cannot stat '/tmp/build/perf/python_ext_build/lib/perf*.so': No such file or directory
+  make[2]: *** [Makefile.perf:639: /tmp/build/perf/python/perf.so] Error 1
 
-Link: https://lore.kernel.org/all/20220325161203.7000698c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/ [1]
-Fixes: d9142e1cf3bb ("selftests: net: Add tls config dependency for tls selftests")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Link: https://lore.kernel.org/r/20220328212904.2685395-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Noticed when building on a docker.io/library/archlinux:base container.
+
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Sedat Dilek <sedat.dilek@gmail.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/config |    1 -
- 1 file changed, 1 deletion(-)
+ tools/perf/Makefile.config |    3 +++
+ tools/perf/util/setup.py   |    2 ++
+ 2 files changed, 5 insertions(+)
 
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -43,5 +43,4 @@ CONFIG_NET_ACT_TUNNEL_KEY=m
- CONFIG_NET_ACT_MIRRED=m
- CONFIG_BAREUDP=m
- CONFIG_IPV6_IOAM6_LWTUNNEL=y
--CONFIG_TLS=m
- CONFIG_CRYPTO_SM4=y
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -270,6 +270,9 @@ ifdef PYTHON_CONFIG
+   PYTHON_EMBED_LIBADD := $(call grep-libs,$(PYTHON_EMBED_LDOPTS)) -lutil
+   PYTHON_EMBED_CCOPTS := $(shell $(PYTHON_CONFIG_SQ) --includes 2>/dev/null)
+   FLAGS_PYTHON_EMBED := $(PYTHON_EMBED_CCOPTS) $(PYTHON_EMBED_LDOPTS)
++  ifeq ($(CC_NO_CLANG), 0)
++    PYTHON_EMBED_CCOPTS := $(filter-out -ffat-lto-objects, $(PYTHON_EMBED_CCOPTS))
++  endif
+ endif
+ 
+ FEATURE_CHECK_CFLAGS-libpython := $(PYTHON_EMBED_CCOPTS)
+--- a/tools/perf/util/setup.py
++++ b/tools/perf/util/setup.py
+@@ -23,6 +23,8 @@ if cc_is_clang:
+             vars[var] = sub("-fstack-protector-strong", "", vars[var])
+         if not clang_has_option("-fno-semantic-interposition"):
+             vars[var] = sub("-fno-semantic-interposition", "", vars[var])
++        if not clang_has_option("-ffat-lto-objects"):
++            vars[var] = sub("-ffat-lto-objects", "", vars[var])
+ 
+ from distutils.core import setup, Extension
+ 
 
 
