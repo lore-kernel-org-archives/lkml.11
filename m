@@ -2,143 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ADCC3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C48FDC3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352814AbiDLKiY (ORCPT
+        id S1353604AbiDLKic (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53710 "EHLO
+        Tue, 12 Apr 2022 06:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381422AbiDLK3T (ORCPT
+        with ESMTP id S1354507AbiDLKdl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:29:19 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79395580CB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:31:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=pXpt/O0wt40ELy2VjiVcNMr4U+X
-        Bfk5SDzhV9fM2Egk=; b=JonB2GfC1bYb3hU/Pm+B/VVayEli2jf5gVR+JuHgVI9
-        0QU1Z1rg+w/ylhmfkssV9mzymBRYToStQ9jqBqjrgUPM2KkGAqoTwbnK1plACiO9
-        nVMgRySQ10W7FikM2QDbyLs5FNnesUrNhNVnvAK8KOyXHkF1EnZXwkwM0UAObKtc
-        =
-Received: (qmail 981999 invoked from network); 12 Apr 2022 11:31:30 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 12 Apr 2022 11:31:30 +0200
-X-UD-Smtp-Session: l3s3148p1@jLPGuXHcAucgAQnoAGZ4AFi7qjeMIP6q
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-mmc@vger.kernel.org
-Cc:     linux-renesas-soc@vger.kernel.org,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>, linux-sh@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] mmc: sh_mmcif: move platform_data header to proper location
-Date:   Tue, 12 Apr 2022 11:31:02 +0200
-Message-Id: <20220412093102.3428-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 12 Apr 2022 06:33:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7869D5B3FE;
+        Tue, 12 Apr 2022 02:33:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13530617D9;
+        Tue, 12 Apr 2022 09:33:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DEF0C385A1;
+        Tue, 12 Apr 2022 09:33:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649756023;
+        bh=p2HThk8k2ZTvsydyJhVxe8rGHmh0AkIHBuDz5J5Ldgc=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=ZenysrLZcXIJlDuLAbZuQlXmpAX2KP1jUqlSMLZ1SB24hcPJhaD9rmZlex8NuQZTr
+         3BxEbQq8TtqO1axlJXrznslc1pGYNiD+DOYs/CDoporNNUjsHpMWwzNBLnNfZDI4wj
+         DutC19Sy5ftlhthoacWgexgX7ui9FcM9W2wTFsp4r6V8W1B+vc2O8EHiumK/5HfMFn
+         Fk5aDSTx+2BOS0yVxrrtAp0yRhlH0qI79hrVnI9OAyOQ4SaYqkKYj1pRQe2Tsp45gh
+         JOumOgcJBcJ2Rz/dTcpsThTkBTctcLQTAzeBuIcg1eyoL6PRnmEboajhvwAIh5vYl8
+         KYrJ6lZFavajw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     cgel.zte@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] wlcore: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+References: <20220412091742.2533527-1-chi.minghao@zte.com.cn>
+Date:   Tue, 12 Apr 2022 12:33:36 +0300
+In-Reply-To: <20220412091742.2533527-1-chi.minghao@zte.com.cn> (cgel zte's
+        message of "Tue, 12 Apr 2022 09:17:42 +0000")
+Message-ID: <8735iiprwv.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have a dedicated directory for platform_data meanwhile, don't spoil
-the MMC directory with it.
+cgel.zte@gmail.com writes:
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+>
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-Change since v1: fixed sorting of includes in the MMCIF driver
-		 (Thanks Geert!)
+Please try to make the patch titles unique, you have already submitted a
+patch with the same name:
 
-I don't have the HW to test this but the buildbots are happy with this
-change. I checked that they actually tested the SH builds. To make the
-patch more readable, I used the -M (rename) feature of git-format-patch.
+wlcore: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
 
- arch/sh/boards/board-sh7757lcr.c                | 2 +-
- arch/sh/boards/mach-ecovec24/setup.c            | 2 +-
- arch/sh/boot/romimage/mmcif-sh7724.c            | 2 +-
- drivers/mmc/host/sh_mmcif.c                     | 2 +-
- include/linux/{mmc => platform_data}/sh_mmcif.h | 2 --
- 5 files changed, 4 insertions(+), 6 deletions(-)
- rename include/linux/{mmc => platform_data}/sh_mmcif.h (99%)
+https://patchwork.kernel.org/project/linux-wireless/patch/20220408081205.2494512-1-chi.minghao@zte.com.cn/
 
-diff --git a/arch/sh/boards/board-sh7757lcr.c b/arch/sh/boards/board-sh7757lcr.c
-index c32b4c6229d3..f39c8196efdf 100644
---- a/arch/sh/boards/board-sh7757lcr.c
-+++ b/arch/sh/boards/board-sh7757lcr.c
-@@ -16,7 +16,7 @@
- #include <linux/io.h>
- #include <linux/mfd/tmio.h>
- #include <linux/mmc/host.h>
--#include <linux/mmc/sh_mmcif.h>
-+#include <linux/platform_data/sh_mmcif.h>
- #include <linux/sh_eth.h>
- #include <linux/sh_intc.h>
- #include <linux/usb/renesas_usbhs.h>
-diff --git a/arch/sh/boards/mach-ecovec24/setup.c b/arch/sh/boards/mach-ecovec24/setup.c
-index 4c9522dd351f..674da7ebd8b7 100644
---- a/arch/sh/boards/mach-ecovec24/setup.c
-+++ b/arch/sh/boards/mach-ecovec24/setup.c
-@@ -19,7 +19,7 @@
- #include <linux/memblock.h>
- #include <linux/mfd/tmio.h>
- #include <linux/mmc/host.h>
--#include <linux/mmc/sh_mmcif.h>
-+#include <linux/platform_data/sh_mmcif.h>
- #include <linux/mtd/physmap.h>
- #include <linux/gpio.h>
- #include <linux/gpio/machine.h>
-diff --git a/arch/sh/boot/romimage/mmcif-sh7724.c b/arch/sh/boot/romimage/mmcif-sh7724.c
-index 6595b6b45bf1..d30123d859e0 100644
---- a/arch/sh/boot/romimage/mmcif-sh7724.c
-+++ b/arch/sh/boot/romimage/mmcif-sh7724.c
-@@ -8,7 +8,7 @@
-  * for more details.
-  */
- 
--#include <linux/mmc/sh_mmcif.h>
-+#include <linux/platform_data/sh_mmcif.h>
- #include <mach/romimage.h>
- 
- #define MMCIF_BASE      (void __iomem *)0xa4ca0000
-diff --git a/drivers/mmc/host/sh_mmcif.c b/drivers/mmc/host/sh_mmcif.c
-index 5f9ebf045b1c..0fd4c9d644dd 100644
---- a/drivers/mmc/host/sh_mmcif.c
-+++ b/drivers/mmc/host/sh_mmcif.c
-@@ -43,12 +43,12 @@
- #include <linux/mmc/host.h>
- #include <linux/mmc/mmc.h>
- #include <linux/mmc/sdio.h>
--#include <linux/mmc/sh_mmcif.h>
- #include <linux/mmc/slot-gpio.h>
- #include <linux/mod_devicetable.h>
- #include <linux/mutex.h>
- #include <linux/of_device.h>
- #include <linux/pagemap.h>
-+#include <linux/platform_data/sh_mmcif.h>
- #include <linux/platform_device.h>
- #include <linux/pm_qos.h>
- #include <linux/pm_runtime.h>
-diff --git a/include/linux/mmc/sh_mmcif.h b/include/linux/platform_data/sh_mmcif.h
-similarity index 99%
-rename from include/linux/mmc/sh_mmcif.h
-rename to include/linux/platform_data/sh_mmcif.h
-index e25533b95d9f..6eb914f958f9 100644
---- a/include/linux/mmc/sh_mmcif.h
-+++ b/include/linux/platform_data/sh_mmcif.h
-@@ -1,7 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-- * include/linux/mmc/sh_mmcif.h
-- *
-  * platform data for eMMC driver
-  *
-  * Copyright (C) 2010 Renesas Solutions Corp.
+I'll rename this patch to:
+
+wlcore: main: use pm_runtime_resume_and_get() instead of pm_runtime_get_sync()
+
 -- 
-2.30.2
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
