@@ -2,103 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B03C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E221C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355593AbiDLNYU (ORCPT
+        id S1355518AbiDLNYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
+        Tue, 12 Apr 2022 09:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356417AbiDLNXK (ORCPT
+        with ESMTP id S1356084AbiDLNWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:23:10 -0400
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D785F56;
-        Tue, 12 Apr 2022 06:14:07 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id a17-20020a9d3e11000000b005cb483c500dso13351016otd.6;
-        Tue, 12 Apr 2022 06:14:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=4Hu29V9bbNGQ7NeMGoWiDLgZuDde0wP79E71crt9DdM=;
-        b=6xDjFtAoU9TZO0esno4Hf4cS5FCI+aIIpNOUkbHDbAuuFwTt4JaIR20bDh9d6DSjfs
-         kAsGSx5LffWFabhBQ7aTEoMNwg1PSL5ed77c9J6xP9GlMkMjvYhtFLxi3tRSmKZWe9gH
-         Euc77qwslSDI9a5R8ODHwNjD43tmFQ6vZcYUFlaNJRFrXOol400alUhSwpI3SmzOSMl0
-         BhI/kargNL8AMuBC4jLIoGZrutqqr+34SjGLtbgMSIj/pNV+KgaMU2nHpA9/6rzSRdBT
-         pp8G7HePqq5VK33vCIP6SBf8i/keNDmT0K1IPrcoqSdwVo3INlQLZPVsV1AocB4KqI2P
-         MLpQ==
-X-Gm-Message-State: AOAM5334wWwbGUWYGN1J6buNWOhED6p1FJzd82JcMM7ueKBP2a0Hcs+L
-        TLuCsqSMAHVVp/kw/bl2Dw==
-X-Google-Smtp-Source: ABdhPJy/ZMhWQUc529yUtvgnyCadjBqr7fjsWtZYK6b6y58vnNMwVPuq1IYac7H3Y8QrDWl4AkwVgw==
-X-Received: by 2002:a05:6830:2aa1:b0:5e6:cccf:419b with SMTP id s33-20020a0568302aa100b005e6cccf419bmr6816302otu.208.1649769246965;
-        Tue, 12 Apr 2022 06:14:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id n62-20020acaef41000000b002ef646e6690sm12947467oih.53.2022.04.12.06.14.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 06:14:06 -0700 (PDT)
-Received: (nullmailer pid 3815484 invoked by uid 1000);
-        Tue, 12 Apr 2022 13:14:05 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Dylan Hung <dylan_hung@aspeedtech.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        linux-aspeed@lists.ozlabs.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        devicetree@vger.kernel.org, joel@jms.id.au, hkallweit1@gmail.com,
-        pabeni@redhat.com, linux-arm-kernel@lists.infradead.org,
-        andrew@aj.id.au, robh+dt@kernel.org, p.zabel@pengutronix.de,
-        krzk+dt@kernel.org, linux-kernel@vger.kernel.org, andrew@lunn.ch,
-        BMC-SW@aspeedtech.com, linux@armlinux.org.uk, davem@davemloft.net
-In-Reply-To: <20220412065611.8930-2-dylan_hung@aspeedtech.com>
-References: <20220412065611.8930-1-dylan_hung@aspeedtech.com> <20220412065611.8930-2-dylan_hung@aspeedtech.com>
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
-Date:   Tue, 12 Apr 2022 08:14:05 -0500
-Message-Id: <1649769245.688561.3815481.nullmailer@robh.at.kernel.org>
+        Tue, 12 Apr 2022 09:22:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F70E64;
+        Tue, 12 Apr 2022 06:13:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B897619AF;
+        Tue, 12 Apr 2022 13:13:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22688C385A5;
+        Tue, 12 Apr 2022 13:13:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649769197;
+        bh=DTegz9gyhgjc2JJ5pN4gPvlldPShZLOKKU3Jkl7X8DE=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=KDCeaD5cjOXtHGc+8cgkGUcV0+tPV2l2i3N5hS+SAd9tIXewUSj0SUZ6DUyipQzEs
+         nvQpH3bkHPcbtJfMB1XQLI9MtoC0qgc+8l/KAP9HgccsqOPCWAuYkXRkfWjmQUbb3v
+         DwutaswFV9nVp4ese307KjmO68Npubljca9IDGsn38SGgXLwp4S442kKADQINcPAB4
+         bEhlfei93EJoJmfdM8I/a15BlccAEGyQ2lQ4V3q69t9p2Wol94jZeur5RILwBh32ua
+         6AtKqbDdtmnbAuQpOsq+PPLtgvY7C2evq43ccDugZhH1Qb6TiWfr5Wgc43BID/7cPk
+         k+RRrXCEIUEAg==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH -next 1/2] wcn36xx: clean up some inconsistent indenting
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220408000113.129906-1-yang.lee@linux.alibaba.com>
+References: <20220408000113.129906-1-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        loic.poulain@linaro.org, toke@toke.dk, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164976919327.15500.7970749626802998679.kvalo@kernel.org>
+Date:   Tue, 12 Apr 2022 13:13:14 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 14:56:09 +0800, Dylan Hung wrote:
-> The AST2600 MDIO bus controller has a reset control bit and must be
-> deasserted before manipulating the MDIO controller. By default, the
-> hardware asserts the reset so the driver only need to deassert it.
+Yang Li <yang.lee@linux.alibaba.com> wrote:
+
+> Eliminate the follow smatch warning:
+> drivers/net/wireless/ath/wcn36xx/smd.c:3151
+> wcn36xx_smd_gtk_offload_get_info_rsp() warn: inconsistent indenting
 > 
-> Regarding to the old DT blobs which don't have reset property in them,
-> the reset deassertion is usually done by the bootloader so the reset
-> property is optional to work with them.
-> 
-> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  .../devicetree/bindings/net/aspeed,ast2600-mdio.yaml         | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> Acked-by: Loic Poulain <loic.poulain@linaro.org>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Patch applied to ath-next branch of ath.git, thanks.
 
-yamllint warnings/errors:
+2578171ff85e wcn36xx: clean up some inconsistent indenting
 
-dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.example.dts:25.35-36 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.example.dtb] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1401: dt_binding_check] Error 2
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220408000113.129906-1-yang.lee@linux.alibaba.com/
 
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
