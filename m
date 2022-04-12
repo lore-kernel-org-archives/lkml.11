@@ -2,816 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4E0C47086
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42257C3527E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388239AbiDLJV4 (ORCPT
+        id S1389955AbiDLJYY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
+        Tue, 12 Apr 2022 05:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377927AbiDLHyl (ORCPT
+        with ESMTP id S1355531AbiDLIIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:54:41 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929BA506D6;
-        Tue, 12 Apr 2022 00:32:01 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C7VegV012130;
-        Tue, 12 Apr 2022 02:31:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649748700;
-        bh=WelqgPwRZMbriUIX8bn6yxP6/kX9vGCTrhQ2oBUrTx4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=kVRhb9VIT1VQISQXPbzlKL4+Ffp+NsVnk8A6mf2PPv8FwO0x8RLsm/nukWXA+14M/
-         UD/K6LqKB8EX7WnN4orKVDXzxQMDrXqaLx1naCA9xOVqPIP/9gXS0WNQw3nJWYniZV
-         xZiof4ZlLbr4TgPtKmZfNn2zXI73Xxnt0H+UlA+s=
-Received: from DFLE101.ent.ti.com (dfle101.ent.ti.com [10.64.6.22])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C7Ve4Z125190
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 Apr 2022 02:31:40 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
- Apr 2022 02:31:39 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 12 Apr 2022 02:31:39 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C7VdhR104366;
-        Tue, 12 Apr 2022 02:31:39 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nishanth Menon <nm@ti.com>
-Subject: [PATCH 2/2] rtc: Introduce ti-k3-rtc
-Date:   Tue, 12 Apr 2022 02:31:38 -0500
-Message-ID: <20220412073138.25027-3-nm@ti.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220412073138.25027-1-nm@ti.com>
-References: <20220412073138.25027-1-nm@ti.com>
+        Tue, 12 Apr 2022 04:08:31 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2547326C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:38:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649749091; x=1681285091;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=C8LO8vYVLUon+ONyychkpKMpSrIqU1G8Lust1Omohy8=;
+  b=AhFNovyujTGBURSSd98RaK6AMfYVbwPM/0v+YTXa+UcSzr+Boe4eou40
+   g04zdPsfNq77kpPejMuCJnYr7IOqendPpDw1rsE0agkdh3W7ifdLNCMy5
+   YQa94cfQQgO7kfcd+0qZmsuxY/lfj5cNps6+hr91Z6hoV3JcZl6PE2JTi
+   e9+KmiZww1Zjo/PFaFqM4E0MOhw8mY3Y07EtvLgukbSvlpRK6/A+Bw/mY
+   RZ03khxeMBkaY++6eHcysYvcyiLUFaoEt3Cwf1KL61UsgUwpDp8l9hxbx
+   Sf4W/6jJft0YP1YUJZVavSyGdrzsBAudBpeOmthuey490gNlJmAQz0Rlf
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242889122"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="242889122"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:37:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="660379149"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga004.jf.intel.com with ESMTP; 12 Apr 2022 00:37:44 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 12 Apr 2022 00:37:44 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 12 Apr 2022 00:37:44 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 12 Apr 2022 00:37:42 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OyvSeWDQqNXNChq6XjvFYgFI4P9XI24nbddVU2IaoTMGQqhWHVNCxEnTCT6gIdFMdyH/AZW+K9NF/HkmK4mn83t7jsEZXnlpihpREWregezZWCQYM9bDvNUihc5EFFDoeIYQg4F+i7stSVaGOZ/dF1muMMrcfLXBBIgMPewSPUVClu+KbQKdJS7bTh9Fb8hgsWFxQLKRucxf07YSsJMtEGSrv1fDn/PjYO2uOj0QRUiowlITxxWGq536MDpGEjxxKmGrAvAoV+v+Ez8T+lqWU1blcs/uvaC4EeB/fwF0m9nJ1JuLtV4ExRjCO6fCVrdCsZ6EB/XwVyssvxtcwA6Ztw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C8LO8vYVLUon+ONyychkpKMpSrIqU1G8Lust1Omohy8=;
+ b=BygPwC40zVgScNLa0Z52YlIOcN+ywYiqzA53296Ts7oPMBQFtodwD86F6vvBmeIXL76QvCJW5W6Y838Ss4q+pfLmzhAFvLu58nUhXpzU+OfjWdp0tirjB8hASFQ2T+KK6DA4D50dn/tP6A2sx9fB0HmG3Jfq5aie+izrq/+Z59XM94VgD7WmpEiUEo9xFHHe1s5tRE1f2t0uI2Zh2HFsxJRXgk4A+YKVxiEKuzgryyFYJQOp6Q8ZuXR0Fz2P2OrXrIvor1IAn6PoFPqA0pp59r2OAxV3h7k8JT/YEWx+91AVCiHqO8nig8bkkQqj/0ody4k6sfHHhHFFX+BDSngdyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CY4PR11MB1462.namprd11.prod.outlook.com (2603:10b6:910:b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 07:37:41 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::c4ea:a404:b70b:e54e]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::c4ea:a404:b70b:e54e%8]) with mapi id 15.20.5164.018; Tue, 12 Apr 2022
+ 07:37:41 +0000
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        "Robin Murphy" <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>
+CC:     Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH RFC v3 02/12] iommu: Add a flag to indicate immutable
+ singleton group
+Thread-Topic: [PATCH RFC v3 02/12] iommu: Add a flag to indicate immutable
+ singleton group
+Thread-Index: AQHYTMWQdMRj1LtW7ESP7xJUKRpqwqzrmnCQgAAi0gCAACVF0A==
+Date:   Tue, 12 Apr 2022 07:37:41 +0000
+Message-ID: <BN9PR11MB5276246A53447854DDA8920D8CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220410102443.294128-1-baolu.lu@linux.intel.com>
+ <20220410102443.294128-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB527679E5CE0516B2786F57518CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <7c70a136-6871-b48c-8e46-852bb1b62958@linux.intel.com>
+In-Reply-To: <7c70a136-6871-b48c-8e46-852bb1b62958@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9bddad8f-8316-4001-6775-08da1c57537d
+x-ms-traffictypediagnostic: CY4PR11MB1462:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <CY4PR11MB1462FB67FB48F832D61D829F8CED9@CY4PR11MB1462.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SwM0jI2j5YQoaJ5dGnte3c1a+2o7aWFCCnbjDgjr/m5ojEzfNewMiEGbvqA4kMT6keDgBUlhUabLpfs9WEbYzSuzK5hd9/Sn5VN0v1A/8d88NcUzXJwQ8njNG0sXgRjLx54pUnRpELgpIbb6NDLS7LG74nv/+85FzQdpOLht5Mijaj01bhJ0R6HXYVv93M0Xq0bjSCvp9eMlcDQpH9NZqOexVBQ0WcuC2buBWpAToCZoFMI/GQ/7CIwwy0WEitDEzJrN+Tj7Xp1RBePjzAHqJSy14StINEeogrMuTcnkxxnnm2/BdRdEk10HEEpYOfXe8LtjGxDcz8iZazOrfxAIe3hdqqufnlKLLZb4pEDmvL+3+5BEbjEbYs7j47fN+tPAB9GmuPxtTaX4CNgLuXkJQW1K1SWmZzLPqcuPd48ZSsb4k0Bh6Z0RroSoNRM2tdX32m9gGiMp59oUoVv+JWP2k0t/3XQlO90cRqdlF86y7tUMCv8SWdmsFykgvU2XNuO5cnSzAeZgK1kcZIiZObUf7XdYckSnD1tE0qFkVEAJM+QJC0atpXmaqHVc48h4WM1HiXsIBAbWqDPE8GwcIui5Jix4Gf297IaSKStT56TwZrbDmMR+64lGobeTYc3uXUZIDJGEMNYrGlfJdnhmAP7nb0rHzGJDie+z4oPXe6l3qua72jdei1KD3HVsynSCZQEWZ4XYVob/+F7y5OS9MhmV3Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(122000001)(8676002)(4326008)(7416002)(54906003)(110136005)(5660300002)(186003)(2906002)(55016003)(316002)(71200400001)(52536014)(8936002)(86362001)(82960400001)(26005)(6506007)(53546011)(7696005)(66476007)(9686003)(66446008)(66556008)(38070700005)(76116006)(38100700002)(64756008)(33656002)(66946007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SStkdWdUc1NHVWpkdGtXczlSR29MVzZ0M0lpakNJTFBNb2RiYlR5bmlNTnJh?=
+ =?utf-8?B?WWFBVEs5TlpoUVIzMUFyc2JjVDNsYWpGR2gySDdJMUNFejR3OU5VUTBoc2xi?=
+ =?utf-8?B?UUJjUTdUQXdFSFRIMElKOVN2S1BFY2pMeEpmN0p4NDRnclBZWUxKaWNxSGNW?=
+ =?utf-8?B?bERjM29rWTNpS3NIMDhvcmpySy92R3VHeGQ1bHJ4Y2ZuV00zb1JVcXlUZEI0?=
+ =?utf-8?B?a1dRa0F0dkNmdXpOY3NLVE5pbnNQODlUNWJ2M2JxdU1BUkZwSkFYZmpydkRa?=
+ =?utf-8?B?cy8zWXBQSVJEMXFQNDRESDVtK0JRNkl4RzQySW1raUdGbFZBN1lOK2pUSEUr?=
+ =?utf-8?B?ajVsQ1p0SHlFOENCMFhlU3ZIS1VTaDBBYmpzSi91R2lFUjBqQWlyQzQ2VWo1?=
+ =?utf-8?B?ZkVvanZZVkdxQUY0WTJFRmhYSXBXMnkyVysvMzM5d3oyano0bktsYXNuVW9x?=
+ =?utf-8?B?bm1DOXBKc1lwdk1yREFuNjcxV3I5UDlIeVRwZUxueFpBYStjTkVjSm0wZFFE?=
+ =?utf-8?B?VUo4ZU1lOVRia0lvYlFlNU80SVhNWTR4Qjd6ZVBUcHo1QS8vRHdlMHJSOXR6?=
+ =?utf-8?B?QlZpRkFCK3BjeHVTMEZQU1JMME94SDA4Zm04ZWVkTjlwYmJXOEdacHMxckRk?=
+ =?utf-8?B?ZlJ0OFZFTE0xQVJqWmVmN0RJRVNUSjdjVjVJaytoOTk0SFRYemhwZXQ4dTJu?=
+ =?utf-8?B?Q2IxU3J1OUZvcURTSUJIOFk3NHRrb21jbWV3eFZrNi9UeFQyQVRKVXJDMFh6?=
+ =?utf-8?B?eHc5VDlYSFk1UmltTy9vUStOdUI0ZVh4SDV5N1FzUC9MSWVHb2J0TWtnbGdO?=
+ =?utf-8?B?cTg1THEyTzl1enVMdnJTa1RWcXJUYnloZWtjMzVFZmpVOXk5aENwclZIQno0?=
+ =?utf-8?B?L0xUSlpWLzN6bDhnQ0lIWCt6MmVlWEJkNTI0KzM2UiszeFdCaXpWbCtrWVN6?=
+ =?utf-8?B?R0tlOVJ1MmdXb3pMQmluT2ZtQ2o3bGlQc0MrVWNTMjlxaVN1RmNEMGc2ZHUy?=
+ =?utf-8?B?NmdsU25CVE1sclppOGc3ZlZRZ2tGVCt1VFFwcXVGTW5zUGhIb0ZCTmNNbmZU?=
+ =?utf-8?B?ZDZHQ3ZnR0REdG91ZFM1WEs3UkRaQjdsYnpmUDVHeERNb2w5TGU1WFpZZ2w0?=
+ =?utf-8?B?TTJxUGx4K3dvSUFjYkM4Y2NqdHpCamFrWFIzYVM0WlVybHNTeUFINVAydDJN?=
+ =?utf-8?B?LzJleUlMTkF6UFlkM2x2cjBaRDZRT25xSU94cDI4OEpKNEEzUks5YmpvV0ZU?=
+ =?utf-8?B?elppaGtjY1k1Y2VsS1VsOXF5a2RCY3haQ3VudDFDbFZPYVZFR2k5Y0JhUEQ0?=
+ =?utf-8?B?V3FDUVJJN09tMFVCMjdRQW9FSytLRnhnaUE3V3ArMlBxYytCMHh2aEQra1dV?=
+ =?utf-8?B?NlJ6cVp0c3Z3cXdaMTZWaklLQ2ZTS1B0NmtYTEZJZGNuYkhVdU43YTl1S2JZ?=
+ =?utf-8?B?MkgwbnhneCsxek9DNkNWbjg5dEovTFVwa1ZuNXhsZzNKakdCOU14WkJqUXd2?=
+ =?utf-8?B?V1AxZW5CVFhUOGVmUmcyaVBpR1JmMDNNdHFhdDc2NWFNOU9HZ2V0T0l4TTI0?=
+ =?utf-8?B?ZUIyeHdTMDBmZ3JzK0c2NVQvcG9xTkc3Rlo4OW1LRzNIbjA0WkE0K0cwQ0oy?=
+ =?utf-8?B?c2RVRjFPanArZnAzNnM4ck9WdkRKTlhSK1Q1YVBUd2ZjQlBrZTlJbE4xNHBY?=
+ =?utf-8?B?Y0VITjh0V3RrRExYNGlFaEJ2ajcrc0NRYnlHcFhYbnF6bjhIbHM3TzEvZDc4?=
+ =?utf-8?B?T2RGNEtGem1zRlpkSEFhUEpxQjEvQzdkS0pFaUJSTEdNUThkRFFoN3krUThs?=
+ =?utf-8?B?QzIxVGEzOTJ1Ny9aVFNDNnR4amhIdzV6c0ZGa1R0S1NTZWJFQVJRVlEwMmhU?=
+ =?utf-8?B?UHJiREhNc2xLb0prNkxza05HR2lub25IOGhLL0VxbHU1YjhCR0FwRFRTTGV1?=
+ =?utf-8?B?S1RaMFo3aGpwMW9Ka0svLzlqVmZOa0s5WnZpUm8wNHFSdnJkSjZjM0JWbFFn?=
+ =?utf-8?B?V3BhZ3R3RWMwS0Jva2ZyMStRL09QRGdRaXZkakhLbk1rWDc5eUswaXlVcTlj?=
+ =?utf-8?B?R3BGSkZ0Y3JSWGE5ZERCdmZlWjB2UFFQbUUzR2xkL0RiOXRpYjlVd2N1d0NE?=
+ =?utf-8?B?SXJLUWVuS0hSY2x4b3U3MFdINnI0VitIaWdOTm1zN0ZnZ1JxTGk5cUpWMmxZ?=
+ =?utf-8?B?VkUzZnF5SXBxMFJsdUw1TnY5R3A3MGlyTnB6T2hZU0hnYUsyOStNeXRJUWQ0?=
+ =?utf-8?B?dEJ4eDBDR3ZDYWVCc0FEYkxCNitIYlVvL0cyS2hnQ2NZeWd2S0ZWRTJBMFdz?=
+ =?utf-8?B?Um5rcXo3b20xVFNyZ2Jqb2F2RytnNEJuczZ5MXpoSVdxTkNRNGVxZz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9bddad8f-8316-4001-6775-08da1c57537d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2022 07:37:41.3869
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dVaYC0YWqqyDQJHsE55TLmuOiNTXvqcx1jL21qE3iN2g5gHUOsZMsuLMLZ9u8iXEyGbdUEhV8woF3SbiL7w+5A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1462
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce support for Texas Instruments Real Time Clock controller on
-newer K3 family of SoCs such as AM62x.
-
-The hardware module that is being supported is the "digital only"
-version which does'nt have capability of external wakeup sources and
-external power backup. However, for many practical applications, this
-should suffice as RTC is operational across low power sequences.
-
-The hardware block by itself is split into two distinct domains
-internally to further reduce the power consumption with the actual
-counter block and comparators clocked off a 32k clock source (which
-based on SoC integration can be sourced by an external crystal) and an
-register interface block which is driven by the bus clock. While optimal
-from power perspective, it does create some complicated synchronizations
-and sequences that one must be wary of in the driver handling.
-
-Signed-off-by: Nishanth Menon <nm@ti.com>
----
- drivers/rtc/Kconfig     |  10 +
- drivers/rtc/Makefile    |   1 +
- drivers/rtc/rtc-ti-k3.c | 687 ++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 698 insertions(+)
- create mode 100644 drivers/rtc/rtc-ti-k3.c
-
-diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
-index 41c65b4d2baf..972602af8838 100644
---- a/drivers/rtc/Kconfig
-+++ b/drivers/rtc/Kconfig
-@@ -1922,6 +1922,16 @@ config RTC_DRV_ASPEED
- 	  This driver can also be built as a module, if so, the module
- 	  will be called "rtc-aspeed".
- 
-+config RTC_DRV_TI_K3
-+	tristate "TI K3 RTC"
-+	depends on ARCH_K3 || COMPILE_TEST
-+	help
-+	  If you say yes here you get support for the Texas Instruments's
-+	  Real Time Clock for K3 architecture.
-+
-+	  This driver can also be built as a module, if so, the module
-+	  will be called "rtc-ti-k3".
-+
- comment "HID Sensor RTC drivers"
- 
- config RTC_DRV_HID_SENSOR_TIME
-diff --git a/drivers/rtc/Makefile b/drivers/rtc/Makefile
-index 2d827d8261d5..b74128e174d7 100644
---- a/drivers/rtc/Makefile
-+++ b/drivers/rtc/Makefile
-@@ -183,3 +183,4 @@ obj-$(CONFIG_RTC_DRV_WM8350)	+= rtc-wm8350.o
- obj-$(CONFIG_RTC_DRV_X1205)	+= rtc-x1205.o
- obj-$(CONFIG_RTC_DRV_XGENE)	+= rtc-xgene.o
- obj-$(CONFIG_RTC_DRV_ZYNQMP)	+= rtc-zynqmp.o
-+obj-$(CONFIG_RTC_DRV_TI_K3)	+= rtc-ti-k3.o
-diff --git a/drivers/rtc/rtc-ti-k3.c b/drivers/rtc/rtc-ti-k3.c
-new file mode 100644
-index 000000000000..7220f0f12071
---- /dev/null
-+++ b/drivers/rtc/rtc-ti-k3.c
-@@ -0,0 +1,687 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Texas Instruments K3 RTC driver
-+ *
-+ * Copyright (C) 2021-2022 Texas Instruments Incorporated - https://www.ti.com/
-+ */
-+
-+#define dev_fmt(fmt) "%s: " fmt, __func__
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/property.h>
-+#include <linux/rtc.h>
-+
-+/* Registers */
-+#define REG_K3RTC_S_CNT_LSW		0x08
-+#define REG_K3RTC_S_CNT_MSW		0x0c
-+#define REG_K3RTC_COMP			0x10
-+#define REG_K3RTC_ON_OFF_S_CNT_LSW	0x20
-+#define REG_K3RTC_ON_OFF_S_CNT_MSW	0x24
-+#define REG_K3RTC_SCRATCH0		0x30
-+#define REG_K3RTC_SCRATCH7		0x4c
-+#define REG_K3RTC_GENERAL_CTL		0x50
-+#define REG_K3RTC_IRQSTATUS_RAW_SYS	0x54
-+#define REG_K3RTC_IRQSTATUS_SYS		0x58
-+#define REG_K3RTC_IRQENABLE_SET_SYS	0x5c
-+#define REG_K3RTC_IRQENABLE_CLR_SYS	0x60
-+#define REG_K3RTC_SYNCPEND		0x68
-+#define REG_K3RTC_KICK0			0x70
-+#define REG_K3RTC_KICK1			0x74
-+
-+/* Control Bits for REG_K3RTC_S_CNT_LSW */
-+#define K3RTC_S_CNT_LSW_MASK		GENMASK(31, 0)
-+
-+/* Control Bits for REG_K3RTC_S_CNT_MSW */
-+#define K3RTC_S_CNT_MSW_MASK		GENMASK(15, 0)
-+
-+/* Control Bits for REG_K3RTC_GENERAL_CTL */
-+#define K3RTC_O32K_OSC_DEP_EN_BIT	BIT(21)
-+#define K3RTC_UNLOCK_BIT		BIT(23)
-+#define K3RTC_CNT_FMODE_MASK		GENMASK(25, 24)
-+#define K3RTC_CNT_FMODE_S_CNT_VALUE	(0x2 << 24)
-+
-+/* Control Bits for REG_K3RTC_IRQ* */
-+#define K3RTC_EVENT_ON_OFF_BIT		BIT(0)
-+#define K3RTC_EVENT_OFF_ON_BIT		BIT(1)
-+
-+/* Control Bits for REG_K3RTC_SYNCPEND */
-+#define K3RTC_WR_PEND_BIT		BIT(0)
-+#define K3RTC_RD_PEND_BIT		BIT(1)
-+#define K3RTC_RELOAD_FROM_BBD_BIT	BIT(31)
-+
-+/* Magic values for lock/unlock */
-+#define K3RTC_KICK0_UNLOCK_VALUE	0x83e70b13
-+#define K3RTC_KICK1_UNLOCK_VALUE	0x95a4f1e0
-+
-+/* Multiplier for ppb conversions */
-+#define K3RTC_PPB_MULT			(1000000000LL)
-+/* Min and max values supported with 'offset' interface (swapped sign) */
-+#define K3RTC_MIN_OFFSET		(-277761)
-+#define K3RTC_MAX_OFFSET		(277778)
-+
-+/**
-+ * struct ti_k3_rtc_soc_data - Private of compatible data for ti-k3-rtc
-+ * @unlock_irq_erratum:	Has erratum for unlock infinite IRQs (erratum i2327)
-+ */
-+struct ti_k3_rtc_soc_data {
-+	const bool unlock_irq_erratum;
-+};
-+
-+/**
-+ * struct ti_k3_rtc - Private data for ti-k3-rtc
-+ * @irq:		IRQ
-+ * @sync_timeout_us:	data sync timeout period in uSec (2 * 32k period)
-+ * @rate_32k:		32k clock rate in Hz
-+ * @rtc_dev:		rtc device
-+ * @rtc_base:		rtc base address
-+ * @soc:		SoC compatible match data
-+ */
-+struct ti_k3_rtc {
-+	unsigned int irq;
-+	u32 sync_timeout_us;
-+	unsigned long rate_32k;
-+	struct rtc_device *rtc_dev;
-+	void __iomem *rtc_base;
-+	const struct ti_k3_rtc_soc_data *soc;
-+};
-+
-+static inline u32 k3rtc_readl(struct ti_k3_rtc *priv, u32 offset)
-+{
-+	return readl(priv->rtc_base + offset);
-+}
-+
-+static inline void k3rtc_writel(struct ti_k3_rtc *priv, u32 offset, u32 value)
-+{
-+	writel(value, priv->rtc_base + offset);
-+}
-+
-+/**
-+ * k3rtc_fence  - Ensure a register sync took place between the two domains
-+ * @priv:      pointer to priv data
-+ *
-+ * Return: 0 if the sync took place, else returns -ETIMEDOUT
-+ */
-+static int k3rtc_fence(struct ti_k3_rtc *priv)
-+{
-+	u32 timeout = priv->sync_timeout_us;
-+	u32 mask = K3RTC_RD_PEND_BIT | K3RTC_WR_PEND_BIT;
-+	u32 val = 0;
-+
-+	while (timeout--) {
-+		val = k3rtc_readl(priv, REG_K3RTC_SYNCPEND);
-+		if (!(val & mask))
-+			return 0;
-+		usleep_range(1, 2);
-+	}
-+
-+	pr_err("RTC Fence timeout: 0x%08x\n", val);
-+	return -ETIMEDOUT;
-+}
-+
-+static inline int k3rtc_check_unlocked(struct ti_k3_rtc *priv)
-+{
-+	u32 val;
-+
-+	val = k3rtc_readl(priv, REG_K3RTC_GENERAL_CTL);
-+	return (val & K3RTC_UNLOCK_BIT) ? 0 : 1;
-+}
-+
-+static int k3rtc_unlock_rtc(struct ti_k3_rtc *priv)
-+{
-+	u32 timeout = priv->sync_timeout_us;
-+	int ret;
-+
-+	ret = k3rtc_check_unlocked(priv);
-+	if (!ret)
-+		return ret;
-+
-+	k3rtc_writel(priv, REG_K3RTC_KICK0, K3RTC_KICK0_UNLOCK_VALUE);
-+	k3rtc_writel(priv, REG_K3RTC_KICK1, K3RTC_KICK1_UNLOCK_VALUE);
-+
-+	/* Skip fence since we are going to check the unlock bit as fence */
-+	while (timeout--) {
-+		ret = k3rtc_check_unlocked(priv);
-+		if (!ret)
-+			return ret;
-+		usleep_range(1, 2);
-+	}
-+
-+	return -ETIMEDOUT;
-+}
-+
-+static int k3rtc_configure(struct device *dev)
-+{
-+	int ret;
-+	u32 ctl;
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+
-+	/*
-+	 * HWBUG: The compare statemachine is broken if the RTC module
-+	 * is NOT unlocked in under one second of boot - which is pretty long
-+	 * time from the perspective of Linux driver (module load, u-boot
-+	 * shell all can take much longer than this.
-+	 *
-+	 * In such occurrence, it is assumed that the RTC module is un-usable
-+	 */
-+	if (priv->soc->unlock_irq_erratum) {
-+		ret = k3rtc_check_unlocked(priv);
-+		/* If there is an error OR if we are locked, return error */
-+		if (ret) {
-+			dev_err(dev, HW_ERR "Erratum i2327 unlock QUIRK! Cannot operate!!\n");
-+			return -EFAULT;
-+		}
-+	} else {
-+		/* May Need to explicitly unlock first time */
-+		ret = k3rtc_unlock_rtc(priv);
-+		if (ret) {
-+			dev_err(dev, "Failed to unlock(%d)!\n", ret);
-+			return ret;
-+		}
-+	}
-+
-+	/* Enable Shadow register sync on 32k clk boundary */
-+	ctl = k3rtc_readl(priv, REG_K3RTC_GENERAL_CTL);
-+	ctl |= K3RTC_O32K_OSC_DEP_EN_BIT;
-+	k3rtc_writel(priv, REG_K3RTC_GENERAL_CTL, ctl);
-+
-+	/*
-+	 * Wait at least 2 clk sync time before proceeding further programming.
-+	 * This ensures that the 32k based sync is active.
-+	 */
-+	usleep_range(priv->sync_timeout_us, priv->sync_timeout_us + 5);
-+
-+	/* We need to ensure fence here to make sure sync here */
-+	ret = k3rtc_fence(priv);
-+	if (ret) {
-+		dev_err(dev, "Failed fence osc_dep enable(%d) - is 32k clk working?!\n",
-+			ret);
-+		return ret;
-+	}
-+
-+	/* Lets just make sure we get consistent time value */
-+	ctl &= ~K3RTC_CNT_FMODE_MASK;
-+	/*
-+	 * FMODE setting: Reading lower seconds will freeze value on higher
-+	 * seconds. This also implies that we must *ALWAYS* read lower seconds
-+	 * prior to reading higher seconds
-+	 */
-+	ctl |= K3RTC_CNT_FMODE_S_CNT_VALUE;
-+	k3rtc_writel(priv, REG_K3RTC_GENERAL_CTL, ctl);
-+
-+	/* Clear any spurious IRQ sources if any */
-+	k3rtc_writel(priv, REG_K3RTC_IRQSTATUS_SYS,
-+		     K3RTC_EVENT_ON_OFF_BIT | K3RTC_EVENT_OFF_ON_BIT);
-+	/* Disable all IRQs */
-+	k3rtc_writel(priv, REG_K3RTC_IRQENABLE_CLR_SYS,
-+		     K3RTC_EVENT_ON_OFF_BIT | K3RTC_EVENT_OFF_ON_BIT);
-+
-+	/* And.. Let us Sync the writes in */
-+	ret = k3rtc_fence(priv);
-+	if (ret) {
-+		dev_err(dev, "Failed to fence(%d)!\n", ret);
-+		return ret;
-+	}
-+
-+	return ret;
-+}
-+
-+static int ti_k3_rtc_read_time(struct device *dev, struct rtc_time *tm)
-+{
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	u32 seconds_lo, seconds_hi;
-+
-+	seconds_lo = k3rtc_readl(priv, REG_K3RTC_S_CNT_LSW);
-+	seconds_hi = k3rtc_readl(priv, REG_K3RTC_S_CNT_MSW);
-+
-+	rtc_time64_to_tm((((time64_t)seconds_hi) << 32) | (time64_t)seconds_lo, tm);
-+
-+	return 0;
-+}
-+
-+static int ti_k3_rtc_set_time(struct device *dev, struct rtc_time *tm)
-+{
-+	int ret;
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	time64_t seconds;
-+	u32 seconds_lo, seconds_hi;
-+
-+	seconds = rtc_tm_to_time64(tm);
-+
-+	seconds_lo = seconds & K3RTC_S_CNT_LSW_MASK;
-+	seconds_hi = (seconds >> 32) & K3RTC_S_CNT_MSW_MASK;
-+
-+	k3rtc_writel(priv, REG_K3RTC_S_CNT_LSW, seconds_lo);
-+	k3rtc_writel(priv, REG_K3RTC_S_CNT_MSW, seconds_hi);
-+
-+	ret = k3rtc_fence(priv);
-+	if (ret) {
-+		dev_err(dev, "Failed to fence(%d)!\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ti_k3_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
-+{
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	u32 seconds_lo, seconds_hi;
-+	u32 alm;
-+
-+	seconds_lo = k3rtc_readl(priv, REG_K3RTC_ON_OFF_S_CNT_LSW);
-+	seconds_hi = k3rtc_readl(priv, REG_K3RTC_ON_OFF_S_CNT_MSW);
-+
-+	rtc_time64_to_tm((((time64_t)seconds_hi) << 32) | (time64_t)seconds_lo, &alarm->time);
-+
-+	alm = k3rtc_readl(priv, REG_K3RTC_IRQENABLE_SET_SYS);
-+	alarm->enabled = (alm & K3RTC_EVENT_ON_OFF_BIT) ? 1 : 0;
-+
-+	return 0;
-+}
-+
-+static int ti_k3_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
-+{
-+	int ret;
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	u32 reg;
-+	u32 offset =
-+	    enabled ? REG_K3RTC_IRQENABLE_SET_SYS : REG_K3RTC_IRQENABLE_CLR_SYS;
-+
-+	reg = k3rtc_readl(priv, REG_K3RTC_IRQENABLE_SET_SYS);
-+	reg &= K3RTC_EVENT_ON_OFF_BIT;
-+	if ((enabled && reg) || (!enabled && !reg))
-+		return 0;
-+
-+	k3rtc_writel(priv, offset, K3RTC_EVENT_ON_OFF_BIT);
-+
-+	/*
-+	 * Ensure the write sync is through - NOTE: it should be OK to have
-+	 * ISR to fire as we are checking sync (which should be done in a 32k
-+	 * cycle or so).
-+	 */
-+	ret = k3rtc_fence(priv);
-+	if (ret) {
-+		dev_err(dev, "Failed to fence(%d)!\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ti_k3_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
-+{
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	time64_t seconds;
-+	u32 seconds_lo, seconds_hi;
-+	int ret;
-+
-+	seconds = rtc_tm_to_time64(&alarm->time);
-+
-+	seconds_lo = seconds & K3RTC_S_CNT_LSW_MASK;
-+	seconds_hi = (seconds >> 32) & K3RTC_S_CNT_MSW_MASK;
-+
-+	k3rtc_writel(priv, REG_K3RTC_ON_OFF_S_CNT_LSW, seconds_lo);
-+	k3rtc_writel(priv, REG_K3RTC_ON_OFF_S_CNT_MSW, seconds_hi);
-+
-+	/* Make sure the alarm time is synced in */
-+	ret = k3rtc_fence(priv);
-+	if (ret) {
-+		dev_err(dev, "Failed to fence(%d)!\n", ret);
-+		return ret;
-+	}
-+
-+	/* Alarm irq enable will do a sync */
-+	return ti_k3_rtc_alarm_irq_enable(dev, alarm->enabled);
-+}
-+
-+static int ti_k3_rtc_read_offset(struct device *dev, long *offset)
-+{
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	u32 ticks_per_hr = priv->rate_32k * 3600;
-+	int comp;
-+	s64 tmp;
-+
-+	comp = k3rtc_readl(priv, REG_K3RTC_COMP);
-+
-+	/* Convert from RTC calibration register format to ppb format */
-+	tmp = comp * (s64)K3RTC_PPB_MULT;
-+	if (tmp < 0)
-+		tmp -= ticks_per_hr / 2LL;
-+	else
-+		tmp += ticks_per_hr / 2LL;
-+	tmp = div_s64(tmp, ticks_per_hr);
-+
-+	/* Offset value operates in negative way, so swap sign */
-+	*offset = (long)-tmp;
-+
-+	return 0;
-+}
-+
-+static int ti_k3_rtc_set_offset(struct device *dev, long offset)
-+{
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	u32 ticks_per_hr = priv->rate_32k * 3600;
-+	int comp;
-+	s64 tmp;
-+
-+	/* Make sure offset value is within supported range */
-+	if (offset < K3RTC_MIN_OFFSET || offset > K3RTC_MAX_OFFSET)
-+		return -ERANGE;
-+
-+	/* Convert from ppb format to RTC calibration register format */
-+	tmp = offset * (s64)ticks_per_hr;
-+	if (tmp < 0)
-+		tmp -= K3RTC_PPB_MULT / 2LL;
-+	else
-+		tmp += K3RTC_PPB_MULT / 2LL;
-+	tmp = div_s64(tmp, K3RTC_PPB_MULT);
-+
-+	/* Offset value operates in negative way, so swap sign */
-+	comp = (int)-tmp;
-+
-+	k3rtc_writel(priv, REG_K3RTC_COMP, comp);
-+
-+	return k3rtc_fence(priv);
-+}
-+
-+static irqreturn_t ti_k3_rtc_interrupt(s32 irq, void *dev_id)
-+{
-+	struct device *dev = dev_id;
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+	u32 reg;
-+	u32 timeout;
-+	int ret;
-+
-+	/*
-+	 * IRQ assertion can be very fast, however, the IRQ Status clear
-+	 * de-assert depends on 32k clock edge in the 32k domain
-+	 * If we clear the status prior to the first 32k clock edge,
-+	 * the status bit is cleared, but the IRQ is stays re-asserted.
-+	 *
-+	 * To prevent this condition, we need to wait for one 32k clock cycle
-+	 * We can either do that by polling the 32k observability signal for
-+	 * a toggle OR we could just sleep and let the processor do other
-+	 * stuff. We use sync_timeout_us which is 2x32k clock period to
-+	 * make sure.
-+	 */
-+	usleep_range(priv->sync_timeout_us, priv->sync_timeout_us + 2);
-+
-+	/* Lets make sure that this is a valid interrupt */
-+	reg = k3rtc_readl(priv, REG_K3RTC_IRQSTATUS_SYS);
-+
-+	if (!(reg & K3RTC_EVENT_ON_OFF_BIT)) {
-+		u32 raw = k3rtc_readl(priv, REG_K3RTC_IRQSTATUS_RAW_SYS);
-+
-+		dev_err(dev, HW_ERR "Erratum i2327 / false interrupt? IRQ status: 0x%08x / 0x%08x\n",
-+			reg, raw);
-+		return IRQ_NONE;
-+	}
-+
-+	/* Write 1 to clear status reg */
-+	k3rtc_writel(priv, REG_K3RTC_IRQSTATUS_SYS, K3RTC_EVENT_ON_OFF_BIT);
-+
-+	/* Sync the write in */
-+	ret = k3rtc_fence(priv);
-+	if (ret) {
-+		dev_err(dev, "Failed to fence irq status clr(%d)!\n", ret);
-+		return IRQ_NONE;
-+	}
-+
-+	/*
-+	 * Force the 32k status to be reloaded back in to ensure status is
-+	 * reflected back correctly.
-+	 */
-+	reg = k3rtc_readl(priv, REG_K3RTC_SYNCPEND);
-+	if (ret) {
-+		dev_err(dev, "sync read fail:%d\n", ret);
-+		return IRQ_NONE;
-+	}
-+	reg |= K3RTC_RELOAD_FROM_BBD_BIT;
-+	k3rtc_writel(priv, REG_K3RTC_SYNCPEND, reg);
-+
-+	/* Ensure the write sync is through */
-+	ret = k3rtc_fence(priv);
-+	if (ret) {
-+		dev_err(dev, "Failed to fence reload from bbd(%d)!\n", ret);
-+		return IRQ_NONE;
-+	}
-+
-+	/* Now we ensure that the status bit is cleared */
-+	timeout = priv->sync_timeout_us;
-+	while (timeout--) {
-+		reg = k3rtc_readl(priv, REG_K3RTC_IRQSTATUS_SYS);
-+		if (!(reg & K3RTC_EVENT_ON_OFF_BIT))
-+			break;
-+
-+		usleep_range(1, 2);
-+	}
-+	if (!timeout) {
-+		dev_err(dev, "Time out waiting for status clear: 0x%08x\n", reg);
-+		return IRQ_NONE;
-+	}
-+
-+	/* Notify RTC core on event */
-+	rtc_update_irq(priv->rtc_dev, 1, RTC_IRQF | RTC_AF);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static const struct rtc_class_ops ti_k3_rtc_ops = {
-+	.read_time = ti_k3_rtc_read_time,
-+	.set_time = ti_k3_rtc_set_time,
-+	.read_alarm = ti_k3_rtc_read_alarm,
-+	.set_alarm = ti_k3_rtc_set_alarm,
-+	.read_offset = ti_k3_rtc_read_offset,
-+	.set_offset = ti_k3_rtc_set_offset,
-+	.alarm_irq_enable = ti_k3_rtc_alarm_irq_enable,
-+};
-+
-+static int ti_k3_rtc_scratch_read(void *priv_data, unsigned int offset,
-+				  void *_val, size_t bytes)
-+{
-+	struct ti_k3_rtc *priv = (struct ti_k3_rtc *)priv_data;
-+	u32 *val = _val;
-+	size_t i;
-+
-+	for (i = 0; i < bytes / 4; i++) {
-+		val[i] = k3rtc_readl(priv,
-+				     REG_K3RTC_SCRATCH0 + offset + (i * 4));
-+	}
-+
-+	return 0;
-+}
-+
-+static int ti_k3_rtc_scratch_write(void *priv_data, unsigned int offset,
-+				   void *_val, size_t bytes)
-+{
-+	struct ti_k3_rtc *priv = (struct ti_k3_rtc *)priv_data;
-+	u32 *val = _val;
-+	size_t i;
-+
-+	for (i = 0; i < bytes / 4; i++) {
-+		k3rtc_writel(priv, REG_K3RTC_SCRATCH0 + offset + (i * 4),
-+			     val[i]);
-+	}
-+	return k3rtc_fence(priv);
-+}
-+
-+static struct nvmem_config ti_k3_rtc_nvmem_config = {
-+	.name = "ti_k3_rtc_scratch",
-+	.word_size = 4,
-+	.stride = 4,
-+	.size = REG_K3RTC_SCRATCH7 - REG_K3RTC_SCRATCH0 + 4,
-+	.reg_read = ti_k3_rtc_scratch_read,
-+	.reg_write = ti_k3_rtc_scratch_write,
-+};
-+
-+static int k3rtc_get_32kclk(struct device *dev, struct ti_k3_rtc *priv)
-+{
-+	int ret;
-+	struct clk *clk;
-+
-+	clk = devm_clk_get(dev, "osc32k");
-+	if (IS_ERR(clk)) {
-+		dev_err(dev, "No input reference 32k clock\n");
-+		return PTR_ERR(clk);
-+	}
-+
-+	ret = clk_prepare_enable(clk);
-+	if (ret) {
-+		dev_err(dev, "Failed to enable the reference 32k clock(%d)\n", ret);
-+		return ret;
-+	}
-+
-+	ret = devm_add_action_or_reset(dev, (void (*)(void *))clk_disable_unprepare, clk);
-+	if (ret)
-+		return ret;
-+
-+	priv->rate_32k = clk_get_rate(clk);
-+
-+	/* Make sure we are exact 32k clock. Else, try to compensate delay */
-+	if (priv->rate_32k != 32768)
-+		dev_warn(dev, "Clock rate %ld is not 32768! Could misbehave!\n",
-+			 priv->rate_32k);
-+
-+	/* Max sync timeout will be two 32k clk sync cycles = ~61uS */
-+	priv->sync_timeout_us = (u32)(DIV_ROUND_UP_ULL(1000000, priv->rate_32k) * 2);
-+
-+	return ret;
-+}
-+
-+static int k3rtc_get_vbusclk(struct device *dev, struct ti_k3_rtc *priv)
-+{
-+	int ret;
-+	struct clk *clk;
-+
-+	clk = devm_clk_get(dev, "vbus");
-+	if (IS_ERR(clk)) {
-+		dev_err(dev, "No input vbus clock\n");
-+		return PTR_ERR(clk);
-+	}
-+
-+	ret = clk_prepare_enable(clk);
-+	if (ret) {
-+		dev_err(dev, "Failed to enable the vbus clock(%d)\n", ret);
-+		return ret;
-+	}
-+
-+	ret = devm_add_action_or_reset(dev, (void (*)(void *))clk_disable_unprepare, clk);
-+	return ret;
-+}
-+
-+static int ti_k3_rtc_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct ti_k3_rtc *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(struct ti_k3_rtc), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->rtc_base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->rtc_base))
-+		return PTR_ERR(priv->rtc_base);
-+
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return ret;
-+	priv->irq = (unsigned int)ret;
-+
-+	priv->rtc_dev = devm_rtc_allocate_device(dev);
-+	if (IS_ERR(priv->rtc_dev))
-+		return PTR_ERR(priv->rtc_dev);
-+
-+	priv->soc = of_device_get_match_data(dev);
-+
-+	priv->rtc_dev->ops = &ti_k3_rtc_ops;
-+	priv->rtc_dev->range_max = (1ULL << 48) - 1;	/* 48Bit seconds */
-+	ti_k3_rtc_nvmem_config.priv = priv;
-+
-+	ret = devm_request_threaded_irq(dev, priv->irq, NULL,
-+					ti_k3_rtc_interrupt,
-+					IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-+					dev_name(dev), dev);
-+	if (ret) {
-+		dev_err(dev, "Could not request IRQ: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = k3rtc_get_32kclk(dev, priv);
-+	if (ret)
-+		return ret;
-+	ret = k3rtc_get_vbusclk(dev, priv);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	ret = k3rtc_configure(dev);
-+	if (ret)
-+		return ret;
-+
-+	if (device_property_present(dev, "wakeup-source"))
-+		device_init_wakeup(dev, true);
-+	else
-+		device_set_wakeup_capable(dev, true);
-+
-+	ret = devm_rtc_register_device(priv->rtc_dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_rtc_nvmem_register(priv->rtc_dev, &ti_k3_rtc_nvmem_config);
-+	return ret;
-+}
-+
-+static const struct ti_k3_rtc_soc_data ti_k3_am62_data = {
-+	.unlock_irq_erratum = true,
-+};
-+
-+static const struct of_device_id ti_k3_rtc_of_match_table[] = {
-+	{.compatible = "ti,am62-rtc", .data = &ti_k3_am62_data},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ti_k3_rtc_of_match_table);
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int ti_k3_rtc_suspend(struct device *dev)
-+{
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+
-+	if (device_may_wakeup(dev))
-+		enable_irq_wake(priv->irq);
-+	return 0;
-+}
-+
-+static int ti_k3_rtc_resume(struct device *dev)
-+{
-+	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
-+
-+	if (device_may_wakeup(dev))
-+		disable_irq_wake(priv->irq);
-+	return 0;
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(ti_k3_rtc_pm_ops, ti_k3_rtc_suspend, ti_k3_rtc_resume);
-+
-+static struct platform_driver ti_k3_rtc_driver = {
-+	.probe = ti_k3_rtc_probe,
-+	.driver = {
-+		   .name = "rtc-ti-k3",
-+		   .of_match_table = ti_k3_rtc_of_match_table,
-+		   .pm = &ti_k3_rtc_pm_ops,
-+		   },
-+};
-+module_platform_driver(ti_k3_rtc_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("TI K3 RTC driver");
-+MODULE_AUTHOR("Nishanth Menon");
-+MODULE_ALIAS("platform:rtc-ti-k3");
--- 
-2.31.1
-
+PiBGcm9tOiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUdWVz
+ZGF5LCBBcHJpbCAxMiwgMjAyMiAxOjA5IFBNDQo+IE9uIDIwMjIvNC8xMiAxMToxNSwgVGlhbiwg
+S2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5j
+b20+DQo+ID4+IFNlbnQ6IFN1bmRheSwgQXByaWwgMTAsIDIwMjIgNjoyNSBQTQ0KPiA+DQo+ID4+
+DQo+ID4+IFRoaXMgYWRkcyBhIGZsYWcgaW4gdGhlIGlvbW11X2dyb3VwIHN0cnVjdCB0byBpbmRp
+Y2F0ZSBhbiBpbW11dGFibGUNCj4gPj4gc2luZ2xldG9uIGdyb3VwLCBhbmQgdXNlcyBzdGFuZGFy
+ZCBQQ0kgYnVzIHRvcG9sb2d5LCBpc29sYXRpb24gZmVhdHVyZXMsDQo+ID4+IGFuZCBETUEgYWxp
+YXMgcXVpcmtzIHRvIHNldCB0aGUgZmxhZy4gSWYgdGhlIGRldmljZSBjYW1lIGZyb20gRFQsIGFz
+c3VtZQ0KPiA+PiBpdCBpcyBzdGF0aWMgYW5kIHRoZW4gdGhlIHNpbmdsZXRvbiBhdHRyaWJ1dGUg
+Y2FuIGtub3cgZnJvbSB0aGUgZGV2aWNlDQo+ID4+IGNvdW50IGluIHRoZSBncm91cC4NCj4gPg0K
+PiA+IHdoZXJlIGRvZXMgdGhlIGFzc3VtcHRpb24gY29tZSBmcm9tPw0KPiANCj4gSG90cGx1ZyBp
+cyB0aGUgb25seSBmYWN0b3IgdGhhdCBjYW4gZHluYW1pY2FsbHkgYWZmZWN0IHRoZQ0KPiBjaGFy
+YWN0ZXJpc3RpY3Mgb2YgSU9NTVUgZ3JvdXAgc2luZ2xldG9uIGFzIGZhciBhcyBJIGNhbiBzZWUu
+IElmIGENCj4gZGV2aWNlIG5vZGUgd2FzIGNyZWF0ZWQgZnJvbSB0aGUgRFQsIGl0IGNvdWxkIGJl
+IHRyZWF0ZWQgYXMgc3RhdGljLA0KPiBoZW5jZSB3ZSBjYW4ganVkZ2UgdGhlIHNpbmdsZXRvbiBp
+biBpb21tdSBwcm9iZSBwaGFzZSBkdXJpbmcgYm9vdC4NCg0KSSBkaWRuJ3QgZ2V0IHRoaXMuIExl
+dCdzIGxvb2sgYXQgeW91ciBjb2RlIGluIGlvbW11X2dyb3VwX2FkZF9kZXZpY2UoKToNCg0KICsJ
+ZWxzZSBpZiAoaXNfb2Zfbm9kZShkZXZfZndub2RlKGRldikpKQ0KICsJCWdyb3VwLT5pbW11dGFi
+bGVfc2luZ2xldG9uID0NCiArCQkJCShpb21tdV9ncm91cF9kZXZpY2VfY291bnQoZ3JvdXApID09
+IDEpOw0KDQpFdmVuIGlmIHRoZXJlIGlzIGEgbXVsdGktZGV2aWNlcyBncm91cCBhYm92ZSBsb2dp
+YyB3aWxsIHNldCB0aGUgZmxhZyB3aGVuDQp0aGUgZmlyc3QgZGV2aWNlIGluIHRoZSBncm91cCBp
+cyBhZGRlZCBzaW5jZSBhdCB0aGF0IHRpbWUgdGhlcmUgaXMgb25seQ0Kb25lIGRldmljZSBpbiB0
+aGUgZ3JvdXAuIFdlIG5lZWQgb3RoZXIgY29uY3JldGUgaW5mb3JtYXRpb24gIHRvIHRlbGwNCml0
+IHNpbWlsYXIgdG8gaG93IHlvdSB3YWxrIFBDSSBoaWVyYXJjaHkgdG8gZmluZCBvdXQgdGhlIGZh
+Y3QuLi4gDQoNCj4gPj4gKwkvKg0KPiA+PiArCSAqIFRoZSBkZXZpY2UgY291bGQgYmUgY29uc2lk
+ZXJlZCB0byBiZSBmdWxseSBpc29sYXRlZCBpZg0KPiA+PiArCSAqIGFsbCBkZXZpY2VzIG9uIHRo
+ZSBwYXRoIGZyb20gdGhlIHBhcmVudCB0byB0aGUgaG9zdC1QQ0kNCj4gPj4gKwkgKiBicmlkZ2Ug
+YXJlIHByb3RlY3RlZCBmcm9tIHBlZXItdG8tcGVlciBETUEgYnkgQUNTLg0KPiA+PiArCSAqLw0K
+PiA+PiArCWlmICghcGNpX2lzX3Jvb3RfYnVzKHBkZXYtPmJ1cykgJiYNCj4gPj4gKwkgICAgIXBj
+aV9hY3NfcGF0aF9lbmFibGVkKHBkZXYtPmJ1cy0+c2VsZiwgTlVMTCwgUkVRX0FDU19GTEFHUykp
+DQo+ID4+ICsJCXJldHVybiBmYWxzZTsNCj4gPj4gKw0KPiA+PiArCS8qIE11bHRpLWZ1bmN0aW9u
+IGRldmljZXMgc2hvdWxkIGhhdmUgQUNTIGVuYWJsZWQuICovDQo+ID4+ICsJaWYgKHBkZXYtPm11
+bHRpZnVuY3Rpb24gJiYgIXBjaV9hY3NfZW5hYmxlZChwZGV2LCBSRVFfQUNTX0ZMQUdTKSkNCj4g
+Pj4gKwkJcmV0dXJuIGZhbHNlOw0KPiA+DQo+ID4gTG9va3MgbXkgZWFybGllciBjb21tZW50IHdh
+cyBsb3N0LCBpLmUuIHlvdSBjYW4ganVzdCB1c2UNCj4gPiBwY2lfYWNzX3BhdGhfZW5hYmxlZChw
+ZGV2KSB0byBjb3ZlciBhYm92ZSB0d28gY2hlY2tzLg0KPiANCj4gSWYgYSBkZXZpY2UgaXMgZGly
+ZWN0bHkgY29ubmVjdGVkIHRvIHRoZSByb290IGJyaWRnZSBhbmQgaXQgaXMgbm90IGFuDQo+IE1G
+RCwgZG8gd2Ugc3RpbGwgbmVlZCBBQ1Mgb24gaXQ/IFRoZSBJbnRlbCBpZHhkIGRldmljZSBzZWVt
+cyB0byBiZSBzdWNoDQo+IGEgZGV2aWNlLiBJIGhhZCBhIHF1aWNrIGNoZWNrIHdpdGggbHNwY2ks
+IGl0IGhhcyBubyBBQ1Mgc3VwcG9ydC4NCj4gDQo+IEkgcHJvYmFibHkgbWlzc2VkIGFueXRoaW5n
+Lg0KPiANCg0Kc2luZ2xlLWZ1bmN0aW9uIFJDaUVQIGRvZXNuJ3QgbmVlZCB0byBpbXBsZW1lbnQg
+QUNTIGJ1dCB0aGlzIGhhcw0KYmVlbiBjb3ZlcmVkIGJ5IHBjaV9hY3NfZW5hYmxlZCgpIGFuZCBw
+Y2lfYWNzX3BhdGhfZW5hYmxlZCgpLg0K
