@@ -2,136 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 19:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D14C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 19:27:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350787AbiDLT15 (ORCPT
+        id S1355924AbiDLT3U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 15:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        Tue, 12 Apr 2022 15:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357713AbiDLT1o (ORCPT
+        with ESMTP id S1352096AbiDLT3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 15:27:44 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D06525C60
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:25:25 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id k29so1589400pgm.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:25:25 -0700 (PDT)
+        Tue, 12 Apr 2022 15:29:12 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E103948E76
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:26:51 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id 15so10523294ljw.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:26:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mYhX4cxvNPixKiX8/O3wLDCe+0alwiuzYnrIU9ZEA4g=;
-        b=WcXC5z9iBD0s8lqEIkWuMQZUWfBIEmGdOcTDJqsddJGTc3xoDzEDte6mLkWCIDPq6H
-         YHQuTi2jz+pLaZ8K0n3h+80UsslQCJcbZCL49vv/iIQRc4MzeoUTN57u4Pk6Dtk8H9Wc
-         KDCu2a04jyUl6dKyGyJfhQgPSJPUaOxmhiyGeDPKKJPcJHNUlNymuti54JQo6/NDczvO
-         vbVuQ9W77Cy/v2QPjgtsQEF4MpP2tX3f+bHSl/ir7fHiWkRxbpG2V2V744Rx+xNFpwjR
-         XZUkPMYcqusEKPz9Uy9mX9juzRrR5tQ+Q4qiBB8T1Gj6Sx2YQ1W9au99vcD3HFtSTAwh
-         8rqw==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uhp2gyxJXafqQhufiyepsQB0fVUjcBdyLXTovCl6zhk=;
+        b=5r3BqAvHHqrB2sxGTnYHVAS69nI4KU7prcQCYLC+0giVYjXTuDzbhcWunmrmixMgiI
+         l6KAoj+O6vndDV8nCt3/S5YfZKl20CFaNrJbcc41X99anlIpoxpW/y7x7Y1M8Moxl+/V
+         1/swlz2HX63Q+NBEhUfmJQEpWAJDocdiEL2YUckMfpe3C8nZcla3i0xFsf7D/9DkQ9ru
+         eAJG41WiqDv83Av6IuPIHFgdRnfdlNyaK+rskTFa67tR2m82ZCspiqGtd/RBP6s+qYm3
+         8gfkf6bS7/JwsfLxy6EmCDw65cudX7DLbyf2e7vFavB5H90QMXcKGJMnj7FuirippGU7
+         eNJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mYhX4cxvNPixKiX8/O3wLDCe+0alwiuzYnrIU9ZEA4g=;
-        b=IGVH9N0gAAKpO5FkSU7nyQPye5JQLFDg43YJBGWHBEpIHz18DyefUZHwWV49p7uCKn
-         jpO4Chs4G7fHuiughq/vGUHIq2kg2aSa7Z33opyEOR0/vYw2Kew0MXdYl0hDKbI6Heoj
-         isL+lzcdVdgkiZsE3CqZElhpVRUprLpA2UqVoB1xlAo3mkmfFHgSnasdeqIWkRa0Ok46
-         +P8xpI+oE8HoUdVFb46/wMtfp0JbW7UTVLQqmflo1jPKpavrVe1BuSFuSdn3J5FYDLT/
-         OCXaPO1NS4yucJo4I2cWuM25WZXBLZaYLXnlwGxOZaH2pCaa3TqUgQBKXWBequRSLcxb
-         8qtg==
-X-Gm-Message-State: AOAM531/ubnKTNhzPjCtqFejotGfY8hiHIzk8YgjIWJ+7MDhnEI0w+2G
-        yeKdErz+yzLslJrTCOR0horZFg==
-X-Google-Smtp-Source: ABdhPJzeMv6SyUCfIBcUkGwkpHGFXVQVcRPNb1is3QYfwJwv0AwJdiiTP5oX9DldB+gEsO0E0yWlUQ==
-X-Received: by 2002:a05:6a00:15ca:b0:505:bf6f:2b48 with SMTP id o10-20020a056a0015ca00b00505bf6f2b48mr12169006pfu.64.1649791524446;
-        Tue, 12 Apr 2022 12:25:24 -0700 (PDT)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm38925670pfc.78.2022.04.12.12.25.23
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uhp2gyxJXafqQhufiyepsQB0fVUjcBdyLXTovCl6zhk=;
+        b=M4CVNCAAjgUcRjFPUh13eDsAu5XQoRpGyMa7FSMZe7/TNPR2+pK4tl52NS4ht5Bn4A
+         AlN5rQFPHCn/VulLwogyS2uh69cDlf2RPz7EjzmQpfYxM/IlNhaeuR5SjVGiBH9AiqMY
+         PHFD1XSLjFVr9T1vOvsq65IOx9Isp5Pikx0qQr8EaOF9Vl5KfT/iK2wy3N48BcV0YwGS
+         WiuXEknwaJHJP4sdfcp+355n7clpFJDMppc87JEfERD6OgJvymyNfJo4dBtFLOxDcIAc
+         UgoExyx4T4mjwjFH3AxUYxH/vR3LZ3JcNdXi30sUo7kjz2Y1zDMEO00Oc5CQBu91glAy
+         2s4g==
+X-Gm-Message-State: AOAM533MAG7rOku8VvSYT6AOxMm7xe74UrE330omR1+gr9kHpzB1NuyY
+        eUK0+ddnZSr097YWzcaFBjLF8A==
+X-Google-Smtp-Source: ABdhPJzNqQFsr22ki1Pj8rD15MClx6e4/Y9XgiO6Rr06pMklFiRq4YmMNE+KUcyBNh7zLIW+Z44IOA==
+X-Received: by 2002:a05:651c:1a09:b0:24a:c7df:339c with SMTP id by9-20020a05651c1a0900b0024ac7df339cmr25219403ljb.298.1649791610046;
+        Tue, 12 Apr 2022 12:26:50 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id h19-20020a056512055300b0046bb9a59e13sm309392lfl.56.2022.04.12.12.26.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 12:25:24 -0700 (PDT)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     cgroups@vger.kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Subject: [PATCH] cgroup: don't queue css_release_work if one already pending
-Date:   Tue, 12 Apr 2022 12:24:59 -0700
-Message-Id: <20220412192459.227740-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 12 Apr 2022 12:26:49 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 72EEB1030D2; Tue, 12 Apr 2022 22:28:21 +0300 (+03)
+Date:   Tue, 12 Apr 2022 22:28:21 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
+ against RLIMIT_MEMLOCK
+Message-ID: <20220412192821.xliop57sblvjx4t4@box.shutemov.name>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-5-chao.p.peng@linux.intel.com>
+ <Yk8L0CwKpTrv3Rg3@google.com>
+ <20220411153233.54ljmi7zgqovhgsn@box.shutemov.name>
+ <20220412133925.GG8013@chaop.bj.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412133925.GG8013@chaop.bj.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a corrupted list bug scenario that can be triggered from
-cgroup css_create(). The reproduces writes to cgroup.subtree_control
-file, which invokes cgroup_apply_control_enable(), css_create(), and
-css_populate_dir(), which then randomly fails with a fault injected -ENOMEM.
-In such scenario the css_create() error path rcu enqueues css_free_rwork_fn
-work for an css->refcnt initialized with css_release() destructor,
-and there is a chance that the css_release() function will be invoked
-for a cgroup_subsys_state, for which a destroy_work has already been
-queued via css_create() error path. This causes a list_add corruption
-as can be seen in the syzkaller report [1].
-This can be avoided by adding a check to css_release() that checks
-if it has already been enqueued.
+On Tue, Apr 12, 2022 at 09:39:25PM +0800, Chao Peng wrote:
+> On Mon, Apr 11, 2022 at 06:32:33PM +0300, Kirill A. Shutemov wrote:
+> > On Thu, Apr 07, 2022 at 04:05:36PM +0000, Sean Christopherson wrote:
+> > > Hmm, shmem_writepage() already handles SHM_F_INACCESSIBLE by rejecting the swap, so
+> > > maybe it's just the page migration path that needs to be updated?
+> > 
+> > My early version prevented migration with -ENOTSUPP for
+> > address_space_operations::migratepage().
+> > 
+> > What's wrong with that approach?
+> 
+> I previously thought migratepage will not be called since we already
+> marked the pages as UNMOVABLE, sounds not correct?
 
-[1] https://syzkaller.appspot.com/bug?id=e26e54d6eac9d9fb50b221ec3e4627b327465dbd
+Do you mean missing __GFP_MOVABLE? I can be wrong, but I don't see that it
+direclty affects if the page is migratable. It is a hint to page allocator
+to group unmovable pages to separate page block and impove availablity of
+higher order pages this way. Page allocator tries to allocate unmovable
+pages from pages blocks that already have unmovable pages.
 
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Zefan Li <lizefan.x@bytedance.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: <cgroups@vger.kernel.org>
-Cc: <netdev@vger.kernel.org>
-Cc: <bpf@vger.kernel.org>
-Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
-Reported-by: syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Fixes: 8f36aaec9c92 ("cgroup: Use rcu_work instead of explicit rcu and work item")
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
- kernel/cgroup/cgroup.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index adb820e98f24..9ae2de29f8c9 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -5210,8 +5210,11 @@ static void css_release(struct percpu_ref *ref)
- 	struct cgroup_subsys_state *css =
- 		container_of(ref, struct cgroup_subsys_state, refcnt);
- 
--	INIT_WORK(&css->destroy_work, css_release_work_fn);
--	queue_work(cgroup_destroy_wq, &css->destroy_work);
-+	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT,
-+			      work_data_bits(&css->destroy_work))) {
-+		INIT_WORK(&css->destroy_work, css_release_work_fn);
-+		queue_work(cgroup_destroy_wq, &css->destroy_work);
-+	}
- }
- 
- static void init_and_link_css(struct cgroup_subsys_state *css,
 -- 
-2.35.1
+ Kirill A. Shutemov
