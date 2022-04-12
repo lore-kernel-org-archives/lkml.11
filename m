@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB93C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3CDC3527C
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355348AbiDLIIB (ORCPT
+        id S1355231AbiDLIHg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        Tue, 12 Apr 2022 04:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355026AbiDLH1F (ORCPT
+        with ESMTP id S1354787AbiDLH0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD4147AD4;
-        Tue, 12 Apr 2022 00:07:02 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B70F4704D;
+        Tue, 12 Apr 2022 00:06:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B0BBB81A8F;
-        Tue, 12 Apr 2022 07:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71DC1C385AB;
-        Tue, 12 Apr 2022 07:06:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F74616B3;
+        Tue, 12 Apr 2022 07:06:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42CD2C385A6;
+        Tue, 12 Apr 2022 07:06:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747219;
-        bh=8NBQ5K9uRRSfDU5tznudwhA9E3UIsrOYnRLVdJ8Ujh8=;
+        s=korg; t=1649747198;
+        bh=XwUz5NgVuhsGb/iOf7TIf0swvsE/bb+9ol3LL0KyTCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rVKSaCkgjGT7H4P61RXmdl7oR7nkgpakhEeB2yJ86P45rRPv9uqM2YK1rdAoU+66B
-         GggWAipDgUeEq5AnPfN2494otGLNNfTu+Pw+COrrQQ8YHAnNLu4taykJXYVZnWGFeH
-         Ebm8wV+MQIsg51JdaSavK9eu5QtwnQGYa/jxhAWM=
+        b=0KbzelUKoU3NMLkf0ThG6UZ9ss4aDgLOWQQnIbDhBilVPHr8DgW1T1tgAPTcsrBfJ
+         CFMEOxz2vmNwn9xi49E8WkJvBrQhEkFYEzA9I8iLBquHN7Z9K0xaiVQoXdeIGlvPg/
+         Rg19tiUksSQ6GFuf26zxcOPfimOt/O5V3r8qxV+U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        Justin Forbes <jforbes@redhat.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Rafael Aquini <aquini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 284/285] mm/sparsemem: fix mem_section will never be NULL gcc 12 warning
-Date:   Tue, 12 Apr 2022 08:32:21 +0200
-Message-Id: <20220412062951.847943070@linuxfoundation.org>
+        stable@vger.kernel.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "Erhard F." <erhard_f@mailbox.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.16 277/285] Revert "powerpc: Set max_mapnr correctly"
+Date:   Tue, 12 Apr 2022 08:32:14 +0200
+Message-Id: <20220412062951.648724736@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -54,77 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-commit a431dbbc540532b7465eae4fc8b56a85a9fc7d17 upstream.
+commit 1ff5c8e8c835e8a81c0868e3050c76563dd56a2c upstream.
 
-The gcc 12 compiler reports a "'mem_section' will never be NULL" warning
-on the following code:
+This reverts commit 602946ec2f90d5bd965857753880db29d2d9a1e9.
 
-    static inline struct mem_section *__nr_to_section(unsigned long nr)
-    {
-    #ifdef CONFIG_SPARSEMEM_EXTREME
-        if (!mem_section)
-                return NULL;
-    #endif
-        if (!mem_section[SECTION_NR_TO_ROOT(nr)])
-                return NULL;
-       :
+If CONFIG_HIGHMEM is enabled, no highmem will be added with max_mapnr
+set to max_low_pfn, see mem_init():
 
-It happens with CONFIG_SPARSEMEM_EXTREME off.  The mem_section definition
-is
+  for (pfn = highmem_mapnr; pfn < max_mapnr; ++pfn) {
+        ...
+        free_highmem_page();
+  }
 
-    #ifdef CONFIG_SPARSEMEM_EXTREME
-    extern struct mem_section **mem_section;
-    #else
-    extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
-    #endif
+Now that virt_addr_valid() has been fixed in the previous commit, we can
+revert the change to max_mapnr.
 
-In the !CONFIG_SPARSEMEM_EXTREME case, mem_section is a static
-2-dimensional array and so the check "!mem_section[SECTION_NR_TO_ROOT(nr)]"
-doesn't make sense.
-
-Fix this warning by moving the "!mem_section[SECTION_NR_TO_ROOT(nr)]"
-check up inside the CONFIG_SPARSEMEM_EXTREME block and adding an
-explicit NR_SECTION_ROOTS check to make sure that there is no
-out-of-bound array access.
-
-Link: https://lkml.kernel.org/r/20220331180246.2746210-1-longman@redhat.com
-Fixes: 3e347261a80b ("sparsemem extreme implementation")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Reported-by: Justin Forbes <jforbes@redhat.com>
-Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Rafael Aquini <aquini@redhat.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 602946ec2f90 ("powerpc: Set max_mapnr correctly")
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reported-by: Erhard F. <erhard_f@mailbox.org>
+[mpe: Update change log to reflect series reordering]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220406145802.538416-2-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/mmzone.h |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ arch/powerpc/mm/mem.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1389,13 +1389,16 @@ static inline unsigned long *section_to_
- 
- static inline struct mem_section *__nr_to_section(unsigned long nr)
- {
-+	unsigned long root = SECTION_NR_TO_ROOT(nr);
-+
-+	if (unlikely(root >= NR_SECTION_ROOTS))
-+		return NULL;
-+
- #ifdef CONFIG_SPARSEMEM_EXTREME
--	if (!mem_section)
-+	if (!mem_section || !mem_section[root])
- 		return NULL;
+--- a/arch/powerpc/mm/mem.c
++++ b/arch/powerpc/mm/mem.c
+@@ -256,7 +256,7 @@ void __init mem_init(void)
  #endif
--	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
--		return NULL;
--	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
-+	return &mem_section[root][nr & SECTION_ROOT_MASK];
- }
- extern size_t mem_section_usage_size(void);
+ 
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+-	set_max_mapnr(max_low_pfn);
++	set_max_mapnr(max_pfn);
+ 
+ 	kasan_late_init();
  
 
 
