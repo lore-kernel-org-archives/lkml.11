@@ -2,148 +2,380 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59622C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE155C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229712AbiDLXXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
+        id S229608AbiDLXXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiDLXWo (ORCPT
+        with ESMTP id S229767AbiDLXW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:22:44 -0400
-Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCA46376;
-        Tue, 12 Apr 2022 15:51:55 -0700 (PDT)
-Received: by mail-vs1-xe36.google.com with SMTP id n5so28398vsc.4;
-        Tue, 12 Apr 2022 15:51:55 -0700 (PDT)
+        Tue, 12 Apr 2022 19:22:57 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCC1CF4B6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:09:22 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id a10so228841qvm.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:09:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ezdzc9fwB75FHs1RJU/8xMrtLkAqryX8e9lSQiCG6+o=;
-        b=cU9m/K7Eni83YVgmrXwmtrkQj72C5hzDjLWdtTFybmcwnahHAfZEs0iJx1d8hNPrL9
-         xLycI8nlRheQ1e3GZSFw+o8gPaVGVlgIlQ5Ip3jUXrCXhK2FUZtv2Oco1mOXlR0rl07a
-         D1x8VEftu5H+lm98oDGx1Z6quG27tqLunILzlWPwv9r+INhfInQ3G1tjUhJa84jztczf
-         wU7Q2I06GHcTllXmnxqHBjlkF4E3P5+yLNQM38rUAzaUFloU0b/oP9wvTMj7SaXTSyvl
-         psRBO6sjwXyjtAKMXk+JBM2B4Gbw5o+wY3ubKZkov1HV6cnIvH2yWDgQk1mKp00kX6+F
-         urOg==
+        d=cs-iitr-ac-in.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=ZPJRBS7EzVsf+onsY2rqgdhw/p5Dje+tIdQ4sGX/NOI=;
+        b=Y/EkMUos4x9/7KMQS9R8H1jARGXB0cGwwmLvqhQTlyTSPT0umiwsD9oZNQLoh/iQHE
+         ddGy2nLcnVT+sVYMKhsQXeSap60GmGZCczgiuU6gaUTIOF77mhyrk2QMBcaUZR8lu5Vi
+         /1VXYzpjWogWKEzPT8dgN6oy5E6u2G/dv/GYZR2T+KssXrBiFbYzMPAfXm0A+0JyJaHu
+         6LuWltlr9TymGhCsoqfUZ4Y4UgA+rBhCkDKs3eUJKsfDubHQIRrrRWaptI7F+ozajn6c
+         bYE4vaWLmIJ1EWRRvQ5tLN59WGebL0+wRMvD6Uk9ee5BHeT3HUSGIWZFphGY+Nysd9FM
+         XXwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ezdzc9fwB75FHs1RJU/8xMrtLkAqryX8e9lSQiCG6+o=;
-        b=Ms5KjXn+BzqAI4G07rSPr/NLU1Pn16+Qk8cGsEzKKIftJGyamedcoPrfk4kvbId6tg
-         90VCCB8xGQWSchpGamRZqo0rTDhrEICR9WrBJT/6Gl/dNTHdecE7oGVJKW2ER18D+4SR
-         BBuWvluHJ8M+W1vVP746Oigvr+DKo3+sbgeO49gCF3Mto7lGWlfCnIe5L7AbBhG8/9Y0
-         DLCSdWkMp73lJ2BxeNP6etu2/vYCgIYAwbLfZxkK4my9r6SsvNfyHdmk3yjbWdEWHadl
-         bc9he0U5nKSYmTXOezUPQt/xnrw39+keOCZJlsX0q8zDOydPgdPw82qxA/36dY0RNtOH
-         +XiA==
-X-Gm-Message-State: AOAM5324c5ypZFP8OWzLf9n8kvOGQGs3FaJR7SVZHk389jYjPGQZoO/3
-        l+uSfRycX8TXeLs7HEnTD4sSVImO/oDgWxQsGpzS+Bbypz4=
-X-Google-Smtp-Source: ABdhPJzFmqDl3FEyc+heWcRNc23/etW3e72ExFo4mTnsv5LYt8gIlxwoTVFLMaA+QTD9Uvi6pY0ytv9F1xXaDufGqkA=
-X-Received: by 2002:a67:f693:0:b0:328:295b:3077 with SMTP id
- n19-20020a67f693000000b00328295b3077mr6317205vso.80.1649803914668; Tue, 12
- Apr 2022 15:51:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-5-jolsa@kernel.org>
- <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com> <20220412094923.0abe90955e5db486b7bca279@kernel.org>
-In-Reply-To: <20220412094923.0abe90955e5db486b7bca279@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 12 Apr 2022 15:51:43 -0700
-Message-ID: <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
-Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ZPJRBS7EzVsf+onsY2rqgdhw/p5Dje+tIdQ4sGX/NOI=;
+        b=4nJWIi0lH5LAXwpYzo0GSkj67UPozrnUIPP2HXuhnytdDiw+Mh9HSfk2HBo/kF9+VL
+         4x1PS0GllGXm8WQw8v+Htx9TUKygrdpM5AkEbYvQ3Eyq1YNNCSE4T6rC4FmFW3JLEZNS
+         C9AAmzGnOP72Skt8+21CA3tMGIGmdcIH4pm11wfq04cC09sqMc5MPHmYW7GHUXxbGWaR
+         GcWDoL1j9xmhQMDTpIQI7T6a4ezni+ePgzyJTTY1q4ULb59yC2g1Fvy7/NPezkzy2SmE
+         8Cf2YBsgHAg+yU9Xd9WEYjmG1xCL4DUU39r/hLRF5+3Y/cLL7OCUJq9Y0BXZlk704iko
+         Xt4g==
+X-Gm-Message-State: AOAM532beyfj4Dzue5ZVttmNctsYdl1BVG+Ywr5IGFFSfwOFBo3azp7C
+        SBjs6b80ADA5BsSPH/abyyNKFUw4wN6IeI10b8M=
+X-Google-Smtp-Source: ABdhPJzGTF8aYsoEDEOTseo8VEd8JLcz6GrPhf+S/G26uiMMWSxX3gykmd+5Y510yUx4T1sxlk093Q==
+X-Received: by 2002:a17:903:110c:b0:14d:8859:5c8 with SMTP id n12-20020a170903110c00b0014d885905c8mr39098969plh.156.1649799380096;
+        Tue, 12 Apr 2022 14:36:20 -0700 (PDT)
+Received: from mahak-Inspiron-7570.iitr.ac.in ([103.37.201.167])
+        by smtp.googlemail.com with ESMTPSA id y3-20020a056a00190300b004fa2411bb92sm41915859pfi.93.2022.04.12.14.36.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 14:36:19 -0700 (PDT)
+From:   Mahak Gupta <mahak_g@cs.iitr.ac.in>
+To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Cc:     Mahak Gupta <mahak_g@cs.iitr.ac.in>
+Subject: [PATCH v2] staging: r8188eu: correct multiple misspellings in driver r8188eu
+Date:   Wed, 13 Apr 2022 03:05:39 +0530
+Message-Id: <20220412213539.2945-1-mahak_g@cs.iitr.ac.in>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 5:49 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> On Mon, 11 Apr 2022 15:15:40 -0700
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> > > +#define DEBUGFS "/sys/kernel/debug/tracing/"
-> > > +
-> > > +static int get_syms(char ***symsp, size_t *cntp)
-> > > +{
-> > > +       size_t cap = 0, cnt = 0, i;
-> > > +       char *name, **syms = NULL;
-> > > +       struct hashmap *map;
-> > > +       char buf[256];
-> > > +       FILE *f;
-> > > +       int err;
-> > > +
-> > > +       /*
-> > > +        * The available_filter_functions contains many duplicates,
-> > > +        * but other than that all symbols are usable in kprobe multi
-> > > +        * interface.
-> > > +        * Filtering out duplicates by using hashmap__add, which won't
-> > > +        * add existing entry.
-> > > +        */
-> > > +       f = fopen(DEBUGFS "available_filter_functions", "r");
-> >
-> > I'm really curious how did you manage to attach to everything in
-> > available_filter_functions because when I'm trying to do that I fail.
-> > available_filter_functions has a bunch of functions that should not be
-> > attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
-> >
-> >   void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
->
-> Hmm, this sounds like a bug in ftrace side. IIUC, the
-> "available_filter_functions" only shows the functions which is NOT
-> instrumented by mcount, we should not see any notrace functions on it.
->
-> Technically, this is done by __no_instrument_function__ attribute.
->
-> #if defined(CC_USING_HOTPATCH)
-> #define notrace                 __attribute__((hotpatch(0, 0)))
-> #elif defined(CC_USING_PATCHABLE_FUNCTION_ENTRY)
-> #define notrace                 __attribute__((patchable_function_entry(0, 0)))
-> #else
-> #define notrace                 __attribute__((__no_instrument_function__))
-> #endif
->
-> >
-> > So first, curious what I am doing wrong or rather why it succeeds in
-> > your case ;)
-> >
-> > But second, just wanted to plea to "fix" available_filter_functions to
-> > not list stuff that should not be attachable. Can you please take a
-> > look and checks what's going on there and why do we have notrace
-> > functions (and what else should *NOT* be there)?
->
-> Can you share how did you reproduce the issue? I'll check it.
->
+Fix multiple spelling errors reported by checkpatch.
 
-$ sudo cat /sys/kernel/debug/tracing/available_filter_functions | grep
-__bpf_tramp
-__bpf_tramp_image_release
-__bpf_tramp_image_put_rcu_tasks
-__bpf_tramp_image_put_rcu
-__bpf_tramp_image_put_deferred
-__bpf_tramp_exit
+Signed-off-by: Mahak Gupta <mahak_g@cs.iitr.ac.in>
+---
+ drivers/staging/r8188eu/core/rtw_ioctl_set.c |  2 +-
+ drivers/staging/r8188eu/core/rtw_mlme.c      | 10 +++---
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c  | 36 ++++++++++----------
+ drivers/staging/r8188eu/core/rtw_recv.c      |  8 ++---
+ drivers/staging/r8188eu/core/rtw_xmit.c      |  8 ++---
+ 5 files changed, 32 insertions(+), 32 deletions(-)
 
+diff --git a/drivers/staging/r8188eu/core/rtw_ioctl_set.c b/drivers/staging/r8188eu/core/rtw_ioctl_set.c
+index 4b78e42d180d..9df6fb122bc5 100644
+--- a/drivers/staging/r8188eu/core/rtw_ioctl_set.c
++++ b/drivers/staging/r8188eu/core/rtw_ioctl_set.c
+@@ -290,7 +290,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
+ 
+ 		if ((*pold_state == Ndis802_11Infrastructure) || (*pold_state == Ndis802_11IBSS)) {
+ 			if (check_fwstate(pmlmepriv, _FW_LINKED))
+-				rtw_indicate_disconnect(padapter); /* will clr Linked_state; before this function, we must have chked whether  issue dis-assoc_cmd or not */
++				rtw_indicate_disconnect(padapter); /* will clr Linked_state; before this function, we must have checked whether  issue dis-assoc_cmd or not */
+ 	       }
+ 
+ 		*pold_state = networktype;
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index c90f36dee1ea..a2b42779bc87 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -193,7 +193,7 @@ void _rtw_free_network_nolock(struct	mlme_priv *pmlmepriv, struct wlan_network *
+ /*
+ 	return the wlan_network with the matching addr
+ 
+-	Shall be calle under atomic context... to avoid possible racing condition...
++	Shall be called under atomic context... to avoid possible racing condition...
+ */
+ struct wlan_network *_rtw_find_network(struct __queue *scanned_queue, u8 *addr)
+ {
+@@ -329,7 +329,7 @@ void rtw_free_network_queue(struct adapter *dev, u8 isfreeall)
+ /*
+ 	return the wlan_network with the matching addr
+ 
+-	Shall be calle under atomic context... to avoid possible racing condition...
++	Shall be called under atomic context... to avoid possible racing condition...
+ */
+ struct	wlan_network *rtw_find_network(struct __queue *scanned_queue, u8 *addr)
+ {
+@@ -912,7 +912,7 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct adapter *padapter, str
+ 		}
+ 		/* 	Commented by Albert 2012/07/21 */
+ 		/* 	When doing the WPS, the wps_ie_len won't equal to 0 */
+-		/* 	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
++		/* 	And the Wi-Fi driver shouldn't allow the data packet to be transmitted. */
+ 		if (padapter->securitypriv.wps_ie_len != 0) {
+ 			psta->ieee8021x_blocked = true;
+ 			padapter->securitypriv.wps_ie_len = 0;
+@@ -1304,7 +1304,7 @@ void rtw_stadel_event_callback(struct adapter *adapter, u8 *pbuf)
+ }
+ 
+ /*
+-* _rtw_join_timeout_handler - Timeout/faliure handler for CMD JoinBss
++* _rtw_join_timeout_handler - Timeout/failure handler for CMD JoinBss
+ * @adapter: pointer to struct adapter structure
+ */
+ void _rtw_join_timeout_handler (struct adapter *adapter)
+@@ -1339,7 +1339,7 @@ void _rtw_join_timeout_handler (struct adapter *adapter)
+ }
+ 
+ /*
+-* rtw_scan_timeout_handler - Timeout/Faliure handler for CMD SiteSurvey
++* rtw_scan_timeout_handler - Timeout/Failure handler for CMD SiteSurvey
+ * @adapter: pointer to struct adapter structure
+ */
+ void rtw_scan_timeout_handler (struct adapter *adapter)
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 474391bf7cb5..fd445aa09377 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -156,7 +156,7 @@ static struct rt_channel_plan_map	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
+ 	{0x03},	/* 0x41, RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN_2G */
+ };
+ 
+-static struct rt_channel_plan_map RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03}; /* use the conbination for max channel numbers */
++static struct rt_channel_plan_map RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03}; /* use the combination for max channel numbers */
+ 
+ /*
+  * Search the @param channel_num in given @param channel_set
+@@ -1733,7 +1733,7 @@ void issue_p2p_GO_request(struct adapter *padapter, u8 *raddr)
+ 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
+ 
+ 	/*	Commented by Albert 20110306 */
+-	/*	According to the P2P Specification, the group negoitation request frame should contain 9 P2P attributes */
++	/*	According to the P2P Specification, the group negotiation request frame should contain 9 P2P attributes */
+ 	/*	1. P2P Capability */
+ 	/*	2. Group Owner Intent */
+ 	/*	3. Configuration Timeout */
+@@ -2088,7 +2088,7 @@ static void issue_p2p_GO_response(struct adapter *padapter, u8 *raddr, u8 *frame
+ 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
+ 
+ 	/*	Commented by Albert 20100908 */
+-	/*	According to the P2P Specification, the group negoitation response frame should contain 9 P2P attributes */
++	/*	According to the P2P Specification, the group negotiation response frame should contain 9 P2P attributes */
+ 	/*	1. Status */
+ 	/*	2. P2P Capability */
+ 	/*	3. Group Owner Intent */
+@@ -2384,7 +2384,7 @@ static void issue_p2p_GO_confirm(struct adapter *padapter, u8 *raddr, u8 result)
+ 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
+ 
+ 	/*	Commented by Albert 20110306 */
+-	/*	According to the P2P Specification, the group negoitation request frame should contain 5 P2P attributes */
++	/*	According to the P2P Specification, the group negotiation request frame should contain 5 P2P attributes */
+ 	/*	1. Status */
+ 	/*	2. P2P Capability */
+ 	/*	3. Operating Channel */
+@@ -4009,7 +4009,7 @@ struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv)
+ 
+ /****************************************************************************
+ 
+-Following are some TX fuctions for WiFi MLME
++Following are some TX functions for WiFi MLME
+ 
+ *****************************************************************************/
+ 
+@@ -4611,7 +4611,7 @@ int issue_probereq_ex(struct adapter *padapter, struct ndis_802_11_ssid *pssid,
+ 	return ret;
+ }
+ 
+-/*  if psta == NULL, indiate we are station(client) now... */
++/*  if psta == NULL, indicate we are station(client) now... */
+ void issue_auth(struct adapter *padapter, struct sta_info *psta, unsigned short status)
+ {
+ 	struct xmit_frame *pmgntframe;
+@@ -5010,7 +5010,7 @@ void issue_assocreq(struct adapter *padapter)
+ 				if (!padapter->registrypriv.wifi_spec) {
+ 					/* Commented by Kurt 20110629 */
+ 					/* In some older APs, WPS handshake */
+-					/* would be fail if we append vender extensions informations to AP */
++					/* would be fail if we append vender extensions information to AP */
+ 					if (!memcmp(pIE->data, WPS_OUI, 4))
+ 						pIE->Length = 14;
+ 				}
+@@ -5165,7 +5165,7 @@ void issue_assocreq(struct adapter *padapter)
+ 		kfree(pmlmepriv->assoc_req);
+ }
+ 
+-/* when wait_ack is ture, this function shoule be called at process context */
++/* when wait_ack is true, this function should be called at process context */
+ static int _issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int power_mode, int wait_ack)
+ {
+ 	int ret = _FAIL;
+@@ -5234,7 +5234,7 @@ static int _issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned
+ 	return ret;
+ }
+ 
+-/* when wait_ms > 0 , this function shoule be called at process context */
++/* when wait_ms > 0 , this function should be called at process context */
+ /* da == NULL for station mode */
+ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms)
+ {
+@@ -5243,7 +5243,7 @@ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int pow
+ 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+ 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
+ 
+-	/* da == NULL, assum it's null data for sta to ap*/
++	/* da == NULL, assume it's null data for sta to ap*/
+ 	if (!da)
+ 		da = get_my_bssid(&pmlmeinfo->network);
+ 
+@@ -5267,7 +5267,7 @@ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int pow
+ 	return ret;
+ }
+ 
+-/* when wait_ack is ture, this function shoule be called at process context */
++/* when wait_ack is true, this function should be called at process context */
+ static int _issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int wait_ack)
+ {
+ 	int ret = _FAIL;
+@@ -5340,7 +5340,7 @@ static int _issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16
+ 	return ret;
+ }
+ 
+-/* when wait_ms > 0 , this function shoule be called at process context */
++/* when wait_ms > 0 , this function should be called at process context */
+ /* da == NULL for station mode */
+ int issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int try_cnt, int wait_ms)
+ {
+@@ -5349,7 +5349,7 @@ int issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int
+ 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+ 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
+ 
+-	/* da == NULL, assum it's null data for sta to ap*/
++	/* da == NULL, assume it's null data for sta to ap*/
+ 	if (!da)
+ 		da = get_my_bssid(&pmlmeinfo->network);
+ 
+@@ -5790,7 +5790,7 @@ void clear_beacon_valid_bit(struct adapter *adapter)
+ 
+ /****************************************************************************
+ 
+-Following are some utitity fuctions for WiFi MLME
++Following are some utility functions for WiFi MLME
+ 
+ *****************************************************************************/
+ 
+@@ -5888,7 +5888,7 @@ void site_survey(struct adapter *padapter)
+ 		} else {
+ 			/*  20100721:Interrupt scan operation here. */
+ 			/*  For SW antenna diversity before link, it needs to switch to another antenna and scan again. */
+-			/*  It compares the scan result and select beter one to do connection. */
++			/*  It compares the scan result and select better one to do connection. */
+ 			if (AntDivBeforeLink8188E(padapter)) {
+ 				pmlmeext->sitesurvey_res.bss_cnt = 0;
+ 				pmlmeext->sitesurvey_res.channel_idx = -1;
+@@ -6109,7 +6109,7 @@ void start_create_ibss(struct adapter *padapter)
+ 	/* update wireless mode */
+ 	update_wireless_mode(padapter);
+ 
+-	/* udpate capability */
++	/* update capability */
+ 	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
+ 	update_capinfo(padapter, caps);
+ 	if (caps & cap_IBSS) {/* adhoc master */
+@@ -6160,7 +6160,7 @@ void start_clnt_join(struct adapter *padapter)
+ 	/* update wireless mode */
+ 	update_wireless_mode(padapter);
+ 
+-	/* udpate capability */
++	/* update capability */
+ 	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
+ 	update_capinfo(padapter, caps);
+ 	if (caps & cap_ESS) {
+@@ -6740,7 +6740,7 @@ void mlmeext_joinbss_event_callback(struct adapter *padapter, int join_res)
+ 	/* BCN interval */
+ 	rtw_write16(padapter, REG_BCN_INTERVAL, pmlmeinfo->bcn_interval);
+ 
+-	/* udpate capability */
++	/* update capability */
+ 	update_capinfo(padapter, pmlmeinfo->capability);
+ 
+ 	/* WMM, Update EDCA param */
+diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
+index 91a6e0f035f4..a3f71697f6d7 100644
+--- a/drivers/staging/r8188eu/core/rtw_recv.c
++++ b/drivers/staging/r8188eu/core/rtw_recv.c
+@@ -877,7 +877,7 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
+ 			if (psta->sleepq_len == 0) {
+ 				pstapriv->tim_bitmap &= ~BIT(psta->aid);
+ 
+-				/* upate BCN for TIM IE */
++				/* update BCN for TIM IE */
+ 				/* update_BCNTIM(padapter); */
+ 				update_beacon(padapter, _TIM_IE_, NULL, false);
+ 			}
+@@ -891,7 +891,7 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
+ 
+ 				pstapriv->tim_bitmap &= ~BIT(psta->aid);
+ 
+-				/* upate BCN for TIM IE */
++				/* update BCN for TIM IE */
+ 				/* update_BCNTIM(padapter); */
+ 				update_beacon(padapter, _TIM_IE_, NULL, false);
+ 			}
+@@ -1810,13 +1810,13 @@ void rtw_signal_stat_timer_hdl(struct timer_list *t)
+ 	} else {
+ 		if (recvpriv->signal_strength_data.update_req == 0) {/*  update_req is clear, means we got rx */
+ 			avg_signal_strength = recvpriv->signal_strength_data.avg_val;
+-			/*  after avg_vals are accquired, we can re-stat the signal values */
++			/*  after avg_vals are acquired, we can re-stat the signal values */
+ 			recvpriv->signal_strength_data.update_req = 1;
+ 		}
+ 
+ 		if (recvpriv->signal_qual_data.update_req == 0) {/*  update_req is clear, means we got rx */
+ 			avg_signal_qual = recvpriv->signal_qual_data.avg_val;
+-			/*  after avg_vals are accquired, we can re-stat the signal values */
++			/*  after avg_vals are acquired, we can re-stat the signal values */
+ 			recvpriv->signal_qual_data.update_req = 1;
+ 		}
+ 
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index 029b994e1b71..2a686b5c65b1 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -958,7 +958,7 @@ s32 rtw_xmitframe_coalesce(struct adapter *padapter, struct sk_buff *pkt, struct
+ 		}
+ 
+ 		if (bmcst) {
+-			/*  don't do fragment to broadcat/multicast packets */
++			/*  don't do fragment to broadcast/multicast packets */
+ 			mem_sz = _rtw_pktfile_read(&pktfile, pframe, pattrib->pktlen);
+ 		} else {
+ 			mem_sz = _rtw_pktfile_read(&pktfile, pframe, mpdu_len);
+@@ -1768,7 +1768,7 @@ int xmitframe_enqueue_for_sleeping_sta(struct adapter *padapter, struct xmit_fra
+ 			pstapriv->tim_bitmap |= BIT(0);/*  */
+ 			pstapriv->sta_dz_bitmap |= BIT(0);
+ 
+-			update_beacon(padapter, _TIM_IE_, NULL, false);/* tx bc/mc packets after upate bcn */
++			update_beacon(padapter, _TIM_IE_, NULL, false);/* tx bc/mc packets after update bcn */
+ 
+ 			ret = true;
+ 		}
+@@ -1818,7 +1818,7 @@ int xmitframe_enqueue_for_sleeping_sta(struct adapter *padapter, struct xmit_fra
+ 				pstapriv->tim_bitmap |= BIT(psta->aid);
+ 
+ 				if (psta->sleepq_len == 1) {
+-					/* upate BCN for TIM IE */
++					/* update BCN for TIM IE */
+ 					update_beacon(padapter, _TIM_IE_, NULL, false);
+ 				}
+ 			}
+@@ -2087,7 +2087,7 @@ void xmit_delivery_enabled_frames(struct adapter *padapter, struct sta_info *pst
+ 		if ((psta->sleepq_ac_len == 0) && (!psta->has_legacy_ac) && (wmmps_ac)) {
+ 			pstapriv->tim_bitmap &= ~BIT(psta->aid);
+ 
+-			/* upate BCN for TIM IE */
++			/* update BCN for TIM IE */
+ 			update_beacon(padapter, _TIM_IE_, NULL, false);
+ 		}
+ 	}
+-- 
+2.17.1
 
-__bpf_tramp_exit is notrace function, so shouldn't be here. Notice
-that __bpf_tramp_enter (which is also notrace) are not in
-available_filter_functions.
-
-So it's quite bizarre and inconsistent.
-
-> Thank you,
->
->
-> --
-> Masami Hiramatsu <mhiramat@kernel.org>
