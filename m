@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17EEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C77EDC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376447AbiDLJUv (ORCPT
+        id S1353113AbiDLJSC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        Tue, 12 Apr 2022 05:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356884AbiDLHjb (ORCPT
+        with ESMTP id S1357683AbiDLHki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFCB4AE0A;
-        Tue, 12 Apr 2022 00:10:24 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC5837A2B;
+        Tue, 12 Apr 2022 00:16:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FB69B81A8F;
-        Tue, 12 Apr 2022 07:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF773C385A5;
-        Tue, 12 Apr 2022 07:10:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B792F6171C;
+        Tue, 12 Apr 2022 07:16:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45C1C385A5;
+        Tue, 12 Apr 2022 07:16:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747421;
-        bh=JgWjmrDTOJos8NVOPw83gcBgwqQRunXW+dnqIQpg6OI=;
+        s=korg; t=1649747800;
+        bh=5FCLa8SESKUYBJ4ATRRqzp9RiCWwoTSFcXkravvhKjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8LJirYkw9uiXAoxV/Dc38XYnqR8R0UcpsfVI8B0bYcB/pRm3lgxp8+kibPATwfDL
-         CWPxGDYfoCct4sbveLiowVDOuTJdxYafS27sYkgtIgbWeCE4czFFHM1KuhFu2lo0ke
-         wsJDCAcJDhs0t8OY2dF072r7WmQvNggVkICvKVN0=
+        b=zw4olPOLZrsVCcfDOlxexaW/zcADpB3nuXEOOfceycSPi1Ds7tT/XGTDEFSVuigZo
+         MjdVoRAYzanLCV5HHDTaV0WeTRS4afSro7MS75c2pd6Ic6vjBqmHwJlzDHNSb101R3
+         L8OCXe1XCYgWi9DEhWy3GDU15EhYMq1DeiiymQ2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 074/343] PCI: pciehp: Add Qualcomm quirk for Command Completed erratum
-Date:   Tue, 12 Apr 2022 08:28:12 +0200
-Message-Id: <20220412062953.236867554@linuxfoundation.org>
+Subject: [PATCH 5.17 211/343] mctp: Fix check for dev_hard_header() result
+Date:   Tue, 12 Apr 2022 08:30:29 +0200
+Message-Id: <20220412062957.437294374@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,42 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Matt Johnston <matt@codeconstruct.com.au>
 
-[ Upstream commit 9f72d4757cbe4d1ed669192f6d23817c9e437c4b ]
+[ Upstream commit 60be976ac45137657b7b505d7e0d44d0e51accb7 ]
 
-The Qualcomm PCI bridge device (Device ID 0x0110) found in chipsets such as
-SM8450 does not set the Command Completed bit unless writes to the Slot
-Command register change "Control" bits.
+dev_hard_header() returns the length of the header, so
+we need to test for negative errors rather than non-zero.
 
-This results in timeouts like below:
-
-  pcieport 0001:00:00.0: pciehp: Timeout on hotplug command 0x03c0 (issued 2020 msec ago)
-
-Add the device to the Command Completed quirk to mark commands "completed"
-immediately unless they change the "Control" bits.
-
-Link: https://lore.kernel.org/r/20220210145003.135907-1-manivannan.sadhasivam@linaro.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Fixes: 889b7da23abf ("mctp: Add initial routing framework")
+Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/mctp/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
-index 85dce560831a..040ae076ec0e 100644
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -1086,6 +1086,8 @@ static void quirk_cmd_compl(struct pci_dev *pdev)
- }
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
- 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
-+DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0110,
-+			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0400,
- 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0401,
+diff --git a/net/mctp/route.c b/net/mctp/route.c
+index 05fbd318eb98..d47438f5233d 100644
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -507,7 +507,7 @@ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
+ 
+ 	rc = dev_hard_header(skb, skb->dev, ntohs(skb->protocol),
+ 			     daddr, skb->dev->dev_addr, skb->len);
+-	if (rc) {
++	if (rc < 0) {
+ 		kfree_skb(skb);
+ 		return -EHOSTUNREACH;
+ 	}
 -- 
 2.35.1
 
