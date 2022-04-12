@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0057EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243900AbiDLAuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S232584AbiDLAuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242844AbiDLAra (ORCPT
+        with ESMTP id S243104AbiDLArj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:47:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB10D140FC;
-        Mon, 11 Apr 2022 17:45:12 -0700 (PDT)
+        Mon, 11 Apr 2022 20:47:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0636713E9F;
+        Mon, 11 Apr 2022 17:45:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 263A7617F1;
-        Tue, 12 Apr 2022 00:45:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E27FC385A9;
-        Tue, 12 Apr 2022 00:45:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 963F2617E8;
+        Tue, 12 Apr 2022 00:45:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEAEBC385A3;
+        Tue, 12 Apr 2022 00:45:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724311;
-        bh=KccWkGMsmWZDcpmtaeXrM8wNO5HV5j5n2QEt9Q4tRGk=;
+        s=k20201202; t=1649724323;
+        bh=96MyTFeUkLFFOgfR7cfAs1rXUZMNhiPDiCmVNh0AGgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nux+ECpd8pSP/qnBcZBPZcByBS8L2hbd3uUZ0Mmoc942fcn/4ehIlLYQc9g4fKKB1
-         G9MxYqKf2eYxyFFmB88Ieg2RS6wjdq0Ya+5peGbtwDhB2b4rS3k7FejVi+KF6A06JD
-         T/WzaxXQF7/2Isubdc2QUIXs3MDJMOyftmpdICLinlt0IcpD2MNcsZpeejE/SbjbPT
-         6SJSeVn/BTvtjWETdxi33VxQsemyAyBsNefBvEZZMIRlzcYoasv0YDiWXOIItRNH5g
-         np6CX6jBd6qx97aEkRC8o1cIkfsH2zlkBd2D0EiwDYQa2MQqJh4x8HNSmlAfYP7t5V
-         9RGft8IDPRcqg==
+        b=VuiRK2vluoWPUrQRZOgUEVVH7lnqsHLQuy/Az3F/5yprnULzvSPMx4Ie8bax3KF1B
+         o7YElAejEtKLCqqBXNpYeb+4GEQozGjKlQf4z0x7HY30AlAtzijnbAouFHEGfZqaPr
+         h4k/30nm+I+58QUG89YCwNFS/oMWwHcYcxUT8dtt3/6ZUeu8NYDAVLDq8Hw67QWpYJ
+         X3oNldwdX6ZcPQrSCSZnB28Qv71QLr/F2o/9jjCjTiHxG8Hi8mndb7jc6dDQvv8m6F
+         Gebi3j/k3wjAc157hEi/K5rrMcjYa8VFTble471bla/TUSCeFElEy5m1r9QoNgmcph
+         At1K9r9ICDFXA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Kelley <mikelley@microsoft.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        decui@microsoft.com, linux-hyperv@vger.kernel.org,
-        linux-arch@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 14/49] Drivers: hv: vmbus: Propagate VMbus coherence to each VMbus device
-Date:   Mon, 11 Apr 2022 20:43:32 -0400
-Message-Id: <20220412004411.349427-14-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 20/49] scsi: lpfc: Fix queue failures when recovering from PCI parity error
+Date:   Mon, 11 Apr 2022 20:43:38 -0400
+Message-Id: <20220412004411.349427-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004411.349427-1-sashal@kernel.org>
 References: <20220412004411.349427-1-sashal@kernel.org>
@@ -54,130 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 37200078ed6aa2ac3c88a01a64996133dccfdd34 ]
+[ Upstream commit df0101197c4d9596682901631f3ee193ed354873 ]
 
-VMbus synthetic devices are not represented in the ACPI DSDT -- only
-the top level VMbus device is represented. As a result, on ARM64
-coherence information in the _CCA method is not specified for
-synthetic devices, so they default to not hardware coherent.
-Drivers for some of these synthetic devices have been recently
-updated to use the standard DMA APIs, and they are incurring extra
-overhead of unneeded software coherence management.
+When recovering from a pci-parity error the driver is failing to re-create
+queues, causing recovery to fail. Looking deeper, it was found that the
+interrupt vector count allocated on the recovery was fewer than the vectors
+originally allocated. This disparity resulted in CPU map entries with stale
+information. When the driver tries to re-create the queues, it attempts to
+use the stale information which indicates an eq/interrupt vector that was
+no longer created.
 
-Fix this by propagating coherence information from the VMbus node
-in ACPI to the individual synthetic devices. There's no effect on
-x86/x64 where devices are always hardware coherent.
+Fix by clearng the cpup map array before enabling and requesting the IRQs
+in the lpfc_sli_reset_slot_s4 routine().
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/1648138492-2191-2-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Link: https://lore.kernel.org/r/20220317032737.45308-4-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/hv_common.c         | 11 +++++++++++
- drivers/hv/vmbus_drv.c         | 31 +++++++++++++++++++++++++++++++
- include/asm-generic/mshyperv.h |  1 +
- 3 files changed, 43 insertions(+)
+ drivers/scsi/lpfc/lpfc_init.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-index 181d16bbf49d..820e81406251 100644
---- a/drivers/hv/hv_common.c
-+++ b/drivers/hv/hv_common.c
-@@ -20,6 +20,7 @@
- #include <linux/panic_notifier.h>
- #include <linux/ptrace.h>
- #include <linux/slab.h>
-+#include <linux/dma-map-ops.h>
- #include <asm/hyperv-tlfs.h>
- #include <asm/mshyperv.h>
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index c8c049cf8d96..9569a7390f9d 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -15248,6 +15248,8 @@ lpfc_io_slot_reset_s4(struct pci_dev *pdev)
+ 	psli->sli_flag &= ~LPFC_SLI_ACTIVE;
+ 	spin_unlock_irq(&phba->hbalock);
  
-@@ -216,6 +217,16 @@ bool hv_query_ext_cap(u64 cap_query)
- }
- EXPORT_SYMBOL_GPL(hv_query_ext_cap);
- 
-+void hv_setup_dma_ops(struct device *dev, bool coherent)
-+{
-+	/*
-+	 * Hyper-V does not offer a vIOMMU in the guest
-+	 * VM, so pass 0/NULL for the IOMMU settings
-+	 */
-+	arch_setup_dma_ops(dev, 0, 0, NULL, coherent);
-+}
-+EXPORT_SYMBOL_GPL(hv_setup_dma_ops);
-+
- bool hv_is_hibernation_supported(void)
- {
- 	return !hv_root_partition && acpi_sleep_state_supported(ACPI_STATE_S4);
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index a963b970ffb2..82ea763e862e 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -920,6 +920,21 @@ static int vmbus_probe(struct device *child_device)
- 	return ret;
- }
- 
-+/*
-+ * vmbus_dma_configure -- Configure DMA coherence for VMbus device
-+ */
-+static int vmbus_dma_configure(struct device *child_device)
-+{
-+	/*
-+	 * On ARM64, propagate the DMA coherence setting from the top level
-+	 * VMbus ACPI device to the child VMbus device being added here.
-+	 * On x86/x64 coherence is assumed and these calls have no effect.
-+	 */
-+	hv_setup_dma_ops(child_device,
-+		device_get_dma_attr(&hv_acpi_dev->dev) == DEV_DMA_COHERENT);
-+	return 0;
-+}
-+
- /*
-  * vmbus_remove - Remove a vmbus device
-  */
-@@ -1040,6 +1055,7 @@ static struct bus_type  hv_bus = {
- 	.remove =		vmbus_remove,
- 	.probe =		vmbus_probe,
- 	.uevent =		vmbus_uevent,
-+	.dma_configure =	vmbus_dma_configure,
- 	.dev_groups =		vmbus_dev_groups,
- 	.drv_groups =		vmbus_drv_groups,
- 	.bus_groups =		vmbus_bus_groups,
-@@ -2434,6 +2450,21 @@ static int vmbus_acpi_add(struct acpi_device *device)
- 
- 	hv_acpi_dev = device;
- 
-+	/*
-+	 * Older versions of Hyper-V for ARM64 fail to include the _CCA
-+	 * method on the top level VMbus device in the DSDT. But devices
-+	 * are hardware coherent in all current Hyper-V use cases, so fix
-+	 * up the ACPI device to behave as if _CCA is present and indicates
-+	 * hardware coherence.
-+	 */
-+	ACPI_COMPANION_SET(&device->dev, device);
-+	if (IS_ENABLED(CONFIG_ACPI_CCA_REQUIRED) &&
-+	    device_get_dma_attr(&device->dev) == DEV_DMA_NOT_SUPPORTED) {
-+		pr_info("No ACPI _CCA found; assuming coherent device I/O\n");
-+		device->flags.cca_seen = true;
-+		device->flags.coherent_dma = true;
-+	}
-+
- 	result = acpi_walk_resources(device->handle, METHOD_NAME__CRS,
- 					vmbus_walk_resources, NULL);
- 
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index c08758b6b364..c05d2ce9b6cd 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -269,6 +269,7 @@ bool hv_isolation_type_snp(void);
- u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size);
- void hyperv_cleanup(void);
- bool hv_query_ext_cap(u64 cap_query);
-+void hv_setup_dma_ops(struct device *dev, bool coherent);
- void *hv_map_memory(void *addr, unsigned long size);
- void hv_unmap_memory(void *addr);
- #else /* CONFIG_HYPERV */
++	/* Init cpu_map array */
++	lpfc_cpu_map_array_init(phba);
+ 	/* Configure and enable interrupt */
+ 	intr_mode = lpfc_sli4_enable_intr(phba, phba->intr_mode);
+ 	if (intr_mode == LPFC_INTR_ERROR) {
 -- 
 2.35.1
 
