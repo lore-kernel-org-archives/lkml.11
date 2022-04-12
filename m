@@ -2,183 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DCFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356031AbiDLNnm (ORCPT
+        id S1352939AbiDLNok (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        Tue, 12 Apr 2022 09:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355968AbiDLNnh (ORCPT
+        with ESMTP id S236249AbiDLNoh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:43:37 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261694ECCE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:41:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649770879; x=1681306879;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=4mr0BKGyGNmXW0x7QfGTYNSu+BqJgjoRew/Y6ezcFe4=;
-  b=A/ua4LQDANDzC+m/5NIauxLgHT7WjK0qbnbWzyQMaamx99Hd75Ohhmz4
-   gJHPo2RXmk5bDqXCXeVtMpFQhxoiTtFEs+rEkdYk2NVYE1LkeZigvC+mQ
-   GL7pkKYSr6/0SgbaZUIiY9vKIStGxP9x/bVpHJeZadGaWfPTE2LKze3RN
-   82QAUiyErk53p86GDhL3bGorxb3DRwCa35o9sZ6lf0P95maVlBUUR5uqD
-   0b5xfKGHW1Zq/7g3/WvWPZgVRb3upQ++11KRV0NSn1+iudHgBVVaujza7
-   ShsxgyE7zqWgGmXyRlVItD/wgipGplYUysbh1MqkkU7oPG/q4U3Q76TE7
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="325286273"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="325286273"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:41:18 -0700
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="660494090"
-Received: from fyu1.sc.intel.com ([172.25.103.126])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:41:18 -0700
-Date:   Tue, 12 Apr 2022 06:41:39 -0700
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        jean-philippe <jean-philippe@linaro.org>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
- <20220207230254.3342514-6-fenghua.yu@intel.com>
- <Ygt4h0PgYzKOiB38@8bytes.org>
- <tencent_F6830A1196DB4C6A904D7C691F0D961D1108@qq.com>
- <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
- <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
- <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
- <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
- <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
- <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+        Tue, 12 Apr 2022 09:44:37 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3884ECCE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:42:18 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kd6MV07y1zdZcX;
+        Tue, 12 Apr 2022 21:41:42 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 21:42:16 +0800
+Subject: Re: [PATCH v2 2/9] mm/vmscan: remove unneeded can_split_huge_page
+ check
+To:     Oscar Salvador <osalvador@suse.de>
+CC:     <akpm@linux-foundation.org>, <ying.huang@intel.com>,
+        <songmuchun@bytedance.com>, <hch@infradead.org>,
+        <willy@infradead.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220409093500.10329-1-linmiaohe@huawei.com>
+ <20220409093500.10329-3-linmiaohe@huawei.com>
+ <YlU/h0fdE1L846Bd@localhost.localdomain>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <7455b680-3d89-5d3e-ba0e-6e4358b114a2@huawei.com>
+Date:   Tue, 12 Apr 2022 21:42:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+In-Reply-To: <YlU/h0fdE1L846Bd@localhost.localdomain>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Zhangfei,
+On 2022/4/12 16:59, Oscar Salvador wrote:
+> On Sat, Apr 09, 2022 at 05:34:53PM +0800, Miaohe Lin wrote:
+>> We don't need to check can_split_folio() because folio_maybe_dma_pinned()
+>> is checked before. It will avoid the long term pinned pages to be swapped
+>> out. And we can live with short term pinned pages. Without can_split_folio
+>> checking we can simplify the code. Also activate_locked can be changed to
+>> keep_locked as it's just short term pinning.
+> 
+> What do you mean by "we can live with short term pinned pages"?
+> Does it mean that it was not pinned when we check
+> folio_maybe_dma_pinned() but now it is?
+> 
+> To me it looks like the pinning is fluctuating and we rely on
+> split_folio_to_list() to see whether we succeed or not, and if not
+> we give it another spin in the next round?
 
-On Tue, Apr 12, 2022 at 03:04:09PM +0800, zhangfei.gao@foxmail.com wrote:
-> 
-> 
-> On 2022/4/11 下午10:52, Dave Hansen wrote:
-> > On 4/11/22 07:44, zhangfei.gao@foxmail.com wrote:
-> > > On 2022/4/11 下午10:36, Dave Hansen wrote:
-> > > > On 4/11/22 07:20, zhangfei.gao@foxmail.com wrote:
-> > > > > > Is there nothing before this call trace?  Usually there will be at least
-> > > > > > some warning text.
-> > > > > I added dump_stack() in ioasid_free.
-> > > > Hold on a sec, though...
-> > > > 
-> > > > What's the *problem* here?  Did something break or are you just saying
-> > > > that something looks weird to _you_?
-> > > After this, nginx is not working at all, and hardware reports error.
-> > > Suppose the the master use the ioasid for init, but got freed.
-> > > 
-> > > hardware reports:
-> > > [  152.731869] hisi_sec2 0000:76:00.0: qm_acc_do_task_timeout [error status=0x20] found
-> > > [  152.739657] hisi_sec2 0000:76:00.0: qm_acc_wb_not_ready_timeout [error status=0x40] found
-> > > [  152.747877] hisi_sec2 0000:76:00.0: sec_fsm_hbeat_rint [error status=0x20] found
-> > > [  152.755340] hisi_sec2 0000:76:00.0: Controller resetting...
-> > > [  152.762044] hisi_sec2 0000:76:00.0: QM mailbox operation timeout!
-> > > [  152.768198] hisi_sec2 0000:76:00.0: Failed to dump sqc!
-> > > [  152.773490] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
-> > > [  152.781426] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
-> > > [  152.787468] hisi_sec2 0000:76:00.0: Failed to dump sqc!
-> > > [  152.792753] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
-> > > [  152.800685] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
-> > > [  152.806730] hisi_sec2 0000:76:00.0: Failed to dump sqc!
-> > > [  152.812017] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
-> > > [  152.819946] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
-> > > [  152.825992] hisi_sec2 0000:76:00.0: Failed to dump sqc!
-> > That would have been awfully handy information to have in an initial bug report. :)
-> > Is there a chance you could dump out that ioasid alloc *and* free information in ioasid_alloc/free()?  This could be some kind of problem with the allocator, or with copying the ioasid at fork.
-> The issue is nginx master process init resource, start daemon process, then
-> master process quit and free ioasid.
-> The daemon nginx process is not the original master process.
-> 
-> master process:  init resource
-> driver -> iommu_sva_bind_device -> ioasid_alloc
+Yes. Short term pinned pages is relative to long term pinned pages and these pages won't be
+pinned for a noticeable time. So it's expected to split the folio successfully in the next
+round as the pinning is really fluctuating. Or am I miss something?
 
-Which code in the master process/daemon calls driver->iommu_sva_unbind_device?
+Many thanks for your comment and reply!
 
 > 
-> nginx : ngx_daemon
-> fork daemon, without add mm's refcount.
-> 
-> src/os/unix/ngx_daemon.c
-> ngx_daemon(ngx_log_t *log)
-> {
->     int  fd;
-> 
->     switch (fork()) {
->     case -1:
->         ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "fork() failed");
->         return NGX_ERROR;
-> 
->     case 0:        // here master process is quit directly and will be
-> released.
->         break;
-> 
->     default:
->         exit(0);
->     }
-> // here daemon process take control.
->     ngx_parent = ngx_pid;
->     ngx_pid = ngx_getpid();
-> 
-> 
-> fork.c
-> copy_mm
->         if (clone_flags & CLONE_VM) {
->                 mmget(oldmm);
->                 mm = oldmm;
->         } else {
->                 mm = dup_mm(tsk, current->mm);    // here daemon process
-> handling without mmget.
-> 
-> master process quit, mmput ->  mm_pasid_drop->ioasid_free
-> But this ignore driver's iommu_sva_unbind_device function,
-> iommu_sva_bind_device and iommu_sva_unbind_device are not pair,  So driver
-> does not know ioasid is freed.
-> 
-> Any suggestion?
-
-ioasid is per process or per mm. A daemon process shouldn't share the same 
-ioasid with any other process with even its parent process. Its parent gets
-an ioasid and frees it on exit. The ioasid is gone and shouldn't be used
-by its child process.
-
-Each daemon process should call driver -> iommu_sva_bind_device -> ioasid_alloc
-to get its own ioasid/PASID. On daemon quit, the ioasid is freed.
-
-That means nqnix needs to be changed.
-
-> Or can we still use the original ioasid refcount mechanism?
+>> Suggested-by: Huang, Ying <ying.huang@intel.com>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  mm/vmscan.c | 22 ++++++++--------------
+>>  1 file changed, 8 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/mm/vmscan.c b/mm/vmscan.c
+>> index 4a76be47bed1..01f5db75a507 100644
+>> --- a/mm/vmscan.c
+>> +++ b/mm/vmscan.c
+>> @@ -1711,20 +1711,14 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+>>  					goto keep_locked;
+>>  				if (folio_maybe_dma_pinned(folio))
+>>  					goto keep_locked;
+>> -				if (PageTransHuge(page)) {
+>> -					/* cannot split THP, skip it */
+>> -					if (!can_split_folio(folio, NULL))
+>> -						goto activate_locked;
+>> -					/*
+>> -					 * Split pages without a PMD map right
+>> -					 * away. Chances are some or all of the
+>> -					 * tail pages can be freed without IO.
+>> -					 */
+>> -					if (!folio_entire_mapcount(folio) &&
+>> -					    split_folio_to_list(folio,
+>> -								page_list))
+>> -						goto activate_locked;
+>> -				}
+>> +				/*
+>> +				 * Split pages without a PMD map right
+>> +				 * away. Chances are some or all of the
+>> +				 * tail pages can be freed without IO.
+>> +				 */
+>> +				if (PageTransHuge(page) && !folio_entire_mapcount(folio) &&
+>> +				    split_folio_to_list(folio, page_list))
+>> +					goto keep_locked;
+>>  				if (!add_to_swap(page)) {
+>>  					if (!PageTransHuge(page))
+>>  						goto activate_locked_split;
+>> -- 
+>> 2.23.0
+>>
+>>
 > 
 
-Thanks.
-
--Fenghua
