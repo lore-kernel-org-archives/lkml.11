@@ -2,169 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C405C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352319AbiDLNLe (ORCPT
+        id S1355264AbiDLNO5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56454 "EHLO
+        Tue, 12 Apr 2022 09:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355538AbiDLNH7 (ORCPT
+        with ESMTP id S1356739AbiDLNOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:07:59 -0400
+        Tue, 12 Apr 2022 09:14:08 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A676B09C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:53:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8981464FF;
+        Tue, 12 Apr 2022 06:00:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649768000; x=1681304000;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=3p+HZigMoDJf+SmGF5tM7x7zvBgqrhGgl3QbbiaEU7I=;
-  b=JTFCxR5VxOJW/TgnO5Tu43UYQW1G71gsJwKvKQGTQ/shqJxq8ogaKrjk
-   I3RztTRgXNDc2GZxIKZsqDy+IuxVKGK4amneU8vw24bzp3Hk3KVwG+QYr
-   GTXeHnxUU2qIBJARM0TWUWn9PAjcs7zLl2FmbmkCWQ3FXdlERG0smjhRZ
-   aMQtgu4MEqJ4ltLmDddNC92OJ4qBzHgXYtRBpAb3MtMaFzjqfGpIpXzzt
-   2dfHz6jK9hXPODIxCo5djKD6Vzvlt0FlVGgWK8WqGclM79bpooB4rf8V3
-   XpgBoAWEYeV4rYbiE5aZ8YeH71XAmH2JMKpi0LVLXhW3cMNaGojOgIGU3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="244249533"
+  t=1649768427; x=1681304427;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aklz1wH2PpwK2r+zdOU9ky7jwil4mxNjAY0x6rBzBpU=;
+  b=TL28whpgzxQ7Dx4AnF5XADROtvpfJ4iY7SDotK1dv7goioCfGGR/l7oM
+   CwjWk+nAcWi/v6b99fQLu6lDRI+khRNKk3uW6KGwKf1/M8DnInfB38Vi7
+   KO9t0gTAS0Q/tEE9a1GyiQmf9rShHoQZE/5DTKVQBVIeTjuRza5Ll281n
+   ikU5gBxgqPWFNVWBKj48px7YKwKMUJ7fu+Oi8qeClksaAMQzdSLmFzT5Z
+   zDhsNTQ/oSK5fZd61ZPkuTi/aUPOPJYkt7BfFK14CwMPKkd1g03jjW4bs
+   qugy5eQe0EcmqAhBdNxHPrTeX0QKjnSDRblGHqrYUmSPSMnxEciIAKFtH
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="244250580"
 X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="244249533"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:53:20 -0700
+   d="scan'208,217";a="244250580"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:00:27 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="572752923"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.174]) ([10.254.210.174])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:53:13 -0700
-Message-ID: <1289f780-143e-004c-41ac-d95b6f18d63c@linux.intel.com>
-Date:   Tue, 12 Apr 2022 20:53:11 +0800
+   d="scan'208,217";a="699825871"
+Received: from black.fi.intel.com (HELO black.fi.intel.com.) ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2022 06:00:24 -0700
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Benson Leung <bleung@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        Jameson Thies <jthies@google.com>,
+        "Regupathy, Rajaram" <rajaram.regupathy@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Won Chung <wonchung@google.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/3] usb: typec: Separate sysfs directory for all USB PD objects
+Date:   Tue, 12 Apr 2022 16:00:20 +0300
+Message-Id: <20220412130023.83927-1-heikki.krogerus@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <20220410102443.294128-1-baolu.lu@linux.intel.com>
- <20220410102443.294128-9-baolu.lu@linux.intel.com>
- <BN9PR11MB5276BCAA64597FE400DF15CF8CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH RFC v3 08/12] iommu/sva: Use attach/detach_pasid_dev in
- SVA interfaces
-In-Reply-To: <BN9PR11MB5276BCAA64597FE400DF15CF8CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/12 15:19, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Sunday, April 10, 2022 6:25 PM
->> +struct iommu_sva *
->> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void
->> *drvdata)
->> +{
->> +	int ret = -EINVAL;
->> +	struct iommu_sva *handle;
->> +	struct iommu_domain *domain;
->> +	struct iommu_sva_ioas *ioas;
->> +
->> +	/*
->> +	 * TODO: Remove the drvdata parameter after kernel PASID support
->> is
->> +	 * enabled for the idxd driver.
->> +	 */
->> +	if (drvdata)
->> +		return ERR_PTR(-EOPNOTSUPP);
->> +
->> +	/* Allocate mm->pasid if necessary. */
->> +	ret = iommu_sva_alloc_pasid(mm, 1, (1U << dev->iommu->pasid_bits)
->> - 1);
->> +	if (ret)
->> +		return ERR_PTR(ret);
->> +
->> +	mutex_lock(&iommu_sva_lock);
->> +	ioas = iommu_sva_ioas_get(mm, mm->pasid);
->> +	if (!ioas) {
->> +		ret = -ENOMEM;
-> 
-> ioas can be NULL for multiple reasons, e.g. :
-> 
-> 1) ioas->mm != mm;
-> 2) kzalloc failure;
-> 3) xa_store failure;
-> 
-> It's more sensible to return error from iommu_sva_ioas_get() directly.
+Hi,
 
-Fair enough.
+In this version the USB Power Delivery support is now completely
+separated into its own little subsystem. The USB Power Delivery
+objects are not devices, but they are also no longer tied to any
+device by default. This change makes it possible to share the USB PD
+objects between multiple devices on top of being able to select the
+objects that we want the device to use.
 
-> 
->> +		goto out_unlock;
->> +	}
->> +
->> +	/* Search for an existing bond. */
->> +	list_for_each_entry(handle, &ioas->bonds, node) {
->> +		if (handle->dev == dev) {
->> +			refcount_inc(&handle->users);
->> +			/* No new bond, drop the counter. */
->> +			iommu_sva_ioas_put(ioas);
->> +			goto out_success;
->> +		}
->> +	}
->> +
->> +	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
-> 
-> s/handle/bond/?
+The USB Power Delivery objects are now placed under
+/sys/kernel/usb_power_delivery directory. As an example:
 
-"handle" is used in the previous implementation but "bond" looks better
-to read. :-)
+	/sys/kernel/usb_power_delivery/pd0
 
-> 
->> +	if (!handle) {
->> +		ret = -ENOMEM;
->> +		goto out_put_ioas;
->> +	}
->> +
->> +	/* The reference to ioas will be kept until domain free. */
->> +	domain = iommu_sva_alloc_domain(dev, ioas);
-> 
-> Shouldn't we first try whether existing domains are compatible to this
-> device?
+So now that pd0 can be linked to a device, or devices, that want (or
+can) use it to negotiate the USB PD contract with. An example where
+two devices share the PD:
 
-If we think that here domain represents a hardware pagetable actually
-used by IOMMU for a {device, pasid}, we are able to use per-{device,
-pasid} domain without checking compatibility. Sharing a domain among
-devices under the same IOMMU may be an optimization. That could be done
-in the IOMMU driver just like what vt-d driver is doing for pass-through
-DMA domains.
+	/sys/class/typec/port0/usb_power_delivery -> ../../../../../../../kernel/usb_power_delivery/pd0
+	/sys/class/typec/port1/usb_power_delivery -> ../../../../../../../kernel/usb_power_delivery/pd0
 
-> 
->> @@ -1952,6 +1954,7 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
->>   void iommu_domain_free(struct iommu_domain *domain)
->>   {
->>   	iommu_put_dma_cookie(domain);
->> +	iommu_sva_ioas_put(domain->sva_ioas);
->>   	domain->ops->free(domain);
->>   }
-> 
-> is it good to have general iommu_domain_free() to always call a put()
-> function for a specific domain type? Why cannot it be done before
-> calling iommu_domain_free() in sva-lib.c?
+I did not change the directory hierarchy at all, because I'm assuming
+that it is not a problem anymore:
 
-It's better to have a generic free() helper since an sva domain could be
-freed outside of iommu sva code as you can see in the following patches.
+	pd0/<message>/<object>/<field>
 
-Best regards,
-baolu
+On top of that change, I also switched to tcpm.c from ucsi.c as
+the first user of this thing.
+
+
+v1 cover letter:
+
+Ideally after this there should be no need to add any new USB Power
+Delivery specific attribute files directly to the USB Type-C devices
+in sysfs. They now have their own directory.
+
+The idea of the series is that any device (so not just USB Type-C
+connectors and the partners attached to them) that supports USB Power
+Delivery can have this separate sub-directory "usb_power_delivery" in
+sysfs, and that sub-directory will have all the USB Power Delivery
+objects and all the other USB Power Delivery details.
+
+There are already ways that allow us to read the USB Power Delivery
+capabilities from potentially any USB PD capable USB device attached
+to the bus - one way is defined in the USB Type-C Bridge
+Specification.
+
+Initially the Capability Messages (i.e. PDOs) are exposed.
+
+This is an example (tree view) of the capabilities that the ports on a
+normal x86 system advertise to the partner. First you have the message
+directory (source_capabilities and sink_capabilities), and that will
+have a sub-directory for each PDO that capability message has. The PDO
+sub-directories are named by their type. The number in front of the
+name is the object position of the PDO:
+
+/sys/class/typec/port0/usb_power_delivery
+|-- revision
+|-- sink_capabilities/
+|   |-- 1:fixed_supply/
+|   |   |-- dual_role_data
+|   |   |-- dual_role_power
+|   |   |-- fast_role_swap_current
+|   |   |-- operational_current
+|   |   |-- unchunked_extended_messages_supported
+|   |   |-- unconstrained_power
+|   |   |-- usb_communication_capable
+|   |   |-- usb_suspend_supported
+|   |   `-- voltage
+|   |-- 2:variable_supply/
+|   |   |-- maximum_voltage
+|   |   |-- minimum_voltage
+|   |   `-- operational_current
+|   `-- 3:battery/
+|       |-- maximum_voltage
+|       |-- minimum_voltage
+|       `-- operational_power
+`-- source_capabilities/
+    `-- 1:fixed_supply/
+        |-- dual_role_data
+        |-- dual_role_power
+        |-- maximum_current
+        |-- unchunked_extended_messages_supported
+        |-- unconstrained_power
+        |-- usb_communication_capable
+        |-- usb_suspend_supported
+        `-- voltage
+
+And these are the capabilities of my Thunderbolt3 dock:
+
+/sys/class/typec/port0-partner/usb_power_delivery
+|-- revision
+|-- sink_capabilities/
+|   `-- 1:fixed_supply/
+|       |-- dual_role_data
+|       |-- dual_role_power
+|       |-- fast_role_swap_current
+|       |-- operational_current
+|       |-- unchunked_extended_messages_supported
+|       |-- unconstrained_power
+|       |-- usb_communication_capable
+|       |-- usb_suspend_supported
+|       `-- voltage
+`-- source_capabilities/
+    |-- 1:fixed_supply/
+    |   |-- dual_role_data
+    |   |-- dual_role_power
+    |   |-- maximum_current
+    |   |-- unchunked_extended_messages_supported
+    |   |-- unconstrained_power
+    |   |-- usb_communication_capable
+    |   |-- usb_suspend_supported
+    |   `-- voltage
+    |-- 2:fixed_supply/
+    |   |-- maximum_current
+    |   `-- voltage
+    |-- 3:fixed_supply/
+    |   |-- maximum_current
+    |   `-- voltage
+    |-- 4:fixed_supply/
+    |   |-- maximum_current
+    |   `-- voltage
+    `-- 5:fixed_supply/
+        |-- maximum_current
+        `-- voltage
+
+Heikki Krogerus (3):
+  usb: typec: Separate USB Power Delivery from USB Type-C
+  usb: typec: USB Power Deliver helpers for ports and partners
+  usb: typec: tcpm: Register USB Power Delivery Capabilities
+
+ Documentation/ABI/testing/sysfs-class-typec   |   8 +
+ .../testing/sysfs-kernel-usb_power_delivery   | 255 ++++++
+ drivers/usb/typec/Makefile                    |   2 +-
+ drivers/usb/typec/class.c                     | 153 ++++
+ drivers/usb/typec/class.h                     |   4 +
+ drivers/usb/typec/pd.c                        | 741 ++++++++++++++++++
+ drivers/usb/typec/pd.h                        |  31 +
+ drivers/usb/typec/tcpm/tcpm.c                 | 142 +++-
+ include/linux/usb/pd.h                        |  33 +
+ include/linux/usb/typec.h                     |  22 +
+ 10 files changed, 1389 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-kernel-usb_power_delivery
+ create mode 100644 drivers/usb/typec/pd.c
+ create mode 100644 drivers/usb/typec/pd.h
+
+-- 
+2.35.1
+
