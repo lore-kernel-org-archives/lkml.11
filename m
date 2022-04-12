@@ -2,54 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7881FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357605AbiDLQds (ORCPT
+        id S1357661AbiDLQdw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37352 "EHLO
+        Tue, 12 Apr 2022 12:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357683AbiDLQd2 (ORCPT
+        with ESMTP id S239010AbiDLQd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:33:28 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFFC5DE71
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:30:59 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23C9IF5w029511
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:30:58 -0700
+        Tue, 12 Apr 2022 12:33:29 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879D95E16A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:02 -0700 (PDT)
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23CF0kP2030058
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:02 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=aieyOoQjElV+1yHY4ofNprLGHOfx4cTB9R/S9Mt9YWM=;
- b=kTPBHuGjkQ4l/Mu81WgtVpG7SpzFExkrcLl3/kEHKJ3zoowyFxr5Z0Kk4RAuF633tzQX
- EwzalpGbfkqbjBm8Vr6sLrslNLpntewyDuDE90dJoc/atgDT45snWZIUU/OpzbxHVSHS
- y4v9IvWA/GDlicg45DdLMpJ1GnT2x83Esrk= 
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=jpJLwlCd/Lo6d9EOp1tU7k+L8lqn56Qe1VGs4ldSBt0=;
+ b=lhDW+wS1PWX7Dd5U0d5//NRgork1OIGL5UlZ3DkxJHOrEGqG+gCYCAv/SvVcEgTgQX14
+ S5vwRH08+ID1Yp+Qpjf9pPxN2VXUgVs+ZNZFVvbXUwIJ+abYyVPApBmOqK8GqetsPPco
+ 9vESh4MnV7ZgKMqu2zzMsr+1yv428IFNEyk= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fd6p3t9x3-1
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fdbpj8pek-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:30:58 -0700
-Received: from twshared41237.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:31:02 -0700
+Received: from twshared14141.02.ash7.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 12 Apr 2022 09:30:57 -0700
+ 15.1.2308.21; Tue, 12 Apr 2022 09:31:01 -0700
 Received: by devbig039.lla1.facebook.com (Postfix, from userid 572232)
-        id 16E457456060; Tue, 12 Apr 2022 09:30:47 -0700 (PDT)
+        id 398667456066; Tue, 12 Apr 2022 09:30:48 -0700 (PDT)
 From:   Dylan Yudaken <dylany@fb.com>
 To:     <io-uring@vger.kernel.org>
 CC:     <axboe@kernel.dk>, <asml.silence@gmail.com>,
         <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
         Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH 0/4] io_uring: verify that reserved fields are 0
-Date:   Tue, 12 Apr 2022 09:30:38 -0700
-Message-ID: <20220412163042.2788062-1-dylany@fb.com>
+Subject: [PATCH 2/4] io_uring: verify that resv2 is 0 in io_uring_rsrc_update2
+Date:   Tue, 12 Apr 2022 09:30:40 -0700
+Message-ID: <20220412163042.2788062-3-dylany@fb.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220412163042.2788062-1-dylany@fb.com>
+References: <20220412163042.2788062-1-dylany@fb.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: GH5SC7BSaBPZ5qrzy3r0fBuT0hagiLFK
-X-Proofpoint-GUID: GH5SC7BSaBPZ5qrzy3r0fBuT0hagiLFK
+X-Proofpoint-ORIG-GUID: eRMg5F3rRGAyajd58Tpyi9hUQZNAk48j
+X-Proofpoint-GUID: eRMg5F3rRGAyajd58Tpyi9hUQZNAk48j
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
@@ -57,27 +60,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A few reserved fields are not verified to be 0. In preparation for possib=
-ly using these fields later we should verify that they are passed as 0.
+Verify that the user does not pass in anything but 0 for this field.
 
-One extra field I do not have confidence in verifying is up.nr in io_regi=
-ster_files_update(). Should this also be checked to be zero?
+Fixes: 992da01aa932 ("io_uring: change registration/upd/rsrc tagging ABI"=
+)
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+---
+ fs/io_uring.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Patch 1 in this series just moves a validation out of __io_register_rsrc_=
-update as it was duplicated
-Patch 2-4 add verifications for reserved fields
-
-Dylan Yudaken (4):
-  io_uring: move io_uring_rsrc_update2 validation
-  io_uring: verify that resv2 is 0 in io_uring_rsrc_update2
-  io_uring: verify resv is 0 in ringfd register/unregister
-  io_uring: verify pad field is 0 in io_get_ext_arg
-
- fs/io_uring.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
-
-
-base-commit: 0f8da75b51ac863b9435368bd50691718cc454b0
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 58bfa71fe3b6..e899192ffb77 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -6839,6 +6839,7 @@ static int io_files_update(struct io_kiocb *req, un=
+signed int issue_flags)
+ 	up.nr =3D 0;
+ 	up.tags =3D 0;
+ 	up.resv =3D 0;
++	up.resv2 =3D 0;
+=20
+ 	io_ring_submit_lock(ctx, needs_lock);
+ 	ret =3D __io_register_rsrc_update(ctx, IORING_RSRC_FILE,
+@@ -11423,7 +11424,7 @@ static int io_register_files_update(struct io_rin=
+g_ctx *ctx, void __user *arg,
+ 	memset(&up, 0, sizeof(up));
+ 	if (copy_from_user(&up, arg, sizeof(struct io_uring_rsrc_update)))
+ 		return -EFAULT;
+-	if (up.resv)
++	if (up.resv || up.resv2)
+ 		return -EINVAL;
+ 	return __io_register_rsrc_update(ctx, IORING_RSRC_FILE, &up, nr_args);
+ }
+@@ -11437,7 +11438,7 @@ static int io_register_rsrc_update(struct io_ring=
+_ctx *ctx, void __user *arg,
+ 		return -EINVAL;
+ 	if (copy_from_user(&up, arg, sizeof(up)))
+ 		return -EFAULT;
+-	if (!up.nr || up.resv)
++	if (!up.nr || up.resv || up.resv2)
+ 		return -EINVAL;
+ 	return __io_register_rsrc_update(ctx, type, &up, up.nr);
+ }
 --=20
 2.30.2
 
