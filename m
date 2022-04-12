@@ -2,262 +2,353 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B36C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F230C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239214AbiDLAEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34144 "EHLO
+        id S239377AbiDLAKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236437AbiDLAEo (ORCPT
+        with ESMTP id S238262AbiDLAKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:04:44 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6512ED42
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:02:29 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23BNicXa024777;
-        Tue, 12 Apr 2022 00:02:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=Ymhm3gWLFUXXkn5483f/1Rx+YzD94Ie5+Dy9QnMA8pY=;
- b=nMj6Kj2t1b92u0VcCmR6oYCfajpyNsrxYFqMKOSUcbx0EbCBtvtMoNvVxmcjcDCImz5b
- Knyqm9f97FyI7AMfZgI4b4kcQt1lsS+NvtplK1x0TipnVcjSO/sDyaNQzqUnUYtMc3yp
- Losyt5avJAMTUssB1+JIYAoTUOCav761xOdnF1cAibWL56zJ0UZpDEnxVfqDAk6wceWA
- aoxJQDPOmXHqCGFoZvvnvWXU2ntwerzFXWvL9JOon7Hbxm7pQgsh43qIN2VvK6YHOmuO
- XOwzWhrOnAx8CD+j+BKpgG/g2OAyX4uM4xRzZ0Vm4jdGSSUbfJyoaB2OCiij5D7QTPlu dQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3fcx9987ph-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 00:02:05 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23BNnExM003563;
-        Tue, 12 Apr 2022 00:02:04 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3fcx9987p1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 00:02:04 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23BNrv2L030620;
-        Tue, 12 Apr 2022 00:02:02 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fb1dj3v9e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 00:02:02 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23C020kV24248614
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Apr 2022 00:02:00 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8251A11C050;
-        Tue, 12 Apr 2022 00:02:00 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C11AC11C04A;
-        Tue, 12 Apr 2022 00:01:59 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.66.170])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Tue, 12 Apr 2022 00:01:59 +0000 (GMT)
-Date:   Tue, 12 Apr 2022 02:01:45 +0200
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
-Message-ID: <20220412020145.32e26e5a.pasic@linux.ibm.com>
-In-Reply-To: <877d7vbspu.fsf@redhat.com>
-References: <20220406083538.16274-1-jasowang@redhat.com>
-        <20220406083538.16274-5-jasowang@redhat.com>
-        <20220406075952-mutt-send-email-mst@kernel.org>
-        <87wng2e527.fsf@redhat.com>
-        <20220408150307.24b6b99f.pasic@linux.ibm.com>
-        <20220410034556-mutt-send-email-mst@kernel.org>
-        <CACGkMEtarZb6g3ij5=+As17+d9jtdAqNa1EzSuTXc7Pq_som0Q@mail.gmail.com>
-        <877d7vbspu.fsf@redhat.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        Mon, 11 Apr 2022 20:10:49 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7BD19290
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:08:32 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso924801pju.1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:08:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2wEkt+Fl5QHii5v8XtDT8LMRWz6S8eR3qRxTt2Sw5V4=;
+        b=O5GYMczRyjp9uULNTyB4HDTn7FN9FuUeovnT56eEy6ngCmuYvzf1umOPz47prHSQNf
+         sjm/mmaBMH9kX3OdAcZ7e/mJAQAcMPie9u2zSpjWdnb1xMYgeQIiHu/x3QzFfgMPwLcn
+         ChcH10leiDHwQJUEVJeAwZiwajcffDTsWWV8oFMN6dAi0MmppUO+1s4Tub7/W9P9bpJo
+         C/zenybAGnDMDQP2ii5SwFJs5SuLp7PIFO7OKXo4uROOns9yBTBle9VJuXUdM3HT/PBz
+         G5aoKrJ8LlOqXpDBI/i4othZBimrMI7KGMfeW3P4doPTZZLtAGAaKDecV9y6sDmmSnos
+         PvTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2wEkt+Fl5QHii5v8XtDT8LMRWz6S8eR3qRxTt2Sw5V4=;
+        b=Df9ulaQXSyebx9C1pGtuzsP/3OJ6WlwrS7LRPtl+/mxvUlg+GaYTGF0r0vlPNeWsVj
+         VhpjB5151GvRQV3bvmLuRircIEdfrBYszE4uzwFvRqZcORaZxvQJG7Az7vmAbh/q3aFe
+         W7y8XB2SmxILnLfoX9LOk0VZfNGq5EIiRLJgprIukDw2RIw9g5r130oirfXJf1DsJ3FD
+         40vUAxa4jILIxBjcxmM/8Yg25ZwDDcCpmnjvVaf2XY5QRAhgU/ozXylP4TXadGH7T6K0
+         bus3TVE80PiOyr23o8wKrI8cXThgimmj0kHsh7AavITy52XBppS6/44JXwG0zotQQibG
+         iIvQ==
+X-Gm-Message-State: AOAM5321U1oxsSXanKgRsUDB7HFmcQFolhfpX5vBFC1nZFcJ4kJ0ccho
+        45oFddG2TybQt3OrOeTKvPrfalHCeoAYtKhf6ZhuJQ==
+X-Google-Smtp-Source: ABdhPJwiqEMeg1D9j4J0Y+o8ZfMSN8ekDMHy7Zw5j+2VdEX4b8YSMIxWQgkLUtHS84yYy4GAXTgkQnH5MT/1f7wCXo8=
+X-Received: by 2002:a17:903:32c5:b0:156:b466:c8ed with SMTP id
+ i5-20020a17090332c500b00156b466c8edmr34561265plr.34.1649722112368; Mon, 11
+ Apr 2022 17:08:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 1bvXk22wNw3YGkUdJsgQgRpdAVK_Flry
-X-Proofpoint-ORIG-GUID: 0h2qVqskP8RMF8-85NvyW9SJF_9wzeKg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-11_09,2022-04-11_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
- lowpriorityscore=0 phishscore=0 malwarescore=0 suspectscore=0 adultscore=0
- mlxscore=0 impostorscore=0 priorityscore=1501 spamscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204110128
+References: <20220405194747.2386619-1-jane.chu@oracle.com> <20220405194747.2386619-5-jane.chu@oracle.com>
+In-Reply-To: <20220405194747.2386619-5-jane.chu@oracle.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Mon, 11 Apr 2022 17:08:21 -0700
+Message-ID: <CAPcyv4ij8VxaeosTsRFgUTnSpRRaxWnxWK6xvUJrhmT-7ae+-Q@mail.gmail.com>
+Subject: Re: [PATCH v7 4/6] dax: add DAX_RECOVERY flag and .recovery_write dev_pgmap_ops
+To:     Jane Chu <jane.chu@oracle.com>
+Cc:     david <david@fromorbit.com>, "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Vishal L Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        device-mapper development <dm-devel@redhat.com>,
+        "Weiny, Ira" <ira.weiny@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>, X86 ML <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022 16:27:41 +0200
-Cornelia Huck <cohuck@redhat.com> wrote:
+On Tue, Apr 5, 2022 at 12:48 PM Jane Chu <jane.chu@oracle.com> wrote:
+>
+> Introduce DAX_RECOVERY flag to dax_direct_access(). The flag is
+> not set by default in dax_direct_access() such that the helper
+> does not translate a pmem range to kernel virtual address if the
+> range contains uncorrectable errors.  When the flag is set,
+> the helper ignores the UEs and return kernel virtual adderss so
+> that the caller may get on with data recovery via write.
+>
+> Also introduce a new dev_pagemap_ops .recovery_write function.
+> The function is applicable to FSDAX device only. The device
+> page backend driver provides .recovery_write function if the
+> device has underlying mechanism to clear the uncorrectable
+> errors on the fly.
+>
+> Signed-off-by: Jane Chu <jane.chu@oracle.com>
+> ---
+>  drivers/dax/super.c             | 17 ++++++++--
+>  drivers/md/dm-linear.c          |  4 +--
+>  drivers/md/dm-log-writes.c      |  5 +--
+>  drivers/md/dm-stripe.c          |  4 +--
+>  drivers/md/dm-target.c          |  2 +-
+>  drivers/md/dm-writecache.c      |  5 +--
+>  drivers/md/dm.c                 |  5 +--
+>  drivers/nvdimm/pmem.c           | 57 +++++++++++++++++++++++++++------
+>  drivers/nvdimm/pmem.h           |  2 +-
+>  drivers/s390/block/dcssblk.c    |  4 +--
+>  fs/dax.c                        | 24 ++++++++++----
+>  fs/fuse/dax.c                   |  4 +--
+>  include/linux/dax.h             | 11 +++++--
+>  include/linux/device-mapper.h   |  2 +-
+>  include/linux/memremap.h        |  7 ++++
+>  tools/testing/nvdimm/pmem-dax.c |  2 +-
+>  16 files changed, 116 insertions(+), 39 deletions(-)
+>
+> diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+> index 0211e6f7b47a..8252858cd25a 100644
+> --- a/drivers/dax/super.c
+> +++ b/drivers/dax/super.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/uio.h>
+>  #include <linux/dax.h>
+>  #include <linux/fs.h>
+> +#include <linux/memremap.h>
+>  #include "dax-private.h"
+>
+>  /**
+> @@ -117,6 +118,7 @@ enum dax_device_flags {
+>   * @dax_dev: a dax_device instance representing the logical memory range
+>   * @pgoff: offset in pages from the start of the device to translate
+>   * @nr_pages: number of consecutive pages caller can handle relative to @pfn
+> + * @flags: by default 0, set to DAX_RECOVERY to kick start dax recovery
+>   * @kaddr: output parameter that returns a virtual address mapping of pfn
+>   * @pfn: output parameter that returns an absolute pfn translation of @pgoff
+>   *
+> @@ -124,7 +126,7 @@ enum dax_device_flags {
+>   * pages accessible at the device relative @pgoff.
+>   */
+>  long dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff, long nr_pages,
+> -               void **kaddr, pfn_t *pfn)
+> +               int flags, void **kaddr, pfn_t *pfn)
+>  {
+>         long avail;
+>
+> @@ -137,7 +139,7 @@ long dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff, long nr_pages,
+>         if (nr_pages < 0)
+>                 return -EINVAL;
+>
+> -       avail = dax_dev->ops->direct_access(dax_dev, pgoff, nr_pages,
+> +       avail = dax_dev->ops->direct_access(dax_dev, pgoff, nr_pages, flags,
+>                         kaddr, pfn);
+>         if (!avail)
+>                 return -ERANGE;
+> @@ -194,6 +196,17 @@ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+>  }
+>  EXPORT_SYMBOL_GPL(dax_zero_page_range);
+>
+> +size_t dax_recovery_write(struct dax_device *dax_dev, pgoff_t pgoff,
+> +               pfn_t pfn, void *addr, size_t bytes, struct iov_iter *iter)
+> +{
+> +       struct dev_pagemap *pgmap = get_dev_pagemap(pfn_t_to_pfn(pfn), NULL);
+> +
+> +       if (!pgmap || !pgmap->ops || !pgmap->ops->recovery_write)
+> +               return 0;
+> +       return pgmap->ops->recovery_write(pgmap, pgoff, addr, bytes, iter);
+> +}
+> +EXPORT_SYMBOL_GPL(dax_recovery_write);
+> +
+>  #ifdef CONFIG_ARCH_HAS_PMEM_API
+>  void arch_wb_cache_pmem(void *addr, size_t size);
+>  void dax_flush(struct dax_device *dax_dev, void *addr, size_t size)
+> diff --git a/drivers/md/dm-linear.c b/drivers/md/dm-linear.c
+> index 76b486e4d2be..9e6d8bdf3b2a 100644
+> --- a/drivers/md/dm-linear.c
+> +++ b/drivers/md/dm-linear.c
+> @@ -172,11 +172,11 @@ static struct dax_device *linear_dax_pgoff(struct dm_target *ti, pgoff_t *pgoff)
+>  }
+>
+>  static long linear_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+> -               long nr_pages, void **kaddr, pfn_t *pfn)
+> +               long nr_pages, int flags, void **kaddr, pfn_t *pfn)
+>  {
+>         struct dax_device *dax_dev = linear_dax_pgoff(ti, &pgoff);
+>
+> -       return dax_direct_access(dax_dev, pgoff, nr_pages, kaddr, pfn);
+> +       return dax_direct_access(dax_dev, pgoff, nr_pages, flags, kaddr, pfn);
+>  }
+>
+>  static int linear_dax_zero_page_range(struct dm_target *ti, pgoff_t pgoff,
+> diff --git a/drivers/md/dm-log-writes.c b/drivers/md/dm-log-writes.c
+> index c9d036d6bb2e..e23f062ade5f 100644
+> --- a/drivers/md/dm-log-writes.c
+> +++ b/drivers/md/dm-log-writes.c
+> @@ -889,11 +889,12 @@ static struct dax_device *log_writes_dax_pgoff(struct dm_target *ti,
+>  }
+>
+>  static long log_writes_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+> -                                        long nr_pages, void **kaddr, pfn_t *pfn)
+> +                                        long nr_pages, int flags,
+> +                                        void **kaddr, pfn_t *pfn)
+>  {
+>         struct dax_device *dax_dev = log_writes_dax_pgoff(ti, &pgoff);
+>
+> -       return dax_direct_access(dax_dev, pgoff, nr_pages, kaddr, pfn);
+> +       return dax_direct_access(dax_dev, pgoff, nr_pages, flags, kaddr, pfn);
+>  }
+>
+>  static int log_writes_dax_zero_page_range(struct dm_target *ti, pgoff_t pgoff,
+> diff --git a/drivers/md/dm-stripe.c b/drivers/md/dm-stripe.c
+> index c81d331d1afe..b89339c78702 100644
+> --- a/drivers/md/dm-stripe.c
+> +++ b/drivers/md/dm-stripe.c
+> @@ -315,11 +315,11 @@ static struct dax_device *stripe_dax_pgoff(struct dm_target *ti, pgoff_t *pgoff)
+>  }
+>
+>  static long stripe_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+> -               long nr_pages, void **kaddr, pfn_t *pfn)
+> +               long nr_pages, int flags, void **kaddr, pfn_t *pfn)
+>  {
+>         struct dax_device *dax_dev = stripe_dax_pgoff(ti, &pgoff);
+>
+> -       return dax_direct_access(dax_dev, pgoff, nr_pages, kaddr, pfn);
+> +       return dax_direct_access(dax_dev, pgoff, nr_pages, flags, kaddr, pfn);
+>  }
+>
+>  static int stripe_dax_zero_page_range(struct dm_target *ti, pgoff_t pgoff,
+> diff --git a/drivers/md/dm-target.c b/drivers/md/dm-target.c
+> index 64dd0b34fcf4..24b1e5628f3a 100644
+> --- a/drivers/md/dm-target.c
+> +++ b/drivers/md/dm-target.c
+> @@ -142,7 +142,7 @@ static void io_err_release_clone_rq(struct request *clone,
+>  }
+>
+>  static long io_err_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+> -               long nr_pages, void **kaddr, pfn_t *pfn)
+> +               long nr_pages, int flags, void **kaddr, pfn_t *pfn)
+>  {
+>         return -EIO;
+>  }
+> diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
+> index 5630b470ba42..180ca8fa383e 100644
+> --- a/drivers/md/dm-writecache.c
+> +++ b/drivers/md/dm-writecache.c
+> @@ -286,7 +286,8 @@ static int persistent_memory_claim(struct dm_writecache *wc)
+>
+>         id = dax_read_lock();
+>
+> -       da = dax_direct_access(wc->ssd_dev->dax_dev, offset, p, &wc->memory_map, &pfn);
+> +       da = dax_direct_access(wc->ssd_dev->dax_dev, offset, p, 0,
+> +                       &wc->memory_map, &pfn);
+>         if (da < 0) {
+>                 wc->memory_map = NULL;
+>                 r = da;
+> @@ -309,7 +310,7 @@ static int persistent_memory_claim(struct dm_writecache *wc)
+>                 do {
+>                         long daa;
+>                         daa = dax_direct_access(wc->ssd_dev->dax_dev, offset + i, p - i,
+> -                                               NULL, &pfn);
+> +                                               0, NULL, &pfn);
+>                         if (daa <= 0) {
+>                                 r = daa ? daa : -EINVAL;
+>                                 goto err3;
+> diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+> index ad2e0bbeb559..a8c697bb6603 100644
+> --- a/drivers/md/dm.c
+> +++ b/drivers/md/dm.c
+> @@ -1087,7 +1087,8 @@ static struct dm_target *dm_dax_get_live_target(struct mapped_device *md,
+>  }
+>
+>  static long dm_dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff,
+> -                                long nr_pages, void **kaddr, pfn_t *pfn)
+> +                                long nr_pages, int flags, void **kaddr,
+> +                                pfn_t *pfn)
+>  {
+>         struct mapped_device *md = dax_get_private(dax_dev);
+>         sector_t sector = pgoff * PAGE_SECTORS;
+> @@ -1105,7 +1106,7 @@ static long dm_dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff,
+>         if (len < 1)
+>                 goto out;
+>         nr_pages = min(len, nr_pages);
+> -       ret = ti->type->direct_access(ti, pgoff, nr_pages, kaddr, pfn);
+> +       ret = ti->type->direct_access(ti, pgoff, nr_pages, flags, kaddr, pfn);
+>
+>   out:
+>         dm_put_live_table(md, srcu_idx);
+> diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+> index 30c71a68175b..0400c5a7ba39 100644
+> --- a/drivers/nvdimm/pmem.c
+> +++ b/drivers/nvdimm/pmem.c
+> @@ -238,12 +238,23 @@ static int pmem_rw_page(struct block_device *bdev, sector_t sector,
+>
+>  /* see "strong" declaration in tools/testing/nvdimm/pmem-dax.c */
+>  __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
+> -               long nr_pages, void **kaddr, pfn_t *pfn)
+> +               long nr_pages, int flags, void **kaddr, pfn_t *pfn)
+>  {
+>         resource_size_t offset = PFN_PHYS(pgoff) + pmem->data_offset;
+> +       sector_t sector = PFN_PHYS(pgoff) >> SECTOR_SHIFT;
+> +       unsigned int num = PFN_PHYS(nr_pages) >> SECTOR_SHIFT;
+> +       struct badblocks *bb = &pmem->bb;
+> +       sector_t first_bad;
+> +       int num_bad;
+> +       bool bad_in_range;
+> +       long actual_nr;
+> +
+> +       if (!bb->count)
+> +               bad_in_range = false;
+> +       else
+> +               bad_in_range = !!badblocks_check(bb, sector, num, &first_bad, &num_bad);
 
-> On Mon, Apr 11 2022, Jason Wang <jasowang@redhat.com> wrote:
-> 
-> > On Sun, Apr 10, 2022 at 3:51 PM Michael S. Tsirkin <mst@redhat.com> wrote:  
-> >>
-> >> On Fri, Apr 08, 2022 at 03:03:07PM +0200, Halil Pasic wrote:  
-> >> > On Wed, 06 Apr 2022 15:04:32 +0200
-> >> > Cornelia Huck <cohuck@redhat.com> wrote:
-> >> >  
-> >> > > On Wed, Apr 06 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >> > >  
-> >> > > > On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:  
-> >> > > >> This patch implements PCI version of synchronize_vqs().
-> >> > > >>
-> >> > > >> Cc: Thomas Gleixner <tglx@linutronix.de>
-> >> > > >> Cc: Peter Zijlstra <peterz@infradead.org>
-> >> > > >> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> >> > > >> Cc: Marc Zyngier <maz@kernel.org>
-> >> > > >> Signed-off-by: Jason Wang <jasowang@redhat.com>  
-> >> > > >
-> >> > > > Please add implementations at least for ccw and mmio.  
-> >> > >
-> >> > > I'm not sure what (if anything) can/should be done for ccw...  
-> >> >
-> >> > If nothing needs to be done I would like to have at least a comment in
-> >> > the code that explains why. So that somebody who reads the code
-> >> > doesn't wonder: why is virtio-ccw not implementing that callback.  
-> >>
-> >> Right.
-> >>
-> >> I am currently thinking instead of making this optional in the
-> >> core we should make it mandatory, and have transports which do not
-> >> need to sync have an empty stub with documentation explaining why.  
-> 
-> Yes, that makes sense to me. If we can explain why we don't need to do
-> anything, we should keep that explanation easily accessible.
-> 
-> >>
-> >> Also, do we want to document this sync is explicitly for irq enable/disable?
-> >> synchronize_irq_enable_disable?  
-> >
-> > I would not since the transport is not guaranteed to use an interrupt
-> > for callbacks.
-> >  
-> >>
-> >>  
-> >> > >  
-> >> > > >  
-> >> > > >> ---
-> >> > > >>  drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
-> >> > > >>  drivers/virtio/virtio_pci_common.h |  2 ++
-> >> > > >>  drivers/virtio/virtio_pci_legacy.c |  1 +
-> >> > > >>  drivers/virtio/virtio_pci_modern.c |  2 ++
-> >> > > >>  4 files changed, 19 insertions(+)
-> >> > > >>
-> >> > > >> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-> >> > > >> index d724f676608b..b78c8bc93a97 100644
-> >> > > >> --- a/drivers/virtio/virtio_pci_common.c
-> >> > > >> +++ b/drivers/virtio/virtio_pci_common.c
-> >> > > >> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_device *vdev)
-> >> > > >>                  synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
-> >> > > >>  }
-> >> > > >>
-> >> > > >> +void vp_synchronize_vqs(struct virtio_device *vdev)
-> >> > > >> +{
-> >> > > >> +        struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> >> > > >> +        int i;
-> >> > > >> +
-> >> > > >> +        if (vp_dev->intx_enabled) {
-> >> > > >> +                synchronize_irq(vp_dev->pci_dev->irq);
-> >> > > >> +                return;
-> >> > > >> +        }
-> >> > > >> +
-> >> > > >> +        for (i = 0; i < vp_dev->msix_vectors; ++i)
-> >> > > >> +                synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
-> >> > > >> +}
-> >> > > >> +  
-> >> > >
-> >> > > ...given that this seems to synchronize threaded interrupt handlers?
-> >> > > Halil, do you think ccw needs to do anything? (AFAICS, we only have one
-> >> > > 'irq' for channel devices anyway, and the handler just calls the
-> >> > > relevant callbacks directly.)  
-> >> >
-> >> > Sorry I don't understand enough yet. A more verbose documentation on
-> >> > "virtio_synchronize_vqs - synchronize with virtqueue callbacks" would
-> >> > surely benefit me. It may be more than enough for a back-belt but it
-> >> > ain't enough for me to tell what is the callback supposed to accomplish.  
-> 
-> +1 for more explanations.
-> 
-> >> >
-> >> > I will have to study this discussion and the code more thoroughly.
-> >> > Tentatively I side with Jason and Michael in a sense, that I don't
-> >> > believe virtio-ccw is safe against rough interrupts.  
-> >
-> > That's my feeling as well.  
-> 
-> I'd say ccw is safe against "notification interrupts before indicators
-> have been registered".
+Why all this change...
 
-I believe Jason's scope is broader than that. Let me try to explain. A
-quote form the standard:
-"""
-3.1.1 Driver Requirements: Device Initialization
-The driver MUST follow this sequence to initialize a device: 
-    1. Reset the device. 
-    2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the device. 
-    3. Set the DRIVER status bit: the guest OS knows how to drive the device. 
-    4. Read device feature bits, and write the subset of feature bits understood by the OS and driver to the device. During this step the driver MAY read (but MUST NOT write) the device-specific configuration fields to check that it can support the device before accepting it. 
-    5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature bits after this step. 
-    6. Re-read device status to ensure the FEATURES_OK bit is still set: otherwise, the device does not support our subset of features and the device is unusable. 
-    7. Perform device-specific setup, including discovery of virtqueues for the device, optional per-bus setup, reading and possibly writing the device’s virtio configuration space, and population of virtqueues. 
-    8. Set the DRIVER_OK status bit. At this point the device is “live”.
-"""
+>
+> -       if (unlikely(is_bad_pmem(&pmem->bb, PFN_PHYS(pgoff) / 512,
+> -                                       PFN_PHYS(nr_pages))))
 
-That means stuff may happen between "discovery of virtqueues" and "DRIVER_OK". So it
-is not sufficient to be "safe against notifications before indicators
-have been registered", but we want to be also safe between "indicators have
-been registered" and "DRIVER_OK status has been set". 
+...instead of adding "&& !(flags & DAX_RECOVERY)" to this statement?
 
-@Jason: can you confirm?
+> +       if (bad_in_range && !(flags & DAX_RECOVERY))
+>                 return -EIO;
+>
+>         if (kaddr)
+> @@ -251,13 +262,26 @@ __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
+>         if (pfn)
+>                 *pfn = phys_to_pfn_t(pmem->phys_addr + offset, pmem->pfn_flags);
+>
+> +       if (!bad_in_range) {
+> +               /*
+> +                * If badblock is present but not in the range, limit known good range
+> +                * to the requested range.
+> +                */
+> +               if (bb->count)
+> +                       return nr_pages;
+> +               return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
+> +       }
+> +
+>         /*
+> -        * If badblocks are present, limit known good range to the
+> -        * requested range.
+> +        * In case poison is found in the given range and DAX_RECOVERY flag is set,
+> +        * recovery stride is set to kernel page size because the underlying driver and
+> +        * firmware clear poison functions don't appear to handle large chunk (such as
+> +        * 2MiB) reliably.
+>          */
+> -       if (unlikely(pmem->bb.count))
+> -               return nr_pages;
+> -       return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
+> +       actual_nr = PHYS_PFN(PAGE_ALIGN((first_bad - sector) << SECTOR_SHIFT));
+> +       dev_dbg(pmem->bb.dev, "start sector(%llu), nr_pages(%ld), first_bad(%llu), actual_nr(%ld)\n",
+> +                       sector, nr_pages, first_bad, actual_nr);
+> +       return (actual_nr == 0) ? 1 : actual_nr;
 
-Regarding the question "are we safe against notifications before
-indicators have been registered" I think we really need to think about
-something like Secure Execution. We don't have, and we are unlikely
-to have in hardware virtio-ccw implementations, and for a malicious hypervisor
-that has full access to the guest memory hardening makes no sense.
+Similar feedback as above that this is more change than I would expect.
 
-But if we assume that an attacker can inject adapter interrupts for an arbitrary
-ISC, and can poke any shared memory (notifier bits are shared)... Things might
-become critical already when register_adapter_interrupt() does it's magic.
+I think just adding...
 
+if (flags & DAX_RECOVERY)
+   return 1;
 
-> For the reverse case, maybe we should always
-> invalidate the indicators in the reset case? More information regarding
-> the attack vector would help here :)
-> 
-> My main concern is that we would need to synchronize against a single
-> interrupt that covers all kinds of I/O interrupts, not just a single
-> device...
-> 
-
-Could we synchronize on struct airq_info's lock member? If we were
-to grab all of these that might be involved...
-
-AFAIU for the synchronize implementation we need a lock or a set of locks
-that contain all the possible vring_interrupt() calls with the queuues
-that belong to the given device as a critical section. That way, one
-has the acquire's and release's in place so that the vrign_interrupt()
-either guaranteed to finish before the change of driver_ready is
-guaranteed to be complete, or it is guaranteed to see the change.
-
-In any case, I guess we should first get clear on the first part. I.e.
-when do we want to allow host->guest notifications.
-
-Regards,
-Halil
-
+...before the typical return path is enough.
