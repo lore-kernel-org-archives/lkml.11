@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66929C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1778CC38162
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388631AbiDLJWf (ORCPT
+        id S1388520AbiDLJW1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        Tue, 12 Apr 2022 05:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357907AbiDLHkx (ORCPT
+        with ESMTP id S1358219AbiDLHlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:53 -0400
+        Tue, 12 Apr 2022 03:41:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32733A701;
-        Tue, 12 Apr 2022 00:17:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2034B42A17;
+        Tue, 12 Apr 2022 00:17:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F66461701;
-        Tue, 12 Apr 2022 07:17:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 421FCC385AB;
-        Tue, 12 Apr 2022 07:17:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFECA61045;
+        Tue, 12 Apr 2022 07:17:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C0E0C385A1;
+        Tue, 12 Apr 2022 07:17:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747824;
-        bh=537283YRBjJKgJj+Nf1tX1vYfyuMABT/nm75Jj/WTxo=;
+        s=korg; t=1649747855;
+        bh=HLy3qY+J5ROTEF4rwyotysIW1sSO8dDgG1rHbzkhJac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lNdFbFNz1KfjS2zH06SOw/h0HieR0fqLJyl8Q2z8SnJz6cgKGLoc1645EaFv10spH
-         ajWba4aaIxXg3GMzjuH/xRv7lNZKU0jV6jYEAErOkES5JdKv1QuHfOFE0OTJ6wBaPZ
-         JUuZE1Wkn55+fxsDhVDmG87ZwjeUzftmTZq8nNis=
+        b=IM5zbrN3BMuJCxUpezxflmU+o+ZkGW5kB0fUPCdavQw6uze7p0LDLOvUacXxv1fCk
+         AZy2i0SV17idNneDAxZyaq7yrWgPPbvt7jygbZ+K+R/1OP+mGIzFRFf2A+Xn3IvITd
+         gRQrTxFci13ODH0j0/JAInFEmVim0+nAGxnQCFO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Enzo Matsumiya <ematsumiya@suse.de>,
+        Shyam Prasad N <sprasad@microsoft.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 219/343] spi: rpc-if: Fix RPM imbalance in probe error path
-Date:   Tue, 12 Apr 2022 08:30:37 +0200
-Message-Id: <20220412062957.663302382@linuxfoundation.org>
+Subject: [PATCH 5.17 229/343] cifs: fix potential race with cifsd thread
+Date:   Tue, 12 Apr 2022 08:30:47 +0200
+Message-Id: <20220412062957.947491639@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,46 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Paulo Alcantara <pc@cjr.nz>
 
-[ Upstream commit 2f8cf5f642e80f8b6b0e660a9c86924a1f41cd80 ]
+[ Upstream commit 687127c81ad32c8900a3fedbc7ed8f686ca95855 ]
 
-If rpcif_hw_init() fails, Runtime PM is left enabled.
+To avoid racing with demultiplex thread while it is handling data on
+socket, use cifs_signal_cifsd_for_reconnect() helper for marking
+current server to reconnect and let the demultiplex thread handle the
+rest.
 
-Fixes: b04cc0d912eb80d3 ("memory: renesas-rpc-if: Add support for RZ/G2L")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Link: https://lore.kernel.org/r/1c78a1f447d019bb66b6e7787f520ae78821e2ae.1648562287.git.geert+renesas@glider.be
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: dca65818c80c ("cifs: use a different reconnect helper for non-cifsd threads")
+Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rpc-if.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ fs/cifs/connect.c | 2 +-
+ fs/cifs/netmisc.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-rpc-if.c b/drivers/spi/spi-rpc-if.c
-index fe82f3575df4..24ec1c83f379 100644
---- a/drivers/spi/spi-rpc-if.c
-+++ b/drivers/spi/spi-rpc-if.c
-@@ -158,14 +158,18 @@ static int rpcif_spi_probe(struct platform_device *pdev)
- 
- 	error = rpcif_hw_init(rpc, false);
- 	if (error)
--		return error;
-+		goto out_disable_rpm;
- 
- 	error = spi_register_controller(ctlr);
- 	if (error) {
- 		dev_err(&pdev->dev, "spi_register_controller failed\n");
--		rpcif_disable_rpm(rpc);
-+		goto out_disable_rpm;
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index d6f8ccc7bfe2..0270b412f801 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -4465,7 +4465,7 @@ static int tree_connect_dfs_target(const unsigned int xid, struct cifs_tcon *tco
+ 	 */
+ 	if (rc && server->current_fullpath != server->origin_fullpath) {
+ 		server->current_fullpath = server->origin_fullpath;
+-		cifs_reconnect(tcon->ses->server, true);
++		cifs_signal_cifsd_for_reconnect(server, true);
  	}
  
-+	return 0;
-+
-+out_disable_rpm:
-+	rpcif_disable_rpm(rpc);
- 	return error;
- }
+ 	dfs_cache_free_tgts(tl);
+diff --git a/fs/cifs/netmisc.c b/fs/cifs/netmisc.c
+index ebe236b9d9f5..235aa1b395eb 100644
+--- a/fs/cifs/netmisc.c
++++ b/fs/cifs/netmisc.c
+@@ -896,7 +896,7 @@ map_and_check_smb_error(struct mid_q_entry *mid, bool logErr)
+ 		if (class == ERRSRV && code == ERRbaduid) {
+ 			cifs_dbg(FYI, "Server returned 0x%x, reconnecting session...\n",
+ 				code);
+-			cifs_reconnect(mid->server, false);
++			cifs_signal_cifsd_for_reconnect(mid->server, false);
+ 		}
+ 	}
  
 -- 
 2.35.1
