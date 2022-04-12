@@ -2,305 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE7AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD53C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233512AbiDLJeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
+        id S1377285AbiDLJeq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356426AbiDLJNe (ORCPT
+        with ESMTP id S1388440AbiDLJWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:13:34 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83592E9ED
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:23:37 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3B177E0004;
-        Tue, 12 Apr 2022 08:23:35 +0000 (UTC)
+        Tue, 12 Apr 2022 05:22:12 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1E546676
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:28:36 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B09881C0014;
+        Tue, 12 Apr 2022 08:28:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649751816;
+        t=1649752115;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=8/BUvdkEcJIRkkGqjqjfSEkXhbiW0if/BHm1OExvqGA=;
-        b=P9hyo6f3qtS5V49850/VVxAN9C6ND+mD+VPXg0F4wUi3QSUxHf1VkVETXtlFvbqWnK5NRI
-        RNYR/5GFcxw7PqVyrR2TOGD/0FQytBYI+U7URWyvg4lwJsD9ilIgnG6NWTgg0K9gcqUOVM
-        6BsdqJClAalYBKBirbsuQYd1p2hgVJSDZIoKZbB3kz3l44DVGS9WHEUCSICyYaP/rro2jM
-        tiMBaSZ/83l5ffSITSmvssg3HtS9qqWCJ3D+7bFZs7XALLIefz9oO9HUDr3c3kXHIurgVU
-        9XxGovWl0RAi8WQIa5GwfPmZVKHc/GZqTt3M/VNaMAIA96rA2XI7vMABe86jsw==
-Date:   Tue, 12 Apr 2022 10:23:34 +0200
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] drm: of: Improve error handling in bridge/panel detection
-Message-ID: <YlU3BsARY6GB6/qC@aptenodytes>
-References: <20220407093408.1478769-1-paul.kocialkowski@bootlin.com>
- <YlD4235/tGsQqede@yoga.lan>
+        bh=wzGSuUZ52CEXpm0PjnzfqryT/AQxVArAKAFDHRtNmXY=;
+        b=hyMuocSLSq+lLIQ8M72hif0KMCKsTDDXZeOqDwiA2O+v3q/dvAS/1JbUle4m64ZC6ZGCvF
+        LpPgQQVD5SoJrrNEZbaxXjN8ZbXIkRsd1w5yXhiuswDfYieCnb06YSVeY92LMt5D+Q9qYD
+        TysR0VEHDbAEt1QE+CwwHvgaWBjAK1zJ2+35Eelc3TRDZ4cw6ucnsKTWibqcBHIhRphWRf
+        onjHrZIm6100vw631T7BiLHk8Fvf80WyfkpTe8V8RJaOXt8QrqrLj12yn33CmBGlfRKX0V
+        G3FesljFtwLtVcRAzfukTp0/b1ErKARhYxZxP4YCN7aYwxFPPQm6VBnpumZoIw==
+Date:   Tue, 12 Apr 2022 10:28:32 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Bastian Hecht <hechtb@googlemail.com>,
+        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
+        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mtd: rawnand: Fix return value check of
+ wait_for_completion_timeout
+Message-ID: <20220412102832.09957c35@xps13>
+In-Reply-To: <bf603638-cc34-b185-3001-9caeba1884d7@gmail.com>
+References: <202204121253.NcZifMQi-lkp@intel.com>
+        <20220412063703.8537-1-linmq006@gmail.com>
+        <20220412090649.33bb3f8b@xps13>
+        <61783400-4df2-47af-78a7-7acb715c3a71@gmail.com>
+        <20220412094822.3818ebc2@xps13>
+        <bf603638-cc34-b185-3001-9caeba1884d7@gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="RsThgsWvuAuvhE8K"
-Content-Disposition: inline
-In-Reply-To: <YlD4235/tGsQqede@yoga.lan>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Miaoqian,
 
---RsThgsWvuAuvhE8K
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+linmq006@gmail.com wrote on Tue, 12 Apr 2022 16:23:24 +0800:
 
-Hi Bjorn,
-
-with a question for Jagan at the end.
-
-On Fri 08 Apr 22, 22:09, Bjorn Andersson wrote:
-> On Thu 07 Apr 04:34 CDT 2022, Paul Kocialkowski wrote:
+> Hi Miquel,
 >=20
-> > With the previous rework of drm_of_find_panel_or_bridge only
-> > -EPROBE_DEFER is returned while previous behavior allowed -ENODEV
-> > to be returned when the port/endpoint is either missing or unavailable.
-> >=20
-> > Make the default return code of the function -ENODEV to handle this and
-> > only return -EPROBE_DEFER in find_panel_or_bridge when the of device is
-> > available but not yet registered. Also return the error code whenever
-> > the remote node exists to avoid checking for child nodes.
-> >=20
-> > Checking child nodes could result in -EPROBE_DEFER returned by
-> > find_panel_or_bridge with an unrelated child node that would overwrite
-> > a legitimate -ENODEV from find_panel_or_bridge if the remote node from
-> > the of graph is unavailable. This happens because find_panel_or_bridge
-> > has no way to distinguish between a legitimate panel/bridge node that
-> > isn't yet registered and an unrelated node.
-> >=20
-> > Add comments around to clarify this behavior.
-> >=20
-> > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > Fixes: 67bae5f28c89 ("drm: of: Properly try all possible cases for brid=
-ge/panel detection")
-> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > Cc: Thierry Reding <thierry.reding@gmail.com>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> >=20
->=20
-> Thanks for your patch, this does seem to solve the first problem I
-> reported, where I have a DisplayPort bridge with the following content:
->=20
-> sn65dsi86: bridge@2c {
-> 	compatible =3D "ti,sn65dsi86";
-> 	...;
->=20
-> 	ports {
-> 		port@0 {
-> 			reg =3D <0>;
-> 			sn65dsi86_in_a: endpoint {
-> 				remote-endpoint =3D <&dsi0_out>;
-> 			};
-> 		};
->=20
-> 		port@1 {
-> 			reg =3D <1>;
-> 			sn65dsi86_out: endpoint {
-> 				remote-endpoint =3D <&panel_in_edp>;
-> 			};
-> 		};
-> 	};
->=20
-> 	aux-bus {
-> 		panel: panel {
-> 			compatible =3D "boe,nv133fhm-n61";
-> 			backlight =3D <&backlight>;
->=20
-> 			port {
-> 				panel_in_edp: endpoint {
-> 					remote-endpoint =3D <&sn65dsi86_out>;
-> 				};
-> 			};
-> 		};
-> 	};
-> };
->=20
-> The code now finds a match on of_graph_get_remote_node() and returns 0
-> or -EPROBE_DEFER from find_panel_or_bridge(?, 1, ?). And we return this,
-> before failing to resolve the "aux-bus" as a panel.
-
-Sounds good!
-
-> But my other case still doesn't work:
->=20
-> mdss_dp: displayport-controller@ae90000 {
-> 	compatible =3D "qcom,sm8350-dp";
-> 	...;
-> 	operating-points-v2 =3D <&dp_opp_table>;
->=20
-> 	ports {
-> 		port@0 {
-> 			reg =3D <0>;
-> 			dp_in: endpoint {
-> 				remote-endpoint =3D <&dpu_intf0_out>;
-> 			};
-> 		};
-> 	};
->=20
-> 	dp_opp_table: opp-table {
-> 		...
-> 	};
-> };
->=20
-> port@1 may be a reference to a DisplayPort panel, but in this particular
-> case the output is a USB Type-c connector (compatible
-> "usb-c-connector"). So I'm not able to specify this link, given that it
-> will not be a bridge or panel...ever...
-
-So in this case you have one port that can go either to a panel or a connec=
-tor.
-Using drm_of_find_panel_or_bridge will always return -EPROBE_DEFER for the
-connector (I suspect this was also the previous behavior) so I think you sh=
-ould
-first check (in the driver) if the remote is a type-c connector
-(of_graph_get_remote_node +  of_device_is_compatible) and use
-drm_of_find_panel_or_bridge if not.
-
-> So this does not find a match on of_graph_get_remote_node(np, 1, ?), so
-> we move ahead and look at all children not named "port" or "ports". We
-> find the opp-table and concludes that this not a panel. At this point
-> ret is overwritten and we end up returning -EPROBE_DEFER.
-
-So if I understand correctly, port@1 is not defined when the issue happens
-and it returns -EPROBE_DEFER like you described.
-
-We could step things up a notch and return -ENODEV if of_graph_is_present
-but of_graph_get_remote_node returns NULL. The idea would be that if the of
-graph is present, the child node mechanism cannot be used.
-
-> I think it's worth reverting back to the explicit of_graph link to the
-> panel, even in the case that it's an immediate child node. It avoids the
-> problem of specifying that all future display nodes must only have
-> children of type ports, port or panel. We might be able to come up with
-> something that works for my case, but it seems fragile and not very
-> future proof. The explicit port is a little bit clunky, but it doesn't
-> have this problem.
-
-I think in any case we really don't want to specify that display nodes cann=
-ot
-have any other child than ports, port or a direct panel/bridge. I know that
-a number of bindings already specify different types of child nodes.
-
-I am absolutly in favor of reverting the child node mechanism, but it might
-be too late already if a binding was already defined to work this way.
-Of course we should actively discourage anyone to use it in a new binding.
-
-Jagan, can you prove some insight on why this mechanism was needed in the f=
-irst
-place and if we can get rid of it without breaking any active binding?
-
-Cheers,
-
-Paul
-
-> Regards,
-> Bjorn
->=20
-> > ---
-> >  drivers/gpu/drm/drm_of.c | 23 ++++++++++++++++++-----
-> >  1 file changed, 18 insertions(+), 5 deletions(-)
-> >=20
-> > diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-> > index 8716da6369a6..97ea9d2016ff 100644
-> > --- a/drivers/gpu/drm/drm_of.c
-> > +++ b/drivers/gpu/drm/drm_of.c
-> > @@ -223,6 +223,9 @@ static int find_panel_or_bridge(struct device_node =
-*node,
-> >  				struct drm_panel **panel,
-> >  				struct drm_bridge **bridge)
-> >  {
-> > +	if (!of_device_is_available(node))
-> > +		return -ENODEV;
-> > +
-> >  	if (panel) {
-> >  		*panel =3D of_drm_find_panel(node);
-> >  		if (!IS_ERR(*panel))
-> > @@ -265,7 +268,7 @@ int drm_of_find_panel_or_bridge(const struct device=
-_node *np,
-> >  				struct drm_bridge **bridge)
-> >  {
-> >  	struct device_node *node;
-> > -	int ret;
-> > +	int ret =3D -ENODEV;
+> On 2022/4/12 15:48, Miquel Raynal wrote:
 > > =20
-> >  	if (!panel && !bridge)
-> >  		return -EINVAL;
-> > @@ -282,8 +285,12 @@ int drm_of_find_panel_or_bridge(const struct devic=
-e_node *np,
-> >  			ret =3D find_panel_or_bridge(node, panel, bridge);
-> >  			of_node_put(node);
+> >>> Hi Miaoqian,
+> >>>
+> >>> linmq006@gmail.com wrote on Tue, 12 Apr 2022 06:36:52 +0000:
+> >>>   =20
+> >>>> wait_for_completion_timeout() returns unsigned long not int.
+> >>>> It returns 0 if timed out, and positive if completed.
+> >>>> The check for <=3D 0 is ambiguous and should be =3D=3D 0 here
+> >>>> indicating timeout which is the only error case.
+> >>>>
+> >>>> Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
+> >>>> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> >>>> ---
+> >>>> change in v2:
+> >>>> - initialize ret to 1.
+> >>>> ---
+> >>>>  drivers/mtd/nand/raw/sh_flctl.c | 8 +++++---
+> >>>>  1 file changed, 5 insertions(+), 3 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/=
+sh_flctl.c
+> >>>> index b85b9c6fcc42..2373251f585b 100644
+> >>>> --- a/drivers/mtd/nand/raw/sh_flctl.c
+> >>>> +++ b/drivers/mtd/nand/raw/sh_flctl.c
+> >>>> @@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_fl=
+ctl *flctl, unsigned long *buf,
+> >>>>  	dma_addr_t dma_addr;
+> >>>>  	dma_cookie_t cookie;
+> >>>>  	uint32_t reg;
+> >>>> -	int ret;
+> >>>> +	int ret =3D 1;   =20
+> >>> Does not look right. I know this function returns > 0 on positive
+> >>> outcomes but this does not make any sense in the first place.   =20
+> >> Yes, I made a mistake, Now I realize that in v2, it will return 1 in e=
+rror path
+> >>
+> >> when DMA submit failed. =20
+> > Not 1, but a proper error code please (-ETIMEDOUT, -EINVAL, whatever)
 > > =20
-> > -			if (!ret)
-> > -				return 0;
-> > +			/*
-> > +			 * If the graph/remote node is present we consider it
-> > +			 * to be the legitimate candidate here and return
-> > +			 * whatever code we got from find_panel_or_bridge.
-> > +			 */
-> > +			return ret;
-> >  		}
-> >  	}
-> > =20
-> > @@ -296,12 +303,18 @@ int drm_of_find_panel_or_bridge(const struct devi=
-ce_node *np,
-> >  		ret =3D find_panel_or_bridge(node, panel, bridge);
-> >  		of_node_put(node);
-> > =20
-> > -		/* Stop at the first found occurrence. */
-> > +		/*
-> > +		 * Note that an unrelated (available) child node will cause
-> > +		 * find_panel_or_bridge to return -EPROBE_DEFER because there
-> > +		 * is no way to distinguish the node from a legitimate
-> > +		 * panel/bridge that didn't register yet. Keep iterating nodes
-> > +		 * and only return on the first found occurrence.
-> > +		 */
-> >  		if (!ret)
-> >  			return 0;
-> >  	}
-> > =20
-> > -	return -EPROBE_DEFER;
-> > +	return ret;
-> >  }
-> >  EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);
-> > =20
-> > --=20
-> > 2.35.1
-> >=20
+> >> And for patch v1, it will return 0=C2=A0 if calls wait_for_completion_=
+timeout succeeds.
+> >> =20
+> >>> This function is static and only called twice, please turn it into
+> >>> something like:
+> >>>
+> >>> if (dma_fifo_transfer())
+> >>> 	error
+> >>> else
+> >>> 	ok   =20
+> >> So I want to keep ret>0 means success.
+> >>
+> >> Or could I set ret > 0 after in wait_for_completion_timeout() success =
+path?
+> >>
+> >> like:
+> >>
+> >> =C2=A0=C2=A0=C2=A0 if(time_left =3D=3D 0)
+> >>
+> >> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 ret =3D -ETIM=
+EDOUT;
+> >>
+> >> =C2=A0=C2=A0=C2=A0 else
+> >>
+> >> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =C2=A0 ret =3D 1; =20
+> > You can initialize ret to zero at to top. So that anything !=3D 0 is an
+> > error (like a lot of functions in the kernel).  =20
+>=20
+> Thanks for your advice, I will do this.
+> > And use:
+> >
+> > 	if (dma_fifo_transfer())
+> > 		error(); =20
+> I think keeping the original condition structure is better,
+> something like:
+>=20
+> if (dma_fifo_transfer()=3D=3D0)
 
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
+  if (cond && cond && !dma_fifo_transfer())
 
---RsThgsWvuAuvhE8K
-Content-Type: application/pgp-signature; name="signature.asc"
+> 	succeed();
+>=20
+> In this way, only minor changes is needed=E2=80=94=E2=80=94only need to u=
+pdate the symbol in condition.
+> Otherwise It needs to restructure the code and be more complicated.
+>=20
+>=20
+> Thanks,
+>=20
+> >> What do you think?
+> >>
+> >>
+> >> Thanks,
+> >> =20
+> >>>> +	unsigned long time_left;
+> >>>> =20
+> >>>>  	if (dir =3D=3D DMA_FROM_DEVICE) {
+> >>>>  		chan =3D flctl->chan_fifo0_rx;
+> >>>> @@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_=
+flctl *flctl, unsigned long *buf,
+> >>>>  		goto out;
+> >>>>  	}
+> >>>> =20
+> >>>> -	ret =3D
+> >>>> +	time_left =3D
+> >>>>  	wait_for_completion_timeout(&flctl->dma_complete,
+> >>>>  				msecs_to_jiffies(3000));
+> >>>> =20
+> >>>> -	if (ret <=3D 0) {
+> >>>> +	if (time_left =3D=3D 0) {
+> >>>>  		dmaengine_terminate_all(chan);
+> >>>>  		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
+> >>>> +		ret =3D -ETIMEDOUT;
+> >>>>  	}
+> >>>> =20
+> >>>>  out:   =20
+> >>> Thanks,
+> >>> Miqu=C3=A8l   =20
+> >
+> > Thanks,
+> > Miqu=C3=A8l =20
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmJVNwYACgkQ3cLmz3+f
-v9En1ggAjUXTG2lHoEKBdruRe7Dd8kzQrav2FV13zPsiv7nYC1CennWfaAqPWUDU
-yqg5ae+zHwP3TMmhFqzp1eHfNJ1PQ5+XVW7ANDcig400QKeRuIMqVBVybFubJLP/
-oCB8oP1h3S6bMk7nDRM8oHsIUz8bHdxeBzGncKzMLNlUvFkAgTYyl0Yaj6HZ/S5E
-+VxjDArY4FpVz8GvOpf1UNZgTtfkSl1K+mQ6J0/mIifY0S/BAw70GosBsvGgSqM2
-AraPkUK3tcj8M6HZIs2sW5Q0FnNZiDIxmk9IClyBYCG9HHlmo9nV8su/lQ3Po+vz
-EFicWeA45ovXso3DlCt+lRQz4BQI/A==
-=FCXc
------END PGP SIGNATURE-----
-
---RsThgsWvuAuvhE8K--
+Thanks,
+Miqu=C3=A8l
