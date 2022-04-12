@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E33AFC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 138DFC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385482AbiDLIv5 (ORCPT
+        id S1385520AbiDLIwI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        Tue, 12 Apr 2022 04:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358839AbiDLHmQ (ORCPT
+        with ESMTP id S1358908AbiDLHmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2002753E3C;
-        Tue, 12 Apr 2022 00:19:25 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A0354686;
+        Tue, 12 Apr 2022 00:19:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA2DEB81A8F;
-        Tue, 12 Apr 2022 07:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E0DCC385A5;
-        Tue, 12 Apr 2022 07:19:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5B99B81A8F;
+        Tue, 12 Apr 2022 07:19:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D4AC385AB;
+        Tue, 12 Apr 2022 07:19:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747962;
-        bh=QhsvxtWGhK5wtgUU105j/Ut1BdLJxJR/yoBWlg8U0ts=;
+        s=korg; t=1649747973;
+        bh=r7zwxBmSBYLoVuMUOCzhurkmYQox+oscdpkyavZfQGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GRy/1z54+wobF+Sd+OUhWCeiuYkQ+wwZmyZp4tLX9e5NztBq8kOF6ZtuO6gS2fCER
-         PVlN+Zgmj/vhUGwJlAUBvy+phmdooT/z2mbCFI9QHLyAS2pv86alK1szKrZ/fgdj70
-         /NP9ptZhTD6ktAWNyJ1hlEhGZwEVGqPYpV4Uzn34=
+        b=cNOc7WgLFgNq3EgcrEqtlIMkukmu6vADF5ZkB7hvB/PLXMfJ5S0hgjDJtKIQGKzIY
+         slzsNBNI108D3QuSkV/ReIeAf1qVKT0qOnjcjzu9PhmpBLQNJ68YNNuf/22JwNxtry
+         /xi/70UHW0Zo+n+l1nFOgcvdfoGHDCyE0bvaUy/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yann Gautier <yann.gautier@foss.st.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.17 268/343] mmc: mmci: stm32: correctly check all elements of sg list
-Date:   Tue, 12 Apr 2022 08:31:26 +0200
-Message-Id: <20220412062959.058808790@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com,
+        Guo Xuenan <guoxuenan@huawei.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Yann Collet <cyan@fb.com>, Chengyang Fan <cy.fan@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 272/343] lz4: fix LZ4_decompress_safe_partial read out of bound
+Date:   Tue, 12 Apr 2022 08:31:30 +0200
+Message-Id: <20220412062959.174661611@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,46 +55,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yann Gautier <yann.gautier@foss.st.com>
+From: Guo Xuenan <guoxuenan@huawei.com>
 
-commit 0d319dd5a27183b75d984e3dc495248e59f99334 upstream.
+commit eafc0a02391b7b36617b36c97c4b5d6832cf5e24 upstream.
 
-Use sg and not data->sg when checking sg list elements. Else only the
-first element alignment is checked.
-The last element should be checked the same way, for_each_sg already set
-sg to sg_next(sg).
+When partialDecoding, it is EOF if we've either filled the output buffer
+or can't proceed with reading an offset for following match.
 
-Fixes: 46b723dd867d ("mmc: mmci: add stm32 sdmmc variant")
-Cc: stable@vger.kernel.org
-Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
-Link: https://lore.kernel.org/r/20220317111944.116148-2-yann.gautier@foss.st.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+In some extreme corner cases when compressed data is suitably corrupted,
+UAF will occur.  As reported by KASAN [1], LZ4_decompress_safe_partial
+may lead to read out of bound problem during decoding.  lz4 upstream has
+fixed it [2] and this issue has been disscussed here [3] before.
+
+current decompression routine was ported from lz4 v1.8.3, bumping
+lib/lz4 to v1.9.+ is certainly a huge work to be done later, so, we'd
+better fix it first.
+
+[1] https://lore.kernel.org/all/000000000000830d1205cf7f0477@google.com/
+[2] https://github.com/lz4/lz4/commit/c5d6f8a8be3927c0bec91bcc58667a6cfad244ad#
+[3] https://lore.kernel.org/all/CC666AE8-4CA4-4951-B6FB-A2EFDE3AC03B@fb.com/
+
+Link: https://lkml.kernel.org/r/20211111105048.2006070-1-guoxuenan@huawei.com
+Reported-by: syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com
+Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
+Reviewed-by: Nick Terrell <terrelln@fb.com>
+Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Cc: Yann Collet <cyan@fb.com>
+Cc: Chengyang Fan <cy.fan@huawei.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/mmci_stm32_sdmmc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ lib/lz4/lz4_decompress.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/mmci_stm32_sdmmc.c
-+++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
-@@ -62,8 +62,8 @@ static int sdmmc_idma_validate_data(stru
- 	 * excepted the last element which has no constraint on idmasize
- 	 */
- 	for_each_sg(data->sg, sg, data->sg_len - 1, i) {
--		if (!IS_ALIGNED(data->sg->offset, sizeof(u32)) ||
--		    !IS_ALIGNED(data->sg->length, SDMMC_IDMA_BURST)) {
-+		if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
-+		    !IS_ALIGNED(sg->length, SDMMC_IDMA_BURST)) {
- 			dev_err(mmc_dev(host->mmc),
- 				"unaligned scatterlist: ofst:%x length:%d\n",
- 				data->sg->offset, data->sg->length);
-@@ -71,7 +71,7 @@ static int sdmmc_idma_validate_data(stru
- 		}
- 	}
+--- a/lib/lz4/lz4_decompress.c
++++ b/lib/lz4/lz4_decompress.c
+@@ -271,8 +271,12 @@ static FORCE_INLINE int LZ4_decompress_g
+ 			ip += length;
+ 			op += length;
  
--	if (!IS_ALIGNED(data->sg->offset, sizeof(u32))) {
-+	if (!IS_ALIGNED(sg->offset, sizeof(u32))) {
- 		dev_err(mmc_dev(host->mmc),
- 			"unaligned last scatterlist: ofst:%x length:%d\n",
- 			data->sg->offset, data->sg->length);
+-			/* Necessarily EOF, due to parsing restrictions */
+-			if (!partialDecoding || (cpy == oend))
++			/* Necessarily EOF when !partialDecoding.
++			 * When partialDecoding, it is EOF if we've either
++			 * filled the output buffer or
++			 * can't proceed with reading an offset for following match.
++			 */
++			if (!partialDecoding || (cpy == oend) || (ip >= (iend - 2)))
+ 				break;
+ 		} else {
+ 			/* may overwrite up to WILDCOPYLENGTH beyond cpy */
 
 
