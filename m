@@ -2,260 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF64C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17188C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348875AbiDLGci (ORCPT
+        id S1348937AbiDLGf1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
+        Tue, 12 Apr 2022 02:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241763AbiDLGcY (ORCPT
+        with ESMTP id S1348898AbiDLGfZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:32:24 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204336570;
-        Mon, 11 Apr 2022 23:30:07 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23C6Bhgh021578;
-        Tue, 12 Apr 2022 02:29:38 -0400
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2175.outbound.protection.outlook.com [104.47.59.175])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3fb861s0re-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 02:29:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=INcscFLKorAu3OydriThRwsdVZmA9QhRwPO74il+gdCMYX1TdozI3kyjOxXRlUYzmCutQ0+49REGwz3l5AeZPTHNVFiPYPnVh12oE2eCCwpzLRh6HwYSvjt0mYftoW2++M8bS+lCLnBceaYxVWhT6ejV2Cwi6RDcjcOGBHdSTR7i1gDQkwG5qTg/I+uHvxC72SX1BXNohVGETrtNM4JMV8844ecLRL+7kzGZUKncZrMWYjVvyBZWK7ZCz29LIz8flBK7howJdENPBYJawCKvsLwIrWPY1hdxmslpkweQmstNyY0NpSuMvY4ydu8mOOMLP2SsCDvQ7C+LSUK8Nx19KQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8hD++m9Iy0D4DS7XDH+PXWcSlqeUwhIwN8uWbohTv8A=;
- b=coODDNNqOcOx7ePDnEy7GzymYdvCNnJjIU7MuNGXilUmbCczWkxLrPRPxu7jsMNrjl2j2MVsIZQ0do0ezzI4FddTsflBYbqq33p2XNEyqQYncqzaAH1jZo3F6tzhFr+Ny12yUscX1lCRh3KAi/Q+hnoAZfNf7R4vSBp1wrgCsS4LWJtBnxCseL5NMgpxTLKhVuAR2FkjpWcTlwTR0oAnDH76NrA5aQBxI5dtWZqUaWy9PFa6ObB6UWDTYEUBn8TSXOMXAtVqTjNHszOnl0ZqMqcXr25Lgcbg594So7SmrxgKMUehHtumuu+koFjD58ruH2kJBF3fqj6hvx3SxXomIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8hD++m9Iy0D4DS7XDH+PXWcSlqeUwhIwN8uWbohTv8A=;
- b=hVZLMS/zfA3waMzEQ4rthiCAZp3aa2lzzseoYnKnxKv6YLQIbI20Cmgc3ZCZv9IP5/sobYPEQ84oNkXeOb+UI4z1djfONZ8tGobUlGb318o/dElVTQ0D2AjDdnApXXE9/IZ/m9TUW5/k1R6jFAYlX+nAx40f4ZmYyeVgh79c1xs=
-Received: from PH0PR03MB6786.namprd03.prod.outlook.com (2603:10b6:510:122::7)
- by DM6PR03MB4668.namprd03.prod.outlook.com (2603:10b6:5:18c::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 06:29:36 +0000
-Received: from PH0PR03MB6786.namprd03.prod.outlook.com
- ([fe80::a97e:a520:c3a6:d2ae]) by PH0PR03MB6786.namprd03.prod.outlook.com
- ([fe80::a97e:a520:c3a6:d2ae%9]) with mapi id 15.20.5144.030; Tue, 12 Apr 2022
- 06:29:36 +0000
-From:   "Sa, Nuno" <Nuno.Sa@analog.com>
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Kees Cook <keescook@chromium.org>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] iio: stmpe-adc: Fix wait_for_completion_timeout return
- value check
-Thread-Topic: [PATCH v2] iio: stmpe-adc: Fix wait_for_completion_timeout
- return value check
-Thread-Index: AQHYTiF1o+UEAcyHdk+WlnZwOcLGqazr0M0Q
-Date:   Tue, 12 Apr 2022 06:29:35 +0000
-Message-ID: <PH0PR03MB6786157EDA63137DF0071D1F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
-References: <60e67c07-7e40-4187-a90a-1be9acdfe757@gmail.com>
- <20220412015547.4137-1-linmq006@gmail.com>
-In-Reply-To: <20220412015547.4137-1-linmq006@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: =?iso-8859-1?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcbnNhXGFwcG?=
- =?iso-8859-1?Q?RhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
- =?iso-8859-1?Q?OWUzNWJcbXNnc1xtc2ctZWFhOTk1YWQtYmEyOS0xMWVjLThiZGMtZmM3Nz?=
- =?iso-8859-1?Q?c0MjFmY2FlXGFtZS10ZXN0XGVhYTk5NWFmLWJhMjktMTFlYy04YmRjLWZj?=
- =?iso-8859-1?Q?Nzc3NDIxZmNhZWJvZHkudHh0IiBzej0iMjc3NSIgdD0iMTMyOTQyMTg1Nz?=
- =?iso-8859-1?Q?Q1MjQ4MTY3IiBoPSJVd2xhVDRpUUlQcGlCTHBFN2hMZVVBT0dUeEk9IiBp?=
- =?iso-8859-1?Q?ZD0iIiBibD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQU?=
- =?iso-8859-1?Q?FFb0NBQUNuYndLdE5rN1lBUmlsT3BpL2c5WElHS1U2bUwrRDFjZ0RBQUFB?=
- =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBSEFBQUFEYUFRQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-1?Q?FBQUFBQUFBQUFBRUFBUUFCQUFBQVZJRXZvUUFBQUFBQUFBQUFBQUFBQUo0?=
- =?iso-8859-1?Q?QUFBQmhBR1FBYVFCZkFITUFaUUJqQUhVQWNnQmxBRjhBY0FCeUFHOEFhZ0?=
- =?iso-8859-1?Q?JsQUdNQWRBQnpBRjhBWmdCaEFHd0Fjd0JsQUY4QVpnQnZBSE1BYVFCMEFH?=
- =?iso-8859-1?Q?a0FkZ0JsQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-1?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFFQUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdFQV?=
- =?iso-8859-1?Q?pBQnBBRjhBY3dCbEFHTUFkUUJ5QUdVQVh3QndBSElBYndCcUFHVUFZd0Iw?=
- =?iso-8859-1?Q?QUhNQVh3QjBBR2tBWlFCeUFERUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-1?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-1?Q?FBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFDZUFBQUFZUUJrQUdrQVh3?=
- =?iso-8859-1?Q?QnpBR1VBWXdCMUFISUFaUUJmQUhBQWNnQnZBR29BWlFCakFIUUFjd0JmQU?=
- =?iso-8859-1?Q?hRQWFRQmxBSElBTWdBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
- =?iso-8859-1?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?iso-8859-1?Q?QUFBQkFBQUFBQUFBQUFJQUFBQUFBQT09Ii8+PC9tZXRhPg=3D=3D?=
-x-dg-rorf: true
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bed5031a-c838-4978-f36a-08da1c4dd05b
-x-ms-traffictypediagnostic: DM6PR03MB4668:EE_
-x-microsoft-antispam-prvs: <DM6PR03MB4668355D4809048E305F8FC999ED9@DM6PR03MB4668.namprd03.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hosHcJ4QfS1WBImAHccmjG+tH+TBZAh0dG98fQpEVc3VSa95+hBPXvZ1KJutURZGKmBTeyAIzWYYBFpcgCGAI9IyE6e1eWoMnodK6xQXT/ReQyvqttIml+IJuL1wOiXFZd46vwnVdRiFY3pLzpO8IwG8/hXF/wKGNKY8TS6A415DdYG8gAuEjcKsRentBjnH9ry82dmbXL0P49Zz8Mk0gLJ8HpH1BRFAj+99zG/DiJ8iwFs3WcCYHsf3yEUJ8SYnUsBZg++gXGSlE12aV9539b7QlQRDwY/Bt3DT+GbHRpYwwCBuHZOAXcuHKat9iIFU7/JjtGSHQsv8y+OcxU0wlHWH/I2UdJBelb8Jb4xuum4D1Z88desn/rXISFUB0mx5r9MFrQE20LzgCSKkDKjYAkxtBdjWJgomfPXplxYyZcc1tXIbf7NSGV9wlSMAImjaCe/czMtQh4qtvW4EtufqM0D2USibqcDVfo5FLwzPx3gB00F51ZN6dEauxZ0JH8NabV18lCkuMHondwvzuO48l4huITW65+B5jr7CtMTk9PWZwDouYz6bhTeNrgMMdhOLGtqGjyUMVPT09Ip1lfBjSiWppUHoqPFbtJ2Y3eLLWrQn10ozhfDVYmgsEYjbz5g5DbXg1Q/+rqK7UWwwu+6kHGzjINYvY9FYDlQG2atnxhzvVJbHNOpsCLfb6+13uXJb1NbxBQuz76QO2BqG+LQykoutUxfQ20cY3itV1eSIx6w=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR03MB6786.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(71200400001)(53546011)(2906002)(5660300002)(7416002)(8936002)(55016003)(52536014)(6506007)(7696005)(38100700002)(9686003)(33656002)(83380400001)(122000001)(316002)(110136005)(921005)(76116006)(508600001)(66446008)(186003)(8676002)(64756008)(66476007)(66556008)(66946007)(38070700005)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?WQp8fVLK3SqdLMpYDrks7KC4dIjx0tZ0WV8kHBBAo+j54jyahQTjNrJl/R?=
- =?iso-8859-1?Q?B3i/Q6yfo5Jxm40W5Bm/x5pwWo0PvptWye5sX7DPssmGOXurlyCIBhs3t4?=
- =?iso-8859-1?Q?qg/GOqfVsFS4DcRZ8DLOe3s2+LEbATZiTnkY4e4SxQ6qzwlnr92v6Uz1gN?=
- =?iso-8859-1?Q?I2/I3J/3mOhiDrInjNR91WRBqUXU+Akv/rkEGQKPiYNyuzFeDi79jQTzqA?=
- =?iso-8859-1?Q?Lum24dEfEiJhm+MmY9FS6BiYLsSqBbJJpgTLX7nCSCpJmXA/si+zQTHUH3?=
- =?iso-8859-1?Q?pC6uQdOXY5SeaFW/U2j2PFi8KFB1pSpkzvFzoI/QElk2k11Mx9Up2z9COu?=
- =?iso-8859-1?Q?bEQIJkHdJ5TkRVmKu0hlu3ZHytcEEnqUQLJU+q3tGZ1Fic56TwdUREX1vn?=
- =?iso-8859-1?Q?mmIAk/qFf7M80uepkZ3uMlJ1/8w+LYziBj0IrM8Hg9nLprkqmFaX1Fm6Mu?=
- =?iso-8859-1?Q?RhStQr04xPfVdmxjucybuuRXqraV8H9Dh/7M9T8wA77zzTI54BA6ENyy8V?=
- =?iso-8859-1?Q?wbLkEXZnTn4sHUkQW/N34xIVd+qPkW3t+M9xylsPzDzTETvpUOneCBeY0L?=
- =?iso-8859-1?Q?FGJrI6fVe6aGmIz6KtWoETjtswz/uoG3c9018zvo842ZlUBGYwjPhvNItx?=
- =?iso-8859-1?Q?81zU+fwobhIQ/iirwym7DRNZJO9dDfh+T0MZyUQcACACicGI/TAeJPrid3?=
- =?iso-8859-1?Q?VgIBrYm/ks3DB715u1FYC5z5uDcG/WyfX9wQaITEoN3Q4xrpLLa/N/Giy0?=
- =?iso-8859-1?Q?2Uw7qEyXIcfkCGBGjn1wemuaDI2P9dmHQ7wa43m8rxYsix4mBMopLAqUZ0?=
- =?iso-8859-1?Q?jifvvLjcL6Bxog07slOKmLqxFMIQCM302WoE1who+7bQVE4FUWfRK51UL6?=
- =?iso-8859-1?Q?gyvBCwSVk3ehkYEO/17Qq7Oz977gt0CZTN2mXPU5ULQ6QEDQIAQ19OsCnS?=
- =?iso-8859-1?Q?f+scvx2UnbYE1eAp4/ha/lwrlp2+khhTZf3UgDgdwPUe7XqIe6i7OZBnCV?=
- =?iso-8859-1?Q?tNHdCTijLv06J/C/KJZ1brIlqhl7sS+LVahkEYaX9F6Xr1rgiHvuAVTiN3?=
- =?iso-8859-1?Q?wx5s5g+ZhQgacJvOOGLXusO8+FWkCaK/tQ1fIRwnxlJqCFCOZqubbkHfP4?=
- =?iso-8859-1?Q?Zf0/xQxLKXelWgAywYRCP7DbmE2sZmlBfv+HgyFXgDSp7IZv41MUY0SwdD?=
- =?iso-8859-1?Q?2jfuYYGWaftB7OvAHoctxthOSf4XACsVPLTZFZLHgcc0pT8eaH4tFfvFVi?=
- =?iso-8859-1?Q?gH4q4aapzNS6X8O+bh3rNEk0yokwWdYQN0qcUf9ctghqK46hLWkkPWFkQR?=
- =?iso-8859-1?Q?V84bPIqMD9zSKbMo86XeaaWgvArcBhOrN/mg2ahUevH+V2+OWuM8TE1fQ2?=
- =?iso-8859-1?Q?GEnNDJKPRnHPwwpae6q2Q874xth3Cp5EZ9YGCQby9XS/XheWFEraBi7h/W?=
- =?iso-8859-1?Q?DECbovdpzCoqGGf/YLvthCg+YobAVWSPp99I/2IlXYbLaTN4x6zUkVI+DO?=
- =?iso-8859-1?Q?iTqyOO2oDbiDaYoUi8ljFZjwNEkSOK4uPcKuRG1gdSrhaTHusxkXBDxpE/?=
- =?iso-8859-1?Q?DyrpOGeu/Jc0FlGFlHyaWQraca8ZSMwUCYUmq/CZrmxHb1v+UFkb6ESaR+?=
- =?iso-8859-1?Q?awGllI7K841Yl/4KwoGztnU97gTXDiF1QdYrm9B3eb57g1hAIFicBJ4DoS?=
- =?iso-8859-1?Q?upJcB0l11BcmmJw0YQ1nzjn2m+H9L5DHX8ShsmbmbaQPCtIQkcoE54OcEA?=
- =?iso-8859-1?Q?/J+U3bqroRcycPTzMxUQAo7JnWemTAOQABcYmHtGSS3p3rjPej8xBpfZl3?=
- =?iso-8859-1?Q?gHacjTkGriDsYuFC3WSMHP6S/GMIxNfvlo1aVHZN45nOUxQebLg0R4A2JB?=
- =?iso-8859-1?Q?vg?=
-x-ms-exchange-antispam-messagedata-1: 86z9b6/0D6DxkQ==
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 12 Apr 2022 02:35:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194D535864;
+        Mon, 11 Apr 2022 23:33:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94E8CB81B41;
+        Tue, 12 Apr 2022 06:33:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A09D5C385A6;
+        Tue, 12 Apr 2022 06:33:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649745186;
+        bh=L2IsNl0bmms7Q59edkGIyCctQprb8/wC5LLuVDxZR3o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fwUDimW77uCuf+kTIXmaGs5s/I++d1ZhBkAp9Krur5FyAkX1LEeMKmSRWQQ7EPbA+
+         zNX6sYMkHTD69sffbvLBd+tBWqA1C4Gf8FLfT5+5hpiUpeGIFEzWH5kUZsBfza+IQW
+         WxohcZ+5jDVY6OZjR4yhBNTz6hEgvEmMMn8wOSEQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 001/171] ubifs: Rectify space amount budget for mkdir/tmpfile operations
+Date:   Tue, 12 Apr 2022 08:28:12 +0200
+Message-Id: <20220412062927.915976662@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
+References: <20220412062927.870347203@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR03MB6786.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bed5031a-c838-4978-f36a-08da1c4dd05b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2022 06:29:35.9155
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iofzOJS0DpTY6wNU518RITv2UhyGXBeP151bHYHHvMGu2TyoDxsf92JIuq3LKQSeGS//rL4oi0oQ7mwhbmCBLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4668
-X-Proofpoint-GUID: _7exyP1clxiklKtYsOj9Rs_-SweLKupd
-X-Proofpoint-ORIG-GUID: _7exyP1clxiklKtYsOj9Rs_-SweLKupd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-12_02,2022-04-11_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 malwarescore=0
- adultscore=0 phishscore=0 priorityscore=1501 suspectscore=0
- mlxlogscore=999 impostorscore=0 mlxscore=0 spamscore=0 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204120029
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Zhihao Cheng <chengzhihao1@huawei.com>
+
+[ Upstream commit a6dab6607d4681d227905d5198710b575dbdb519 ]
+
+UBIFS should make sure the flash has enough space to store dirty (Data
+that is newer than disk) data (in memory), space budget is exactly
+designed to do that. If space budget calculates less data than we need,
+'make_reservation()' will do more work(return -ENOSPC if no free space
+lelf, sometimes we can see "cannot reserve xxx bytes in jhead xxx, error
+-28" in ubifs error messages) with ubifs inodes locked, which may effect
+other syscalls.
+
+A simple way to decide how much space do we need when make a budget:
+See how much space is needed by 'make_reservation()' in ubifs_jnl_xxx()
+function according to corresponding operation.
+
+It's better to report ENOSPC in ubifs_budget_space(), as early as we can.
+
+Fixes: 474b93704f32163 ("ubifs: Implement O_TMPFILE")
+Fixes: 1e51764a3c2ac05 ("UBIFS: add new flash file system")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/ubifs/dir.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ubifs/dir.c b/fs/ubifs/dir.c
+index 5daffd46369d..9257ee893bdb 100644
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -353,15 +353,18 @@ static int do_tmpfile(struct inode *dir, struct dentry *dentry,
+ {
+ 	struct inode *inode;
+ 	struct ubifs_info *c = dir->i_sb->s_fs_info;
+-	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1};
++	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
++					.dirtied_ino = 1};
+ 	struct ubifs_budget_req ino_req = { .dirtied_ino = 1 };
+ 	struct ubifs_inode *ui, *dir_ui = ubifs_inode(dir);
+ 	int err, instantiated = 0;
+ 	struct fscrypt_name nm;
+ 
+ 	/*
+-	 * Budget request settings: new dirty inode, new direntry,
+-	 * budget for dirtied inode will be released via writeback.
++	 * Budget request settings: new inode, new direntry, changing the
++	 * parent directory inode.
++	 * Allocate budget separately for new dirtied inode, the budget will
++	 * be released via writeback.
+ 	 */
+ 
+ 	dbg_gen("dent '%pd', mode %#hx in dir ino %lu",
+@@ -949,7 +952,8 @@ static int ubifs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
+ 	struct ubifs_inode *dir_ui = ubifs_inode(dir);
+ 	struct ubifs_info *c = dir->i_sb->s_fs_info;
+ 	int err, sz_change;
+-	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1 };
++	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
++					.dirtied_ino = 1};
+ 	struct fscrypt_name nm;
+ 
+ 	/*
+-- 
+2.35.1
 
 
-> -----Original Message-----
-> From: Miaoqian Lin <linmq006@gmail.com>
-> Sent: Tuesday, April 12, 2022 3:56 AM
-> To: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
-> <lars@metafoo.de>; Maxime Coquelin
-> <mcoquelin.stm32@gmail.com>; Alexandre Torgue
-> <alexandre.torgue@foss.st.com>; Kees Cook
-> <keescook@chromium.org>; Miaoqian Lin <linmq006@gmail.com>;
-> Philippe Schenker <philippe.schenker@toradex.com>; linux-
-> iio@vger.kernel.org; linux-stm32@st-md-mailman.stormreply.com;
-> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH v2] iio: stmpe-adc: Fix wait_for_completion_timeout
-> return value check
->=20
-> [External]
->=20
-> wait_for_completion_timeout() returns unsigned long not long.
-> it returns 0 if timed out, and positive if completed.
-> The check for <=3D 0 is ambiguous and should be =3D=3D 0 here
-> indicating timeout which is the only error case
->=20
-> Fixes: e813dde6f833 ("iio: stmpe-adc: Use
-> wait_for_completion_timeout")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
-> changes in v2:
-> - Fix same issue in stmpe_read_temp.
-> ---
-
-Reviewed-by: Nuno S=E1 <nuno.sa@analog.com>
-
-(I guess the subject also needs tweaking for the preferred format)
-
->  drivers/iio/adc/stmpe-adc.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-> index d2d405388499..83e0ac4467ca 100644
-> --- a/drivers/iio/adc/stmpe-adc.c
-> +++ b/drivers/iio/adc/stmpe-adc.c
-> @@ -61,7 +61,7 @@ struct stmpe_adc {
->  static int stmpe_read_voltage(struct stmpe_adc *info,
->  		struct iio_chan_spec const *chan, int *val)
->  {
-> -	long ret;
-> +	unsigned long ret;
->=20
->  	mutex_lock(&info->lock);
->=20
-> @@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc
-> *info,
->=20
->  	ret =3D wait_for_completion_timeout(&info->completion,
-> STMPE_ADC_TIMEOUT);
->=20
-> -	if (ret <=3D 0) {
-> +	if (ret =3D=3D 0) {
->  		stmpe_reg_write(info->stmpe,
-> STMPE_REG_ADC_INT_STA,
->  				STMPE_ADC_CH(info->channel));
->  		mutex_unlock(&info->lock);
-> @@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc
-> *info,
->  static int stmpe_read_temp(struct stmpe_adc *info,
->  		struct iio_chan_spec const *chan, int *val)
->  {
-> -	long ret;
-> +	unsigned long ret;
->=20
->  	mutex_lock(&info->lock);
->=20
-> @@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc
-> *info,
->=20
->  	ret =3D wait_for_completion_timeout(&info->completion,
-> STMPE_ADC_TIMEOUT);
->=20
-> -	if (ret <=3D 0) {
-> +	if (ret =3D=3D 0) {
->  		mutex_unlock(&info->lock);
->  		return -ETIMEDOUT;
->  	}
-> --
-> 2.17.1
 
