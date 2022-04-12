@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCD5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AECDAC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356380AbiDLIJd (ORCPT
+        id S1356386AbiDLIJi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
+        Tue, 12 Apr 2022 04:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353676AbiDLHZv (ORCPT
+        with ESMTP id S1353673AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7572717D;
-        Tue, 12 Apr 2022 00:03:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1562613D;
+        Tue, 12 Apr 2022 00:03:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DB91B81B4D;
-        Tue, 12 Apr 2022 07:03:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDAC2C385A1;
-        Tue, 12 Apr 2022 07:03:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 688F9615BB;
+        Tue, 12 Apr 2022 07:03:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F704C385A8;
+        Tue, 12 Apr 2022 07:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747014;
-        bh=yFy9U19sXHN41q82kKN50sXNb/tbKR+J5nGyLCB4Wqg=;
+        s=korg; t=1649746986;
+        bh=KATIwZicvNr90IGaZXN1HDWS0h1x5A7R1dmMW/o73O4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ROcjGT5hUlG1rckGrl9of1cGAMhOEedvXBbQKHRVkpuR4yL1I7nzU05NU8vEKQHmW
-         5svCEoT9hcuVwPkNSIwrdi8eOI8X9G340OzIO6i1Dij/V09leRS4T7FIPtWu6zCE+D
-         /8pjzijyNUri4mMn6YOAFkFXMUqXkFDxy5x/eiUY=
+        b=HKG0fF5EWbBoAyp1kBr/l3zaDltuC2XMDrgrdvb8/inOTzmS/bk9DaXkng1Y7hqBL
+         rMYDQ5q2uBIVTrUttVL5aHk8fFCdE0C5J5mt2rdiyR9Z68SGWWDjP2mPCiaprIucpd
+         qDfDSASdvr7ToBGBM1OEcyegVL0BclGffSqQyv1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 213/285] scsi: mpt3sas: Fix use after free in _scsih_expander_node_remove()
-Date:   Tue, 12 Apr 2022 08:31:10 +0200
-Message-Id: <20220412062949.805433258@linuxfoundation.org>
+        stable@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 162/285] vrf: fix packet sniffing for traffic originating from ip tunnels
+Date:   Tue, 12 Apr 2022 08:30:19 +0200
+Message-Id: <20220412062948.346283747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,97 +51,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Eyal Birger <eyal.birger@gmail.com>
 
-commit 87d663d40801dffc99a5ad3b0188ad3e2b4d1557 upstream.
+[ Upstream commit 012d69fbfcc739f846766c1da56ef8b493b803b5 ]
 
-The function mpt3sas_transport_port_remove() called in
-_scsih_expander_node_remove() frees the port field of the sas_expander
-structure, leading to the following use-after-free splat from KASAN when
-the ioc_info() call following that function is executed (e.g. when doing
-rmmod of the driver module):
+in commit 048939088220
+("vrf: add mac header for tunneled packets when sniffer is attached")
+an Ethernet header was cooked for traffic originating from tunnel devices.
 
-[ 3479.371167] ==================================================================
-[ 3479.378496] BUG: KASAN: use-after-free in _scsih_expander_node_remove+0x710/0x750 [mpt3sas]
-[ 3479.386936] Read of size 1 at addr ffff8881c037691c by task rmmod/1531
-[ 3479.393524]
-[ 3479.395035] CPU: 18 PID: 1531 Comm: rmmod Not tainted 5.17.0-rc8+ #1436
-[ 3479.401712] Hardware name: Supermicro Super Server/H12SSL-NT, BIOS 2.1 06/02/2021
-[ 3479.409263] Call Trace:
-[ 3479.411743]  <TASK>
-[ 3479.413875]  dump_stack_lvl+0x45/0x59
-[ 3479.417582]  print_address_description.constprop.0+0x1f/0x120
-[ 3479.423389]  ? _scsih_expander_node_remove+0x710/0x750 [mpt3sas]
-[ 3479.429469]  kasan_report.cold+0x83/0xdf
-[ 3479.433438]  ? _scsih_expander_node_remove+0x710/0x750 [mpt3sas]
-[ 3479.439514]  _scsih_expander_node_remove+0x710/0x750 [mpt3sas]
-[ 3479.445411]  ? _raw_spin_unlock_irqrestore+0x2d/0x40
-[ 3479.452032]  scsih_remove+0x525/0xc90 [mpt3sas]
-[ 3479.458212]  ? mpt3sas_expander_remove+0x1d0/0x1d0 [mpt3sas]
-[ 3479.465529]  ? down_write+0xde/0x150
-[ 3479.470746]  ? up_write+0x14d/0x460
-[ 3479.475840]  ? kernfs_find_ns+0x137/0x310
-[ 3479.481438]  pci_device_remove+0x65/0x110
-[ 3479.487013]  __device_release_driver+0x316/0x680
-[ 3479.493180]  driver_detach+0x1ec/0x2d0
-[ 3479.498499]  bus_remove_driver+0xe7/0x2d0
-[ 3479.504081]  pci_unregister_driver+0x26/0x250
-[ 3479.510033]  _mpt3sas_exit+0x2b/0x6cf [mpt3sas]
-[ 3479.516144]  __x64_sys_delete_module+0x2fd/0x510
-[ 3479.522315]  ? free_module+0xaa0/0xaa0
-[ 3479.527593]  ? __cond_resched+0x1c/0x90
-[ 3479.532951]  ? lockdep_hardirqs_on_prepare+0x273/0x3e0
-[ 3479.539607]  ? syscall_enter_from_user_mode+0x21/0x70
-[ 3479.546161]  ? trace_hardirqs_on+0x1c/0x110
-[ 3479.551828]  do_syscall_64+0x35/0x80
-[ 3479.556884]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 3479.563402] RIP: 0033:0x7f1fc482483b
-...
-[ 3479.943087] ==================================================================
+However, the header is added based on whether the mac_header is unset
+and ignores cases where the device doesn't expose a mac header to upper
+layers, such as in ip tunnels like ipip and gre.
 
-Fix this by introducing the local variable port_id to store the port ID
-value before executing mpt3sas_transport_port_remove(). This local variable
-is then used in the call to ioc_info() instead of dereferencing the freed
-port structure.
+Traffic originating from such devices still appears garbled when capturing
+on the vrf device.
 
-Link: https://lore.kernel.org/r/20220322055702.95276-1-damien.lemoal@opensource.wdc.com
-Fixes: 7d310f241001 ("scsi: mpt3sas: Get device objects using sas_address & portID")
-Cc: stable@vger.kernel.org
-Acked-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix by observing whether the original device exposes a header to upper
+layers, similar to the logic done in af_packet.
+
+In addition, skb->mac_len needs to be adjusted after adding the Ethernet
+header for the skb_push/pull() surrounding dev_queue_xmit_nit() to work
+on these packets.
+
+Fixes: 048939088220 ("vrf: add mac header for tunneled packets when sniffer is attached")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_scsih.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/vrf.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -11035,6 +11035,7 @@ _scsih_expander_node_remove(struct MPT3S
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index b2242a082431..091dd7caf10c 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -1265,6 +1265,7 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
+ 	eth = (struct ethhdr *)skb->data;
+ 
+ 	skb_reset_mac_header(skb);
++	skb_reset_mac_len(skb);
+ 
+ 	/* we set the ethernet destination and the source addresses to the
+ 	 * address of the VRF device.
+@@ -1294,9 +1295,9 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
+  */
+ static int vrf_add_mac_header_if_unset(struct sk_buff *skb,
+ 				       struct net_device *vrf_dev,
+-				       u16 proto)
++				       u16 proto, struct net_device *orig_dev)
  {
- 	struct _sas_port *mpt3sas_port, *next;
- 	unsigned long flags;
-+	int port_id;
+-	if (skb_mac_header_was_set(skb))
++	if (skb_mac_header_was_set(skb) && dev_has_header(orig_dev))
+ 		return 0;
  
- 	/* remove sibling ports attached to this expander */
- 	list_for_each_entry_safe(mpt3sas_port, next,
-@@ -11055,6 +11056,8 @@ _scsih_expander_node_remove(struct MPT3S
- 			    mpt3sas_port->hba_port);
- 	}
+ 	return vrf_prepare_mac_header(skb, vrf_dev, proto);
+@@ -1402,6 +1403,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
  
-+	port_id = sas_expander->port->port_id;
+ 	/* if packet is NDISC then keep the ingress interface */
+ 	if (!is_ndisc) {
++		struct net_device *orig_dev = skb->dev;
 +
- 	mpt3sas_transport_port_remove(ioc, sas_expander->sas_address,
- 	    sas_expander->sas_address_parent, sas_expander->port);
+ 		vrf_rx_stats(vrf_dev, skb->len);
+ 		skb->dev = vrf_dev;
+ 		skb->skb_iif = vrf_dev->ifindex;
+@@ -1410,7 +1413,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ 			int err;
  
-@@ -11062,7 +11065,7 @@ _scsih_expander_node_remove(struct MPT3S
- 	    "expander_remove: handle(0x%04x), sas_addr(0x%016llx), port:%d\n",
- 	    sas_expander->handle, (unsigned long long)
- 	    sas_expander->sas_address,
--	    sas_expander->port->port_id);
-+	    port_id);
+ 			err = vrf_add_mac_header_if_unset(skb, vrf_dev,
+-							  ETH_P_IPV6);
++							  ETH_P_IPV6,
++							  orig_dev);
+ 			if (likely(!err)) {
+ 				skb_push(skb, skb->mac_len);
+ 				dev_queue_xmit_nit(skb, vrf_dev);
+@@ -1440,6 +1444,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
+ 				  struct sk_buff *skb)
+ {
++	struct net_device *orig_dev = skb->dev;
++
+ 	skb->dev = vrf_dev;
+ 	skb->skb_iif = vrf_dev->ifindex;
+ 	IPCB(skb)->flags |= IPSKB_L3SLAVE;
+@@ -1460,7 +1466,8 @@ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
+ 	if (!list_empty(&vrf_dev->ptype_all)) {
+ 		int err;
  
- 	spin_lock_irqsave(&ioc->sas_node_lock, flags);
- 	list_del(&sas_expander->list);
+-		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP);
++		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP,
++						  orig_dev);
+ 		if (likely(!err)) {
+ 			skb_push(skb, skb->mac_len);
+ 			dev_queue_xmit_nit(skb, vrf_dev);
+-- 
+2.35.1
+
 
 
