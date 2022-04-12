@@ -2,88 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 481F9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDC8C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380422AbiDLIWA (ORCPT
+        id S1380513AbiDLIWW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
+        Tue, 12 Apr 2022 04:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353908AbiDLHZ5 (ORCPT
+        with ESMTP id S1353886AbiDLHZ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:57 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8902D11C1B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:05:11 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id a42so10161630pfx.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:05:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=MD2PafPOZxiALVxRANZJtJfxFryFkWiYa4P1WpagSvo=;
-        b=ZoOMT2yrxzYBvfqKLstICxEU5NbOmIO81l0gvJWERON+OxWRK9IFg6/vpoIDfHAmJ6
-         da4UtAu84n6WCPrn+3LyAlAG0NQpdiYQ/ZFWe0Mkr8XAUamFWjfPlLZXXOH7CNFHLSce
-         HdTeQ/7o4hGeRPtNWJicF3vceIB245SwJfEbiHvo7jCiS/tdmWQctHtuWoPU2aiTWoQs
-         kLfgB7c+Ov+MCQob3dYAwrmLFhxkyEIX1WBG9+aNyDcqQE0BPqgKQk7xj9t88gPlLqYY
-         h4Sbw4WnxiVcPdlWg1emSanSfT8WyjqvAh701hPQqAQR+GLqZGU+hJ9oYwKMbM25KNGo
-         PqCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=MD2PafPOZxiALVxRANZJtJfxFryFkWiYa4P1WpagSvo=;
-        b=ycyLi3mI3cvVEs5IEsiuUO8Xgl3NmbaZ0QrXAQVJtHsOC0NLrqEqMenpdqMB9xHjuu
-         uR8l9jkmMcDy13mWoqjnSYFj3s4Zgg03gxwR67demRo8VBN5OQmIi/NLgzIJ94DKe2vx
-         2lGrcKUBn2ZnMwVOO1PHybH0Mx1LliAPwQddUHUwpqF/pBRJ/CgCQFxukGU4N3r4zMCM
-         kgpnSQor7FErq07JY1i6bFaGdKovtEGbpRpLLyq/UmgNXgNCdw2FGX7X5QF/S6pHgfhx
-         DzPLx2xsdMz+Rak1wI9fgz8Jio7km4hZEmo+dn1cdopAAiye2ihB2FXTtc0WVnztPCmk
-         /PDw==
-X-Gm-Message-State: AOAM5327FxPCZZN1edZSb1bI40rVsX6ApATgwuA98mORMjr3e3IFxjC4
-        bmrTiqHbGmEjOH7bQiLsdjI=
-X-Google-Smtp-Source: ABdhPJycADu1O3trds1gUcEXHablNZlIDVa1C9T6c102ZVWQucGUgPEoS5U0EZJPhuOsxr9sEPWpgw==
-X-Received: by 2002:a65:6956:0:b0:399:1f0e:6172 with SMTP id w22-20020a656956000000b003991f0e6172mr29157318pgq.286.1649747110823;
-        Tue, 12 Apr 2022 00:05:10 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id g15-20020a056a000b8f00b004fa9dbf27desm38059686pfj.55.2022.04.12.00.05.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 00:05:10 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Emma Anholt <emma@anholt.net>, Maxime Ripard <mripard@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Eric Anholt <eric@anholt.net>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] drm/vc4: Fix pm_runtime_get_sync() error checking
-Date:   Tue, 12 Apr 2022 07:04:57 +0000
-Message-Id: <20220412070458.21819-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 12 Apr 2022 03:25:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC570FD09;
+        Tue, 12 Apr 2022 00:05:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 808AAB81B4D;
+        Tue, 12 Apr 2022 07:05:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB0BAC385A6;
+        Tue, 12 Apr 2022 07:05:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747103;
+        bh=X/kxAdyy8ubxvC4P7+q/VVC5pIvWgQr+bpFFx6PiJI0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UcV2tNJtBcZH5FqP6BxKKs4//yempEflQFt2sDjvzlWh8VOruWzzmxGjfiKoMcwuG
+         Wq4/KvH/nJO/Jx/ofLVhhADiz6t2X4/zvM4YI/LdYPI2wIMFViVU8U9xyxfsJWjy2b
+         BF9ORBSFsq9yotvdmZ+0PHYm8ZvpE/aU7kyFCtSY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Adrian-Ken Rueegsegger <ken@codelabs.ch>,
+        Reto Buerki <reet@codelabs.ch>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.16 242/285] x86/msi: Fix msi message data shadow struct
+Date:   Tue, 12 Apr 2022 08:31:39 +0200
+Message-Id: <20220412062950.647425068@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+From: Reto Buerki <reet@codelabs.ch>
 
-Fixes: 4078f5757144 ("drm/vc4: Add DSI driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+commit 59b18a1e65b7a2134814106d0860010e10babe18 upstream.
+
+The x86 MSI message data is 32 bits in total and is either in
+compatibility or remappable format, see Intel Virtualization Technology
+for Directed I/O, section 5.1.2.
+
+Fixes: 6285aa50736 ("x86/msi: Provide msi message shadow structs")
+Co-developed-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
+Signed-off-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
+Signed-off-by: Reto Buerki <reet@codelabs.ch>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220407110647.67372-1-reet@codelabs.ch
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/msi.h |   19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 752f921735c6..26aa7d1fa421 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -847,7 +847,7 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
- 	int ret;
+--- a/arch/x86/include/asm/msi.h
++++ b/arch/x86/include/asm/msi.h
+@@ -12,14 +12,17 @@ int pci_msi_prepare(struct irq_domain *d
+ /* Structs and defines for the X86 specific MSI message format */
  
- 	ret = pm_runtime_get_sync(dev);
--	if (ret) {
-+	if (ret < 0) {
- 		DRM_ERROR("Failed to runtime PM enable on DSI%d\n", dsi->variant->port);
- 		return;
- 	}
--- 
-2.17.1
+ typedef struct x86_msi_data {
+-	u32	vector			:  8,
+-		delivery_mode		:  3,
+-		dest_mode_logical	:  1,
+-		reserved		:  2,
+-		active_low		:  1,
+-		is_level		:  1;
+-
+-	u32	dmar_subhandle;
++	union {
++		struct {
++			u32	vector			:  8,
++				delivery_mode		:  3,
++				dest_mode_logical	:  1,
++				reserved		:  2,
++				active_low		:  1,
++				is_level		:  1;
++		};
++		u32	dmar_subhandle;
++	};
+ } __attribute__ ((packed)) arch_msi_msg_data_t;
+ #define arch_msi_msg_data	x86_msi_data
+ 
+
 
