@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C146C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E872C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232906AbiDLGkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
+        id S1345310AbiDLGkk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349923AbiDLGhe (ORCPT
+        with ESMTP id S1350544AbiDLGiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:37:34 -0400
+        Tue, 12 Apr 2022 02:38:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FA7DEFD;
-        Mon, 11 Apr 2022 23:34:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D75217E03;
+        Mon, 11 Apr 2022 23:34:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8260618EA;
-        Tue, 12 Apr 2022 06:34:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7C6FC385A8;
-        Tue, 12 Apr 2022 06:34:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADE15618D8;
+        Tue, 12 Apr 2022 06:34:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB4DDC385AD;
+        Tue, 12 Apr 2022 06:34:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745253;
-        bh=hlqg9P0tk9dzhD9oMocgyBmlvqdOFAOmODcn6fGLW5I=;
+        s=korg; t=1649745288;
+        bh=09Q5arsHbCDki2+OPqAaH5Hi1LBk0EyS0fDB2hv9HGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JAA7FehIHOOJSWVCXgansj4hqKewLtb5QCA0PX0HRC3VPKiiDrXAMvedhj/MrwIoW
-         Ujjg+Hf7dVHATOT44k1B56NcjAgR4KxR0J2NAAj+8pL7SpUDxHRh3A53tTvQwzT4Uh
-         E1JyOiyH0Sh/XwjqDw5k++/2rmzNF93i15PB2uNU=
+        b=dRUV2QwrZydj8l20b+m7v9e6v5jWJ7ASE/YIlAhMMOIHz8FI1cGJImObgoz+qxCBV
+         pythNANt2He9rkFANp7AoDDBV4b23POaOHEzRNfcFxucN4byiyaBfqUOhrVd2UXLM8
+         vn3uMHaDJUx/7yFBva6+AIs/foxFViDUeB45RYas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anisse Astier <anisse@astier.eu>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 008/171] drm: Add orientation quirk for GPD Win Max
-Date:   Tue, 12 Apr 2022 08:28:19 +0200
-Message-Id: <20220412062928.122822700@linuxfoundation.org>
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 045/171] mt76: mt7615: Fix assigning negative values to unsigned variable
+Date:   Tue, 12 Apr 2022 08:28:56 +0200
+Message-Id: <20220412062929.191577764@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -50,38 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anisse Astier <anisse@astier.eu>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
+[ Upstream commit 9273ffcc9a11942bd586bb42584337ef3962b692 ]
 
-Panel is 800x1280, but mounted on a laptop form factor, sideways.
+Smatch reports the following:
+drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
+mt7615_mac_adjust_sensitivity() warn: assigning (-110) to unsigned
+variable 'def_th'
+drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
+mt7615_mac_adjust_sensitivity() warn: assigning (-98) to unsigned
+variable 'def_th'
 
-Signed-off-by: Anisse Astier <anisse@astier.eu>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 448c2f2d803a..f5ab891731d0 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -166,6 +166,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
- 		},
- 		.driver_data = (void *)&lcd720x1280_rightside_up,
-+	}, {	/* GPD Win Max */
-+		.matches = {
-+		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
-+		},
-+		.driver_data = (void *)&lcd800x1280_rightside_up,
- 	}, {	/*
- 		 * GPD Pocket, note that the the DMI data is less generic then
- 		 * it seems, devices with a board-vendor of "AMI Corporation"
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 424be103093c..1465a92ea3fc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -1626,7 +1626,7 @@ mt7615_mac_adjust_sensitivity(struct mt7615_phy *phy,
+ 	struct mt7615_dev *dev = phy->dev;
+ 	int false_cca = ofdm ? phy->false_cca_ofdm : phy->false_cca_cck;
+ 	bool ext_phy = phy != &dev->phy;
+-	u16 def_th = ofdm ? -98 : -110;
++	s16 def_th = ofdm ? -98 : -110;
+ 	bool update = false;
+ 	s8 *sensitivity;
+ 	int signal;
 -- 
 2.35.1
 
