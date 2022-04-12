@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 067E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E830AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:44:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344221AbiDLIpi (ORCPT
+        id S1352804AbiDLIqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        Tue, 12 Apr 2022 04:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357346AbiDLHkF (ORCPT
+        with ESMTP id S1357340AbiDLHkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81AC24F3A;
-        Tue, 12 Apr 2022 00:15:38 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8875324F30;
+        Tue, 12 Apr 2022 00:15:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C1BAB81B4F;
-        Tue, 12 Apr 2022 07:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0689C385A1;
-        Tue, 12 Apr 2022 07:15:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2601161708;
+        Tue, 12 Apr 2022 07:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F0B8C385A5;
+        Tue, 12 Apr 2022 07:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747736;
-        bh=s3jXKWdwkdVWvSsHAFTai9wLnPC5wzkPc8r960P/19I=;
+        s=korg; t=1649747733;
+        bh=c+omZP6b97ce8PuNMw7NgKdL3P/XKwm+AoC4Zyoc8Sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prW3leIHQlF3jS3lohMucpe233Ub34yZEKsbKtyFOazoUtIFkXpFZUdglK/xozkx6
-         x/IN2C2se8If8FLCHO4sS86TH9YbR05Lkuw0L3OMkHYFPW7tOZKWc8TUhGOYrdgalx
-         uzfZ8+XHEf3JR9LclNcViNldXOqWdwiqIaH+kO98=
+        b=JUnL05mh28+3tbdpNgCksYQeNHUM9+RFIcXeHCAyrulRFuM/gn6w2NhsneEERo2At
+         D9xcHli4+7fMDGO3AAquH0CVxTKXf9OHopivJ5IQPLZU6fFD/rhIYj71UxWfcQ8A7m
+         TMHnBLDZt4KGmmw8QpkQW80XqbOawwH88D6xCiMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 186/343] SUNRPC: Fix socket waits for write buffer space
-Date:   Tue, 12 Apr 2022 08:30:04 +0200
-Message-Id: <20220412062956.729801171@linuxfoundation.org>
+Subject: [PATCH 5.17 185/343] jfs: prevent NULL deref in diFree
+Date:   Tue, 12 Apr 2022 08:30:03 +0200
+Message-Id: <20220412062956.701501170@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,126 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-[ Upstream commit 7496b59f588dd52886fdbac7633608097543a0a5 ]
+[ Upstream commit a53046291020ec41e09181396c1e829287b48d47 ]
 
-The socket layer requires that we use the socket lock to protect changes
-to the sock->sk_write_pending field and others.
+Add validation check for JFS_IP(ipimap)->i_imap to prevent a NULL deref
+in diFree since diFree uses it without do any validations.
+When function jfs_mount calls diMount to initialize fileset inode
+allocation map, it can fail and JFS_IP(ipimap)->i_imap won't be
+initialized. Then it calls diFreeSpecial to close fileset inode allocation
+map inode and it will flow into jfs_evict_inode. Function jfs_evict_inode
+just validates JFS_SBI(inode->i_sb)->ipimap, then calls diFree. diFree use
+JFS_IP(ipimap)->i_imap directly, then it will cause a NULL deref.
 
-Reported-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Reported-by: TCS Robot <tcs_robot@tencent.com>
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtsock.c | 54 +++++++++++++++++++++++++++++++------------
- 1 file changed, 39 insertions(+), 15 deletions(-)
+ fs/jfs/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 11eab0f0333b..5eb05c2dd6d6 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -763,12 +763,12 @@ xs_stream_start_connect(struct sock_xprt *transport)
- /**
-  * xs_nospace - handle transmit was incomplete
-  * @req: pointer to RPC request
-+ * @transport: pointer to struct sock_xprt
-  *
-  */
--static int xs_nospace(struct rpc_rqst *req)
-+static int xs_nospace(struct rpc_rqst *req, struct sock_xprt *transport)
- {
--	struct rpc_xprt *xprt = req->rq_xprt;
--	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-+	struct rpc_xprt *xprt = &transport->xprt;
- 	struct sock *sk = transport->inet;
- 	int ret = -EAGAIN;
+diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
+index 57ab424c05ff..072821b50ab9 100644
+--- a/fs/jfs/inode.c
++++ b/fs/jfs/inode.c
+@@ -146,12 +146,13 @@ void jfs_evict_inode(struct inode *inode)
+ 		dquot_initialize(inode);
  
-@@ -779,25 +779,49 @@ static int xs_nospace(struct rpc_rqst *req)
+ 		if (JFS_IP(inode)->fileset == FILESYSTEM_I) {
++			struct inode *ipimap = JFS_SBI(inode->i_sb)->ipimap;
+ 			truncate_inode_pages_final(&inode->i_data);
  
- 	/* Don't race with disconnect */
- 	if (xprt_connected(xprt)) {
-+		struct socket_wq *wq;
-+
-+		rcu_read_lock();
-+		wq = rcu_dereference(sk->sk_wq);
-+		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
-+		rcu_read_unlock();
-+
- 		/* wait for more buffer space */
-+		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
- 		sk->sk_write_pending++;
- 		xprt_wait_for_buffer_space(xprt);
- 	} else
- 		ret = -ENOTCONN;
+ 			if (test_cflag(COMMIT_Freewmap, inode))
+ 				jfs_free_zero_link(inode);
  
- 	spin_unlock(&xprt->transport_lock);
-+	return ret;
-+}
+-			if (JFS_SBI(inode->i_sb)->ipimap)
++			if (ipimap && JFS_IP(ipimap)->i_imap)
+ 				diFree(inode);
  
--	/* Race breaker in case memory is freed before above code is called */
--	if (ret == -EAGAIN) {
--		struct socket_wq *wq;
-+static int xs_sock_nospace(struct rpc_rqst *req)
-+{
-+	struct sock_xprt *transport =
-+		container_of(req->rq_xprt, struct sock_xprt, xprt);
-+	struct sock *sk = transport->inet;
-+	int ret = -EAGAIN;
- 
--		rcu_read_lock();
--		wq = rcu_dereference(sk->sk_wq);
--		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
--		rcu_read_unlock();
-+	lock_sock(sk);
-+	if (!sock_writeable(sk))
-+		ret = xs_nospace(req, transport);
-+	release_sock(sk);
-+	return ret;
-+}
- 
--		sk->sk_write_space(sk);
--	}
-+static int xs_stream_nospace(struct rpc_rqst *req)
-+{
-+	struct sock_xprt *transport =
-+		container_of(req->rq_xprt, struct sock_xprt, xprt);
-+	struct sock *sk = transport->inet;
-+	int ret = -EAGAIN;
-+
-+	lock_sock(sk);
-+	if (!sk_stream_memory_free(sk))
-+		ret = xs_nospace(req, transport);
-+	release_sock(sk);
- 	return ret;
- }
- 
-@@ -887,7 +911,7 @@ static int xs_local_send_request(struct rpc_rqst *req)
- 	case -ENOBUFS:
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_stream_nospace(req);
- 		break;
- 	default:
- 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
-@@ -963,7 +987,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
- 		/* Should we call xs_close() here? */
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_sock_nospace(req);
- 		break;
- 	case -ENETUNREACH:
- 	case -ENOBUFS:
-@@ -1083,7 +1107,7 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
- 		/* Should we call xs_close() here? */
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_stream_nospace(req);
- 		break;
- 	case -ECONNRESET:
- 	case -ECONNREFUSED:
+ 			/*
 -- 
 2.35.1
 
