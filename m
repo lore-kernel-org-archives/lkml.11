@@ -2,82 +2,416 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D910C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229489AbiDLUFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 16:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
+        id S232979AbiDLUGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 16:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232916AbiDLUFZ (ORCPT
+        with ESMTP id S231558AbiDLUFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 16:05:25 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A373D4EDE1;
-        Tue, 12 Apr 2022 12:55:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649793351; x=1681329351;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qpmveqwO7SyvzvBsb9MExzJEADb5MiyVxp91O/5Gxf8=;
-  b=EdFe8w8CoPxH9UAJRPDTU4Q91omFzZ4MNvklV485ddSVOIviahl03nJJ
-   HBp0V8JVr9sXaxIb5BxAU+E0sQ9Rb2RuVclttLxboNLPkP9lQ6/qqFhH9
-   HhZKtT6feYGIBYSmbmGAZXV7ESoKLQsrjT8UPfsaf5r7iZBqIXEuSwySZ
-   gp+R2c91h5rGz1nEO87hYIXfA8JTLEukR9Wnu6YtQ5mUXNyYRBbVKRad6
-   qzhdQrf565xLLamjZSVg9B/2cmVfODbw2jZbwpjYXrEEdFc9WuE911rdv
-   sVowzl7ieF9LZggDloTpRsxF3LOinaG7/9ufYdNB59CA9xpJa41iPF3KF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="325397924"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="325397924"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 12:55:29 -0700
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="526640026"
-Received: from lpfafma-mobl.amr.corp.intel.com (HELO guptapa-desk) ([10.209.17.36])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 12:55:29 -0700
-Date:   Tue, 12 Apr 2022 12:55:27 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
-        dave.hansen@intel.com, Borislav Petkov <bp@suse.de>,
-        Neelima Krishnan <neelima.krishnan@intel.com>,
-        "kvm @ vger . kernel . org" <kvm@vger.kernel.org>
-Subject: Re: [PATCH v2] x86/tsx: fix KVM guest live migration for tsx=on
-Message-ID: <20220412195527.xwpgk4mzyqccpqmo@guptapa-desk>
-References: <20220411180131.5054-1-jon@nutanix.com>
- <20220411200703.48654-1-jon@nutanix.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220411200703.48654-1-jon@nutanix.com>
+        Tue, 12 Apr 2022 16:05:34 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B960C70F42
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:56:38 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id a16-20020a258050000000b0064197c6f42bso28550ybn.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Qa/7y0OEpQUkYgBQSJeM3qms0fr+o4IBYWGiwmiwFFY=;
+        b=KylilMwjThBhSUPirLeo9nwO9QOrI1G261NW3yJhQOIwax8g2Z4YsX8EL8fH+erkYL
+         a2OpFQxK88nosaZUc4kuIXGeSqcGewwFiX6M5/j3TJ2aQX7aODggfoNu/QAYEsZgH/CW
+         yyajwEkBd52OweEBfTrfPnkwFW52jvrHjKZn0pwqvn4HVujVf6vTtiW+eq7BnF4AwZha
+         YFiir7W6IYzTnarvn2BB75lwvgIh54jCKTgQDBPkxqJyYyKt6zTG8tei5BCY9XDHUMlY
+         fdDAl1ADbSSbcCnNEpKHlMrf4WbPDObuKwsWUUPQ5AJ2R8djJKUpzrW1pgZ8DDk0TeKy
+         Ru7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Qa/7y0OEpQUkYgBQSJeM3qms0fr+o4IBYWGiwmiwFFY=;
+        b=MTc/fPHGDHFN4hpbMJb6laPCMQ/YKEVWTnw5o9cSEXQ8gmRJSMq29SVRFmPDJPt7hG
+         eAXvJP0jWzN93FgbtxxrJA0NIvq6RLKGI4LqQbasKQWkohPucdYbeHP4ZODIw9Plslbs
+         vPPkXgPwdx71fkMmQCC2fAFClj+NMSD3H9M+Y5Rze8hv8DQFaBpKGezV0GvXElBhQYgU
+         CPteUfldW3/VZTjdQ+7/fn5sjtEIyeX2kBKVwBAJx0AjGq1v012L+VB+DMEdKIAcf00m
+         s7o8DSU8G9Y4oJUU88zNYLMdE2lg12TuAp5O1gIjFPFKVQk3sxQO4rp6AgJctczj8B9Z
+         ObLA==
+X-Gm-Message-State: AOAM53143JdRUzP2+d7PJ5fIyS9Y/THCxqxeDq7K3/zMtIFNrMPfLWRI
+        qn3fwIWDefygBAoL1lcRKpcCVvqRzvgCQuhh18IE
+X-Google-Smtp-Source: ABdhPJzelVMzG1x/6itFuV5dAryt+IFT2eu5DEWOkMltWaAhxNVB/8revTm/qGjGMKmZnEh01OewUBghXbSJ03RkNLiA
+X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:8927:f9ed:8b14:ddae])
+ (user=axelrasmussen job=sendgmr) by 2002:a05:690c:9e:b0:2e9:b625:1be2 with
+ SMTP id be30-20020a05690c009e00b002e9b6251be2mr32962751ywb.48.1649793397885;
+ Tue, 12 Apr 2022 12:56:37 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 12:56:31 -0700
+Message-Id: <20220412195631.282237-1-axelrasmussen@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [PATCH v4] ioctl_userfaultfd.2, userfaultfd.2: add minor fault mode
+From:   Axel Rasmussen <axelrasmussen@google.com>
+To:     Alejandro Colomar <alx.manpages@gmail.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Xu <peterx@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-man@vger.kernel.org,
+        linux-mm@kvack.org, Axel Rasmussen <axelrasmussen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 04:07:01PM -0400, Jon Kohler wrote:
->Move automatic disablement for TSX microcode deprecation from tsx_init() to
->x86_get_tsx_auto_mode(), such that systems with tsx=on will continue to
->see the TSX CPU features (HLE, RTM) even on updated microcode.
+Userfaultfd minor fault mode is supported starting from Linux 5.13.
 
-This patch needs to be based on recent changes in TSX handling (due to
-Feb 2022 microcode update). These patches were recently merged in tip
-tree:
+This commit adds a description of the new mode, as well as the new ioctl
+used to resolve such faults. The two go hand-in-hand: one can't resolve
+a minor fault without continue, and continue can't be used to resolve
+any other kind of fault.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
+This patch covers just the hugetlbfs implementation (in 5.13). Support
+for shmem is forthcoming, but as it has not yet made it into a kernel
+release candidate, it will be added in a future commit.
 
-Specifically these patches:
+v1->v2:
+- Some spelling / phrasing improvements
+v2->v3:
+- Improved line wrapping in man2/ioctl_userfaultfd.2
+v3->v4:
+- Rebased onto http://www.alejandro-colomar.es/src/alx/linux/man-pages/man-pages.git/ main
+- Mentioned minor fault shmem support
+- Improved line wrapping in man2/userfaultfd.2
 
-   x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits [1]
-   x86/tsx: Disable TSX development mode at boot [2]
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+---
+ man2/ioctl_userfaultfd.2 | 142 ++++++++++++++++++++++++++++++++++++---
+ man2/userfaultfd.2       |  95 ++++++++++++++++++++++----
+ 2 files changed, 215 insertions(+), 22 deletions(-)
 
-Thanks,
-Pawan
+diff --git a/man2/ioctl_userfaultfd.2 b/man2/ioctl_userfaultfd.2
+index 15a681164c..d0cb0c9c8e 100644
+--- a/man2/ioctl_userfaultfd.2
++++ b/man2/ioctl_userfaultfd.2
+@@ -197,6 +197,16 @@ memory accesses to the regions registered with userfaultfd.
+ If this feature bit is set,
+ .I uffd_msg.pagefault.feat.ptid
+ will be set to the faulted thread ID for each page-fault message.
++.TP
++.BR UFFD_FEATURE_MINOR_HUGETLBFS " (since Linux 5.13)"
++If this feature bit is set,
++the kernel supports registering userfaultfd ranges
++in minor mode on hugetlbfs-backed memory areas.
++.TP
++.BR UFFD_FEATURE_MINOR_SHMEM " (since Linux 5.14)"
++If this feature bit is set,
++the kernel supports registering userfaultfd ranges
++in minor mode on shmem-backed memory areas.
+ .PP
+ The returned
+ .I ioctls
+@@ -256,14 +266,8 @@ by the current kernel version.
+ (Since Linux 4.3.)
+ Register a memory address range with the userfaultfd object.
+ The pages in the range must be "compatible".
+-.PP
+-Up to Linux kernel 4.11,
+-only private anonymous ranges are compatible for registering with
+-.BR UFFDIO_REGISTER .
+-.PP
+-Since Linux 4.11,
+-hugetlbfs and shared memory ranges are also compatible with
+-.BR UFFDIO_REGISTER .
++Please refer to the list of register modes below
++for the compatible memory backends for each mode.
+ .PP
+ The
+ .I argp
+@@ -302,9 +306,22 @@ the specified range:
+ .TP
+ .B UFFDIO_REGISTER_MODE_MISSING
+ Track page faults on missing pages.
++Since Linux 4.3,
++only private anonymous ranges are compatible.
++Since Linux 4.11,
++hugetlbfs and shared memory ranges are also compatible.
+ .TP
+ .B UFFDIO_REGISTER_MODE_WP
+ Track page faults on write-protected pages.
++Since Linux 5.7,
++only private anonymous ranges are compatible.
++.TP
++.B UFFDIO_REGISTER_MODE_MINOR
++Track minor page faults.
++Since Linux 5.13,
++only hugetlbfs ranges are compatible.
++Since Linux 5.14,
++compatiblity with shmem ranges was added.
+ .PP
+ If the operation is successful, the kernel modifies the
+ .I ioctls
+@@ -331,6 +348,11 @@ The
+ The
+ .B UFFDIO_ZEROPAGE
+ operation is supported.
++.TP
++.B 1 << _UFFDIO_CONTINUE
++The
++.B UFFDIO_CONTINUE
++operation is supported.
+ .PP
+ This
+ .BR ioctl (2)
+@@ -731,6 +753,110 @@ or not registered with userfaultfd write-protect mode.
+ .TP
+ .B EFAULT
+ Encountered a generic fault during processing.
++.\"
++.SS UFFDIO_CONTINUE
++(Since Linux 5.13.)
++Resolve a minor page fault
++by installing page table entries
++for existing pages in the page cache.
++.PP
++The
++.I argp
++argument is a pointer to a
++.I uffdio_continue
++structure as shown below:
++.PP
++.in +4n
++.EX
++struct uffdio_continue {
++    struct uffdio_range range; /* Range to install PTEs for and continue */
++    __u64 mode;                /* Flags controlling the behavior of continue */
++    __s64 mapped;              /* Number of bytes mapped, or negated error */
++};
++.EE
++.in
++.PP
++The following value may be bitwise ORed in
++.IR mode
++to change the behavior of the
++.B UFFDIO_CONTINUE
++operation:
++.TP
++.B UFFDIO_CONTINUE_MODE_DONTWAKE
++Do not wake up the thread that waits for page-fault resolution.
++.PP
++The
++.I mapped
++field is used by the kernel
++to return the number of bytes that were actually mapped,
++or an error in the same manner as
++.BR UFFDIO_COPY .
++If the value returned in the
++.I mapped
++field doesn't match the value that was specified in
++.IR range.len ,
++the operation fails with the error
++.BR EAGAIN .
++The
++.I mapped
++field is output-only;
++it is not read by the
++.B UFFDIO_CONTINUE
++operation.
++.PP
++This
++.BR ioctl (2)
++operation returns 0 on success.
++In this case,
++the entire area was mapped.
++On error, \-1 is returned and
++.I errno
++is set to indicate the error.
++Possible errors include:
++.TP
++.B EAGAIN
++The number of bytes mapped
++(i.e., the value returned in the
++.I mapped
++field)
++does not equal the value that was specified in the
++.I range.len
++field.
++.TP
++.B EINVAL
++Either
++.I range.start
++or
++.I range.len
++was not a multiple of the system page size; or
++.I range.len
++was zero; or the range specified was invalid.
++.TP
++.B EINVAL
++An invalid bit was specified in the
++.IR mode
++field.
++.TP
++.B EEXIST
++One or more pages were already mapped in the given range.
++.TP
++.B ENOENT
++The faulting process has changed its virtual memory layout simultaneously with
++an outstanding
++.B UFFDIO_CONTINUE
++operation.
++.TP
++.B ENOMEM
++Allocating memory needed to setup the page table mappings failed.
++.TP
++.B EFAULT
++No existing page could be found in the page cache for the given range.
++.TP
++.BR ESRCH
++The faulting process has exited at the time of a
++.B UFFDIO_CONTINUE
++operation.
++.\"
+ .SH RETURN VALUE
+ See descriptions of the individual operations, above.
+ .SH ERRORS
+diff --git a/man2/userfaultfd.2 b/man2/userfaultfd.2
+index 41741b4d88..f8dc4766b1 100644
+--- a/man2/userfaultfd.2
++++ b/man2/userfaultfd.2
+@@ -65,7 +65,7 @@ all memory ranges that were registered with the object are unregistered
+ and unread events are flushed.
+ .\"
+ .PP
+-Userfaultfd supports two modes of registration:
++Userfaultfd supports three modes of registration:
+ .TP
+ .BR UFFDIO_REGISTER_MODE_MISSING " (since 4.10)"
+ When registered with
+@@ -79,6 +79,18 @@ or an
+ .B UFFDIO_ZEROPAGE
+ ioctl.
+ .TP
++.BR UFFDIO_REGISTER_MODE_MINOR " (since 5.13)"
++When registered with
++.B UFFDIO_REGISTER_MODE_MINOR
++mode, user-space will receive a page-fault notification
++when a minor page fault occurs.
++That is, when a backing page is in the page cache, but
++page table entries don't yet exist.
++The faulted thread will be stopped from execution
++until the page fault is resolved from user-space by an
++.B UFFDIO_CONTINUE
++ioctl.
++.TP
+ .BR UFFDIO_REGISTER_MODE_WP " (since 5.7)"
+ When registered with
+ .B UFFDIO_REGISTER_MODE_WP
+@@ -199,9 +211,10 @@ a page fault occurring in the requested memory range, and satisfying
+ the mode defined at the registration time, will be forwarded by the kernel to
+ the user-space application.
+ The application can then use the
+-.B UFFDIO_COPY
++.B UFFDIO_COPY ,
++.B UFFDIO_ZEROPAGE ,
+ or
+-.B UFFDIO_ZEROPAGE
++.B UFFDIO_CONTINUE
+ .BR ioctl (2)
+ operations to resolve the page fault.
+ .PP
+@@ -305,6 +318,59 @@ should have the flag
+ cleared upon the faulted page or range.
+ .PP
+ Write-protect mode supports only private anonymous memory.
++.\"
++.SS Userfaultfd minor fault mode (since 5.13)
++Since Linux 5.13,
++userfaultfd supports minor fault mode.
++In this mode,
++fault messages are produced not for major faults
++(where the page was missing),
++but rather for minor faults,
++where a page exists in the page cache,
++but the page table entries are not yet present.
++The user needs to first check availability of this feature using the
++.B UFFDIO_API
++ioctl with the appropriate feature bits set before using this feature:
++.B UFFD_FEATURE_MINOR_HUGETLBFS
++since Linux 5.13,
++or
++.B UFFD_FEATURE_MINOR_SHMEM
++since Linux 5.14.
++.PP
++To register with userfaultfd minor fault mode,
++the user needs to initiate the
++.B UFFDIO_REGISTER
++ioctl with mode
++.B UFFD_REGISTER_MODE_MINOR
++set.
++.PP
++When a minor fault occurs,
++user-space will receive a page-fault notification
++whose
++.I uffd_msg.pagefault.flags
++will have the
++.B UFFD_PAGEFAULT_FLAG_MINOR
++flag set.
++.PP
++To resolve a minor page fault,
++the handler should decide whether or not
++the existing page contents need to be modified first.
++If so,
++this should be done in-place via a second,
++non-userfaultfd-registered mapping
++to the same backing page
++(e.g., by mapping the shmem or hugetlbfs file twice).
++Once the page is considered "up to date",
++the fault can be resolved by initiating an
++.B UFFDIO_CONTINUE
++ioctl,
++which installs the page table entries and
++(by default)
++wakes up the faulting thread(s).
++.PP
++Minor fault mode supports only hugetlbfs-backed (since Linux 5.13)
++and shmem-backed (since Linux 5.14) memory.
++.\"
+ .SS Reading from the userfaultfd structure
+ Each
+ .BR read (2)
+@@ -443,19 +509,20 @@ For
+ the following flag may appear:
+ .RS
+ .TP
+-.B UFFD_PAGEFAULT_FLAG_WRITE
+-If the address is in a range that was registered with the
+-.B UFFDIO_REGISTER_MODE_MISSING
+-flag (see
+-.BR ioctl_userfaultfd (2))
+-and this flag is set, this a write fault;
+-otherwise it is a read fault.
++.B UFFD_PAGEFAULT_FLAG_WP
++If this flag is set, then the fault was a write-protect fault.
++.TP
++.B UFFD_PAGEFAULT_FLAG_MINOR
++If this flag is set, then the fault was a minor fault.
+ .TP
++.B UFFD_PAGEFAULT_FLAG_WRITE
++If this flag is set, then the fault was a write fault.
++.PP
++If neither
+ .B UFFD_PAGEFAULT_FLAG_WP
+-If the address is in a range that was registered with the
+-.B UFFDIO_REGISTER_MODE_WP
+-flag, when this bit is set, it means it is a write-protect fault.
+-Otherwise it is a page-missing fault.
++nor
++.B UFFD_PAGEFAULT_FLAG_MINOR
++are set, then the fault was a missing fault.
+ .RE
+ .TP
+ .I pagefault.feat.pid
+-- 
+2.35.1.1178.g4f1659d476-goog
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=258f3b8c3210b03386e4ad92b4bd8652b5c1beb3
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=400331f8ffa3bec5c561417e5eec6848464e9160
