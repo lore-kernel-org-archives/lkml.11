@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9E4C41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E143AC35280
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386585AbiDLI6k (ORCPT
+        id S1386642AbiDLI6v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
+        Tue, 12 Apr 2022 04:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359233AbiDLHmw (ORCPT
+        with ESMTP id S1356826AbiDLHjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E760355760;
-        Tue, 12 Apr 2022 00:20:35 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587B452E69;
+        Tue, 12 Apr 2022 00:10:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 910BAB81B60;
-        Tue, 12 Apr 2022 07:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C08C385A5;
-        Tue, 12 Apr 2022 07:20:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 851DC616B2;
+        Tue, 12 Apr 2022 07:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 961D1C385A5;
+        Tue, 12 Apr 2022 07:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748033;
-        bh=jZ9OyGMlutFC7CgIcngmbcnEnIoe5Nr2Zego+PXvzVA=;
+        s=korg; t=1649747416;
+        bh=/w61AelEsbUjYwIL6ru1+o8XctAGMaB5iEznL38kFIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hmFFMdA1ccWYkLkoy1uDyxLsyp6HmLVuUuSiboCZFuLJXPyaWvbackcUh+TAOgf4O
-         Jm7/7apz+yza6oeSJIqOwHX8YI3dVE2LC7rbdV2dICgQ/3G0YLgLY3XET49SqUVpIJ
-         tnopJDfQRxu2MjgxAxSiw04yFDya2mXPAobNf3rM=
+        b=RdUVsh661K5zz1unvhDrMu7KU+wuKK7tXdAaCxm8ZA6iNHnxC5p+1AdYchXc6xSzv
+         3NTYlzONclVW6RRLkin3o3ZFeyo2+og45czQqiBZxztGFaPelVEYlqPCDVOyXW3ENz
+         c4EpgUs6HNQEx0+vFREPjVwOaalpdgdvnfBJO5uc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>, Nadav Amit <namit@vmware.com>
-Subject: [PATCH 5.17 296/343] x86/mm/tlb: Revert retpoline avoidance approach
-Date:   Tue, 12 Apr 2022 08:31:54 +0200
-Message-Id: <20220412062959.868855833@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 072/343] PCI: endpoint: Fix alignment fault error in copy tests
+Date:   Tue, 12 Apr 2022 08:28:10 +0200
+Message-Id: <20220412062953.179936107@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,108 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Hansen <dave.hansen@linux.intel.com>
+From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
 
-commit d39268ad24c0fd0665d0c5cf55a7c1a0ebf94766 upstream.
+[ Upstream commit 829cc0e2ea2d61fb6c54bc3f8a17f86c56e11864 ]
 
-0day reported a regression on a microbenchmark which is intended to
-stress the TLB flushing path:
+The copy test uses the memcpy() to copy data between IO memory spaces.
+This can trigger an alignment fault error (pasted the error logs below)
+because memcpy() may use unaligned accesses on a mapped memory that is
+just IO, which does not support unaligned memory accesses.
 
-	https://lore.kernel.org/all/20220317090415.GE735@xsang-OptiPlex-9020/
+Fix it by using the correct memcpy API to copy from/to IO memory.
 
-It pointed at a commit from Nadav which intended to remove retpoline
-overhead in the TLB flushing path by taking the 'cond'-ition in
-on_each_cpu_cond_mask(), pre-calculating it, and incorporating it into
-'cpumask'.  That allowed the code to use a bunch of earlier direct
-calls instead of later indirect calls that need a retpoline.
+Alignment fault error logs:
+   Unable to handle kernel paging request at virtual address ffff8000101cd3c1
+   Mem abort info:
+     ESR = 0x96000021
+     EC = 0x25: DABT (current EL), IL = 32 bits
+     SET = 0, FnV = 0
+     EA = 0, S1PTW = 0
+     FSC = 0x21: alignment fault
+   Data abort info:
+     ISV = 0, ISS = 0x00000021
+     CM = 0, WnR = 0
+   swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000081773000
+   [ffff8000101cd3c1] pgd=1000000082410003, p4d=1000000082410003, pud=1000000082411003, pmd=1000000082412003, pte=0068004000001f13
+   Internal error: Oops: 96000021 [#1] PREEMPT SMP
+   Modules linked in:
+   CPU: 0 PID: 6 Comm: kworker/0:0H Not tainted 5.15.0-rc1-next-20210914-dirty #2
+   Hardware name: LS1012A RDB Board (DT)
+   Workqueue: kpcitest pci_epf_test_cmd_handler
+   pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+   pc : __memcpy+0x168/0x230
+   lr : pci_epf_test_cmd_handler+0x6f0/0xa68
+   sp : ffff80001003bce0
+   x29: ffff80001003bce0 x28: ffff800010135000 x27: ffff8000101e5000
+   x26: ffff8000101cd000 x25: ffff6cda941cf6c8 x24: 0000000000000000
+   x23: ffff6cda863f2000 x22: ffff6cda9096c800 x21: ffff800010135000
+   x20: ffff6cda941cf680 x19: ffffaf39fd999000 x18: 0000000000000000
+   x17: 0000000000000000 x16: 0000000000000000 x15: ffffaf39fd2b6000
+   x14: 0000000000000000 x13: 15f5c8fa2f984d57 x12: 604d132b60275454
+   x11: 065cee5e5fb428b6 x10: aae662eb17d0cf3e x9 : 1d97c9a1b4ddef37
+   x8 : 7541b65edebf928c x7 : e71937c4fc595de0 x6 : b8a0e09562430d1c
+   x5 : ffff8000101e5401 x4 : ffff8000101cd401 x3 : ffff8000101e5380
+   x2 : fffffffffffffff1 x1 : ffff8000101cd3c0 x0 : ffff8000101e5000
+   Call trace:
+    __memcpy+0x168/0x230
+    process_one_work+0x1ec/0x370
+    worker_thread+0x44/0x478
+    kthread+0x154/0x160
+    ret_from_fork+0x10/0x20
+   Code: a984346c a9c4342c f1010042 54fffee8 (a97c3c8e)
+   ---[ end trace 568c28c7b6336335 ]---
 
-But, in practice, threads can go idle (and into lazy TLB mode where
-they don't need to flush their TLB) between the early and late calls.
-It works in this direction and not in the other because TLB-flushing
-threads tend to hold mmap_lock for write.  Contention on that lock
-causes threads to _go_ idle right in this early/late window.
-
-There was not any performance data in the original commit specific
-to the retpoline overhead.  I did a few tests on a system with
-retpolines:
-
-	https://lore.kernel.org/all/dd8be93c-ded6-b962-50d4-96b1c3afb2b7@intel.com/
-
-which showed a possible small win.  But, that small win pales in
-comparison with the bigger loss induced on non-retpoline systems.
-
-Revert the patch that removed the retpolines.  This was not a
-clean revert, but it was self-contained enough not to be too painful.
-
-Fixes: 6035152d8eeb ("x86/mm/tlb: Open-code on_each_cpu_cond_mask() for tlb_is_not_lazy()")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Acked-by: Nadav Amit <namit@vmware.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lkml.kernel.org/r/164874672286.389.7021457716635788197.tip-bot2@tip-bot2
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20211217094708.28678-1-Zhiqiang.Hou@nxp.com
+Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/mm/tlb.c |   37 +++++--------------------------------
- 1 file changed, 5 insertions(+), 32 deletions(-)
+ drivers/pci/endpoint/functions/pci-epf-test.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -854,13 +854,11 @@ done:
- 			nr_invalidate);
- }
- 
--static bool tlb_is_not_lazy(int cpu)
-+static bool tlb_is_not_lazy(int cpu, void *data)
- {
- 	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
- }
- 
--static DEFINE_PER_CPU(cpumask_t, flush_tlb_mask);
--
- DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared);
- EXPORT_PER_CPU_SYMBOL(cpu_tlbstate_shared);
- 
-@@ -889,36 +887,11 @@ STATIC_NOPV void native_flush_tlb_multi(
- 	 * up on the new contents of what used to be page tables, while
- 	 * doing a speculative memory access.
- 	 */
--	if (info->freed_tables) {
-+	if (info->freed_tables)
- 		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
--	} else {
--		/*
--		 * Although we could have used on_each_cpu_cond_mask(),
--		 * open-coding it has performance advantages, as it eliminates
--		 * the need for indirect calls or retpolines. In addition, it
--		 * allows to use a designated cpumask for evaluating the
--		 * condition, instead of allocating one.
--		 *
--		 * This code works under the assumption that there are no nested
--		 * TLB flushes, an assumption that is already made in
--		 * flush_tlb_mm_range().
--		 *
--		 * cond_cpumask is logically a stack-local variable, but it is
--		 * more efficient to have it off the stack and not to allocate
--		 * it on demand. Preemption is disabled and this code is
--		 * non-reentrant.
--		 */
--		struct cpumask *cond_cpumask = this_cpu_ptr(&flush_tlb_mask);
--		int cpu;
--
--		cpumask_clear(cond_cpumask);
--
--		for_each_cpu(cpu, cpumask) {
--			if (tlb_is_not_lazy(cpu))
--				__cpumask_set_cpu(cpu, cond_cpumask);
--		}
--		on_each_cpu_mask(cond_cpumask, flush_tlb_func, (void *)info, true);
--	}
-+	else
-+		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
-+				(void *)info, 1, cpumask);
- }
- 
- void flush_tlb_multi(const struct cpumask *cpumask,
+diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
+index 90d84d3bc868..c7e45633beaf 100644
+--- a/drivers/pci/endpoint/functions/pci-epf-test.c
++++ b/drivers/pci/endpoint/functions/pci-epf-test.c
+@@ -285,7 +285,17 @@ static int pci_epf_test_copy(struct pci_epf_test *epf_test)
+ 		if (ret)
+ 			dev_err(dev, "Data transfer failed\n");
+ 	} else {
+-		memcpy(dst_addr, src_addr, reg->size);
++		void *buf;
++
++		buf = kzalloc(reg->size, GFP_KERNEL);
++		if (!buf) {
++			ret = -ENOMEM;
++			goto err_map_addr;
++		}
++
++		memcpy_fromio(buf, src_addr, reg->size);
++		memcpy_toio(dst_addr, buf, reg->size);
++		kfree(buf);
+ 	}
+ 	ktime_get_ts64(&end);
+ 	pci_epf_test_print_rate("COPY", reg->size, &start, &end, use_dma);
+-- 
+2.35.1
+
 
 
