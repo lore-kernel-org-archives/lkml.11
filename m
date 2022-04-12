@@ -2,114 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AFBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379631AbiDLKTq (ORCPT
+        id S1379775AbiDLKTz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        Tue, 12 Apr 2022 06:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354330AbiDLKDX (ORCPT
+        with ESMTP id S1356807AbiDLJzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:03:23 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE786E8F6;
-        Tue, 12 Apr 2022 02:10:30 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id u2so13636675vsl.6;
-        Tue, 12 Apr 2022 02:10:30 -0700 (PDT)
+        Tue, 12 Apr 2022 05:55:18 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE2111C23
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:58:50 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id c10so5567674wrb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:58:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LmC2G1kIC2bjPYIdvitbx5KXueFp/+sexGyQ4odL7qI=;
-        b=WBvobLH5KLi6Jflqi4+K9mLcfHiASYqCcI9tr6wtc5F8ebkEW2Hp2dBLHpaJID78hB
-         XMzIYXVY/guqlwBP5rwvCPA/w/ZaLgMrdJTscqTkmRGIBLEajBtLrZGVOmqpyCFe5n4N
-         xZPTbjnLKiuJGye6o0olrzZrmj9XlEFJ1rnjErRXGo/eRgkgGStcZnHy+2tKZr2QppyE
-         szBMAoOmPDyvDSRYwCJiM7CxbthSHwTPQFvrQQpRJP/nlOHXwwogt/WKkUKiVhqHiM45
-         cIsRmm/VTJB4qT/zml8EVFdVXo23lgGIEEO4ugfKw2NEN3ISysd1mTvWX1AXvlgSfnA6
-         sUzg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=CPUP1Iq5fK/bmBgD1XCDK9cdQZsBkT+LUZqC6FIYBEk=;
+        b=ej+a3pcQfnw/MAwQO1KUZl+/MzVf9OjlW3toLX+V5ZSuj6Lygh+c53bbo4I0FoV8/a
+         p8vakm0Jsw3ksH8U50KlfPdIlpLfa7owB0utMqfTJJqho+MpEgpubq/ic8KcX9sig5v2
+         5PFZnLin2hJonUxw1sJ83AYtUmG9nzttIF+8MPSDAmTB6/5DoGzMePQGAzjTKjCKmU9J
+         odRpwIOgtfuS3i1OiXnWCKw2VlC28PkjI/SPSFsfqh3jtmGyxC51bDyFNAYxafhLn+Mj
+         2pgNVO1ZuF/1N3XZJETFpkBxoXbwy0LeF5SFvKQEr3ttl18GC/NavN60TWVeTDtaDrMr
+         LWfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LmC2G1kIC2bjPYIdvitbx5KXueFp/+sexGyQ4odL7qI=;
-        b=N1iazT2sqe36XDrIS1QnRuOLHZZAYMKkEiACFBEF5cjxtL6gW0Gu76xW0vlvERQoOq
-         IB63b/K3zUZXOi2vlkcBXdtA65bKXT5ufWlM79rhuco+BBnmNmkk2ZyfNOrOf2mFDjPp
-         ZlESYac75GIi7x525NH9+JCpjz+3a1XP2B1uV2vWPAKtHFqeqwm+goUN9t/OYVRRqFSO
-         NIFmJSNFGoSQpyL77Z2SwjEddQqSe4YdPk7dvCj4BD6sULR0q/F8Hjp47j6O8nazVyov
-         cFO32h8TsRFts6SwTvOWnrwV1eHm/+JVbDtCP5VQ0raR4qDjHa1VV22lHVuG+21vgst3
-         YNgA==
-X-Gm-Message-State: AOAM5310m45UMjHBb/ABWsbWt/Uw839UCbKFdaPBZPqJXvP+879+NRtY
-        By3qEEZ8hzlBeQQpvTrBtRukjlbf7ydz/BUalJc=
-X-Google-Smtp-Source: ABdhPJxHCqelE2YrKMEsQ3BujCVr7G3u5Mo/6g1Tf9IHCCWKPVh24iVU3I84se8WdJ9gaTZ+Xv/N27J+Sp7Es95QiHA=
-X-Received: by 2002:a67:cd85:0:b0:329:c97:af2f with SMTP id
- r5-20020a67cd85000000b003290c97af2fmr524126vsl.6.1649754629222; Tue, 12 Apr
- 2022 02:10:29 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=CPUP1Iq5fK/bmBgD1XCDK9cdQZsBkT+LUZqC6FIYBEk=;
+        b=s1YUbxV/fMlkDEFi8PVVeQZjvGZDh5RgJBOz+o3ZY2Ut7/V2YHDuz5vswsPOIyhNO7
+         B0IMdf9kmElu39B6uYBCpV/9pQMaruyWkTw/DYKxAxKmlVOlSs+bZnykS6Xy8Oqsigb+
+         mBBt8CLjaPzJE2nGHa94mRv/UrDWGxm74Xg5Whzo0ZKKZ0V16DhfBA68Mf0+zBTRpNEt
+         eWCEWIK8y+/1v15WmhFzcU3/6ZxDX2ClIGCcH3gf/yd+xL94SYEnSSlIWcer9grZsQZM
+         Zs6Tm8qEURIJ9DhsVvWIqFG/NUa4O1VUQ/WmxP909Rfsrp9TnFW65W9TkKrN5zhoML08
+         Yfrw==
+X-Gm-Message-State: AOAM531nefx0IC8Uc7LmK6nM+8hVMIQMKnZXDi8Yg72jE4zGBkYOvcH/
+        F6VIRDpXdUckWsV56snv6TIKbQ==
+X-Google-Smtp-Source: ABdhPJyoMN7KH4PRi34uNSYqnK6SmghZOUl9xoVGecU6nVJPgukZNVMMheGJqnwEunGq2o9JuaTtOw==
+X-Received: by 2002:a5d:64ae:0:b0:207:8830:fa57 with SMTP id m14-20020a5d64ae000000b002078830fa57mr19642993wrp.272.1649753928432;
+        Tue, 12 Apr 2022 01:58:48 -0700 (PDT)
+Received: from vingu-book ([2a01:e0a:f:6020:8808:91f3:6692:66dd])
+        by smtp.gmail.com with ESMTPSA id i9-20020a5d5849000000b002058631cfacsm29504199wrf.61.2022.04.12.01.58.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Apr 2022 01:58:47 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 10:58:45 +0200
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+To:     Kuyo Chang <kuyo.chang@mediatek.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH 1/1] sched/pelt: Refine the enqueue_load_avg calculate
+ method
+Message-ID: <20220412085845.GA14088@vingu-book>
+References: <20220411061702.22978-1-kuyo.chang@mediatek.com>
+ <CAKfTPtAyhc-tAWXmXcHstmiBSMjj5GENizX__KRDab28NRum1A@mail.gmail.com>
+ <5a90b20570ecacf457f68da7a106d3b2f8c2269e.camel@mediatek.com>
 MIME-Version: 1.0
-References: <20220412064940.14798-1-guozhengkui@vivo.com>
-In-Reply-To: <20220412064940.14798-1-guozhengkui@vivo.com>
-From:   Ilya Dryomov <idryomov@gmail.com>
-Date:   Tue, 12 Apr 2022 11:11:11 +0200
-Message-ID: <CAOi1vP-OQFQ9-PmUnv_qO6Yy4iMKCWDXX+jupfKSZKYnHnb66w@mail.gmail.com>
-Subject: Re: [PATCH linux-next] net: ceph: use swap() macro instead of taking
- tmp variable
-To:     Guo Zhengkui <guozhengkui@vivo.com>
-Cc:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "open list:CEPH COMMON CODE (LIBCEPH)" <ceph-devel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        zhengkui_guo@outlook.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5a90b20570ecacf457f68da7a106d3b2f8c2269e.camel@mediatek.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 9:01 AM Guo Zhengkui <guozhengkui@vivo.com> wrote:
->
-> Fix the following coccicheck warning:
-> net/ceph/crush/mapper.c:1077:8-9: WARNING opportunity for swap()
->
-> by using swap() for the swapping of variable values and drop
-> the tmp variable that is not needed any more.
->
-> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
-> ---
->  net/ceph/crush/mapper.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> diff --git a/net/ceph/crush/mapper.c b/net/ceph/crush/mapper.c
-> index 7057f8db4f99..1daf95e17d67 100644
-> --- a/net/ceph/crush/mapper.c
-> +++ b/net/ceph/crush/mapper.c
-> @@ -906,7 +906,6 @@ int crush_do_rule(const struct crush_map *map,
->         int recurse_to_leaf;
->         int wsize = 0;
->         int osize;
-> -       int *tmp;
->         const struct crush_rule *rule;
->         __u32 step;
->         int i, j;
-> @@ -1073,9 +1072,7 @@ int crush_do_rule(const struct crush_map *map,
->                                 memcpy(o, c, osize*sizeof(*o));
->
->                         /* swap o and w arrays */
-> -                       tmp = o;
-> -                       o = w;
-> -                       w = tmp;
-> +                       swap(o, w);
->                         wsize = osize;
->                         break;
->
-> --
-> 2.20.1
->
+Le mardi 12 avril 2022 à 10:51:23 (+0800), Kuyo Chang a écrit :
+> On Mon, 2022-04-11 at 10:39 +0200, Vincent Guittot wrote:
+> > On Mon, 11 Apr 2022 at 08:17, Kuyo Chang <kuyo.chang@mediatek.com>
+> > wrote:
+> > > 
+> > > From: kuyo chang <kuyo.chang@mediatek.com>
+> > > 
+> > > I meet the warning message at cfs_rq_is_decayed at below code.
+> > > 
+> > > SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+> > >                     cfs_rq->avg.util_avg ||
+> > >                     cfs_rq->avg.runnable_avg)
+> > > 
+> > > Following is the calltrace.
+> > > 
+> > > Call trace:
+> > > __update_blocked_fair
+> > > update_blocked_averages
+> > > newidle_balance
+> > > pick_next_task_fair
+> > > __schedule
+> > > schedule
+> > > pipe_read
+> > > vfs_read
+> > > ksys_read
+> > > 
+> > > After code analyzing and some debug messages, I found it exits a
+> > > corner
+> > > case at attach_entity_load_avg which will cause load_sum is zero
+> > > and
+> > > load_avg is not.
+> > > Consider se_weight is 88761 according by sched_prio_to_weight
+> > > table.
+> > > And assume the get_pelt_divider() is 47742, se->avg.load_avg is 1.
+> > > By the calculating for se->avg.load_sum as following will become
+> > > zero
+> > > as following.
+> > > se->avg.load_sum =
+> > >         div_u64(se->avg.load_avg * se->avg.load_sum,
+> > > se_weight(se));
+> > > se->avg.load_sum = 1*47742/88761 = 0.
+> > 
+> > The root problem is there, se->avg.load_sum must not be null if
+> > se->avg.load_avg is not null because the correct relation between
+> > _avg
+> > and _sum is:
+> > 
+> > load_avg = weight * load_sum / divider.
+> > 
+> > so the fix should be attach_entity_load_avg() and probably the below
+> > is enough
+> > 
+> > se->avg.load_sum = div_u64(se->avg.load_avg * se->avg.load_sum,
+> > se_weight(se)) + 1;
+> 
+> Thanks for your kindly suggestion.
+> +1 would make the calcuation for load_sum may be overestimate?
+> How about the below code make sense for fix the corner case?
+> 
+> --- 
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3832,7 +3832,8 @@ static void attach_entity_load_avg(struct cfs_rq
+> *cfs_rq, struct sched_entity *s
+>  	se->avg.load_sum = divider;
+>  	if (se_weight(se)) {
+>  		se->avg.load_sum =
+> -			div_u64(se->avg.load_avg * se->avg.load_sum,
+> se_weight(se));
+> +			(se->avg.load_avg * se->avg.load_sum >
+> se_weight(se)) ?
+> +			div_u64(se->avg.load_avg * se->avg.load_sum,
+> se_weight(se)) : 1;
+>  	}
+>  
+>  	enqueue_load_avg(cfs_rq, se);
+> -- 
+> 2.18.0
 
-Applied.
+In this case, the below is easier to read
 
-Thanks,
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 1658a9428d96..2c685474db23 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3836,10 +3836,12 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
 
-                Ilya
+        se->avg.runnable_sum = se->avg.runnable_avg * divider;
+
+-       se->avg.load_sum = divider;
+-       if (se_weight(se)) {
++       se->avg.load_sum = se->avg.load_avg * divider;
++       if (se_weight(se) < se->avg.load_sum) {
+                se->avg.load_sum =
+-                       div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
++                       div_u64(se->avg.load_sum, se_weight(se));
++       } else {
++               se->avg.load_sum = 1;
+        }
+
+        enqueue_load_avg(cfs_rq, se);
+
+
+
+> 
+> 
+> > > 
+> > > After enqueue_load_avg code as below.
+> > > cfs_rq->avg.load_avg += se->avg.load_avg;
+> > > cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
+> > > 
+> > > Then the load_sum for cfs_rq will be 1 while the load_sum for
+> > > cfs_rq is 0.
+> > > So it will hit the warning message.
+> > > 
+> > > After all, I refer the following commit patch to do the similar
+> > > thing at
+> > > enqueue_load_avg.
+> > > sched/pelt: Relax the sync of load_sum with load_avg
+> > > 
+> > > After long time testing, the kernel warning was gone and the system
+> > > runs
+> > > as well as before.
+> > > 
+> > > Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
+> > > ---
+> > >  kernel/sched/fair.c | 6 ++++--
+> > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> > > index d4bd299d67ab..30d8b6dba249 100644
+> > > --- a/kernel/sched/fair.c
+> > > +++ b/kernel/sched/fair.c
+> > > @@ -3074,8 +3074,10 @@ account_entity_dequeue(struct cfs_rq
+> > > *cfs_rq, struct sched_entity *se)
+> > >  static inline void
+> > >  enqueue_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se)
+> > >  {
+> > > -       cfs_rq->avg.load_avg += se->avg.load_avg;
+> > > -       cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
+> > > +       add_positive(&cfs_rq->avg.load_avg, se->avg.load_avg);
+> > > +       add_positive(&cfs_rq->avg.load_sum, se_weight(se) * se-
+> > > >avg.load_sum);
+> > > +       cfs_rq->avg.load_sum = max_t(u32, cfs_rq->avg.load_sum,
+> > > +                                         cfs_rq->avg.load_avg *
+> > > PELT_MIN_DIVIDER);
+> > >  }
+> > > 
+> > >  static inline void
+> > > --
+> > > 2.18.0
+> > > 
+> 
