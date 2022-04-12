@@ -2,134 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0204FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0740BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:27:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355787AbiDLNZv (ORCPT
+        id S1355974AbiDLN1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
+        Tue, 12 Apr 2022 09:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356031AbiDLNY5 (ORCPT
+        with ESMTP id S1356237AbiDLN05 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:24:57 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE243134D;
-        Tue, 12 Apr 2022 06:15:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649769330; x=1681305330;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=rdlamBty3xnTdbqFu5TFXF+lmSyntbHoVwqIuXriL1c=;
-  b=Ze0Bd0ON/Yj4dzaBOa35/HHDk89SfDa8vmDk1pCRHXE1TPXj4oMba3G0
-   MNA4NaP939ZcvXAISk64LHQl70/ndQpP7oWfvVofqy+40mMEmFi1XLZIX
-   L6dYkBBClDQhUwcUc3FOvIMp/+0/hOtYX9EaP1qMPxz9LmoWXF/S4GVxP
-   I=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Apr 2022 06:15:30 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:15:29 -0700
-Received: from hu-vgarodia-hyd.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 06:15:28 -0700
-From:   Vikash Garodia <quic_vgarodia@quicinc.com>
-To:     <linux-media@vger.kernel.org>, <stanimir.varbanov@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>, <quic_vgarodia@quicinc.com>
-Subject: [PATCH v2 1/2] media: venus: do not queue internal buffers from previous sequence
-Date:   Tue, 12 Apr 2022 18:45:10 +0530
-Message-ID: <1649769311-22622-2-git-send-email-quic_vgarodia@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649769311-22622-1-git-send-email-quic_vgarodia@quicinc.com>
-References: <1649769311-22622-1-git-send-email-quic_vgarodia@quicinc.com>
+        Tue, 12 Apr 2022 09:26:57 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A29F43
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:21:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649769713; x=1681305713;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=K10aPqsXZD4QBwO3VmQYeC0CYp3r9bJXTTZCH/ubYRg=;
+  b=B1RHb143ANeQEW8AObmztQGfvAhg+lIfSa3Y3JYaXsrElRAmw+n3Hwo4
+   R0Z7e5X3ZF6dS+NU5IZTds+pUikledlddWAlRxMmoJqru9VrdtNt8bYYx
+   Pn15c4sXH9vOhtJS6cFphkegD8RpfyFW5jzqLc+K9OMdaGf53aAinamjo
+   QMxfpZS/cRu6GQvMn3I4mVAf4P3zar0VvwUniJLnZ3eYt0uq1T8EPVInO
+   dUTMrTT2OECejZ1oXGv2CTl9bXC5T9Zu6AiuyDrG/r//vw5CLbHlPVZoa
+   N5CDEZywGDiU+zuuchOzTHZXcl39GYs+aRU3fc4sp+WMsLWF0xPjpgSfU
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261220817"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="261220817"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:21:43 -0700
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="551708376"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:21:41 -0700
+Date:   Tue, 12 Apr 2022 21:21:37 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc:     robin.murphy@arm.com, m.szyprowski@samsung.com, hch@lst.de,
+        Wang Zhaoyang1 <zhaoyang1.wang@intel.com>,
+        Gao Liang <liang.gao@intel.com>,
+        Kevin Tian <kevin.tian@intel.com>
+Subject: Re: [PATCH] dma-direct: avoid redundant memory sync for swiotlb
+Message-ID: <20220412132132.GA18002@gao-cwp>
+References: <20220412113805.3210-1-chao.gao@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412113805.3210-1-chao.gao@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During reconfig (DRC) event from firmware, it is not guaranteed that
-all the DPB(internal) buffers would be released by the firmware. Some
-buffers might be released gradually while processing frames from the
-new sequence. These buffers now stay idle in the dpblist.
-In subsequent call to queue the DPBs to firmware, these idle buffers
-should not be queued. The fix identifies those buffers and free them.
+On Tue, Apr 12, 2022 at 07:38:05PM +0800, Chao Gao wrote:
+>When we looked into FIO performance with swiotlb enabled in VM, we found
+>swiotlb_bounce() is always called one more time than expected for each DMA
+>read request.
+>
+>It turns out that the bounce buffer is copied to original DMA buffer twice
+>after the completion of a DMA request (one is done by in
+>dma_direct_sync_single_for_cpu(), the other by swiotlb_tbl_unmap_single()).
+>But the content in bounce buffer actually doesn't change between the two
+>rounds of copy. So, one round of copy is redundant.
+>
+>Pass DMA_ATTR_SKIP_CPU_SYNC flag to swiotlb_tbl_unmap_single() to
+>skip the memory copy in it.
+>
+>This fix increases FIO 64KB sequential read throughput in a guest with
+>swiotlb=force by 5.6%.
+>
 
-Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
-Acked-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
----
- drivers/media/platform/qcom/venus/helpers.c | 34 +++++++++++++++++++++--------
- 1 file changed, 25 insertions(+), 9 deletions(-)
+Sorry. A fixes tag is missing:
 
-diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
-index 0bca95d..fa01edd 100644
---- a/drivers/media/platform/qcom/venus/helpers.c
-+++ b/drivers/media/platform/qcom/venus/helpers.c
-@@ -90,12 +90,28 @@ bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt)
- }
- EXPORT_SYMBOL_GPL(venus_helper_check_codec);
- 
-+static void free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
-+{
-+	ida_free(&inst->dpb_ids, buf->dpb_out_tag);
-+
-+	list_del_init(&buf->list);
-+	dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
-+		       buf->attrs);
-+	kfree(buf);
-+}
-+
- int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
- {
--	struct intbuf *buf;
-+	struct intbuf *buf, *next;
-+	unsigned int dpb_size = 0;
- 	int ret = 0;
- 
--	list_for_each_entry(buf, &inst->dpbbufs, list) {
-+	if (inst->dpb_buftype == HFI_BUFFER_OUTPUT)
-+		dpb_size = inst->output_buf_size;
-+	else if (inst->dpb_buftype == HFI_BUFFER_OUTPUT2)
-+		dpb_size = inst->output2_buf_size;
-+
-+	list_for_each_entry_safe(buf, next, &inst->dpbbufs, list) {
- 		struct hfi_frame_data fdata;
- 
- 		memset(&fdata, 0, sizeof(fdata));
-@@ -106,6 +122,12 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
- 		if (buf->owned_by == FIRMWARE)
- 			continue;
- 
-+		/* free buffer from previous sequence which was released later */
-+		if (dpb_size > buf->size) {
-+			free_dpb_buf(inst, buf);
-+			continue;
-+		}
-+
- 		fdata.clnt_data = buf->dpb_out_tag;
- 
- 		ret = hfi_session_process_buf(inst, &fdata);
-@@ -127,13 +149,7 @@ int venus_helper_free_dpb_bufs(struct venus_inst *inst)
- 	list_for_each_entry_safe(buf, n, &inst->dpbbufs, list) {
- 		if (buf->owned_by == FIRMWARE)
- 			continue;
--
--		ida_free(&inst->dpb_ids, buf->dpb_out_tag);
--
--		list_del_init(&buf->list);
--		dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
--			       buf->attrs);
--		kfree(buf);
-+		free_dpb_buf(inst, buf);
- 	}
- 
- 	if (list_empty(&inst->dpbbufs))
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Fixes: 55897af63091 ("dma-direct: merge swiotlb_dma_ops into the dma_direct code")
 
+>Reported-by: Wang Zhaoyang1 <zhaoyang1.wang@intel.com>
+>Reported-by: Gao Liang <liang.gao@intel.com>
+>Signed-off-by: Chao Gao <chao.gao@intel.com>
+>Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>---
+> kernel/dma/direct.h | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+>diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+>index 4632b0f4f72e..8a6cd53dbe8c 100644
+>--- a/kernel/dma/direct.h
+>+++ b/kernel/dma/direct.h
+>@@ -114,6 +114,7 @@ static inline void dma_direct_unmap_page(struct device *dev, dma_addr_t addr,
+> 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
+> 
+> 	if (unlikely(is_swiotlb_buffer(dev, phys)))
+>-		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
+>+		swiotlb_tbl_unmap_single(dev, phys, size, dir,
+>+					 attrs | DMA_ATTR_SKIP_CPU_SYNC);
+> }
+> #endif /* _KERNEL_DMA_DIRECT_H */
+>-- 
+>2.25.1
+>
