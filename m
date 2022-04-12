@@ -2,169 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA18DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17113C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243890AbiDLMfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:35:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
+        id S1347461AbiDLMgO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346084AbiDLMf1 (ORCPT
+        with ESMTP id S1348114AbiDLMft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:35:27 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E433F5DE44
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:53:47 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id u15so18162594ejf.11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:53:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cwWMneWmYo0bsVQNTnfjzMcjYCr1j17IxDi8v2ddzV0=;
-        b=pOPSFaKNtRrc6Xfd6Mgck9tiiSqlG/jRNHohJ6jbz469ZDQEJDVr5tBlX/x+HzYwET
-         UazcNzCtzLdaFmC9tgK7KPUq7O+v+EG92zXkoHj1FlwX+809xEXwr5rOZJKRTlgzWRJb
-         LfVUVGYh6ySPN0yaBiYZXDMMoGG5bWlAEOBfIMFCnuMm8eOS/PMXVrzTVblV5IhcGbI2
-         ocGyzKdbCItAa649nhhKEpivREE2IGCbn0YXFUrMUthE1DrYQBA/g8MRXaF2P5ixtFOk
-         fB/cBcJTrOJIU5kUorcq+6d7oZCRDkUB0tnNdsEDPtBYpA389yzBbduVHLPf+NYbvrmJ
-         DFPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cwWMneWmYo0bsVQNTnfjzMcjYCr1j17IxDi8v2ddzV0=;
-        b=wCFaoI5vid59CLi5QYS+32D5RX/LtpvheiOUZ7SXJlrGcNq2ID2Fht7G9u4xJLmKGW
-         CgQGZD6VFjHTn/4dF0PXsEEcKIVNrJKug8EUvIvN36/Z6ze0ETZvFPSt9O59NzvMz80g
-         jzAMTCgMfSPfn6w8BCO0afWG7uX42h3KVnCH9PmTBZnKwO1rMMmZAvESQ2N07oPrZXMh
-         uwrkZAemJ6rqkse/FHhqFM3LJEsqmJXupJtUyrESKsaDnkkwhtnXokxZ/ZKnOWuOCzxV
-         +2vU/VZ8tztDmkkCfu/dTvLFiCTx+5Kw/HvOSuHQG+e94JaKU+2oEEGHIxmXaf+anLYP
-         HYCg==
-X-Gm-Message-State: AOAM5307jnQrNucXc87pWO0AkwfLZSkvtrfdehfYbcuMvdMElL2mz2fY
-        URzXFhsrdeo0gsShQc+V5Q3Qiw==
-X-Google-Smtp-Source: ABdhPJzjUIVyQeW3XuC0ld4eIJnrJZrmjsdr+XuecYgxxiG+iAXjBdVXzyJPY252GX4f3SnJi4TWGA==
-X-Received: by 2002:a17:906:99c5:b0:6df:8215:4ccd with SMTP id s5-20020a17090699c500b006df82154ccdmr34666885ejn.684.1649764426399;
-        Tue, 12 Apr 2022 04:53:46 -0700 (PDT)
-Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id v21-20020a1709064e9500b006e8973a14d0sm2158703eju.174.2022.04.12.04.53.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 04:53:45 -0700 (PDT)
-Message-ID: <c13a0f34-4938-3d56-43e0-5a9053e0bc25@linaro.org>
-Date:   Tue, 12 Apr 2022 13:53:44 +0200
+        Tue, 12 Apr 2022 08:35:49 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 363E513FB4;
+        Tue, 12 Apr 2022 04:54:39 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3641A1424;
+        Tue, 12 Apr 2022 04:54:39 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.38.213])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E47C63F70D;
+        Tue, 12 Apr 2022 04:54:32 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        linux-perf-users@vger.kernel.org
+Subject: [RFC V2 0/8] arm64/perf: Enable branch stack sampling
+Date:   Tue, 12 Apr 2022 17:24:47 +0530
+Message-Id: <20220412115455.293119-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
-Content-Language: en-US
-To:     Camel Guo <camel.guo@axis.com>, linux@roeck-us.net,
-        jdelvare@suse.com, robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     kernel@axis.com, linux-hwmon@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Camel Guo <camelg@axis.com>
-References: <20220411100329.1783432-1-camel.guo@axis.com>
- <20220411100329.1783432-2-camel.guo@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220411100329.1783432-2-camel.guo@axis.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/04/2022 12:03, Camel Guo wrote:
-> From: Camel Guo <camelg@axis.com>
-> 
-> Document the TMP401, TMP411 and TMP43x device devicetree bindings
-> 
-> Signed-off-by: Camel Guo <camelg@axis.com>
-> ---
->  .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 111 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 112 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-> 
+This series enables perf branch stack sampling support on arm64 platform
+via a new arch feature called Branch Record Buffer Extension (BRBE). All
+relevant register definitions could be accessed here.
 
-Thank you for your patch. There is something to discuss/improve.
+https://developer.arm.com/documentation/ddi0601/2021-12/AArch64-Registers
 
-> diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-> new file mode 100644
-> index 000000000000..28be5cbb009b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-> @@ -0,0 +1,111 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/hwmon/ti,tmp401.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: TMP401, TPM411 and TMP43x temperature sensor
-> +
-> +maintainers:
-> +  - Guenter Roeck <linux@roeck-us.net>
-> +
-> +description: |
-> +  ±1°C Remote and Local temperature sensor
-> +
-> +  Datasheets:
-> +  https://www.ti.com/lit/ds/symlink/tmp401.pdf
-> +  https://www.ti.com/lit/ds/symlink/tmp411.pdf
-> +  https://www.ti.com/lit/ds/symlink/tmp431.pdf
-> +  https://www.ti.com/lit/ds/symlink/tmp435.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,tmp401
-> +      - ti,tmp411
-> +      - ti,tmp431
-> +      - ti,tmp432
-> +      - ti,tmp435
+This series applies on v5.18-rc1 after the BRBE related perf ABI changes series
+(V5) that was posted earlier.
 
-Blank line, please.
+https://lore.kernel.org/all/20220404045046.634522-2-anshuman.khandual@arm.com/
 
-> +  reg:
-> +    maxItems: 1
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  ti,extended-range-enable:
-> +    description: |
+Following issues remain inconclusive
 
-No need for "|". Here and in most of other cases below.
+- Jame's concerns regarding permission inadequacy related to perfmon_capable()
+- Jame's concerns regarding using perf_event_paranoid along with perfmon_capable()
+- Rob's concerns regarding the series structure, arm_pmu callbacks based framework
 
-> +      When set, this sensor measures over extended temperature range.
-> +    type: boolean
-> +
-> +  ti,n-factor:
-> +    description: |
-> +      The value (two's complement) to be programmed in the n-factor correction
-> +      register.
+Changes in RFC V2:
 
-Do not describe the programming model (registers) but hardware property
-instead.
+- Added branch_sample_priv() while consolidating other branch sample filter helpers
+- Changed all SYS_BRBXXXN_EL1 register definition encodings per Marc
+- Changed the BRBE driver as per proposed BRBE related perf ABI changes (V5)
+- Added documentation for struct arm_pmu changes, updated commit message
+- Updated commit message for BRBE detection infrastructure patch
+- PERF_SAMPLE_BRANCH_KERNEL gets checked during arm event init (outside the driver)
+- Branch privilege state capture mechanism has now moved inside the driver
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    items:
-> +      minimum: 0
-> +      maximum: 255
-> +
-> +  ti,beta-compensation:
-> +    description: |
-> +      The value to be programmed in the beta range register.
+Changes in RFC V1:
 
-The same, register values should not be stored in DT.
+https://lore.kernel.org/all/1642998653-21377-1-git-send-email-anshuman.khandual@arm.com/
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    items:
-> +      minimum: 0
-> +      maximum: 15
-> +
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: James Clark <james.clark@arm.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-perf-users@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
+Anshuman Khandual (8):
+  perf: Consolidate branch sample filter helpers
+  arm64/perf: Add register definitions for BRBE
+  arm64/perf: Update struct arm_pmu for BRBE
+  arm64/perf: Update struct pmu_hw_events for BRBE
+  driver/perf/arm_pmu_platform: Add support for BRBE attributes detection
+  arm64/perf: Drive BRBE from perf event states
+  arm64/perf: Add BRBE driver
+  arm64/perf: Enable branch stack sampling
 
-Best regards,
-Krzysztof
+ arch/arm64/include/asm/sysreg.h | 222 +++++++++++++++++
+ arch/arm64/kernel/perf_event.c  |  48 ++++
+ drivers/perf/Kconfig            |  11 +
+ drivers/perf/Makefile           |   1 +
+ drivers/perf/arm_pmu.c          |  72 +++++-
+ drivers/perf/arm_pmu_brbe.c     | 425 ++++++++++++++++++++++++++++++++
+ drivers/perf/arm_pmu_brbe.h     | 259 +++++++++++++++++++
+ drivers/perf/arm_pmu_platform.c |  34 +++
+ include/linux/perf/arm_pmu.h    |  63 +++++
+ include/linux/perf_event.h      |  24 ++
+ kernel/events/core.c            |   9 +-
+ 11 files changed, 1158 insertions(+), 10 deletions(-)
+ create mode 100644 drivers/perf/arm_pmu_brbe.c
+ create mode 100644 drivers/perf/arm_pmu_brbe.h
+
+-- 
+2.25.1
+
