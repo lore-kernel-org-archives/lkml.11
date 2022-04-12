@@ -2,87 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64710C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:40:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbiDLEl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 00:41:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43832 "EHLO
+        id S1346805AbiDLEmY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 00:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346789AbiDLElP (ORCPT
+        with ESMTP id S1346571AbiDLEmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 00:41:15 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 822112A728;
-        Mon, 11 Apr 2022 21:38:59 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4F7E11756;
-        Mon, 11 Apr 2022 21:38:59 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.38.213])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6E6383F70D;
-        Mon, 11 Apr 2022 21:38:55 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     christophe.leroy@csgroup.eu, catalin.marinas@arm.com,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V5 7/7] mm/mmap: Drop arch_vm_get_page_pgprot()
-Date:   Tue, 12 Apr 2022 10:08:48 +0530
-Message-Id: <20220412043848.80464-8-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412043848.80464-1-anshuman.khandual@arm.com>
-References: <20220412043848.80464-1-anshuman.khandual@arm.com>
+        Tue, 12 Apr 2022 00:42:09 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0537DE31;
+        Mon, 11 Apr 2022 21:39:47 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23BLtKjb031973;
+        Tue, 12 Apr 2022 04:39:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=RpMZW/U3P5tVksdvNelEblhiKLUKeauIp6aIxmelim4=;
+ b=eyD6lWkKmsWpksKcTlMbYSYGFTn+0o8//+ZavJVRI2rYyNLIYI5DMUpnQrgJ6BGZZPR0
+ eMxk9SPRcHYbQUWlTO4LYt/4KqD3vqd3XUQ2nK+4/gdRt1wctOHNC1w7ns+CAniaMN1e
+ /4bjuC40DSqManRJ3Y9d5ZUko9qQHP5vM1YFC5ovXBK4G39n8QXH4pfFpoKrX2/IDUyJ
+ 9uW5Zjca6JwH1eQw9paxCAkR/C15T0Kzq3+9sOgAZbCwZP+ItebzU0isnMcku0uDlKqG
+ eaP8YDDCWN7tenYL6xrtpXmb+FHB8BwhKufhMn+Ayi+DCaPllvtmF9nmg6up+U80oQYw RQ== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3fb0jd5ekb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 04:39:25 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23C4aCrY035802;
+        Tue, 12 Apr 2022 04:39:24 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fcg9gy4nc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 04:39:24 +0000
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 23C4dOZX040689;
+        Tue, 12 Apr 2022 04:39:24 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fcg9gy4k0-1;
+        Tue, 12 Apr 2022 04:39:24 +0000
+From:   Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc:     harshit.m.mogalapalli@oracle.com, dan.carpenter@oracle.com,
+        Steve French <sfrench@samba.org>,
+        Stefan Metzmacher <metze@samba.org>,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] cifs: potential buffer overflow in handling symlinks
+Date:   Mon, 11 Apr 2022 21:38:22 -0700
+Message-Id: <20220412043823.57037-1-harshit.m.mogalapalli@oracle.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: xqL3uRre6-QmHJhJSpdr_eNJvtynp2K3
+X-Proofpoint-GUID: xqL3uRre6-QmHJhJSpdr_eNJvtynp2K3
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are no platforms left which use arch_vm_get_page_prot(). Just drop
-generic arch_vm_get_page_prot().
+Smatch printed a warning:
+	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
+	__memcpy() 'dctx->buf' too small (16 vs u32max)
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+It's caused because Smatch marks 'link_len' as untrusted since it comes
+from sscanf(). Add a check to ensure that 'link_len' is not larger than
+the size of the 'link_str' buffer.
+
+Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 ---
- include/linux/mman.h | 4 ----
- mm/mmap.c            | 3 +--
- 2 files changed, 1 insertion(+), 6 deletions(-)
+ fs/cifs/link.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/linux/mman.h b/include/linux/mman.h
-index b66e91b8176c..58b3abd457a3 100644
---- a/include/linux/mman.h
-+++ b/include/linux/mman.h
-@@ -93,10 +93,6 @@ static inline void vm_unacct_memory(long pages)
- #define arch_calc_vm_flag_bits(flags) 0
- #endif
+diff --git a/fs/cifs/link.c b/fs/cifs/link.c
+index 852e54e..ebfedae 100644
+--- a/fs/cifs/link.c
++++ b/fs/cifs/link.c
+@@ -85,6 +85,9 @@
+ 	if (rc != 1)
+ 		return -EINVAL;
  
--#ifndef arch_vm_get_page_prot
--#define arch_vm_get_page_prot(vm_flags) __pgprot(0)
--#endif
--
- #ifndef arch_validate_prot
- /*
-  * This is called from mprotect().  PROT_GROWSDOWN and PROT_GROWSUP have
-diff --git a/mm/mmap.c b/mm/mmap.c
-index edf2a5e38f4d..db7f33154206 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -110,8 +110,7 @@ pgprot_t protection_map[16] __ro_after_init = {
- pgprot_t vm_get_page_prot(unsigned long vm_flags)
- {
- 	pgprot_t ret = __pgprot(pgprot_val(protection_map[vm_flags &
--				(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]) |
--			pgprot_val(arch_vm_get_page_prot(vm_flags)));
-+				(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]));
- 
- 	return ret;
- }
++	if (link_len > buf_len - CIFS_MF_SYMLINK_LINK_OFFSET)
++		return -EINVAL;
++
+ 	rc = symlink_hash(link_len, link_str, md5_hash);
+ 	if (rc) {
+ 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
 -- 
-2.25.1
+1.8.3.1
 
