@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4EB3C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D66C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351662AbiDLHMr (ORCPT
+        id S1351838AbiDLHNA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
+        Tue, 12 Apr 2022 03:13:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352521AbiDLGz4 (ORCPT
+        with ESMTP id S1351443AbiDLGxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:55:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B0241338;
-        Mon, 11 Apr 2022 23:45:56 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96C83CFEB;
+        Mon, 11 Apr 2022 23:40:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A1CFACE1ACD;
-        Tue, 12 Apr 2022 06:45:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC333C385A6;
-        Tue, 12 Apr 2022 06:45:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 663F5B81B29;
+        Tue, 12 Apr 2022 06:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEE7CC385A8;
+        Tue, 12 Apr 2022 06:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745953;
-        bh=Ww2ABR0jOGrcCjgf8sorN85jiVKs8UFZOAl4vYtrdS4=;
+        s=korg; t=1649745639;
+        bh=bKs0Q75ct17B8KXG5SA0L8h4El3ofgB2af3dL9aRO6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qricHDCIG43rCW8avnYIVZ5Sp7FXiMmpchTJT+NMmr/7lAL6QbMoUG6kHsnaAUIuZ
-         4sj6H+olH1PiscU2hKqfhtw0L7tUz70fHizFOv7oQ6v8NDXdxsmPgoyq6QI66Fr/Mc
-         ldh1l2nSZFvxkwS+GLNYsmjOlVX6mdqTIVbyPK4s=
+        b=rnffzio7KBtpTRHWRAudTwPSxvOzhqHmN8pKQVlbbb742KmE1uHj+sfgEDjwoqEYb
+         nloMR9cDqlKGk7RstadiisfD6mVhK45w+Gxp3qDnVA4dLbQJmsfZBo+R34xEUKycCr
+         V+Uxk1sZKMVR7BCebq3g5cwrJh6EEchzb/+kzIaY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 108/277] init/main.c: return 1 from handled __setup() functions
-Date:   Tue, 12 Apr 2022 08:28:31 +0200
-Message-Id: <20220412062945.165453049@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Fangrui Song <maskray@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>
+Subject: [PATCH 5.10 167/171] arm64: module: remove (NOLOAD) from linker script
+Date:   Tue, 12 Apr 2022 08:30:58 +0200
+Message-Id: <20220412062932.732866506@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
+In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
+References: <20220412062927.870347203@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,57 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Fangrui Song <maskray@google.com>
 
-[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
+commit 4013e26670c590944abdab56c4fa797527b74325 upstream.
 
-initcall_blacklist() should return 1 to indicate that it handled its
-cmdline arguments.
+On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
+inappropriate for .plt and .text.* sections which are always
+SHT_PROGBITS.
 
-set_debug_rodata() should return 1 to indicate that it handled its
-cmdline arguments.  Print a warning if the option string is invalid.
+In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
+and (NOLOAD) will be essentially ignored. In ld.lld, since
+https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
+customize the output section type"), ld.lld will report a `section type
+mismatch` error. Just remove (NOLOAD) to fix the error.
 
-This prevents these strings from being added to the 'init' program's
-environment as they are not init arguments/parameters.
+[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
+section should be marked as not loadable" on
+https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
+outdated for ELF.
 
-Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Fangrui Song <maskray@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20220218081209.354383-1-maskray@google.com
+Signed-off-by: Will Deacon <will@kernel.org>
+[nathan: Fix conflicts due to lack of 1cbdf60bd1b7]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- init/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/module.lds.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index b340d990d77c..06b98350ebd2 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -1198,7 +1198,7 @@ static int __init initcall_blacklist(char *str)
- 		}
- 	} while (str_entry);
- 
--	return 0;
-+	return 1;
+--- a/arch/arm64/include/asm/module.lds.h
++++ b/arch/arm64/include/asm/module.lds.h
+@@ -1,7 +1,7 @@
+ #ifdef CONFIG_ARM64_MODULE_PLTS
+ SECTIONS {
+-	.plt 0 (NOLOAD) : { BYTE(0) }
+-	.init.plt 0 (NOLOAD) : { BYTE(0) }
+-	.text.ftrace_trampoline 0 (NOLOAD) : { BYTE(0) }
++	.plt 0 : { BYTE(0) }
++	.init.plt 0 : { BYTE(0) }
++	.text.ftrace_trampoline 0 : { BYTE(0) }
  }
- 
- static bool __init_or_module initcall_blacklisted(initcall_t fn)
-@@ -1460,7 +1460,9 @@ static noinline void __init kernel_init_freeable(void);
- bool rodata_enabled __ro_after_init = true;
- static int __init set_debug_rodata(char *str)
- {
--	return strtobool(str, &rodata_enabled);
-+	if (strtobool(str, &rodata_enabled))
-+		pr_warn("Invalid option string for rodata: '%s'\n", str);
-+	return 1;
- }
- __setup("rodata=", set_debug_rodata);
  #endif
--- 
-2.35.1
-
 
 
