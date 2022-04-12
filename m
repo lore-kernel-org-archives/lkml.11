@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4D0C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8C9C3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357078AbiDLHjq (ORCPT
+        id S1357243AbiDLHjx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45762 "EHLO
+        Tue, 12 Apr 2022 03:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352903AbiDLHOg (ORCPT
+        with ESMTP id S1353031AbiDLHOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E125B31928;
-        Mon, 11 Apr 2022 23:55:17 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C25F255B1;
+        Mon, 11 Apr 2022 23:55:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2323B81B35;
-        Tue, 12 Apr 2022 06:55:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14C17C385A6;
-        Tue, 12 Apr 2022 06:55:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 089FD61451;
+        Tue, 12 Apr 2022 06:55:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B8DBC385A6;
+        Tue, 12 Apr 2022 06:55:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746515;
-        bh=/uKbheoXCqGmE+l6GjoWxiFv0SNKT75bIlepXGZFYGQ=;
+        s=korg; t=1649746543;
+        bh=RPqEzanMnDxC24UF3o+CM9LqcNRSJxwgPiVt2BV2MzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0bhuGt3LcBQnd9vEz8F5aHEY7k5U9QCtQThuq6dkCm1EHWwjUPHcGgQlyT5BJCW8J
-         /W9s2DQtMAoh+ndCHGvSwXDtwXB+DoqBE4OBTaBSHyUhtQ7wL1sBKp2HZkiQlMc74K
-         GMu/kGkp75ll0FCP+1e2OtKJ/LCGY0QoIMjDgxIc=
+        b=QxiHDDvLmEoEDBfyIN+Lsjwa2vqTbKbSaLyI05ke9JCceLoH0wDJFhRyTrfTNAf6R
+         ZCV+8MAXfJrV04NCzzIyE3KRqxKB/JQ06en8JFztkDoE2jBxXhCuYNXiwJpNjhwS2m
+         Jk+S2VthMa4s6Tmv507qgi0ZM34ta+EXvS4lC49s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anisse Astier <anisse@astier.eu>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jani Nikula <jani.nikula@intel.com>,
+        stable@vger.kernel.org, Scott Benesh <scott.benesh@microchip.com>,
+        Scott Teel <scott.teel@microchip.com>,
+        Kevin Barnett <kevin.barnett@microchip.com>,
+        Don Brace <don.brace@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 009/285] drm: Add orientation quirk for GPD Win Max
-Date:   Tue, 12 Apr 2022 08:27:46 +0200
-Message-Id: <20220412062943.945074073@linuxfoundation.org>
+Subject: [PATCH 5.16 044/285] scsi: smartpqi: Fix rmmod stack trace
+Date:   Tue, 12 Apr 2022 08:28:21 +0200
+Message-Id: <20220412062944.947521357@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,38 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anisse Astier <anisse@astier.eu>
+From: Don Brace <don.brace@microchip.com>
 
-[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
+[ Upstream commit c4ff687d25c05919382a759503bd3821689f4e2f ]
 
-Panel is 800x1280, but mounted on a laptop form factor, sideways.
+Prevent "BUG: scheduling while atomic: rmmod" stack trace.
 
-Signed-off-by: Anisse Astier <anisse@astier.eu>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
+Stop setting spin_locks before calling OS functions to remove devices.
+
+Link: https://lore.kernel.org/r/164375207296.440833.4996145011193819683.stgit@brunhilda.pdev.net
+Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
+Reviewed-by: Scott Teel <scott.teel@microchip.com>
+Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
+Signed-off-by: Don Brace <don.brace@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/scsi/smartpqi/smartpqi_init.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index b910978d3e48..4e853acfd1e8 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -180,6 +180,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
- 		},
- 		.driver_data = (void *)&lcd720x1280_rightside_up,
-+	}, {	/* GPD Win Max */
-+		.matches = {
-+		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
-+		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
-+		},
-+		.driver_data = (void *)&lcd800x1280_rightside_up,
- 	}, {	/*
- 		 * GPD Pocket, note that the the DMI data is less generic then
- 		 * it seems, devices with a board-vendor of "AMI Corporation"
+diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
+index f0897d587454..2db9f874cc51 100644
+--- a/drivers/scsi/smartpqi/smartpqi_init.c
++++ b/drivers/scsi/smartpqi/smartpqi_init.c
+@@ -2513,17 +2513,15 @@ static void pqi_remove_all_scsi_devices(struct pqi_ctrl_info *ctrl_info)
+ 	struct pqi_scsi_dev *device;
+ 	struct pqi_scsi_dev *next;
+ 
+-	spin_lock_irqsave(&ctrl_info->scsi_device_list_lock, flags);
+-
+ 	list_for_each_entry_safe(device, next, &ctrl_info->scsi_device_list,
+ 		scsi_device_list_entry) {
+ 		if (pqi_is_device_added(device))
+ 			pqi_remove_device(ctrl_info, device);
++		spin_lock_irqsave(&ctrl_info->scsi_device_list_lock, flags);
+ 		list_del(&device->scsi_device_list_entry);
+ 		pqi_free_device(device);
++		spin_unlock_irqrestore(&ctrl_info->scsi_device_list_lock, flags);
+ 	}
+-
+-	spin_unlock_irqrestore(&ctrl_info->scsi_device_list_lock, flags);
+ }
+ 
+ static int pqi_scan_scsi_devices(struct pqi_ctrl_info *ctrl_info)
 -- 
 2.35.1
 
