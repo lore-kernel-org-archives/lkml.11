@@ -2,109 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F287C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E699CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbiDLU5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 16:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
+        id S230098AbiDLU5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 16:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiDLU5G (ORCPT
+        with ESMTP id S229682AbiDLU5U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 16:57:06 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31030147537
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:52:13 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id n19-20020a9d7113000000b005cd9cff76c3so14196975otj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:52:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=E/sfuAYENU6UCHVTWqjFkHV1/OSU1AIAFVjMvfNyJ5k=;
-        b=wHUAnWUOVTPZ0YoLJMOSVtGGQZHYba4E5Nb/7yndemn1YzYnQDp9JX7Sla5M/2OShh
-         JdHuMh9a0HG+wltK0D/G9iflV38ag2iC5fwzIEV6lYXZ6q8xNlDmQRf++iJpG4q8muyA
-         Uj9eGVzjzNR6o+qx5utWqwZ/1XMP/GISj9MAkqTwtHnMLIjVoNtNHrhD4wRh3uLwVWbF
-         EEpjn9NRHsbk1v5PFGsXFfXsZs3jIelQBHh+SFG5pXIppMvUeYTKBcVuNTtofrgKbI2P
-         4tXBqNzsWur6OZt6If3nTcdsTaHpwlqRUSU6h8/P1x8EBYqwlyiuQbqvwfvKEE0uCDMI
-         ncSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=E/sfuAYENU6UCHVTWqjFkHV1/OSU1AIAFVjMvfNyJ5k=;
-        b=Ldct07oTfE2K/iL8WNKHwZm0M8Dh0rtBXUEqyVsoFxZ0PR/gFTpq+kmyXZ/G//lXsy
-         xKIENfGp3wBOw5H0mQKewnwG4i21cUqIEQgdWguL+hS+CmOQpEcha50PeHy73rgk1TXx
-         UtVVCkG10vxcBD6UKbnigLqcAtXzMRwIML/Lzatws4O+RZBB1js7tt3Mm16Ayt9dFS8J
-         pIHeWQvmjw8tkKqm/y5f6HcWQrzHmv741oMAFElcuEnYKmNyex51bHma0pVb6pLEOD6o
-         9Avqrdx2jAziKFtLWFXl46MZ3ykR0NpbVRJSIc3o+bp7LIqt4vXFT7RfE2p9s1PLe6xX
-         83vQ==
-X-Gm-Message-State: AOAM533B6EYWrt/q3rtPMlhMDp2Z2HeD5NOSwfSijK0yngPRLB93NtEt
-        qYMsOaaLcCFG4SVNQNDucqqxUA==
-X-Google-Smtp-Source: ABdhPJwjcIvzgdEJLnuijwZQ02tCKe+ogBaa/q1YYFlZAZ+Xy8RMe6e4X1zADMRvNMJtvgts4wtLqA==
-X-Received: by 2002:a05:6830:4409:b0:5cd:ad47:5b47 with SMTP id q9-20020a056830440900b005cdad475b47mr14024722otv.49.1649796687913;
-        Tue, 12 Apr 2022 13:51:27 -0700 (PDT)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id u20-20020a4a9e94000000b003291f6ac4b2sm12602878ook.28.2022.04.12.13.51.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 13:51:27 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 15:51:25 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Jonathan Marek <jonathan@marek.ca>
-Cc:     linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] arm64: dts: qcom: sm8450: delete incorrect ufs
- interconnect fields
-Message-ID: <YlXmTbKwYtvLSjgp@builder.lan>
-References: <20220407172145.31903-1-jonathan@marek.ca>
+        Tue, 12 Apr 2022 16:57:20 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DB0C9B41
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:52:25 -0700 (PDT)
+Message-ID: <20220412204353.712177025@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649796708;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         references:references; bh=hndER118dmw7kYMFXyYuvsxJ9ycP9/DqyDamURXJ4cA=;
+        b=AmRwcY/LhGb9vNhP+WyUubPJbFc+2etjHtIp065eY+h3wqeHg6fkEeELkQDzX6b8Gwryoe
+        Iqmxq2EcM6m4fWPmRGDklO0XngB85nyLrEQNvuVhR8IyuiKGroEaUO0oDaYSfUpIkQqoaD
+        G3zdaN69kbndjLQgIT7cfKZUj3JOaw95laXDMqttXE5sRBoiSam80uq0KbSURbjqYbMZcq
+        9ZSvI1ufcF3vOSEhpXUpnUWCRdCSZZ7rSWshUSn8OTyupuY4gLz+xXjJt/SFV1OENIR2cT
+        xdopFgHYmq3GpawN5imMJD1pbEtE/jyndrweg1cclKmRz8tmdcgt3wkRVP7mGw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649796708;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         references:references; bh=hndER118dmw7kYMFXyYuvsxJ9ycP9/DqyDamURXJ4cA=;
+        b=RKZPDyIMtrgo2N2+DgcPZfB7tgeC4aJOd42vo0AKwK+Ehwfs2V4TgjDl9RWxJChp5NVyFN
+        /nm4BKohR+tNKjBw==
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [patch V4 2/2] smp: Make softirq handling RT safe in
+ flush_smp_call_function_queue()
+References: <20220412203649.956258017@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407172145.31903-1-jonathan@marek.ca>
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 12 Apr 2022 22:51:48 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 07 Apr 12:21 CDT 2022, Jonathan Marek wrote:
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-> Upstream sm8450.dtsi has #interconnect-cells = <2>; so these are wrong.
-> Ignored and undocumented with upstream UFS driver so delete for now.
-> 
+flush_smp_call_function_queue() invokes do_softirq() which is not available
+on PREEMPT_RT. flush_smp_call_function_queue() is invoked from the idle
+task and the migration task with preemption or interrupts disabled.
 
-Just to clarify, the binding do document interconnects and the property
-should be there in the end. v1 (why isn't this marked v2?) was correct.
+So RT kernels cannot process soft interrupts in that context as that has to
+acquire 'sleeping spinlocks' which is not possible with preemption or
+interrupts disabled and forbidden from the idle task anyway.
 
-What I asked for was a statement on why it should be picked up for
-v5.18-rc (as Dmitry requested).
+The currently known SMP function call which raises a soft interrupt is in
+the block layer, but this functionality is not enabled on RT kernels due to
+latency and performance reasons.
 
-Regards,
-Bjorn
+RT could wake up ksoftirqd unconditionally, but this wants to be avoided if
+there were soft interrupts pending already when this is invoked in the
+context of the migration task. The migration task might have preempted a
+threaded interrupt handler which raised a soft interrupt, but did not reach
+the local_bh_enable() to process it. The "running" ksoftirqd might prevent
+the handling in the interrupt thread context which is causing latency
+issues.
 
-> Fixes: aa2d0bf04a3c ("arm64: dts: qcom: sm8450: add interconnect nodes")
-> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-> ---
->  arch/arm64/boot/dts/qcom/sm8450.dtsi | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> index 2c18e1ef9e82d..90cdbec3cac99 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> @@ -1663,9 +1663,6 @@ ufs_mem_hc: ufshc@1d84000 {
->  
->  			iommus = <&apps_smmu 0xe0 0x0>;
->  
-> -			interconnects = <&aggre1_noc MASTER_UFS_MEM &mc_virt SLAVE_EBI1>,
-> -					<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_UFS_MEM_CFG>;
-> -			interconnect-names = "ufs-ddr", "cpu-ufs";
->  			clock-names =
->  				"core_clk",
->  				"bus_aggr_clk",
-> -- 
-> 2.26.1
-> 
+Add a new function which handles this case explicitely for RT and falls
+back to do_softirq() on !RT kernels. In the RT case this warns when one of
+the flushed SMP function calls raised a soft interrupt so this can be
+investigated.
+
+[ tglx: Moved the RT part out of SMP code ]
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/YgKgL6aPj8aBES6G@linutronix.de
+---
+v4:
+  - Move the RT logic into softirq.c which also avoids the wakeup
+    when softinterrupts are disabled. The enable will handle
+    them anyway.
+v3:
+   - Only wake ksoftirqd if the softirqs were raised wthin
+     flush_smp_call_function_queue().
+   - Add a warning in the wake case.
+v2: Drop an empty line.
+
+ include/linux/interrupt.h |    9 +++++++++
+ kernel/smp.c              |    5 ++++-
+ kernel/softirq.c          |   13 +++++++++++++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+---
+
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -607,6 +607,15 @@ struct softirq_action
+ asmlinkage void do_softirq(void);
+ asmlinkage void __do_softirq(void);
+ 
++#ifdef CONFIG_PREEMPT_RT
++extern void do_softirq_post_smp_call_flush(unsigned int was_pending);
++#else
++static inline void do_softirq_post_smp_call_flush(unsigned int unused)
++{
++	do_softirq();
++}
++#endif
++
+ extern void open_softirq(int nr, void (*action)(struct softirq_action *));
+ extern void softirq_init(void);
+ extern void __raise_softirq_irqoff(unsigned int nr);
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -696,6 +696,7 @@ static void __flush_smp_call_function_qu
+  */
+ void flush_smp_call_function_queue(void)
+ {
++	unsigned int was_pending;
+ 	unsigned long flags;
+ 
+ 	if (llist_empty(this_cpu_ptr(&call_single_queue)))
+@@ -704,9 +705,11 @@ void flush_smp_call_function_queue(void)
+ 	cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->idle, CFD_SEQ_NOCPU,
+ 		      smp_processor_id(), CFD_SEQ_IDLE);
+ 	local_irq_save(flags);
++	/* Get the already pending soft interrupts for RT enabled kernels */
++	was_pending = local_softirq_pending();
+ 	__flush_smp_call_function_queue(true);
+ 	if (local_softirq_pending())
+-		do_softirq();
++		do_softirq_post_smp_call_flush(was_pending);
+ 
+ 	local_irq_restore(flags);
+ }
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -294,6 +294,19 @@ static inline void invoke_softirq(void)
+ 		wakeup_softirqd();
+ }
+ 
++/*
++ * flush_smp_call_function_queue() can raise a soft interrupt in a function
++ * call. On RT kernels this is undesired and the only known functionality
++ * in the block layer which does this is disabled on RT. If soft interrupts
++ * get raised which haven't been raised before the flush, warn so it can be
++ * investigated.
++ */
++void softirq_post_smp_call_flush(unsigned int was_pending)
++{
++	if (WARN_ON_ONCE(was_pending != local_softirq_pending()))
++		invoke_softirq();
++}
++
+ #else /* CONFIG_PREEMPT_RT */
+ 
+ /*
+
