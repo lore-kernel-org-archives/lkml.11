@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 590D7C3E8A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CB6C47090
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378579AbiDLILh (ORCPT
+        id S1378109AbiDLILX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42876 "EHLO
+        Tue, 12 Apr 2022 04:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354123AbiDLH0F (ORCPT
+        with ESMTP id S1353833AbiDLHZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F1A4475B;
-        Tue, 12 Apr 2022 00:05:56 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3773ABC3A;
+        Tue, 12 Apr 2022 00:04:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 075156146F;
-        Tue, 12 Apr 2022 07:05:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1915CC385A6;
-        Tue, 12 Apr 2022 07:05:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E811AB81A8F;
+        Tue, 12 Apr 2022 07:04:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 416C3C385A1;
+        Tue, 12 Apr 2022 07:04:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747155;
-        bh=uBHQLW5+mpdPRS3b2MbTke8aMBxhdOu3bzGGetA00PQ=;
+        s=korg; t=1649747088;
+        bh=3RUt2KxfRxSsYsWSSjP4U2KH/Rhc8qyzgbW8l/zg94U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ovGn6VZisq3PD0McsFpL4qHjChwUxbrXFVSV+EB+2Pfykwy+3XlA8BlLH9F7/EoCW
-         gm4pWJEl4bCX1lJx0Oo62K7CAtPAMh0FiC3k6BuqlZFLL4Tsu/d8WMfXmno5PjRNsu
-         3S7+/lhV0QbaT0wSAt8UXnlnqIMf9h8/W2y6594E=
+        b=zXmfWzAuFelpLC+tFp7XMEycSHpN9QiOgfAg8mpu9op3Z0/rNMSM0SqF+Xs31wm75
+         NKxJbcWcV+kvoG6jUg4JAxfEXlmXpNViCoYW43wEUGPzXgp2vZkKWUF+hXo+KO1cnA
+         91z7d+BinHuH+ZhJl/1AXN51cVrO9CjFuPiQF0mM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 263/285] Revert "selftests: net: Add tls config dependency for tls selftests"
-Date:   Tue, 12 Apr 2022 08:32:00 +0200
-Message-Id: <20220412062951.251698397@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.16 238/285] arm64: patch_text: Fixup last cpu should be master
+Date:   Tue, 12 Apr 2022 08:31:35 +0200
+Message-Id: <20220412062950.532233422@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -48,35 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 20695e9a9fd39103d1b0669470ae74030b7aa196 upstream.
+commit 31a099dbd91e69fcab55eef4be15ed7a8c984918 upstream.
 
-This reverts commit d9142e1cf3bbdaf21337767114ecab26fe702d47.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-The test is supposed to run cleanly with TLS is disabled,
-to test compatibility with TCP behavior. I can't repro
-the failure [1], the problem should be debugged rather
-than papered over.
-
-Link: https://lore.kernel.org/all/20220325161203.7000698c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/ [1]
-Fixes: d9142e1cf3bb ("selftests: net: Add tls config dependency for tls selftests")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Link: https://lore.kernel.org/r/20220328212904.2685395-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ae16480785de ("arm64: introduce interfaces to hotpatch kernel and module code")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220407073323.743224-2-guoren@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/config |    1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/kernel/patching.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -43,6 +43,5 @@ CONFIG_NET_ACT_TUNNEL_KEY=m
- CONFIG_NET_ACT_MIRRED=m
- CONFIG_BAREUDP=m
- CONFIG_IPV6_IOAM6_LWTUNNEL=y
--CONFIG_TLS=m
- CONFIG_CRYPTO_SM4=y
- CONFIG_AMT=m
+--- a/arch/arm64/kernel/patching.c
++++ b/arch/arm64/kernel/patching.c
+@@ -117,8 +117,8 @@ static int __kprobes aarch64_insn_patch_
+ 	int i, ret = 0;
+ 	struct aarch64_insn_patch *pp = arg;
+ 
+-	/* The first CPU becomes master */
+-	if (atomic_inc_return(&pp->cpu_count) == 1) {
++	/* The last CPU becomes master */
++	if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
+ 		for (i = 0; ret == 0 && i < pp->insn_cnt; i++)
+ 			ret = aarch64_insn_patch_text_nosync(pp->text_addrs[i],
+ 							     pp->new_insns[i]);
 
 
