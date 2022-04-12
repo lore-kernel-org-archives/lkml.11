@@ -2,163 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C800C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C83B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354418AbiDLMwS (ORCPT
+        id S1354503AbiDLMwh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+        Tue, 12 Apr 2022 08:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355276AbiDLMsJ (ORCPT
+        with ESMTP id S1355776AbiDLMsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:48:09 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B88A1F5;
-        Tue, 12 Apr 2022 05:16:27 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id w18so22061951edi.13;
-        Tue, 12 Apr 2022 05:16:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ky3MoM/ZXCS0RcXaCsseb5+miwfvst1Flp3YDairGIg=;
-        b=Xl9KpFn65ILeLpPDIRZBPb95ZmXjferRlNp6HPxpkd1j1QF8DXXvk9S3NSa3GyjL3b
-         5WjKzS+ISRKAlDXBdzjNJttH7hETKPz0YkMyOcMzfGb2+oS9tI/kKHVvK3y8deZ4tuaf
-         NKB5ia1EYiiphdafJX10nkDwQnEM2tMZC9asN9FSqeO8zdCVu9xg72bjFDLiZ8sO2i3q
-         zx81w9qKu4uPh2ca7EM6S+RMohZfp+0Q/x3EFJlX/fBppcdX896rQZOq9U7Aof5YfLGg
-         9vHJP3+076uELgNbmY9/87m4bTRNG14IU7JsKZ0pUSSiwfvcLlHAroQwS6vGKJ9OiPlA
-         wIcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ky3MoM/ZXCS0RcXaCsseb5+miwfvst1Flp3YDairGIg=;
-        b=gKHmVfPLf45iQCUF5rOFS9QnTdIbpaaCRah46PC9EUgvf2LPw7Hde4Cdk40xqBosh1
-         HjKjSk/t1U7BG2gUG4bZEuYaqHFZR2UZpvMRQNM7VE90fjCdmGihNBIbX084cSbQn4Sj
-         5+hJlw66tJy7axXDfTvdm6Hql9LbqLq82rcBJCPeL5TbnDapHDmblgDh2Oz+mjJnb5zk
-         FgFpr1WCVwL/mlYIA4POoXT6PI5CyTN6z1OC2uSK8MWT9bae4e9e/mLb6i/kE7fzH7FE
-         06zWPf4UmJNHjhz7n/FDTC8ekpiAhsuWtmL4OBmuu8gRaXCkOVG2TdDbG2XbDETKk7Fv
-         7TIA==
-X-Gm-Message-State: AOAM5312fAoOZqXgOWmg4ZRhxlpKcUZTaa1jvKi+Asg+rTLAaTU47uTl
-        JgZlBnFP6lMtTZks4Rq7c0g=
-X-Google-Smtp-Source: ABdhPJwqiMKCloQu7lPo6bm5yONqwcUrI2WJNOkYvlBGU31dOESCjYQsFkAtckDbWpPnqOdkuMwE/Q==
-X-Received: by 2002:a05:6402:4487:b0:41d:9622:3292 with SMTP id er7-20020a056402448700b0041d96223292mr1925545edb.330.1649765785753;
-        Tue, 12 Apr 2022 05:16:25 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:16:25 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michael Walle <michael@walle.cc>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Colin Ian King <colin.king@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v3 03/18] net: dsa: sja1105: reorder sja1105_first_entry_longer_than with memory allocation
-Date:   Tue, 12 Apr 2022 14:15:42 +0200
-Message-Id: <20220412121557.3553555-4-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412121557.3553555-1-jakobkoschel@gmail.com>
-References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
+        Tue, 12 Apr 2022 08:48:35 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2FE3A72E;
+        Tue, 12 Apr 2022 05:19:33 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 12:19:30 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649765971;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9NpdWSphFBid/89npUSGNL3SE9N2vITi79LW7flhQo0=;
+        b=bJ4qf9vs5GCHSOfa9qWJqlDRSzPXB7lpJs7B8Pl/88MmEQEQyG0TOQrW61AKfmVGLL06Li
+        6JRE/xn4S4flWn79dlR5SnY/vKvYBMKH3CjxqVWu3ovyJJL5rHhNaZLpvR9r3qeqUI7LK7
+        cHdENRhXerWmez36gXOSkY5jzlCvbN5KfWIAb+/vHym+K27c3MrBs0A6S4rgH17VMYIhny
+        DRH54NliV5RLFF/ctlDmYuZAuAOxUbKOELm1LRBC4UoSOLKR04fMgDhxsclpMtn+ZEf9+h
+        7jj4mB1tWevAl1GGAIFMVznwxCUdsRVBuE7U+ffMWxQcu3V25OaN3rhnV7mIRA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649765971;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9NpdWSphFBid/89npUSGNL3SE9N2vITi79LW7flhQo0=;
+        b=ZHqFNVVjVF1xqbPTQpUG3DA+XYa53sadQfbjTDqT6nekpvdbiZIOW3pTPSryq6BFFN+0+e
+        Jm41LGGG1lTzYhAA==
+From:   "tip-bot2 for Longpeng(Mike)" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: smp/core] cpu/hotplug: Allow the CPU in CPU_UP_PREPARE state to
+ be brought up again.
+Cc:     "Longpeng(Mike)" <longpeng2@huawei.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Henry Wang <Henry.Wang@arm.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220209080214.1439408-3-bigeasy@linutronix.de>
+References: <20220209080214.1439408-3-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164976597017.4207.3233698884104111909.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+The following commit has been merged into the smp/core branch of tip:
 
-sja1105_first_entry_longer_than() does not make use of the full struct
-sja1105_gate_entry *e, just of e->interval which is set from the passed
-entry_time.
+Commit-ID:     c7dfb2591b23856182e2c9da6b1d526ef7fd6b2e
+Gitweb:        https://git.kernel.org/tip/c7dfb2591b23856182e2c9da6b1d526ef7fd6b2e
+Author:        Longpeng(Mike) <longpeng2@huawei.com>
+AuthorDate:    Wed, 09 Feb 2022 09:02:14 +01:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Tue, 12 Apr 2022 14:13:01 +02:00
 
-This means that if there is a gate conflict, we have allocated e for
-nothing, just to free it later. Reorder the memory allocation and the
-function call, to avoid that and simplify the error unwind path.
+cpu/hotplug: Allow the CPU in CPU_UP_PREPARE state to be brought up again.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+A CPU will not show up in virtualized environment which includes an
+Enclave. The VM splits its resources into a primary VM and a Enclave
+VM. While the Enclave is active, the hypervisor will ignore all requests to
+bring up a CPU and this CPU will remain in CPU_UP_PREPARE state.
+
+The kernel will wait up to ten seconds for CPU to show up (do_boot_cpu())
+and then rollback the hotplug state back to CPUHP_OFFLINE leaving the CPU
+state in CPU_UP_PREPARE. The CPU state is set back to CPUHP_TEARDOWN_CPU
+during the CPU_POST_DEAD stage.
+
+After the Enclave VM terminates, the primary VM can bring up the CPU
+again.
+
+Allow to bring up the CPU if it is in the CPU_UP_PREPARE state.
+
+[bigeasy: Rewrite commit description.]
+
+Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Dongli Zhang <dongli.zhang@oracle.com>
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
+Reviewed-by: Henry Wang <Henry.Wang@arm.com>
+Link: https://lore.kernel.org/r/20220209080214.1439408-3-bigeasy@linutronix.de
+
 ---
- drivers/net/dsa/sja1105/sja1105_vl.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+ kernel/smpboot.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
-index 369be2ac3587..e5ea8eb9ec4e 100644
---- a/drivers/net/dsa/sja1105/sja1105_vl.c
-+++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-@@ -36,7 +36,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- {
- 	struct sja1105_gate_entry *e;
- 	struct list_head *pos;
--	int rc;
+diff --git a/kernel/smpboot.c b/kernel/smpboot.c
+index f6bc0bc..b9f5454 100644
+--- a/kernel/smpboot.c
++++ b/kernel/smpboot.c
+@@ -392,6 +392,13 @@ int cpu_check_up_prepare(int cpu)
+ 		 */
+ 		return -EAGAIN;
+ 
++	case CPU_UP_PREPARE:
++		/*
++		 * Timeout while waiting for the CPU to show up. Allow to try
++		 * again later.
++		 */
++		return 0;
 +
-+	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
-+					      entry_time, extack);
-+	if (IS_ERR(pos))
-+		return PTR_ERR(pos);
+ 	default:
  
- 	e = kzalloc(sizeof(*e), GFP_KERNEL);
- 	if (!e)
-@@ -45,22 +49,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- 	e->rule = rule;
- 	e->gate_state = gate_state;
- 	e->interval = entry_time;
--
--	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
--					      e->interval, extack);
--	if (IS_ERR(pos)) {
--		rc = PTR_ERR(pos);
--		goto err;
--	}
--
- 	list_add(&e->list, pos->prev);
- 
- 	gating_cfg->num_entries++;
- 
- 	return 0;
--err:
--	kfree(e);
--	return rc;
- }
- 
- /* The gate entries contain absolute times in their e->interval field. Convert
--- 
-2.25.1
-
+ 		/* Should not happen.  Famous last words. */
