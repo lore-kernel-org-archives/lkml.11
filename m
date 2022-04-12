@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41235C4708E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63083C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389737AbiDLJYF (ORCPT
+        id S1389286AbiDLJXf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:24:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
+        Tue, 12 Apr 2022 05:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353953AbiDLHiB (ORCPT
+        with ESMTP id S1357093AbiDLHjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:38:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B59517FB;
-        Tue, 12 Apr 2022 00:09:45 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FB79FC8;
+        Tue, 12 Apr 2022 00:11:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28762B81B58;
-        Tue, 12 Apr 2022 07:09:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EA20C385A5;
-        Tue, 12 Apr 2022 07:09:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54F35616E7;
+        Tue, 12 Apr 2022 07:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66F1CC385A1;
+        Tue, 12 Apr 2022 07:11:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747382;
-        bh=P+yUphLekVSunkS4tg37Dl51JfFmmML9Ddy2YUNFXgg=;
+        s=korg; t=1649747501;
+        bh=Msr4Gq3pyulIUEyqR8XNczKHQK4bAvQ9hTJeI+N2L84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EVSbDotQ2ZQGegzHkqIf6/5qmcyeOu9wdKSeM8V1OF70F5ttKbBemoGjZ6Ca+4le+
-         PqDARmzG0zXQ1DBOA0Zb8+ViZOvCtR4KzRnDgXG00CVHRsL4YSY6XX5e8lfExaDVMu
-         mudkRonCJVVjyrVl06v7zmGkT8sDkXtTAxAAngm4=
+        b=csbulciRzku8ISBLutWHHcyr1LLb7Pnc5Iaa/SLLyNTaX/1CRT3jK123MTvlVBFe3
+         QEtpwC/NMBjtVI8P9NqkwFL6kUcU7EY5SflAP9LWOvYeSdeCd+qqQ2q1ie4KlptOGr
+         19NO/IefEEsyUe9pMXcJt1py6I/XJ8c8f2q4HSlc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Wheeler <daniel.wheeler@amd.com>,
-        Anthony Koo <Anthony.Koo@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 022/343] drm/amd/display: Use PSR version selected during set_psr_caps
-Date:   Tue, 12 Apr 2022 08:27:20 +0200
-Message-Id: <20220412062951.745001905@linuxfoundation.org>
+        stable@vger.kernel.org, Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 065/343] kvm: selftests: aarch64: use a tighter assert in vgic_poke_irq()
+Date:   Tue, 12 Apr 2022 08:28:03 +0200
+Message-Id: <20220412062952.980826571@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,49 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+From: Ricardo Koller <ricarkol@google.com>
 
-[ Upstream commit b80ddeb29d9df449f875f0b6f5de08d7537c02b8 ]
+[ Upstream commit b53de63a89244c196d8a2ea76b6754e3fdb4b626 ]
 
-[Why]
-If the DPCD caps specifies a PSR version newer than PSR_VERSION_1 then
-we fallback to using PSR_VERSION_1 in amdgpu_dm_set_psr_caps.
+vgic_poke_irq() checks that the attr argument passed to the vgic device
+ioctl is sane. Make this check tighter by moving it to after the last
+attr update.
 
-This gets overriden with the raw DPCD value in amdgpu_dm_link_setup_psr,
-which can result in DMCUB hanging if we pass in an unsupported PSR
-version number.
-
-[How]
-Fix the hang by using link->psr_settings.psr_version directly during
-amdgpu_dm_link_setup_psr.
-
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Acked-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Ricardo Koller <ricarkol@google.com>
+Reported-by: Reiji Watanabe <reijiw@google.com>
+Cc: Andrew Jones <drjones@redhat.com>
+Reviewed-by: Andrew Jones <drjones@redhat.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220127030858.3269036-6-ricarkol@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ tools/testing/selftests/kvm/lib/aarch64/vgic.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c
-index c510638b4f99..a009fc654ac9 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_psr.c
-@@ -149,10 +149,8 @@ bool amdgpu_dm_link_setup_psr(struct dc_stream_state *stream)
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/vgic.c b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+index 7c876ccf9294..5d45046c1b80 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/vgic.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+@@ -140,9 +140,6 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid,
+ 	uint64_t val;
+ 	bool intid_is_private = INTID_IS_SGI(intid) || INTID_IS_PPI(intid);
  
- 	link = stream->link;
- 
--	psr_config.psr_version = link->dpcd_caps.psr_caps.psr_version;
+-	/* Check that the addr part of the attr is within 32 bits. */
+-	assert(attr <= KVM_DEV_ARM_VGIC_OFFSET_MASK);
 -
--	if (psr_config.psr_version > 0) {
--		psr_config.psr_exit_link_training_required = 0x1;
-+	if (link->psr_settings.psr_version != DC_PSR_VERSION_UNSUPPORTED) {
-+		psr_config.psr_version = link->psr_settings.psr_version;
- 		psr_config.psr_frame_capture_indication_req = 0;
- 		psr_config.psr_rfb_setup_time = 0x37;
- 		psr_config.psr_sdp_transmit_line_num_deadline = 0x20;
+ 	uint32_t group = intid_is_private ? KVM_DEV_ARM_VGIC_GRP_REDIST_REGS
+ 					  : KVM_DEV_ARM_VGIC_GRP_DIST_REGS;
+ 
+@@ -152,6 +149,9 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid,
+ 		attr += SZ_64K;
+ 	}
+ 
++	/* Check that the addr part of the attr is within 32 bits. */
++	assert((attr & ~KVM_DEV_ARM_VGIC_OFFSET_MASK) == 0);
++
+ 	/*
+ 	 * All calls will succeed, even with invalid intid's, as long as the
+ 	 * addr part of the attr is within 32 bits (checked above). An invalid
 -- 
 2.35.1
 
