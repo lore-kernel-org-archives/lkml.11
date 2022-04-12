@@ -2,183 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C4A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350623AbiDLGrc (ORCPT
+        id S1350682AbiDLGri (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42446 "EHLO
+        Tue, 12 Apr 2022 02:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351016AbiDLGnt (ORCPT
+        with ESMTP id S1351017AbiDLGnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:43:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5C739143;
-        Mon, 11 Apr 2022 23:37:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD78FB81B29;
-        Tue, 12 Apr 2022 06:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F40C385A1;
-        Tue, 12 Apr 2022 06:37:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745428;
-        bh=X62b0Q0P9Zr7NPTCiTF1KoeFOQKbxwT1dnaBcNKvL9E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZYXSyS8o8Xs04s+gb6iqqgV2HwSt3sOjTwQWsnNtO3HLDK+Glq3g5oz7Y2q47Do6b
-         FGTHmPz3JZ+YgPcDRwrJExNUUf7kNcFK+oYXmbtDyPATp7tONsOi34twWkRXPJIlfe
-         +KGq8+kItYZNPB3IVElKFInGkSYVCrwP7oakLgNo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 092/171] NFS: nfsiod should not block forever in mempool_alloc()
-Date:   Tue, 12 Apr 2022 08:29:43 +0200
-Message-Id: <20220412062930.547500805@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
-References: <20220412062927.870347203@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 12 Apr 2022 02:43:50 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D80739148
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:37:11 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n18so15933403plg.5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references;
+        bh=z9KCSsSOTorZ297IRaNBlVXKYcv73Yi8iB+F+B3CCNQ=;
+        b=JmmcP1AtLg3fbaMnX+VVeF4cZ4XJEHNbYmBA124tHtTaz7JLrPIaoAmVjTv6WwP1lS
+         yHVzSeQ4kZSs8V8Jqpvqd74EJ1cs7rdj/0KVQI9eTokFX3y+eBfRPtwSckN1oZgHR3Wl
+         RsYgZwIhxmKI3pC0JNARPPOj8y5Vhb9Elxu9Y/nUqFu1dzndBz8f9JSYSC71euSjzFzo
+         UObmYrjsaa/q8LknB3BSu0gZQPRp7nUBwgctAZlhxP02pJkORvNLAolvZ8NONJPWCWQ9
+         k6aUXTmGfmOMBJ4k61QdA/ZWLd18YoiUIgLQYdXxIrgckWETDQ1ZEdkXVe+2PQJZhChW
+         lB0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references;
+        bh=z9KCSsSOTorZ297IRaNBlVXKYcv73Yi8iB+F+B3CCNQ=;
+        b=8MJ07pCXAg1M+ZjfJKjhw+W5xWS/v5pPblGgODZVgFFb+vT+o8QI5OUEDL5PdgEM2W
+         d4amsa5yKhX6ikQcUUlpclej/clzJLW7qAAq1/dZWTS8oqNaFhcG54K1eKW2cZg2unA8
+         spTuhNIM9/tMPjdvu+S+Jw8dKcSBsqys++KBdZLraZIsYgVagIcdC6VK8LK5L2mbDO0w
+         EDd/wV2X6bP6WRUrA1et8SIbfDSNCux8PL28yfwvNL/7jKV6KqWWqWAQ+fUTi6qtm/7I
+         MoS+xhHWRMQbF3F3lijBzJ/KYHox0If5piMI3y5+eLjbDcCN4PBzg0cx1h0uxEqk3FTU
+         fjAw==
+X-Gm-Message-State: AOAM531SlejCvEDLeS6fuDmBqaKL4WEQzPxowDaa1Y6Cnp/VwL6OLirn
+        jbjD9KCrXGzX46Jm6h8vSAs=
+X-Google-Smtp-Source: ABdhPJxbRo2HxccOLyjPF69o/uFLKLEC2j4IdcjTAgHfPDXjQ0DQp/HOEXokeWC72a2MvL80rsvHbQ==
+X-Received: by 2002:a17:902:8e82:b0:151:6f68:7088 with SMTP id bg2-20020a1709028e8200b001516f687088mr37030839plb.11.1649745430901;
+        Mon, 11 Apr 2022 23:37:10 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id nv11-20020a17090b1b4b00b001c71b0bf18bsm1618768pjb.11.2022.04.11.23.37.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 23:37:10 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Bastian Hecht <hechtb@googlemail.com>,
+        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
+        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] mtd: rawnand: Fix return value check of wait_for_completion_timeout
+Date:   Tue, 12 Apr 2022 06:36:52 +0000
+Message-Id: <20220412063703.8537-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <202204121253.NcZifMQi-lkp@intel.com>
+References: <202204121253.NcZifMQi-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-[ Upstream commit 515dcdcd48736576c6f5c197814da6f81c60a21e ]
-
-The concern is that since nfsiod is sometimes required to kick off a
-commit, it can get locked up waiting forever in mempool_alloc() instead
-of failing gracefully and leaving the commit until later.
-
-Try to allocate from the slab first, with GFP_KERNEL | __GFP_NORETRY,
-then fall back to a non-blocking attempt to allocate from the memory
-pool.
-
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- fs/nfs/internal.h      |  7 +++++++
- fs/nfs/pnfs_nfs.c      |  8 ++++++--
- fs/nfs/write.c         | 24 +++++++++---------------
- include/linux/nfs_fs.h |  2 +-
- 4 files changed, 23 insertions(+), 18 deletions(-)
+change in v2:
+- initialize ret to 1.
+---
+ drivers/mtd/nand/raw/sh_flctl.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
-index 98554dd18a71..7de38abb6566 100644
---- a/fs/nfs/internal.h
-+++ b/fs/nfs/internal.h
-@@ -578,6 +578,13 @@ nfs_write_match_verf(const struct nfs_writeverf *verf,
- 		!nfs_write_verifier_cmp(&req->wb_verf, &verf->verifier);
- }
+diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh_flctl.c
+index b85b9c6fcc42..2373251f585b 100644
+--- a/drivers/mtd/nand/raw/sh_flctl.c
++++ b/drivers/mtd/nand/raw/sh_flctl.c
+@@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 	dma_addr_t dma_addr;
+ 	dma_cookie_t cookie;
+ 	uint32_t reg;
+-	int ret;
++	int ret = 1;
++	unsigned long time_left;
  
-+static inline gfp_t nfs_io_gfp_mask(void)
-+{
-+	if (current->flags & PF_WQ_WORKER)
-+		return GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN;
-+	return GFP_KERNEL;
-+}
-+
- /* unlink.c */
- extern struct rpc_task *
- nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
-diff --git a/fs/nfs/pnfs_nfs.c b/fs/nfs/pnfs_nfs.c
-index 7b9d701bef01..a2ad8bb87e2d 100644
---- a/fs/nfs/pnfs_nfs.c
-+++ b/fs/nfs/pnfs_nfs.c
-@@ -419,7 +419,7 @@ static struct nfs_commit_data *
- pnfs_bucket_fetch_commitdata(struct pnfs_commit_bucket *bucket,
- 			     struct nfs_commit_info *cinfo)
- {
--	struct nfs_commit_data *data = nfs_commitdata_alloc(false);
-+	struct nfs_commit_data *data = nfs_commitdata_alloc();
- 
- 	if (!data)
- 		return NULL;
-@@ -515,7 +515,11 @@ pnfs_generic_commit_pagelist(struct inode *inode, struct list_head *mds_pages,
- 	unsigned int nreq = 0;
- 
- 	if (!list_empty(mds_pages)) {
--		data = nfs_commitdata_alloc(true);
-+		data = nfs_commitdata_alloc();
-+		if (!data) {
-+			nfs_retry_commit(mds_pages, NULL, cinfo, -1);
-+			return -ENOMEM;
-+		}
- 		data->ds_commit_index = -1;
- 		list_splice_init(mds_pages, &data->pages);
- 		list_add_tail(&data->list, &list);
-diff --git a/fs/nfs/write.c b/fs/nfs/write.c
-index cc926e69ee9b..a97eaf4e813c 100644
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -70,27 +70,17 @@ static mempool_t *nfs_wdata_mempool;
- static struct kmem_cache *nfs_cdata_cachep;
- static mempool_t *nfs_commit_mempool;
- 
--struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail)
-+struct nfs_commit_data *nfs_commitdata_alloc(void)
- {
- 	struct nfs_commit_data *p;
- 
--	if (never_fail)
--		p = mempool_alloc(nfs_commit_mempool, GFP_NOIO);
--	else {
--		/* It is OK to do some reclaim, not no safe to wait
--		 * for anything to be returned to the pool.
--		 * mempool_alloc() cannot handle that particular combination,
--		 * so we need two separate attempts.
--		 */
-+	p = kmem_cache_zalloc(nfs_cdata_cachep, nfs_io_gfp_mask());
-+	if (!p) {
- 		p = mempool_alloc(nfs_commit_mempool, GFP_NOWAIT);
--		if (!p)
--			p = kmem_cache_alloc(nfs_cdata_cachep, GFP_NOIO |
--					     __GFP_NOWARN | __GFP_NORETRY);
- 		if (!p)
- 			return NULL;
-+		memset(p, 0, sizeof(*p));
+ 	if (dir == DMA_FROM_DEVICE) {
+ 		chan = flctl->chan_fifo0_rx;
+@@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 		goto out;
  	}
--
--	memset(p, 0, sizeof(*p));
- 	INIT_LIST_HEAD(&p->pages);
- 	return p;
- }
-@@ -1800,7 +1790,11 @@ nfs_commit_list(struct inode *inode, struct list_head *head, int how,
- 	if (list_empty(head))
- 		return 0;
  
--	data = nfs_commitdata_alloc(true);
-+	data = nfs_commitdata_alloc();
-+	if (!data) {
-+		nfs_retry_commit(head, NULL, cinfo, -1);
-+		return -ENOMEM;
-+	}
+-	ret =
++	time_left =
+ 	wait_for_completion_timeout(&flctl->dma_complete,
+ 				msecs_to_jiffies(3000));
  
- 	/* Set up the argument struct */
- 	nfs_init_commit(data, head, NULL, cinfo);
-diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
-index 2a17e0dfd431..e39342945a80 100644
---- a/include/linux/nfs_fs.h
-+++ b/include/linux/nfs_fs.h
-@@ -551,7 +551,7 @@ extern int nfs_wb_all(struct inode *inode);
- extern int nfs_wb_page(struct inode *inode, struct page *page);
- extern int nfs_wb_page_cancel(struct inode *inode, struct page* page);
- extern int  nfs_commit_inode(struct inode *, int);
--extern struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail);
-+extern struct nfs_commit_data *nfs_commitdata_alloc(void);
- extern void nfs_commit_free(struct nfs_commit_data *data);
- bool nfs_commit_end(struct nfs_mds_commit_info *cinfo);
+-	if (ret <= 0) {
++	if (time_left == 0) {
+ 		dmaengine_terminate_all(chan);
+ 		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
++		ret = -ETIMEDOUT;
+ 	}
  
+ out:
 -- 
-2.35.1
-
-
+2.17.1
 
