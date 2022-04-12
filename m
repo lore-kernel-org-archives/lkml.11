@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C397C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6858BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384886AbiDLImb (ORCPT
+        id S1385076AbiDLImt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
+        Tue, 12 Apr 2022 04:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357271AbiDLHjz (ORCPT
+        with ESMTP id S1357137AbiDLHjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F2CDFFB;
-        Tue, 12 Apr 2022 00:14:35 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A0412639;
+        Tue, 12 Apr 2022 00:12:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8522561045;
-        Tue, 12 Apr 2022 07:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEDFC385A1;
-        Tue, 12 Apr 2022 07:14:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F4EEB81895;
+        Tue, 12 Apr 2022 07:12:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2C8BC385A1;
+        Tue, 12 Apr 2022 07:12:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747675;
-        bh=vAiDl1GwVbQ82UKpOaMdXzGgdpkyRkO6Fv8harzJaY8=;
+        s=korg; t=1649747565;
+        bh=D395o5bGU/NH15icxNw1+v+DkBD0CVO/J/ItItHyemY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJEPD98mgdrCaH7jXoTlUJrCY6SMP2Fxvpz2G+6X0891E5/JYE7ZiskqJ69qlpv3d
-         p27R8hsz0iVvvdOKso+mgVtAJzlkEDdVCk3B8ITGjEGQKAoXuz5fEjCg70UgYxOz0d
-         JqxB2kontUorx/9oihrImgD5P6OWuuirbHK9l8gg=
+        b=Tu0bTUqRLEPyJV+LrtGesJnv1c7S1IWPJ8/1MN5IlSrBn/oHRx4k/KlOgVQ8iIJyz
+         mMVkoDQqCWwEoritY1arPmrh+anfMuzsshOp5o3j7bfIH9qZWAkM2sBe3vUKGRSBKo
+         Zx+EQVXqEmiqaLhyUjZRQAifkP5XTfIrQmyPCPng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 166/343] staging: wfx: apply the necessary SDIO quirks for the Silabs WF200
-Date:   Tue, 12 Apr 2022 08:29:44 +0200
-Message-Id: <20220412062956.162857858@linuxfoundation.org>
+        Colin Winegarden <colin.winegarden@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 125/343] bnxt_en: Eliminate unintended link toggle during FW reset
+Date:   Tue, 12 Apr 2022 08:29:03 +0200
+Message-Id: <20220412062954.992335228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,58 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+From: Michael Chan <michael.chan@broadcom.com>
 
-[ Upstream commit 96e0cbca1cb96e9d3deac3051aa816e13082f3fd ]
+[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
 
-Until now, the SDIO quirks are applied directly from the driver.
-However, it is better to apply the quirks before driver probing. So,
-this patch relocate the quirks in the MMC framework.
+If the flow control settings have been changed, a subsequent FW reset
+may cause the ethernet link to toggle unnecessarily.  This link toggle
+will increase the down time by a few seconds.
 
-Note that the WF200 has no valid SDIO VID/PID. Therefore, we match DT
-rather than on the SDIO VID/PID.
+The problem is caused by bnxt_update_phy_setting() detecting a false
+mismatch in the flow control settings between the stored software
+settings and the current FW settings after the FW reset.  This mismatch
+is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
+inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
+bit should not be added to link_info->req_flow_ctrl.
 
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-Link: https://lore.kernel.org/r/20220216093112.92469-3-Jerome.Pouiller@silabs.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/quirks.h      | 5 +++++
- drivers/staging/wfx/bus_sdio.c | 3 ---
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/mmc/core/quirks.h b/drivers/mmc/core/quirks.h
-index 20f568727277..f879dc63d936 100644
---- a/drivers/mmc/core/quirks.h
-+++ b/drivers/mmc/core/quirks.h
-@@ -149,6 +149,11 @@ static const struct mmc_fixup __maybe_unused sdio_fixup_methods[] = {
- static const struct mmc_fixup __maybe_unused sdio_card_init_methods[] = {
- 	SDIO_FIXUP_COMPATIBLE("ti,wl1251", wl1251_quirk, 0),
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 8aaa2335f848..f09b04556c32 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2101,9 +2101,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+ 		}
  
-+	SDIO_FIXUP_COMPATIBLE("silabs,wf200", add_quirk,
-+			      MMC_QUIRK_BROKEN_BYTE_MODE_512 |
-+			      MMC_QUIRK_LENIENT_FN0 |
-+			      MMC_QUIRK_BLKSZ_FOR_BYTE_MODE),
-+
- 	END_FIXUP
- };
- 
-diff --git a/drivers/staging/wfx/bus_sdio.c b/drivers/staging/wfx/bus_sdio.c
-index a670176ba06f..0612f8a7c085 100644
---- a/drivers/staging/wfx/bus_sdio.c
-+++ b/drivers/staging/wfx/bus_sdio.c
-@@ -207,9 +207,6 @@ static int wfx_sdio_probe(struct sdio_func *func,
- 
- 	bus->func = func;
- 	sdio_set_drvdata(func, bus);
--	func->card->quirks |= MMC_QUIRK_LENIENT_FN0 |
--			      MMC_QUIRK_BLKSZ_FOR_BYTE_MODE |
--			      MMC_QUIRK_BROKEN_BYTE_MODE_512;
- 
- 	sdio_claim_host(func);
- 	ret = sdio_enable_func(func);
+ 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
+-		if (bp->hwrm_spec_code >= 0x10201)
+-			link_info->req_flow_ctrl =
+-				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
++		link_info->req_flow_ctrl = 0;
+ 	} else {
+ 		/* when transition from auto pause to force pause,
+ 		 * force a link change
 -- 
 2.35.1
 
