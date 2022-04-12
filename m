@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 451EEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA0BC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359246AbiDLJB1 (ORCPT
+        id S1359765AbiDLJBl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
+        Tue, 12 Apr 2022 05:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357161AbiDLHju (ORCPT
+        with ESMTP id S1357158AbiDLHjt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61ECB13DDF;
-        Tue, 12 Apr 2022 00:13:09 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A6713D7C;
+        Tue, 12 Apr 2022 00:13:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23819B81B60;
-        Tue, 12 Apr 2022 07:13:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F303C385A1;
-        Tue, 12 Apr 2022 07:13:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE2761701;
+        Tue, 12 Apr 2022 07:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 159B8C385A8;
+        Tue, 12 Apr 2022 07:13:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747586;
-        bh=ZnTZ42DPMBoQ75SCZiE8sntMwYXskuJKw8g3vyalkdQ=;
+        s=korg; t=1649747581;
+        bh=RYJBN0sO+bxatsg4SRUBwH/bmw/chcpuG9tRlvPBoEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zTn4176t6qBPLlPsSzYW9GScMn6ghGJ8nrbggg8YFHAB16cKg/h3nFJOPYQvX975G
-         6WFvaoJf5uitqANNVYYhcez23n5utjGR+RPKvVV6dlpEtYHN7j4AFcQqBjYObxcihf
-         oO/uyLg+qCOu1P9cJPNWQFrEBW1miL45Q4Zor6CE=
+        b=P38ypWuhZtBmWoG2El1136yqbLU7dvwkODBfp7KKfgydYm/67ZYgLqOZfh+WJAeso
+         1JSLfsHlK97jYFVUYpRtls4wSGYVKH5LeVb3rVS6PapI2W0Q6Nr4ETHTJuhvFBBVhH
+         lkRCXtgdi/jNhVGjyLn/1ARuThn0EBot8UXzKuns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Jianglei Nie <niejianglei2021@163.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 133/343] can: isotp: set default value for N_As to 50 micro seconds
-Date:   Tue, 12 Apr 2022 08:29:11 +0200
-Message-Id: <20220412062955.222619662@linuxfoundation.org>
+Subject: [PATCH 5.17 131/343] scsi: libfc: Fix use after free in fc_exch_abts_resp()
+Date:   Tue, 12 Apr 2022 08:29:09 +0200
+Message-Id: <20220412062955.165334337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,136 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 530e0d46c61314c59ecfdb8d3bcb87edbc0f85d3 ]
+[ Upstream commit 271add11994ba1a334859069367e04d2be2ebdd4 ]
 
-The N_As value describes the time a CAN frame needs on the wire when
-transmitted by the CAN controller. Even very short CAN FD frames need
-arround 100 usecs (bitrate 1Mbit/s, data bitrate 8Mbit/s).
+fc_exch_release(ep) will decrease the ep's reference count. When the
+reference count reaches zero, it is freed. But ep is still used in the
+following code, which will lead to a use after free.
 
-Having N_As to be zero (the former default) leads to 'no CAN frame
-separation' when STmin is set to zero by the receiving node. This 'burst
-mode' should not be enabled by default as it could potentially dump a high
-number of CAN frames into the netdev queue from the soft hrtimer context.
-This does not affect the system stability but is just not nice and
-cooperative.
+Return after the fc_exch_release() call to avoid use after free.
 
-With this N_As/frame_txtime value the 'burst mode' is disabled by default.
-
-As user space applications usually do not set the frame_txtime element
-of struct can_isotp_options the new in-kernel default is very likely
-overwritten with zero when the sockopt() CAN_ISOTP_OPTS is invoked.
-To make sure that a N_As value of zero is only set intentional the
-value '0' is now interpreted as 'do not change the current value'.
-When a frame_txtime of zero is required for testing purposes this
-CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
-
-Link: https://lore.kernel.org/all/20220309120416.83514-2-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/20220303015115.459778-1-niejianglei2021@163.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/can/isotp.h | 28 ++++++++++++++++++++++------
- net/can/isotp.c                | 12 +++++++++++-
- 2 files changed, 33 insertions(+), 7 deletions(-)
+ drivers/scsi/libfc/fc_exch.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
-index c55935b64ccc..590f8aea2b6d 100644
---- a/include/uapi/linux/can/isotp.h
-+++ b/include/uapi/linux/can/isotp.h
-@@ -137,20 +137,16 @@ struct can_isotp_ll_options {
- #define CAN_ISOTP_WAIT_TX_DONE	0x400	/* wait for tx completion */
- #define CAN_ISOTP_SF_BROADCAST	0x800	/* 1-to-N functional addressing */
+diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
+index 841000445b9a..aa223db4cf53 100644
+--- a/drivers/scsi/libfc/fc_exch.c
++++ b/drivers/scsi/libfc/fc_exch.c
+@@ -1701,6 +1701,7 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
+ 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
+ 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
+ 		fc_exch_release(ep);	/* release from pending timer hold */
++		return;
+ 	}
  
--/* default values */
-+/* protocol machine default values */
- 
- #define CAN_ISOTP_DEFAULT_FLAGS		0
- #define CAN_ISOTP_DEFAULT_EXT_ADDRESS	0x00
- #define CAN_ISOTP_DEFAULT_PAD_CONTENT	0xCC /* prevent bit-stuffing */
--#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	0
-+#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	50000 /* 50 micro seconds */
- #define CAN_ISOTP_DEFAULT_RECV_BS	0
- #define CAN_ISOTP_DEFAULT_RECV_STMIN	0x00
- #define CAN_ISOTP_DEFAULT_RECV_WFTMAX	0
- 
--#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
--#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
--#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
--
- /*
-  * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
-  *
-@@ -162,4 +158,24 @@ struct can_isotp_ll_options {
-  * consistency and copied directly into the flow control (FC) frame.
-  */
- 
-+/* link layer default values => make use of Classical CAN frames */
-+
-+#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
-+#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
-+#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
-+
-+/*
-+ * The CAN_ISOTP_DEFAULT_FRAME_TXTIME has become a non-zero value as
-+ * it only makes sense for isotp implementation tests to run without
-+ * a N_As value. As user space applications usually do not set the
-+ * frame_txtime element of struct can_isotp_options the new in-kernel
-+ * default is very likely overwritten with zero when the sockopt()
-+ * CAN_ISOTP_OPTS is invoked.
-+ * To make sure that a N_As value of zero is only set intentional the
-+ * value '0' is now interpreted as 'do not change the current value'.
-+ * When a frame_txtime of zero is required for testing purposes this
-+ * CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
-+ */
-+#define CAN_ISOTP_FRAME_TXTIME_ZERO	0xFFFFFFFF
-+
- #endif /* !_UAPI_CAN_ISOTP_H */
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index a95d171b3a64..5bce7c66c121 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -141,6 +141,7 @@ struct isotp_sock {
- 	struct can_isotp_options opt;
- 	struct can_isotp_fc_options rxfc, txfc;
- 	struct can_isotp_ll_options ll;
-+	u32 frame_txtime;
- 	u32 force_tx_stmin;
- 	u32 force_rx_stmin;
- 	struct tpcon rx, tx;
-@@ -360,7 +361,7 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
- 
- 		so->tx_gap = ktime_set(0, 0);
- 		/* add transmission time for CAN frame N_As */
--		so->tx_gap = ktime_add_ns(so->tx_gap, so->opt.frame_txtime);
-+		so->tx_gap = ktime_add_ns(so->tx_gap, so->frame_txtime);
- 		/* add waiting time for consecutive frames N_Cs */
- 		if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
- 			so->tx_gap = ktime_add_ns(so->tx_gap,
-@@ -1247,6 +1248,14 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
- 		/* no separate rx_ext_address is given => use ext_address */
- 		if (!(so->opt.flags & CAN_ISOTP_RX_EXT_ADDR))
- 			so->opt.rx_ext_address = so->opt.ext_address;
-+
-+		/* check for frame_txtime changes (0 => no changes) */
-+		if (so->opt.frame_txtime) {
-+			if (so->opt.frame_txtime == CAN_ISOTP_FRAME_TXTIME_ZERO)
-+				so->frame_txtime = 0;
-+			else
-+				so->frame_txtime = so->opt.frame_txtime;
-+		}
- 		break;
- 
- 	case CAN_ISOTP_RECV_FC:
-@@ -1448,6 +1457,7 @@ static int isotp_init(struct sock *sk)
- 	so->opt.rxpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
- 	so->opt.txpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
- 	so->opt.frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
-+	so->frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
- 	so->rxfc.bs = CAN_ISOTP_DEFAULT_RECV_BS;
- 	so->rxfc.stmin = CAN_ISOTP_DEFAULT_RECV_STMIN;
- 	so->rxfc.wftmax = CAN_ISOTP_DEFAULT_RECV_WFTMAX;
+ 	spin_lock_bh(&ep->ex_lock);
 -- 
 2.35.1
 
