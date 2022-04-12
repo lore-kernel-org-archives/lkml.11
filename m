@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 138DFC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE358C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385520AbiDLIwI (ORCPT
+        id S1385453AbiDLIvs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
+        Tue, 12 Apr 2022 04:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358908AbiDLHmU (ORCPT
+        with ESMTP id S1358703AbiDLHmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A0354686;
-        Tue, 12 Apr 2022 00:19:36 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5F353B62;
+        Tue, 12 Apr 2022 00:18:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5B99B81A8F;
-        Tue, 12 Apr 2022 07:19:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D4AC385AB;
-        Tue, 12 Apr 2022 07:19:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF24A6171C;
+        Tue, 12 Apr 2022 07:18:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E078CC385A1;
+        Tue, 12 Apr 2022 07:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747973;
-        bh=r7zwxBmSBYLoVuMUOCzhurkmYQox+oscdpkyavZfQGg=;
+        s=korg; t=1649747932;
+        bh=OlZDwkLIrhSfs14hQ3b6bvoPaxN1iOD12TvNEMCVr08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cNOc7WgLFgNq3EgcrEqtlIMkukmu6vADF5ZkB7hvB/PLXMfJ5S0hgjDJtKIQGKzIY
-         slzsNBNI108D3QuSkV/ReIeAf1qVKT0qOnjcjzu9PhmpBLQNJ68YNNuf/22JwNxtry
-         /xi/70UHW0Zo+n+l1nFOgcvdfoGHDCyE0bvaUy/E=
+        b=MiDp91WUTsXho3Y0Am6kBht2GngfCEsGpGAvgD8WEnkY+BnXMvGDXxopr3s55ZkMP
+         Gxu1sdbuXKdXtIDPu+FMiDkLxV1rctfBsTb/1LgXaFFHEyKr7UPwTq51ZbLokEzq0P
+         QDEEUJ2my9/A/pogA46yQsSedldwt3X2Y9Gc/7mE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com,
-        Guo Xuenan <guoxuenan@huawei.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Yann Collet <cyan@fb.com>, Chengyang Fan <cy.fan@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 272/343] lz4: fix LZ4_decompress_safe_partial read out of bound
-Date:   Tue, 12 Apr 2022 08:31:30 +0200
-Message-Id: <20220412062959.174661611@linuxfoundation.org>
+        stable@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Suman Anna <s-anna@ti.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Tony Lindgren <tony@atomide.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 258/343] iommu/omap: Fix regression in probe for NULL pointer dereference
+Date:   Tue, 12 Apr 2022 08:31:16 +0200
+Message-Id: <20220412062958.773402653@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -55,57 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Xuenan <guoxuenan@huawei.com>
+From: Tony Lindgren <tony@atomide.com>
 
-commit eafc0a02391b7b36617b36c97c4b5d6832cf5e24 upstream.
+[ Upstream commit 71ff461c3f41f6465434b9e980c01782763e7ad8 ]
 
-When partialDecoding, it is EOF if we've either filled the output buffer
-or can't proceed with reading an offset for following match.
+Commit 3f6634d997db ("iommu: Use right way to retrieve iommu_ops") started
+triggering a NULL pointer dereference for some omap variants:
 
-In some extreme corner cases when compressed data is suitably corrupted,
-UAF will occur.  As reported by KASAN [1], LZ4_decompress_safe_partial
-may lead to read out of bound problem during decoding.  lz4 upstream has
-fixed it [2] and this issue has been disscussed here [3] before.
+__iommu_probe_device from probe_iommu_group+0x2c/0x38
+probe_iommu_group from bus_for_each_dev+0x74/0xbc
+bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
+bus_iommu_probe from bus_set_iommu+0x80/0xc8
+bus_set_iommu from omap_iommu_init+0x88/0xcc
+omap_iommu_init from do_one_initcall+0x44/0x24
 
-current decompression routine was ported from lz4 v1.8.3, bumping
-lib/lz4 to v1.9.+ is certainly a huge work to be done later, so, we'd
-better fix it first.
+This is caused by omap iommu probe returning 0 instead of ERR_PTR(-ENODEV)
+as noted by Jason Gunthorpe <jgg@ziepe.ca>.
 
-[1] https://lore.kernel.org/all/000000000000830d1205cf7f0477@google.com/
-[2] https://github.com/lz4/lz4/commit/c5d6f8a8be3927c0bec91bcc58667a6cfad244ad#
-[3] https://lore.kernel.org/all/CC666AE8-4CA4-4951-B6FB-A2EFDE3AC03B@fb.com/
+Looks like the regression already happened with an earlier commit
+6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
+that changed the function return type and missed converting one place.
 
-Link: https://lkml.kernel.org/r/20211111105048.2006070-1-guoxuenan@huawei.com
-Reported-by: syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com
-Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
-Reviewed-by: Nick Terrell <terrelln@fb.com>
-Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc: Yann Collet <cyan@fb.com>
-Cc: Chengyang Fan <cy.fan@huawei.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Drew Fustini <dfustini@baylibre.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Suman Anna <s-anna@ti.com>
+Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+Fixes: 6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
+Fixes: 3f6634d997db ("iommu: Use right way to retrieve iommu_ops")
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Tested-by: Drew Fustini <dfustini@baylibre.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/20220331062301.24269-1-tony@atomide.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/lz4/lz4_decompress.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/iommu/omap-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/lib/lz4/lz4_decompress.c
-+++ b/lib/lz4/lz4_decompress.c
-@@ -271,8 +271,12 @@ static FORCE_INLINE int LZ4_decompress_g
- 			ip += length;
- 			op += length;
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 980e4af3f06b..d2e82a1b56d8 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1661,7 +1661,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	num_iommus = of_property_count_elems_of_size(dev->of_node, "iommus",
+ 						     sizeof(phandle));
+ 	if (num_iommus < 0)
+-		return 0;
++		return ERR_PTR(-ENODEV);
  
--			/* Necessarily EOF, due to parsing restrictions */
--			if (!partialDecoding || (cpy == oend))
-+			/* Necessarily EOF when !partialDecoding.
-+			 * When partialDecoding, it is EOF if we've either
-+			 * filled the output buffer or
-+			 * can't proceed with reading an offset for following match.
-+			 */
-+			if (!partialDecoding || (cpy == oend) || (ip >= (iend - 2)))
- 				break;
- 		} else {
- 			/* may overwrite up to WILDCOPYLENGTH beyond cpy */
+ 	arch_data = kcalloc(num_iommus + 1, sizeof(*arch_data), GFP_KERNEL);
+ 	if (!arch_data)
+-- 
+2.35.1
+
 
 
