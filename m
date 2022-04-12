@@ -2,100 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4753CC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 931CAC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352579AbiDLHOJ (ORCPT
+        id S1352639AbiDLHOM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
+        Tue, 12 Apr 2022 03:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352540AbiDLG4A (ORCPT
+        with ESMTP id S1352544AbiDLG4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:56:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A7D41625;
-        Mon, 11 Apr 2022 23:45:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EBA6B81B35;
-        Tue, 12 Apr 2022 06:45:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCEBC385A1;
-        Tue, 12 Apr 2022 06:45:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745956;
-        bh=FuKjtPKoVK7gpsVJPs78/XrHFLnI2blZAVO9LBmv2XM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSfois/ts4zSRHKFdo89nhLmwJIBJvjcqpi19SeqKnpQDM+PC8UQ6BKrLozhsIgv8
-         BpuzaLSl69788xFgNi3rLHyitUp+IlKPaNOC/WDtiS/Ads4qDjKnjugGgYx7Zp1iLV
-         whNsfvm5Y5pySlMzUPRiCQ50AVSUB1AbcTX84tZg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qinghua Jin <qhjin.dev@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Jan Kara <jack@suse.cz>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 109/277] minix: fix bug when opening a file with O_DIRECT
-Date:   Tue, 12 Apr 2022 08:28:32 +0200
-Message-Id: <20220412062945.194200276@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D674162D
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:45:58 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id u15so16658468ejf.11
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JYLTflw7lfJdOYx0URIPHkyjZlSOngY1f4PANC1Ya4Q=;
+        b=bfGqjachYVfU5dPcDQg5xv9rbpIvCedlwXnPSgn1JNYcXGDNhP9LHMKnTUwviTqDVz
+         HlY2DpIzKBG9qnHFP1Wd5RF1IOBtplLTITXxocnnSjUMVA6L10hNHfY36jfiQI3IwjLM
+         gzEIYmLESgC426ishFNHPpqlz5rXW3CA4UlH7wwGnRXLcoEPmOdBTmNjXRQOnDGtVDp7
+         tsFtQILfU39vtpL87hJwcLga80ZelaEvtYbhFbA0VRp7VCoeCHu2+GmOJbOPiuKaMYG1
+         Uhz5Zvfudmp3k43IcTvdvEBUnHdNsS3ZgpPBrtOtWsvrgtcBhKX2J59rukUOdtGI7gjN
+         5riw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JYLTflw7lfJdOYx0URIPHkyjZlSOngY1f4PANC1Ya4Q=;
+        b=UYCHBpuCFip5GMECbJl8zwc1rT/fNjpwKUR2KJDfU9Zo+1wIEmT/7St0TbYH7kYMcE
+         CsUP770eIeFPk2Y4EBjO5CTuaW2lbJfKzlnxGNB8OewjCvZqKi9Ig0eIYejK0ZF2icbM
+         fCg7X0GPI7puPTY5WVRHFLkRrhQPIXGTXzxIHKanm+NsziDEma82vw7m6+cOeepiO5Jj
+         JARw8jDvnLyHdcvu146sg/IIxzDvhFU02xGq2NHIHBxZtiTNB4YCMcziOdOllZnxsw+9
+         FUWAiAswqh2xO4ddkJZLustU16UpbN9cfToCTpln03lYcfN1Y/VeTbQtGnOoQf7V5uR4
+         5XAA==
+X-Gm-Message-State: AOAM530QmFb8lx+CuwGjfQz2/0qBv4Pf2OzN/p8yfv/8JX7qtH5EUOj8
+        9E0KucVDsjJfws1/fy5AEn0=
+X-Google-Smtp-Source: ABdhPJw6lfK5d0W8P9JWT5moNgL+/hy+tNZlsnRZrxsACK0MlAXTebV5yp1YPCq7QatkW/q2oN9Ntw==
+X-Received: by 2002:a17:906:9c82:b0:6e1:2c94:1616 with SMTP id fj2-20020a1709069c8200b006e12c941616mr33061090ejc.64.1649745957361;
+        Mon, 11 Apr 2022 23:45:57 -0700 (PDT)
+Received: from ?IPV6:2003:c7:8f1b:f064:b948:7f3d:8352:96be? (p200300c78f1bf064b9487f3d835296be.dip0.t-ipconnect.de. [2003:c7:8f1b:f064:b948:7f3d:8352:96be])
+        by smtp.gmail.com with ESMTPSA id fx3-20020a170906b74300b006daecedee44sm12758207ejb.220.2022.04.11.23.45.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 23:45:55 -0700 (PDT)
+Message-ID: <25a1bac5-7758-9602-7c9f-9d8b02d845e4@gmail.com>
+Date:   Tue, 12 Apr 2022 08:45:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 4/7] staging: vt6655: Replace VNSvOutPortB with
+ iowrite8
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Forest Bond <forest@alittletooquiet.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <cover.1649706687.git.philipp.g.hortmann@gmail.com>
+ <3cac1ca7000a56e82b390ea0ddbab5aa549ee7ec.1649706687.git.philipp.g.hortmann@gmail.com>
+ <20220412063731.GA3293@kadam>
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+In-Reply-To: <20220412063731.GA3293@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qinghua Jin <qhjin.dev@gmail.com>
+On 4/12/22 08:37, Dan Carpenter wrote:
+> On Mon, Apr 11, 2022 at 10:49:39PM +0200, Philipp Hortmann wrote:
+>> Replace macro VNSvOutPortB with iowrite8.
+>> The name of macro and the arguments use CamelCase which
+>> is not accepted by checkpatch.pl
+>>
+>> For constants from 0 to below 0x80 the u8 cast was omitted.
+>> For variables which are defined as unsigned char the u8 is omitted.
+> I hate that GCC prints warnings for this.  Useless.  Horrible.  But I
+> understand that GCC does and we haven't figured out how to disable it
+> or who needs to approve that.
+> 
+> But even then I still don't understand the casting in this patch.
+> 
+> Shouldn't the rule be to do the minimum work arounds to silence GCC?
+> My understand is that the the casting is only needed when you're dealing
+> with a bitwise negated constant.  These are macros so the parameters
+> might be constant so basically any bitwise negate gets a cast.
+> 
 
-[ Upstream commit 9ce3c0d26c42d279b6c378a03cd6a61d828f19ca ]
+Please send me the compiler flags you are using.
+I was using:
+make "KCFLAGS=-pipe -Wall" -C . M=drivers/staging/vt6655/
+But of course more flags are set.
+I did not see any compiler warnings.
 
-Testcase:
-1. create a minix file system and mount it
-2. open a file on the file system with O_RDWR|O_CREAT|O_TRUNC|O_DIRECT
-3. open fails with -EINVAL but leaves an empty file behind. All other
-   open() failures don't leave the failed open files behind.
+Thanks
 
-It is hard to check the direct_IO op before creating the inode.  Just as
-ext4 and btrfs do, this patch will resolve the issue by allowing to
-create the file with O_DIRECT but returning error when writing the file.
-
-Link: https://lkml.kernel.org/r/20220107133626.413379-1-qhjin.dev@gmail.com
-Signed-off-by: Qinghua Jin <qhjin.dev@gmail.com>
-Reported-by: Colin Ian King <colin.king@intel.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/minix/inode.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/minix/inode.c b/fs/minix/inode.c
-index a71f1cf894b9..d4bd94234ef7 100644
---- a/fs/minix/inode.c
-+++ b/fs/minix/inode.c
-@@ -447,7 +447,8 @@ static const struct address_space_operations minix_aops = {
- 	.writepage = minix_writepage,
- 	.write_begin = minix_write_begin,
- 	.write_end = generic_write_end,
--	.bmap = minix_bmap
-+	.bmap = minix_bmap,
-+	.direct_IO = noop_direct_IO
- };
- 
- static const struct inode_operations minix_symlink_inode_operations = {
--- 
-2.35.1
-
-
-
+Regards,
+Philipp Hortmann
