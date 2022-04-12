@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CC6C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F98FC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351711AbiDLHEA (ORCPT
+        id S1351760AbiDLHEO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
+        Tue, 12 Apr 2022 03:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351554AbiDLGx6 (ORCPT
+        with ESMTP id S1351545AbiDLGx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC73D1838A;
-        Mon, 11 Apr 2022 23:42:41 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880AB186F0;
+        Mon, 11 Apr 2022 23:42:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 573A560A69;
-        Tue, 12 Apr 2022 06:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6915CC385A1;
-        Tue, 12 Apr 2022 06:42:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 240D160A21;
+        Tue, 12 Apr 2022 06:42:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F7BC385A8;
+        Tue, 12 Apr 2022 06:42:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745760;
-        bh=6WWeLjwM6nugWoViIV7BNPooOy6baoQmDnNITUB0e5I=;
+        s=korg; t=1649745744;
+        bh=nFWpWCPbOaoMAwUpLix+4mXkQpbORA6GkI7rlenqrL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bhmYo0VnUCw+6KBR3NdyQO23fXgwFWG4GAxla2GEduLjeSYT8o6kG44mTFawy8sg8
-         W+44PsVMKoq3aoEnM3hAkIe+buMeZUSR88TAQlKmCR9ABItSaamln5aJ3k+Fl+JJf5
-         qgURhadwPOJUiVNv3o6GZdFJW/7i6AMU5uCnlDJo=
+        b=S5UmFbm+OXsyyEGo0ZLEn2LtD433wiariqfTzAfEm0RaPWWnPr9Fj5Y8kqfWn7cgl
+         uFUoNSr8fnFjJYYB8BxNu18m7VpQhJNWV5fevj1t7fx1zC4RG9fQXAVnhhD0jxn1T1
+         AFZpQogUPXmuxTLKc/LdzmoljZYCsPyDGFgZP+Hw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 037/277] power: supply: axp20x_battery: properly report current when discharging
-Date:   Tue, 12 Apr 2022 08:27:20 +0200
-Message-Id: <20220412062943.121873586@linuxfoundation.org>
+Subject: [PATCH 5.15 032/277] drm/bridge: Add missing pm_runtime_put_sync
+Date:   Tue, 12 Apr 2022 08:27:15 +0200
+Message-Id: <20220412062942.973424530@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,60 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+[ Upstream commit 46f47807738441e354873546dde0b000106c068a ]
 
-As stated in [1], negative current values are used for discharging
-batteries.
+pm_runtime_get_sync() will increase the rumtime PM counter
+even when it returns an error. Thus a pairing decrement is needed
+to prevent refcount leak. Fix this by replacing this API with
+pm_runtime_resume_and_get(), which will not change the runtime
+PM counter on error. Besides, a matching decrement is needed
+on the error handling path to keep the counter balanced.
 
-AXP PMICs internally have two different ADC channels for shunt current
-measurement: one used during charging and one during discharging.
-The values reported by these ADCs are unsigned.
-While the driver properly selects ADC channel to get the data from,
-it doesn't apply negative sign when reporting discharging current.
-
-[1] Documentation/ABI/testing/sysfs-class-power
-
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/1643008835-73961-1-git-send-email-lyz_cs@pku.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp20x_battery.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/bridge/nwl-dsi.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 18a9db0df4b1..335e12cc5e2f 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -186,7 +186,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
- {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	struct iio_channel *chan;
- 	int ret = 0, reg, val1;
+diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
+index 6e484d836cfe..691039aba87f 100644
+--- a/drivers/gpu/drm/bridge/nwl-dsi.c
++++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+@@ -861,18 +861,19 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
+ 	memcpy(&dsi->mode, adjusted_mode, sizeof(dsi->mode));
+ 	drm_mode_debug_printmodeline(adjusted_mode);
  
- 	switch (psp) {
-@@ -266,12 +265,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 		if (ret)
- 			return ret;
+-	pm_runtime_get_sync(dev);
++	if (pm_runtime_resume_and_get(dev) < 0)
++		return;
  
--		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
--			chan = axp20x_batt->batt_chrg_i;
--		else
--			chan = axp20x_batt->batt_dischrg_i;
--
--		ret = iio_read_channel_processed(chan, &val->intval);
-+		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
-+		} else {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
-+			val->intval = -val1;
-+		}
- 		if (ret)
- 			return ret;
+ 	if (clk_prepare_enable(dsi->lcdif_clk) < 0)
+-		return;
++		goto runtime_put;
+ 	if (clk_prepare_enable(dsi->core_clk) < 0)
+-		return;
++		goto runtime_put;
  
+ 	/* Step 1 from DSI reset-out instructions */
+ 	ret = reset_control_deassert(dsi->rst_pclk);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to deassert PCLK: %d\n", ret);
+-		return;
++		goto runtime_put;
+ 	}
+ 
+ 	/* Step 2 from DSI reset-out instructions */
+@@ -882,13 +883,18 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
+ 	ret = reset_control_deassert(dsi->rst_esc);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to deassert ESC: %d\n", ret);
+-		return;
++		goto runtime_put;
+ 	}
+ 	ret = reset_control_deassert(dsi->rst_byte);
+ 	if (ret < 0) {
+ 		DRM_DEV_ERROR(dev, "Failed to deassert BYTE: %d\n", ret);
+-		return;
++		goto runtime_put;
+ 	}
++
++	return;
++
++runtime_put:
++	pm_runtime_put_sync(dev);
+ }
+ 
+ static void
 -- 
 2.35.1
 
