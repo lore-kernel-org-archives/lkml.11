@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4311C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241197AbiDLJRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        id S1358779AbiDLJUM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357680AbiDLHkh (ORCPT
+        with ESMTP id S1357040AbiDLHjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:37 -0400
+        Tue, 12 Apr 2022 03:39:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA2A37A86;
-        Tue, 12 Apr 2022 00:16:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F00417045;
+        Tue, 12 Apr 2022 00:10:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E57D061045;
-        Tue, 12 Apr 2022 07:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09C82C385A1;
-        Tue, 12 Apr 2022 07:16:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC8EF6103A;
+        Tue, 12 Apr 2022 07:10:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD78FC385A5;
+        Tue, 12 Apr 2022 07:10:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747797;
-        bh=9jNENUbCs6cw5+MzCQnWH+zyHEXcOMOtfAZicP9f8m4=;
+        s=korg; t=1649747457;
+        bh=1eZQ2mG1B5Ze4BFKltM7j3jjf6Smhu+NEKul0MLnFVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zbg1pcBcKPWuHbdWWpa84TY5oSoq0F6DCk3AXeHAXkie11uCa92DkYlAeslU+RiSP
-         AotNtaf8KRt13v8Cgx6Tps6Lo3I+41YuIInwJjraLWMXdjXTHUFavYyS9jhjq0if8c
-         5DC67Q9Jw0M1mf1EAUWqjmbgU29H0sVkIwq0NyYg=
+        b=sQOxHtpUbRwbKrf7QwI1bs+38NvWrgs0OzMKJqxvaAie2VMfgw9FRvzprVCZ5G466
+         fDnWVinTEFKy/EEXY7osfD0cU7ZHjUjeXzXNXJOFpylOiasVd2EuOWLStLCDu0tyLv
+         n20PGga6cb7V5k7JHsy69HG9NJsu3eOuqNGsoJn8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 210/343] ice: Fix MAC address setting
-Date:   Tue, 12 Apr 2022 08:30:28 +0200
-Message-Id: <20220412062957.409137034@linuxfoundation.org>
+Subject: [PATCH 5.17 086/343] usb: dwc3: pci: Set the swnode from inside dwc3_pci_quirks()
+Date:   Tue, 12 Apr 2022 08:28:24 +0200
+Message-Id: <20220412062953.589206078@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,62 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 2c0069f3f91f125b1b2ce66cc6bea8eb134723c3 ]
+[ Upstream commit e285cb403994419e997749c9a52b9370884ae0c8 ]
 
-Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
-the usage of 'status' and 'err' variables into single one in
-function ice_set_mac_address(). Unfortunately this causes
-a regression when call of ice_fltr_add_mac() returns -EEXIST because
-this return value does not indicate an error in this case but
-value of 'err' remains to be -EEXIST till the end of the function
-and is returned to caller.
+The quirk handling may need to set some different properties
+which means using a different swnode, move the setting of the swnode
+to inside dwc3_pci_quirks() so that the quirk handling can choose
+a different swnode.
 
-Prior mentioned commit this does not happen because return value of
-ice_fltr_add_mac() was stored to 'status' variable first and
-if it was -EEXIST then 'err' remains to be zero.
-
-Fix the problem by reset 'err' to zero when ice_fltr_add_mac()
-returns -EEXIST.
-
-Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Acked-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220213130524.18748-4-hdegoede@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 296f9d5f7408..92e0fe9316b9 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5432,16 +5432,19 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 06d0e88ec8af..4d9608cc55f7 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -185,7 +185,8 @@ static const struct software_node dwc3_pci_amd_mr_swnode = {
+ 	.properties = dwc3_pci_mr_properties,
+ };
  
- 	/* Add filter for new MAC. If filter exists, return success */
- 	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
--	if (err == -EEXIST)
-+	if (err == -EEXIST) {
- 		/* Although this MAC filter is already present in hardware it's
- 		 * possible in some cases (e.g. bonding) that dev_addr was
- 		 * modified outside of the driver and needs to be restored back
- 		 * to this value.
- 		 */
- 		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
--	else if (err)
-+
-+		return 0;
-+	} else if (err) {
- 		/* error if the new filter addition failed */
- 		err = -EADDRNOTAVAIL;
-+	}
+-static int dwc3_pci_quirks(struct dwc3_pci *dwc)
++static int dwc3_pci_quirks(struct dwc3_pci *dwc,
++			   const struct software_node *swnode)
+ {
+ 	struct pci_dev			*pdev = dwc->pci;
  
- err_update_filters:
- 	if (err) {
+@@ -242,7 +243,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
+ 		}
+ 	}
+ 
+-	return 0;
++	return device_add_software_node(&dwc->dwc3->dev, swnode);
+ }
+ 
+ #ifdef CONFIG_PM
+@@ -307,11 +308,7 @@ static int dwc3_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	dwc->dwc3->dev.parent = dev;
+ 	ACPI_COMPANION_SET(&dwc->dwc3->dev, ACPI_COMPANION(dev));
+ 
+-	ret = device_add_software_node(&dwc->dwc3->dev, (void *)id->driver_data);
+-	if (ret < 0)
+-		goto err;
+-
+-	ret = dwc3_pci_quirks(dwc);
++	ret = dwc3_pci_quirks(dwc, (void *)id->driver_data);
+ 	if (ret)
+ 		goto err;
+ 
 -- 
 2.35.1
 
