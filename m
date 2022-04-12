@@ -2,124 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB06C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED29C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354686AbiDLQOq (ORCPT
+        id S1350806AbiDLQUN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
+        Tue, 12 Apr 2022 12:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238419AbiDLQOo (ORCPT
+        with ESMTP id S236190AbiDLQUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:14:44 -0400
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D551496BB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:12:26 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id CB0DC3201F88;
-        Tue, 12 Apr 2022 12:12:23 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Tue, 12 Apr 2022 12:12:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-transfer-encoding:date:date:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1649779943; x=1649866343; bh=Swq3vULHL4
-        0tNAUp4uZ9yWQwrv+6ZS9Mb46odzoBxs8=; b=qgq3EzQjxZkLFJXAe23DqDX97j
-        cApfWLkJ86GFRu78qiRsRbjgxOelPJhgKhGAIy5P6mxSOHAn1/O2kMlL2VX9LiVt
-        rObPSE/lJTIZYA2Un61Y+unRKlVNVDLz31yrlYgEor1XIBRfldYVPSlAPdU7xC+D
-        fV+w6sRB7xQYOqmPvp+JZMBMVKrWvEme0tpcZaH1904sNI+VT5ldjo/L4m81etuU
-        fg7BTK8thDBaY3zXMRp2FprVgNij7Gq2qYZY6xPnH+pJCwQmCKcQuz2xU/xeCO7b
-        1GvYpsczwQY6TH4IQ8R5QIijk2Mh1FivF/K98bUa5oxsqP7LKkHDYGNoUNPg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm3; t=1649779943; x=1649866343; bh=S
-        wq3vULHL40tNAUp4uZ9yWQwrv+6ZS9Mb46odzoBxs8=; b=dxcKP8ujyaC/lmnE3
-        lu+0Ry0SNoQZVh/3J6BG+wNWs7GfHZ9DI5Z5DaBv/rpGtUsuqX91G6i+VAyIa0wd
-        OQA+qogNGOEijg/H6A0sPBrytY3KYCeLt+2anujiOtDKSImuZet+HuEP+lpK4Ikt
-        ZLNAZ0koeAw+el63OmlYmxWlkoNt5oXXwGfuRJfzN1aSXXR/CKOd/8WnLbg8KicM
-        KWwsn67eEW4plgv2zTSLBGDb7iRZinCUKg4xrGq1M8sAdOJS7AXbBKhpPissdXMZ
-        r7eN5gZwF7GhvmLBK4BXJn+gTcTtNY+JzQ4ymIEt1w2ijufm+Xvc9sxbuakzvlS0
-        oIFlA==
-X-ME-Sender: <xms:5qRVYoardRClJUGUy5AsiTQb2NVf1IZp6yX0o8tvyC3mZAc6-IMYEg>
-    <xme:5qRVYjaIslUcQC4gpg46CgxFW7ihnkm9EljGvP0rvrKMsIHalsSzlIuP1yiUcH-T4
-    cf0-Bo9mX2siwFbcwA>
-X-ME-Received: <xmr:5qRVYi_bjEDCpUxc_-JQH8C3OwS_n65P1TNPSEHWvAdUPCkZyOyGMvnpU-umUZdc2Q00bqwdQsRVjvu-yaYwLex9C_2KP1JD7zTtuBGIgWqJPBHVtY3dwWwUW0hIfC4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekkedgleeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcurfgv
-    thgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvghrnh
-    epuefgleekvddtjefffeejheevleefveekgfduudfhgefhfeegtdehveejfefffffgnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvghnse
-    hsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:56RVYir5HB9bkQuyYpfFIhNe6VhEpaTwXzU_MeNinHNQc1oG1oIajQ>
-    <xmx:56RVYjqXLaLsLCCGFnZ67s6GZ97_cnHnvLuwD76nMScAkJzd71ZClA>
-    <xmx:56RVYgQcpjlwMG9qbQODZkz8JtNyLptYRR_frIWWEj9IKtW77P1POw>
-    <xmx:56RVYkf-XL0KmkSd8_0GuvHyaqnat9VFq_dNoarc0Wj73pf4JXUiMw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Apr 2022 12:12:21 -0400 (EDT)
-From:   Sven Peter <sven@svenpeter.dev>
-To:     Joerg Roedel <joro@8bytes.org>
-Cc:     Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>,
-        Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: merge DART into ARM/APPLE MACHINE
-Date:   Tue, 12 Apr 2022 18:12:11 +0200
-Message-Id: <20220412161211.23162-1-sven@svenpeter.dev>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Tue, 12 Apr 2022 12:20:11 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5A555BED;
+        Tue, 12 Apr 2022 09:17:53 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id CB88F1F44415
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649780272;
+        bh=HG4zMAQTMsRTHk1kQ+DW7QY45qxSF73vy5Es63Yx/Hs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ie3NRjpwbAQ6cKLOUQoYITA6lfCLeBMXZqyKTetVNOwu1eFOnlDIS0Hyl1ms1j+hU
+         CWOJDqVXrI5AdKOkIllkSsrz7hrLwsPJnS9Lo7jPIeMg7Haa0JyzweD+PRe0JVHK04
+         ZdlRENGtXaYzDJkDtrAOgzDh2HuOBspLV5vsR5KvgvMnDPjBV9GuGDNfdc8Zg1ayuo
+         FtTuW85jObOrIekLzn62cGHsY6Dn2+F5biP5AN/aBfvU/5q1WAtgooD7FRil6SaE+d
+         +9sTEHPcko2Bzusdvyvz0qWsvXuJOVIe/j909WNAbo4d2EucJ2a9qTbxxjgbf35+8g
+         Gdk3RqTWV2VbA==
+Message-ID: <084cce2b-5c50-1d14-70f8-a313d61b901d@collabora.com>
+Date:   Tue, 12 Apr 2022 18:17:48 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] spi: spi-mtk-nor: initialize spi controller after resume
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Ikjoon Jang <ikjn@chromium.org>
+Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220412115743.22641-1-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220412115743.22641-1-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's the same people anyway.
+Il 12/04/22 13:57, Allen-KH Cheng ha scritto:
+> After system resumes, the registers of nor controller are
+> initialized with default values. The nor controller will
+> not function properly.
+> 
+> To handle both issues above, we add mtk_nor_init() in
+> mtk_nor_resume after pm_runtime_force_resume().
+> 
+> Fixes: 3bfd9103c7af ("spi: spi-mtk-nor: Add power management support")
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
----
- MAINTAINERS | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+That's just one issue, not two, so... "To handle both issues [etc]" should become
+something like:
+"Solve this issue by reinitializing the registers right after resuming the
+controller"
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fd768d43e048..5af879de869c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1375,14 +1375,6 @@ L:	linux-input@vger.kernel.org
- S:	Odd fixes
- F:	drivers/input/mouse/bcm5974.c
- 
--APPLE DART IOMMU DRIVER
--M:	Sven Peter <sven@svenpeter.dev>
--R:	Alyssa Rosenzweig <alyssa@rosenzweig.io>
--L:	iommu@lists.linux-foundation.org
--S:	Maintained
--F:	Documentation/devicetree/bindings/iommu/apple,dart.yaml
--F:	drivers/iommu/apple-dart.c
--
- APPLE PCIE CONTROLLER DRIVER
- M:	Alyssa Rosenzweig <alyssa@rosenzweig.io>
- M:	Marc Zyngier <maz@kernel.org>
-@@ -1836,6 +1828,7 @@ F:	Documentation/devicetree/bindings/arm/apple/*
- F:	Documentation/devicetree/bindings/clock/apple,nco.yaml
- F:	Documentation/devicetree/bindings/i2c/apple,i2c.yaml
- F:	Documentation/devicetree/bindings/interrupt-controller/apple,*
-+F:	Documentation/devicetree/bindings/iommu/apple,dart.yaml
- F:	Documentation/devicetree/bindings/mailbox/apple,mailbox.yaml
- F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
- F:	Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
-@@ -1845,6 +1838,7 @@ F:	arch/arm64/boot/dts/apple/
- F:	drivers/clk/clk-apple-nco.c
- F:	drivers/i2c/busses/i2c-pasemi-core.c
- F:	drivers/i2c/busses/i2c-pasemi-platform.c
-+F:	drivers/iommu/apple-dart.c
- F:	drivers/irqchip/irq-apple-aic.c
- F:	drivers/mailbox/apple-mailbox.c
- F:	drivers/pinctrl/pinctrl-apple-gpio.c
--- 
-2.25.1
+After fixing the commit description,
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
