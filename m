@@ -2,165 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC81C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7045AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354842AbiDLM7i (ORCPT
+        id S1354944AbiDLM7n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
+        Tue, 12 Apr 2022 08:59:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355146AbiDLM5w (ORCPT
+        with ESMTP id S1355633AbiDLM60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:57:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92CC59A55;
-        Tue, 12 Apr 2022 05:31:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B941B81D2D;
-        Tue, 12 Apr 2022 12:31:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F2FC385A6;
-        Tue, 12 Apr 2022 12:31:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649766688;
-        bh=qvgvgPlnqIF4Nwhd/KVD2DfqHWxVoFnWvDT/T+pTUxg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gTRMUm9FpmPdmWAYUNF0Kc1HCctRfKCsfzRNc8O0rE2QQNaVs7Bbf3tO3vEpfeGyB
-         47992792v7zS+xdeFT9wflnpVYqhWy/HbjpSHRFIzC9cgzzOhLa8ciB6t+6fKAlE/b
-         pEckANQRnyja2+s6hKMB7oTTHQMz2esUuQQ3BZL7GME/qxyNtNtXaOMWQhOdgnxBU4
-         8zXSGsbrGWqonXrebx/UcEuPe11BJ+sfypdhvHLk55txlYM8yy91qmKEMyKSty9Z4A
-         TVe5BgdOyX5yOIu13InAyvW0wlloyI6adBEcilfN2wdOpCN5A0UGQZASr1b4L7Z87c
-         caY85b2Z+Q+sg==
-Received: by mail-io1-f46.google.com with SMTP id r2so22030592iod.9;
-        Tue, 12 Apr 2022 05:31:28 -0700 (PDT)
-X-Gm-Message-State: AOAM533bBAbNFQoXpLFchMd9p6ApHn5yASO7/oI/QpZgxGXumvqGwz6S
-        ywytT+cq/etYYTwW4Ef/onPdp85OYK5rEiYxaw==
-X-Google-Smtp-Source: ABdhPJzysinMng65dytPxyEs+g/U4hp7xMDUjNUwYTOhCqrvOU3/Ba48iG7ejIU9HPu1N2kuCqqb1gTfROoyF+ACUnU=
-X-Received: by 2002:a05:6602:1645:b0:646:4780:fc28 with SMTP id
- y5-20020a056602164500b006464780fc28mr15420111iow.194.1649766687353; Tue, 12
- Apr 2022 05:31:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220412045228.35306-1-patrick.wang.shcn@gmail.com>
-In-Reply-To: <20220412045228.35306-1-patrick.wang.shcn@gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 12 Apr 2022 07:31:16 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJ3Vi18RizzkKok5Rg8AM3U3Eytaunqk-5RF795ma=wcA@mail.gmail.com>
-Message-ID: <CAL_JsqJ3Vi18RizzkKok5Rg8AM3U3Eytaunqk-5RF795ma=wcA@mail.gmail.com>
-Subject: Re: [PATCH] of: fdt: do not reserve memory below MIN_MEMBLOCK_ADDR
-To:     Patrick Wang <patrick.wang.shcn@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>
-Cc:     Frank Rowand <frowand.list@gmail.com>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 12 Apr 2022 08:58:26 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36A75C86F;
+        Tue, 12 Apr 2022 05:33:05 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CBBxYi029884;
+        Tue, 12 Apr 2022 12:32:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=vyaBAvLraJ2tua5EQaq+mkfRTcOYDbXcnxO/FeOjC/k=;
+ b=H5SUElumn5gMoOxYd2hW7du6gP4afvBGMDsyxb7nHOweHmItj1WDZJpbB4bH9n8rO8O0
+ psNHTuvdd9hUgdPYp0dRQ7ORroZd3Jku+ELf+xKgG3Y9VLuFzMnJKTwCRbNHHnFs6Jz0
+ EsFIZZEltkcrieTRMUBBJ+OW/2dsyS10g0SbEvIsAejgewm1l3hTTs+71uyN458dNK3N
+ 9XnVp4LLT1Ug2yGdS5kuEB30SyiEBDFThP2v0y8VbeB6CgxdGDj8aOLbq2GSJoOdg2rc
+ ccO52nlg/dt4FJp31E9EL6kdkXSvdfxh52gYOxNO2T+e1Hiqa2NBs2nr6ZRgbNteGXFi Fg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fd8b5htcc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 12:32:46 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CCUC0O008163;
+        Tue, 12 Apr 2022 12:32:45 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fd8b5htbj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 12:32:45 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CCDnoX030588;
+        Tue, 12 Apr 2022 12:32:43 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3fb1dj4w0m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 12:32:42 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CCWeLQ40501638
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 12:32:40 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 920D75204E;
+        Tue, 12 Apr 2022 12:32:40 +0000 (GMT)
+Received: from sig-9-65-64-123.ibm.com (unknown [9.65.64.123])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 57E9852050;
+        Tue, 12 Apr 2022 12:32:37 +0000 (GMT)
+Message-ID: <f55551188f2a17a7a5da54ea4a38bfbae938a62f.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 RESEND] efi: Do not import certificates from UEFI
+ Secure Boot for T2 Macs
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Aditya Garg <gargaditya08@live.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        "admin@kodeit.net" <admin@kodeit.net>
+Date:   Tue, 12 Apr 2022 08:32:36 -0400
+In-Reply-To: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
+References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: P0qJhkOPK2C5QZTvOJ6EMKg6-W1Da97M
+X-Proofpoint-GUID: CPrrncJGw3lrPoyPHwhMngG2z1YirLDY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_04,2022-04-12_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ bulkscore=0 spamscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 clxscore=1011 malwarescore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204120059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Mike Rapoport
+On Sun, 2022-04-10 at 10:49 +0000, Aditya Garg wrote:
+> From: Aditya Garg <gargaditya08@live.com>
+> 
+> On T2 Macs, the secure boot is handled by the T2 Chip. If enabled, only
+> macOS and Windows are allowed to boot on these machines. Thus we need to
+> disable secure boot for Linux.
 
-On Mon, Apr 11, 2022 at 11:52 PM Patrick Wang
-<patrick.wang.shcn@gmail.com> wrote:
->
-> Dt reserve memory without base checking, which will trigger an oops in
-> kmemleak when the base address is below MIN_MEMBLOCK_ADDR:
+The end result might be "disable secure boot for Linux", but that isn't
+what the code is actually doing.  As a result of not being able to read
+or load certificates, secure boot cannot be enabled.  Please be more
+precise.
 
-Why does the caller need to know what this address is? Shouldn't
-memblock handle all this internally?
-
-What about when EFI memory maps are used?
-
->
-> # echo scan > /sys/kernel/debug/kmemleak
-> [   54.888353] Unable to handle kernel paging request at virtual address ff5fffffffe00000
-> [   54.888932] Oops [#1]
-> [   54.889102] Modules linked in:
-> [   54.889326] CPU: 2 PID: 134 Comm: bash Not tainted 5.18.0-rc1-next-20220407 #33
-> [   54.889620] Hardware name: riscv-virtio,qemu (DT)
-> [   54.889901] epc : scan_block+0x74/0x15c
-> [   54.890215]  ra : scan_block+0x72/0x15c
-> [   54.890390] epc : ffffffff801e5806 ra : ffffffff801e5804 sp : ff200000104abc30
-> [   54.890607]  gp : ffffffff815cd4e8 tp : ff60000004cfa340 t0 : 0000000000000200
-> [   54.890835]  t1 : 00aaaaaac23954cc t2 : 00000000000003ff s0 : ff200000104abc90
-> [   54.891024]  s1 : ffffffff81b0ff28 a0 : 0000000000000000 a1 : ff5fffffffe01000
-> [   54.891201]  a2 : ffffffff81b0ff28 a3 : 0000000000000002 a4 : 0000000000000001
-> [   54.891377]  a5 : 0000000000000000 a6 : ff200000104abd7c a7 : 0000000000000005
-> [   54.891552]  s2 : ff5fffffffe00ff9 s3 : ffffffff815cd998 s4 : ffffffff815d0e90
-> [   54.891727]  s5 : ffffffff81b0ff28 s6 : 0000000000000020 s7 : ffffffff815d0eb0
-> [   54.891903]  s8 : ffffffffffffffff s9 : ff5fffffffe00000 s10: ff5fffffffe01000
-> [   54.892078]  s11: 0000000000000022 t3 : 00ffffffaa17db4c t4 : 000000000000000f
-> [   54.892271]  t5 : 0000000000000001 t6 : 0000000000000000
-> [   54.892408] status: 0000000000000100 badaddr: ff5fffffffe00000 cause: 000000000000000d
-> [   54.892643] [<ffffffff801e5a1c>] scan_gray_list+0x12e/0x1a6
-> [   54.892824] [<ffffffff801e5d3e>] kmemleak_scan+0x2aa/0x57e
-> [   54.892961] [<ffffffff801e633c>] kmemleak_write+0x32a/0x40c
-> [   54.893096] [<ffffffff803915ac>] full_proxy_write+0x56/0x82
-> [   54.893235] [<ffffffff801ef456>] vfs_write+0xa6/0x2a6
-> [   54.893362] [<ffffffff801ef880>] ksys_write+0x6c/0xe2
-> [   54.893487] [<ffffffff801ef918>] sys_write+0x22/0x2a
-> [   54.893609] [<ffffffff8000397c>] ret_from_syscall+0x0/0x2
-> [   54.894183] ---[ end trace 0000000000000000 ]---
->
-> Add base checking and ignore the range lower than MIN_MEMBLOCK_ADDR.
->
-> Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
+> If we boot into Linux after disabling
+> secure boot, if CONFIG_LOAD_UEFI_KEYS is enabled, EFI Runtime services
+> fail to start, with the following logs in dmesg
+> 
+> Call Trace:
+>  <TASK>
+>  page_fault_oops+0x4f/0x2c0
+>  ? search_bpf_extables+0x6b/0x80
+>  ? search_module_extables+0x50/0x80
+>  ? search_exception_tables+0x5b/0x60
+>  kernelmode_fixup_or_oops+0x9e/0x110
+>  __bad_area_nosemaphore+0x155/0x190
+>  bad_area_nosemaphore+0x16/0x20
+>  do_kern_addr_fault+0x8c/0xa0
+>  exc_page_fault+0xd8/0x180
+>  asm_exc_page_fault+0x1e/0x30
+> (Removed some logs from here)
+>  ? __efi_call+0x28/0x30
+>  ? switch_mm+0x20/0x30
+>  ? efi_call_rts+0x19a/0x8e0
+>  ? process_one_work+0x222/0x3f0
+>  ? worker_thread+0x4a/0x3d0
+>  ? kthread+0x17a/0x1a0
+>  ? process_one_work+0x3f0/0x3f0
+>  ? set_kthread_struct+0x40/0x40
+>  ? ret_from_fork+0x22/0x30
+>  </TASK>
+> ---[ end trace 1f82023595a5927f ]---
+> efi: Froze efi_rts_wq and disabled EFI Runtime Services
+> integrity: Couldn't get size: 0x8000000000000015
+> integrity: MODSIGN: Couldn't get UEFI db list
+> efi: EFI Runtime Services are disabled!
+> integrity: Couldn't get size: 0x8000000000000015
+> integrity: Couldn't get UEFI dbx list
+> integrity: Couldn't get size: 0x8000000000000015
+> integrity: Couldn't get mokx list
+> integrity: Couldn't get size: 0x80000000
+> 
+> This patch prevents querying of these UEFI variables, since these Macs
+> seem to use a non-standard EFI hardware
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Aditya Garg <gargaditya08@live.com>
 > ---
->  drivers/of/fdt.c | 27 ++++++++++++++++++++-------
->  1 file changed, 20 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index ec315b060..296c4ab8e 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -33,6 +33,13 @@
->
->  #include "of_private.h"
->
-> +#ifndef MIN_MEMBLOCK_ADDR
-> +#define MIN_MEMBLOCK_ADDR      __pa(PAGE_OFFSET)
+> v2 :- Reduce code size of the table.
+> V3 :- Close the brackets which were left open by mistake.
+>  .../platform_certs/keyring_handler.h          |  8 ++++
+>  security/integrity/platform_certs/load_uefi.c | 48 +++++++++++++++++++
+>  2 files changed, 56 insertions(+)
+> 
+> diff --git a/security/integrity/platform_certs/keyring_handler.h b/security/integrity/platform_certs/keyring_handler.h
+> index 2462bfa08..cd06bd607 100644
+> --- a/security/integrity/platform_certs/keyring_handler.h
+> +++ b/security/integrity/platform_certs/keyring_handler.h
+> @@ -30,3 +30,11 @@ efi_element_handler_t get_handler_for_db(const efi_guid_t *sig_type);
+>  efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
+>  
+>  #endif
+> +
+> +#ifndef UEFI_QUIRK_SKIP_CERT
+> +#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
+> +		 .matches = { \
+> +			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
+> +			DMI_MATCH(DMI_PRODUCT_NAME, product), \
+> +		},
 > +#endif
-> +#ifndef MAX_MEMBLOCK_ADDR
-> +#define MAX_MEMBLOCK_ADDR      ((phys_addr_t)~0)
-> +#endif
+> diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
+> index 08b6d12f9..f246c8732 100644
+> --- a/security/integrity/platform_certs/load_uefi.c
+> +++ b/security/integrity/platform_certs/load_uefi.c
+> @@ -3,6 +3,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/sched.h>
+>  #include <linux/cred.h>
+> +#include <linux/dmi.h>
+>  #include <linux/err.h>
+>  #include <linux/efi.h>
+>  #include <linux/slab.h>
+> @@ -12,6 +13,32 @@
+>  #include "../integrity.h"
+>  #include "keyring_handler.h"
+>  
+> +/* Apple Macs with T2 Security chip don't support these UEFI variables.
+
+Please refer to Documentation/process/coding-style.rst for the format
+of multi-line comments.
+
+> + * The T2 chip manages the Secure Boot and does not allow Linux to boot
+> + * if it is turned on. If turned off, an attempt to get certificates
+> + * causes a crash, so we simply return 0 for them in each function.
+> + */
+> +
+
+No need for a blank line here.
+
+> +static const struct dmi_system_id uefi_skip_cert[] = {
+> +
+No need for a blank here either.
+
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
+> +	{ }
+> +};
 > +
 >  /*
->   * of_fdt_limit_memory - limit the number of regions in the /memory node
->   * @limit: maximum entries
-> @@ -480,6 +487,19 @@ static u32 of_fdt_crc32;
->  static int __init early_init_dt_reserve_memory_arch(phys_addr_t base,
->                                         phys_addr_t size, bool nomap)
+>   * Look to see if a UEFI variable called MokIgnoreDB exists and return true if
+>   * it does.
+> @@ -21,12 +48,18 @@
+>   * is set, we should ignore the db variable also and the true return indicates
+>   * this.
+>   */
+> +
+Or here
+
+>  static __init bool uefi_check_ignore_db(void)
 >  {
-> +       const u64 phys_offset = MIN_MEMBLOCK_ADDR;
+>  	efi_status_t status;
+>  	unsigned int db = 0;
+>  	unsigned long size = sizeof(db);
+>  	efi_guid_t guid = EFI_SHIM_LOCK_GUID;
+> +	const struct dmi_system_id *dmi_id;
 > +
-> +       if (base < phys_offset) {
-> +               pr_warn("Ignoring reserved memory range 0x%llx - 0x%llx\n",
-> +                       base, phys_offset);
-> +               size = (phys_offset - base) < size ?
-> +                       size - (phys_offset - base) : 0;
-> +               base = phys_offset;
+> +	dmi_id = dmi_first_match(uefi_skip_cert);
+> +	if (dmi_id)
+> +		return 0;
+
+The function returns a bool.  Return either "true" or "false".
+
+>  
+>  	status = efi.get_variable(L"MokIgnoreDB", &guid, NULL, &size, &db);
+>  	return status == EFI_SUCCESS;
+> @@ -41,6 +74,11 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+>  	unsigned long lsize = 4;
+>  	unsigned long tmpdb[4];
+>  	void *db;
+> +	const struct dmi_system_id *dmi_id;
 > +
-> +               if (!size)
-> +                       return -EFAULT;
-> +       }
+> +	dmi_id = dmi_first_match(uefi_skip_cert);
+> +	if (dmi_id)
+> +		return 0;
+
+The return value here should be NULL.
+
+>  
+>  	*status = efi.get_variable(name, guid, NULL, &lsize, &tmpdb);
+>  	if (*status == EFI_NOT_FOUND)
+> @@ -85,6 +123,11 @@ static int __init load_moklist_certs(void)
+>  	unsigned long moksize;
+>  	efi_status_t status;
+>  	int rc;
+> +	const struct dmi_system_id *dmi_id;
 > +
->         if (nomap) {
->                 /*
->                  * If the memory is already reserved (by another region), we
-> @@ -1198,13 +1218,6 @@ int __init early_init_dt_scan_chosen(char *cmdline)
->         return 0;
->  }
->
-> -#ifndef MIN_MEMBLOCK_ADDR
-> -#define MIN_MEMBLOCK_ADDR      __pa(PAGE_OFFSET)
-> -#endif
-> -#ifndef MAX_MEMBLOCK_ADDR
-> -#define MAX_MEMBLOCK_ADDR      ((phys_addr_t)~0)
-> -#endif
-> -
->  void __init __weak early_init_dt_add_memory_arch(u64 base, u64 size)
->  {
->         const u64 phys_offset = MIN_MEMBLOCK_ADDR;
-> --
-> 2.25.1
->
+> +	dmi_id = dmi_first_match(uefi_skip_cert);
+> +	if (dmi_id)
+> +		return 0;
+>  
+>  	/* First try to load certs from the EFI MOKvar config table.
+>  	 * It's not an error if the MOKvar config table doesn't exist
+> @@ -138,6 +181,11 @@ static int __init load_uefi_certs(void)
+>  	unsigned long dbsize = 0, dbxsize = 0, mokxsize = 0;
+>  	efi_status_t status;
+>  	int rc = 0;
+> +	const struct dmi_system_id *dmi_id;
+> +
+> +	dmi_id = dmi_first_match(uefi_skip_cert);
+> +	if (dmi_id)
+> +		return 0;
+
+uefi_check_ignore_db(), get_cert_list(), uefi_check_ignore_db(), and
+/load_moklist_certs() are all defined all static and are gated here by
+this dmi_first_match().  There's probably no need for any of the other
+calls to dmi_first_match().
+
+Like in all the other cases, there should be some sort of message.  At
+minimum, there should be a pr_info().
+
+>  
+>  	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
+>  		return false;
+
+thanks,
+
+Mimi
+
