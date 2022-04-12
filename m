@@ -2,93 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9993C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55280C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240405AbiDLJvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44948 "EHLO
+        id S239848AbiDLJvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353613AbiDLJnu (ORCPT
+        with ESMTP id S1359678AbiDLJsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:43:50 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4756360A83
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:53:10 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso2189965pjh.3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:53:10 -0700 (PDT)
+        Tue, 12 Apr 2022 05:48:03 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AF163503;
+        Tue, 12 Apr 2022 01:53:52 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id e8-20020a17090a118800b001cb13402ea2so2231574pja.0;
+        Tue, 12 Apr 2022 01:53:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VCefrZdfoSNAmADQ4rDEGDGpMamNwlihzSsXzq1s8T8=;
-        b=p53JNlmEO3AdY9Dcfd9psNc/BECz9tDHElvzGGZfzA4B1FRN0VKefh0WsP2jNk6nyC
-         Bcgeekw4Pes1N003jaQiy2vWoXFlY/m0t2O7oZSx0JvKN2n21eZBGiFcnW/NIV1+5JbC
-         dYL3nRA/1fGrfn2sH1XT7bv97Zu+nK6XrzaIFzOV6yboyRmscCMxs70mldh7roTkDEUD
-         VekK/Jlw58pHUtrjJQ5wzU9IWIl3via84gTlJ1bv+NaqxzXhSld+rLf+j6X2Bt7lh0Z4
-         ODjdzXg2b/y/YV5sRe524vcJfu9AxSFOhBF2aWs04ZN26gIxR9Q7Jc51AVTPdP46RgU6
-         AAdQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jmCpHCMje6DqtUs4yqS5xd4MJHXw5XyWXqbNnJZJI6A=;
+        b=S1S23s85lCZ4pEedIgLJany23GsJwNl+sETb6R8H7W+W3S5VOcSfEGpMnCYfUdhv3m
+         g/ew39g3VpTLSdY2410LO2Fvwt6/+p2K1sQNWXKUWyVs6NXQ3FH3FqhZn5xgUCPLKudS
+         28Z5QrFim4mD5b/TcyE3bo7QqENkek1BZqRc8iovMrIdJEIWln9trhqrxO/6LpMbcMV7
+         WZgoCehtFMafjr9LOmGoM9qTAtzPkzv9bOe4AK68uH/Zrh2hCh5zFOSj1V+BNP55snS8
+         b1Er5WX74yVtj3Qj5yuJfHrA1X6gupJrxsO8erNt0vMzldbfeTxdUTMzW9hPRs1YaD8P
+         br9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=VCefrZdfoSNAmADQ4rDEGDGpMamNwlihzSsXzq1s8T8=;
-        b=Hz92TnfLfjkcbjukJ8izSv/VMtwKb8jkCGFTt602i0NWCPfB0Jl0W1XXhjXXLBYjat
-         2Mxe3OpaynLqIwiWUyZBMS7v4ASEesxzx/VZNPSlk52FmLRcUdc1cYD7uN2YKV/F1Kyl
-         GQ/YqQzAxa0jIpQcA1eFpZ4qONwoHQGfyCVM4UBV9hDKYGti+j9g1YUz7/HLw3VmCXuf
-         zJy/MAhdMnLqwVBANgWc/8bMy/t+RZA1tvjFkKCnN356YzdexgzeKOk352upgLy7oZxE
-         7K/CNfwkd9qgdI+RwcExhSzNxLEkbYcZRMRtb5mAmLgaIcAV3a7he9H4zoiTPigRyhZ5
-         pxIA==
-X-Gm-Message-State: AOAM531oi5Pdoox8lTjG7ZgAV1VbPXJhkPOqM9/BwCebK1cy23xRkT5V
-        DJPJJFitDF9Uqm5nq0D7IdDzr0J00EA=
-X-Google-Smtp-Source: ABdhPJzbmsBk4kOMnyThdwbADw3SdgTf4CORQF62zG2osZ117ScN+2nEjEN00BR+93+8bZWnYXb5vQ==
-X-Received: by 2002:a17:90a:e7c6:b0:1c7:443:3fdf with SMTP id kb6-20020a17090ae7c600b001c704433fdfmr3834381pjb.3.1649753590047;
-        Tue, 12 Apr 2022 01:53:10 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004e1414f0bb1sm39899515pfl.135.2022.04.12.01.53.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 01:53:09 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     lee.jones@linaro.org, gremlin@gremlin.it
-Cc:     gregkh@linuxfoundation.org, mad_soft@inbox.ru,
-        linus.walleij@linaro.org, linux-kernel@vger.kernel.org,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] mfd: fix error check return value of platform_get_irq()
-Date:   Tue, 12 Apr 2022 08:53:05 +0000
-Message-Id: <20220412085305.2533030-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        bh=jmCpHCMje6DqtUs4yqS5xd4MJHXw5XyWXqbNnJZJI6A=;
+        b=UsYJNc91fMgQjc7xl+zwovb6WcXn/nFIEqO9qYyaZ18jn1OhwPSODiyTIC7hdmBJIv
+         uvUI2vE4apWNevHEM1da+Y0lxTth/Fie45klzwwiOS80RUX1WkxcUWgMmRZ8PliKiGcw
+         igfXMdbp8hCAuxnYjwsrVPwx0mhp5UxVyA4fcaiFiZ7o82tDRX2wBtBCY/JFGIPYQ8pB
+         yWj+0M+FM6HcO7TT5keXaxKyCU6I5BJ0Ej2XV6PDGI6M3WhJftR17bXOnKIF8dAm6mIj
+         2scWHAimFWBrPKH2WAr/NaMhLl2cveneEZnvkkD0HO4RtJ0QaBRqoLuOJFiGoGhlGig6
+         Xb+w==
+X-Gm-Message-State: AOAM531D/64/5LjWdO6ERD8u9GGKWOKTkYnHDGc8uPePhb2rq48E25Pn
+        7IKEyz/9Bwqu+0IZUghVsQA=
+X-Google-Smtp-Source: ABdhPJzeUmMzv/rHk/HRe+pbfq6rGYcycw2WpFMc6HJD/OaTFSmf83XNk1ns+oO4R5agAGqulZcr9w==
+X-Received: by 2002:a17:90b:1803:b0:1c7:24c4:ab52 with SMTP id lw3-20020a17090b180300b001c724c4ab52mr3744795pjb.240.1649753631471;
+        Tue, 12 Apr 2022 01:53:51 -0700 (PDT)
+Received: from [192.168.2.225] (93.179.119.173.16clouds.com. [93.179.119.173])
+        by smtp.gmail.com with ESMTPSA id d21-20020a056a0010d500b004fd9ee64134sm37205794pfu.74.2022.04.12.01.53.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 01:53:50 -0700 (PDT)
+Message-ID: <77119299-efb5-5364-44fe-9f71c7c6a4a4@gmail.com>
+Date:   Tue, 12 Apr 2022 16:53:45 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] docs/zh_CN: sync with original text
+ Documentation/vm/page_owner.rst
+Content-Language: en-US
+To:     Haowen Bai <baihaowen@meizu.com>, Alex Shi <alexs@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        siyanteng@loongson.cn
+References: <1649733951-8827-1-git-send-email-baihaowen@meizu.com>
+From:   Alex Shi <seakeel@gmail.com>
+In-Reply-To: <1649733951-8827-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+Cc: Yanteng Si <siyanteng@loongson.cn>
 
-platform_get_irq() return negative value on failure, so null check of
-irq is incorrect. Fix it by comparing whether it is less than zero.
+and please remove the warning in git apply:
 
-Fixes: dcc21cc09e3c ("mfd: Add driver for Atmel Microcontroller on iPaq h3xxx")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- drivers/mfd/ipaq-micro.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Applying: docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+.git/rebase-apply/patch:33: trailing whitespace.
+                符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的 
+warning: 1 line adds whitespace errors.
 
-diff --git a/drivers/mfd/ipaq-micro.c b/drivers/mfd/ipaq-micro.c
-index e92eeeb67a98..4cd5ecc72211 100644
---- a/drivers/mfd/ipaq-micro.c
-+++ b/drivers/mfd/ipaq-micro.c
-@@ -403,7 +403,7 @@ static int __init micro_probe(struct platform_device *pdev)
- 	micro_reset_comm(micro);
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (!irq)
-+	if (irq < 0)
- 		return -EINVAL;
- 	ret = devm_request_irq(&pdev->dev, irq, micro_serial_isr,
- 			       IRQF_SHARED, "ipaq-micro",
--- 
-2.25.1
 
+
+On 4/12/22 11:25, Haowen Bai wrote:
+> As the tools/vm/page_owner_sort added some feature and original text
+> updated, sync the translation of zh_CN.
+>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>  Documentation/translations/zh_CN/vm/page_owner.rst | 54 +++++++++++++++++++++-
+>  1 file changed, 53 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/translations/zh_CN/vm/page_owner.rst b/Documentation/translations/zh_CN/vm/page_owner.rst
+> index 9e951fabba9d..0d4f94034db6 100644
+> --- a/Documentation/translations/zh_CN/vm/page_owner.rst
+> +++ b/Documentation/translations/zh_CN/vm/page_owner.rst
+> @@ -103,14 +103,66 @@ page owner在默认情况下是禁用的。所以，如果你想使用它，你
+>  		-m		按总内存排序
+>  		-p		按pid排序。
+>  		-P		按tgid排序。
+> +		-n		按任务名称排序。
+>  		-r		按内存释放时间排序。
+>  		-s		按堆栈跟踪排序。
+>  		-t		按时间排序（默认）。
+> +		--sort <order>	指定排序顺序。排序语法是 [+|-]key[,[+|-]key[,...]]. 从
+> +						**标准格式说明符**部分选择一个键。"+" 是可选的，因为默认方向是增加数字或字典顺序。
+> +						允许混合使用缩写键和全称键。
+> +
+> +		Examples:
+> +				./page_owner_sort <input> <output> --sort=n,+pid,-tgid
+> +				./page_owner_sort <input> <output> --sort=at
+>  
+>     其它函数:
+>  
+>  	Cull:
+> -		-c		通过比较堆栈跟踪而不是总块来进行剔除。
+> +		--cull <rules>
+> +				指定筛选规则。筛选语法是 key[,key[,...]]。在**标准格式说明符**部分选择一个多字母键
+> +
+> +		<rules> 是逗号分隔列表形式的单个参数，它提供了一种指定单个筛选规则的方法。下面的**标准格式说明
+> +				符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的 
+> +				STANDARD SORT KEYS 部分所述。允许混合使用缩写形式和完整形式的键。
+>  
+> +		Examples:
+> +				./page_owner_sort <input> <output> --cull=stacktrace
+> +				./page_owner_sort <input> <output> --cull=st,pid,name
+> +				./page_owner_sort <input> <output> --cull=n,f
+>  	Filter:
+>  		-f		过滤掉内存已被释放的块的信息。
+> +
+> +	Select:
+> +		--pid <pidlist>		通过 pid 进行选择。这将选择进程 ID 号出现在 <pidlist> 中的块。
+> +		--tgid <tgidlist>	通过 tgid 进行选择。这将选择线程组 ID 号出现在 <tgidlist> 中的块。
+> +		--name <cmdlist>	按任务名称选择。这将选择任务名称出现在 <cmdlist> 中的块。
+> +
+> +		<pidlist>、<tgidlist>、<cmdlist>是逗号分隔列表形式的单参数，它提供了一种指定单个选择规则的方法。
+> +
+> +
+> +		Examples:
+> +				./page_owner_sort <input> <output> --pid=1
+> +				./page_owner_sort <input> <output> --tgid=1,2,3
+> +				./page_owner_sort <input> <output> --name name1,name2
+> +
+> +		标准格式说明符
+> +==========================
+> +--sort 选项:
+> +
+> +	缩写键	全称键		描述
+> +	p		pid			进程 ID
+
+
+Are above lines aligned?
+
+
+Thanks
+
+Alex
+
+> +	tg		tgid		线程组 ID
+> +	n		name		任务名称
+> +	st		stacktrace	页面分配的调用栈
+> +	T		txt			块的全文
+> +	ft		free_ts		页面被释放的时间戳
+> +	at		alloc_ts	页面分配的时间戳
+> +
+> +--curl 选项:
+> +
+> +	缩写键	全称键		描述
+> +	p		pid			进程 ID
+> +	tg		tgid		线程组 ID
+> +	n		name		任务名称
+> +	f		free		该页面是否已被释放
+> +	st		stacktrace	页面分配的调用栈
