@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 041C1C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 350E2C35294
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385819AbiDLIxH (ORCPT
+        id S1385863AbiDLIxW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
+        Tue, 12 Apr 2022 04:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359214AbiDLHmt (ORCPT
+        with ESMTP id S1359267AbiDLHmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72409554BF;
-        Tue, 12 Apr 2022 00:20:30 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E602CCAA;
+        Tue, 12 Apr 2022 00:21:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29E7CB81A8F;
-        Tue, 12 Apr 2022 07:20:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73797C385A1;
-        Tue, 12 Apr 2022 07:20:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE9C1B81B4F;
+        Tue, 12 Apr 2022 07:21:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07CE1C385A1;
+        Tue, 12 Apr 2022 07:21:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748027;
-        bh=u1+eONhLb4ECviN+wgOEn248x+H4smqRChUv5JM4SuY=;
+        s=korg; t=1649748088;
+        bh=9VZAPCzEDAxExx6/TXtYqfHjelitcTwOZOGjOs8mLFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TZqpsO8jAS95IDRKzkUq6JBc/ccjXdDYszGZe9uSCMug3hKv0Pa2jc3wL0/HuikQO
-         9yNk5LOX/HJYjMyUTH53BiVWDaZpqi6EG76C4MTGfE7TaIrPEmZpYC/HCOOgIhLc5K
-         GPESZi5kXgIADF1k4lu5ONPxxV9CtYtIn+QBCG5U=
+        b=D+MYuLagRtWZULzRG19K5+TuhDdI37FWVCsZVN7idANXflCy5ICIPwRw/D/yJzRbq
+         Okynhx4iEuoBKpkcTjuPe6Sl6DJvxItbuRRVZb0AwR6/71dRy9ivPTAA4+q/jGLgsA
+         ftYMEBJnCV8+kO338sJj7ZqZfdD0nCKdrZabVLFw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 5.17 294/343] gpio: Restrict usage of GPIO chip irq members before initialization
-Date:   Tue, 12 Apr 2022 08:31:52 +0200
-Message-Id: <20220412062959.813051346@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Philip Yang <Philip.Yang@amd.com>,
+        Harish Kasiviswanathan <Harish.Kasiviswanathan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 314/343] drm/amdkfd: Fix variable set but not used warning
+Date:   Tue, 12 Apr 2022 08:32:12 +0200
+Message-Id: <20220412063000.386044332@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,94 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreeya Patel <shreeya.patel@collabora.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-commit 5467801f1fcbdc46bc7298a84dbf3ca1ff2a7320 upstream.
+commit 90c44207cdd18091ac9aa7cab8a3e7b0ef00e847 upstream.
 
-GPIO chip irq members are exposed before they could be completely
-initialized and this leads to race conditions.
+All warnings (new ones prefixed by >>):
 
-One such issue was observed for the gc->irq.domain variable which
-was accessed through the I2C interface in gpiochip_to_irq() before
-it could be initialized by gpiochip_add_irqchip(). This resulted in
-Kernel NULL pointer dereference.
+   drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_svm.c: In function
+'svm_range_deferred_list_work':
+>> drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_svm.c:2067:22: warning:
+variable 'p' set but not used [-Wunused-but-set-variable]
+    2067 |  struct kfd_process *p;
+         |
 
-Following are the logs for reference :-
-
-kernel: Call Trace:
-kernel:  gpiod_to_irq+0x53/0x70
-kernel:  acpi_dev_gpio_irq_get_by+0x113/0x1f0
-kernel:  i2c_acpi_get_irq+0xc0/0xd0
-kernel:  i2c_device_probe+0x28a/0x2a0
-kernel:  really_probe+0xf2/0x460
-kernel: RIP: 0010:gpiochip_to_irq+0x47/0xc0
-
-To avoid such scenarios, restrict usage of GPIO chip irq members before
-they are completely initialized.
-
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Fixes: 367c9b0f1b8750 ("drm/amdkfd: Ensure mm remain valid in svm deferred_list work")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-By: Harish Kasiviswanathan <Harish.Kasiviswanathan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpiolib.c      |   19 +++++++++++++++++++
- include/linux/gpio/driver.h |    9 +++++++++
- 2 files changed, 28 insertions(+)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1404,6 +1404,16 @@ static int gpiochip_to_irq(struct gpio_c
- {
- 	struct irq_domain *domain = gc->irq.domain;
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -2066,13 +2066,10 @@ static void svm_range_deferred_list_work
+ 	struct svm_range_list *svms;
+ 	struct svm_range *prange;
+ 	struct mm_struct *mm;
+-	struct kfd_process *p;
  
-+#ifdef CONFIG_GPIOLIB_IRQCHIP
-+	/*
-+	 * Avoid race condition with other code, which tries to lookup
-+	 * an IRQ before the irqchip has been properly registered,
-+	 * i.e. while gpiochip is still being brought up.
-+	 */
-+	if (!gc->irq.initialized)
-+		return -EPROBE_DEFER;
-+#endif
-+
- 	if (!gpiochip_irqchip_irq_valid(gc, offset))
- 		return -ENXIO;
+ 	svms = container_of(work, struct svm_range_list, deferred_list_work);
+ 	pr_debug("enter svms 0x%p\n", svms);
  
-@@ -1593,6 +1603,15 @@ static int gpiochip_add_irqchip(struct g
- 
- 	acpi_gpiochip_request_interrupts(gc);
- 
-+	/*
-+	 * Using barrier() here to prevent compiler from reordering
-+	 * gc->irq.initialized before initialization of above
-+	 * GPIO chip irq members.
-+	 */
-+	barrier();
-+
-+	gc->irq.initialized = true;
-+
- 	return 0;
- }
- 
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -219,6 +219,15 @@ struct gpio_irq_chip {
- 	bool per_parent_data;
- 
- 	/**
-+	 * @initialized:
-+	 *
-+	 * Flag to track GPIO chip irq member's initialization.
-+	 * This flag will make sure GPIO chip irq members are not used
-+	 * before they are initialized.
-+	 */
-+	bool initialized;
-+
-+	/**
- 	 * @init_hw: optional routine to initialize hardware before
- 	 * an IRQ chip will be added. This is quite useful when
- 	 * a particular driver wants to clear IRQ related registers
+-	p = container_of(svms, struct kfd_process, svms);
+-
+ 	spin_lock(&svms->deferred_list_lock);
+ 	while (!list_empty(&svms->deferred_range_list)) {
+ 		prange = list_first_entry(&svms->deferred_range_list,
 
 
