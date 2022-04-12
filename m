@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 932D2C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B93C3525B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354164AbiDLH0G (ORCPT
+        id S1354626AbiDLH0c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
+        Tue, 12 Apr 2022 03:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351633AbiDLHMq (ORCPT
+        with ESMTP id S1351682AbiDLHMt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7142286CD;
-        Mon, 11 Apr 2022 23:50:51 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F4A15A0F;
+        Mon, 11 Apr 2022 23:51:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91B2FB81B35;
-        Tue, 12 Apr 2022 06:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F298EC385A1;
-        Tue, 12 Apr 2022 06:50:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FE706149D;
+        Tue, 12 Apr 2022 06:51:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCA4C385A1;
+        Tue, 12 Apr 2022 06:51:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746249;
-        bh=J1aS2TvbmzFAHejZI/i7umfoY7zFKn7+Ucs2BIKv+RA=;
+        s=korg; t=1649746292;
+        bh=AY9XliJqhQHz3+D1GqTzQinJSnUeCbZ2PTPqsNyVaYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JvyCF1skvRGQ6WUk0yoNf2jd8qRfWUha1zDgZTZCKrN0DmbgOTFlUm/MVjbJjlV6w
-         ZTJtP95jDtsv95USjgkWSL5WoiFKiF0Z4cSioi3Qx4RooA2Gaezllz3Xz5NuYv/FN1
-         yiS2yVWY70IFB6MfoybzZGXFDCJ4SOn2WI78qSDc=
+        b=agMODraYXgVdxVMQlLzmVSblZ2vTmVrujzgM6RsYuHC8ZacFVE04W0AGW5K3iO07E
+         +RfezlH7sZFIwCXRsS3QSLP9RTvLiB2YDe4E60JqdouLgXBOS7BN4sPb3dBOwX1SJP
+         vF765D+XKff288Wnk/KrUykPTPmtRjI7mXSY+M/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Avri Altman <Avri.Altman@wdc.com>,
-        Michael Wu <michael@allwinnertech.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 213/277] mmc: core: Fixup support for writeback-cache for eMMC and SD
-Date:   Tue, 12 Apr 2022 08:30:16 +0200
-Message-Id: <20220412062948.204655447@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 180/277] dpaa2-ptp: Fix refcount leak in dpaa2_ptp_probe
+Date:   Tue, 12 Apr 2022 08:29:43 +0200
+Message-Id: <20220412062947.245289421@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,73 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Wu <michael@allwinnertech.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 08ebf903af57cda6d773f3dd1671b64f73b432b8 upstream.
+[ Upstream commit 2b04bd4f03bba021959ca339314f6739710f0954 ]
 
-During the card initialization process, the mmc core checks whether the
-eMMC/SD card supports an internal writeback-cache and then enables it
-inside the card.
+This node pointer is returned by of_find_compatible_node() with
+refcount incremented. Calling of_node_put() to aovid the refcount leak.
 
-Unfortunately, this isn't according to what the mmc core reports to the
-upper block layer. Instead, the writeback-cache support with REQ_FLUSH and
-REQ_FUA, are being enabled depending on whether the host supports the CMD23
-(MMC_CAP_CMD23) and whether an eMMC supports the reliable-write command.
-
-This is wrong and it may also sound awkward. In fact, it's a remnant
-from when both eMMC/SD cards didn't have dedicated commands/support to
-control the internal writeback-cache. In other words, it was the best we
-could do at that point in time.
-
-To fix the problem, but also without breaking backwards compatibility,
-let's align the REQ_FLUSH support with whether the writeback-cache became
-successfully enabled - for both eMMC and SD cards.
-
-Cc: stable@kernel.org
-Fixes: 881d1c25f765 ("mmc: core: Add cache control for eMMC4.5 device")
-Fixes: 130206a615a9 ("mmc: core: Add support for cache ctrl for SD cards")
-Depends-on: 97fce126e279 ("mmc: block: Issue a cache flush only when it's enabled")
-Reviewed-by: Avri Altman <Avri.Altman@wdc.com>
-Signed-off-by: Michael Wu <michael@allwinnertech.com>
-Link: https://lore.kernel.org/r/20220331073223.106415-1-michael@allwinnertech.com
-[Ulf: Re-wrote the commit message]
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d346c9e86d86 ("dpaa2-ptp: reuse ptp_qoriq driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220404125336.13427-1-linmq006@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/block.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -2376,6 +2376,8 @@ static struct mmc_blk_data *mmc_blk_allo
- 	struct mmc_blk_data *md;
- 	int devidx, ret;
- 	char cap_str[10];
-+	bool cache_enabled = false;
-+	bool fua_enabled = false;
- 
- 	devidx = ida_simple_get(&mmc_blk_ida, 0, max_devices, GFP_KERNEL);
- 	if (devidx < 0) {
-@@ -2457,13 +2459,17 @@ static struct mmc_blk_data *mmc_blk_allo
- 			md->flags |= MMC_BLK_CMD23;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+index 32b5faa87bb8..208a3459f2e2 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+@@ -168,7 +168,7 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
+ 	base = of_iomap(node, 0);
+ 	if (!base) {
+ 		err = -ENOMEM;
+-		goto err_close;
++		goto err_put;
  	}
  
--	if (mmc_card_mmc(card) &&
--	    md->flags & MMC_BLK_CMD23 &&
-+	if (md->flags & MMC_BLK_CMD23 &&
- 	    ((card->ext_csd.rel_param & EXT_CSD_WR_REL_PARAM_EN) ||
- 	     card->ext_csd.rel_sectors)) {
- 		md->flags |= MMC_BLK_REL_WR;
--		blk_queue_write_cache(md->queue.queue, true, true);
-+		fua_enabled = true;
-+		cache_enabled = true;
- 	}
-+	if (mmc_cache_enabled(card->host))
-+		cache_enabled  = true;
-+
-+	blk_queue_write_cache(md->queue.queue, cache_enabled, fua_enabled);
- 
- 	string_get_size((u64)size, 512, STRING_UNITS_2,
- 			cap_str, sizeof(cap_str));
+ 	err = fsl_mc_allocate_irqs(mc_dev);
+@@ -212,6 +212,8 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
+ 	fsl_mc_free_irqs(mc_dev);
+ err_unmap:
+ 	iounmap(base);
++err_put:
++	of_node_put(node);
+ err_close:
+ 	dprtc_close(mc_dev->mc_io, 0, mc_dev->mc_handle);
+ err_free_mcp:
+-- 
+2.35.1
+
 
 
