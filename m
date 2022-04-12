@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C999C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B012C3527C
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358909AbiDLJUT (ORCPT
+        id S1359860AbiDLJUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
+        Tue, 12 Apr 2022 05:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357004AbiDLHjj (ORCPT
+        with ESMTP id S1356949AbiDLHjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5309915708;
-        Tue, 12 Apr 2022 00:10:46 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4A74B1C4;
+        Tue, 12 Apr 2022 00:10:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BECF1B81B55;
-        Tue, 12 Apr 2022 07:10:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07FEAC385A1;
-        Tue, 12 Apr 2022 07:10:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B222E616AB;
+        Tue, 12 Apr 2022 07:10:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFCACC385A1;
+        Tue, 12 Apr 2022 07:10:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747443;
-        bh=JQ4CIo/B9TfQlgpiYFcfzmhMll5JVvDMZabjKybC0oo=;
+        s=korg; t=1649747435;
+        bh=CBy5DzSt/DDqfNIg2zikiyymZmnWiRhZbtSG9wmBV8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GVZsYFyTDA6BkmU6FwozgUvISvOvTlqlOIHb5panTBj1VmqrkI3HHdnfqNxOlt8tW
-         H4tcvdmTr/5qnVG+fHYI2JGEkZK6/MLiMEfO2DcpB5tpYiCdO1jy+v24Q4F5+FLb2A
-         cusdPmlZEx/EiwRjtCMIodQR7huv8JDfR82Wngys=
+        b=PW3gbfiS4SEcNbvqVmItBM3FPJYlrv/qyU3lCE8gAWxppcZh8fs/cu/eCQQMDwisq
+         6jTicJu+vYV4KI4LmDMAk3649Wlt5PdZYVuWOWz3xvg7B7gpIi9z3m84RVyFs0G11V
+         EzaaRkNd765T+8zEFOVrrrW4aQY8dfR+HgAczAMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zou Wei <zou_wei@huawei.com>,
-        Kevin Tang <kevin3.tang@gmail.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 081/343] drm/sprd: check the platform_get_resource() return value
-Date:   Tue, 12 Apr 2022 08:28:19 +0200
-Message-Id: <20220412062953.438250061@linuxfoundation.org>
+Subject: [PATCH 5.17 079/343] power: supply: axp288-charger: Set Vhold to 4.4V
+Date:   Tue, 12 Apr 2022 08:28:17 +0200
+Message-Id: <20220412062953.380604209@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,60 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Tang <kevin3.tang@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 73792e6e66be1225837cc1a40f1e39b1d077751c ]
+[ Upstream commit 5ac121b81b4051e7fc83d5b3456a5e499d5bd147 ]
 
-platform_get_resource() may fail and return NULL, so check it's value
-before using it.
+The AXP288's recommended and factory default Vhold value (minimum
+input voltage below which the input current draw will be reduced)
+is 4.4V. This lines up with other charger IC's such as the TI
+bq2419x/bq2429x series which use 4.36V or 4.44V.
 
-Reported-by: Zou Wei <zou_wei@huawei.com>
-Signed-off-by: Kevin Tang <kevin3.tang@gmail.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/all/20220117084156.9338-1-kevin3.tang@gmail.com
+For some reason some BIOS-es initialize Vhold to 4.6V or even 4.7V
+which combined with the typical voltage drop over typically low
+wire gauge micro-USB cables leads to the input-current getting
+capped below 1A (with a 2A capable dedicated charger) based on Vhold.
 
-v1 -> v2:
-- new patch
+This leads to slow charging, or even to the device slowly discharging
+if the device is in heavy use.
 
+As the Linux AXP288 drivers use the builtin BC1.2 charger detection
+and send the input-current-limit according to the detected charger
+there really is no reason not to use the recommended 4.4V Vhold.
+
+Set Vhold to 4.4V to fix the slow charging issue on various devices.
+
+There is one exception, the special-case of the HP X2 2-in-1s which
+combine this BC1.2 capable PMIC with a Type-C port and a 5V/3A factory
+provided charger with a Type-C plug which does not do BC1.2. These
+have their input-current-limit hardcoded to 3A (like under Windows)
+and use a higher Vhold on purpose to limit the current when used
+with other chargers. To avoid touching Vhold on these HP X2 laptops
+the code setting Vhold is added to an else branch of the if checking
+for these models.
+
+Note this also fixes the sofar unused VBUS_ISPOUT_VHOLD_SET_MASK
+define, which was wrong.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sprd/sprd_dpu.c | 5 +++++
- drivers/gpu/drm/sprd/sprd_dsi.c | 5 +++++
- 2 files changed, 10 insertions(+)
+ drivers/power/supply/axp288_charger.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/sprd/sprd_dpu.c b/drivers/gpu/drm/sprd/sprd_dpu.c
-index 06a3414ee43a..1637203ea103 100644
---- a/drivers/gpu/drm/sprd/sprd_dpu.c
-+++ b/drivers/gpu/drm/sprd/sprd_dpu.c
-@@ -790,6 +790,11 @@ static int sprd_dpu_context_init(struct sprd_dpu *dpu,
- 	int ret;
+diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
+index ec41f6cd3f93..c498e62ab4e2 100644
+--- a/drivers/power/supply/axp288_charger.c
++++ b/drivers/power/supply/axp288_charger.c
+@@ -42,11 +42,11 @@
+ #define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
+ #define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
+ #define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
+-#define VBUS_ISPOUT_VHOLD_SET_MASK	0x31
++#define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
+ #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
+ #define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
+ #define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
+-#define VBUS_ISPOUT_VHOLD_SET_4300MV	0x3	/* 4300mV */
++#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
+ #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(dev, "failed to get I/O resource\n");
-+		return -EINVAL;
-+	}
-+
- 	ctx->base = devm_ioremap(dev, res->start, resource_size(res));
- 	if (!ctx->base) {
- 		dev_err(dev, "failed to map dpu registers\n");
-diff --git a/drivers/gpu/drm/sprd/sprd_dsi.c b/drivers/gpu/drm/sprd/sprd_dsi.c
-index 911b3cddc264..12b67a5d5923 100644
---- a/drivers/gpu/drm/sprd/sprd_dsi.c
-+++ b/drivers/gpu/drm/sprd/sprd_dsi.c
-@@ -907,6 +907,11 @@ static int sprd_dsi_context_init(struct sprd_dsi *dsi,
- 	struct resource *res;
+ #define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
+@@ -769,6 +769,16 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
+ 		ret = axp288_charger_vbus_path_select(info, true);
+ 		if (ret < 0)
+ 			return ret;
++	} else {
++		/* Set Vhold to the factory default / recommended 4.4V */
++		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
++		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
++					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
++		if (ret < 0) {
++			dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
++				AXP20X_VBUS_IPSOUT_MGMT, ret);
++			return ret;
++		}
+ 	}
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(dev, "failed to get I/O resource\n");
-+		return -EINVAL;
-+	}
-+
- 	ctx->base = devm_ioremap(dev, res->start, resource_size(res));
- 	if (!ctx->base) {
- 		drm_err(dsi->drm, "failed to map dsi host registers\n");
+ 	/* Read current charge voltage and current limit */
 -- 
 2.35.1
 
