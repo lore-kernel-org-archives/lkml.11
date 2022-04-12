@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0FEC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D08EC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386451AbiDLI6J (ORCPT
+        id S1386408AbiDLI5z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        Tue, 12 Apr 2022 04:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359259AbiDLHmw (ORCPT
+        with ESMTP id S1359386AbiDLHm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4DC2B253;
-        Tue, 12 Apr 2022 00:21:15 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44EB2CC92;
+        Tue, 12 Apr 2022 00:22:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B7B6153F;
-        Tue, 12 Apr 2022 07:21:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A239C385A1;
-        Tue, 12 Apr 2022 07:21:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BF19B81B60;
+        Tue, 12 Apr 2022 07:22:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA537C385A1;
+        Tue, 12 Apr 2022 07:21:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748074;
-        bh=qVZQZO1froVUTZ6TwlksDchw3cHLrw0uS/UZVNIs+5k=;
+        s=korg; t=1649748119;
+        bh=oVLVH4dSiXl6ZrohuS/jFnrjBXXcyG7ewltwzTF8/vg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WYOlBrW5XwLS6TEGR6KFD4gikTUrVl10RnYBY8RheGegig0AQGXqDjHuz7ho3xH/S
-         JCtv/XAA4opxP5/LaPNsSPcxG1Tv7KF0Tq0SRzZ7xoveOrjW21S9FCYMCbt84ilTim
-         RPyPo0m5HcUM/mFP4QJl897aI4JcRU7z+Zg/OTuA=
+        b=B4xkqMnbkuJZNxSwkicNWWjdhRWBPJseJrp3DOrT26MpLBDWM2y9Ax5BT2Tckphp6
+         +K3vOnkScPRtLz4A8Nkyfhe0SFVBo0VuNblf1WAKXRGACZ63o+THWAsDaiJHK52VVT
+         ZFu3c2yGmj53OSf9YnC3ai4HQmM3k7dYyPn6+RL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.17 309/343] drm/nouveau/pmu: Add missing callbacks for Tegra devices
-Date:   Tue, 12 Apr 2022 08:32:07 +0200
-Message-Id: <20220412063000.240457912@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 286/343] btrfs: avoid defragging extents whose next extents are not targets
+Date:   Tue, 12 Apr 2022 08:31:44 +0200
+Message-Id: <20220412062959.581114826@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,69 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karol Herbst <kherbst@redhat.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 38d4e5cf5b08798f093374e53c2f4609d5382dd5 upstream.
+commit 75a36a7d3ea904cef2e5b56af0c58cc60dcf947a upstream.
 
-Fixes a crash booting on those platforms with nouveau.
+[BUG]
+There is a report that autodefrag is defragging single sector, which
+is completely waste of IO, and no help for defragging:
 
-Fixes: 4cdd2450bf73 ("drm/nouveau/pmu/gm200-: use alternate falcon reset sequence")
-Cc: Ben Skeggs <bskeggs@redhat.com>
-Cc: Karol Herbst <kherbst@redhat.com>
-Cc: dri-devel@lists.freedesktop.org
-Cc: nouveau@lists.freedesktop.org
-Cc: <stable@vger.kernel.org> # v5.17+
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220322124800.2605463-1-kherbst@redhat.com
+   btrfs-cleaner-808 defrag_one_locked_range: root=256 ino=651122 start=0 len=4096
+
+[CAUSE]
+In defrag_collect_targets(), we check if the current range (A) can be merged
+with next one (B).
+
+If mergeable, we will add range A into target for defrag.
+
+However there is a catch for autodefrag, when checking mergeability
+against range B, we intentionally pass 0 as @newer_than, hoping to get a
+higher chance to merge with the next extent.
+
+But in the next iteration, range B will looked up by defrag_lookup_extent(),
+with non-zero @newer_than.
+
+And if range B is not really newer, it will rejected directly, causing
+only range A being defragged, while we expect to defrag both range A and
+B.
+
+[FIX]
+Since the root cause is the difference in check condition of
+defrag_check_next_extent() and defrag_collect_targets(), we fix it by:
+
+1. Pass @newer_than to defrag_check_next_extent()
+2. Pass @extent_thresh to defrag_check_next_extent()
+
+This makes the check between defrag_collect_targets() and
+defrag_check_next_extent() more consistent.
+
+While there is still some minor difference, the remaining checks are
+focus on runtime flags like writeback/delalloc, which are mostly
+transient and safe to be checked only in defrag_collect_targets().
+
+Link: https://github.com/btrfs/linux/issues/423#issuecomment-1066981856
+CC: stable@vger.kernel.org # 5.16+
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c |    1 +
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c |    2 +-
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c |    1 +
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h  |    1 +
- 4 files changed, 4 insertions(+), 1 deletion(-)
+ fs/btrfs/ioctl.c |   20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
-@@ -216,6 +216,7 @@ gm20b_pmu = {
- 	.intr = gt215_pmu_intr,
- 	.recv = gm20b_pmu_recv,
- 	.initmsg = gm20b_pmu_initmsg,
-+	.reset = gf100_pmu_reset,
- };
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1215,7 +1215,7 @@ static u32 get_extent_max_capacity(const
+ }
  
- #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
-@@ -23,7 +23,7 @@
-  */
- #include "priv.h"
- 
--static void
-+void
- gp102_pmu_reset(struct nvkm_pmu *pmu)
+ static bool defrag_check_next_extent(struct inode *inode, struct extent_map *em,
+-				     bool locked)
++				     u32 extent_thresh, u64 newer_than, bool locked)
  {
- 	struct nvkm_device *device = pmu->subdev.device;
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
-@@ -83,6 +83,7 @@ gp10b_pmu = {
- 	.intr = gt215_pmu_intr,
- 	.recv = gm20b_pmu_recv,
- 	.initmsg = gm20b_pmu_initmsg,
-+	.reset = gp102_pmu_reset,
- };
+ 	struct extent_map *next;
+ 	bool ret = false;
+@@ -1225,11 +1225,12 @@ static bool defrag_check_next_extent(str
+ 		return false;
  
- #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
-@@ -41,6 +41,7 @@ int gt215_pmu_send(struct nvkm_pmu *, u3
+ 	/*
+-	 * We want to check if the next extent can be merged with the current
+-	 * one, which can be an extent created in a past generation, so we pass
+-	 * a minimum generation of 0 to defrag_lookup_extent().
++	 * Here we need to pass @newer_then when checking the next extent, or
++	 * we will hit a case we mark current extent for defrag, but the next
++	 * one will not be a target.
++	 * This will just cause extra IO without really reducing the fragments.
+ 	 */
+-	next = defrag_lookup_extent(inode, em->start + em->len, 0, locked);
++	next = defrag_lookup_extent(inode, em->start + em->len, newer_than, locked);
+ 	/* No more em or hole */
+ 	if (!next || next->block_start >= EXTENT_MAP_LAST_BYTE)
+ 		goto out;
+@@ -1241,6 +1242,13 @@ static bool defrag_check_next_extent(str
+ 	 */
+ 	if (next->len >= get_extent_max_capacity(em))
+ 		goto out;
++	/* Skip older extent */
++	if (next->generation < newer_than)
++		goto out;
++	/* Also check extent size */
++	if (next->len >= extent_thresh)
++		goto out;
++
+ 	ret = true;
+ out:
+ 	free_extent_map(next);
+@@ -1446,7 +1454,7 @@ static int defrag_collect_targets(struct
+ 			goto next;
  
- bool gf100_pmu_enabled(struct nvkm_pmu *);
- void gf100_pmu_reset(struct nvkm_pmu *);
-+void gp102_pmu_reset(struct nvkm_pmu *pmu);
- 
- void gk110_pmu_pgob(struct nvkm_pmu *, bool);
+ 		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
+-							  locked);
++						extent_thresh, newer_than, locked);
+ 		if (!next_mergeable) {
+ 			struct defrag_target_range *last;
  
 
 
