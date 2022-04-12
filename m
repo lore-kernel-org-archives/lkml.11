@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E178C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239486AbiDLGwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
+        id S1349482AbiDLGwX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350709AbiDLGrl (ORCPT
+        with ESMTP id S1350875AbiDLGsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:47:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464D424947;
-        Mon, 11 Apr 2022 23:39:18 -0700 (PDT)
+        Tue, 12 Apr 2022 02:48:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DFC25585;
+        Mon, 11 Apr 2022 23:39:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA53AB81B29;
-        Tue, 12 Apr 2022 06:39:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CE88C385A1;
-        Tue, 12 Apr 2022 06:39:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF190618DC;
+        Tue, 12 Apr 2022 06:39:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBE36C385A1;
+        Tue, 12 Apr 2022 06:39:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745555;
-        bh=QhsvxtWGhK5wtgUU105j/Ut1BdLJxJR/yoBWlg8U0ts=;
+        s=korg; t=1649745569;
+        bh=596DBPnwHs2YqO+iTvAQw1ZottEYdxgsk57woNRTF7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fw8gNdjdJhuTiy33vv2V8ZpBxlEr2ZsS7jJajGTw4x23fhHtCW7my7pr719sjvs9r
-         vibLlQl5yR3qVyCAzAPbSlocT9zmnQ1f167PElDJIs3QTFGtdXRahPGLR4QGTcf056
-         k0a5DuFqBKL8KuZJCkqMxcvtHQTehfkX9pTD8eWM=
+        b=NA2zMNMSys+VeIeeJM/qlQeQqwPuOd3i8yl1qnesX4AaFzgVUiHhP6uJKv71CKTsm
+         2vFNoipSFL3ihq4Y1n4ozkDWc4/Wy0ngurS6sYMS3bg0X5krHwWffi5RqG5/2I3YIE
+         RKfN5iePaE9wnZjDIMRpmbJjN3q0HzdJTsg2bg3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yann Gautier <yann.gautier@foss.st.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.10 136/171] mmc: mmci: stm32: correctly check all elements of sg list
-Date:   Tue, 12 Apr 2022 08:30:27 +0200
-Message-Id: <20220412062931.822488453@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 141/171] io_uring: fix race between timeout flush and removal
+Date:   Tue, 12 Apr 2022 08:30:32 +0200
+Message-Id: <20220412062931.969405079@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -48,46 +48,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yann Gautier <yann.gautier@foss.st.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 0d319dd5a27183b75d984e3dc495248e59f99334 upstream.
+commit e677edbcabee849bfdd43f1602bccbecf736a646 upstream.
 
-Use sg and not data->sg when checking sg list elements. Else only the
-first element alignment is checked.
-The last element should be checked the same way, for_each_sg already set
-sg to sg_next(sg).
+io_flush_timeouts() assumes the timeout isn't in progress of triggering
+or being removed/canceled, so it unconditionally removes it from the
+timeout list and attempts to cancel it.
 
-Fixes: 46b723dd867d ("mmc: mmci: add stm32 sdmmc variant")
-Cc: stable@vger.kernel.org
-Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
-Link: https://lore.kernel.org/r/20220317111944.116148-2-yann.gautier@foss.st.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Leave it on the list and let the normal timeout cancelation take care
+of it.
+
+Cc: stable@vger.kernel.org # 5.5+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/mmci_stm32_sdmmc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/io_uring.c |   15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
---- a/drivers/mmc/host/mmci_stm32_sdmmc.c
-+++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
-@@ -62,8 +62,8 @@ static int sdmmc_idma_validate_data(stru
- 	 * excepted the last element which has no constraint on idmasize
- 	 */
- 	for_each_sg(data->sg, sg, data->sg_len - 1, i) {
--		if (!IS_ALIGNED(data->sg->offset, sizeof(u32)) ||
--		    !IS_ALIGNED(data->sg->length, SDMMC_IDMA_BURST)) {
-+		if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
-+		    !IS_ALIGNED(sg->length, SDMMC_IDMA_BURST)) {
- 			dev_err(mmc_dev(host->mmc),
- 				"unaligned scatterlist: ofst:%x length:%d\n",
- 				data->sg->offset, data->sg->length);
-@@ -71,7 +71,7 @@ static int sdmmc_idma_validate_data(stru
- 		}
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -1556,6 +1556,7 @@ static void __io_queue_deferred(struct i
+ 
+ static void io_flush_timeouts(struct io_ring_ctx *ctx)
+ {
++	struct io_kiocb *req, *tmp;
+ 	u32 seq;
+ 
+ 	if (list_empty(&ctx->timeout_list))
+@@ -1563,10 +1564,8 @@ static void io_flush_timeouts(struct io_
+ 
+ 	seq = ctx->cached_cq_tail - atomic_read(&ctx->cq_timeouts);
+ 
+-	do {
++	list_for_each_entry_safe(req, tmp, &ctx->timeout_list, timeout.list) {
+ 		u32 events_needed, events_got;
+-		struct io_kiocb *req = list_first_entry(&ctx->timeout_list,
+-						struct io_kiocb, timeout.list);
+ 
+ 		if (io_is_timeout_noseq(req))
+ 			break;
+@@ -1583,9 +1582,8 @@ static void io_flush_timeouts(struct io_
+ 		if (events_got < events_needed)
+ 			break;
+ 
+-		list_del_init(&req->timeout.list);
+ 		io_kill_timeout(req, 0);
+-	} while (!list_empty(&ctx->timeout_list));
++	}
+ 
+ 	ctx->cq_last_tm_flush = seq;
+ }
+@@ -5639,6 +5637,7 @@ static int io_timeout_prep(struct io_kio
+ 	else
+ 		data->mode = HRTIMER_MODE_REL;
+ 
++	INIT_LIST_HEAD(&req->timeout.list);
+ 	hrtimer_init(&data->timer, CLOCK_MONOTONIC, data->mode);
+ 	return 0;
+ }
+@@ -6282,12 +6281,12 @@ static enum hrtimer_restart io_link_time
+ 	if (!list_empty(&req->link_list)) {
+ 		prev = list_entry(req->link_list.prev, struct io_kiocb,
+ 				  link_list);
+-		if (refcount_inc_not_zero(&prev->refs))
+-			list_del_init(&req->link_list);
+-		else
++		list_del_init(&req->link_list);
++		if (!refcount_inc_not_zero(&prev->refs))
+ 			prev = NULL;
  	}
  
--	if (!IS_ALIGNED(data->sg->offset, sizeof(u32))) {
-+	if (!IS_ALIGNED(sg->offset, sizeof(u32))) {
- 		dev_err(mmc_dev(host->mmc),
- 			"unaligned last scatterlist: ofst:%x length:%d\n",
- 			data->sg->offset, data->sg->length);
++	list_del(&req->timeout.list);
+ 	spin_unlock_irqrestore(&ctx->completion_lock, flags);
+ 
+ 	if (prev) {
 
 
