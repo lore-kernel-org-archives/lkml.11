@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95445C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF052C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:59:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243342AbiDLA53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
+        id S1344026AbiDLA5n (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245490AbiDLAzd (ORCPT
+        with ESMTP id S234752AbiDLAzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:55:33 -0400
+        Mon, 11 Apr 2022 20:55:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F102E02D;
-        Mon, 11 Apr 2022 17:49:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9675815FCA;
+        Mon, 11 Apr 2022 17:49:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9418BB815C8;
-        Tue, 12 Apr 2022 00:49:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D89BC385A3;
-        Tue, 12 Apr 2022 00:49:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C532B819B4;
+        Tue, 12 Apr 2022 00:49:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D24AC385A3;
+        Tue, 12 Apr 2022 00:49:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724549;
-        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nDR5SuQUCau+RnZSKuYyirNv6zWIcvJ5PjMdE0UhQIRLODwwkd6Q+IAO9betuC4SP
-         x8m7sdhxiJCyBuw3VEOnjIppn6iUjTdH+zzaHbRnF4fokQjYvYys/DB3b5NbjmYrvm
-         hgS2+Gmmr5fZdVpNZC5igY90ZlrMT2qx0DxXnXblgvaNxTH7QQ5YuuhunsGbI7L6MC
-         f45z68azfeydBwmYhv2MqmRLAhxd5/hasuAyGdc1USdViNzE99oJZi2Uit7As2jMir
-         MgIHt9tHJWXjgP3PwD2NDAL4O66ewTzxOnNlGpzpZecN/3BeRWya+fCiKd0iNjm5g+
-         afdkqVqQiTzmg==
+        s=k20201202; t=1649724552;
+        bh=IE8kZKRy47IvvMkoGbDFPP2fqcW3TlmKejad7IWGKfk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rNkgRU1lZyHOiL9qlJAKOAyXJWrzJB1IO9P2qUTyg9cCj6JhF9+5Yu+bl14aTX08H
+         8T/GfU0LMcZ+ZNWnaSNXppxmbn1MhRf74HEvX58bqHDxKIAs5gNFSyhyNRx73gdOVE
+         Kpnscut2B16jd79X1bynxOwx5WRtfvdq9LFCfji+PHtH1yp3AaxptidxuZV9sRumbS
+         ff/lQb+DGwRkUR6zSZ01pR0qweCrYbU5ZEpZ9MLzr/LRRYIVV/bLXRpCfUSYfnwG89
+         O61G7H8dDFLzFe5WvKbl6OYEL7Gv+s9nBAK0oonZYPCqt52AszGqdRYJqTYlqZBdAT
+         gT8/F6FOxYiYA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 01/30] drm/amd: Add USBC connector ID
-Date:   Mon, 11 Apr 2022 20:48:35 -0400
-Message-Id: <20220412004906.350678-1-sashal@kernel.org>
+Cc:     Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 03/30] btrfs: do not warn for free space inode in cow_file_range
+Date:   Mon, 11 Apr 2022 20:48:37 -0400
+Message-Id: <20220412004906.350678-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
+References: <20220412004906.350678-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,33 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
+[ Upstream commit a7d16d9a07bbcb7dcd5214a1bea75c808830bc0d ]
 
-[Why&How] Add a dedicated AMDGPU specific ID for use with
-newer ASICs that support USB-C output
+This is a long time leftover from when I originally added the free space
+inode, the point was to catch cases where we weren't honoring the NOCOW
+flag.  However there exists a race with relocation, if we allocate our
+free space inode in a block group that is about to be relocated, we
+could trigger the COW path before the relocation has the opportunity to
+find the extents and delete the free space cache.  In production where
+we have auto-relocation enabled we're seeing this WARN_ON_ONCE() around
+5k times in a 2 week period, so not super common but enough that it's at
+the top of our metrics.
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+We're properly handling the error here, and with us phasing out v1 space
+cache anyway just drop the WARN_ON_ONCE.
+
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/inode.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-index 5b393622f592..a0f0a17e224f 100644
---- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-+++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-@@ -119,6 +119,7 @@
- #define CONNECTOR_OBJECT_ID_eDP                   0x14
- #define CONNECTOR_OBJECT_ID_MXM                   0x15
- #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
-+#define CONNECTOR_OBJECT_ID_USBC                  0x17
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 1d9262a35473..00eccbd25e5c 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -995,7 +995,6 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
+ 	int ret = 0;
  
- /* deleted */
- 
+ 	if (btrfs_is_free_space_inode(inode)) {
+-		WARN_ON_ONCE(1);
+ 		ret = -EINVAL;
+ 		goto out_unlock;
+ 	}
 -- 
 2.35.1
 
