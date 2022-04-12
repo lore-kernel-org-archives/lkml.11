@@ -2,82 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 402EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:02:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344632AbiDLEDp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 00:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S233438AbiDLEE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 00:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239821AbiDLECd (ORCPT
+        with ESMTP id S1345752AbiDLEEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 00:02:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84B02DD72;
-        Mon, 11 Apr 2022 21:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83412B81B14;
-        Tue, 12 Apr 2022 04:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 267D1C385AE;
-        Tue, 12 Apr 2022 04:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649736015;
-        bh=34Ml6GzHkj3zF6xanNUVROhywpBQ0j8Ex47ZQ60nfSM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W1CNhPWJI82u3kxt3ANsWQG/V0eR/Dio/ClKBz1hrLZMnRddgpRpC25BR7ia4SrjN
-         OC62XrjJsZcqCfU5+vBQjhJ7ubpgH6BJQ9PIQ0x9eh1tMpbJ4oWUVZEpL2sqvqVkvP
-         HziM1hKBdV2/AXVXbaNwo47C92PpNgaHIlWPjLl21PLkn2BubZKo8cvgvbqswAiso9
-         PQCeIH3DKIyLDa03iZxTCRziRNXkYlYE4JIgHUYM3iAtYviPlfRDD2rW9ANIL6hJyK
-         GseXEBlTko9GOVmCMi/1brKa8N0nMZMs1DgN5Q6YZjg2qyAc1EmVkXd+kSnz84LtGC
-         Fok4wV9dNoqyA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 09A2FE8DBD1;
-        Tue, 12 Apr 2022 04:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 12 Apr 2022 00:04:04 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97C833A0F
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 21:01:27 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id y19so3313934qvk.5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 21:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=4NRq9wUKR0Pv6QYoD5yUdpYhNg4tlKq7MmYRIVRzyYg=;
+        b=QzCANZSdJ5P0+QrETcEAa6nqQQp1jd5ilnjCvFDnDT7sdPxYaJ10EojfQFQAg69hNZ
+         pc425I6h5uZoTbN4CZVHIRffDzOOpuJennuxofR1caDO8EZAE4n/XKf8cRtK/VKaSjIA
+         uVzhZ2dKVH+8iSdQvlWf0yBGRTe4KFfS/dpFO46TdYcVOtuUYXz/a5YXgzGPXWMeHkv9
+         V20UJ6t8nLZvj253txKvxL2aMaAB616KPMuEMfUeg8WpYHCfXqnJG8dkVr09Eh8edyjW
+         f/wQweIS/rbsNs74SDT+yfLu04AAa8W1EUknm3+hS4og/ZPN8eqVz9oB6XGqfkwQiEcB
+         qggQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4NRq9wUKR0Pv6QYoD5yUdpYhNg4tlKq7MmYRIVRzyYg=;
+        b=XvwA60HQFwUtqSl3XkP1n9Hs78AFaYRgFpC8MJcmWnu3kLwW5mc4CJVWV1hj/IIXod
+         oyfOnRCdlFaXsDDmXB5wMKD5FiIrl8tiUTUL7koMlj11h61a6/ocSEpaJQwWm0SZW9AZ
+         MUf/z+fuzVd4KQgyacEGAnEkM+sa6ZRUvcO9wx1iZX1lE7pbYsTcEhjRPXZ9eeh9kbL9
+         Upi5qIHL1bRa0ClY/K9rgu3pP8r88UbYGv+Wumvryqww5UHK+S6hbwZs++nkN2gzM75k
+         9Fh0LyIHQX+IjCyRxiBWruX/CcmSL4m+MSOKE89RfddHfyZ41MW8V1rebZ3CIc6hYwAg
+         DNkQ==
+X-Gm-Message-State: AOAM532S1WBfR6k/nVgBguurhWJobx+sJ0FDmoOexna9XEaWQEUrDOz+
+        egde+4CvtSGw68Pj/LbkuzhZq/SMUYbXa79p
+X-Google-Smtp-Source: ABdhPJzqhYzE8rSosQ1y35nYVPJCR/QBBweg90gLw/1MosTidp4k6pHMqgdf7sjn4nLxuVotsKjRUg==
+X-Received: by 2002:a05:6214:19c8:b0:444:32f0:2351 with SMTP id j8-20020a05621419c800b0044432f02351mr2073117qvc.109.1649736086971;
+        Mon, 11 Apr 2022 21:01:26 -0700 (PDT)
+Received: from jaehee-ThinkPad-X1-Extreme ([2607:fb90:50fb:900e:25ab:983d:ac30:58b5])
+        by smtp.gmail.com with ESMTPSA id t125-20020a372d83000000b0069c1df12422sm3349402qkh.84.2022.04.11.21.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 21:01:26 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 00:01:23 -0400
+From:   Jaehee Park <jhpark1013@gmail.com>
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev, Stefano Brivio <sbrivio@redhat.com>
+Subject: Re: [PATCH] staging: wfx: use container_of() to get vif
+Message-ID: <20220412040123.GB2856917@jaehee-ThinkPad-X1-Extreme>
+References: <20220407204128.GA1810425@jaehee-ThinkPad-X1-Extreme>
+ <alpine.DEB.2.22.394.2204081149360.2196@hadrien>
+ <20220408222102.GB2511628@jaehee-ThinkPad-X1-Extreme>
+ <1911301.taCxCBeP46@pc-42>
+ <alpine.DEB.2.22.394.2204091737130.2655@hadrien>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2] sfc: ef10: Fix assigning negative value to unsigned
- variable
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164973601503.30868.3317524742602882068.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Apr 2022 04:00:15 +0000
-References: <1649640757-30041-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1649640757-30041-1-git-send-email-baihaowen@meizu.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <alpine.DEB.2.22.394.2204091737130.2655@hadrien>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 11 Apr 2022 09:32:37 +0800 you wrote:
-> fix warning reported by smatch:
-> 251 drivers/net/ethernet/sfc/ef10.c:2259 efx_ef10_tx_tso_desc()
-> warn: assigning (-208) to unsigned variable 'ip_tot_len'
+On Sat, Apr 09, 2022 at 05:37:32PM +0200, Julia Lawall wrote:
 > 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
-> V1->V2: to assign "0x10000 - EFX_TSO2_MAX_HDRLEN" is the actual
-> semantics of the value.
 > 
-> [...]
+> On Sat, 9 Apr 2022, Jérôme Pouiller wrote:
+> 
+> > On Saturday 9 April 2022 00:21:02 CEST Jaehee Park wrote:
+> > > On Fri, Apr 08, 2022 at 11:49:49AM +0200, Julia Lawall wrote:
+> > > > On Thu, 7 Apr 2022, Jaehee Park wrote:
+> > > >
+> > > > > Use container_of() to get vif. This improves the code in two ways:
+> > > > > [1] it speeds up the compilation because container_of() saves steps to
+> > > > > retrieve vif (the representation of ieee80211_vif), and
+> > > >
+> > > > I don't understand this part.
+> > > >
+> > > > julia
+> > > >
+> > >
+> > > Thank you for your message. I revised the commit message (below)--
+> > > I hope it makes it clearer. I'm open to suggestions as well!
+> > >
+> > > Currently, upon virtual interface creation, wfx_add_interface() stores
+> > > a reference to the corresponding struct ieee80211_vif in private data,
+> > > for later usage. This is not needed when using the container_of
+> > > construct. This construct already has all the info it needs to retrieve
+> > > the reference to the corresponding struct from the offset that is
+> > > already available, inherent in container_of(), between its type and
+> > > member inputs (struct ieee80211_vif and drv_priv, respectively).
+> > > Remove vif (which was previously storing the reference to the struct
+> > > ieee80211_vif) from the struct wfx_vif, define a macro
+> > > wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
+> > > the newly defined container_of construct.
+> > >
+> > > Sorry if I'm putting out more information than was asked for:
+> > > Diagram is worth a thousand words; this one is made by Stefano when
+> > > he was explaining the container_of() construct:
+> > >
+> > > .-----------------------------------.
+> > > |  .------------------------------. |
+> > > '->| struct ieee80211_vif         | |
+> > >    |------------------------------| |
+> > >    | 1                            | |
+> > >    | 2                            | |
+> > >    |  .--------------------------.| |
+> > >    | 3| struct wfx_vif drv_priv   | |
+> > >    |  |---------------------------| |
+> > >    |  | ...                       | |
+> > >    |  |                           | |
+> > >    |  | struct ieee80211_vif *vif---'
+> > >    '------------------------------'
+> > > In this example, the offset is 3.
+> > > What I want to convey here is the compiler already knows the offset
+> > > of drv_priv within struct ieee80211_vif by using the container_of()
+> > > construct. So, it doesn't need to do extra work.
+> >
+> > Wow, nice ascii art :)
+> >
+> > I think that Julia has not understand why you said it "speeds up the
+> > compilation". I think you meant "speeds up the execution", don't you?
+> 
+> Yes, that was my concern.
+> 
+> julia
 
-Here is the summary with links:
-  - [V2] sfc: ef10: Fix assigning negative value to unsigned variable
-    https://git.kernel.org/netdev/net-next/c/b8ff3395fbdf
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Understood-- Thank you Julia and Jérôme for catching my mistake and clarifying! 
