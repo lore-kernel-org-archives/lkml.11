@@ -2,51 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F694C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF42C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355111AbiDLIHG (ORCPT
+        id S1355187AbiDLIH2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
+        Tue, 12 Apr 2022 04:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354361AbiDLH0T (ORCPT
+        with ESMTP id S1354706AbiDLH0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404C345079;
-        Tue, 12 Apr 2022 00:06:12 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2674667D;
+        Tue, 12 Apr 2022 00:06:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8F64B81B50;
-        Tue, 12 Apr 2022 07:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24139C385A1;
-        Tue, 12 Apr 2022 07:06:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A5E3616D1;
+        Tue, 12 Apr 2022 07:06:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 062B3C385A1;
+        Tue, 12 Apr 2022 07:06:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747169;
-        bh=zfD7YjenlyUPbPHuXN1cKuXgTMmzI3+KRTFSfXHPC28=;
+        s=korg; t=1649747186;
+        bh=Q3b0PMg5JLkodTK+XtPZfINqw+rpVNUCVbxglG8Bpqg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=izdKqfnL5uBU0KaqfnOLa2TvdrivpsUWnARd4RQBVpWWxsF4j0F7L8y3VUdw1yL7F
-         lg0F3Bc3l1y7o0jy070hjbzLwi1JAliyBzCaeuxPKMpG7NdrFXK/U3lBYeRdIUsJam
-         E6S5gsRujBqCD52hhnwwEbLykvFn1jZl52d0d2l8=
+        b=x9I4iMaz9yd9KPTg+ZA4uDyLaKQ3hFkNuDoKmlMlDCd9DXVr+C+2c0HeiXXzq+/C2
+         XDzUEOyuYaDGsT0qmCdDp+3dHJZLn10luQIXa2CqQOh6wcqFIUCCFYrpJrSM5TCwfU
+         +ON2C5Ma2qzR8mTdv0Z0sIc3KrPiwB2wcHExhym4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
+        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
         Nick Desaulniers <ndesaulniers@google.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.16 268/285] perf python: Fix probing for some clang command line options
-Date:   Tue, 12 Apr 2022 08:32:05 +0200
-Message-Id: <20220412062951.392626163@linuxfoundation.org>
+        Nathan Chancellor <nathan@kernel.org>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 5.16 273/285] ubsan: remove CONFIG_UBSAN_OBJECT_SIZE
+Date:   Tue, 12 Apr 2022 08:32:10 +0200
+Message-Id: <20220412062951.536113780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -58,60 +60,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Kees Cook <keescook@chromium.org>
 
-commit dd6e1fe91cdd52774ca642d1da75b58a86356b56 upstream.
+commit 69d0db01e210e07fe915e5da91b54a867cda040f upstream.
 
-The clang compiler complains about some options even without a source
-file being available, while others require one, so use the simple
-tools/build/feature/test-hello.c file.
+The object-size sanitizer is redundant to -Warray-bounds, and
+inappropriately performs its checks at run-time when all information
+needed for the evaluation is available at compile-time, making it quite
+difficult to use:
 
-Then check for the "is not supported" string in its output, in addition
-to the "unknown argument" already being looked for.
+  https://bugzilla.kernel.org/show_bug.cgi?id=214861
 
-This was noticed when building with clang-13 where -ffat-lto-objects
-isn't supported and since we were looking just for "unknown argument"
-and not providing a source code to clang, was mistakenly assumed as
-being available and not being filtered to set of command line options
-provided to clang, leading to a build failure.
+With -Warray-bounds almost enabled globally, it doesn't make sense to
+keep this around.
 
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
+Link: https://lkml.kernel.org/r/20211203235346.110809-1-keescook@chromium.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Marco Elver <elver@google.com>
+Cc: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Michal Marek <michal.lkml@markovi.net>
 Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Sedat Dilek <sedat.dilek@gmail.com>
-Link: http://lore.kernel.org/lkml/
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/setup.py |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ lib/Kconfig.ubsan      |   13 -------------
+ lib/test_ubsan.c       |   22 ----------------------
+ scripts/Makefile.ubsan |    1 -
+ 3 files changed, 36 deletions(-)
 
---- a/tools/perf/util/setup.py
-+++ b/tools/perf/util/setup.py
-@@ -1,12 +1,14 @@
--from os import getenv
-+from os import getenv, path
- from subprocess import Popen, PIPE
- from re import sub
+--- a/lib/Kconfig.ubsan
++++ b/lib/Kconfig.ubsan
+@@ -112,19 +112,6 @@ config UBSAN_UNREACHABLE
+ 	  This option enables -fsanitize=unreachable which checks for control
+ 	  flow reaching an expected-to-be-unreachable position.
  
- cc = getenv("CC")
- cc_is_clang = b"clang version" in Popen([cc.split()[0], "-v"], stderr=PIPE).stderr.readline()
-+src_feature_tests  = getenv('srctree') + '/tools/build/feature'
+-config UBSAN_OBJECT_SIZE
+-	bool "Perform checking for accesses beyond the end of objects"
+-	default UBSAN
+-	# gcc hugely expands stack usage with -fsanitize=object-size
+-	# https://lore.kernel.org/lkml/CAHk-=wjPasyJrDuwDnpHJS2TuQfExwe=px-SzLeN8GFMAQJPmQ@mail.gmail.com/
+-	depends on !CC_IS_GCC
+-	depends on $(cc-option,-fsanitize=object-size)
+-	help
+-	  This option enables -fsanitize=object-size which checks for accesses
+-	  beyond the end of objects where the optimizer can determine both the
+-	  object being operated on and its size, usually seen with bad downcasts,
+-	  or access to struct members from NULL pointers.
+-
+ config UBSAN_BOOL
+ 	bool "Perform checking for non-boolean values used as boolean"
+ 	default UBSAN
+--- a/lib/test_ubsan.c
++++ b/lib/test_ubsan.c
+@@ -79,15 +79,6 @@ static void test_ubsan_load_invalid_valu
+ 	eval2 = eval;
+ }
  
- def clang_has_option(option):
--    return [o for o in Popen([cc, option], stderr=PIPE).stderr.readlines() if b"unknown argument" in o] == [ ]
-+    cc_output = Popen([cc, option, path.join(src_feature_tests, "test-hello.c") ], stderr=PIPE).stderr.readlines()
-+    return [o for o in cc_output if ((b"unknown argument" in o) or (b"is not supported" in o))] == [ ]
+-static void test_ubsan_null_ptr_deref(void)
+-{
+-	volatile int *ptr = NULL;
+-	int val;
+-
+-	UBSAN_TEST(CONFIG_UBSAN_OBJECT_SIZE);
+-	val = *ptr;
+-}
+-
+ static void test_ubsan_misaligned_access(void)
+ {
+ 	volatile char arr[5] __aligned(4) = {1, 2, 3, 4, 5};
+@@ -98,29 +89,16 @@ static void test_ubsan_misaligned_access
+ 	*ptr = val;
+ }
  
- if cc_is_clang:
-     from distutils.sysconfig import get_config_vars
+-static void test_ubsan_object_size_mismatch(void)
+-{
+-	/* "((aligned(8)))" helps this not into be misaligned for ptr-access. */
+-	volatile int val __aligned(8) = 4;
+-	volatile long long *ptr, val2;
+-
+-	UBSAN_TEST(CONFIG_UBSAN_OBJECT_SIZE);
+-	ptr = (long long *)&val;
+-	val2 = *ptr;
+-}
+-
+ static const test_ubsan_fp test_ubsan_array[] = {
+ 	test_ubsan_shift_out_of_bounds,
+ 	test_ubsan_out_of_bounds,
+ 	test_ubsan_load_invalid_value,
+ 	test_ubsan_misaligned_access,
+-	test_ubsan_object_size_mismatch,
+ };
+ 
+ /* Excluded because they Oops the module. */
+ static const test_ubsan_fp skip_ubsan_array[] = {
+ 	test_ubsan_divrem_overflow,
+-	test_ubsan_null_ptr_deref,
+ };
+ 
+ static int __init test_ubsan_init(void)
+--- a/scripts/Makefile.ubsan
++++ b/scripts/Makefile.ubsan
+@@ -8,7 +8,6 @@ ubsan-cflags-$(CONFIG_UBSAN_LOCAL_BOUNDS
+ ubsan-cflags-$(CONFIG_UBSAN_SHIFT)		+= -fsanitize=shift
+ ubsan-cflags-$(CONFIG_UBSAN_DIV_ZERO)		+= -fsanitize=integer-divide-by-zero
+ ubsan-cflags-$(CONFIG_UBSAN_UNREACHABLE)	+= -fsanitize=unreachable
+-ubsan-cflags-$(CONFIG_UBSAN_OBJECT_SIZE)	+= -fsanitize=object-size
+ ubsan-cflags-$(CONFIG_UBSAN_BOOL)		+= -fsanitize=bool
+ ubsan-cflags-$(CONFIG_UBSAN_ENUM)		+= -fsanitize=enum
+ ubsan-cflags-$(CONFIG_UBSAN_TRAP)		+= -fsanitize-undefined-trap-on-error
 
 
