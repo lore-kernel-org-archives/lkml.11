@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F368C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD83C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352508AbiDLHFg (ORCPT
+        id S1352662AbiDLHFt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
+        Tue, 12 Apr 2022 03:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351675AbiDLGyL (ORCPT
+        with ESMTP id S1351721AbiDLGyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8BA3818D;
-        Mon, 11 Apr 2022 23:43:30 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CB938BD1;
+        Mon, 11 Apr 2022 23:43:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1F49DCE1C07;
-        Tue, 12 Apr 2022 06:43:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C1F7C385A1;
-        Tue, 12 Apr 2022 06:43:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DF392CE1C0A;
+        Tue, 12 Apr 2022 06:43:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04103C385A6;
+        Tue, 12 Apr 2022 06:43:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745807;
-        bh=2Lmy5BWtN6cg/yToOVXfhNfL68kEcVZK7xgZJjL4nco=;
+        s=korg; t=1649745818;
+        bh=4C9l3ozTCA7bF8Ub+SzXQVBfPrIj+YQioOgIA03OWB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYCW3yhBS5EyKcnJIBuqcu5+Oi5vqXETygRPVavx6FUZ724GH+60MjQPDlpYhtL3B
-         N0Jp29dunjSZQZ8mXUovN3yBtTwaxXA/Ipj2eAY+N4oyzkW+YGI1AGs45YLtjbKff+
-         7gAuVPcOOjVtYMmHcnp71/SqtDiK96mftr+y8Y5I=
+        b=W3Ea88sKR3JvekLpsHEQLGBk46e3Hoaum8TKKJdTziMn88BaWBY6GtLedIp4DABPZ
+         p8Dv7LW4RlTsemQq9F7VpJRhlsNbT7KzZY9CilZ81FdF9S3xpwOU91gPW7r00MjhZ7
+         G95QMRkvzJ0CK4dVTd9+rw7Xk+Yn8/dMeGPj9iiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 015/277] KVM: x86/emulator: Emulate RDPID only if it is enabled in guest
-Date:   Tue, 12 Apr 2022 08:26:58 +0200
-Message-Id: <20220412062942.478850015@linuxfoundation.org>
+Subject: [PATCH 5.15 060/277] iwlwifi: mvm: move only to an enabled channel
+Date:   Tue, 12 Apr 2022 08:27:43 +0200
+Message-Id: <20220412062943.785594959@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,79 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
 
-[ Upstream commit a836839cbfe60dc434c5476a7429cf2bae36415d ]
+[ Upstream commit e04135c07755d001b5cde61048c69a7cc84bb94b ]
 
-When RDTSCP is supported but RDPID is not supported in host,
-RDPID emulation is available. However, __kvm_get_msr() would
-only fail when RDTSCP/RDPID both are disabled in guest, so
-the emulator wouldn't inject a #UD when RDPID is disabled but
-RDTSCP is enabled in guest.
+During disassociation we're decreasing the phy's ref count.
+If the ref count becomes 0, we're configuring the phy ctxt
+to the default channel (the lowest channel which the device
+can operate on). Currently we're not checking whether the
+the default channel is enabled or not. Fix it by configuring
+the phy ctxt to the lowest channel which is enabled.
 
-Fixes: fb6d4d340e05 ("KVM: x86: emulate RDPID")
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <1dfd46ae5b76d3ed87bde3154d51c64ea64c99c1.1646226788.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220210181930.03f281b6a6bc.I5b63d43ec41996d599e6f37ec3f32e878b3e405e@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c     | 4 +++-
- arch/x86/kvm/kvm_emulate.h | 1 +
- arch/x86/kvm/x86.c         | 6 ++++++
- 3 files changed, 10 insertions(+), 1 deletion(-)
+ .../net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 31 +++++++++++++------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 4cf0938a876b..3747a754a8e8 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -3514,8 +3514,10 @@ static int em_rdpid(struct x86_emulate_ctxt *ctxt)
- {
- 	u64 tsc_aux = 0;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+index 035336a9e755..6d82725cb87d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ /*
+- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
++ * Copyright (C) 2012-2014, 2018-2022 Intel Corporation
+  * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
+  * Copyright (C) 2017 Intel Deutschland GmbH
+  */
+@@ -295,18 +295,31 @@ void iwl_mvm_phy_ctxt_unref(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt)
+ 	 * otherwise we might not be able to reuse this phy.
+ 	 */
+ 	if (ctxt->ref == 0) {
+-		struct ieee80211_channel *chan;
++		struct ieee80211_channel *chan = NULL;
+ 		struct cfg80211_chan_def chandef;
+-		struct ieee80211_supported_band *sband = NULL;
+-		enum nl80211_band band = NL80211_BAND_2GHZ;
++		struct ieee80211_supported_band *sband;
++		enum nl80211_band band;
++		int channel;
  
--	if (ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux))
-+	if (!ctxt->ops->guest_has_rdpid(ctxt))
- 		return emulate_ud(ctxt);
+-		while (!sband && band < NUM_NL80211_BANDS)
+-			sband = mvm->hw->wiphy->bands[band++];
++		for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
++			sband = mvm->hw->wiphy->bands[band];
+ 
+-		if (WARN_ON(!sband))
+-			return;
++			if (!sband)
++				continue;
 +
-+	ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux);
- 	ctxt->dst.val = tsc_aux;
- 	return X86EMUL_CONTINUE;
- }
-diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
-index 68b420289d7e..fb09cd22cb7f 100644
---- a/arch/x86/kvm/kvm_emulate.h
-+++ b/arch/x86/kvm/kvm_emulate.h
-@@ -226,6 +226,7 @@ struct x86_emulate_ops {
- 	bool (*guest_has_long_mode)(struct x86_emulate_ctxt *ctxt);
- 	bool (*guest_has_movbe)(struct x86_emulate_ctxt *ctxt);
- 	bool (*guest_has_fxsr)(struct x86_emulate_ctxt *ctxt);
-+	bool (*guest_has_rdpid)(struct x86_emulate_ctxt *ctxt);
++			for (channel = 0; channel < sband->n_channels; channel++)
++				if (!(sband->channels[channel].flags &
++						IEEE80211_CHAN_DISABLED)) {
++					chan = &sband->channels[channel];
++					break;
++				}
  
- 	void (*set_nmi_mask)(struct x86_emulate_ctxt *ctxt, bool masked);
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 3e606a6940dc..5e2983959f23 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -7393,6 +7393,11 @@ static bool emulator_guest_has_fxsr(struct x86_emulate_ctxt *ctxt)
- 	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_FXSR);
- }
- 
-+static bool emulator_guest_has_rdpid(struct x86_emulate_ctxt *ctxt)
-+{
-+	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_RDPID);
-+}
+-		chan = &sband->channels[0];
++			if (chan)
++				break;
++		}
 +
- static ulong emulator_read_gpr(struct x86_emulate_ctxt *ctxt, unsigned reg)
- {
- 	return kvm_register_read_raw(emul_to_vcpu(ctxt), reg);
-@@ -7475,6 +7480,7 @@ static const struct x86_emulate_ops emulate_ops = {
- 	.guest_has_long_mode = emulator_guest_has_long_mode,
- 	.guest_has_movbe     = emulator_guest_has_movbe,
- 	.guest_has_fxsr      = emulator_guest_has_fxsr,
-+	.guest_has_rdpid     = emulator_guest_has_rdpid,
- 	.set_nmi_mask        = emulator_set_nmi_mask,
- 	.get_hflags          = emulator_get_hflags,
- 	.exiting_smm         = emulator_exiting_smm,
++		if (WARN_ON(!chan))
++			return;
+ 
+ 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
+ 		iwl_mvm_phy_ctxt_changed(mvm, ctxt, &chandef, 1, 1);
 -- 
 2.35.1
 
