@@ -2,123 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A7C8C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 979B3C35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359286AbiDLIdW (ORCPT
+        id S1382848AbiDLIeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:33:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
+        Tue, 12 Apr 2022 04:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353477AbiDLHZn (ORCPT
+        with ESMTP id S1356166AbiDLHeh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:43 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6008D434A2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:00:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649746838; x=1681282838;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7ylCwKVWNSXBLS3JnfvV528nX7gUEq87FZmfPhU2/a8=;
-  b=B1Ttb5BJmUHedTDMGhvV6Q3qB/5xixOaHErOaLolk+OheSnxX4aeDpoe
-   UNkKZN4o2VL0dJF6aw/XpJwtlOkW8+RlDBJ3hzyP9pMQLFZQthHWo5YO+
-   D/2iI6xyfcIH487W1sHT5duKAmIOHu/GlxMkvvxFk/dKTHTVPZ+SS66Y5
-   4l13K4I5zA05g9y8zdup4gUqGP0zwZ+8NGwo0rNsdg47uCqRJ3H4U4o6D
-   fA1LIis0SLE0b+uGnL3xLyQ6crMS/goEmk/keFctSl7cLBcxNQx+IzK6Y
-   pP9cqVrAfrtRzXOJOgynRWIm/Ak4VFjvnWB438+Ob5XFOcPJLxLsGUkOm
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242880124"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="242880124"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:00:36 -0700
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="572619329"
-Received: from joliu-mobl2.ccr.corp.intel.com ([10.254.214.243])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:00:25 -0700
-Message-ID: <c4e871721f43af56eba3addb510a98c7d9560e2f.camel@intel.com>
-Subject: Re: [PATCH 0/4] A few cleanup and fixup patches for migration
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     mike.kravetz@oracle.com, shy828301@gmail.com, willy@infradead.org,
-        ziy@nvidia.com, minchan@kernel.org, apopple@nvidia.com,
-        dave.hansen@linux.intel.com, o451686892@gmail.com,
-        jhubbard@nvidia.com, peterx@redhat.com, naoya.horiguchi@nec.com,
-        mhocko@suse.com, riel@redhat.com, osalvador@suse.de,
-        david@redhat.com, sfr@canb.auug.org.au, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Date:   Tue, 12 Apr 2022 15:00:22 +0800
-In-Reply-To: <880376f0-f480-979b-261f-72cf9475474c@huawei.com>
-References: <20220409073846.22286-1-linmiaohe@huawei.com>
-         <e268117b314817ecd4c07ac48b0a6dcaf680ed69.camel@intel.com>
-         <880376f0-f480-979b-261f-72cf9475474c@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Tue, 12 Apr 2022 03:34:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6BCBA5;
+        Tue, 12 Apr 2022 00:09:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E15FCB81B4D;
+        Tue, 12 Apr 2022 07:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36AC9C385AD;
+        Tue, 12 Apr 2022 07:09:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747341;
+        bh=hta54ajdwmJh2NBKG/lZbC1dBvxycmRgwzA6FsJy5NI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sZqJ7Bf0an92O1vFqLLVmswGcCgcS7FbWfnrOjlpscMbteS9D8NFSHpd1/JMJBlcK
+         IdeTi2spABwLx2PzLWKRyqHz3ZRB6edg4m571gHOyFtqBhtkfWvCVZz50qu3zxSjis
+         F+iE1Qt84NbBuScf0Rra/CDeeebxF/2u81ygPo7w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 044/343] scsi: mvsas: Replace snprintf() with sysfs_emit()
+Date:   Tue, 12 Apr 2022 08:27:42 +0200
+Message-Id: <20220412062952.379075022@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-12 at 11:29 +0800, Miaohe Lin wrote:
-> On 2022/4/12 10:25, ying.huang@intel.com wrote:
-> > On Sat, 2022-04-09 at 15:38 +0800, Miaohe Lin wrote:
-> > > Hi everyone,
-> > > This series contains a few patches to remove unneeded lock page and
-> > > PageMovable check, reduce the rcu lock duration. Also we fix potential
-> > > pte_unmap on an not mapped pte. More details can be found in the
-> > > respective changelogs. Thanks!
-> > 
-> > It appears that you ignored my comments for the previous version.  Can
-> > you check it?
-> 
-> I do remember [1] and I tried to make isolate_huge_page consistent with isolate_lru_page.
-> But their return value conventions are different. isolate_huge_page return 0 when
-> success while isolate_huge_page returns true in this case. So make them consistent
-> would lead to many code change. I should have added this in my changelog.
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-I found that there are only 7 callers of isolate_huge_page().  It sounds
-like something that is still doable.
+[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
 
-Best Regards,
-Huang, Ying
+coccinelle report:
+./drivers/scsi/mvsas/mv_init.c:699:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/mvsas/mv_init.c:747:8-16:
+WARNING: use scnprintf or sprintf
 
-> Thanks.
-> 
-> [1] https://lore.kernel.org/linux-mm/8735jsgctq.fsf@yhuang6-desk2.ccr.corp.intel.com/
-> 
-> 
-> > 
-> > Best Regards,
-> > Huang, Ying
-> > 
-> > > ---
-> > > v1:
-> > >   rebase [1] on mainline.
-> > > 
-> > > [1] https://lore.kernel.org/lkml/20220304093409.25829-2-linmiaohe@huawei.com/T/
-> > > ---
-> > > Miaohe Lin (4):
-> > >   mm/migration: reduce the rcu lock duration
-> > >   mm/migration: remove unneeded lock page and PageMovable check
-> > >   mm/migration: return errno when isolate_huge_page failed
-> > >   mm/migration: fix potential pte_unmap on an not mapped pte
-> > > 
-> > >  include/linux/migrate.h |  2 +-
-> > >  include/linux/swapops.h |  4 ++--
-> > >  mm/filemap.c            | 10 +++++-----
-> > >  mm/hugetlb.c            |  2 +-
-> > >  mm/migrate.c            | 31 +++++++++++++------------------
-> > >  5 files changed, 22 insertions(+), 27 deletions(-)
-> > > 
-> > 
-> > 
-> > 
-> > .
-> > 
-> 
+Use sysfs_emit() instead of scnprintf() or sprintf().
+
+Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/mvsas/mv_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index dcae2d4464f9..44df7c03aab8 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -696,7 +696,7 @@ static struct pci_driver mvs_pci_driver = {
+ static ssize_t driver_version_show(struct device *cdev,
+ 				   struct device_attribute *attr, char *buffer)
+ {
+-	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
++	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
+ }
+ 
+ static DEVICE_ATTR_RO(driver_version);
+@@ -744,7 +744,7 @@ static ssize_t interrupt_coalescing_store(struct device *cdev,
+ static ssize_t interrupt_coalescing_show(struct device *cdev,
+ 					 struct device_attribute *attr, char *buffer)
+ {
+-	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
++	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
+ }
+ 
+ static DEVICE_ATTR_RW(interrupt_coalescing);
+-- 
+2.35.1
+
 
 
