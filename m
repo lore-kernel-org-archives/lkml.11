@@ -2,91 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F13C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56116C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381164AbiDLIXO (ORCPT
+        id S1381221AbiDLIXR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42824 "EHLO
+        Tue, 12 Apr 2022 04:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353758AbiDLHZx (ORCPT
+        with ESMTP id S1353717AbiDLHZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:53 -0400
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769842190
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Bkffw/tORnlmhR+gIFgr3oGerYveSodb4qpEBRE6/iA=;
-  b=NN5omO0mJWMWo28GRM27ZTIEsCMWZZQfcFvGkzizYwguhHUhVxh/oz2M
-   I0hjb6s+ioxXL/zpOYfpsmt8FUiyozS69m89vwlzL4qOhSGGpIS7I03u8
-   q97rx4H8YhWxSCqrEyeAyxTkfdKI0H3RIwAvKaND2RkFYJ6rvUEgwOGzL
-   0=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,253,1643670000"; 
-   d="scan'208";a="31248913"
-Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:04:09 +0200
-Date:   Tue, 12 Apr 2022 09:04:08 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To:     Jaehee Park <jhpark1013@gmail.com>
-cc:     johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-Subject: Re: [PATCH 2/2] staging: greybus: remove return in an empty void
- function
-In-Reply-To: <eaf51ac31d264179298cb24c91f05a14e3651bda.1649712572.git.jhpark1013@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204120901380.3122@hadrien>
-References: <cover.1649712572.git.jhpark1013@gmail.com> <eaf51ac31d264179298cb24c91f05a14e3651bda.1649712572.git.jhpark1013@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Tue, 12 Apr 2022 03:25:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BA9F6E;
+        Tue, 12 Apr 2022 00:04:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E16C761045;
+        Tue, 12 Apr 2022 07:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC6D2C385A1;
+        Tue, 12 Apr 2022 07:04:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747047;
+        bh=QfgYC+KY/2KOvHfkTtApVBJJ78wgukpzMTQSv8FIaSw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GoCRUkCC3qqnJ3QRFmGptNRVvcdk5RgRl+jpDhYCokPitCkh3PjnVCzAcXh8AdCDl
+         138J0ekY8j2bYpp0gXPTHZSgXDD77dxr9SBN4sO8KJoB4p0Q6gdqFsSUJe5i9jsC7R
+         5LvgmZSRdAbEf6sJgh/3EsfRMUEHa4vN/HYJTOnE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 224/285] io_uring: dont check req->file in io_fsync_prep()
+Date:   Tue, 12 Apr 2022 08:31:21 +0200
+Message-Id: <20220412062950.122417427@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jens Axboe <axboe@kernel.dk>
+
+commit ec858afda857e361182ceafc3d2ba2b164b8e889 upstream.
+
+This is a leftover from the really old days where we weren't able to
+track and error early if we need a file and it wasn't assigned. Kill
+the check.
+
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/io_uring.c |    3 ---
+ 1 file changed, 3 deletions(-)
+
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -4155,9 +4155,6 @@ static int io_fsync_prep(struct io_kiocb
+ {
+ 	struct io_ring_ctx *ctx = req->ctx;
+ 
+-	if (!req->file)
+-		return -EBADF;
+-
+ 	if (unlikely(ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
+ 	if (unlikely(sqe->addr || sqe->ioprio || sqe->buf_index ||
 
 
-On Mon, 11 Apr 2022, Jaehee Park wrote:
-
-> Issue found by checkpatch:
-> WARNING: void function return statements are not generally useful
-
-Even for a simple change, it wouldbe better to follow the model that the
-subject line should concisely orient the reader (eg "remove unneeded
-return") and the log message should give a more complete description.
-Simply repeating what checkpatch tells you is rarely a good idea.  It says
-what the problem is in a general way, whereas you should be explaining the
-reasoning behind your fix in a specific case.  Here you could say that an
-empty function with void return type does not need an explicit return, and
-that the problem was detected with checkpatch.
-
-julia
-
->
-> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> ---
->  drivers/staging/greybus/audio_codec.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
-> index 0f50d1e51e2c..3e3a16568def 100644
-> --- a/drivers/staging/greybus/audio_codec.c
-> +++ b/drivers/staging/greybus/audio_codec.c
-> @@ -1032,7 +1032,6 @@ static int gbcodec_probe(struct snd_soc_component *comp)
->  static void gbcodec_remove(struct snd_soc_component *comp)
->  {
->  	/* Empty function for now */
-> -	return;
->  }
->
->  static int gbcodec_write(struct snd_soc_component *comp, unsigned int reg,
-> --
-> 2.25.1
->
->
->
