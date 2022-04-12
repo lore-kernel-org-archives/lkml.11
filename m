@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D21C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC653C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235640AbiDLH5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        id S1354391AbiDLH5u (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353550AbiDLHZq (ORCPT
+        with ESMTP id S1353552AbiDLHZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F5C26100;
-        Tue, 12 Apr 2022 00:01:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394F926573;
+        Tue, 12 Apr 2022 00:01:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28E4CB81B35;
-        Tue, 12 Apr 2022 07:01:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97799C385A6;
-        Tue, 12 Apr 2022 07:01:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8B4E60B2B;
+        Tue, 12 Apr 2022 07:01:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0921C385A1;
+        Tue, 12 Apr 2022 07:01:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746880;
-        bh=kUn2qAPqnhLi5OlFTb3kcm5yBG9tINbEWnBPKsnb0Rs=;
+        s=korg; t=1649746885;
+        bh=Ur7rnRKD7I0yAumOWBGWGZkPPf4CPiK8FlaCdTnTWQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvD1R0xsGOFMGzCzY9MqOWkVKx8EclApREnhBeWbeZc5D/qLG36d+5Ojuybt7lmlA
-         kFEAiTOpZb9d8+TKvNkrihCFPeXEBLFKu1BMdhpFEJudACwP0B5ngeWZBNHTeEWxAh
-         cwX8h8eNu3f8jVMNR6knDVS/kAyfsMR4emxyFN4M=
+        b=zdL8uc0V2AKBw4wKWjvpNrTD5itzkgaRDkgTeyHWJ0PsVSwo86Ax0XXUfo73v7pxi
+         C86cJmiOEEC7lcokbcNKRd9tlWE6UTaOBAhmGMDyHR1hA/rf2HCRgtL+NX4KXY76gC
+         FLBPZ9bjquMlIpeAEjLqk3chQheS/N083eWQv4Q0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 123/285] opp: Expose of-nodes name in debugfs
-Date:   Tue, 12 Apr 2022 08:29:40 +0200
-Message-Id: <20220412062947.215634701@linuxfoundation.org>
+Subject: [PATCH 5.16 158/285] scsi: zorro7xx: Fix a resource leak in zorro7xx_remove_one()
+Date:   Tue, 12 Apr 2022 08:30:15 +0200
+Message-Id: <20220412062948.231550167@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,65 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 021dbecabc93b1610b5db989d52a94e0c6671136 ]
+[ Upstream commit 16ed828b872d12ccba8f07bcc446ae89ba662f9c ]
 
-It is difficult to find which OPPs are active at the moment, specially
-if there are multiple OPPs with same frequency available in the device
-tree (controlled by supported hardware feature).
+The error handling path of the probe releases a resource that is not freed
+in the remove function. In some cases, a ioremap() must be undone.
 
-Expose name of the DT node to find out the exact OPP.
+Add the missing iounmap() call in the remove function.
 
-While at it, also expose level field.
-
-Reported-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Link: https://lore.kernel.org/r/247066a3104d25f9a05de8b3270fc3c848763bcc.1647673264.git.christophe.jaillet@wanadoo.fr
+Fixes: 45804fbb00ee ("[SCSI] 53c700: Amiga Zorro NCR53c710 SCSI")
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/opp/debugfs.c | 5 +++++
- drivers/opp/opp.h     | 1 +
- 2 files changed, 6 insertions(+)
+ drivers/scsi/zorro7xx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
-index 596c185b5dda..b5f2f9f39392 100644
---- a/drivers/opp/debugfs.c
-+++ b/drivers/opp/debugfs.c
-@@ -10,6 +10,7 @@
- #include <linux/debugfs.h>
- #include <linux/device.h>
- #include <linux/err.h>
-+#include <linux/of.h>
- #include <linux/init.h>
- #include <linux/limits.h>
- #include <linux/slab.h>
-@@ -131,9 +132,13 @@ void opp_debug_create_one(struct dev_pm_opp *opp, struct opp_table *opp_table)
- 	debugfs_create_bool("suspend", S_IRUGO, d, &opp->suspend);
- 	debugfs_create_u32("performance_state", S_IRUGO, d, &opp->pstate);
- 	debugfs_create_ulong("rate_hz", S_IRUGO, d, &opp->rate);
-+	debugfs_create_u32("level", S_IRUGO, d, &opp->level);
- 	debugfs_create_ulong("clock_latency_ns", S_IRUGO, d,
- 			     &opp->clock_latency_ns);
+diff --git a/drivers/scsi/zorro7xx.c b/drivers/scsi/zorro7xx.c
+index 27b9e2baab1a..7acf9193a9e8 100644
+--- a/drivers/scsi/zorro7xx.c
++++ b/drivers/scsi/zorro7xx.c
+@@ -159,6 +159,8 @@ static void zorro7xx_remove_one(struct zorro_dev *z)
+ 	scsi_remove_host(host);
  
-+	opp->of_name = of_node_full_name(opp->np);
-+	debugfs_create_str("of_name", S_IRUGO, d, (char **)&opp->of_name);
-+
- 	opp_debug_create_supplies(opp, opp_table, d);
- 	opp_debug_create_bw(opp, opp_table, d);
- 
-diff --git a/drivers/opp/opp.h b/drivers/opp/opp.h
-index 407c3bfe51d9..45e3a55239a1 100644
---- a/drivers/opp/opp.h
-+++ b/drivers/opp/opp.h
-@@ -96,6 +96,7 @@ struct dev_pm_opp {
- 
- #ifdef CONFIG_DEBUG_FS
- 	struct dentry *dentry;
-+	const char *of_name;
- #endif
- };
- 
+ 	NCR_700_release(host);
++	if (host->base > 0x01000000)
++		iounmap(hostdata->base);
+ 	kfree(hostdata);
+ 	free_irq(host->irq, host);
+ 	zorro_release_device(z);
 -- 
 2.35.1
 
