@@ -2,130 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9524CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D93AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347375AbiDLKad (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
+        id S234566AbiDLKhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381006AbiDLK0A (ORCPT
+        with ESMTP id S1381419AbiDLKfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:26:00 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3426F54BF1;
-        Tue, 12 Apr 2022 02:29:52 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 12 Apr
- 2022 17:29:50 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 12 Apr
- 2022 17:29:49 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <alexs@kernel.org>, <corbet@lwn.net>
-CC:     <siyanteng@loongson.cn>, <baihaowen@meizu.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH V3] docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
-Date:   Tue, 12 Apr 2022 17:29:48 +0800
-Message-ID: <1649755788-1838-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649733951-8827-1-git-send-email-baihaowen@meizu.com>
-References: <1649733951-8827-1-git-send-email-baihaowen@meizu.com>
+        Tue, 12 Apr 2022 06:35:09 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D755E159
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:37:20 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id q129so18453979oif.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
+         :subject:to:cc;
+        bh=evIZsLOQJjFi37tCwIrJkfpZ9gIHXQ0UW8l5PUtfRtM=;
+        b=4QAERHFJ8BTZGtY7E+DkrtJGJSnzxgQgHwbOYAwlxzZXnKMY9dp3NVgOGA1Cbx3AW0
+         FxY2zgabemqQKkM8yYWIKTkzeKaFcP40xAgE+1dbimqQ4CldI7+o8TQ8dE1kodW+jrQU
+         gYXrQIuo73uA51I8IaOWcFPhvw+t8g/pF4/eUcwWtHBUvZuNigXM/QZvceMRt4bz7R/Q
+         iRCQbyMV95o4pipHij2S0MaVqvssVGHgSj8Xz769fQj6HFHoNaTjIpDoiR+7ZrOU9ACV
+         kY13mSlQ12q7mCyqJQTWIMCVaZV8qk0mntRPEqqEkgTpq9DAW883/q4t7wQjC3Wogopk
+         7VLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:user-agent:references:in-reply-to
+         :mime-version:date:message-id:subject:to:cc;
+        bh=evIZsLOQJjFi37tCwIrJkfpZ9gIHXQ0UW8l5PUtfRtM=;
+        b=fqEiFsLFWfflgySzZh75XJPN4ezJnUPxRTEOPWLuirJem79VX807QAJ6CQ9puTg8ii
+         IlwK4Tuw4sJyHvGpU8WO18yNwSNciB7sp11lW23xLjr10a9hetsplE8IicDO1BBz9poj
+         Wo1iFVmszqoPWLat8Cg6iy61xolaUXtCr8gmUPx/pOZxOaNF77pXkAKop98knkxGUBIO
+         eKs9MsW5crQI141efilV/otxACiywNUpyRsovrOr9ZeacAOw0DuydVTmsK52sCrlHdTM
+         d6JkIy9R3lbAyPkp9IdNzBRSSLQlP1okNTDAyVym8Md90R49IbXvORNknJ5pEpFh3Azd
+         Ybvw==
+X-Gm-Message-State: AOAM530o0wDOJP76BRtNIRxuKzdIjVEjqy12kut+F+5pWkvZoYzDjsdn
+        waza/0Mc3wQ8wE/kU8srQvHCISvWpRSSwvvl8805Yg==
+X-Google-Smtp-Source: ABdhPJw50fakNZZtGphBh/3iA9VZT9nYrxLt56LrY9rUXQ7AMr4P93Xi3Vwjdes2KLA+ubvrsqu9MdqkL/hZl7jIqcA=
+X-Received: by 2002:a05:6808:1804:b0:2f9:65eb:c40b with SMTP id
+ bh4-20020a056808180400b002f965ebc40bmr1343724oib.78.1649756239335; Tue, 12
+ Apr 2022 02:37:19 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 12 Apr 2022 02:37:18 -0700
+From:   Guillaume Ranquet <granquet@baylibre.com>
+User-Agent: meli 0.7.2
+References: <20220327223927.20848-1-granquet@baylibre.com> <20220327223927.20848-17-granquet@baylibre.com>
+ <736a7f6710f1ea31eff4abcc3d9c3ff79a1f0ddb.camel@mediatek.com>
+In-Reply-To: <736a7f6710f1ea31eff4abcc3d9c3ff79a1f0ddb.camel@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="y"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Date:   Tue, 12 Apr 2022 02:37:18 -0700
+Message-ID: <CABnWg9vfMJTbOTK-khgaj7RReLVSKJ3DCmJbDvgKMf+tUBwoSA@mail.gmail.com>
+Subject: Re: [PATCH v9 16/22] drm/meditek: dpi: Add matrix_sel helper
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, vkoul@kernel.org,
+        airlied@linux.ie, angelogioacchino.delregno@collabora.com,
+        chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
+        ck.hu@mediatek.com, daniel@ffwll.ch, deller@gmx.de,
+        jitao.shi@mediatek.com, kishon@ti.com, krzk+dt@kernel.org,
+        maarten.lankhorst@linux.intel.com, matthias.bgg@gmail.com,
+        mripard@kernel.org, p.zabel@pengutronix.de, robh+dt@kernel.org,
+        tzimmermann@suse.de
+Cc:     devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-phy@lists.infradead.org, markyacoub@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the tools/vm/page_owner_sort added some feature and original text
-updated, sync the translation of zh_CN.
+On Mon, 28 Mar 2022 10:49, Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
+>On Mon, 2022-03-28 at 00:39 +0200, Guillaume Ranquet wrote:
+>> Add a mtk_dpi_matrix_sel() helper to update the DPI_MATRIX_SET
+>> register depending on the color format.
+>>
+>> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+>> ---
+>>  drivers/gpu/drm/mediatek/mtk_dpi.c | 21 +++++++++++++++++++++
+>>  1 file changed, 21 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+>> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+>> index 8198d3cf23ac..82f97c687652 100644
+>> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+>> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+>> @@ -385,6 +385,25 @@ static void mtk_dpi_config_disable_edge(struct
+>> mtk_dpi *dpi)
+>>  		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0,
+>> EDGE_SEL_EN);
+>>  }
+>>
+>> +static void mtk_dpi_matrix_sel(struct mtk_dpi *dpi, enum
+>> mtk_dpi_out_color_format format)
+>> +{
+>> +	u32 matrix_sel = 0;
+>> +
+>> +	switch (format) {
+>> +	case MTK_DPI_COLOR_FORMAT_YCBCR_422:
+>> +	case MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL:
+>> +	case MTK_DPI_COLOR_FORMAT_YCBCR_444:
+>> +	case MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL:
+>> +	case MTK_DPI_COLOR_FORMAT_XV_YCC:
+>> +		if (dpi->mode.hdisplay <= 720)
+>> +			matrix_sel = 0x2;
+>> +		break;
+>> +	default:
+>> +		break;
+>> +	}
+>> +	mtk_dpi_mask(dpi, DPI_MATRIX_SET, matrix_sel,
+>> INT_MATRIX_SEL_MASK);
+>> +}
+>> +
+>>  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+>>  					enum mtk_dpi_out_color_format
+>> format)
+>>  {
+>> @@ -392,6 +411,7 @@ static void mtk_dpi_config_color_format(struct
+>> mtk_dpi *dpi,
+>>  	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+>>  		mtk_dpi_config_yuv422_enable(dpi, false);
+>>  		mtk_dpi_config_csc_enable(dpi, true);
+>> +		mtk_dpi_matrix_sel(dpi, format);
+>>  		if (dpi->conf->swap_input_support)
+>>  			mtk_dpi_config_swap_input(dpi, false);
+>>  		mtk_dpi_config_channel_swap(dpi,
+>> MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+>> @@ -399,6 +419,7 @@ static void mtk_dpi_config_color_format(struct
+>> mtk_dpi *dpi,
+>>  		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+>>  		mtk_dpi_config_yuv422_enable(dpi, true);
+>>  		mtk_dpi_config_csc_enable(dpi, true);
+>> +		mtk_dpi_matrix_sel(dpi, format);
+>>  		if (dpi->conf->swap_input_support)
+>>  			mtk_dpi_config_swap_input(dpi, true);
+>>  		mtk_dpi_config_channel_swap(dpi,
+>> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+>
+>Hello Guillaume,
+>
+>Thanks for your patch.
+>I have one question:
+>Do this setting affect the dpi for previous SoCs?
+>(8183, 8192, or 8186)
+>If we can confirm the original register setting for this offset in
+>8183/8192/8186, I think we can clarify this question.
+>
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
-V1->V2: fix whitespace warning.
-V2->V3: fix some tab Alignment issue.
+I've checked in the datasheet I have (8365/8385) that this register
+and setting exists.
+So yes, it will affect other platforms.
 
- Documentation/translations/zh_CN/vm/page_owner.rst | 54 +++++++++++++++++++++-
- 1 file changed, 53 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/translations/zh_CN/vm/page_owner.rst b/Documentation/translations/zh_CN/vm/page_owner.rst
-index 9e951fabba9d..0d4f94034db6 100644
---- a/Documentation/translations/zh_CN/vm/page_owner.rst
-+++ b/Documentation/translations/zh_CN/vm/page_owner.rst
-@@ -103,14 +103,66 @@ page owner在默认情况下是禁用的。所以，如果你想使用它，你
- 		-m		按总内存排序
- 		-p		按pid排序。
- 		-P		按tgid排序。
-+		-n		按任务名称排序。
- 		-r		按内存释放时间排序。
- 		-s		按堆栈跟踪排序。
- 		-t		按时间排序（默认）。
-+		--sort <order>	指定排序顺序。排序语法是 [+|-]key[,[+|-]key[,...]]. 从
-+						**标准格式说明符**部分选择一个键。"+" 是可选的，因为默认方向是增加数字或字典顺序。
-+						允许混合使用缩写键和全称键。
-+
-+		Examples:
-+				./page_owner_sort <input> <output> --sort=n,+pid,-tgid
-+				./page_owner_sort <input> <output> --sort=at
- 
-    其它函数:
- 
- 	Cull:
--		-c		通过比较堆栈跟踪而不是总块来进行剔除。
-+		--cull <rules>
-+				指定筛选规则。筛选语法是 key[,key[,...]]。在**标准格式说明符**部分选择一个多字母键
-+
-+		<rules> 是逗号分隔列表形式的单个参数，它提供了一种指定单个筛选规则的方法。下面的**标准格式说明
-+				符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的
-+				STANDARD SORT KEYS 部分所述。允许混合使用缩写形式和完整形式的键。
- 
-+		Examples:
-+				./page_owner_sort <input> <output> --cull=stacktrace
-+				./page_owner_sort <input> <output> --cull=st,pid,name
-+				./page_owner_sort <input> <output> --cull=n,f
- 	Filter:
- 		-f		过滤掉内存已被释放的块的信息。
-+
-+	Select:
-+		--pid <pidlist>		通过 pid 进行选择。这将选择进程 ID 号出现在 <pidlist> 中的块。
-+		--tgid <tgidlist>	通过 tgid 进行选择。这将选择线程组 ID 号出现在 <tgidlist> 中的块。
-+		--name <cmdlist>	按任务名称选择。这将选择任务名称出现在 <cmdlist> 中的块。
-+
-+		<pidlist>、<tgidlist>、<cmdlist>是逗号分隔列表形式的单参数，它提供了一种指定单个选择规则的方法。
-+
-+
-+		Examples:
-+				./page_owner_sort <input> <output> --pid=1
-+				./page_owner_sort <input> <output> --tgid=1,2,3
-+				./page_owner_sort <input> <output> --name name1,name2
-+
-+	标准格式说明符
-+==========================
-+--sort 选项:
-+
-+	缩写键		全称键		描述
-+	p		pid		进程 ID
-+	tg		tgid		线程组 ID
-+	n		name		任务名称
-+	st		stacktrace	页面分配的调用栈
-+	T		txt		块的全文
-+	ft		free_ts		页面被释放的时间戳
-+	at		alloc_ts	页面分配的时间戳
-+
-+--curl 选项:
-+
-+	缩写键		全称键		描述
-+	p		pid		进程 ID
-+	tg		tgid		线程组 ID
-+	n		name		任务名称
-+	f		free		该页面是否已被释放
-+	st		stacktrace	页面分配的调用栈
--- 
-2.7.4
-
+>BRs,
+>Rex
+>
