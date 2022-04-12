@@ -2,136 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06959C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B603C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiDLJbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59038 "EHLO
+        id S1353942AbiDLJeZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384578AbiDLImD (ORCPT
+        with ESMTP id S1380244AbiDLJVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:42:03 -0400
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800B931535;
-        Tue, 12 Apr 2022 01:07:38 -0700 (PDT)
-Received: by mail-qv1-f44.google.com with SMTP id n11so4743820qvl.0;
-        Tue, 12 Apr 2022 01:07:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B3kIM+vDEOWvwfE796xa+4bsmSumR9WhkTFX0uGGX6Y=;
-        b=fBWj5YWSMFQnZBTUYp54FFejJ+IhpzQf6ezPhuxIE1NutpQM20mZKRGuYdZatjiot7
-         jlO8KF5a6VasAc7RUheIGG6EemPe0WadcjdOTtkjpzsScWK2s+CuvYvMj//4kG1PXAcM
-         l+RgdD6eusiFOeJ0fhHrni1HgcxpofUJ78eN/+jvbVZhIrPGfPB9fhQg280HBMVQxR/E
-         OBz5/PSCxZGEHHTwGNFlykza9DNUMsu3UQTgiemND7rEYjPdvpPF5QVwZ052dFCW9rJa
-         xtmugRIeaEaf6yvlemtP9Nv09V08CxxutlYYGMLbg1/X0Nt8fWXEGZe7+AhVPMEUoQji
-         tzdA==
-X-Gm-Message-State: AOAM532IerohS7Xyx38i40Eb7WMixVZKoNqRd/oMdvlr1rL5l6EWvAhF
-        Oc2QhVk+/JbK0L2eXm8A78AM57wy1IFVtYyU
-X-Google-Smtp-Source: ABdhPJzc0khSaFQdyMCKOxNyN6GGAkNL69WoBEeWMFMJwVT22yEtHyIRKzwvKk3kxo+s87C2F4Adsw==
-X-Received: by 2002:a05:6214:23c8:b0:432:e69f:5d77 with SMTP id hr8-20020a05621423c800b00432e69f5d77mr29821869qvb.7.1649750857214;
-        Tue, 12 Apr 2022 01:07:37 -0700 (PDT)
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
-        by smtp.gmail.com with ESMTPSA id d199-20020ae9efd0000000b0069bfae33230sm5707380qkg.53.2022.04.12.01.07.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 01:07:36 -0700 (PDT)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2ebf4b91212so94128987b3.8;
-        Tue, 12 Apr 2022 01:07:36 -0700 (PDT)
-X-Received: by 2002:a81:618b:0:b0:2db:d952:8a39 with SMTP id
- v133-20020a81618b000000b002dbd9528a39mr29324182ywb.132.1649750856326; Tue, 12
- Apr 2022 01:07:36 -0700 (PDT)
+        Tue, 12 Apr 2022 05:21:09 -0400
+X-Greylist: delayed 431 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 01:26:32 PDT
+Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8F338BD9;
+        Tue, 12 Apr 2022 01:26:32 -0700 (PDT)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4KczCJ4Nnwz1r4JD;
+        Tue, 12 Apr 2022 10:19:08 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4KczCJ2GNVz1qty4;
+        Tue, 12 Apr 2022 10:19:08 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id rXjb5LFYsQQh; Tue, 12 Apr 2022 10:19:07 +0200 (CEST)
+X-Auth-Info: /mg83ax7YgZuCI0/7BlnjE0KpBKb9OSSgf4yqYyYL/rip/QnkSIDtPEXLMW/Bvw9
+Received: from igel.home (ppp-46-244-183-143.dynamic.mnet-online.de [46.244.183.143])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue, 12 Apr 2022 10:19:07 +0200 (CEST)
+Received: by igel.home (Postfix, from userid 1000)
+        id 2092F2C3625; Tue, 12 Apr 2022 10:19:07 +0200 (CEST)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH] stat: don't fail if the major number is >= 256
+References: <alpine.LRH.2.02.2204111023230.6206@file01.intranet.prod.int.rdu2.redhat.com>
+        <CAHk-=wijDnLH2K3Rh2JJo-SmWL_ntgzQCDxPeXbJ9A-vTF3ZvA@mail.gmail.com>
+        <alpine.LRH.2.02.2204111236390.31647@file01.intranet.prod.int.rdu2.redhat.com>
+        <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com>
+X-Yow:  Yow!  Now we can become alcoholics!
+Date:   Tue, 12 Apr 2022 10:19:07 +0200
+In-Reply-To: <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com>
+        (Linus Torvalds's message of "Mon, 11 Apr 2022 19:37:44 -1000")
+Message-ID: <87tuayn284.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20220411211243.11121-1-javierm@redhat.com> <20220411211243.11121-3-javierm@redhat.com>
- <CAMuHMdVuivPSRooR5CqTX6GQtxO6RQYwKUqfOK36zsiN8-v6kg@mail.gmail.com> <d37de4b1-55f7-ff4d-6230-6f0b6e65799c@redhat.com>
-In-Reply-To: <d37de4b1-55f7-ff4d-6230-6f0b6e65799c@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 12 Apr 2022 10:07:25 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV_4Gp2fqfCTeUigVxK=J4NF=SqJVd1hKAWpyuUv0Pnzw@mail.gmail.com>
-Message-ID: <CAMuHMdV_4Gp2fqfCTeUigVxK=J4NF=SqJVd1hKAWpyuUv0Pnzw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] dt-bindings: display: ssd1307fb: Extend schema for
- SPI controllers
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+On Apr 11 2022, Linus Torvalds wrote:
 
-On Tue, Apr 12, 2022 at 10:01 AM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> On 4/12/22 09:16, Geert Uytterhoeven wrote:
-> > On Mon, Apr 11, 2022 at 11:12 PM Javier Martinez Canillas
-> > <javierm@redhat.com> wrote:
-> >> The Solomon SSD130x OLED displays can either have an I2C or SPI interface,
-> >> add to the schema the properties and examples for OLED devices under SPI.
-> >>
-> >> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-
-> >> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> >> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> >> @@ -39,9 +39,14 @@ properties:
-> >>    reset-gpios:
-> >>      maxItems: 1
-> >>
-> >> +  dc-gpios:
-> >> +    maxItems: 1
-> >> +
-> >
-> > Perhaps add a description, and clarify this is for SPI only?
+>> For me, the failure happens in cp_compat_stat (I have a 64-bit kernel). In
+>> struct compat_stat in arch/x86/include/asm/compat.h, st_dev and st_rdev
+>> are compat_dev_t which is 16-bit. But they are followed by 16-bit
+>> paddings, so they could be extended.
 >
-> I wondered how to make it required for SPI but couldn't find another binding
-> that did the same and I'm not that familiar with DT schemas to figure it out.
+> Ok, that actually looks like a bug.
 >
-> Before, when I had compatible strings just for SPI I could do the following:
->
->   - if:
->       properties:
->         compatible:
->           contains:
->             enum:
->               - sinowealth,sh1106-spi
->               - solomon,ssd1305-spi
->               - solomon,ssd1306-spi
->               - solomon,ssd1307-spi
->               - solomon,ssd1309-spi
->     then:
->       required:
->         - spi-max-frequency
->         - dc-gpios
->
-> but now that we are using the same compatible strings for I2C and SPI, the
-> compatible string can't be used anymore as an indication to make required.
->
-> Do you have any hints here on how I should enforce this in the schema ?
->
-> Or if you think that a comment is enough, then I will add it in v3.
+> The compat structure should match the native structure.  Those "u16
+> __padX" fields seem to be just a symptom of the bug.
 
-I don't know how to make it required for SPI, if possible at all.
+Looks like the move to 32-bit st_[r]dev was never applied to struct
+compat_stat, see commit e95b206567 ("[PATCH] struct stat - support
+larger dev_t") from tglx/history.git.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
