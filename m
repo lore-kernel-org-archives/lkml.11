@@ -2,164 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6740C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EB7C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355420AbiDLNHy (ORCPT
+        id S1355347AbiDLNHu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
+        Tue, 12 Apr 2022 09:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356309AbiDLNDY (ORCPT
+        with ESMTP id S1356401AbiDLND2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E3B76C977
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:44:53 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 349ED153B;
-        Tue, 12 Apr 2022 05:44:53 -0700 (PDT)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D7A163F70D;
-        Tue, 12 Apr 2022 05:44:50 -0700 (PDT)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
-        baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 02/21] x86/resctrl: Merge mon_capable and mon_enabled
-Date:   Tue, 12 Apr 2022 12:44:00 +0000
-Message-Id: <20220412124419.30689-3-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
-References: <20220412124419.30689-1-james.morse@arm.com>
+        Tue, 12 Apr 2022 09:03:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A21DF42;
+        Tue, 12 Apr 2022 05:45:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30C09B81CCD;
+        Tue, 12 Apr 2022 12:45:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18DDFC385A1;
+        Tue, 12 Apr 2022 12:45:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649767530;
+        bh=XYiwRfijmpElQc3kiUm2Ka2BQBWKE6kkKwKlog3l6Fw=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=ol2DO33P1N8tMqZh4X8Yj4ItBwtVOONDeChhJGN4LnJD4gIccJc4cv84waAZ2jGoM
+         u6PVkiJfdOP8A29p1K4eO5dnEbiTo3ayyk7R8ZLGnd/AqtAIAF1Sbcq/6xSxvk5pAf
+         kJB/cusL+nAw+O1lZlrgiLCGTv9McBJLaHRngWBLcxmmLHlkWrsrRk4MU6hNSP5mx6
+         jSRGFxOOq7UyP6wOu5/ejhr9Wi3/eT7CQbXrW+WC0jLziii0gyvfK0Es9EzmILy668
+         6Z2L9z55ae0y1Ehkud7V63F/q9HEylhRu9trydlYgCL1Lx1jPvghLiyk3pYojFAxm2
+         Txq7fsNfrZrEQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Philippe Schenker <dev@pschenker.ch>
+Cc:     Deren Wu <deren.wu@mediatek.com>, linux-wireless@vger.kernel.org,
+        Felix Fietkau <nbd@nbd.name>, linux@leemhuis.info,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+References: <20220412090415.17541-1-dev@pschenker.ch>
+        <87y20aod5d.fsf@kernel.org>
+        <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
+        <420241bdd4fdbd1379f59e38571ec04c580eba41.camel@pschenker.ch>
+Date:   Tue, 12 Apr 2022 15:45:24 +0300
+In-Reply-To: <420241bdd4fdbd1379f59e38571ec04c580eba41.camel@pschenker.ch>
+        (Philippe Schenker's message of "Tue, 12 Apr 2022 14:30:34 +0200")
+Message-ID: <87bkx6o4gr.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mon_enabled and mon_capable are always set as a pair by
-rdt_get_mon_l3_config().
+Philippe Schenker <dev@pschenker.ch> writes:
 
-There is no point having two values.
+> On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
+>> On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
+>> > Philippe Schenker <dev@pschenker.ch> writes:
+>> >=20
+>> > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+>> > >=20
+>> > > This commit introduces a regression on some systems where the
+>> > > kernel is
+>> > > crashing in different locations after a reboot was issued.
+>> > >=20
+>> > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest
+>> > > firmware.
+>> > >=20
+>> > > Link:=20
+>> > > https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5=
+077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0=
+ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
+>> > > =C2=A0
+>> > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+>> >=20
+>> > Can I take this to wireless tree? Felix, ack?
+>> >=20
+>> > I'll also add:
+>> >=20
+>> > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
+>> >=20
+>>=20
+>> Hi Kalle,
+>>=20
+>> We have a patch for a similar problem. Can you wait for the
+>> verification by Philippe?
+>> Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
+>> after
+>> reboot")
+>> Link:=20
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commi=
+t/drivers/net/wireless/mediatek/mt76?id=3D602cc0c9618a819ab00ea3c9400742a0c=
+a318380
+>>=20
+>> I can reproduce the problem in my v5.16-rc5 desktop. And the issue can
+>> be fixed when the patch applied.
+>>=20
+>>=20
+>> Hi Philippe,
+>>=20
+>> Can you please help to check the patch in your platform?
+>
+> Aah, so I have been a bit late with my painful bisecting. Should have
+> checked -next before...=20
 
-Merge them together.
+Actually commit 602cc0c9618a is already in Linus' tree and it was
+included in v5.18-rc1 release.
 
-Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
-Tested-by: Xin Hao <xhao@linux.alibaba.com>
-Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
----
-Changes since v1:
- * Removed stray cdp_capable changes.
----
- arch/x86/kernel/cpu/resctrl/internal.h | 4 ----
- arch/x86/kernel/cpu/resctrl/monitor.c  | 1 -
- arch/x86/kernel/cpu/resctrl/rdtgroup.c | 8 ++++----
- include/linux/resctrl.h                | 2 --
- 4 files changed, 4 insertions(+), 11 deletions(-)
+> Whatever, your patch works just fine. I cherry picked your patch on
+> top mainline v5.17 and it works just fine with that one.
+>
+> Thank you very much Deren!
 
-diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index 53f3d275a98f..8828b5c1b6d2 100644
---- a/arch/x86/kernel/cpu/resctrl/internal.h
-+++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -459,10 +459,6 @@ int resctrl_arch_set_cdp_enabled(enum resctrl_res_level l, bool enable);
- 	for_each_rdt_resource(r)					      \
- 		if (r->mon_capable)
- 
--#define for_each_mon_enabled_rdt_resource(r)				      \
--	for_each_rdt_resource(r)					      \
--		if (r->mon_enabled)
--
- /* CPUID.(EAX=10H, ECX=ResID=1).EAX */
- union cpuid_0x10_1_eax {
- 	struct {
-diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index eaf25a234ff5..497cadf3285d 100644
---- a/arch/x86/kernel/cpu/resctrl/monitor.c
-+++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -717,7 +717,6 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
- 	l3_mon_evt_init(r);
- 
- 	r->mon_capable = true;
--	r->mon_enabled = true;
- 
- 	return 0;
- }
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index d15c49f77c8c..651ff5288e85 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -1765,7 +1765,7 @@ static int rdtgroup_create_info_dir(struct kernfs_node *parent_kn)
- 			goto out_destroy;
- 	}
- 
--	for_each_mon_enabled_rdt_resource(r) {
-+	for_each_mon_capable_rdt_resource(r) {
- 		fflags =  r->fflags | RF_MON_INFO;
- 		sprintf(name, "%s_MON", r->name);
- 		ret = rdtgroup_mkdir_info_resdir(r, name, fflags);
-@@ -2504,7 +2504,7 @@ void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r, unsigned int dom_id)
- 	struct rdtgroup *prgrp, *crgrp;
- 	char name[32];
- 
--	if (!r->mon_enabled)
-+	if (!r->mon_capable)
- 		return;
- 
- 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
-@@ -2572,7 +2572,7 @@ void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
- 	struct rdtgroup *prgrp, *crgrp;
- 	struct list_head *head;
- 
--	if (!r->mon_enabled)
-+	if (!r->mon_capable)
- 		return;
- 
- 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
-@@ -2642,7 +2642,7 @@ static int mkdir_mondata_all(struct kernfs_node *parent_kn,
- 	 * Create the subdirectories for each domain. Note that all events
- 	 * in a domain like L3 are grouped into a resource whose domain is L3
- 	 */
--	for_each_mon_enabled_rdt_resource(r) {
-+	for_each_mon_capable_rdt_resource(r) {
- 		ret = mkdir_mondata_subdir_alldom(kn, r, prgrp);
- 		if (ret)
- 			goto out_destroy;
-diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 386ab3a41500..8180c539800d 100644
---- a/include/linux/resctrl.h
-+++ b/include/linux/resctrl.h
-@@ -130,7 +130,6 @@ struct resctrl_schema;
- /**
-  * struct rdt_resource - attributes of a resctrl resource
-  * @rid:		The index of the resource
-- * @mon_enabled:	Is monitoring enabled for this feature
-  * @alloc_capable:	Is allocation available on this machine
-  * @mon_capable:	Is monitor feature available on this machine
-  * @num_rmid:		Number of RMIDs available
-@@ -149,7 +148,6 @@ struct resctrl_schema;
-  */
- struct rdt_resource {
- 	int			rid;
--	bool			mon_enabled;
- 	bool			alloc_capable;
- 	bool			mon_capable;
- 	int			num_rmid;
--- 
-2.30.2
+And thank you Philippe for quickly testing this!
 
+> Sorry Kalle for the overlapping revert, please do not apply it.
+
+Ok, I'll drop your revert.
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
