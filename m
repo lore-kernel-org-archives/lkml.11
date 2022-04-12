@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA319C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5DEC47080
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387123AbiDLJFk (ORCPT
+        id S1387137AbiDLJFo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        Tue, 12 Apr 2022 05:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359242AbiDLHmw (ORCPT
+        with ESMTP id S1359231AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4695576E;
-        Tue, 12 Apr 2022 00:20:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C58829CAA;
+        Tue, 12 Apr 2022 00:20:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 594B261045;
-        Tue, 12 Apr 2022 07:20:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68938C385A5;
-        Tue, 12 Apr 2022 07:20:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAAE56153F;
+        Tue, 12 Apr 2022 07:20:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE20DC385A1;
+        Tue, 12 Apr 2022 07:20:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748038;
-        bh=1fAADtwZr8mUN51KJvbjJw10IrVyo6zwcuvu2c/R9yc=;
+        s=korg; t=1649748055;
+        bh=7zGoYeuoPi9RAdbiPKb+irnBIcgN9hLDgptYFZeAQdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B0G8LGzA9vytDRXkP9gkAHQO702qgKRawGcNogQw88zHS9hn1Q7XFh9kMeMLiHjdV
-         nqBmA7zPxoiOe7Fqc67ZJpl2fB2ehKz2bi39oJx2F3UffXra0Zyv5pGq1upJCHQcA1
-         jtJi74Cp0NaIkSddDKCQHlz+yjtpN62nFV4VW1lo=
+        b=JIRfXK0piSvwh2Igu2goLn3TazXW5bdzf+wX4FviRxZ+elMG7D9oygKXl0UpwRZuF
+         DJXBsY5FMKD+97aNdRoZlA9eUiqiBm5lXamh/KiYgjLfCKeRXOL/El0p0njYeAdBhq
+         qaCsZQcA8oKjgNxs+qI6Bx9jeWh7IEsJFnrlY0MY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 280/343] x86/pm: Save the MSR validity status at context setup
-Date:   Tue, 12 Apr 2022 08:31:38 +0200
-Message-Id: <20220412062959.405582569@linuxfoundation.org>
+        stable@vger.kernel.org, Shirish S <shirish.s@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 303/343] amd/display: set backlight only if required
+Date:   Tue, 12 Apr 2022 08:32:01 +0200
+Message-Id: <20220412063000.070566639@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,55 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Shirish S <shirish.s@amd.com>
 
-commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
+commit 4052287a75eb3fc0f487fcc5f768a38bede455c8 upstream.
 
-The mechanism to save/restore MSRs during S3 suspend/resume checks for
-the MSR validity during suspend, and only restores the MSR if its a
-valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
-throw an exception for every suspend cycle.  The more invalid MSRs,
-higher the impact will be.
+[Why]
+comparing pwm bl values (coverted) with user brightness(converted)
+levels in commit_tail leads to continuous setting of backlight via dmub
+as they don't to match.
+This leads overdrive in queuing of commands to DMCU that sometimes lead
+to depending on load on DMCU fw:
 
-Check and save the MSR validity at setup.  This ensures that only valid
-MSRs that are guaranteed to not throw an exception will be attempted
-during suspend.
+"[drm:dc_dmub_srv_wait_idle] *ERROR* Error waiting for DMUB idle: status=3"
 
-Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Borislav Petkov <bp@suse.de>
+[How]
+Store last successfully set backlight value and compare with it instead
+of pwm reads which is not what we should compare with.
+
+Signed-off-by: Shirish S <shirish.s@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/power/cpu.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    7 ++++---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h |    6 ++++++
+ 2 files changed, 10 insertions(+), 3 deletions(-)
 
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -40,7 +40,8 @@ static void msr_save_context(struct save
- 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
- 
- 	while (msr < end) {
--		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
-+		if (msr->valid)
-+			rdmsrl(msr->info.msr_no, msr->info.reg.q);
- 		msr++;
- 	}
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3951,7 +3951,7 @@ static u32 convert_brightness_to_user(co
+ 				 max - min);
  }
-@@ -424,8 +425,10 @@ static int msr_build_context(const u32 *
+ 
+-static int amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
++static void amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
+ 					 int bl_idx,
+ 					 u32 user_brightness)
+ {
+@@ -3982,7 +3982,8 @@ static int amdgpu_dm_backlight_set_level
+ 			DRM_DEBUG("DM: Failed to update backlight on eDP[%d]\n", bl_idx);
  	}
  
- 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
-+		u64 dummy;
-+
- 		msr_array[i].info.msr_no	= msr_id[j];
--		msr_array[i].valid		= false;
-+		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
- 		msr_array[i].info.reg.q		= 0;
+-	return rc ? 0 : 1;
++	if (rc)
++		dm->actual_brightness[bl_idx] = user_brightness;
+ }
+ 
+ static int amdgpu_dm_backlight_update_status(struct backlight_device *bd)
+@@ -9914,7 +9915,7 @@ static void amdgpu_dm_atomic_commit_tail
+ 	/* restore the backlight level */
+ 	for (i = 0; i < dm->num_of_edps; i++) {
+ 		if (dm->backlight_dev[i] &&
+-		    (amdgpu_dm_backlight_get_level(dm, i) != dm->brightness[i]))
++		    (dm->actual_brightness[i] != dm->brightness[i]))
+ 			amdgpu_dm_backlight_set_level(dm, i, dm->brightness[i]);
  	}
- 	saved_msrs->num   = total_num;
+ #endif
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
+@@ -540,6 +540,12 @@ struct amdgpu_display_manager {
+ 	 * cached backlight values.
+ 	 */
+ 	u32 brightness[AMDGPU_DM_MAX_NUM_EDP];
++	/**
++	 * @actual_brightness:
++	 *
++	 * last successfully applied backlight values.
++	 */
++	u32 actual_brightness[AMDGPU_DM_MAX_NUM_EDP];
+ };
+ 
+ enum dsc_clock_force_state {
 
 
