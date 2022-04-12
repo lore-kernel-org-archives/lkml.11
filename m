@@ -2,125 +2,341 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A21DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57183C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355254AbiDLNFv (ORCPT
+        id S1355059AbiDLNF5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        Tue, 12 Apr 2022 09:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356273AbiDLNDX (ORCPT
+        with ESMTP id S1354975AbiDLNCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:23 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E95096C48A
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:44:30 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 975AD150C;
-        Tue, 12 Apr 2022 05:44:30 -0700 (PDT)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 445143F70D;
-        Tue, 12 Apr 2022 05:44:28 -0700 (PDT)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
+        Tue, 12 Apr 2022 09:02:13 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C53198;
+        Tue, 12 Apr 2022 05:41:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649767275; x=1681303275;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=eyXblfG/A5HWVja7fFUb4HNY/ZRRmFMXW6QIdjEei/o=;
+  b=Bf3bPc/YraGzPZAJmicdhLm+9cFkKE5cPUl/VANxPQgA3hCbaw/aB6ll
+   ZD7EkPG0pScmuSl8bC1F/ByShPpMM5XywO9YoXWFp9zvfIXxcyzSgWS4F
+   qyxkp/zKVIC/3GmZqUCgB7x+qYFGLluSh74zlGjxj6f1lrXnDJs5fwJWs
+   5XMLNJ5A1UHAYOu09dSrrcUuAzkdCavt3rCuJ5+iu+V/Zs1x/pSxcNTc7
+   QBDUWmUqLMDeznZPqx+8xmnEMikNLBFpndwHseJ6yV+jbb2BOrkUgaE83
+   CaVJNhneaOY8Y78bV1D5+4WR+eGxcJE6vIAMuaXV+5NjpdL8+R8BPMl6w
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262112433"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="262112433"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:41:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="526023841"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by orsmga002.jf.intel.com with ESMTP; 12 Apr 2022 05:41:06 -0700
+Date:   Tue, 12 Apr 2022 20:40:56 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
-        baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 00/21] x86/resctrl: Make resctrl_arch_rmid_read() return values in bytes
-Date:   Tue, 12 Apr 2022 12:43:58 +0000
-Message-Id: <20220412124419.30689-1-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 10/13] KVM: Register private memslot to memory backing
+ store
+Message-ID: <20220412124056.GA8013@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-11-chao.p.peng@linux.intel.com>
+ <YkNXoCBjfpfI67QF@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkNXoCBjfpfI67QF@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in this version?
- * Fixed the problems with mon_capable preventing mbps_val[] being allocated
-   on the correct resources.
- * Fixed initialisation of ctrl_val[] to ~0 when mba_sc is selected.
- * Assorted style fixes.
+On Tue, Mar 29, 2022 at 07:01:52PM +0000, Sean Christopherson wrote:
+> On Thu, Mar 10, 2022, Chao Peng wrote:
+> > Add 'notifier' to memslot to make it a memfile_notifier node and then
+> > register it to memory backing store via memfile_register_notifier() when
+> > memslot gets created. When memslot is deleted, do the reverse with
+> > memfile_unregister_notifier(). Note each KVM memslot can be registered
+> > to different memory backing stores (or the same backing store but at
+> > different offset) independently.
+> > 
+> > Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> > ---
+> >  include/linux/kvm_host.h |  1 +
+> >  virt/kvm/kvm_main.c      | 75 ++++++++++++++++++++++++++++++++++++----
+> >  2 files changed, 70 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> > index 6e1d770d6bf8..9b175aeca63f 100644
+> > --- a/include/linux/kvm_host.h
+> > +++ b/include/linux/kvm_host.h
+> > @@ -567,6 +567,7 @@ struct kvm_memory_slot {
+> >  	struct file *private_file;
+> >  	loff_t private_offset;
+> >  	struct memfile_pfn_ops *pfn_ops;
+> > +	struct memfile_notifier notifier;
+> >  };
+> >  
+> >  static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
+> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> > index d11a2628b548..67349421eae3 100644
+> > --- a/virt/kvm/kvm_main.c
+> > +++ b/virt/kvm/kvm_main.c
+> > @@ -840,6 +840,37 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
+> >  
+> >  #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
+> >  
+> > +#ifdef CONFIG_MEMFILE_NOTIFIER
+> > +static inline int kvm_memfile_register(struct kvm_memory_slot *slot)
+> 
+> This is a good oppurtunity to hide away the memfile details a bit.  Maybe
+> kvm_private_mem_{,un}register()?
 
----
-The aim of this series is to insert a split between the parts of the monitor
-code that the architecture must implement, and those that are part of the
-resctrl filesystem. The eventual aim is to move all filesystem parts out
-to live in /fs/resctrl, so that resctrl can be wired up for MPAM.
+Happy to change.
 
-What's MPAM? See the cover letter of a previous series. [1]
+> 
+> > +{
+> > +	return memfile_register_notifier(file_inode(slot->private_file),
+> > +					 &slot->notifier,
+> > +					 &slot->pfn_ops);
+> > +}
+> > +
+> > +static inline void kvm_memfile_unregister(struct kvm_memory_slot *slot)
+> > +{
+> > +	if (slot->private_file) {
+> > +		memfile_unregister_notifier(file_inode(slot->private_file),
+> > +					    &slot->notifier);
+> > +		fput(slot->private_file);
+> 
+> This should not do fput(), it makes the helper imbalanced with respect to the
+> register path and will likely lead to double fput().  Indeed, if preparing the
+> region fails, __kvm_set_memory_region() will double up on fput() due to checking
+> its local "file" for null, not slot->private for null.
 
-The series adds domain online/offline callbacks to allow the filesystem to
-manage some of its structures itself, then moves all the 'mba_sc' behaviour
-to be part of the filesystem.
-This means another architecture doesn't need to provide an mbps_val array.
-As its all software, the resctrl filesystem should be able to do this without
-any help from the architecture code.
+Right.
 
-Finally __rmid_read() is refactored to be the API call that the architecture
-provides to read a counter value. All the hardware specific overflow detection,
-scaling and value correction should occur behind this helper.
+> 
+> > +		slot->private_file = NULL;
+> > +	}
+> > +}
+> > +
+> > +#else /* !CONFIG_MEMFILE_NOTIFIER */
+> > +
+> > +static inline int kvm_memfile_register(struct kvm_memory_slot *slot)
+> > +{
+> 
+> This should WARN_ON_ONCE().  Ditto for unregister.
+> 
+> > +	return -EOPNOTSUPP;
+> > +}
+> > +
+> > +static inline void kvm_memfile_unregister(struct kvm_memory_slot *slot)
+> > +{
+> > +}
+> > +
+> > +#endif /* CONFIG_MEMFILE_NOTIFIER */
+> > +
+> >  #ifdef CONFIG_HAVE_KVM_PM_NOTIFIER
+> >  static int kvm_pm_notifier_call(struct notifier_block *bl,
+> >  				unsigned long state,
+> > @@ -884,6 +915,9 @@ static void kvm_destroy_dirty_bitmap(struct kvm_memory_slot *memslot)
+> >  /* This does not remove the slot from struct kvm_memslots data structures */
+> >  static void kvm_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
+> >  {
+> > +	if (slot->flags & KVM_MEM_PRIVATE)
+> > +		kvm_memfile_unregister(slot);
+> 
+> With fput() move out of unregister, this needs to be:
 
+Agreed.
 
-This series is based on v5.18-rc1, and can be retrieved from:
-git://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/resctrl_monitors_in_bytes/v4
+> 
+> 	if (slot->flags & KVM_MEM_PRIVATE) {
+> 		kvm_private_mem_unregister(slot);
+> 		fput(slot->private_file);
+> 	}
+> > +
+> >  	kvm_destroy_dirty_bitmap(slot);
+> >  
+> >  	kvm_arch_free_memslot(kvm, slot);
+> > @@ -1738,6 +1772,12 @@ static int kvm_set_memslot(struct kvm *kvm,
+> >  		kvm_invalidate_memslot(kvm, old, invalid_slot);
+> >  	}
+> >  
+> > +	if (new->flags & KVM_MEM_PRIVATE && change == KVM_MR_CREATE) {
+> > +		r = kvm_memfile_register(new);
+> > +		if (r)
+> > +			return r;
+> > +	}
+> 
+> This belongs in kvm_prepare_memory_region().  The shenanigans for DELETE and MOVE
+> are special.
 
-[0] git://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/resctrl_merge_cdp/v7
-[1] https://lore.kernel.org/lkml/20210728170637.25610-1-james.morse@arm.com/
+Sure.
 
-[v1] https://lore.kernel.org/lkml/20210729223610.29373-1-james.morse@arm.com/
-[v2] https://lore.kernel.org/lkml/20211001160302.31189-1-james.morse@arm.com/
-[v3] https://lore.kernel.org/lkml/20220217182110.7176-1-james.morse@arm.com/
+> 
+> > +
+> >  	r = kvm_prepare_memory_region(kvm, old, new, change);
+> >  	if (r) {
+> >  		/*
+> > @@ -1752,6 +1792,10 @@ static int kvm_set_memslot(struct kvm *kvm,
+> >  		} else {
+> >  			mutex_unlock(&kvm->slots_arch_lock);
+> >  		}
+> > +
+> > +		if (new->flags & KVM_MEM_PRIVATE && change == KVM_MR_CREATE)
+> > +			kvm_memfile_unregister(new);
+> > +
+> >  		return r;
+> >  	}
+> >  
+> > @@ -1817,6 +1861,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
+> >  	enum kvm_mr_change change;
+> >  	unsigned long npages;
+> >  	gfn_t base_gfn;
+> > +	struct file *file = NULL;
+> 
+> Nit, naming this private_file would help understand its use.  Though I think it's
+> easier to not have a local variable.  More below.
+> 
+> >  	int as_id, id;
+> >  	int r;
+> >  
+> > @@ -1890,14 +1935,24 @@ int __kvm_set_memory_region(struct kvm *kvm,
+> >  			return 0;
+> >  	}
+> >  
+> > +	if (mem->flags & KVM_MEM_PRIVATE) {
+> > +		file = fdget(region_ext->private_fd).file;
+> 
+> This can use fget() instead of fdget().
+> 
+> > +		if (!file)
+> > +			return -EINVAL;
+> > +	}
+> > +
+> >  	if ((change == KVM_MR_CREATE || change == KVM_MR_MOVE) &&
+> > -	    kvm_check_memslot_overlap(slots, id, base_gfn, base_gfn + npages))
+> > -		return -EEXIST;
+> > +	    kvm_check_memslot_overlap(slots, id, base_gfn, base_gfn + npages)) {
+> > +		r = -EEXIST;
+> > +		goto out;
+> > +	}
+> >  
+> >  	/* Allocate a slot that will persist in the memslot. */
+> >  	new = kzalloc(sizeof(*new), GFP_KERNEL_ACCOUNT);
+> > -	if (!new)
+> > -		return -ENOMEM;
+> > +	if (!new) {
+> > +		r = -ENOMEM;
+> > +		goto out;
+> > +	}
+> >  
+> >  	new->as_id = as_id;
+> >  	new->id = id;
+> > @@ -1905,10 +1960,18 @@ int __kvm_set_memory_region(struct kvm *kvm,
+> >  	new->npages = npages;
+> >  	new->flags = mem->flags;
+> >  	new->userspace_addr = mem->userspace_addr;
+> > +	new->private_file = file;
+> > +	new->private_offset = mem->flags & KVM_MEM_PRIVATE ?
+> > +			      region_ext->private_offset : 0;
+> 
+> "new" is zero-allocated, so all the private stuff, including the fget(), can be
+> wrapped in a single KVM_MEM_PRIVATE check.  Moving fget() eliminates the number
+> of gotos needed (the above -EEXIST and -ENOMEM paths don't need to be modified).
+> 
+> >  	r = kvm_set_memslot(kvm, old, new, change);
+> > -	if (r)
+> > -		kfree(new);
+> > +	if (!r)
+> > +		return r;
+> 
+> Use goto, e.g.
+> 
+> 	if (r)
+> 		goto out;
+> 
+> 	return 0;
+> 
+> Burying the happy path in a taken if-statement is confusing and error prone,
+> mostly because it breaks well-established kernel patterns.  Note, there's no need
+> for a separate out_free since new->private_file will be NULL in either case.  I
+> don't have a strong preference, I just find it easier to read code that's more
+> explicit, but I'm a-ok collapsing them into a single label.
 
+Will follow this, thanks for the detailed suggestion.
 
-James Morse (21):
-  x86/resctrl: Kill off alloc_enabled
-  x86/resctrl: Merge mon_capable and mon_enabled
-  x86/resctrl: Add domain online callback for resctrl work
-  x86/resctrl: Group struct rdt_hw_domain cleanup
-  x86/resctrl: Add domain offline callback for resctrl work
-  x86/resctrl: Remove set_mba_sc()s control array re-initialisation
-  x86/resctrl: Create mba_sc configuration in the rdt_domain
-  x86/resctrl: Switch over to the resctrl mbps_val list
-  x86/resctrl: Remove architecture copy of mbps_val
-  x86/resctrl: Abstract and use supports_mba_mbps()
-  x86/resctrl: Allow update_mba_bw() to update controls directly
-  x86/resctrl: Calculate bandwidth from the previous __mon_event_count()
-    chunks
-  x86/resctrl: Add per-rmid arch private storage for overflow and chunks
-  x86/resctrl: Allow per-rmid arch private storage to be reset
-  x86/resctrl: Abstract __rmid_read()
-  x86/resctrl: Pass the required parameters into
-    resctrl_arch_rmid_read()
-  x86/resctrl: Move mbm_overflow_count() into resctrl_arch_rmid_read()
-  x86/resctrl: Move get_corrected_mbm_count() into
-    resctrl_arch_rmid_read()
-  x86/resctrl: Rename and change the units of resctrl_cqm_threshold
-  x86/resctrl: Add resctrl_rmid_realloc_limit to abstract x86's
-    boot_cpu_data
-  x86/resctrl: Make resctrl_arch_rmid_read() return values in bytes
-
- arch/x86/kernel/cpu/resctrl/core.c        | 117 ++++-------
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c |  75 +++++---
- arch/x86/kernel/cpu/resctrl/internal.h    |  61 +++---
- arch/x86/kernel/cpu/resctrl/monitor.c     | 224 ++++++++++++++--------
- arch/x86/kernel/cpu/resctrl/pseudo_lock.c |   2 +-
- arch/x86/kernel/cpu/resctrl/rdtgroup.c    | 212 ++++++++++++++++----
- include/linux/resctrl.h                   |  64 ++++++-
- 7 files changed, 493 insertions(+), 262 deletions(-)
-
--- 
-2.30.2
-
+Chao
+> 
+> 	if ((change == KVM_MR_CREATE || change == KVM_MR_MOVE) &&
+> 	    kvm_check_memslot_overlap(slots, id, base_gfn, base_gfn + npages))
+> 		return -EEXIST;
+> 
+> 	/* Allocate a slot that will persist in the memslot. */
+> 	new = kzalloc(sizeof(*new), GFP_KERNEL_ACCOUNT);
+> 	if (!new)
+> 		return -ENOMEM;
+> 
+> 	new->as_id = as_id;
+> 	new->id = id;
+> 	new->base_gfn = base_gfn;
+> 	new->npages = npages;
+> 	new->flags = mem->flags;
+> 	new->userspace_addr = mem->userspace_addr;
+> 
+> 	if (mem->flags & KVM_MEM_PRIVATE) {
+> 		new->private_file = fget(mem->private_fd);
+> 		if (!new->private_file) {
+> 			r = -EINVAL;
+> 			goto out_free;
+> 		}
+> 		new->private_offset = mem->private_offset;
+> 	}
+> 
+> 	r = kvm_set_memslot(kvm, old, new, change);
+> 	if (r)
+> 		goto out;
+> 
+> 	return 0;
+> 
+> out:
+> 	if (new->private_file)
+> 		fput(new->private_file);
+> 
+> out_free:
+> 	kfree(new);
+> 	return r;
