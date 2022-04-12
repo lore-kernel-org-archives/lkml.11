@@ -2,95 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED64C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C26FCC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379368AbiDLKTl (ORCPT
+        id S1376767AbiDLKTa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
+        Tue, 12 Apr 2022 06:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357486AbiDLJ7R (ORCPT
+        with ESMTP id S1356296AbiDLJzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:59:17 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90136D4D3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:01:54 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d15so16217548pll.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:01:54 -0700 (PDT)
+        Tue, 12 Apr 2022 05:55:08 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183456A033
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:57:55 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id r8so18361037oib.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:57:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NJIUPTIwlW1yqo+bBjjNQ6hCNCU4mnU6YG9EAezP6EA=;
-        b=gTDuuZ9+FGdPsqHBdpPR3b+DkmcyZk8Vjr9z3ud96fdzFLo4BQnD440lWFnCGd1Zg3
-         cZvysxJ2g/DGs5Xc0jhErEkcpCGDEv1hMuTXr3nJRHW/IqZ5dg+lp2E0mDHQ+mA7l28r
-         sogpemINd9OotgPA7TJ6dt+aJV6aKYaJpwZOACgli7we52A0S7lBYo5hSkRi3oVCwpZ7
-         nRZ2Ic0QdBdshwR6uBkf/Z6I9krNxFghnIHsCnZUe6omlAGuoqpm+0bgozQk+qG4d1oi
-         H/JWBqCQ7WuWU5kJZfE9s453SwHGHyLYF3FGgPphmmCYqIBCR4vUxBz/rjZ5ny2P/y0t
-         SWqw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
+         :subject:to:cc;
+        bh=4FpzyyLj/OdDU3ZmpUpstG+y8CAFSWZd/AR4b2PM65Y=;
+        b=O4uumP51JcV7qBCLnK0EA1pkMY6sGD/pTvzvNjou2PgcdwHOFuibGIptBgZ3zJNPCO
+         HNcpOraxajhSfH6FKpX+oohFsR9+cAmNzr3raUAIRjIXsDz70WJRGRPe0sBzCtIorZSn
+         jwU9hlWq8nhRQgCL+0BDauOseU08SQ6kHBE39slH9gyCacBPIRunwbgJFwT4MEAkgB4u
+         XOLgBEcCs1r6ODorwmX7IF0ZhAGaeOSeAxRCXAcIUN8mXCyKnW+FU3R/7MlScEWkf0VY
+         ZvjB33mZDqS56xB5bdfVu9Bjy/qdU0l0vvxbk6G4z6AorUZE6E2dkUcfig1wxL70aOEU
+         PS7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NJIUPTIwlW1yqo+bBjjNQ6hCNCU4mnU6YG9EAezP6EA=;
-        b=7i2Vq3zvPHV2SlEFo5V5tS8ZVXBhVJ37WHvOp6+T9KWXkk8AcQUmp8b7Z29UMDBqaX
-         PVm7hJRU9q+xZfMYbXOdUtyI7CLHNni8mbVl3NA3IYnv5dyl2d98d49scF/DQTYDEauh
-         kg2g9bLcdei4MbKLJuRU1Fup/mjSTCOl1GlL9wiSaJTiJeq7jHFlKHvQqfygkNsBuGbT
-         zx3fyWxDzBMpy4MUPDKZYWPLR9/83Q02hWgs8q+eBPVstouoVCKnYrIv411G/eYwq/mD
-         NzgYpOvoO/P2c71WAAn/D1NEbDTwI2/hl6an3JCxgDVqdQ7tMvgmGoXwCSdy4ymAdUwW
-         3HDg==
-X-Gm-Message-State: AOAM532heINrIYJr8mqaFwXUZ0CVg473RZw8tQsimnfmzeDF6DF0Py+5
-        m/7uM0QCfOQknE0CcBvXjshk1/RepOA=
-X-Google-Smtp-Source: ABdhPJyCiaAvpOVYpOy4NCFANstY3YgAIY18ez5RlUm3CicYx95FyB64nqoJrt47QujVjaFtEWPb/A==
-X-Received: by 2002:a17:90a:5983:b0:1c9:ee11:76df with SMTP id l3-20020a17090a598300b001c9ee1176dfmr3824811pji.95.1649754114164;
-        Tue, 12 Apr 2022 02:01:54 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id j63-20020a636e42000000b003987df110edsm2172423pgc.42.2022.04.12.02.01.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 02:01:53 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     iwona.winiarska@intel.com, joel@jms.id.au, andrew@aj.id.au
-Cc:     jae.hyun.yoo@linux.intel.com, pierre-louis.bossart@linux.intel.com,
-        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] peci: fix error check return value of platform_get_irq()
-Date:   Tue, 12 Apr 2022 09:01:47 +0000
-Message-Id: <20220412090148.2533219-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:from:user-agent:references:in-reply-to
+         :mime-version:date:message-id:subject:to:cc;
+        bh=4FpzyyLj/OdDU3ZmpUpstG+y8CAFSWZd/AR4b2PM65Y=;
+        b=beUcIHLmV+S6LpykoMLcD9SESvBrBxyuGTaae6FQwDCqQLtL0mFueHGEpkLUK8m28x
+         d5WiIJLM6dghBjRQg+q1CfVZ/m3Xcg+XdHxLy/8h9GvV1jMF+ZbClTWuFIto73osHR3K
+         7zXxxv1YCwDGWMctpe0HxnHTt0xTU5MhP5xjtNAcFaV9vzqURJ75JBl6YpcJQg3t4jmF
+         OcK7zmfN/0XJJ7PG6VcG1ozzvPrsFLrNhpcQRPlA5JlD2zNCXcwtN2Y769GvEkVWiCdC
+         dkQDWZqCMozFiWTVye00CxXF+hZ5/WvZBXlUEZr+IBH8kKpb0njJD1ZypJXLVwFUAPJe
+         wRTQ==
+X-Gm-Message-State: AOAM530AnHFToCkDLMjDsGwEhEQZl2+TdRAQiWHiq2jZoJtOpn4dVrMI
+        VXfvkViHSVtvRi78svd3gMIQ/V6AUDrjGG4x5HqGrQ==
+X-Google-Smtp-Source: ABdhPJyGsXSnBb0OrYJzuxK+lplYEUvtBMZUA3XN/6JoCjC1Dfht5xOEuqQ6v8izMrWtfTdYVEwhffLY26AWeFbXjVU=
+X-Received: by 2002:a05:6808:159d:b0:2da:3946:ab3d with SMTP id
+ t29-20020a056808159d00b002da3946ab3dmr1258843oiw.248.1649753874382; Tue, 12
+ Apr 2022 01:57:54 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 12 Apr 2022 01:57:53 -0700
+From:   Guillaume Ranquet <granquet@baylibre.com>
+User-Agent: meli 0.7.2
+References: <20220327223927.20848-1-granquet@baylibre.com> <20220327223927.20848-5-granquet@baylibre.com>
+ <0c523ad5-6a71-5c71-17b8-1f15c1860d89@collabora.com>
+In-Reply-To: <0c523ad5-6a71-5c71-17b8-1f15c1860d89@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date:   Tue, 12 Apr 2022 01:57:53 -0700
+Message-ID: <CABnWg9vxnLqAsoLOSHekwa9q3v=atLJEXpXADMc-bj+z1mkQHA@mail.gmail.com>
+Subject: Re: [PATCH v9 04/22] drm/edid: Convert cea_sad helper struct to kernelDoc
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, vkoul@kernel.org,
+        airlied@linux.ie, chunfeng.yun@mediatek.com,
+        chunkuang.hu@kernel.org, ck.hu@mediatek.com, daniel@ffwll.ch,
+        deller@gmx.de, jitao.shi@mediatek.com, kishon@ti.com,
+        krzk+dt@kernel.org, maarten.lankhorst@linux.intel.com,
+        matthias.bgg@gmail.com, mripard@kernel.org, p.zabel@pengutronix.de,
+        robh+dt@kernel.org, tzimmermann@suse.de
+Cc:     devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-phy@lists.infradead.org, markyacoub@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+On Mon, 28 Mar 2022 10:04, AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>Il 28/03/22 00:39, Guillaume Ranquet ha scritto:
+>> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+>> ---
+>>   include/drm/drm_edid.h | 11 ++++++++---
+>>   1 file changed, 8 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+>> index 144c495b99c4..5d4d840b9904 100644
+>> --- a/include/drm/drm_edid.h
+>> +++ b/include/drm/drm_edid.h
+>> @@ -359,12 +359,17 @@ struct edid {
+>>
+>>   #define EDID_PRODUCT_ID(e) ((e)->prod_code[0] | ((e)->prod_code[1] << 8))
+>>
+>> -/* Short Audio Descriptor */
+>
+>Hello Guillaume,
+>
+>> +/* struct cea_sad - Short Audio Descriptor.
+>> +	@format: See HDMI_AUDIO_CODING_TYPE_*.
+>> +	@channels: max number of channels - 1.
+>> +	@freq: See CEA_SAD_FREQ_*.
+>> +	@byte2: meaning depends on format.
+>> +*/
+>
+>I appreciate the effort, but this is not valid kerneldoc.
+>
+>Please refer to https://docs.kernel.org/doc-guide/kernel-doc.html
+>
+>Regards,
+>Angelo
 
-platform_get_irq() return negative value on failure, so null check of
-priv->irq is incorrect. Fix it by comparing whether it is less than zero.
+Hello Angelo,
 
-Fixes: a85e4c52086c ("peci: Add peci-aspeed controller driver")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- drivers/peci/controller/peci-aspeed.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thx for your review.
+I'm sorry I posted this v9 in a bit of a rush...
+but I promise we will get there... eventually :D
 
-diff --git a/drivers/peci/controller/peci-aspeed.c b/drivers/peci/controller/peci-aspeed.c
-index 1925ddc13f00..731c5d8f75c6 100644
---- a/drivers/peci/controller/peci-aspeed.c
-+++ b/drivers/peci/controller/peci-aspeed.c
-@@ -523,7 +523,7 @@ static int aspeed_peci_probe(struct platform_device *pdev)
- 		return PTR_ERR(priv->base);
- 
- 	priv->irq = platform_get_irq(pdev, 0);
--	if (!priv->irq)
-+	if (priv->irq < 0)
- 		return priv->irq;
- 
- 	ret = devm_request_irq(&pdev->dev, priv->irq, aspeed_peci_irq_handler,
--- 
-2.25.1
-
+Thx,
+Guillaume.
