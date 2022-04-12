@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C13C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F70C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231766AbiDLHsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45710 "EHLO
+        id S1354014AbiDLHsc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:48:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353157AbiDLHOx (ORCPT
+        with ESMTP id S1353328AbiDLHPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737BE37AA4;
-        Mon, 11 Apr 2022 23:56:38 -0700 (PDT)
+        Tue, 12 Apr 2022 03:15:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E12B38DB4;
+        Mon, 11 Apr 2022 23:56:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F16FCB81B44;
-        Tue, 12 Apr 2022 06:56:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C090C385A1;
-        Tue, 12 Apr 2022 06:56:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C36E615D5;
+        Tue, 12 Apr 2022 06:56:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE1AEC385A1;
+        Tue, 12 Apr 2022 06:56:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746595;
-        bh=sFmGLkUacBWBHi4zv6UXeP0p70b8wzsnAfwnEIHGy90=;
+        s=korg; t=1649746610;
+        bh=tghxGsbaqHcpP6pV6vKAw/1Th5K64SKUYwOYUvBJVKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CqpzXyLV7f3Oy/VceWFRFDc5Z/fAHOJIDGT652YNKPN/B/BgsOnqk9kaqluYPMa+M
-         yl2l8CECZft4RZg1m1ySPCFPvFOCYNHhnIQZco/oQuvCITx+orJ5T+zFFHxEU3hpcE
-         JwtcjwdbvF1WIRMDo9amVhhUVJPygsG/pt4By8Mc=
+        b=si+QXNRHqkR7rWdCSHO3vXcZ/CfIw6NQIjvcQLKvWRvzsMVvLplDlH3BbH3qW0hjn
+         K1L7tlNu3+eg9WiJJWlSozyqoZo30leYVR1Iua2sF311sJ1ATiN41gVe/30fnNsWiG
+         qTysWxxPB22kDL10+Txy1s23A3cWixEH8d5f+PoE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
+        Mike Snitzer <snitzer@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 061/285] iwlwifi: fix small doc mistake for iwl_fw_ini_addr_val
-Date:   Tue, 12 Apr 2022 08:28:38 +0200
-Message-Id: <20220412062945.431114402@linuxfoundation.org>
+Subject: [PATCH 5.16 066/285] dm ioctl: prevent potential spectre v1 gadget
+Date:   Tue, 12 Apr 2022 08:28:43 +0200
+Message-Id: <20220412062945.574678647@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -48,46 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Jordy Zomer <jordy@jordyzomer.github.io>
 
-[ Upstream commit 3009c797c4b3840495e8f48d8d07f48d2ddfed80 ]
+[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
 
-There was a small copy and paste mistake in the doc declaration of
-iwl_fw_ini_addr_val.  Fix it.
+It appears like cmd could be a Spectre v1 gadget as it's supplied by a
+user and used as an array index. Prevent the contents of kernel memory
+from being leaked to userspace via speculative execution by using
+array_index_nospec.
 
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220205112029.aeec71c397b3.I0ba3234419eb8c8c7512a2ca531a6dbb55046cf7@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/md/dm-ioctl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-index 3988f5fea33a..6b2a2828cb83 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
- /*
-- * Copyright (C) 2018-2021 Intel Corporation
-+ * Copyright (C) 2018-2022 Intel Corporation
-  */
- #ifndef __iwl_fw_dbg_tlv_h__
- #define __iwl_fw_dbg_tlv_h__
-@@ -244,11 +244,10 @@ struct iwl_fw_ini_hcmd_tlv {
- } __packed; /* FW_TLV_DEBUG_HCMD_API_S_VER_1 */
+diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
+index 21fe8652b095..901abd6dea41 100644
+--- a/drivers/md/dm-ioctl.c
++++ b/drivers/md/dm-ioctl.c
+@@ -18,6 +18,7 @@
+ #include <linux/dm-ioctl.h>
+ #include <linux/hdreg.h>
+ #include <linux/compat.h>
++#include <linux/nospec.h>
  
- /**
--* struct iwl_fw_ini_conf_tlv - preset configuration TLV
-+* struct iwl_fw_ini_addr_val - Address and value to set it to
- *
- * @address: the base address
- * @value: value to set at address
--
- */
- struct iwl_fw_ini_addr_val {
- 	__le32 address;
+ #include <linux/uaccess.h>
+ #include <linux/ima.h>
+@@ -1788,6 +1789,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
+ 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
+ 		return NULL;
+ 
++	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
+ 	*ioctl_flags = _ioctls[cmd].flags;
+ 	return _ioctls[cmd].fn;
+ }
 -- 
 2.35.1
 
