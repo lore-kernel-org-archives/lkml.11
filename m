@@ -2,104 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 931CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7DBEC3527B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352639AbiDLHOM (ORCPT
+        id S1352377AbiDLHN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        Tue, 12 Apr 2022 03:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352544AbiDLG4A (ORCPT
+        with ESMTP id S1352204AbiDLGzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:56:00 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D674162D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:45:58 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id u15so16658468ejf.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JYLTflw7lfJdOYx0URIPHkyjZlSOngY1f4PANC1Ya4Q=;
-        b=bfGqjachYVfU5dPcDQg5xv9rbpIvCedlwXnPSgn1JNYcXGDNhP9LHMKnTUwviTqDVz
-         HlY2DpIzKBG9qnHFP1Wd5RF1IOBtplLTITXxocnnSjUMVA6L10hNHfY36jfiQI3IwjLM
-         gzEIYmLESgC426ishFNHPpqlz5rXW3CA4UlH7wwGnRXLcoEPmOdBTmNjXRQOnDGtVDp7
-         tsFtQILfU39vtpL87hJwcLga80ZelaEvtYbhFbA0VRp7VCoeCHu2+GmOJbOPiuKaMYG1
-         Uhz5Zvfudmp3k43IcTvdvEBUnHdNsS3ZgpPBrtOtWsvrgtcBhKX2J59rukUOdtGI7gjN
-         5riw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JYLTflw7lfJdOYx0URIPHkyjZlSOngY1f4PANC1Ya4Q=;
-        b=UYCHBpuCFip5GMECbJl8zwc1rT/fNjpwKUR2KJDfU9Zo+1wIEmT/7St0TbYH7kYMcE
-         CsUP770eIeFPk2Y4EBjO5CTuaW2lbJfKzlnxGNB8OewjCvZqKi9Ig0eIYejK0ZF2icbM
-         fCg7X0GPI7puPTY5WVRHFLkRrhQPIXGTXzxIHKanm+NsziDEma82vw7m6+cOeepiO5Jj
-         JARw8jDvnLyHdcvu146sg/IIxzDvhFU02xGq2NHIHBxZtiTNB4YCMcziOdOllZnxsw+9
-         FUWAiAswqh2xO4ddkJZLustU16UpbN9cfToCTpln03lYcfN1Y/VeTbQtGnOoQf7V5uR4
-         5XAA==
-X-Gm-Message-State: AOAM530QmFb8lx+CuwGjfQz2/0qBv4Pf2OzN/p8yfv/8JX7qtH5EUOj8
-        9E0KucVDsjJfws1/fy5AEn0=
-X-Google-Smtp-Source: ABdhPJw6lfK5d0W8P9JWT5moNgL+/hy+tNZlsnRZrxsACK0MlAXTebV5yp1YPCq7QatkW/q2oN9Ntw==
-X-Received: by 2002:a17:906:9c82:b0:6e1:2c94:1616 with SMTP id fj2-20020a1709069c8200b006e12c941616mr33061090ejc.64.1649745957361;
-        Mon, 11 Apr 2022 23:45:57 -0700 (PDT)
-Received: from ?IPV6:2003:c7:8f1b:f064:b948:7f3d:8352:96be? (p200300c78f1bf064b9487f3d835296be.dip0.t-ipconnect.de. [2003:c7:8f1b:f064:b948:7f3d:8352:96be])
-        by smtp.gmail.com with ESMTPSA id fx3-20020a170906b74300b006daecedee44sm12758207ejb.220.2022.04.11.23.45.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 23:45:55 -0700 (PDT)
-Message-ID: <25a1bac5-7758-9602-7c9f-9d8b02d845e4@gmail.com>
-Date:   Tue, 12 Apr 2022 08:45:53 +0200
+        Tue, 12 Apr 2022 02:55:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC068393C4;
+        Mon, 11 Apr 2022 23:45:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C04CB81B43;
+        Tue, 12 Apr 2022 06:45:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFDF5C385A8;
+        Tue, 12 Apr 2022 06:45:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649745903;
+        bh=qU6k39kQ1C01H9GAzZyVdj/oO7ak6LiTi1/TZBfgvsI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xLxMeOC54u/H17qFdHEvl3lgp9N0rkqY/ULn/EqIJZRtj/2wC6wotT67blqbL+JLo
+         eIn5flN3XDKgz/jKbRQ2OiCuikTY0nftGw4uOdH9PE4szeitUqEWDWVcQvz2z8dLv2
+         Zcf2tdcaHTsQj7xU5QWpQfiEZ4O/vk7NPbjOvDSI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 088/277] powerpc/64e: Tie PPC_BOOK3E_64 to PPC_FSL_BOOK3E
+Date:   Tue, 12 Apr 2022 08:28:11 +0200
+Message-Id: <20220412062944.593056555@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
+References: <20220412062942.022903016@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 4/7] staging: vt6655: Replace VNSvOutPortB with
- iowrite8
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Forest Bond <forest@alittletooquiet.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1649706687.git.philipp.g.hortmann@gmail.com>
- <3cac1ca7000a56e82b390ea0ddbab5aa549ee7ec.1649706687.git.philipp.g.hortmann@gmail.com>
- <20220412063731.GA3293@kadam>
-From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-In-Reply-To: <20220412063731.GA3293@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/12/22 08:37, Dan Carpenter wrote:
-> On Mon, Apr 11, 2022 at 10:49:39PM +0200, Philipp Hortmann wrote:
->> Replace macro VNSvOutPortB with iowrite8.
->> The name of macro and the arguments use CamelCase which
->> is not accepted by checkpatch.pl
->>
->> For constants from 0 to below 0x80 the u8 cast was omitted.
->> For variables which are defined as unsigned char the u8 is omitted.
-> I hate that GCC prints warnings for this.  Useless.  Horrible.  But I
-> understand that GCC does and we haven't figured out how to disable it
-> or who needs to approve that.
-> 
-> But even then I still don't understand the casting in this patch.
-> 
-> Shouldn't the rule be to do the minimum work arounds to silence GCC?
-> My understand is that the the casting is only needed when you're dealing
-> with a bitwise negated constant.  These are macros so the parameters
-> might be constant so basically any bitwise negate gets a cast.
-> 
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-Please send me the compiler flags you are using.
-I was using:
-make "KCFLAGS=-pipe -Wall" -C . M=drivers/staging/vt6655/
-But of course more flags are set.
-I did not see any compiler warnings.
+[ Upstream commit 1a76e520ee1831a81dabf8a9a58c6453f700026e ]
 
-Thanks
+Since the IBM A2 CPU support was removed, see commit
+fb5a515704d7 ("powerpc: Remove platforms/wsp and associated pieces"),
+the only 64-bit Book3E CPUs we support are Freescale (NXP) ones.
 
-Regards,
-Philipp Hortmann
+However our Kconfig still allows configurating a kernel that has 64-bit
+Book3E support, but no Freescale CPU support enabled. Such a kernel
+would never boot, it doesn't know about any CPUs.
+
+It also causes build errors, as reported by lkp, because
+PPC_BARRIER_NOSPEC is not enabled in such a configuration:
+
+  powerpc64-linux-ld: arch/powerpc/net/bpf_jit_comp64.o:(.toc+0x0):
+  undefined reference to `powerpc_security_features'
+
+To fix this, force PPC_FSL_BOOK3E to be selected whenever we are
+building a 64-bit Book3E kernel.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220304061222.2478720-1-mpe@ellerman.id.au
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/platforms/Kconfig.cputype | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index a208997ade88..87a95cbff2f3 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -111,6 +111,7 @@ config PPC_BOOK3S_64
+ 
+ config PPC_BOOK3E_64
+ 	bool "Embedded processors"
++	select PPC_FSL_BOOK3E
+ 	select PPC_FPU # Make it a choice ?
+ 	select PPC_SMP_MUXED_IPI
+ 	select PPC_DOORBELL
+@@ -287,7 +288,7 @@ config FSL_BOOKE
+ config PPC_FSL_BOOK3E
+ 	bool
+ 	select ARCH_SUPPORTS_HUGETLBFS if PHYS_64BIT || PPC64
+-	select FSL_EMB_PERFMON
++	imply FSL_EMB_PERFMON
+ 	select PPC_SMP_MUXED_IPI
+ 	select PPC_DOORBELL
+ 	default y if FSL_BOOKE
+-- 
+2.35.1
+
+
+
