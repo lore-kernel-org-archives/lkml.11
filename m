@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D891AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355131AbiDLNHP (ORCPT
+        id S1354953AbiDLNHV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
+        Tue, 12 Apr 2022 09:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356358AbiDLND0 (ORCPT
+        with ESMTP id S1356376AbiDLND1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:26 -0400
+        Tue, 12 Apr 2022 09:03:27 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0AB363A5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 537DFDE87
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:24 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5CF361516;
-        Tue, 12 Apr 2022 05:45:16 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1336F1570;
+        Tue, 12 Apr 2022 05:45:24 -0700 (PDT)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0AE773F70D;
-        Tue, 12 Apr 2022 05:45:13 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B5E103F70D;
+        Tue, 12 Apr 2022 05:45:21 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -38,9 +38,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 11/21] x86/resctrl: Allow update_mba_bw() to update controls directly
-Date:   Tue, 12 Apr 2022 12:44:09 +0000
-Message-Id: <20220412124419.30689-12-james.morse@arm.com>
+Subject: [PATCH v4 14/21] x86/resctrl: Allow per-rmid arch private storage to be reset
+Date:   Tue, 12 Apr 2022 12:44:12 +0000
+Message-Id: <20220412124419.30689-15-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
 References: <20220412124419.30689-1-james.morse@arm.com>
@@ -50,20 +50,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-update_mba_bw() calculates a new control value for the MBA resource
-based on the user provided mbps_val and the current measured
-bandwidth. Some control values need remapping by delay_bw_map().
+To abstract the rmid counters into a helper that returns the number
+of bytes counted, architecture specific per-rmid state is needed.
 
-It does this by calling wrmsrl() directly. This needs splitting
-up to be done by an architecture specific helper, so that the
-remainder can eventually be moved to /fs/.
+It needs to be possible to reset this hidden state, as the values
+may outlive the life of an rmid, or the mount time of the filesystem.
 
-Add resctrl_arch_update_one() to apply one configuration value
-to the provided resource and domain. This avoids the staging
-and cross-calling that is only needed with changes made by
-user-space. delay_bw_map() moves to be part of the arch code,
-to maintain the 'percentage control' view of MBA resources
-in resctrl.
+mon_event_read() is called with first = true when an rmid is first
+allocated in mkdir_mondata_subdir(). Add resctrl_arch_reset_rmid()
+and call it from __mon_event_count()'s rr->first check.
 
 Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
 Tested-by: Xin Hao <xhao@linux.alibaba.com>
@@ -71,142 +66,158 @@ Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
----
-Chagnes since v2:
- * Call msr_update() directly from resctrl_arch_update_one().
 
+---
 Changes since v1:
- * Capitalisation
+ * Aded WARN_ON_ONCE() for a case that should never happen.
 ---
- arch/x86/kernel/cpu/resctrl/core.c        |  2 +-
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c | 21 +++++++++++++++++++++
- arch/x86/kernel/cpu/resctrl/internal.h    |  1 -
- arch/x86/kernel/cpu/resctrl/monitor.c     | 13 ++++---------
- include/linux/resctrl.h                   |  8 ++++++++
- 5 files changed, 34 insertions(+), 11 deletions(-)
+ arch/x86/kernel/cpu/resctrl/internal.h | 18 ++++---------
+ arch/x86/kernel/cpu/resctrl/monitor.c  | 35 +++++++++++++++++++++++++-
+ include/linux/resctrl.h                | 23 +++++++++++++++++
+ 3 files changed, 62 insertions(+), 14 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
-index f0e2820af475..90ebb7d71af2 100644
---- a/arch/x86/kernel/cpu/resctrl/core.c
-+++ b/arch/x86/kernel/cpu/resctrl/core.c
-@@ -296,7 +296,7 @@ mba_wrmsr_amd(struct rdt_domain *d, struct msr_param *m, struct rdt_resource *r)
-  * that can be written to QOS_MSRs.
-  * There are currently no SKUs which support non linear delay values.
-  */
--u32 delay_bw_map(unsigned long bw, struct rdt_resource *r)
-+static u32 delay_bw_map(unsigned long bw, struct rdt_resource *r)
- {
- 	if (r->membw.delay_linear)
- 		return MAX_MBA_BW - bw;
-diff --git a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-index 9f45207a6c74..ece3a1e0e6f2 100644
---- a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-+++ b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-@@ -282,6 +282,27 @@ static bool apply_config(struct rdt_hw_domain *hw_dom,
- 	return false;
- }
- 
-+int resctrl_arch_update_one(struct rdt_resource *r, struct rdt_domain *d,
-+			    u32 closid, enum resctrl_conf_type t, u32 cfg_val)
-+{
-+	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
-+	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
-+	u32 idx = get_config_index(closid, t);
-+	struct msr_param msr_param;
-+
-+	if (!cpumask_test_cpu(smp_processor_id(), &d->cpu_mask))
-+		return -EINVAL;
-+
-+	hw_dom->ctrl_val[idx] = cfg_val;
-+
-+	msr_param.res = r;
-+	msr_param.low = idx;
-+	msr_param.high = idx + 1;
-+	hw_res->msr_update(d, &msr_param, r);
-+
-+	return 0;
-+}
-+
- int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid)
- {
- 	struct resctrl_staged_config *cfg;
 diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index 373aaba53ecd..3b9e43ba7590 100644
+index 4de8e5bb93e1..b34a1403f033 100644
 --- a/arch/x86/kernel/cpu/resctrl/internal.h
 +++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -527,7 +527,6 @@ void mbm_setup_overflow_handler(struct rdt_domain *dom,
- void mbm_handle_overflow(struct work_struct *work);
- void __init intel_rdt_mbm_apply_quirk(void);
- bool is_mba_sc(struct rdt_resource *r);
--u32 delay_bw_map(unsigned long bw, struct rdt_resource *r);
- void cqm_setup_limbo_handler(struct rdt_domain *dom, unsigned long delay_ms);
- void cqm_handle_limbo(struct work_struct *work);
- bool has_busy_rmid(struct rdt_resource *r, struct rdt_domain *d);
+@@ -22,14 +22,6 @@
+ 
+ #define L2_QOS_CDP_ENABLE		0x01ULL
+ 
+-/*
+- * Event IDs are used to program IA32_QM_EVTSEL before reading event
+- * counter from IA32_QM_CTR
+- */
+-#define QOS_L3_OCCUP_EVENT_ID		0x01
+-#define QOS_L3_MBM_TOTAL_EVENT_ID	0x02
+-#define QOS_L3_MBM_LOCAL_EVENT_ID	0x03
+-
+ #define CQM_LIMBOCHECK_INTERVAL	1000
+ 
+ #define MBM_CNTR_WIDTH_BASE		24
+@@ -73,7 +65,7 @@ DECLARE_STATIC_KEY_FALSE(rdt_mon_enable_key);
+  * @list:		entry in &rdt_resource->evt_list
+  */
+ struct mon_evt {
+-	u32			evtid;
++	enum resctrl_event_id	evtid;
+ 	char			*name;
+ 	struct list_head	list;
+ };
+@@ -90,9 +82,9 @@ struct mon_evt {
+ union mon_data_bits {
+ 	void *priv;
+ 	struct {
+-		unsigned int rid	: 10;
+-		unsigned int evtid	: 8;
+-		unsigned int domid	: 14;
++		unsigned int rid		: 10;
++		enum resctrl_event_id evtid	: 8;
++		unsigned int domid		: 14;
+ 	} u;
+ };
+ 
+@@ -100,7 +92,7 @@ struct rmid_read {
+ 	struct rdtgroup		*rgrp;
+ 	struct rdt_resource	*r;
+ 	struct rdt_domain	*d;
+-	int			evtid;
++	enum resctrl_event_id	evtid;
+ 	bool			first;
+ 	u64			val;
+ };
 diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index 5cc1e6b229d4..ac1a2e8998bb 100644
+index a15f870363b2..71a13c04a846 100644
 --- a/arch/x86/kernel/cpu/resctrl/monitor.c
 +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -420,10 +420,8 @@ void mon_event_count(void *info)
-  */
- static void update_mba_bw(struct rdtgroup *rgrp, struct rdt_domain *dom_mbm)
- {
--	u32 closid, rmid, cur_msr, cur_msr_val, new_msr_val;
-+	u32 closid, rmid, cur_msr_val, new_msr_val;
- 	struct mbm_state *pmbm_data, *cmbm_data;
--	struct rdt_hw_resource *hw_r_mba;
--	struct rdt_hw_domain *hw_dom_mba;
- 	u32 cur_bw, delta_bw, user_bw;
- 	struct rdt_resource *r_mba;
- 	struct rdt_domain *dom_mba;
-@@ -433,8 +431,8 @@ static void update_mba_bw(struct rdtgroup *rgrp, struct rdt_domain *dom_mbm)
- 	if (!is_mbm_local_enabled())
- 		return;
+@@ -137,7 +137,37 @@ static inline struct rmid_entry *__rmid_entry(u32 rmid)
+ 	return entry;
+ }
  
--	hw_r_mba = &rdt_resources_all[RDT_RESOURCE_MBA];
--	r_mba = &hw_r_mba->r_resctrl;
-+	r_mba = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
+-static u64 __rmid_read(u32 rmid, u32 eventid)
++static struct arch_mbm_state *get_arch_mbm_state(struct rdt_hw_domain *hw_dom,
++						 u32 rmid,
++						 enum resctrl_event_id eventid)
++{
++	switch (eventid) {
++	case QOS_L3_OCCUP_EVENT_ID:
++		return NULL;
++	case QOS_L3_MBM_TOTAL_EVENT_ID:
++		return &hw_dom->arch_mbm_total[rmid];
++	case QOS_L3_MBM_LOCAL_EVENT_ID:
++		return &hw_dom->arch_mbm_local[rmid];
++	}
 +
- 	closid = rgrp->closid;
- 	rmid = rgrp->mon.rmid;
- 	pmbm_data = &dom_mbm->mbm_local[rmid];
-@@ -444,7 +442,6 @@ static void update_mba_bw(struct rdtgroup *rgrp, struct rdt_domain *dom_mbm)
- 		pr_warn_once("Failure to get domain for MBA update\n");
- 		return;
- 	}
--	hw_dom_mba = resctrl_to_arch_dom(dom_mba);
++	/* Never expect to get here */
++	WARN_ON_ONCE(1);
++
++	return NULL;
++}
++
++void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
++			     u32 rmid, enum resctrl_event_id eventid)
++{
++	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
++	struct arch_mbm_state *am;
++
++	am = get_arch_mbm_state(hw_dom, rmid, eventid);
++	if (am)
++		memset(am, 0, sizeof(*am));
++}
++
++static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
+ {
+ 	u64 val;
  
- 	cur_bw = pmbm_data->prev_bw;
- 	user_bw = dom_mba->mbps_val[closid];
-@@ -486,9 +483,7 @@ static void update_mba_bw(struct rdtgroup *rgrp, struct rdt_domain *dom_mbm)
- 		return;
- 	}
+@@ -291,6 +321,9 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+ 	struct mbm_state *m;
+ 	u64 chunks, tval;
  
--	cur_msr = hw_r_mba->msr_base + closid;
--	wrmsrl(cur_msr, delay_bw_map(new_msr_val, r_mba));
--	hw_dom_mba->ctrl_val[closid] = new_msr_val;
-+	resctrl_arch_update_one(r_mba, dom_mba, closid, CDP_NONE, new_msr_val);
- 
- 	/*
- 	 * Delta values are updated dynamically package wise for each
++	if (rr->first)
++		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
++
+ 	tval = __rmid_read(rmid, rr->evtid);
+ 	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL)) {
+ 		return tval;
 diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 46ab9fb5562e..84e815cb3be6 100644
+index 84e815cb3be6..0b48239f5920 100644
 --- a/include/linux/resctrl.h
 +++ b/include/linux/resctrl.h
-@@ -197,6 +197,14 @@ struct resctrl_schema {
- /* The number of closid supported by this resource regardless of CDP */
- u32 resctrl_arch_get_num_closid(struct rdt_resource *r);
- int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid);
-+
+@@ -32,6 +32,16 @@ enum resctrl_conf_type {
+ 
+ #define CDP_NUM_TYPES	(CDP_DATA + 1)
+ 
 +/*
-+ * Update the ctrl_val and apply this config right now.
-+ * Must be called on one of the domain's CPUs.
++ * Event IDs, the values match those used to program IA32_QM_EVTSEL before
++ * reading IA32_QM_CTR on RDT systems.
 + */
-+int resctrl_arch_update_one(struct rdt_resource *r, struct rdt_domain *d,
-+			    u32 closid, enum resctrl_conf_type t, u32 cfg_val);
++enum resctrl_event_id {
++	QOS_L3_OCCUP_EVENT_ID		= 0x01,
++	QOS_L3_MBM_TOTAL_EVENT_ID	= 0x02,
++	QOS_L3_MBM_LOCAL_EVENT_ID	= 0x03,
++};
 +
- u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
- 			    u32 closid, enum resctrl_conf_type type);
+ /**
+  * struct resctrl_staged_config - parsed configuration to be applied
+  * @new_ctrl:		new ctrl value to be loaded
+@@ -210,4 +220,17 @@ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
  int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
+ void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
+ 
++/**
++ * resctrl_arch_reset_rmid() - Reset any private state associated with rmid
++ *			       and eventid.
++ * @r:		The domain's resource.
++ * @d:		The rmid's domain.
++ * @rmid:	The rmid whose counter values should be reset.
++ * @eventid:	The eventid whose counter values should be reset.
++ *
++ * This can be called from any CPU.
++ */
++void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
++			     u32 rmid, enum resctrl_event_id eventid);
++
+ #endif /* _RESCTRL_H */
 -- 
 2.30.2
 
