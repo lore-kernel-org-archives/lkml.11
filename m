@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF40C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:18:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351532AbiDLHUg (ORCPT
+        id S1351578AbiDLHUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
+        Tue, 12 Apr 2022 03:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352679AbiDLHFv (ORCPT
+        with ESMTP id S1352609AbiDLHFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:05:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8444839A;
-        Mon, 11 Apr 2022 23:48:31 -0700 (PDT)
+        Tue, 12 Apr 2022 03:05:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FC24831F;
+        Mon, 11 Apr 2022 23:48:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD6361045;
-        Tue, 12 Apr 2022 06:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4BFC385A6;
-        Tue, 12 Apr 2022 06:48:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72160B81B46;
+        Tue, 12 Apr 2022 06:48:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC1CDC385A1;
+        Tue, 12 Apr 2022 06:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746110;
-        bh=vkPmgKey2lf/3Sf8BVlNeaFbqFAGzmVNLtpEoE4dmDk=;
+        s=korg; t=1649746099;
+        bh=UYURcN/9DffPvPsnRGm814Oh0YXv3IG/fcliQiGZsJk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oanRH7qzOYPTYZSkJ1otacWgDfCo1vgau2u0LvZ/wvJptzIoFjQ+rk9az/aDw65Pz
-         H8GpcYgvOhVXMK/nfb6+pipgW88Gu33CMFJQMs/IUZRFEn3F8DlTqBagh5dhmv2YRe
-         i3msm1rRpWidf9yNbVNdwkAmTG5OkWYilcfcQ8Cg=
+        b=oNH05En7zT3XHeV4gdTw2zeDYFqRf/FagoWB8JkG3NcGweT8/npHITMWfZVPCHAhP
+         8jqZrQ/DaCu6CplToFhRM4SweGTw3scQfZOKZdPJJW8QzismHO96et4NQ+z26CoDU9
+         53X3fYfH9+PlVb0X7oMxk5zwkqJkLPd3ynZKeXMI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Alexander Duyck <alexanderduyck@fb.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 164/277] net: stmmac: Fix unset max_speed difference between DT and non-DT platforms
-Date:   Tue, 12 Apr 2022 08:29:27 +0200
-Message-Id: <20220412062946.784520400@linuxfoundation.org>
+Subject: [PATCH 5.15 160/277] skbuff: fix coalescing for page_pool fragment recycling
+Date:   Tue, 12 Apr 2022 08:29:23 +0200
+Message-Id: <20220412062946.669390104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,53 +54,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wens@csie.org>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-[ Upstream commit c21cabb0fd0b54b8b54235fc1ecfe1195a23bcb2 ]
+[ Upstream commit 1effe8ca4e34c34cdd9318436a4232dcb582ebf4 ]
 
-In commit 9cbadf094d9d ("net: stmmac: support max-speed device tree
-property"), when DT platforms don't set "max-speed", max_speed is set to
--1; for non-DT platforms, it stays the default 0.
+Fix a use-after-free when using page_pool with page fragments. We
+encountered this problem during normal RX in the hns3 driver:
 
-Prior to commit eeef2f6b9f6e ("net: stmmac: Start adding phylink support"),
-the check for a valid max_speed setting was to check if it was greater
-than zero. This commit got it right, but subsequent patches just checked
-for non-zero, which is incorrect for DT platforms.
+(1) Initially we have three descriptors in the RX queue. The first one
+    allocates PAGE1 through page_pool, and the other two allocate one
+    half of PAGE2 each. Page references look like this:
 
-In commit 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
-the conversion switched completely to checking for non-zero value as a
-valid value, which caused 1000base-T to stop getting advertised by
-default.
+                RX_BD1 _______ PAGE1
+                RX_BD2 _______ PAGE2
+                RX_BD3 _________/
 
-Instead of trying to fix all the checks, simply leave max_speed alone if
-DT property parsing fails.
+(2) Handle RX on the first descriptor. Allocate SKB1, eventually added
+    to the receive queue by tcp_queue_rcv().
 
-Fixes: 9cbadf094d9d ("net: stmmac: support max-speed device tree property")
-Fixes: 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
-Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220331184832.16316-1-wens@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+(3) Handle RX on the second descriptor. Allocate SKB2 and pass it to
+    netif_receive_skb():
+
+    netif_receive_skb(SKB2)
+      ip_rcv(SKB2)
+        SKB3 = skb_clone(SKB2)
+
+    SKB2 and SKB3 share a reference to PAGE2 through
+    skb_shinfo()->dataref. The other ref to PAGE2 is still held by
+    RX_BD3:
+
+                      SKB2 ---+- PAGE2
+                      SKB3 __/   /
+                RX_BD3 _________/
+
+ (3b) Now while handling TCP, coalesce SKB3 with SKB1:
+
+      tcp_v4_rcv(SKB3)
+        tcp_try_coalesce(to=SKB1, from=SKB3)    // succeeds
+        kfree_skb_partial(SKB3)
+          skb_release_data(SKB3)                // drops one dataref
+
+                      SKB1 _____ PAGE1
+                           \____
+                      SKB2 _____ PAGE2
+                                 /
+                RX_BD3 _________/
+
+    In skb_try_coalesce(), __skb_frag_ref() takes a page reference to
+    PAGE2, where it should instead have increased the page_pool frag
+    reference, pp_frag_count. Without coalescing, when releasing both
+    SKB2 and SKB3, a single reference to PAGE2 would be dropped. Now
+    when releasing SKB1 and SKB2, two references to PAGE2 will be
+    dropped, resulting in underflow.
+
+ (3c) Drop SKB2:
+
+      af_packet_rcv(SKB2)
+        consume_skb(SKB2)
+          skb_release_data(SKB2)                // drops second dataref
+            page_pool_return_skb_page(PAGE2)    // drops one pp_frag_count
+
+                      SKB1 _____ PAGE1
+                           \____
+                                 PAGE2
+                                 /
+                RX_BD3 _________/
+
+(4) Userspace calls recvmsg()
+    Copies SKB1 and releases it. Since SKB3 was coalesced with SKB1, we
+    release the SKB3 page as well:
+
+    tcp_eat_recv_skb(SKB1)
+      skb_release_data(SKB1)
+        page_pool_return_skb_page(PAGE1)
+        page_pool_return_skb_page(PAGE2)        // drops second pp_frag_count
+
+(5) PAGE2 is freed, but the third RX descriptor was still using it!
+    In our case this causes IOMMU faults, but it would silently corrupt
+    memory if the IOMMU was disabled.
+
+Change the logic that checks whether pp_recycle SKBs can be coalesced.
+We still reject differing pp_recycle between 'from' and 'to' SKBs, but
+in order to avoid the situation described above, we also reject
+coalescing when both 'from' and 'to' are pp_recycled and 'from' is
+cloned.
+
+The new logic allows coalescing a cloned pp_recycle SKB into a page
+refcounted one, because in this case the release (4) will drop the right
+reference, the one taken by skb_try_coalesce().
+
+Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
+Suggested-by: Alexander Duyck <alexanderduyck@fb.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/core/skbuff.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 5d29f336315b..11e1055e8260 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -431,8 +431,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
- 	plat->phylink_node = np;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5956c84cb274..e4badc189e37 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5390,11 +5390,18 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+ 	if (skb_cloned(to))
+ 		return false;
  
- 	/* Get max speed of operation from device tree */
--	if (of_property_read_u32(np, "max-speed", &plat->max_speed))
--		plat->max_speed = -1;
-+	of_property_read_u32(np, "max-speed", &plat->max_speed);
+-	/* The page pool signature of struct page will eventually figure out
+-	 * which pages can be recycled or not but for now let's prohibit slab
+-	 * allocated and page_pool allocated SKBs from being coalesced.
++	/* In general, avoid mixing slab allocated and page_pool allocated
++	 * pages within the same SKB. However when @to is not pp_recycle and
++	 * @from is cloned, we can transition frag pages from page_pool to
++	 * reference counted.
++	 *
++	 * On the other hand, don't allow coalescing two pp_recycle SKBs if
++	 * @from is cloned, in case the SKB is using page_pool fragment
++	 * references (PP_FLAG_PAGE_FRAG). Since we only take full page
++	 * references for cloned SKBs at the moment that would result in
++	 * inconsistent reference counts.
+ 	 */
+-	if (to->pp_recycle != from->pp_recycle)
++	if (to->pp_recycle != (from->pp_recycle && !skb_cloned(from)))
+ 		return false;
  
- 	plat->bus_id = of_alias_get_id(np, "ethernet");
- 	if (plat->bus_id < 0)
+ 	if (len <= skb_tailroom(to)) {
 -- 
 2.35.1
 
