@@ -2,122 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 121FDC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F391CC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379986AbiDLKUF (ORCPT
+        id S1358955AbiDLKTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
+        Tue, 12 Apr 2022 06:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357298AbiDLJzU (ORCPT
+        with ESMTP id S1355219AbiDLKJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:55:20 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354741837B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:59:18 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kd03W5c8jzgYh5;
-        Tue, 12 Apr 2022 16:57:27 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 16:59:13 +0800
-Subject: Re: [PATCH 0/4] A few cleanup and fixup patches for migration
-To:     "ying.huang@intel.com" <ying.huang@intel.com>
-CC:     <mike.kravetz@oracle.com>, <shy828301@gmail.com>,
-        <willy@infradead.org>, <ziy@nvidia.com>, <minchan@kernel.org>,
-        <apopple@nvidia.com>, <dave.hansen@linux.intel.com>,
-        <o451686892@gmail.com>, <jhubbard@nvidia.com>, <peterx@redhat.com>,
-        <naoya.horiguchi@nec.com>, <mhocko@suse.com>, <riel@redhat.com>,
-        <osalvador@suse.de>, <david@redhat.com>, <sfr@canb.auug.org.au>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220409073846.22286-1-linmiaohe@huawei.com>
- <e268117b314817ecd4c07ac48b0a6dcaf680ed69.camel@intel.com>
- <880376f0-f480-979b-261f-72cf9475474c@huawei.com>
- <e1356503b9d434ebedf209ad8a0038b8d2f99f20.camel@intel.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <b773a90a-03d2-6c2e-852d-9a2ebbf301cb@huawei.com>
-Date:   Tue, 12 Apr 2022 16:59:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 12 Apr 2022 06:09:03 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61436FF51
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:11:29 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C9B19H123978;
+        Tue, 12 Apr 2022 04:11:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649754661;
+        bh=8hO/8Dci2SJSEgmGxnVfMhUAImO5GUV+8DRYO0LqYl0=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=hzj5nh8sw4F030IO93nlWpVt/0e8wVuRUUfAVHZAUwmiQcBxUq2a0f45pMGBSumKb
+         p5/eXNfWDUrqqyBd9JJg6k5Rk+6T9dYO4MczWTDsHOdybPmCzCHybEwZNOLH/GXuBl
+         E6jG+aeEul4tTXJBrYIQqO4nZ0dEDi29Km00SDAw=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C9B1tY001312
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 04:11:01 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
+ Apr 2022 04:11:00 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 12 Apr 2022 04:11:01 -0500
+Received: from [172.24.221.43] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C9AufX068426;
+        Tue, 12 Apr 2022 04:10:57 -0500
+Message-ID: <c0b9825d-a066-1a26-f428-854ddf6d9186@ti.com>
+Date:   Tue, 12 Apr 2022 14:40:55 +0530
 MIME-Version: 1.0
-In-Reply-To: <e1356503b9d434ebedf209ad8a0038b8d2f99f20.camel@intel.com>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/tidss: Soft Reset DISPC on startup
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+To:     <linux-kernel@vger.kernel.org>, <jyri.sarha@iki.fi>,
+        <tomba@kernel.org>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <dri-devel@lists.freedesktop.org>,
+        <laurent.pinchart@ideasonboard.com>,
+        <tomi.valkeinen@ideasonboard.com>
+CC:     <nm@ti.com>, <a-bhatia1@ti.com>, <r-ravikumar@ti.com>,
+        <nikhil.nd@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <vigneshr@ti.com>
+References: <20220314113739.18000-1-devarsht@ti.com>
+From:   Devarsh Thakkar <devarsht@ti.com>
+In-Reply-To: <20220314113739.18000-1-devarsht@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/12 14:33, ying.huang@intel.com wrote:
-> On Tue, 2022-04-12 at 11:29 +0800, Miaohe Lin wrote:
->> On 2022/4/12 10:25, ying.huang@intel.com wrote:
->>> On Sat, 2022-04-09 at 15:38 +0800, Miaohe Lin wrote:
->>>> Hi everyone,
->>>> This series contains a few patches to remove unneeded lock page and
->>>> PageMovable check, reduce the rcu lock duration. Also we fix potential
->>>> pte_unmap on an not mapped pte. More details can be found in the
->>>> respective changelogs. Thanks!
->>>
->>> It appears that you ignored my comments for the previous version.  Can
->>> you check it?
->>
->> I do remember [1] and I tried to make isolate_huge_page consistent with isolate_lru_page.
->> But their return value conventions are different. isolate_huge_page return 0 when
->> success while isolate_huge_page returns true in this case. So make them consistent
->> would lead to many code change. I should have added this in my changelog.
-> 
-> If you found new problem, you can reply to the original email.  Just
-> don't ignore the comments.
+Hi Laurent, Tomi,
 
-Sorry about it. I would take care of this next time. Thanks!
+On 14/03/22 17:07, Devarsh Thakkar wrote:
+> Soft reset the display subsystem controller on startup and wait for
+> the reset to complete. This helps the scenario where display was
+> already in use by some other core before the linux was booted.
 
-> 
-> Best Regards,
-> Huang, Ying
-> 
->> Thanks.
->>
->> [1] https://lore.kernel.org/linux-mm/8735jsgctq.fsf@yhuang6-desk2.ccr.corp.intel.com/
->>
->>
->>>
->>> Best Regards,
->>> Huang, Ying
->>>
->>>> ---
->>>> v1:
->>>>   rebase [1] on mainline.
->>>>
->>>> [1] https://lore.kernel.org/lkml/20220304093409.25829-2-linmiaohe@huawei.com/T/
->>>> ---
->>>> Miaohe Lin (4):
->>>>   mm/migration: reduce the rcu lock duration
->>>>   mm/migration: remove unneeded lock page and PageMovable check
->>>>   mm/migration: return errno when isolate_huge_page failed
->>>>   mm/migration: fix potential pte_unmap on an not mapped pte
->>>>
->>>>  include/linux/migrate.h |  2 +-
->>>>  include/linux/swapops.h |  4 ++--
->>>>  mm/filemap.c            | 10 +++++-----
->>>>  mm/hugetlb.c            |  2 +-
->>>>  mm/migrate.c            | 31 +++++++++++++------------------
->>>>  5 files changed, 22 insertions(+), 27 deletions(-)
->>>>
->>>
->>>
->>>
->>> .
->>>
->>
-> 
-> 
-> .
-> 
+Could you please help review this patch ?
 
+Regards,
+
+Devarsh
+
+> Signed-off-by: Devarsh Thakkar <devarsht@ti.com>
+> ---
+>  drivers/gpu/drm/tidss/tidss_dispc.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/tidss/tidss_dispc.c b/drivers/gpu/drm/tidss/tidss_dispc.c
+> index 60b92df615aa..dae47853b728 100644
+> --- a/drivers/gpu/drm/tidss/tidss_dispc.c
+> +++ b/drivers/gpu/drm/tidss/tidss_dispc.c
+> @@ -2650,6 +2650,20 @@ static void dispc_init_errata(struct dispc_device *dispc)
+>  	}
+>  }
+>  
+> +static void dispc_softreset(struct dispc_device *dispc)
+> +{
+> +	u32 val;
+> +	int ret = 0;
+> +
+> +	/* Soft reset */
+> +	REG_FLD_MOD(dispc, DSS_SYSCONFIG, 1, 1, 1);
+> +	/* Wait for reset to complete */
+> +	ret = readl_poll_timeout(dispc->base_common + DSS_SYSSTATUS,
+> +				 val, val & 1, 100, 5000);
+> +	if (ret)
+> +		dev_warn(dispc->dev, "failed to reset dispc\n");
+> +}
+> +
+>  int dispc_init(struct tidss_device *tidss)
+>  {
+>  	struct device *dev = tidss->dev;
+> @@ -2709,6 +2723,10 @@ int dispc_init(struct tidss_device *tidss)
+>  			return r;
+>  	}
+>  
+> +	/* K2G display controller does not support soft reset */
+> +	if (feat->subrev != DISPC_K2G)
+> +		dispc_softreset(dispc);
+> +
+>  	for (i = 0; i < dispc->feat->num_vps; i++) {
+>  		u32 gamma_size = dispc->feat->vp_feat.color.gamma_size;
+>  		u32 *gamma_table;
