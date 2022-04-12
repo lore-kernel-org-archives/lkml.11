@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF062C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B0EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350177AbiDLGk1 (ORCPT
+        id S1349020AbiDLGkc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        Tue, 12 Apr 2022 02:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350534AbiDLGiI (ORCPT
+        with ESMTP id S1349095AbiDLGgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:38:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB2A167F5;
-        Mon, 11 Apr 2022 23:34:46 -0700 (PDT)
+        Tue, 12 Apr 2022 02:36:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F58535858;
+        Mon, 11 Apr 2022 23:33:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC88C618C8;
-        Tue, 12 Apr 2022 06:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED56C385A8;
-        Tue, 12 Apr 2022 06:34:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4A6BB81B40;
+        Tue, 12 Apr 2022 06:33:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39043C385A1;
+        Tue, 12 Apr 2022 06:33:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745285;
-        bh=9EP2H3FmaY9uDflc+OPb8r+3hcuSkuIj0pvJzZiloEw=;
+        s=korg; t=1649745233;
+        bh=zEWPr84kizPOn2H9T1Lsima8dDYjoYK1WJ9vYxBLyVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s3Ff7LNwQYmUh9CV25Vh1KQHIEhpu6hOBqSFU8Q4QDi4qTF7dplE7C3pvomxuyix0
-         XCpL//z5iZ9zSVKYElBv1nygEWlasCZ4QczGcheVh6oVg4Y1HeARUM3l34+nskZlir
-         UvjPyNPv4UeP9i9Fqk3SdBg/d/LwIN+f69I/dObM=
+        b=aF2mgDMCbMf0vTXcvStRLaixHi64rAV8q/0ZbGyyanVqC5kExiip4aBbW7Mc1gG4T
+         VKpK5wEmLGWt3Jv0aT76DvQC3JZ1P6zAAIHIUdjv9/VXVlSPFXDz3WRn/eGqEK9t+u
+         lFYan962FernZl+Cr7p04ky1Vw9oNKfOCVNNY5P8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 044/171] scsi: pm8001: Fix memory leak in pm8001_chip_fw_flash_update_req()
-Date:   Tue, 12 Apr 2022 08:28:55 +0200
-Message-Id: <20220412062929.162009623@linuxfoundation.org>
+Subject: [PATCH 5.10 025/171] ipv6: make mc_forwarding atomic
+Date:   Tue, 12 Apr 2022 08:28:36 +0200
+Message-Id: <20220412062928.613323804@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,39 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit f792a3629f4c4aa4c3703d66b43ce1edcc3ec09a ]
+[ Upstream commit 145c7a793838add5e004e7d49a67654dc7eba147 ]
 
-In pm8001_chip_fw_flash_update_build(), if
-pm8001_chip_fw_flash_update_build() fails, the struct fw_control_ex
-allocated must be freed.
+This fixes minor data-races in ip6_mc_input() and
+batadv_mcast_mla_rtr_flags_softif_get_ipv6()
 
-Link: https://lore.kernel.org/r/20220220031810.738362-23-damien.lemoal@opensource.wdc.com
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/ipv6.h       | 2 +-
+ net/batman-adv/multicast.c | 2 +-
+ net/ipv6/addrconf.c        | 4 ++--
+ net/ipv6/ip6_input.c       | 2 +-
+ net/ipv6/ip6mr.c           | 8 ++++----
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 397fce8de46c..da9fbe62a34d 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4845,8 +4845,10 @@ pm8001_chip_fw_flash_update_req(struct pm8001_hba_info *pm8001_ha,
- 	ccb->ccb_tag = tag;
- 	rc = pm8001_chip_fw_flash_update_build(pm8001_ha, &flash_update_info,
- 		tag);
--	if (rc)
-+	if (rc) {
-+		kfree(fw_control_context);
- 		pm8001_tag_free(pm8001_ha, tag);
-+	}
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index f514a7dd8c9c..510f87656479 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -50,7 +50,7 @@ struct ipv6_devconf {
+ 	__s32		use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	__s32		mc_forwarding;
++	atomic_t	mc_forwarding;
+ #endif
+ 	__s32		disable_ipv6;
+ 	__s32		drop_unicast_in_l2_multicast;
+diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
+index 139894ca788b..c8a341cd652c 100644
+--- a/net/batman-adv/multicast.c
++++ b/net/batman-adv/multicast.c
+@@ -136,7 +136,7 @@ static u8 batadv_mcast_mla_rtr_flags_softif_get_ipv6(struct net_device *dev)
+ {
+ 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
  
- 	return rc;
- }
+-	if (in6_dev && in6_dev->cnf.mc_forwarding)
++	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
+ 		return BATADV_NO_FLAGS;
+ 	else
+ 		return BATADV_MCAST_WANT_NO_RTR6;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 7c5bf39dca5d..86bcb1825698 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -542,7 +542,7 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
+ #ifdef CONFIG_IPV6_MROUTE
+ 	if ((all || type == NETCONFA_MC_FORWARDING) &&
+ 	    nla_put_s32(skb, NETCONFA_MC_FORWARDING,
+-			devconf->mc_forwarding) < 0)
++			atomic_read(&devconf->mc_forwarding)) < 0)
+ 		goto nla_put_failure;
+ #endif
+ 	if ((all || type == NETCONFA_PROXY_NEIGH) &&
+@@ -5515,7 +5515,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_USE_OPTIMISTIC] = cnf->use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	array[DEVCONF_MC_FORWARDING] = cnf->mc_forwarding;
++	array[DEVCONF_MC_FORWARDING] = atomic_read(&cnf->mc_forwarding);
+ #endif
+ 	array[DEVCONF_DISABLE_IPV6] = cnf->disable_ipv6;
+ 	array[DEVCONF_ACCEPT_DAD] = cnf->accept_dad;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 06d60662717d..15ea3d082534 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -509,7 +509,7 @@ int ip6_mc_input(struct sk_buff *skb)
+ 	/*
+ 	 *      IPv6 multicast router mode is now supported ;)
+ 	 */
+-	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
++	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
+ 	    !(ipv6_addr_type(&hdr->daddr) &
+ 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
+ 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index 41cb348a7c3c..5f0ac47acc74 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -740,7 +740,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
+ 
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding--;
++		atomic_dec(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -908,7 +908,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
+ 
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding++;
++		atomic_inc(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -1558,7 +1558,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
+ 	} else {
+ 		rcu_assign_pointer(mrt->mroute_sk, sk);
+ 		sock_set_flag(sk, SOCK_RCU_FREE);
+-		net->ipv6.devconf_all->mc_forwarding++;
++		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
+ 	}
+ 	write_unlock_bh(&mrt_lock);
+ 
+@@ -1591,7 +1591,7 @@ int ip6mr_sk_done(struct sock *sk)
+ 			 * so the RCU grace period before sk freeing
+ 			 * is guaranteed by sk_destruct()
+ 			 */
+-			net->ipv6.devconf_all->mc_forwarding--;
++			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
+ 			write_unlock_bh(&mrt_lock);
+ 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
+ 						     NETCONFA_MC_FORWARDING,
 -- 
 2.35.1
 
