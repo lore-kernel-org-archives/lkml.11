@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1B3C352A1
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E77EC352A8
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351836AbiDLHSH (ORCPT
+        id S1353710AbiDLHQA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
+        Tue, 12 Apr 2022 03:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352140AbiDLHEz (ORCPT
+        with ESMTP id S1351441AbiDLHD1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:04:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5040D46B37;
-        Mon, 11 Apr 2022 23:47:44 -0700 (PDT)
+        Tue, 12 Apr 2022 03:03:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC89D4474A;
+        Mon, 11 Apr 2022 23:47:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A3F76103A;
-        Tue, 12 Apr 2022 06:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3704BC385A6;
-        Tue, 12 Apr 2022 06:47:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32B13B81B4A;
+        Tue, 12 Apr 2022 06:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75577C385A8;
+        Tue, 12 Apr 2022 06:47:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746063;
-        bh=GPMcE/Z5TPn8lD0AfTRMCJGO/tcYseOLuUzJh3fgWPQ=;
+        s=korg; t=1649746024;
+        bh=YKg+E1rgLLe/atlLYBLJei1HwcSZ8NIm+I9CGwB5kAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sHuWzAhJvtVUejlAeCWhcVp4oEMkeSWMA+u6qK5KNN0yH1ou9Ns4CDCKG5y6RBzah
-         v27VNCYqjskC7zfddBSHtZ/WGB0grJnp+ZrmtzovyjOMyT8cPk/Cp6Hsjjb2tnKtkm
-         Q+kYG7feYsfZiS4m29g00uD2xvIcHPHdC4arZD9o=
+        b=eHs6Cn8Ysah9N1JiNYYQQG18GNRfjHi6LI2XQXig5HQ1cYkPwP5UOI0WGd/jYeqy0
+         rkiAfjBJFT7gSHxQPitnvTdFGhmdS/+oW6Ey4TfMKv+7yHJIb/brJFAiWQj2c1QKCC
+         Ofuzn+WZGSskhOtlsWTmImoQQ451j3ZL+ZmrSwdk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 148/277] Drivers: hv: vmbus: Fix potential crash on module unload
-Date:   Tue, 12 Apr 2022 08:29:11 +0200
-Message-Id: <20220412062946.319702271@linuxfoundation.org>
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 132/277] x86: Annotate call_on_stack()
+Date:   Tue, 12 Apr 2022 08:28:55 +0200
+Message-Id: <20220412062945.857488242@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,56 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 792f232d57ff28bbd5f9c4abe0466b23d5879dc8 ]
+[ Upstream commit be0075951fde739f14ee2b659e2fd6e2499c46c0 ]
 
-The vmbus driver relies on the panic notifier infrastructure to perform
-some operations when a panic event is detected. Since vmbus can be built
-as module, it is required that the driver handles both registering and
-unregistering such panic notifier callback.
+vmlinux.o: warning: objtool: page_fault_oops()+0x13c: unreachable instruction
 
-After commit 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
-though, the panic notifier registration is done unconditionally in the module
-initialization routine whereas the unregistering procedure is conditionally
-guarded and executes only if HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE capability
-is set.
+0000 000000000005b460 <page_fault_oops>:
+...
+0128    5b588:  49 89 23                mov    %rsp,(%r11)
+012b    5b58b:  4c 89 dc                mov    %r11,%rsp
+012e    5b58e:  4c 89 f2                mov    %r14,%rdx
+0131    5b591:  48 89 ee                mov    %rbp,%rsi
+0134    5b594:  4c 89 e7                mov    %r12,%rdi
+0137    5b597:  e8 00 00 00 00          call   5b59c <page_fault_oops+0x13c>    5b598: R_X86_64_PLT32   handle_stack_overflow-0x4
+013c    5b59c:  5c                      pop    %rsp
 
-This patch fixes that by unconditionally unregistering the panic notifier
-in the module's exit routine as well.
+vmlinux.o: warning: objtool: sysvec_reboot()+0x6d: unreachable instruction
 
-Fixes: 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220315203535.682306-1-gpiccoli@igalia.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+0000 00000000000033f0 <sysvec_reboot>:
+...
+005d     344d:  4c 89 dc                mov    %r11,%rsp
+0060     3450:  e8 00 00 00 00          call   3455 <sysvec_reboot+0x65>        3451: R_X86_64_PLT32    irq_enter_rcu-0x4
+0065     3455:  48 89 ef                mov    %rbp,%rdi
+0068     3458:  e8 00 00 00 00          call   345d <sysvec_reboot+0x6d>        3459: R_X86_64_PC32     .text+0x47d0c
+006d     345d:  e8 00 00 00 00          call   3462 <sysvec_reboot+0x72>        345e: R_X86_64_PLT32    irq_exit_rcu-0x4
+0072     3462:  5c                      pop    %rsp
+
+Both cases are due to a call_on_stack() calling a __noreturn function.
+Since that's an inline asm, GCC can't do anything about the
+instructions after the CALL. Therefore put in an explicit
+ASM_REACHABLE annotation to make sure objtool and gcc are consistently
+confused about control flow.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220308154319.468805622@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/vmbus_drv.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/irq_stack.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 44bd0b6ff505..a939ca1a8d54 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -2776,10 +2776,15 @@ static void __exit vmbus_exit(void)
- 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
- 		kmsg_dump_unregister(&hv_kmsg_dumper);
- 		unregister_die_notifier(&hyperv_die_block);
--		atomic_notifier_chain_unregister(&panic_notifier_list,
--						 &hyperv_panic_block);
- 	}
+diff --git a/arch/x86/include/asm/irq_stack.h b/arch/x86/include/asm/irq_stack.h
+index 8d55bd11848c..e087cd7837c3 100644
+--- a/arch/x86/include/asm/irq_stack.h
++++ b/arch/x86/include/asm/irq_stack.h
+@@ -99,7 +99,8 @@
+ }
  
-+	/*
-+	 * The panic notifier is always registered, hence we should
-+	 * also unconditionally unregister it here as well.
-+	 */
-+	atomic_notifier_chain_unregister(&panic_notifier_list,
-+					 &hyperv_panic_block);
-+
- 	free_page((unsigned long)hv_panic_page);
- 	unregister_sysctl_table(hv_ctl_table_hdr);
- 	hv_ctl_table_hdr = NULL;
+ #define ASM_CALL_ARG0							\
+-	"call %P[__func]				\n"
++	"call %P[__func]				\n"		\
++	ASM_REACHABLE
+ 
+ #define ASM_CALL_ARG1							\
+ 	"movq	%[arg1], %%rdi				\n"		\
 -- 
 2.35.1
 
