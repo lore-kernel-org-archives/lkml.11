@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02279C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE4AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354794AbiDLH0o (ORCPT
+        id S1355009AbiDLH1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        Tue, 12 Apr 2022 03:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351668AbiDLHMv (ORCPT
+        with ESMTP id S1351594AbiDLHMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE66E13CF2;
-        Mon, 11 Apr 2022 23:51:17 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE3A29800;
+        Mon, 11 Apr 2022 23:50:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B48F61472;
-        Tue, 12 Apr 2022 06:51:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AACC385A1;
-        Tue, 12 Apr 2022 06:51:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD084B81B3D;
+        Tue, 12 Apr 2022 06:50:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47A62C385A6;
+        Tue, 12 Apr 2022 06:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746276;
-        bh=1fAADtwZr8mUN51KJvbjJw10IrVyo6zwcuvu2c/R9yc=;
+        s=korg; t=1649746221;
+        bh=hlP2sze5FnxNqcBlA5c2Y8VQGE+NWL4VnSSqf3dvcBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gfhNTI/uW3YNKiMPjVdgZOyB7nNSaZ1oeUce5cUMO7yvTqXPR+uzVzsP+OTUYTJyx
-         IWOAGG8cXaGWQOJZkz5J4wXFMkja9uP+g4uL4cWutMQnIQXw7ttXPVOmSWvvUTyal0
-         8E8RCjSlI8QGifQGBpO72yASuObK2NgMMyafloiQ=
+        b=iG82EV8LoCyzEg7coR/TEjtfYo+Rrr1rwklVAqV5DvWovgCljQRvPufSEqcA7LR1x
+         MJn4SjcvnlKQ8xqeQ/PENQ0h4m6k0YOcpHZLS64EC8GU8mBL+c8WsOxfqNNd0ZKMgq
+         9d5Z8Ok1Sv77uQP3LYmQ9ka/GOxUmN4EuTc8liCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 222/277] x86/pm: Save the MSR validity status at context setup
-Date:   Tue, 12 Apr 2022 08:30:25 +0200
-Message-Id: <20220412062948.469222309@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 204/277] perf tools: Fix perfs libperf_print callback
+Date:   Tue, 12 Apr 2022 08:30:07 +0200
+Message-Id: <20220412062947.944652776@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,55 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
+[ Upstream commit aeee9dc53ce405d2161f9915f553114e94e5b677 ]
 
-The mechanism to save/restore MSRs during S3 suspend/resume checks for
-the MSR validity during suspend, and only restores the MSR if its a
-valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
-throw an exception for every suspend cycle.  The more invalid MSRs,
-higher the impact will be.
+eprintf() does not expect va_list as the type of the 4th parameter.
 
-Check and save the MSR validity at setup.  This ensures that only valid
-MSRs that are guaranteed to not throw an exception will be attempted
-during suspend.
+Use veprintf() because it does.
 
-Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Borislav Petkov <bp@suse.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Fixes: 428dab813a56ce94 ("libperf: Merge libperf_set_print() into libperf_init()")
+Cc: Jiri Olsa <jolsa@kernel.org>
+Link: https://lore.kernel.org/r/20220408132625.2451452-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/power/cpu.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ tools/perf/perf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -40,7 +40,8 @@ static void msr_save_context(struct save
- 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
- 
- 	while (msr < end) {
--		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
-+		if (msr->valid)
-+			rdmsrl(msr->info.msr_no, msr->info.reg.q);
- 		msr++;
- 	}
+diff --git a/tools/perf/perf.c b/tools/perf/perf.c
+index 2f6b67189b42..6aae7b6c376b 100644
+--- a/tools/perf/perf.c
++++ b/tools/perf/perf.c
+@@ -434,7 +434,7 @@ void pthread__unblock_sigwinch(void)
+ static int libperf_print(enum libperf_print_level level,
+ 			 const char *fmt, va_list ap)
+ {
+-	return eprintf(level, verbose, fmt, ap);
++	return veprintf(level, verbose, fmt, ap);
  }
-@@ -424,8 +425,10 @@ static int msr_build_context(const u32 *
- 	}
  
- 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
-+		u64 dummy;
-+
- 		msr_array[i].info.msr_no	= msr_id[j];
--		msr_array[i].valid		= false;
-+		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
- 		msr_array[i].info.reg.q		= 0;
- 	}
- 	saved_msrs->num   = total_num;
+ int main(int argc, const char **argv)
+-- 
+2.35.1
+
 
 
