@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8705C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344567AbiDLBDm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59952 "EHLO
+        id S230271AbiDLBD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345115AbiDLA62 (ORCPT
+        with ESMTP id S1345056AbiDLA61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:28 -0400
+        Mon, 11 Apr 2022 20:58:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451792FE73;
-        Mon, 11 Apr 2022 17:50:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC2D2C662;
+        Mon, 11 Apr 2022 17:50:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3308B819A7;
-        Tue, 12 Apr 2022 00:50:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23673C385A4;
-        Tue, 12 Apr 2022 00:50:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B563B819B4;
+        Tue, 12 Apr 2022 00:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0621FC385A3;
+        Tue, 12 Apr 2022 00:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724637;
-        bh=rj7T6OOQgiD3IzTtd1FHQvgNOE0ybu1G9qy0seW6b6w=;
+        s=k20201202; t=1649724628;
+        bh=Uu7VIrb7ME9y2Ns26nkZF0NerK26h//hTrPsKXDKuPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rAtqZqB3f9jjFyVZmyhwBU+XI8AvltGdctpMHQjfTDLi8Ego9HJGP3f4GS//3hpS4
-         23Xj+tcEMBT+fxrGSXdPw6k5pdsG/q2NB+4+xJ7tV1ThdXjH+pZKHRKTkCAv30kmD7
-         nsZrEs3vAGw+5lwYrACe0pXJVXEvwTdBLYnlba82a3n/dLEuRnWx7sBQnbba6Ee9FD
-         27HsXFl7iaAsbJKxHSWCoJp5RbH/FkEwVybKW+If/8JbSRwglEG+cUvNh0eEdkEyfb
-         o61NGDRjok/tx5JfGNjuZ+38T0eqrG6S90wsrkk6DtUeecon060+KLab+uUIwrf5Yg
-         F9lIbnnI5gO6Q==
+        b=aBMGq/RxgDlU3XU8j7AFoCyZkQtYAXd26wHSKcJ5btJX+q/AgenCD5bgpmpfN/Sg4
+         YBzo/n1OO0btMGvk/DXkIr20+QksKKMIW5WG5ESB2by5UDLWkm9VMOV7opMi+Tz8jv
+         EPp+SgwrfWyi6AEPAvtvRN6B29zNs09mbpHBHzkXKbBWfoPIbAqqXskizqrpuIykCZ
+         udQ9RaxkGanLAQPzsjt4KOqRUZBRld+OQvS/3dxu7x3NFailwdJb3eaQP/1cGYPCyX
+         t1kGVkqejV2Rscg86roBoHCZLwy85L9fcYPP8hOa8Mt03+TrSefPaIkLjucRD4Y9K3
+         kjaK/2skAIZLg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chanho Park <chanho61.park@samsung.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Sasha Levin <sashal@kernel.org>, suzuki.poulose@arm.com,
-        anshuman.khandual@arm.com, mathieu.poirier@linaro.org,
-        lcherian@marvell.com, rmk+kernel@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 29/30] arm64: Add part number for Arm Cortex-A78AE
-Date:   Mon, 11 Apr 2022 20:49:03 -0400
-Message-Id: <20220412004906.350678-29-sashal@kernel.org>
+Cc:     Chandrakanth patil <chandrakanth.patil@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, kashyap.desai@broadcom.com,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        jejb@linux.ibm.com, megaraidlinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 27/30] scsi: megaraid_sas: Target with invalid LUN ID is deleted during scan
+Date:   Mon, 11 Apr 2022 20:49:01 -0400
+Message-Id: <20220412004906.350678-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
 References: <20220412004906.350678-1-sashal@kernel.org>
@@ -58,61 +54,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+From: Chandrakanth patil <chandrakanth.patil@broadcom.com>
 
-[ Upstream commit 83bea32ac7ed37bbda58733de61fc9369513f9f9 ]
+[ Upstream commit 56495f295d8e021f77d065b890fc0100e3f9f6d8 ]
 
-Add the MIDR part number info for the Arm Cortex-A78AE[1] and add it to
-spectre-BHB affected list[2].
+The megaraid_sas driver supports single LUN for RAID devices. That is LUN
+0. All other LUNs are unsupported. When a device scan on a logical target
+with invalid LUN number is invoked through sysfs, that target ends up
+getting removed.
 
-[1]: https://developer.arm.com/Processors/Cortex-A78AE
-[2]: https://developer.arm.com/Arm%20Security%20Center/Spectre-BHB
+Add LUN ID validation in the slave destroy function to avoid the target
+deletion.
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: James Morse <james.morse@arm.com>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220407091128.8700-1-chanho61.park@samsung.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220324094711.48833-1-chandrakanth.patil@broadcom.com
+Signed-off-by: Chandrakanth patil <chandrakanth.patil@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/cputype.h | 2 ++
- arch/arm64/kernel/proton-pack.c  | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/scsi/megaraid/megaraid_sas.h      | 3 +++
+ drivers/scsi/megaraid/megaraid_sas_base.c | 7 +++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
-index bfbf0c4c7c5e..39f5c1672f48 100644
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -75,6 +75,7 @@
- #define ARM_CPU_PART_CORTEX_A77		0xD0D
- #define ARM_CPU_PART_NEOVERSE_V1	0xD40
- #define ARM_CPU_PART_CORTEX_A78		0xD41
-+#define ARM_CPU_PART_CORTEX_A78AE	0xD42
- #define ARM_CPU_PART_CORTEX_X1		0xD44
- #define ARM_CPU_PART_CORTEX_A510	0xD46
- #define ARM_CPU_PART_CORTEX_A710	0xD47
-@@ -123,6 +124,7 @@
- #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
- #define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
- #define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
-+#define MIDR_CORTEX_A78AE	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78AE)
- #define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
- #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
- #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
-diff --git a/arch/arm64/kernel/proton-pack.c b/arch/arm64/kernel/proton-pack.c
-index 3dd489b62b29..6ae53d8cd576 100644
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -861,6 +861,7 @@ u8 spectre_bhb_loop_affected(int scope)
- 	if (scope == SCOPE_LOCAL_CPU) {
- 		static const struct midr_range spectre_bhb_k32_list[] = {
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78AE),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
+diff --git a/drivers/scsi/megaraid/megaraid_sas.h b/drivers/scsi/megaraid/megaraid_sas.h
+index 6b8ec57e8bdf..c088a848776e 100644
+--- a/drivers/scsi/megaraid/megaraid_sas.h
++++ b/drivers/scsi/megaraid/megaraid_sas.h
+@@ -2554,6 +2554,9 @@ struct megasas_instance_template {
+ #define MEGASAS_IS_LOGICAL(sdev)					\
+ 	((sdev->channel < MEGASAS_MAX_PD_CHANNELS) ? 0 : 1)
+ 
++#define MEGASAS_IS_LUN_VALID(sdev)					\
++	(((sdev)->lun == 0) ? 1 : 0)
++
+ #define MEGASAS_DEV_INDEX(scp)						\
+ 	(((scp->device->channel % 2) * MEGASAS_MAX_DEV_PER_CHANNEL) +	\
+ 	scp->device->id)
+diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+index 1a70cc995c28..84a2e9292fd0 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_base.c
++++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+@@ -2111,6 +2111,9 @@ static int megasas_slave_alloc(struct scsi_device *sdev)
+ 			goto scan_target;
+ 		}
+ 		return -ENXIO;
++	} else if (!MEGASAS_IS_LUN_VALID(sdev)) {
++		sdev_printk(KERN_INFO, sdev, "%s: invalid LUN\n", __func__);
++		return -ENXIO;
+ 	}
+ 
+ scan_target:
+@@ -2141,6 +2144,10 @@ static void megasas_slave_destroy(struct scsi_device *sdev)
+ 	instance = megasas_lookup_instance(sdev->host->host_no);
+ 
+ 	if (MEGASAS_IS_LOGICAL(sdev)) {
++		if (!MEGASAS_IS_LUN_VALID(sdev)) {
++			sdev_printk(KERN_INFO, sdev, "%s: invalid LUN\n", __func__);
++			return;
++		}
+ 		ld_tgt_id = MEGASAS_TARGET_ID(sdev);
+ 		instance->ld_tgtid_status[ld_tgt_id] = LD_TARGET_ID_DELETED;
+ 		if (megasas_dbg_lvl & LD_PD_DEBUG)
 -- 
 2.35.1
 
