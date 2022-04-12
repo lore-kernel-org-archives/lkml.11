@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA580C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F932C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382956AbiDLIey (ORCPT
+        id S1383024AbiDLIfT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
+        Tue, 12 Apr 2022 04:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353862AbiDLHZ4 (ORCPT
+        with ESMTP id S1356181AbiDLHek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6D2E09D;
-        Tue, 12 Apr 2022 00:05:01 -0700 (PDT)
+        Tue, 12 Apr 2022 03:34:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6317C2BC9;
+        Tue, 12 Apr 2022 00:09:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 369F260B65;
-        Tue, 12 Apr 2022 07:05:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F800C385A6;
-        Tue, 12 Apr 2022 07:05:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5CF3B81B50;
+        Tue, 12 Apr 2022 07:09:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20982C385A1;
+        Tue, 12 Apr 2022 07:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747100;
-        bh=nixB3c9ysBwrhtGSDitgq3s8EgiWl03CMJTTQJF6RHg=;
+        s=korg; t=1649747344;
+        bh=Kis1m7DCiAim8AJzs0Ba0MT9e/Dm3ojhWqjSSvMIge8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RzTuy/a36OJjqBruwFtNHqNs9zfQF1y9T3aW04XE6G/UQMAYRmixDpzwnYV/Rn6dI
-         ET3NmKr0BTY2oZanMYuGAlwxpdVw3RxMhGWfI0seaC7zay8z9loaKbwfzDi2JpZAZq
-         /Bedhnpl816FDr0a9u1fd2mZZdkkx0wpV7iK0AJk=
+        b=cosjB9MYnHXM0EOYYlwdBnWgAG6uAhrSlBINC88iEXnV6W/Ic6qpGtQvuKFrcRQJ+
+         I6/xUgQDaGuS6GmL8s5dDaa2J5AJh2AGe7wGpiWFyjMjSiy9usrjwxrYmgaVZgqkKh
+         ZWJDDURzbbQ6K31M6ODRoWFpMxwgB8c4BslMKhf0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 5.16 241/285] gpio: Restrict usage of GPIO chip irq members before initialization
-Date:   Tue, 12 Apr 2022 08:31:38 +0200
-Message-Id: <20220412062950.617893187@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 045/343] scsi: bfa: Replace snprintf() with sysfs_emit()
+Date:   Tue, 12 Apr 2022 08:27:43 +0200
+Message-Id: <20220412062952.407996838@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,94 +52,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreeya Patel <shreeya.patel@collabora.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-commit 5467801f1fcbdc46bc7298a84dbf3ca1ff2a7320 upstream.
+[ Upstream commit 2245ea91fd3a04cafbe2f54911432a8657528c3b ]
 
-GPIO chip irq members are exposed before they could be completely
-initialized and this leads to race conditions.
+coccinelle report:
+./drivers/scsi/bfa/bfad_attr.c:908:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:860:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:888:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:853:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:808:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:728:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:822:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:927:9-17:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:900:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:874:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:714:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/scsi/bfa/bfad_attr.c:839:8-16:
+WARNING: use scnprintf or sprintf
 
-One such issue was observed for the gc->irq.domain variable which
-was accessed through the I2C interface in gpiochip_to_irq() before
-it could be initialized by gpiochip_add_irqchip(). This resulted in
-Kernel NULL pointer dereference.
+Use sysfs_emit() instead of scnprintf() or sprintf().
 
-Following are the logs for reference :-
-
-kernel: Call Trace:
-kernel:  gpiod_to_irq+0x53/0x70
-kernel:  acpi_dev_gpio_irq_get_by+0x113/0x1f0
-kernel:  i2c_acpi_get_irq+0xc0/0xd0
-kernel:  i2c_device_probe+0x28a/0x2a0
-kernel:  really_probe+0xf2/0x460
-kernel: RIP: 0010:gpiochip_to_irq+0x47/0xc0
-
-To avoid such scenarios, restrict usage of GPIO chip irq members before
-they are completely initialized.
-
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/def83ff75faec64ba592b867a8499b1367bae303.1643181468.git.yang.guang5@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib.c      |   19 +++++++++++++++++++
- include/linux/gpio/driver.h |    9 +++++++++
- 2 files changed, 28 insertions(+)
+ drivers/scsi/bfa/bfad_attr.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1368,6 +1368,16 @@ static int gpiochip_to_irq(struct gpio_c
- {
- 	struct irq_domain *domain = gc->irq.domain;
+diff --git a/drivers/scsi/bfa/bfad_attr.c b/drivers/scsi/bfa/bfad_attr.c
+index f46989bd083c..5a85401e9e2d 100644
+--- a/drivers/scsi/bfa/bfad_attr.c
++++ b/drivers/scsi/bfa/bfad_attr.c
+@@ -711,7 +711,7 @@ bfad_im_serial_num_show(struct device *dev, struct device_attribute *attr,
+ 	char serial_num[BFA_ADAPTER_SERIAL_NUM_LEN];
  
-+#ifdef CONFIG_GPIOLIB_IRQCHIP
-+	/*
-+	 * Avoid race condition with other code, which tries to lookup
-+	 * an IRQ before the irqchip has been properly registered,
-+	 * i.e. while gpiochip is still being brought up.
-+	 */
-+	if (!gc->irq.initialized)
-+		return -EPROBE_DEFER;
-+#endif
-+
- 	if (!gpiochip_irqchip_irq_valid(gc, offset))
- 		return -ENXIO;
- 
-@@ -1557,6 +1567,15 @@ static int gpiochip_add_irqchip(struct g
- 
- 	acpi_gpiochip_request_interrupts(gc);
- 
-+	/*
-+	 * Using barrier() here to prevent compiler from reordering
-+	 * gc->irq.initialized before initialization of above
-+	 * GPIO chip irq members.
-+	 */
-+	barrier();
-+
-+	gc->irq.initialized = true;
-+
- 	return 0;
+ 	bfa_get_adapter_serial_num(&bfad->bfa, serial_num);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", serial_num);
++	return sysfs_emit(buf, "%s\n", serial_num);
  }
  
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -219,6 +219,15 @@ struct gpio_irq_chip {
- 	bool per_parent_data;
+ static ssize_t
+@@ -725,7 +725,7 @@ bfad_im_model_show(struct device *dev, struct device_attribute *attr,
+ 	char model[BFA_ADAPTER_MODEL_NAME_LEN];
  
- 	/**
-+	 * @initialized:
-+	 *
-+	 * Flag to track GPIO chip irq member's initialization.
-+	 * This flag will make sure GPIO chip irq members are not used
-+	 * before they are initialized.
-+	 */
-+	bool initialized;
-+
-+	/**
- 	 * @init_hw: optional routine to initialize hardware before
- 	 * an IRQ chip will be added. This is quite useful when
- 	 * a particular driver wants to clear IRQ related registers
+ 	bfa_get_adapter_model(&bfad->bfa, model);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", model);
++	return sysfs_emit(buf, "%s\n", model);
+ }
+ 
+ static ssize_t
+@@ -805,7 +805,7 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
+ 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+ 			"Invalid Model");
+ 
+-	return snprintf(buf, PAGE_SIZE, "%s\n", model_descr);
++	return sysfs_emit(buf, "%s\n", model_descr);
+ }
+ 
+ static ssize_t
+@@ -819,7 +819,7 @@ bfad_im_node_name_show(struct device *dev, struct device_attribute *attr,
+ 	u64        nwwn;
+ 
+ 	nwwn = bfa_fcs_lport_get_nwwn(port->fcs_port);
+-	return snprintf(buf, PAGE_SIZE, "0x%llx\n", cpu_to_be64(nwwn));
++	return sysfs_emit(buf, "0x%llx\n", cpu_to_be64(nwwn));
+ }
+ 
+ static ssize_t
+@@ -836,7 +836,7 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
+ 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
+ 	strlcpy(symname, port_attr.port_cfg.sym_name.symname,
+ 			BFA_SYMNAME_MAXLEN);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
++	return sysfs_emit(buf, "%s\n", symname);
+ }
+ 
+ static ssize_t
+@@ -850,14 +850,14 @@ bfad_im_hw_version_show(struct device *dev, struct device_attribute *attr,
+ 	char hw_ver[BFA_VERSION_LEN];
+ 
+ 	bfa_get_pci_chip_rev(&bfad->bfa, hw_ver);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", hw_ver);
++	return sysfs_emit(buf, "%s\n", hw_ver);
+ }
+ 
+ static ssize_t
+ bfad_im_drv_version_show(struct device *dev, struct device_attribute *attr,
+ 				char *buf)
+ {
+-	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_VERSION);
++	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_VERSION);
+ }
+ 
+ static ssize_t
+@@ -871,7 +871,7 @@ bfad_im_optionrom_version_show(struct device *dev,
+ 	char optrom_ver[BFA_VERSION_LEN];
+ 
+ 	bfa_get_adapter_optrom_ver(&bfad->bfa, optrom_ver);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", optrom_ver);
++	return sysfs_emit(buf, "%s\n", optrom_ver);
+ }
+ 
+ static ssize_t
+@@ -885,7 +885,7 @@ bfad_im_fw_version_show(struct device *dev, struct device_attribute *attr,
+ 	char fw_ver[BFA_VERSION_LEN];
+ 
+ 	bfa_get_adapter_fw_ver(&bfad->bfa, fw_ver);
+-	return snprintf(buf, PAGE_SIZE, "%s\n", fw_ver);
++	return sysfs_emit(buf, "%s\n", fw_ver);
+ }
+ 
+ static ssize_t
+@@ -897,7 +897,7 @@ bfad_im_num_of_ports_show(struct device *dev, struct device_attribute *attr,
+ 			(struct bfad_im_port_s *) shost->hostdata[0];
+ 	struct bfad_s *bfad = im_port->bfad;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n",
++	return sysfs_emit(buf, "%d\n",
+ 			bfa_get_nports(&bfad->bfa));
+ }
+ 
+@@ -905,7 +905,7 @@ static ssize_t
+ bfad_im_drv_name_show(struct device *dev, struct device_attribute *attr,
+ 				char *buf)
+ {
+-	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_NAME);
++	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_NAME);
+ }
+ 
+ static ssize_t
+@@ -924,14 +924,14 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
+ 	rports = kcalloc(nrports, sizeof(struct bfa_rport_qualifier_s),
+ 			 GFP_ATOMIC);
+ 	if (rports == NULL)
+-		return snprintf(buf, PAGE_SIZE, "Failed\n");
++		return sysfs_emit(buf, "Failed\n");
+ 
+ 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+ 	bfa_fcs_lport_get_rport_quals(port->fcs_port, rports, &nrports);
+ 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+ 	kfree(rports);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", nrports);
++	return sysfs_emit(buf, "%d\n", nrports);
+ }
+ 
+ static          DEVICE_ATTR(serial_number, S_IRUGO,
+-- 
+2.35.1
+
 
 
