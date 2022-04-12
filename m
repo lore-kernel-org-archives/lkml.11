@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47954C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68ED9C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235926AbiDLHVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
+        id S1343684AbiDLHWF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352838AbiDLHGI (ORCPT
+        with ESMTP id S1352885AbiDLHGZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:06:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB6448E57;
-        Mon, 11 Apr 2022 23:48:50 -0700 (PDT)
+        Tue, 12 Apr 2022 03:06:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25C848E7B;
+        Mon, 11 Apr 2022 23:48:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4666BB81B43;
-        Tue, 12 Apr 2022 06:48:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D1CC385A1;
-        Tue, 12 Apr 2022 06:48:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEF6EB81B35;
+        Tue, 12 Apr 2022 06:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62DC8C385A1;
+        Tue, 12 Apr 2022 06:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746127;
-        bh=LBlGdq6vz+9VNDx+bAUfEJCL60i/v7PjWpnupljX3dY=;
+        s=korg; t=1649746129;
+        bh=sWs8PKY5NAKGOEBUAqtXGwVwMoLjf23mdD2j7BEx9iw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eb4x+uv1OhmI5mDl6tNSuixpCSx0/KSvj9YaNXDzkOt+oHL3lgQUBzr8is41upYG2
-         VHNkCz4eUJA++coklMbNsg+/yyPoENkITFn/MwTs2lR3fYSpFjuXEv8nxEAegdFcH5
-         pPk4/Ulb8GpjfLNtHN1i7jxe/LGX0beNAhVJL80E=
+        b=tTh0SPfbPnUQ+NOL5lONufUhvV4yvpjEtiH6aFWqINWjcCEZTSMaioRADkLu6J0J8
+         O1nWLx88ys91y9fewMwUzx9xFcNwCncBVL97qFIMJYZGhUwsTOUVH/1heAufLU5Iuj
+         pzrAZavxee+syrMuoigplvGTbU6DcmsMcu7XStlA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Axel Lin <axel.lin@ingics.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 169/277] regulator: atc260x: Fix missing active_discharge_on setting
-Date:   Tue, 12 Apr 2022 08:29:32 +0200
-Message-Id: <20220412062946.928515021@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 170/277] arch/arm64: Fix topology initialization for core scheduling
+Date:   Tue, 12 Apr 2022 08:29:33 +0200
+Message-Id: <20220412062946.957811244@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,34 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Lin <axel.lin@ingics.com>
+From: Phil Auld <pauld@redhat.com>
 
-[ Upstream commit 2316f0fc0ad2aa87a568ceaf3d76be983ee555c3 ]
+[ Upstream commit 5524cbb1bfcdff0cad0aaa9f94e6092002a07259 ]
 
-Without active_discharge_on setting, the SWITCH1 discharge enable control
-is always disabled. Fix it.
+Arm64 systems rely on store_cpu_topology() to call update_siblings_masks()
+to transfer the toplogy to the various cpu masks. This needs to be done
+before the call to notify_cpu_starting() which tells the scheduler about
+each cpu found, otherwise the core scheduling data structures are setup
+in a way that does not match the actual topology.
 
-Fixes: 3b15ccac161a ("regulator: Add regulator driver for ATC260x PMICs")
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
-Link: https://lore.kernel.org/r/20220403132235.123727-1-axel.lin@ingics.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+With smt_mask not setup correctly we bail on `cpumask_weight(smt_mask) == 1`
+for !leaders in:
+
+ notify_cpu_starting()
+   cpuhp_invoke_callback_range()
+     sched_cpu_starting()
+       sched_core_cpu_starting()
+
+which leads to rq->core not being correctly set for !leader-rq's.
+
+Without this change stress-ng (which enables core scheduling in its prctl
+tests in newer versions -- i.e. with PR_SCHED_CORE support) causes a warning
+and then a crash (trimmed for legibility):
+
+[ 1853.805168] ------------[ cut here ]------------
+[ 1853.809784] task_rq(b)->core != rq->core
+[ 1853.809792] WARNING: CPU: 117 PID: 0 at kernel/sched/fair.c:11102 cfs_prio_less+0x1b4/0x1c4
+...
+[ 1854.015210] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+...
+[ 1854.231256] Call trace:
+[ 1854.233689]  pick_next_task+0x3dc/0x81c
+[ 1854.237512]  __schedule+0x10c/0x4cc
+[ 1854.240988]  schedule_idle+0x34/0x54
+
+Fixes: 9edeaea1bc45 ("sched: Core-wide rq->lock")
+Signed-off-by: Phil Auld <pauld@redhat.com>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Link: https://lore.kernel.org/r/20220331153926.25742-1-pauld@redhat.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/atc260x-regulator.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/kernel/smp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/regulator/atc260x-regulator.c b/drivers/regulator/atc260x-regulator.c
-index 05147d2c3842..485e58b264c0 100644
---- a/drivers/regulator/atc260x-regulator.c
-+++ b/drivers/regulator/atc260x-regulator.c
-@@ -292,6 +292,7 @@ enum atc2603c_reg_ids {
- 	.bypass_mask = BIT(5), \
- 	.active_discharge_reg = ATC2603C_PMU_SWITCH_CTL, \
- 	.active_discharge_mask = BIT(1), \
-+	.active_discharge_on = BIT(1), \
- 	.owner = THIS_MODULE, \
- }
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 6f6ff072acbd..3beaa6640ab3 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -234,6 +234,7 @@ asmlinkage notrace void secondary_start_kernel(void)
+ 	 * Log the CPU info before it is marked online and might get read.
+ 	 */
+ 	cpuinfo_store_cpu();
++	store_cpu_topology(cpu);
  
+ 	/*
+ 	 * Enable GIC and timers.
+@@ -242,7 +243,6 @@ asmlinkage notrace void secondary_start_kernel(void)
+ 
+ 	ipi_setup(cpu);
+ 
+-	store_cpu_topology(cpu);
+ 	numa_add_cpu(cpu);
+ 
+ 	/*
 -- 
 2.35.1
 
