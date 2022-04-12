@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F89C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82112C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380584AbiDLIW1 (ORCPT
+        id S1379785AbiDLIU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42874 "EHLO
+        Tue, 12 Apr 2022 04:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353796AbiDLHZz (ORCPT
+        with ESMTP id S1354086AbiDLH0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A991565AF;
-        Tue, 12 Apr 2022 00:04:38 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5C9186DE;
+        Tue, 12 Apr 2022 00:05:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 466AF60B2B;
-        Tue, 12 Apr 2022 07:04:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5334EC385A6;
-        Tue, 12 Apr 2022 07:04:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAC8F60B2B;
+        Tue, 12 Apr 2022 07:05:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC7A4C385A8;
+        Tue, 12 Apr 2022 07:05:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747077;
-        bh=SzBItMyTsxEN8wbEy8s1evcdeOWaK+YL9Vm2ua8qJns=;
+        s=korg; t=1649747136;
+        bh=sXMl2ZYE8rt5NfFeBPGIcHAYJuUylPNTH8SOiNKZ7n8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j1lqx/8oacK8kPfemJ2/MvuXoe/TOb0a4ikoPR0puZyGDoLkOx9wWgtsFS37euSMl
-         YScmOGXZbwbTNX6bcByIS8XUohtJv2vYcbbbwZx8rmB2Jc9LxSkHr//Q3D6HKukqrG
-         0dd4zd+qxYxKpqXav2yC38is18b4YPE+HRb5Es4o=
+        b=jZsWSO8dTr9fvqk3u3QMlJaBNdJmETeeasegn3livoQLDcEjamKMixcs+3XSwKdRQ
+         GK/EfhI5y7xLm2j1Kjx+uLCRPmzxb/4rRz797lu6d9HeHZnB/wZnOuJpytiXq0rczH
+         iSH/gTPcsRwibLs7Ry5KgXpxMZIEbv7W93RJ4rr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 234/285] btrfs: avoid defragging extents whose next extents are not targets
-Date:   Tue, 12 Apr 2022 08:31:31 +0200
-Message-Id: <20220412062950.415220912@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 5.16 257/285] drm/amdkfd: Create file descriptor after client is added to smi_clients list
+Date:   Tue, 12 Apr 2022 08:31:54 +0200
+Message-Id: <20220412062951.079211206@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,107 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Lee Jones <lee.jones@linaro.org>
 
-commit 75a36a7d3ea904cef2e5b56af0c58cc60dcf947a upstream.
+commit e79a2398e1b2d47060474dca291542368183bc0f upstream.
 
-[BUG]
-There is a report that autodefrag is defragging single sector, which
-is completely waste of IO, and no help for defragging:
+This ensures userspace cannot prematurely clean-up the client before
+it is fully initialised which has been proven to cause issues in the
+past.
 
-   btrfs-cleaner-808 defrag_one_locked_range: root=256 ino=651122 start=0 len=4096
-
-[CAUSE]
-In defrag_collect_targets(), we check if the current range (A) can be merged
-with next one (B).
-
-If mergeable, we will add range A into target for defrag.
-
-However there is a catch for autodefrag, when checking mergeability
-against range B, we intentionally pass 0 as @newer_than, hoping to get a
-higher chance to merge with the next extent.
-
-But in the next iteration, range B will looked up by defrag_lookup_extent(),
-with non-zero @newer_than.
-
-And if range B is not really newer, it will rejected directly, causing
-only range A being defragged, while we expect to defrag both range A and
-B.
-
-[FIX]
-Since the root cause is the difference in check condition of
-defrag_check_next_extent() and defrag_collect_targets(), we fix it by:
-
-1. Pass @newer_than to defrag_check_next_extent()
-2. Pass @extent_thresh to defrag_check_next_extent()
-
-This makes the check between defrag_collect_targets() and
-defrag_check_next_extent() more consistent.
-
-While there is still some minor difference, the remaining checks are
-focus on runtime flags like writeback/delalloc, which are mostly
-transient and safe to be checked only in defrag_collect_targets().
-
-Link: https://github.com/btrfs/linux/issues/423#issuecomment-1066981856
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Christian König" <christian.koenig@amd.com>
+Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: amd-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ioctl.c |   20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c |   24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -1189,7 +1189,7 @@ static u32 get_extent_max_capacity(const
- }
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
+@@ -270,15 +270,6 @@ int kfd_smi_event_open(struct kfd_dev *d
+ 		return ret;
+ 	}
  
- static bool defrag_check_next_extent(struct inode *inode, struct extent_map *em,
--				     bool locked)
-+				     u32 extent_thresh, u64 newer_than, bool locked)
- {
- 	struct extent_map *next;
- 	bool ret = false;
-@@ -1199,11 +1199,12 @@ static bool defrag_check_next_extent(str
- 		return false;
+-	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
+-			       O_RDWR);
+-	if (ret < 0) {
+-		kfifo_free(&client->fifo);
+-		kfree(client);
+-		return ret;
+-	}
+-	*fd = ret;
+-
+ 	init_waitqueue_head(&client->wait_queue);
+ 	spin_lock_init(&client->lock);
+ 	client->events = 0;
+@@ -288,5 +279,20 @@ int kfd_smi_event_open(struct kfd_dev *d
+ 	list_add_rcu(&client->list, &dev->smi_clients);
+ 	spin_unlock(&dev->smi_lock);
  
- 	/*
--	 * We want to check if the next extent can be merged with the current
--	 * one, which can be an extent created in a past generation, so we pass
--	 * a minimum generation of 0 to defrag_lookup_extent().
-+	 * Here we need to pass @newer_then when checking the next extent, or
-+	 * we will hit a case we mark current extent for defrag, but the next
-+	 * one will not be a target.
-+	 * This will just cause extra IO without really reducing the fragments.
- 	 */
--	next = defrag_lookup_extent(inode, em->start + em->len, 0, locked);
-+	next = defrag_lookup_extent(inode, em->start + em->len, newer_than, locked);
- 	/* No more em or hole */
- 	if (!next || next->block_start >= EXTENT_MAP_LAST_BYTE)
- 		goto out;
-@@ -1215,6 +1216,13 @@ static bool defrag_check_next_extent(str
- 	 */
- 	if (next->len >= get_extent_max_capacity(em))
- 		goto out;
-+	/* Skip older extent */
-+	if (next->generation < newer_than)
-+		goto out;
-+	/* Also check extent size */
-+	if (next->len >= extent_thresh)
-+		goto out;
++	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
++			       O_RDWR);
++	if (ret < 0) {
++		spin_lock(&dev->smi_lock);
++		list_del_rcu(&client->list);
++		spin_unlock(&dev->smi_lock);
 +
- 	ret = true;
- out:
- 	free_extent_map(next);
-@@ -1420,7 +1428,7 @@ static int defrag_collect_targets(struct
- 			goto next;
- 
- 		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
--							  locked);
-+						extent_thresh, newer_than, locked);
- 		if (!next_mergeable) {
- 			struct defrag_target_range *last;
- 
++		synchronize_rcu();
++
++		kfifo_free(&client->fifo);
++		kfree(client);
++		return ret;
++	}
++	*fd = ret;
++
+ 	return 0;
+ }
 
 
