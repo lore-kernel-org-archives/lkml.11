@@ -2,311 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D48AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:34:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352287AbiDLMgh (ORCPT
+        id S1345291AbiDLMgn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
+        Tue, 12 Apr 2022 08:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352228AbiDLMgB (ORCPT
+        with ESMTP id S1352037AbiDLMgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 08:36:01 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDA845E761;
-        Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 83B8A1424;
-        Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.38.213])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A75FD3F70D;
-        Tue, 12 Apr 2022 04:54:48 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-perf-users@vger.kernel.org
-Subject: [RFC V2 2/8] arm64/perf: Add register definitions for BRBE
-Date:   Tue, 12 Apr 2022 17:24:49 +0530
-Message-Id: <20220412115455.293119-3-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412115455.293119-1-anshuman.khandual@arm.com>
-References: <20220412115455.293119-1-anshuman.khandual@arm.com>
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8075E767
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bh17so36796991ejb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QHCIwf7uKojCa/2Ev85bnweKYQuMU3PscULOv/3SfH0=;
+        b=DD4J/SiIfk70HC7aXDM4XEePvBUKdzzefIcgqBNThjAReDiodJEUxv0NPXpUdN4Kvw
+         5GK38QtWhkafFiYN5PdU1rjp9aro7+WtQivpUph3krYiRej9dnybekWAPqZ7OAw9F8xL
+         wNK5tQg9jnGDORnDvGQ8VgkSLX5FYQOqHwx3FAh9Ov0huiJqoLlT2vuI0KfWGVYBqxCW
+         2IWQ1R+ATurd2bGH5iYdmSLgRVFDArfFNifG/UnU14tH8thrH521ohSzxTH0Mb70XYmd
+         T8f7UVwyAEgO4OGSy7qDzscYWwIkGggVShOv5zJcBZ/+SU6h/uZEvJujeGPcbML/6rfT
+         H1qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QHCIwf7uKojCa/2Ev85bnweKYQuMU3PscULOv/3SfH0=;
+        b=M5b3mVki9lyxu2FK/ngJEfVGDVeKGZWPuyySFDF/1xju2+YbUAHCyXlKXEyR/sRVwv
+         ThwNk9/S8zeq8N/VgYUN11snObYdA2cM+XI3pvCM5fV7L/ngQNBCCWssZPJObN9H3GtN
+         xUJ+RpxCGtmo8LsQ+ZrWhABLaaDnU2trEm8aWfm9nH8VaLE2d7itkdtZxqK41VQh7OQW
+         XTMY/IOyjiHTKZZHv47Pw+z6BwEFbg/iq1x7yinCbeTmt+Sy0WQBVj1nxhJPiJRvqQyB
+         NRlrmGmZf+1p4OmJSQ9ZYWckgLEyLivF9AGfmiU3TfoNoGrXwBZlMCV7v9sDIqLIhFO5
+         A0eA==
+X-Gm-Message-State: AOAM531H6IfuH3bCOjmZk9azFg3WW6BURURyqNmJQ0AdwCIbGKMQD6XS
+        9b4DuR36eeGn75ZxVV39NhpyEw==
+X-Google-Smtp-Source: ABdhPJx9FE2flpben9B2OZUqjC1Vqv352+dinvZFdVtXqGLSmXzCHwsuwcdIhzcf0QGCra4M1rTYbQ==
+X-Received: by 2002:a17:906:e87:b0:6df:8602:5801 with SMTP id p7-20020a1709060e8700b006df86025801mr34857117ejf.140.1649764494490;
+        Tue, 12 Apr 2022 04:54:54 -0700 (PDT)
+Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id g4-20020a17090613c400b006e843330364sm5568236ejc.122.2022.04.12.04.54.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 04:54:54 -0700 (PDT)
+Message-ID: <2f0ecdb6-97f0-213a-7ee7-d1fe0a7406a8@linaro.org>
+Date:   Tue, 12 Apr 2022 13:54:53 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/7] dt-bindings: mmc: sdhci-msm: Document the SDX65
+ compatible
+Content-Language: en-US
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, will@kernel.org,
+        robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, ulf.hansson@linaro.org, agross@kernel.org,
+        bjorn.andersson@linaro.org
+Cc:     manivannan.sadhasivam@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds BRBE related register definitions and various other related field
-macros there in. These will be used subsequently in a BRBE driver which is
-being added later on.
+On 11/04/2022 11:50, Rohit Agarwal wrote:
+> The SDHCI controller on SDX65 is based on MSM SDHCI v5 IP. Hence,
+> document the compatible with "qcom,sdhci-msm-v5" as the fallback.
+> 
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- arch/arm64/include/asm/sysreg.h | 222 ++++++++++++++++++++++++++++++++
- 1 file changed, 222 insertions(+)
 
-diff --git a/arch/arm64/include/asm/sysreg.h b/arch/arm64/include/asm/sysreg.h
-index fbf5f8bb9055..77189e02e605 100644
---- a/arch/arm64/include/asm/sysreg.h
-+++ b/arch/arm64/include/asm/sysreg.h
-@@ -149,6 +149,224 @@
- #define SYS_DBGDTRTX_EL0		sys_reg(2, 3, 0, 5, 0)
- #define SYS_DBGVCR32_EL2		sys_reg(2, 4, 0, 7, 0)
- 
-+/*
-+ * BRBINF<N>_EL1 Encoding: [2, 1, 8, CRm, op2]
-+ *
-+ * derived as <CRm> = c{N<3:0>} <op2> = (N<4>x4 + 0)
-+ */
-+#define __SYS_BRBINFO(n)		sys_reg(2, 1, 8, ((n) & 0xf), (((n) & 0x10)) >> 2)
-+
-+#define SYS_BRBINF0_EL1			__SYS_BRBINFO(0)
-+#define SYS_BRBINF1_EL1			__SYS_BRBINFO(1)
-+#define SYS_BRBINF2_EL1			__SYS_BRBINFO(2)
-+#define SYS_BRBINF3_EL1			__SYS_BRBINFO(3)
-+#define SYS_BRBINF4_EL1			__SYS_BRBINFO(4)
-+#define SYS_BRBINF5_EL1			__SYS_BRBINFO(5)
-+#define SYS_BRBINF6_EL1			__SYS_BRBINFO(6)
-+#define SYS_BRBINF7_EL1			__SYS_BRBINFO(7)
-+#define SYS_BRBINF8_EL1			__SYS_BRBINFO(8)
-+#define SYS_BRBINF9_EL1			__SYS_BRBINFO(9)
-+#define SYS_BRBINF10_EL1		__SYS_BRBINFO(10)
-+#define SYS_BRBINF11_EL1		__SYS_BRBINFO(11)
-+#define SYS_BRBINF12_EL1		__SYS_BRBINFO(12)
-+#define SYS_BRBINF13_EL1		__SYS_BRBINFO(13)
-+#define SYS_BRBINF14_EL1		__SYS_BRBINFO(14)
-+#define SYS_BRBINF15_EL1		__SYS_BRBINFO(15)
-+#define SYS_BRBINF16_EL1		__SYS_BRBINFO(16)
-+#define SYS_BRBINF17_EL1		__SYS_BRBINFO(17)
-+#define SYS_BRBINF18_EL1		__SYS_BRBINFO(18)
-+#define SYS_BRBINF19_EL1		__SYS_BRBINFO(19)
-+#define SYS_BRBINF20_EL1		__SYS_BRBINFO(20)
-+#define SYS_BRBINF21_EL1		__SYS_BRBINFO(21)
-+#define SYS_BRBINF22_EL1		__SYS_BRBINFO(22)
-+#define SYS_BRBINF23_EL1		__SYS_BRBINFO(23)
-+#define SYS_BRBINF24_EL1		__SYS_BRBINFO(24)
-+#define SYS_BRBINF25_EL1		__SYS_BRBINFO(25)
-+#define SYS_BRBINF26_EL1		__SYS_BRBINFO(26)
-+#define SYS_BRBINF27_EL1		__SYS_BRBINFO(27)
-+#define SYS_BRBINF28_EL1		__SYS_BRBINFO(28)
-+#define SYS_BRBINF29_EL1		__SYS_BRBINFO(29)
-+#define SYS_BRBINF30_EL1		__SYS_BRBINFO(30)
-+#define SYS_BRBINF31_EL1		__SYS_BRBINFO(31)
-+
-+/*
-+ * BRBSRC<N>_EL1 Encoding: [2, 1, 8, CRm, op2]
-+ *
-+ * derived as <CRm> = c{N<3:0>} <op2> = (N<4>x4 + 1)
-+ */
-+#define __SYS_BRBSRC(n)			sys_reg(2, 1, 8, ((n) & 0xf), ((((n) & 0x10)) >> 2 + 1))
-+
-+#define SYS_BRBSRC0_EL1			__SYS_BRBSRC(0)
-+#define SYS_BRBSRC1_EL1			__SYS_BRBSRC(1)
-+#define SYS_BRBSRC2_EL1			__SYS_BRBSRC(2)
-+#define SYS_BRBSRC3_EL1			__SYS_BRBSRC(3)
-+#define SYS_BRBSRC4_EL1			__SYS_BRBSRC(4)
-+#define SYS_BRBSRC5_EL1			__SYS_BRBSRC(5)
-+#define SYS_BRBSRC6_EL1			__SYS_BRBSRC(6)
-+#define SYS_BRBSRC7_EL1			__SYS_BRBSRC(7)
-+#define SYS_BRBSRC8_EL1			__SYS_BRBSRC(8)
-+#define SYS_BRBSRC9_EL1			__SYS_BRBSRC(9)
-+#define SYS_BRBSRC10_EL1		__SYS_BRBSRC(10)
-+#define SYS_BRBSRC11_EL1		__SYS_BRBSRC(11)
-+#define SYS_BRBSRC12_EL1		__SYS_BRBSRC(12)
-+#define SYS_BRBSRC13_EL1		__SYS_BRBSRC(13)
-+#define SYS_BRBSRC14_EL1		__SYS_BRBSRC(14)
-+#define SYS_BRBSRC15_EL1		__SYS_BRBSRC(15)
-+#define SYS_BRBSRC16_EL1		__SYS_BRBSRC(16)
-+#define SYS_BRBSRC17_EL1		__SYS_BRBSRC(17)
-+#define SYS_BRBSRC18_EL1		__SYS_BRBSRC(18)
-+#define SYS_BRBSRC19_EL1		__SYS_BRBSRC(19)
-+#define SYS_BRBSRC20_EL1		__SYS_BRBSRC(20)
-+#define SYS_BRBSRC21_EL1		__SYS_BRBSRC(21)
-+#define SYS_BRBSRC22_EL1		__SYS_BRBSRC(22)
-+#define SYS_BRBSRC23_EL1		__SYS_BRBSRC(23)
-+#define SYS_BRBSRC24_EL1		__SYS_BRBSRC(24)
-+#define SYS_BRBSRC25_EL1		__SYS_BRBSRC(25)
-+#define SYS_BRBSRC26_EL1		__SYS_BRBSRC(26)
-+#define SYS_BRBSRC27_EL1		__SYS_BRBSRC(27)
-+#define SYS_BRBSRC28_EL1		__SYS_BRBSRC(28)
-+#define SYS_BRBSRC29_EL1		__SYS_BRBSRC(29)
-+#define SYS_BRBSRC30_EL1		__SYS_BRBSRC(30)
-+#define SYS_BRBSRC31_EL1		__SYS_BRBSRC(31)
-+
-+/*
-+ * BRBTGT<N>_EL1 Encoding: [2, 1, 8, CRm, op2]
-+ *
-+ * derived as <CRm> = c{N<3:0>} <op2> = (N<4>x4 + 2)
-+ */
-+#define __SYS_BRBTGT(n)			sys_reg(2, 1, 8, ((n) & 0xf), ((((n) & 0x10)) >> 2 + 2))
-+
-+#define SYS_BRBTGT0_EL1			__SYS_BRBTGT(0)
-+#define SYS_BRBTGT1_EL1			__SYS_BRBTGT(1)
-+#define SYS_BRBTGT2_EL1			__SYS_BRBTGT(2)
-+#define SYS_BRBTGT3_EL1			__SYS_BRBTGT(3)
-+#define SYS_BRBTGT4_EL1			__SYS_BRBTGT(4)
-+#define SYS_BRBTGT5_EL1			__SYS_BRBTGT(5)
-+#define SYS_BRBTGT6_EL1			__SYS_BRBTGT(6)
-+#define SYS_BRBTGT7_EL1			__SYS_BRBTGT(7)
-+#define SYS_BRBTGT8_EL1			__SYS_BRBTGT(8)
-+#define SYS_BRBTGT9_EL1			__SYS_BRBTGT(9)
-+#define SYS_BRBTGT10_EL1		__SYS_BRBTGT(10)
-+#define SYS_BRBTGT11_EL1		__SYS_BRBTGT(11)
-+#define SYS_BRBTGT12_EL1		__SYS_BRBTGT(12)
-+#define SYS_BRBTGT13_EL1		__SYS_BRBTGT(13)
-+#define SYS_BRBTGT14_EL1		__SYS_BRBTGT(14)
-+#define SYS_BRBTGT15_EL1		__SYS_BRBTGT(15)
-+#define SYS_BRBTGT16_EL1		__SYS_BRBTGT(16)
-+#define SYS_BRBTGT17_EL1		__SYS_BRBTGT(17)
-+#define SYS_BRBTGT18_EL1		__SYS_BRBTGT(18)
-+#define SYS_BRBTGT19_EL1		__SYS_BRBTGT(19)
-+#define SYS_BRBTGT20_EL1		__SYS_BRBTGT(20)
-+#define SYS_BRBTGT21_EL1		__SYS_BRBTGT(21)
-+#define SYS_BRBTGT22_EL1		__SYS_BRBTGT(22)
-+#define SYS_BRBTGT23_EL1		__SYS_BRBTGT(23)
-+#define SYS_BRBTGT24_EL1		__SYS_BRBTGT(24)
-+#define SYS_BRBTGT25_EL1		__SYS_BRBTGT(25)
-+#define SYS_BRBTGT26_EL1		__SYS_BRBTGT(26)
-+#define SYS_BRBTGT27_EL1		__SYS_BRBTGT(27)
-+#define SYS_BRBTGT28_EL1		__SYS_BRBTGT(28)
-+#define SYS_BRBTGT29_EL1		__SYS_BRBTGT(29)
-+#define SYS_BRBTGT30_EL1		__SYS_BRBTGT(30)
-+#define SYS_BRBTGT31_EL1		__SYS_BRBTGT(31)
-+
-+#define SYS_BRBIDR0_EL1			sys_reg(2, 1, 9, 2, 0)
-+#define SYS_BRBCR_EL1			sys_reg(2, 1, 9, 0, 0)
-+#define SYS_BRBFCR_EL1			sys_reg(2, 1, 9, 0, 1)
-+#define SYS_BRBTS_EL1			sys_reg(2, 1, 9, 0, 2)
-+#define SYS_BRBINFINJ_EL1		sys_reg(2, 1, 9, 1, 0)
-+#define SYS_BRBSRCINJ_EL1		sys_reg(2, 1, 9, 1, 1)
-+#define SYS_BRBTGTINJ_EL1		sys_reg(2, 1, 9, 1, 2)
-+
-+#define BRBIDR0_CC_SHIFT	12
-+#define BRBIDR0_CC_MASK		GENMASK(3, 0)
-+#define BRBIDR0_FORMAT_SHIFT	8
-+#define BRBIDR0_FORMAT_MASK	GENMASK(3, 0)
-+#define BRBIDR0_NUMREC_SHIFT	0
-+#define BRBIDR0_NUMREC_MASK	GENMASK(7, 0)
-+
-+#define BRBIDR0_CC_20_BIT	0x5
-+#define BRBIDR0_FORMAT_0	0x0
-+
-+#define BRBIDR0_NUMREC_8	0x08
-+#define BRBIDR0_NUMREC_16	0x10
-+#define BRBIDR0_NUMREC_32	0x20
-+#define BRBIDR0_NUMREC_64	0x40
-+
-+#define BRBINF_VALID_SHIFT	0
-+#define BRBINF_VALID_MASK	GENMASK(1, 0)
-+#define BRBINF_MPRED		(1UL << 5)
-+#define BRBINF_EL_SHIFT		6
-+#define BRBINF_EL_MASK		GENMASK(1, 0)
-+#define BRBINF_TYPE_SHIFT	8
-+#define BRBINF_TYPE_MASK	GENMASK(5, 0)
-+#define BRBINF_TX		(1UL << 16)
-+#define BRBINF_LASTFAILED	(1UL << 17)
-+#define BRBINF_CC_SHIFT		32
-+#define BRBINF_CC_MASK		GENMASK(13, 0)
-+#define BRBINF_CCU		(1UL << 46)
-+
-+#define BRBINF_EL_EL0		0x0
-+#define BRBINF_EL_EL1		0x1
-+#define BRBINF_EL_EL2		0x2
-+
-+#define BRBINF_VALID_INVALID	0x0
-+#define BRBINF_VALID_TARGET	0x1
-+#define BRBINF_VALID_SOURCE	0x2
-+#define BRBINF_VALID_ALL	0x3
-+
-+#define BRBINF_TYPE_UNCOND_DIR	0x0
-+#define BRBINF_TYPE_INDIR	0x1
-+#define BRBINF_TYPE_DIR_LINK	0x2
-+#define BRBINF_TYPE_INDIR_LINK	0x3
-+#define BRBINF_TYPE_RET_SUB	0x5
-+#define BRBINF_TYPE_RET_EXCPT	0x7
-+#define BRBINF_TYPE_COND_DIR	0x8
-+#define BRBINF_TYPE_DEBUG_HALT	0x21
-+#define BRBINF_TYPE_CALL	0x22
-+#define BRBINF_TYPE_TRAP	0x23
-+#define BRBINF_TYPE_SERROR	0x24
-+#define BRBINF_TYPE_INST_DEBUG	0x26
-+#define BRBINF_TYPE_DATA_DEBUG	0x27
-+#define BRBINF_TYPE_ALGN_FAULT	0x2A
-+#define BRBINF_TYPE_INST_FAULT	0x2B
-+#define BRBINF_TYPE_DATA_FAULT	0x2C
-+#define BRBINF_TYPE_IRQ		0x2E
-+#define BRBINF_TYPE_FIQ		0x2F
-+#define BRBINF_TYPE_DEBUG_EXIT	0x39
-+
-+#define BRBCR_E0BRE		(1UL << 0)
-+#define BRBCR_E1BRE		(1UL << 1)
-+#define BRBCR_CC		(1UL << 3)
-+#define BRBCR_MPRED		(1UL << 4)
-+#define BRBCR_FZP		(1UL << 8)
-+#define BRBCR_ERTN		(1UL <<	22)
-+#define BRBCR_EXCEPTION		(1UL << 23)
-+#define BRBCR_TS_MASK		GENMASK(1, 0)
-+#define BRBCR_TS_SHIFT		5
-+
-+#define BRBCR_TS_VIRTUAL	0x1
-+#define BRBCR_TS_GST_PHYSICAL	0x2
-+#define BRBCR_TS_PHYSICAL	0x3
-+
-+#define BRBFCR_LASTFAILED	(1UL << 6)
-+#define BRBFCR_PAUSED		(1UL << 7)
-+#define BRBFCR_ENL		(1UL << 16)
-+#define BRBFCR_DIRECT		(1UL << 17)
-+#define BRBFCR_INDIRECT		(1UL << 18)
-+#define BRBFCR_RTN		(1UL << 19)
-+#define BRBFCR_INDCALL		(1UL << 20)
-+#define BRBFCR_DIRCALL		(1UL << 21)
-+#define BRBFCR_CONDDIR		(1UL << 22)
-+#define BRBFCR_BANK_MASK	GENMASK(1, 0)
-+#define BRBFCR_BANK_SHIFT	28
-+
-+#define BRBFCR_BANK_FIRST	0x0
-+#define BRBFCR_BANK_SECOND	0x1
-+
-+#define BRBFCR_BRANCH_ALL	(BRBFCR_DIRECT | BRBFCR_INDIRECT | \
-+				 BRBFCR_RTN | BRBFCR_INDCALL | \
-+				 BRBFCR_DIRCALL | BRBFCR_CONDDIR)
-+
- #define SYS_MIDR_EL1			sys_reg(3, 0, 0, 0, 0)
- #define SYS_MPIDR_EL1			sys_reg(3, 0, 0, 0, 5)
- #define SYS_REVIDR_EL1			sys_reg(3, 0, 0, 0, 6)
-@@ -959,6 +1177,7 @@
- #define ID_AA64MMFR2_CNP_SHIFT		0
- 
- /* id_aa64dfr0 */
-+#define ID_AA64DFR0_BRBE_SHIFT		52
- #define ID_AA64DFR0_MTPMU_SHIFT		48
- #define ID_AA64DFR0_TRBE_SHIFT		44
- #define ID_AA64DFR0_TRACE_FILT_SHIFT	40
-@@ -981,6 +1200,9 @@
- #define ID_AA64DFR0_PMSVER_8_2		0x1
- #define ID_AA64DFR0_PMSVER_8_3		0x2
- 
-+#define ID_AA64DFR0_BRBE		0x1
-+#define ID_AA64DFR0_BRBE_V1P1		0x2
-+
- #define ID_DFR0_PERFMON_SHIFT		24
- 
- #define ID_DFR0_PERFMON_8_0		0x3
--- 
-2.25.1
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
