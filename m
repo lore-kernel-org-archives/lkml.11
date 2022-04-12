@@ -2,148 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1632CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A25CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236400AbiDLLwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
+        id S243484AbiDLLwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348586AbiDLLrm (ORCPT
+        with ESMTP id S1355007AbiDLLtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:47:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2847E57486
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:28:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649759289;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CI/supGVxEWMyhUXNHAcGDlAX2GlLgQ43ophBjewddA=;
-        b=hxvQdhOodtmwacjHrl6XFueSx6u0sefoU/GHvGSaBwXoDkJHt0i1ICqFIzEQLxMfwSlCx0
-        qexjXvHp7Zi/3zVTMXSDGDPh74i4TvF+5yCVZPSP00ZzCiP+8IymdUcM+2MtiH1qZo7Y+h
-        ZxHpYYhjtpEtMIgBYDMS1gYbrqpmhs0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-7ujAnAPBPiaVaavGGEhO7Q-1; Tue, 12 Apr 2022 06:28:07 -0400
-X-MC-Unique: 7ujAnAPBPiaVaavGGEhO7Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AD06D3804091;
-        Tue, 12 Apr 2022 10:28:06 +0000 (UTC)
-Received: from horn.redhat.com (unknown [10.40.193.222])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ABA94145BA42;
-        Tue, 12 Apr 2022 10:28:04 +0000 (UTC)
-From:   Petr Oros <poros@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        jacob.e.keller@intel.com, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org, ivecera@redhat.com
-Subject: [PATCH] ice: wait for EMP reset after firmware flash
-Date:   Tue, 12 Apr 2022 12:27:53 +0200
-Message-Id: <20220412102753.670867-1-poros@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+        Tue, 12 Apr 2022 07:49:09 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF3D2193;
+        Tue, 12 Apr 2022 03:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649759555; x=1681295555;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=2HueON56JbqPuKljYuCapeExQ/BmLqOCss/TXcZPavo=;
+  b=i6EPpNJ9ZX4Kac3UfuAXf8p7aLyg7zOwo43UYpfYYDkXSu8i6Nh3Hj/W
+   89gdVrmavhM9BrdaghdIWJ7yEy7PY4UxVz7vf4H4my78QiVrhkj2a5bLu
+   N+4oZRQb3J7W8iUc8UWgaEKgFvmwAm3qkKkk6xZyLg5MiWY1OqCGJpDre
+   Q=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 12 Apr 2022 03:32:34 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 12 Apr 2022 03:32:32 -0700
+X-QCInternal: smtphost
+Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 12 Apr 2022 16:02:14 +0530
+Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
+        id E48665963; Tue, 12 Apr 2022 16:02:13 +0530 (IST)
+From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org
+Cc:     quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
+        quic_sartgarg@quicinc.com, quic_nitirawa@quicinc.com,
+        quic_sayalil@quicinc.com,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Subject: [PATCH V4 2/2] arm64: dts: qcom: sc7280: Add reset entries for SDCC controllers
+Date:   Tue, 12 Apr 2022 16:02:08 +0530
+Message-Id: <1649759528-15125-3-git-send-email-quic_c_sbhanu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649759528-15125-1-git-send-email-quic_c_sbhanu@quicinc.com>
+References: <1649759528-15125-1-git-send-email-quic_c_sbhanu@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We need to wait for EMP reset after firmware flash.
-Code was extracted from OOT driver and without this wait fw_activate let
-card in inconsistent state recoverable only by second flash/activate
+Add gcc hardware reset entries for eMMC and SD card.
 
-Reproducer:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
-
-dmesg after flash:
-[   55.120788] ice: Copyright (c) 2018, Intel Corporation.
-[   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
-[   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
-[   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
-[   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
-[   55.647348] ice 0000:ca:00.0: PTP init successful
-[   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
-[   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
-[   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
-[   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
-Reboot don't help, only second flash/activate with OOT or patched driver put card back in consistent state
-
-After patch:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
-
-Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
-Signed-off-by: Petr Oros <poros@redhat.com>
+Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index d768925785ca79..90ea2203cdc763 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -6931,12 +6931,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index f0b64be..e2393d1 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -881,6 +881,8 @@
+ 			mmc-hs400-1_8v;
+ 			mmc-hs400-enhanced-strobe;
  
- 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
- 
-+#define ICE_EMP_RESET_SLEEP 5000
- 	if (reset_type == ICE_RESET_EMPR) {
- 		/* If an EMP reset has occurred, any previously pending flash
- 		 * update will have completed. We no longer know whether or
- 		 * not the NVM update EMP reset is restricted.
- 		 */
- 		pf->fw_emp_reset_disabled = false;
++			resets = <&gcc GCC_SDCC1_BCR>;
 +
-+		msleep(ICE_EMP_RESET_SLEEP);
- 	}
+ 			sdhc1_opp_table: opp-table {
+ 				compatible = "operating-points-v2";
  
- 	err = ice_init_all_ctrlq(hw);
+@@ -2686,6 +2688,8 @@
+ 
+ 			qcom,dll-config = <0x0007642c>;
+ 
++			resets = <&gcc GCC_SDCC2_BCR>;
++
+ 			sdhc2_opp_table: opp-table {
+ 				compatible = "operating-points-v2";
+ 
 -- 
-2.35.1
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
 
