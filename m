@@ -2,91 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66745C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:26:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbiDLX3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
+        id S230221AbiDLX3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiDLX2Q (ORCPT
+        with ESMTP id S230030AbiDLX0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:28:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 19A25E0AEC
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:34:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649802841;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QA0FeCUr4bLfjKoIaw8u1rHYCmWADNz6x1PRseUplPs=;
-        b=ErJNn4OQVIBihGuNAhnL3bQp47BOECWayegniReH6ZslPNRmZKFOaHfa3MC174JGW0bnTD
-        XzDaA8AVSXSJiK7hP4RC8CxpSRvo8nuovZ5ccSrPD/cb8D6GsMtbIFUA286e32Chjyob5i
-        QJAZrY1kbJFo8lY8BOY5Hy8Tg2npZRY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-48-WOdkxwytPo6lkFy_EgXcbw-1; Tue, 12 Apr 2022 16:14:16 -0400
-X-MC-Unique: WOdkxwytPo6lkFy_EgXcbw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 12 Apr 2022 19:26:46 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD08A88A1;
+        Tue, 12 Apr 2022 15:36:28 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3F6281C05B0C;
-        Tue, 12 Apr 2022 20:14:11 +0000 (UTC)
-Received: from cmirabil.remote.csb (unknown [10.22.32.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B04B2401DAC;
-        Tue, 12 Apr 2022 20:14:10 +0000 (UTC)
-From:   Charles Mirabile <cmirabil@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Charles Mirabile <cmirabil@redhat.com>,
-        Serge Schneider <serge@raspberrypi.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Mattias Brugger <mbrugger@suse.com>,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
-        Lee Jones <lee.jones@linaro.org>,
-        Mwesigwa Guma <mguma@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH v8 1/6] drivers/mfd: sensehat: Add Raspberry Pi Sense HAT to simple_mfd_i2c
-Date:   Tue, 12 Apr 2022 16:13:38 -0400
-Message-Id: <20220412201343.8074-2-cmirabil@redhat.com>
-In-Reply-To: <20220412201343.8074-1-cmirabil@redhat.com>
-References: <20220412201343.8074-1-cmirabil@redhat.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KdJ7Z0tPbz4xLQ;
+        Wed, 13 Apr 2022 07:02:02 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649797322;
+        bh=r2XCP+C01lmUpMxczGDkvBp+3Q3NgFqgOAMSr2km3yw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=g7Y6uxdIG7NSlD1cN8Au0Suewd1eXzOVebr/NeAg7JIkiL5twMadZ7IwGCxsNMzkW
+         Ml++oqdZb67s7kOm3uhOX7kr8V/2bzB8gdOgHQMN4ZqLGZ4DMsjcJJZk1sH+l+Y/vM
+         1b16XSuXEvxKpC/kwNWPxqgIJD6IXgJFGlmHUXtaEtBMl9hNmlmCGp8XEtApO/0YUc
+         fMQ7Tba7Eiyu7QvugcWQg8C9dI1boOwSFsUEN82V0t0Wu/ur1/HB/lk9+R07WSogrl
+         6Qs9wX0ExacpJovoTVYLQM5yOoVCUIiz32aBVojz6nu80pnYonhY6R5StNtyraUFjq
+         WpvJ/1Bo/IJxA==
+Date:   Wed, 13 Apr 2022 07:02:01 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the omap-fixes tree
+Message-ID: <20220413070201.248a9b11@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: multipart/signed; boundary="Sig_/p830KfUM=nX+TE28sd0D0e.";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the compatible string for the Sense HAT device to
-the list of compatible strings in the simple_mfd_i2c driver so that
-it can match against the device and load its children and their drivers
+--Sig_/p830KfUM=nX+TE28sd0D0e.
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
-Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
-Co-developed-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
----
- drivers/mfd/simple-mfd-i2c.c | 1 +
- 1 file changed, 1 insertion(+)
+Hi all,
 
-diff --git a/drivers/mfd/simple-mfd-i2c.c b/drivers/mfd/simple-mfd-i2c.c
-index f4c8fc3ee463..c47f36581f3f 100644
---- a/drivers/mfd/simple-mfd-i2c.c
-+++ b/drivers/mfd/simple-mfd-i2c.c
-@@ -75,6 +75,7 @@ static const struct simple_mfd_data silergy_sy7636a = {
- static const struct of_device_id simple_mfd_i2c_of_match[] = {
- 	{ .compatible = "kontron,sl28cpld" },
- 	{ .compatible = "silergy,sy7636a", .data = &silergy_sy7636a},
-+	{ .compatible = "raspberrypi,sensehat" },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, simple_mfd_i2c_of_match);
--- 
-2.31.1
+In commit
 
+  9be24a73de12 ("ARM: dts: Fix mmc order for omap3-gta04")
+
+Fixes tag
+
+  Fixes: commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
+
+has these problem(s):
+
+  - leading word 'commit' unexpected
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/p830KfUM=nX+TE28sd0D0e.
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJV6MkACgkQAVBC80lX
+0GzbmggAlC8IVnuZUEfb4mhk3oTqmchFNv53GiCQA5dk9OMYbiTBjxvpSoCyvF1L
+llv0dlBSPraHTxZ3HSPQciLO/we/Ujv8l6d4eDrcVzyFewqoDgqmhyapu/GgTReK
+RVRRm8vdl66HQX0KYduJjRNgJTP6TFitQgWKnQ1pLTWX+nJhSgfV5dUDUsIFgMWA
+ysiPhUzURtD+hLJ9pQhayFG0OX1k8zSBc3Cm1GAJtiOz3x39ctbFFLHpZz+FlFZH
+s1mWtCC/lkRzV57H+oBokvRJbcA1d1nLoWiW+6DtjPf7PbW7UETg8HDkcXGT74He
+Kf7DwjSEUA0d1rT79dYHJ5xN4QIXlg==
+=xZbo
+-----END PGP SIGNATURE-----
+
+--Sig_/p830KfUM=nX+TE28sd0D0e.--
