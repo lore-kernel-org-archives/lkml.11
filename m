@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1456C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD331C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350234AbiDLGmA (ORCPT
+        id S1350527AbiDLGmG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
+        Tue, 12 Apr 2022 02:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350104AbiDLGkM (ORCPT
+        with ESMTP id S1350133AbiDLGkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:40:12 -0400
+        Tue, 12 Apr 2022 02:40:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E172736694;
-        Mon, 11 Apr 2022 23:35:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B374B369CD;
+        Mon, 11 Apr 2022 23:35:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EB5761890;
-        Tue, 12 Apr 2022 06:35:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B0F1C385A6;
-        Tue, 12 Apr 2022 06:35:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E5146189D;
+        Tue, 12 Apr 2022 06:35:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BCE4C385A1;
+        Tue, 12 Apr 2022 06:35:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745323;
-        bh=KyppwBAxf1ZILb2cK4QcPAex7NnhClg9RsYTWWUiftI=;
+        s=korg; t=1649745326;
+        bh=lvv8cnTI6BktFXnIitlRU47v3AeI21a/XvYefVF/WZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1fK4gl68lsJkEg1297fjjHC8tuiI/6HAA585ctXkpUyk9Hapw0kOIB7njhkqPuMjQ
-         0UbmEKqudIKnm/oBHeIhDGnxWPCFzKAsrqVdVLm+gxNGLJMtTJr0/HAABrb434WKTu
-         Yt4IsBaGaE++gF93XGjNQEOSpdAT3nUTNCABctj8=
+        b=dthP9/2rZD3YHQzu2UjhSeGHFSObnqtk+U6Upq/HtyBYl8irYs5ozp0rcc4b1UIzD
+         BqryUeNe6wwaOuGTohPJ1Rz4ELsK6ugyoBHQe32tYuuwuaBt6IwJn9t46r+hO7Yomq
+         aRcQZBd1UGUpNiUEMZxaQ53Ez0JypOeTNp6Y8dFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Neal Liu <neal_liu@aspeedtech.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 030/171] usb: ehci: add pci device support for Aspeed platforms
-Date:   Tue, 12 Apr 2022 08:28:41 +0200
-Message-Id: <20220412062928.757033885@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH 5.10 057/171] powerpc/code-patching: Pre-map patch area
+Date:   Tue, 12 Apr 2022 08:29:08 +0200
+Message-Id: <20220412062929.532622482@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -50,50 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
+[ Upstream commit 591b4b268435f00d2f0b81f786c2c7bd5ef66416 ]
 
-Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-handshake CMD_RUN instead of STS_HALT") to support Aspeed
-ehci-pci device.
+Paul reported a warning with DEBUG_ATOMIC_SLEEP=y:
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  BUG: sleeping function called from invalid context at include/linux/sched/mm.h:256
+  in_atomic(): 0, irqs_disabled(): 1, non_block: 0, pid: 1, name: swapper/0
+  preempt_count: 0, expected: 0
+  ...
+  Call Trace:
+    dump_stack_lvl+0xa0/0xec (unreliable)
+    __might_resched+0x2f4/0x310
+    kmem_cache_alloc+0x220/0x4b0
+    __pud_alloc+0x74/0x1d0
+    hash__map_kernel_page+0x2cc/0x390
+    do_patch_instruction+0x134/0x4a0
+    arch_jump_label_transform+0x64/0x78
+    __jump_label_update+0x148/0x180
+    static_key_enable_cpuslocked+0xd0/0x120
+    static_key_enable+0x30/0x50
+    check_kvm_guest+0x60/0x88
+    pSeries_smp_probe+0x54/0xb0
+    smp_prepare_cpus+0x3e0/0x430
+    kernel_init_freeable+0x20c/0x43c
+    kernel_init+0x30/0x1a0
+    ret_from_kernel_thread+0x5c/0x64
+
+Peter pointed out that this is because do_patch_instruction() has
+disabled interrupts, but then map_patch_area() calls map_kernel_page()
+then hash__map_kernel_page() which does a sleeping memory allocation.
+
+We only see the warning in KVM guests with SMT enabled, which is not
+particularly common, or on other platforms if CONFIG_KPROBES is
+disabled, also not common. The reason we don't see it in most
+configurations is that another path that happens to have interrupts
+enabled has allocated the required page tables for us, eg. there's a
+path in kprobes init that does that. That's just pure luck though.
+
+As Christophe suggested, the simplest solution is to do a dummy
+map/unmap when we initialise the patching, so that any required page
+table levels are pre-allocated before the first call to
+do_patch_instruction(). This works because the unmap doesn't free any
+page tables that were allocated by the map, it just clears the PTE,
+leaving the page table levels there for the next map.
+
+Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Debugged-by: Peter Zijlstra <peterz@infradead.org>
+Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220223015821.473097-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/powerpc/lib/code-patching.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-index e87cf3a00fa4..638f03b89739 100644
---- a/drivers/usb/host/ehci-pci.c
-+++ b/drivers/usb/host/ehci-pci.c
-@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
- /* defined here to avoid adding to pci_ids.h for single instance use */
- #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
+diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
+index a2e4f864b63d..4318aee65a39 100644
+--- a/arch/powerpc/lib/code-patching.c
++++ b/arch/powerpc/lib/code-patching.c
+@@ -43,9 +43,14 @@ int raw_patch_instruction(struct ppc_inst *addr, struct ppc_inst instr)
+ #ifdef CONFIG_STRICT_KERNEL_RWX
+ static DEFINE_PER_CPU(struct vm_struct *, text_poke_area);
  
-+#define PCI_VENDOR_ID_ASPEED		0x1a03
-+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
++static int map_patch_area(void *addr, unsigned long text_poke_addr);
++static void unmap_patch_area(unsigned long addr);
 +
- /*-------------------------------------------------------------------------*/
- #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
- static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
-@@ -222,6 +225,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
- 			ehci->has_synopsys_hc_bug = 1;
- 		}
- 		break;
-+	case PCI_VENDOR_ID_ASPEED:
-+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-+			ehci_info(ehci, "applying Aspeed HC workaround\n");
-+			ehci->is_aspeed = 1;
-+		}
-+		break;
- 	}
+ static int text_area_cpu_up(unsigned int cpu)
+ {
+ 	struct vm_struct *area;
++	unsigned long addr;
++	int err;
  
- 	/* optional debug port, normally in the first BAR */
+ 	area = get_vm_area(PAGE_SIZE, VM_ALLOC);
+ 	if (!area) {
+@@ -53,6 +58,15 @@ static int text_area_cpu_up(unsigned int cpu)
+ 			cpu);
+ 		return -1;
+ 	}
++
++	// Map/unmap the area to ensure all page tables are pre-allocated
++	addr = (unsigned long)area->addr;
++	err = map_patch_area(empty_zero_page, addr);
++	if (err)
++		return err;
++
++	unmap_patch_area(addr);
++
+ 	this_cpu_write(text_poke_area, area);
+ 
+ 	return 0;
 -- 
 2.35.1
 
