@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 487A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5055BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351104AbiDLHC1 (ORCPT
+        id S1351182AbiDLHCj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48356 "EHLO
+        Tue, 12 Apr 2022 03:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351536AbiDLGx4 (ORCPT
+        with ESMTP id S1351530AbiDLGxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEE4186E5;
-        Mon, 11 Apr 2022 23:42:14 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B4A18377;
+        Mon, 11 Apr 2022 23:41:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2637660A6A;
-        Tue, 12 Apr 2022 06:42:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3553DC385A8;
-        Tue, 12 Apr 2022 06:42:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E3B2B81B43;
+        Tue, 12 Apr 2022 06:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C09C385A6;
+        Tue, 12 Apr 2022 06:41:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745733;
-        bh=RgR/bhlckyUFWZryIL/9PaFrl2riAKvcRqAMLZbrrAo=;
+        s=korg; t=1649745717;
+        bh=CWMqiwxtlvgKbd+NivmB/OV5GOd11UOQAsCVPwOiIpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E2xNnFj3Bg6rkMpBBbvtoxWAHh1oNTMznF2Gn3dU81krWdWKjW33tiPna0V8zd/yc
-         rB/eGw/OG06znZqZrFMMbsbGYfXqZx6E8PGnLAOqzQeQrHqYt6qGS6RhKg2/FH4i42
-         ylkbT9WrbRj6zxZFIwtqLa6p5uCljJCq5l9k8iEY=
+        b=Xh8W2pAMqqFA2JlH+BM+QglAF6TWvHJlNuWcn4BPQ1G8E+piCbVcjVJbVRPzF/TA6
+         0Xo4sab0r7biuZAK0c73H5umXKvx8w+aSWxO71CEKbfsL8bf63Njd3NADX4ravw/9g
+         x3r2qLtGhd7mliojzIfajs30H+m9c9W34e2CViQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Venkateswara Naralasetty <quic_vnaralas@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Wayne Chang <waynec@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 028/277] ath11k: fix kernel panic during unload/load ath11k modules
-Date:   Tue, 12 Apr 2022 08:27:11 +0200
-Message-Id: <20220412062942.856711458@linuxfoundation.org>
+Subject: [PATCH 5.15 023/277] usb: gadget: tegra-xudc: Fix control endpoints definitions
+Date:   Tue, 12 Apr 2022 08:27:06 +0200
+Message-Id: <20220412062942.711886943@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,62 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
+From: Wayne Chang <waynec@nvidia.com>
 
-[ Upstream commit 22b59cb965f79ee1accf83172441c9ca0ecb632a ]
+[ Upstream commit 7bd42fb95eb4f98495ccadf467ad15124208ec49 ]
 
-Call netif_napi_del() from ath11k_ahb_free_ext_irq() to fix
-the following kernel panic when unload/load ath11k modules
-for few iterations.
+According to the Tegra Technical Reference Manual, the seq_num
+field of control endpoint is not [31:24] but [31:27]. Bit 24
+is reserved and bit 26 is splitxstate.
 
-[  971.201365] Unable to handle kernel paging request at virtual address 6d97a208
-[  971.204227] pgd = 594c2919
-[  971.211478] [6d97a208] *pgd=00000000
-[  971.214120] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-[  971.412024] CPU: 2 PID: 4435 Comm: insmod Not tainted 5.4.89 #0
-[  971.434256] Hardware name: Generic DT based system
-[  971.440165] PC is at napi_by_id+0x10/0x40
-[  971.445019] LR is at netif_napi_add+0x160/0x1dc
+The change fixes the wrong control endpoint's definitions.
 
-[  971.743127] (napi_by_id) from [<807d89a0>] (netif_napi_add+0x160/0x1dc)
-[  971.751295] (netif_napi_add) from [<7f1209ac>] (ath11k_ahb_config_irq+0xf8/0x414 [ath11k_ahb])
-[  971.759164] (ath11k_ahb_config_irq [ath11k_ahb]) from [<7f12135c>] (ath11k_ahb_probe+0x40c/0x51c [ath11k_ahb])
-[  971.768567] (ath11k_ahb_probe [ath11k_ahb]) from [<80666864>] (platform_drv_probe+0x48/0x94)
-[  971.779670] (platform_drv_probe) from [<80664718>] (really_probe+0x1c8/0x450)
-[  971.789389] (really_probe) from [<80664cc4>] (driver_probe_device+0x15c/0x1b8)
-[  971.797547] (driver_probe_device) from [<80664f60>] (device_driver_attach+0x44/0x60)
-[  971.805795] (device_driver_attach) from [<806650a0>] (__driver_attach+0x124/0x140)
-[  971.814822] (__driver_attach) from [<80662adc>] (bus_for_each_dev+0x58/0xa4)
-[  971.823328] (bus_for_each_dev) from [<80663a2c>] (bus_add_driver+0xf0/0x1e8)
-[  971.831662] (bus_add_driver) from [<806658a4>] (driver_register+0xa8/0xf0)
-[  971.839822] (driver_register) from [<8030269c>] (do_one_initcall+0x78/0x1ac)
-[  971.847638] (do_one_initcall) from [<80392524>] (do_init_module+0x54/0x200)
-[  971.855968] (do_init_module) from [<803945b0>] (load_module+0x1e30/0x1ffc)
-[  971.864126] (load_module) from [<803948b0>] (sys_init_module+0x134/0x17c)
-[  971.871852] (sys_init_module) from [<80301000>] (ret_fast_syscall+0x0/0x50)
-
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.6.0.1-00760-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1642583973-21599-1-git-send-email-quic_vnaralas@quicinc.com
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107091349.149798-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/ahb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 3fb0aa000825..24bd0520926b 100644
---- a/drivers/net/wireless/ath/ath11k/ahb.c
-+++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -391,6 +391,8 @@ static void ath11k_ahb_free_ext_irq(struct ath11k_base *ab)
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 716d9ab2d2ff..be76f891b9c5 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -272,8 +272,10 @@ BUILD_EP_CONTEXT_RW(deq_hi, deq_hi, 0, 0xffffffff)
+ BUILD_EP_CONTEXT_RW(avg_trb_len, tx_info, 0, 0xffff)
+ BUILD_EP_CONTEXT_RW(max_esit_payload, tx_info, 16, 0xffff)
+ BUILD_EP_CONTEXT_RW(edtla, rsvd[0], 0, 0xffffff)
+-BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 24, 0xff)
++BUILD_EP_CONTEXT_RW(rsvd, rsvd[0], 24, 0x1)
+ BUILD_EP_CONTEXT_RW(partial_td, rsvd[0], 25, 0x1)
++BUILD_EP_CONTEXT_RW(splitxstate, rsvd[0], 26, 0x1)
++BUILD_EP_CONTEXT_RW(seq_num, rsvd[0], 27, 0x1f)
+ BUILD_EP_CONTEXT_RW(cerrcnt, rsvd[1], 18, 0x3)
+ BUILD_EP_CONTEXT_RW(data_offset, rsvd[2], 0, 0x1ffff)
+ BUILD_EP_CONTEXT_RW(numtrbs, rsvd[2], 22, 0x1f)
+@@ -1554,6 +1556,9 @@ static int __tegra_xudc_ep_set_halt(struct tegra_xudc_ep *ep, bool halt)
+ 		ep_reload(xudc, ep->index);
  
- 		for (j = 0; j < irq_grp->num_irq; j++)
- 			free_irq(ab->irq_num[irq_grp->irqs[j]], irq_grp);
-+
-+		netif_napi_del(&irq_grp->napi);
- 	}
- }
+ 		ep_ctx_write_state(ep->context, EP_STATE_RUNNING);
++		ep_ctx_write_rsvd(ep->context, 0);
++		ep_ctx_write_partial_td(ep->context, 0);
++		ep_ctx_write_splitxstate(ep->context, 0);
+ 		ep_ctx_write_seq_num(ep->context, 0);
+ 
+ 		ep_reload(xudc, ep->index);
+@@ -2809,7 +2814,10 @@ static void tegra_xudc_reset(struct tegra_xudc *xudc)
+ 	xudc->setup_seq_num = 0;
+ 	xudc->queued_setup_packet = false;
+ 
+-	ep_ctx_write_seq_num(ep0->context, xudc->setup_seq_num);
++	ep_ctx_write_rsvd(ep0->context, 0);
++	ep_ctx_write_partial_td(ep0->context, 0);
++	ep_ctx_write_splitxstate(ep0->context, 0);
++	ep_ctx_write_seq_num(ep0->context, 0);
+ 
+ 	deq_ptr = trb_virt_to_phys(ep0, &ep0->transfer_ring[ep0->deq_ptr]);
  
 -- 
 2.35.1
