@@ -2,131 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D90F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE318C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386315AbiDLIzJ (ORCPT
+        id S1386066AbiDLIyC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        Tue, 12 Apr 2022 04:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359420AbiDLHnC (ORCPT
+        with ESMTP id S1359388AbiDLHnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:43:02 -0400
-Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A9F2B2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:23:51 -0700 (PDT)
-Received: by mail-qk1-f179.google.com with SMTP id 3so5606899qkj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:23:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h09al9GPNRGrgzoVRTG5PYUk3CouyOtKbjw7IpJLnEw=;
-        b=uL+kHwbVi2G3PLmHPKhQRezY1+QnylU84gIWnxwYLhAZf4lMYVuPsml1LuIOjLqbB9
-         193viVP9OmCOliEoozEq7s7ABQeinAN7Y5n60+KMioz2upgcBYS/69sBneeqIO1d18F/
-         3UTCroZSTQACfGriv9S9EHjjkVig1lO5bTNprfQKfvC3RJlKQ9ftmWvfXpipdbdUbXe7
-         pIBHHwqpD4N6UCQfVLC7rZjVsBV2WWf9Gcp+79ng0E6Hyb361J8hSJXNu7YjR35rU0Ds
-         bxcadl1RjuIg1LHwlFMzlBrqKDrm9DEXBx1OaSufCCiEjcjpQ/PGgdZGKsC8JIEz9/eH
-         qhJg==
-X-Gm-Message-State: AOAM531EDPPLs/tnrkDHpfwvWA26Z3xMz4JGb3HA5Kd2bSDHTnyeTpSe
-        cDX/tj+YtayhOLtwCg7pLl8gPnr8Ypojfr0n
-X-Google-Smtp-Source: ABdhPJzRblZrIN6hFP/yVqZSHVaElweTattpKSgtKz5iq+JvRRwl+bSx+IQp93wYLKIay/S5n1jO5g==
-X-Received: by 2002:ae9:e8d0:0:b0:69b:ef92:c0b with SMTP id a199-20020ae9e8d0000000b0069bef920c0bmr2105500qkg.498.1649748230394;
-        Tue, 12 Apr 2022 00:23:50 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id c7-20020a37e107000000b0069c126c5107sm3890118qkm.39.2022.04.12.00.23.49
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 00:23:50 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id x200so7868086ybe.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:23:49 -0700 (PDT)
-X-Received: by 2002:a25:29c2:0:b0:641:224f:17d6 with SMTP id
- p185-20020a2529c2000000b00641224f17d6mr10498662ybp.546.1649748229732; Tue, 12
- Apr 2022 00:23:49 -0700 (PDT)
+        Tue, 12 Apr 2022 03:43:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A042CC9C;
+        Tue, 12 Apr 2022 00:22:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 331E5B81B58;
+        Tue, 12 Apr 2022 07:22:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C85FC385A1;
+        Tue, 12 Apr 2022 07:22:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649748121;
+        bh=PkpEYYaFN+mCmc24zaHnpXLxoDbtM4+leHpEARJnT48=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MnohntWgJjGw6GQWdMXRUXj6mdMz840X2pqv+HtRWNbkmM6GlQ83SqDT4ZYKgfJ+Q
+         wTfrGnms2/zACNZZpFYyyk249pl92OCm+V2kPau/NJNmlM34nrOJXkjfv4nmdY5wEw
+         icxBw37e8m/IP8teemGtub6zNWykJbDq4w6lj4Ew=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Robbie Ko <robbieko@synology.com>,
+        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
+        Kaiwen Hu <kevinhu@synology.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 287/343] btrfs: prevent subvol with swapfile from being deleted
+Date:   Tue, 12 Apr 2022 08:31:45 +0200
+Message-Id: <20220412062959.611109442@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220411211243.11121-1-javierm@redhat.com> <20220411211243.11121-5-javierm@redhat.com>
-In-Reply-To: <20220411211243.11121-5-javierm@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 12 Apr 2022 09:23:38 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVSsAtRLob5fLoBMNu-DRXJOaBrEHYEwG5iCA03XR5JSw@mail.gmail.com>
-Message-ID: <CAMuHMdVSsAtRLob5fLoBMNu-DRXJOaBrEHYEwG5iCA03XR5JSw@mail.gmail.com>
-Subject: Re: [PATCH v2 4/5] drm/solomon: Move device info from ssd130x-i2c to
- the core driver
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+From: Kaiwen Hu <kevinhu@synology.com>
 
-Thanks for your patch!
+commit 60021bd754c6ca0addc6817994f20290a321d8d6 upstream.
 
-On Mon, Apr 11, 2022 at 11:12 PM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> These are declared in the ssd130x-i2c transport driver but the information
-> is not I2C specific, and could be used by other SSD130x transport drivers.
->
-> Move them to the ssd130x core driver and just set the OF device entries to
-> an ID that could be used to lookup the correct device info from an array.
->
-> While being there, also move the SSD130X_DATA and SSD130X_COMMAND control
-> bytes. Since even though are used by the I2C interface, it could also be
+A subvolume with an active swapfile must not be deleted otherwise it
+would not be possible to deactivate it.
 
-though they are ... they could
+After the subvolume is deleted, we cannot swapoff the swapfile in this
+deleted subvolume because the path is unreachable.  The swapfile is
+still active and holding references, the filesystem cannot be unmounted.
 
-> useful for other transport protocols such as SPI.
->
-> Suggested-by: Chen-Yu Tsai <wens@kernel.org>
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+The test looks like this:
 
-> --- a/drivers/gpu/drm/solomon/ssd130x.c
-> +++ b/drivers/gpu/drm/solomon/ssd130x.c
+  mkfs.btrfs -f $dev > /dev/null
+  mount $dev $mnt
 
-> @@ -860,7 +890,14 @@ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
->
->         ssd130x->dev = dev;
->         ssd130x->regmap = regmap;
-> -       ssd130x->device_info = device_get_match_data(dev);
-> +
-> +       variant = (enum ssd130x_variants)device_get_match_data(dev);
+  btrfs sub create $mnt/subvol
+  touch $mnt/subvol/swapfile
+  chmod 600 $mnt/subvol/swapfile
+  chattr +C $mnt/subvol/swapfile
+  dd if=/dev/zero of=$mnt/subvol/swapfile bs=1K count=4096
+  mkswap $mnt/subvol/swapfile
+  swapon $mnt/subvol/swapfile
 
-(uintptr_t), to avoid a cast from pointer to integer of different
-size warning.
+  btrfs sub delete $mnt/subvol
+  swapoff $mnt/subvol/swapfile  # failed: No such file or directory
+  swapoff --all
 
-> +
+  unmount $mnt                  # target is busy.
 
-Please drop the blank line.
+To prevent above issue, we simply check that whether the subvolume
+contains any active swapfile, and stop the deleting process.  This
+behavior is like snapshot ioctl dealing with a swapfile.
 
-> +       if (variant >= NR_SSD130X_VARIANTS)
-> +               return ERR_PTR(dev_err_probe(dev, -EINVAL,
-> +                                            "Invalid SSD130x variant\n"));
-> +
-> +       ssd130x->device_info = &ssd130x_variants[variant];
->
->         if (ssd130x->device_info->page_mode_only)
->                 ssd130x->page_address_mode = 1;
+CC: stable@vger.kernel.org # 5.4+
+Reviewed-by: Robbie Ko <robbieko@synology.com>
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Kaiwen Hu <kevinhu@synology.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/inode.c |   24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
-With the above fixed:
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -4466,6 +4466,13 @@ int btrfs_delete_subvolume(struct inode
+ 			   dest->root_key.objectid);
+ 		return -EPERM;
+ 	}
++	if (atomic_read(&dest->nr_swapfiles)) {
++		spin_unlock(&dest->root_item_lock);
++		btrfs_warn(fs_info,
++			   "attempt to delete subvolume %llu with active swapfile",
++			   root->root_key.objectid);
++		return -EPERM;
++	}
+ 	root_flags = btrfs_root_flags(&dest->root_item);
+ 	btrfs_set_root_flags(&dest->root_item,
+ 			     root_flags | BTRFS_ROOT_SUBVOL_DEAD);
+@@ -10424,8 +10431,23 @@ static int btrfs_swap_activate(struct sw
+ 	 * set. We use this counter to prevent snapshots. We must increment it
+ 	 * before walking the extents because we don't want a concurrent
+ 	 * snapshot to run after we've already checked the extents.
+-	 */
++	 *
++	 * It is possible that subvolume is marked for deletion but still not
++	 * removed yet. To prevent this race, we check the root status before
++	 * activating the swapfile.
++	 */
++	spin_lock(&root->root_item_lock);
++	if (btrfs_root_dead(root)) {
++		spin_unlock(&root->root_item_lock);
++
++		btrfs_exclop_finish(fs_info);
++		btrfs_warn(fs_info,
++		"cannot activate swapfile because subvolume %llu is being deleted",
++			root->root_key.objectid);
++		return -EPERM;
++	}
+ 	atomic_inc(&root->nr_swapfiles);
++	spin_unlock(&root->root_item_lock);
+ 
+ 	isize = ALIGN_DOWN(inode->i_size, fs_info->sectorsize);
+ 
 
-Gr{oetje,eeting}s,
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
