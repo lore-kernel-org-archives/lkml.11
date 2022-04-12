@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C527EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86968C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349891AbiDLMLE (ORCPT
+        id S1351461AbiDLMLM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:11:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
+        Tue, 12 Apr 2022 08:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351869AbiDLMCo (ORCPT
+        with ESMTP id S1351801AbiDLMCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:02:44 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045412655D;
-        Tue, 12 Apr 2022 03:59:16 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id r13so36580481ejd.5;
-        Tue, 12 Apr 2022 03:59:16 -0700 (PDT)
+        Tue, 12 Apr 2022 08:02:43 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA9353E01;
+        Tue, 12 Apr 2022 03:59:11 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id z99so13258040ede.5;
+        Tue, 12 Apr 2022 03:59:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
-        b=SjeWH0jlNFmePRXl8dJ5tOr0nMvE5gz1VnPoBl2RdiuqK7/rhCkGDROJVoWs+R7R2r
-         p1qvebYqg3+jW24bnWcUlRzQVHHgVged1q1Utq4TobXGkcy5laWyweXH8tE3PYW/yO1W
-         ZHVLkn+5LZIcjlzzBMAJEibzhXz7DDetUpsDUAOJo0GVViAjfx2CjmgVqdFnCBQeiNm9
-         OvGvf8HfChICC93V7jrAYlyBRwUh/kl8nhn+1i0n2v21Tys/Qif3K/8QRHJgpg2hVB8k
-         VNyEanXj0JGh5q4lxsCvBqgOAotV4fQ7DPcpVVoqgrHpyzkfkIHdyjUie5gnC3hOwq3g
-         vdvw==
+        bh=8gQ6t5VVe/uNOUtGlR6al3lXmeQqaLcWf63crRRXcTk=;
+        b=k5d4BJQUWbrYgrpJj8fdrxKNd0SI1t4byvzs/kLRovHkFvzheN5XoaJeUSmHWy1z5+
+         G5Fpiiu7ef/yCnHOJCUGJ93cYOMzvJZCfQcdNPi2YUOXnEzwFzLdtHS0aPhTyP+HiK0p
+         LcCWd8b64+3PZ9IObEW24vfr+j+6g4i3Mg5tyJAbWPKYFLQ0dgfDkcX5nYmdcL1jK8By
+         fmb57i3fnbHVMC5wHmqvjwCJQQKg1xDyFVmdP4ZGibnbuCaQdiTxPNIBt7ezZ/pRk7K7
+         UcXXoKdJ8izMDX11hccsEj1VbMT8BwF3B+E7x9H2s+/iFGjafwGZcTND1RR9vqNiPJw9
+         gwNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
-        b=5nYYe0EoJ7/hKbGumJl6c/vNKIXGQKZUgtJZ6lb3RLSfV/OWh533HxFzL8EMqJVDjK
-         zEBBHkLE1l1Hz+KNi3NR6oTRVyVsQFj67mPlmlTFaPsFQB22jIVP+2FRUNm9VBnZfUsJ
-         tBNt7H9ZiUlNJggQufqHiib2PzgNiqqy+ex3KCMnJNFtCfm2cOnBbM1jGxvrYGuZ66E+
-         eJOfVoUNA+/3O1Ad7/ZsnbNiF3zEHpOiWQS0ybaIC/xKMxT2kN/bQDPQzeDZLN2gNLFE
-         fRS6AePkHmlLahC5+XeNfjjLpaueWFUwupH+DX+QEb1SeYqus+V4jgpRk7UJII+0AtdS
-         GgBw==
-X-Gm-Message-State: AOAM531v9QWCNwB8c2hH99ElHkvglYVRdH25u5L95Jd8WSUkrFkvPh+z
-        VoJuterTZ4mpOTKoQe0Durs=
-X-Google-Smtp-Source: ABdhPJxFBamJhsqwDANV0YZl/c0qqOhT6uCLu4Z29O0YhqS8TE5aL2G027YBbvLG8u6zq+Rc73u48A==
-X-Received: by 2002:a17:906:9b85:b0:6db:ab80:7924 with SMTP id dd5-20020a1709069b8500b006dbab807924mr34347460ejc.160.1649761155495;
-        Tue, 12 Apr 2022 03:59:15 -0700 (PDT)
+        bh=8gQ6t5VVe/uNOUtGlR6al3lXmeQqaLcWf63crRRXcTk=;
+        b=Dvh6HuhJtcf5tJE/3z2zFRf6o9Jaxf3VfhrDVo8XLgBHuMU6w/z47iPdB7YOX/XGJ6
+         ebkV1ZJDPBaAiw7QwF3Rq9SjUQMibJoQomQB85jJgOATJcLoCnqCcXIyC9cZ01G3ceo3
+         rU6yB9/LFxtU4H+c9wN/FvjqSdqmO/RPEXkG9BMg+ZgiUgJVmzLoHvIYhFzIE7Rs20kk
+         5lf7P6f/NpVHXdIhZmBRXA+TIwE28uxGK6yJNsLWAuKwAG93ddtPmSIOh3GLZZZlrOQE
+         krFtVBRLhqXB2jJEs5pt5rfP/pFAenB2cdo9e68YG37VT3QZTQOaTsunCyjsAPLBJ+b6
+         LPEQ==
+X-Gm-Message-State: AOAM532tVFW6T4nh6vmgBuNqM+zKe1bRFnnF4fmVag9PYWj/WDiJot6j
+        1lO42LZcVuOsDFc+tQW7R7E=
+X-Google-Smtp-Source: ABdhPJz//QqFUOZQmqJ6nLmpzZRJxNW+5wj6QSPtLJAJrD0qf6F3toSCEta4MTg4CC0fCCaAdc6EzQ==
+X-Received: by 2002:aa7:d39a:0:b0:41d:828d:c75 with SMTP id x26-20020aa7d39a000000b0041d828d0c75mr7570738edq.27.1649761150095;
+        Tue, 12 Apr 2022 03:59:10 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.14
+        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:59:15 -0700 (PDT)
+        Tue, 12 Apr 2022 03:59:09 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -87,9 +87,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v2 18/18] team: Remove use of list iterator variable for list_for_each_entry_from()
-Date:   Tue, 12 Apr 2022 12:58:30 +0200
-Message-Id: <20220412105830.3495846-19-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v2 14/18] sfc: Remove usage of list iterator for list_add() after the loop body
+Date:   Tue, 12 Apr 2022 12:58:26 +0200
+Message-Id: <20220412105830.3495846-15-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
@@ -99,103 +99,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to limit the scope of the list iterator variable to the
-list traversal loop, use a dedicated pointer to iterate through the
-list [1].
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer pointing to the location
+where the element should be inserted [1].
 
-Since that variable should not be used past the loop iteration, a
-separate variable is used to 'remember the current location within the
-loop'.
-
-To either continue iterating from that position or skip the iteration
-(if the previous iteration was complete) list_prepare_entry() is used.
+Before, the code implicitly used the head when no element was found
+when using &new->list. The new 'pos' variable is set to the list head
+by default and overwritten if the list exits early, marking the
+insertion point for list_add().
 
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/team/team.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/sfc/rx_common.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index b07dde6f0abf..688c4393f099 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -2425,17 +2425,17 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 				    int flags, team_nl_send_func_t *send_func,
- 				    struct list_head *sel_opt_inst_list)
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 1b22c7be0088..80894a35ea79 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -555,7 +555,7 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
+  */
+ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
  {
-+	struct team_option_inst *opt_inst, *tmp = NULL;
- 	struct nlattr *option_list;
- 	struct nlmsghdr *nlh;
- 	void *hdr;
--	struct team_option_inst *opt_inst;
- 	int err;
- 	struct sk_buff *skb = NULL;
- 	bool incomplete;
- 	int i;
+-	struct list_head *head = &efx->rss_context.list;
++	struct list_head *head = *pos = &efx->rss_context.list;
+ 	struct efx_rss_context *ctx, *new;
+ 	u32 id = 1; /* Don't use zero, that refers to the master RSS context */
  
--	opt_inst = list_first_entry(sel_opt_inst_list,
--				    struct team_option_inst, tmp_list);
-+	tmp = list_first_entry(sel_opt_inst_list,
-+			       struct team_option_inst, tmp_list);
+@@ -563,8 +563,10 @@ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
  
- start_again:
- 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
-@@ -2456,7 +2456,9 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 		goto nla_put_failure;
+ 	/* Search for first gap in the numbering */
+ 	list_for_each_entry(ctx, head, list) {
+-		if (ctx->user_id != id)
++		if (ctx->user_id != id) {
++			pos = &ctx->list;
+ 			break;
++		}
+ 		id++;
+ 		/* Check for wrap.  If this happens, we have nearly 2^32
+ 		 * allocated RSS contexts, which seems unlikely.
+@@ -582,7 +584,7 @@ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
  
- 	i = 0;
-+	opt_inst = list_prepare_entry(tmp, sel_opt_inst_list, tmp_list);
- 	incomplete = false;
-+	tmp = NULL;
- 	list_for_each_entry_from(opt_inst, sel_opt_inst_list, tmp_list) {
- 		err = team_nl_fill_one_option_get(skb, team, opt_inst);
- 		if (err) {
-@@ -2464,6 +2466,7 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 				if (!i)
- 					goto errout;
- 				incomplete = true;
-+				tmp = opt_inst;
- 				break;
- 			}
- 			goto errout;
-@@ -2707,14 +2710,14 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 	struct nlattr *port_list;
- 	struct nlmsghdr *nlh;
- 	void *hdr;
--	struct team_port *port;
-+	struct team_port *port, *tmp = NULL;
- 	int err;
- 	struct sk_buff *skb = NULL;
- 	bool incomplete;
- 	int i;
+ 	/* Insert the new entry into the gap */
+ 	new->user_id = id;
+-	list_add_tail(&new->list, &ctx->list);
++	list_add_tail(&new->list, pos);
+ 	return new;
+ }
  
--	port = list_first_entry_or_null(&team->port_list,
--					struct team_port, list);
-+	tmp = list_first_entry_or_null(&team->port_list,
-+				       struct team_port, list);
- 
- start_again:
- 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
-@@ -2744,7 +2747,9 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 		err = team_nl_fill_one_port_get(skb, one_port);
- 		if (err)
- 			goto errout;
--	} else if (port) {
-+	} else {
-+		port = list_prepare_entry(tmp, &team->port_list, list);
-+		tmp = NULL;
- 		list_for_each_entry_from(port, &team->port_list, list) {
- 			err = team_nl_fill_one_port_get(skb, port);
- 			if (err) {
-@@ -2752,6 +2757,7 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 					if (!i)
- 						goto errout;
- 					incomplete = true;
-+					tmp = port;
- 					break;
- 				}
- 				goto errout;
 -- 
 2.25.1
 
