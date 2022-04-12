@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7D2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B333C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383076AbiDLIff (ORCPT
+        id S1383097AbiDLIfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56616 "EHLO
+        Tue, 12 Apr 2022 04:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356334AbiDLHfR (ORCPT
+        with ESMTP id S1356346AbiDLHfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:35:17 -0400
+        Tue, 12 Apr 2022 03:35:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FDD4DF45;
-        Tue, 12 Apr 2022 00:09:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA75050E24;
+        Tue, 12 Apr 2022 00:09:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35118B81B4D;
-        Tue, 12 Apr 2022 07:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C36C385A6;
-        Tue, 12 Apr 2022 07:09:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCA20B81B51;
+        Tue, 12 Apr 2022 07:09:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 556B5C385A1;
+        Tue, 12 Apr 2022 07:09:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747350;
-        bh=gRNOeKX3UpDJ2UTk1snAD3IFc3HXFcB2VDj/JDji+rc=;
+        s=korg; t=1649747352;
+        bh=7pOdQWKzUDCKJ7sgaD3ytN5PTOJyYMvtQeItrScDXFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mbrg81fbksp2emUIROrhMOLhf9K+WdRPKnmIUbJ88jJ95lT0D9YdKT/3HAukUdZ3t
-         xo4mXbXZ69CM36Hsoe5hIGwi3NDycTT5u2tLsdvbHOr7TZtD8FzcNf39H2/be2tncK
-         QErjUlWFgFp9RlbzaJ1zQLKBNshKbF4MZJG4YJoU=
+        b=f5BSIgzL5mBI84Yos0vwB/ZP7BLgPDB4q5Ldl9tds+7ka4t/d5L20qNH8VoKhaYx0
+         NJ+fms6ax4eIkHK5lbWmRG2yrEmSuHaoUZGgbTACxgg1Pu/sohk75Z21N+LtyqS+FJ
+         CXI2SH3//48c6vPIxIuhFvtw6JQK93CTU1vaPp/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 047/343] power: supply: axp20x_battery: properly report current when discharging
-Date:   Tue, 12 Apr 2022 08:27:45 +0200
-Message-Id: <20220412062952.465740359@linuxfoundation.org>
+Subject: [PATCH 5.17 021/343] drm/amd/display: Fix memory leak
+Date:   Tue, 12 Apr 2022 08:27:19 +0200
+Message-Id: <20220412062951.716479156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,60 +51,269 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+[ Upstream commit 5d5c6dba2b43e28845d7d7ed32a36802329a5f52 ]
 
-As stated in [1], negative current values are used for discharging
-batteries.
+[why]
+Resource release is needed on the error handling path
+to prevent memory leak.
 
-AXP PMICs internally have two different ADC channels for shunt current
-measurement: one used during charging and one during discharging.
-The values reported by these ADCs are unsigned.
-While the driver properly selects ADC channel to get the data from,
-it doesn't apply negative sign when reporting discharging current.
+[how]
+Fix this by adding kfree on the error handling path.
 
-[1] Documentation/ABI/testing/sysfs-class-power
-
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp20x_battery.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ .../amd/display/amdgpu_dm/amdgpu_dm_debugfs.c | 80 ++++++++++++++-----
+ 1 file changed, 60 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 5d197141f476..9106077c0dbb 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -186,7 +186,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
- {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	struct iio_channel *chan;
- 	int ret = 0, reg, val1;
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+index 26719efa5396..12d437d9a0e4 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+@@ -227,8 +227,10 @@ static ssize_t dp_link_settings_read(struct file *f, char __user *buf,
+ 			break;
  
- 	switch (psp) {
-@@ -266,12 +265,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 		if (ret)
- 			return ret;
- 
--		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
--			chan = axp20x_batt->batt_chrg_i;
--		else
--			chan = axp20x_batt->batt_dischrg_i;
--
--		ret = iio_read_channel_processed(chan, &val->intval);
-+		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
-+		} else {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
-+			val->intval = -val1;
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
 +		}
- 		if (ret)
- 			return ret;
  
+ 		buf += 1;
+ 		size -= 1;
+@@ -389,8 +391,10 @@ static ssize_t dp_phy_settings_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user((*(rd_buf + result)), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -1359,8 +1363,10 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -1376,8 +1382,10 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -1546,8 +1554,10 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -1563,8 +1573,10 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -1731,8 +1743,10 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -1748,8 +1762,10 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -1912,8 +1928,10 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -1929,8 +1947,10 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -2088,8 +2108,10 @@ static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -2105,8 +2127,10 @@ static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -2145,8 +2169,10 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -2162,8 +2188,10 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -2217,8 +2245,10 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -2234,8 +2264,10 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -2289,8 +2321,10 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
+ 				break;
+ 	}
+ 
+-	if (!pipe_ctx)
++	if (!pipe_ctx) {
++		kfree(rd_buf);
+ 		return -ENXIO;
++	}
+ 
+ 	dsc = pipe_ctx->stream_res.dsc;
+ 	if (dsc)
+@@ -2306,8 +2340,10 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
+ 			break;
+ 
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 
+ 		buf += 1;
+ 		size -= 1;
+@@ -3459,8 +3495,10 @@ static ssize_t dcc_en_bits_read(
+ 	dc->hwss.get_dcc_en_bits(dc, dcc_en_bits);
+ 
+ 	rd_buf = kcalloc(rd_buf_size, sizeof(char), GFP_KERNEL);
+-	if (!rd_buf)
++	if (!rd_buf) {
++		kfree(dcc_en_bits);
+ 		return -ENOMEM;
++	}
+ 
+ 	for (i = 0; i < num_pipes; i++)
+ 		offset += snprintf(rd_buf + offset, rd_buf_size - offset,
+@@ -3473,8 +3511,10 @@ static ssize_t dcc_en_bits_read(
+ 		if (*pos >= rd_buf_size)
+ 			break;
+ 		r = put_user(*(rd_buf + result), buf);
+-		if (r)
++		if (r) {
++			kfree(rd_buf);
+ 			return r; /* r = -EFAULT */
++		}
+ 		buf += 1;
+ 		size -= 1;
+ 		*pos += 1;
 -- 
 2.35.1
 
