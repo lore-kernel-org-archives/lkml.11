@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F024C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB65EC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377071AbiDLHrT (ORCPT
+        id S1377092AbiDLHrW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        Tue, 12 Apr 2022 03:47:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351455AbiDLHL6 (ORCPT
+        with ESMTP id S1352245AbiDLHNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:11:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA6D4AE1D;
-        Mon, 11 Apr 2022 23:50:07 -0700 (PDT)
+        Tue, 12 Apr 2022 03:13:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2312417E35;
+        Mon, 11 Apr 2022 23:54:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C58F9B81B49;
-        Tue, 12 Apr 2022 06:50:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F509C385B4;
-        Tue, 12 Apr 2022 06:50:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 314F861502;
+        Tue, 12 Apr 2022 06:54:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4EBC385A1;
+        Tue, 12 Apr 2022 06:54:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746204;
-        bh=PsayhSUI0r6qRAA9FthWV1Nd/j1tkkpYnIXQ3HaXNkY=;
+        s=korg; t=1649746469;
+        bh=H87OD+Fcr4idMU55Do5g6ZPpGOYvTKeKoP/lzF4+dV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ApPXLIwK6A79O8C7UfXQ7/g4+niX4i+JkMm84ZZb9UYdFSf5lwW8v9JNtgg1Y41hi
-         kXZ9Z//W9cma/7btZvv4TZ06fHsfoB28nTY+YQ9fUStsuTTkUi1VrTR5iE4b2Xn0Pl
-         95mLSiit4WlCx/kDEah30LebZRcFkkkLRSi6GOik=
+        b=alDmQjlpcIKdTOJ50jmuJPvwODHlZa1J6gFoXUpdW76wQ0EWzRe3x/9W/brE/3Sie
+         /YGUjz4scCqBMfQQUHJzE14ML4VTWiY8CPVm0diXIfSQyPxuxEBea9AedgnT4BLJ/u
+         2PBgqP39tFwyurHCqRDmd437NSiXnQy+e6yryX+g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Wayne Chang <waynec@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 199/277] SUNRPC: Handle ENOMEM in call_transmit_status()
-Date:   Tue, 12 Apr 2022 08:30:02 +0200
-Message-Id: <20220412062947.797543619@linuxfoundation.org>
+Subject: [PATCH 5.16 017/285] usb: gadget: tegra-xudc: Do not program SPARAM
+Date:   Tue, 12 Apr 2022 08:27:54 +0200
+Message-Id: <20220412062944.174438252@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Wayne Chang <waynec@nvidia.com>
 
-[ Upstream commit d3c15033b240767d0287f1c4a529cbbe2d5ded8a ]
+[ Upstream commit 62fb61580eb48fc890b7bc9fb5fd263367baeca8 ]
 
-Both call_transmit() and call_bc_transmit() can now return ENOMEM, so
-let's make sure that we handle the errors gracefully.
+According to the Tegra Technical Reference Manual, SPARAM
+is a read-only register and should not be programmed in
+the driver.
 
-Fixes: 0472e4766049 ("SUNRPC: Convert socket page send code to use iov_iter()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+The change removes the wrong SPARAM usage.
+
+Signed-off-by: Wayne Chang <waynec@nvidia.com>
+Link: https://lore.kernel.org/r/20220107090443.149021-1-waynec@nvidia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/clnt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/gadget/udc/tegra-xudc.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 5d5627bf3b18..9a183c254c84 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2202,6 +2202,7 @@ call_transmit_status(struct rpc_task *task)
- 		 * socket just returned a connection error,
- 		 * then hold onto the transport lock.
- 		 */
-+	case -ENOMEM:
- 	case -ENOBUFS:
- 		rpc_delay(task, HZ>>2);
- 		fallthrough;
-@@ -2285,6 +2286,7 @@ call_bc_transmit_status(struct rpc_task *task)
- 	case -ENOTCONN:
- 	case -EPIPE:
- 		break;
-+	case -ENOMEM:
- 	case -ENOBUFS:
- 		rpc_delay(task, HZ>>2);
- 		fallthrough;
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 43f1b0d461c1..716d9ab2d2ff 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -32,9 +32,6 @@
+ #include <linux/workqueue.h>
+ 
+ /* XUSB_DEV registers */
+-#define SPARAM 0x000
+-#define  SPARAM_ERSTMAX_MASK GENMASK(20, 16)
+-#define  SPARAM_ERSTMAX(x) (((x) << 16) & SPARAM_ERSTMAX_MASK)
+ #define DB 0x004
+ #define  DB_TARGET_MASK GENMASK(15, 8)
+ #define  DB_TARGET(x) (((x) << 8) & DB_TARGET_MASK)
+@@ -3295,11 +3292,6 @@ static void tegra_xudc_init_event_ring(struct tegra_xudc *xudc)
+ 	unsigned int i;
+ 	u32 val;
+ 
+-	val = xudc_readl(xudc, SPARAM);
+-	val &= ~(SPARAM_ERSTMAX_MASK);
+-	val |= SPARAM_ERSTMAX(XUDC_NR_EVENT_RINGS);
+-	xudc_writel(xudc, val, SPARAM);
+-
+ 	for (i = 0; i < ARRAY_SIZE(xudc->event_ring); i++) {
+ 		memset(xudc->event_ring[i], 0, XUDC_EVENT_RING_SIZE *
+ 		       sizeof(*xudc->event_ring[i]));
 -- 
 2.35.1
 
