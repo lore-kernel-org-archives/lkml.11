@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E33C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA18C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230271AbiDLBD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34708 "EHLO
+        id S1345324AbiDLBEM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345056AbiDLA61 (ORCPT
+        with ESMTP id S1345256AbiDLA6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC2D2C662;
-        Mon, 11 Apr 2022 17:50:30 -0700 (PDT)
+        Mon, 11 Apr 2022 20:58:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A2A2FE76;
+        Mon, 11 Apr 2022 17:51:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B563B819B4;
-        Tue, 12 Apr 2022 00:50:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0621FC385A3;
-        Tue, 12 Apr 2022 00:50:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B2C4B815C8;
+        Tue, 12 Apr 2022 00:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE46AC385A4;
+        Tue, 12 Apr 2022 00:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724628;
-        bh=Uu7VIrb7ME9y2Ns26nkZF0NerK26h//hTrPsKXDKuPU=;
+        s=k20201202; t=1649724685;
+        bh=Wlepa6YIr2hY5FeD4yQs2YIwB5qn8KB5kc30quQBXrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aBMGq/RxgDlU3XU8j7AFoCyZkQtYAXd26wHSKcJ5btJX+q/AgenCD5bgpmpfN/Sg4
-         YBzo/n1OO0btMGvk/DXkIr20+QksKKMIW5WG5ESB2by5UDLWkm9VMOV7opMi+Tz8jv
-         EPp+SgwrfWyi6AEPAvtvRN6B29zNs09mbpHBHzkXKbBWfoPIbAqqXskizqrpuIykCZ
-         udQ9RaxkGanLAQPzsjt4KOqRUZBRld+OQvS/3dxu7x3NFailwdJb3eaQP/1cGYPCyX
-         t1kGVkqejV2Rscg86roBoHCZLwy85L9fcYPP8hOa8Mt03+TrSefPaIkLjucRD4Y9K3
-         kjaK/2skAIZLg==
+        b=sp29ux/f+ByKrw1tqDZig35b/jNAf7dvxrjR0vgnNbRRvi6Jzov75lNCyGz+AoS0y
+         RehVpAV8dtxLFIcnOQVtufvZ4W5MCV9kYsIjfTSwsuLquYPIXYhFYQNrbsA7l2e3r9
+         9e9RaZDsMypH+IB5cfxxFKLvOrIMpLe18Yl8bLfqQdbLKUW+LsQALm0Eig2U/kBr3x
+         u5DJWrW7d+Xcivsk8kKsvDP/CmKEuueGd7v6Rmm4Md6vEsS2E4MV8wC/HvnS8kRDig
+         +k0Xs1bQ6mVKDzaygkW8qUgMZ1D7ENll/GLIJv5RQdGM2WGin+vJmz2PYMHVDkc8KN
+         lzjd4bGmBrSIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chandrakanth patil <chandrakanth.patil@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, kashyap.desai@broadcom.com,
-        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
-        jejb@linux.ibm.com, megaraidlinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 27/30] scsi: megaraid_sas: Target with invalid LUN ID is deleted during scan
-Date:   Mon, 11 Apr 2022 20:49:01 -0400
-Message-Id: <20220412004906.350678-27-sashal@kernel.org>
+Cc:     Marcin Kozlowski <marcinguy@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 15/21] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
+Date:   Mon, 11 Apr 2022 20:50:34 -0400
+Message-Id: <20220412005042.351105-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
-References: <20220412004906.350678-1-sashal@kernel.org>
+In-Reply-To: <20220412005042.351105-1-sashal@kernel.org>
+References: <20220412005042.351105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,66 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chandrakanth patil <chandrakanth.patil@broadcom.com>
+From: Marcin Kozlowski <marcinguy@gmail.com>
 
-[ Upstream commit 56495f295d8e021f77d065b890fc0100e3f9f6d8 ]
+[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
 
-The megaraid_sas driver supports single LUN for RAID devices. That is LUN
-0. All other LUNs are unsupported. When a device scan on a logical target
-with invalid LUN number is invoked through sysfs, that target ends up
-getting removed.
+aqc111_rx_fixup() contains several out-of-bounds accesses that can be
+triggered by a malicious (or defective) USB device, in particular:
 
-Add LUN ID validation in the slave destroy function to avoid the target
-deletion.
+ - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
+   causing OOB reads and (on big-endian systems) OOB endianness flips.
+ - A packet can overlap the metadata array, causing a later OOB
+   endianness flip to corrupt data used by a cloned SKB that has already
+   been handed off into the network stack.
+ - A packet SKB can be constructed whose tail is far beyond its end,
+   causing out-of-bounds heap data to be considered part of the SKB's
+   data.
 
-Link: https://lore.kernel.org/r/20220324094711.48833-1-chandrakanth.patil@broadcom.com
-Signed-off-by: Chandrakanth patil <chandrakanth.patil@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Found doing variant analysis. Tested it with another driver (ax88179_178a), since
+I don't have a aqc111 device to test it, but the code looks very similar.
+
+Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/megaraid/megaraid_sas.h      | 3 +++
- drivers/scsi/megaraid/megaraid_sas_base.c | 7 +++++++
- 2 files changed, 10 insertions(+)
+ drivers/net/usb/aqc111.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/megaraid/megaraid_sas.h b/drivers/scsi/megaraid/megaraid_sas.h
-index 6b8ec57e8bdf..c088a848776e 100644
---- a/drivers/scsi/megaraid/megaraid_sas.h
-+++ b/drivers/scsi/megaraid/megaraid_sas.h
-@@ -2554,6 +2554,9 @@ struct megasas_instance_template {
- #define MEGASAS_IS_LOGICAL(sdev)					\
- 	((sdev->channel < MEGASAS_MAX_PD_CHANNELS) ? 0 : 1)
+diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
+index 7e44110746dd..68912e266826 100644
+--- a/drivers/net/usb/aqc111.c
++++ b/drivers/net/usb/aqc111.c
+@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 	if (start_of_descs != desc_offset)
+ 		goto err;
  
-+#define MEGASAS_IS_LUN_VALID(sdev)					\
-+	(((sdev)->lun == 0) ? 1 : 0)
+-	/* self check desc_offset from header*/
+-	if (desc_offset >= skb_len)
++	/* self check desc_offset from header and make sure that the
++	 * bounds of the metadata array are inside the SKB
++	 */
++	if (pkt_count * 2 + desc_offset >= skb_len)
+ 		goto err;
+ 
++	/* Packets must not overlap the metadata array */
++	skb_trim(skb, desc_offset);
 +
- #define MEGASAS_DEV_INDEX(scp)						\
- 	(((scp->device->channel % 2) * MEGASAS_MAX_DEV_PER_CHANNEL) +	\
- 	scp->device->id)
-diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 1a70cc995c28..84a2e9292fd0 100644
---- a/drivers/scsi/megaraid/megaraid_sas_base.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -2111,6 +2111,9 @@ static int megasas_slave_alloc(struct scsi_device *sdev)
- 			goto scan_target;
- 		}
- 		return -ENXIO;
-+	} else if (!MEGASAS_IS_LUN_VALID(sdev)) {
-+		sdev_printk(KERN_INFO, sdev, "%s: invalid LUN\n", __func__);
-+		return -ENXIO;
- 	}
+ 	if (pkt_count == 0)
+ 		goto err;
  
- scan_target:
-@@ -2141,6 +2144,10 @@ static void megasas_slave_destroy(struct scsi_device *sdev)
- 	instance = megasas_lookup_instance(sdev->host->host_no);
- 
- 	if (MEGASAS_IS_LOGICAL(sdev)) {
-+		if (!MEGASAS_IS_LUN_VALID(sdev)) {
-+			sdev_printk(KERN_INFO, sdev, "%s: invalid LUN\n", __func__);
-+			return;
-+		}
- 		ld_tgt_id = MEGASAS_TARGET_ID(sdev);
- 		instance->ld_tgtid_status[ld_tgt_id] = LD_TARGET_ID_DELETED;
- 		if (megasas_dbg_lvl & LD_PD_DEBUG)
 -- 
 2.35.1
 
