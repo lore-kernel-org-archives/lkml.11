@@ -2,308 +2,1468 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE33C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB3DC352A7
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359236AbiDLJ1o (ORCPT
+        id S1357336AbiDLJ1F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
+        Tue, 12 Apr 2022 05:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356506AbiDLIKh (ORCPT
+        with ESMTP id S1356500AbiDLIKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 04:10:37 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE8727A;
-        Tue, 12 Apr 2022 00:41:17 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KcyJp6drzzFpnS;
-        Tue, 12 Apr 2022 15:38:50 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 15:41:14 +0800
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>
-Subject: Re: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and
- Trace device driver
-To:     John Garry <john.garry@huawei.com>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-References: <20220407125841.3678-1-yangyicong@hisilicon.com>
- <20220407125841.3678-6-yangyicong@hisilicon.com>
- <276c24d2-daf5-5eba-26b9-55edd4a45537@huawei.com>
-From:   Yicong Yang <yangyicong@huawei.com>
-Message-ID: <e2b7484b-eb15-029c-b1e1-4831368f61c9@huawei.com>
-Date:   Tue, 12 Apr 2022 15:41:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96474E098
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:25 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB8A-0007gK-Ll; Tue, 12 Apr 2022 09:40:06 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB89-00AQaD-Ij; Tue, 12 Apr 2022 09:40:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
+Cc:     David Jander <david@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>
+Subject: [PATCH v1 11/17] arm: dts: imx6dl-victgo.dts: Factor out common parts to imx6qdl-victgo.dtsi
+Date:   Tue, 12 Apr 2022 09:39:58 +0200
+Message-Id: <20220412074004.2485264-12-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <276c24d2-daf5-5eba-26b9-55edd4a45537@huawei.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/12 1:19, John Garry wrote:
-> On 07/04/2022 13:58, Yicong Yang wrote:
->> From: Qi Liu <liuqi115@huawei.com>
->>
->> 'perf record' and 'perf report --dump-raw-trace' supported in this
->> patch.
->>
->> Example usage:
->>
->> Output will contain raw PTT data and its textual representation, such
->> as:
->>
->> 0 0 0x5810 [0x30]: PERF_RECORD_AUXTRACE size: 0x400000  offset: 0
->> ref: 0xa5d50c725  idx: 0  tid: -1  cpu: 0
->> .
->> . ... HISI PTT data: size 4194304 bytes
->> .  00000000: 00 00 00 00                                 Prefix
->> .  00000004: 08 20 00 60                                 Header DW0
->> .  00000008: ff 02 00 01                                 Header DW1
->> .  0000000c: 20 08 00 00                                 Header DW2
->> .  00000010: 10 e7 44 ab                                 Header DW3
->> .  00000014: 2a a8 1e 01                                 Time
->> .  00000020: 00 00 00 00                                 Prefix
->> .  00000024: 01 00 00 60                                 Header DW0
->> .  00000028: 0f 1e 00 01                                 Header DW1
->> .  0000002c: 04 00 00 00                                 Header DW2
->> .  00000030: 40 00 81 02                                 Header DW3
->> .  00000034: ee 02 00 00                                 Time
->> ....
->>
->> Signed-off-by: Qi Liu <liuqi115@huawei.com>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
->> ---
->>   tools/perf/arch/arm/util/auxtrace.c           |  76 +++++-
->>   tools/perf/arch/arm/util/pmu.c                |   3 +
->>   tools/perf/arch/arm64/util/Build              |   2 +-
->>   tools/perf/arch/arm64/util/hisi_ptt.c         | 195 ++++++++++++++++
->>   tools/perf/util/Build                         |   2 +
->>   tools/perf/util/auxtrace.c                    |   4 +
->>   tools/perf/util/auxtrace.h                    |   1 +
->>   tools/perf/util/hisi-ptt-decoder/Build        |   1 +
->>   .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   | 170 ++++++++++++++
->>   .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |  28 +++
->>   tools/perf/util/hisi_ptt.c                    | 218 ++++++++++++++++++
->>   tools/perf/util/hisi_ptt.h                    |  28 +++
->>   12 files changed, 724 insertions(+), 4 deletions(-)
->>   create mode 100644 tools/perf/arch/arm64/util/hisi_ptt.c
->>   create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
->>   create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
->>   create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
->>   create mode 100644 tools/perf/util/hisi_ptt.c
->>   create mode 100644 tools/perf/util/hisi_ptt.h
->>
->> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
->> index 5fc6a2a3dbc5..393f5757c039 100644
->> --- a/tools/perf/arch/arm/util/auxtrace.c
->> +++ b/tools/perf/arch/arm/util/auxtrace.c
->> @@ -4,9 +4,11 @@
->>    * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
->>    */
->>   +#include <dirent.h>
->>   #include <stdbool.h>
->>   #include <linux/coresight-pmu.h>
->>   #include <linux/zalloc.h>
->> +#include <api/fs/fs.h>
->>     #include "../../../util/auxtrace.h"
->>   #include "../../../util/debug.h"
->> @@ -14,6 +16,7 @@
->>   #include "../../../util/pmu.h"
->>   #include "cs-etm.h"
->>   #include "arm-spe.h"
->> +#include "hisi_ptt.h"
->>     static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
->>   {
->> @@ -50,6 +53,58 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
->>       return arm_spe_pmus;
->>   }
->>   +static struct perf_pmu **find_all_hisi_ptt_pmus(int *nr_ptts, int *err)
->> +{
->> +    const char *sysfs = sysfs__mountpoint();
->> +    struct perf_pmu **hisi_ptt_pmus = NULL;
->> +    struct dirent *dent;
->> +    char path[PATH_MAX];
->> +    DIR *dir = NULL;
->> +    int idx = 0;
->> +
->> +    snprintf(path, PATH_MAX, "%s" EVENT_SOURCE_DEVICE_PATH, sysfs);
->> +    dir = opendir(path);
->> +    if (!dir) {
->> +        pr_err("can't read directory '%s'\n", EVENT_SOURCE_DEVICE_PATH);
->> +        *err = -EINVAL;
->> +        goto out;
->> +    }
->> +
->> +    while ((dent = readdir(dir))) {
->> +        if (strstr(dent->d_name, HISI_PTT_PMU_NAME))
->> +            (*nr_ptts)++;
->> +    }
->> +
->> +    if (!(*nr_ptts))
->> +        goto out;
->> +
->> +    hisi_ptt_pmus = zalloc(sizeof(struct perf_pmu *) * (*nr_ptts));
->> +    if (!hisi_ptt_pmus) {
->> +        pr_err("hisi_ptt alloc failed\n");
->> +        *err = -ENOMEM;
-> 
-> using PTR_ERR seems better, if possible
-> 
+From: David Jander <david@protonic.nl>
 
-ok will change to that. *err = -ENOMEM is used here to keep consistence with
-what spe does.
+These parts are common to imx6qdl-vicut1.dtsi.
 
->> +        goto out;
->> +    }
->> +
->> +    rewinddir(dir);
->> +    while ((dent = readdir(dir))) {
->> +        if (strstr(dent->d_name, HISI_PTT_PMU_NAME) && idx < (*nr_ptts)) {
->> +            hisi_ptt_pmus[idx] = perf_pmu__find(dent->d_name);
->> +            if (hisi_ptt_pmus[idx]) {
->> +                pr_debug2("%s %d: hisi_ptt_pmu %d type %d name %s\n",
-> 
-> do you really need this?
-> 
+This patch is preparation to unify victgo and vicut1 DTs.
 
-I asked Qi maybe it's unnecessary, but to keep consistence like arm spe.
+Signed-off-by: David Jander <david@protonic.nl>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ arch/arm/boot/dts/imx6dl-victgo.dts   | 649 +------------------------
+ arch/arm/boot/dts/imx6qdl-victgo.dtsi | 658 ++++++++++++++++++++++++++
+ 2 files changed, 659 insertions(+), 648 deletions(-)
+ create mode 100644 arch/arm/boot/dts/imx6qdl-victgo.dtsi
 
->> +                    __func__, __LINE__, idx,
->> +                    hisi_ptt_pmus[idx]->type,
->> +                    hisi_ptt_pmus[idx]->name);
->> +                    idx++;
->> +            }
->> +
->> +        }
->> +    }
->> +
->> +out:
->> +    closedir(dir);
->> +    return hisi_ptt_pmus;
->> +}
->> +
->>   struct auxtrace_record
->>   *auxtrace_record__init(struct evlist *evlist, int *err)
->>   {
->> @@ -57,8 +112,12 @@ struct auxtrace_record
->>       struct evsel *evsel;
->>       bool found_etm = false;
->>       struct perf_pmu *found_spe = NULL;
->> +    struct perf_pmu *found_ptt = NULL;
->>       struct perf_pmu **arm_spe_pmus = NULL;
->> +    struct perf_pmu **hisi_ptt_pmus = NULL;
->> +
->>       int nr_spes = 0;
->> +    int nr_ptts = 0;
->>       int i = 0;
->>         if (!evlist)
->> @@ -66,13 +125,14 @@ struct auxtrace_record
->>         cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
->>       arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
->> +    hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
->>         evlist__for_each_entry(evlist, evsel) {
->>           if (cs_etm_pmu &&
->>               evsel->core.attr.type == cs_etm_pmu->type)
->>               found_etm = true;
->>   -        if (!nr_spes || found_spe)
->> +        if ((!nr_spes || found_spe) && (!nr_ptts || found_ptt))
->>               continue;
->>             for (i = 0; i < nr_spes; i++) {
->> @@ -81,11 +141,18 @@ struct auxtrace_record
->>                   break;
->>               }
->>           }
->> +
->> +        for (i = 0; i < nr_ptts; i++) {
->> +            if (evsel->core.attr.type == hisi_ptt_pmus[i]->type) {
->> +                found_ptt = hisi_ptt_pmus[i];
->> +                break;
->> +            }
->> +        }
->>       }
->>       free(arm_spe_pmus);
-> 
-> do you need to do something similar for hisi ptt?
-> 
-
-thanks for catching this. it's missed. will fix.
-
->>   -    if (found_etm && found_spe) {
->> -        pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
->> +    if (found_etm && found_spe && found_ptt) {
->> +        pr_err("Concurrent ARM Coresight ETM ,SPE and HiSilicon PCIe Trace operation not currently supported\n");
->>           *err = -EOPNOTSUPP;
->>           return NULL;
->>       }
->> @@ -96,6 +163,9 @@ struct auxtrace_record
->>   #if defined(__aarch64__)
->>       if (found_spe)
->>           return arm_spe_recording_init(err, found_spe);
->> +
->> +    if (found_ptt)
->> +        return hisi_ptt_recording_init(err, found_ptt);
->>   #endif
->>         /*
->> diff --git a/tools/perf/arch/arm/util/pmu.c b/tools/perf/arch/arm/util/pmu.c
->> index b8b23b9dc598..89a3cedb4557 100644
->> --- a/tools/perf/arch/arm/util/pmu.c
->> +++ b/tools/perf/arch/arm/util/pmu.c
->> @@ -10,6 +10,7 @@
->>   #include <linux/string.h>
->>     #include "arm-spe.h"
->> +#include "hisi_ptt.h"
->>   #include "../../../util/pmu.h"
->>     struct perf_event_attr
->> @@ -22,6 +23,8 @@ struct perf_event_attr
->>   #if defined(__aarch64__)
->>       } else if (strstarts(pmu->name, ARM_SPE_PMU_NAME)) {
->>           return arm_spe_pmu_default_config(pmu);
->> +    } else if (strstarts(pmu->name, HISI_PTT_PMU_NAME)) {
->> +        pmu->selectable = true;
->>   #endif
->>       }
->>   diff --git a/tools/perf/arch/arm64/util/Build b/tools/perf/arch/arm64/util/Build
->> index 9fcb4e68add9..8b7fd1dc9f37 100644
->> --- a/tools/perf/arch/arm64/util/Build
->> +++ b/tools/perf/arch/arm64/util/Build
->> @@ -11,4 +11,4 @@ perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
->>   perf-$(CONFIG_AUXTRACE) += ../../arm/util/pmu.o \
->>                     ../../arm/util/auxtrace.o \
->>                     ../../arm/util/cs-etm.o \
->> -                  arm-spe.o mem-events.o
->> +                  arm-spe.o mem-events.o hisi_ptt.o
-> 
-> nit: others use '-' in the name
-> 
-
-will follow the convention.
-
-> 
-> I'll check the rest tomorrow.
-
-Thanks,
-Yicong
-
+diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
+index 7fc5bb499cbc..6d61e87405f4 100644
+--- a/arch/arm/boot/dts/imx6dl-victgo.dts
++++ b/arch/arm/boot/dts/imx6dl-victgo.dts
+@@ -5,76 +5,13 @@
+  */
+ 
+ /dts-v1/;
+-#include <dt-bindings/display/sdtv-standards.h>
+-#include <dt-bindings/gpio/gpio.h>
+-#include <dt-bindings/input/input.h>
+-#include <dt-bindings/leds/common.h>
+-#include <dt-bindings/media/tvp5150.h>
+-#include <dt-bindings/sound/fsl-imx-audmux.h>
+ #include "imx6dl.dtsi"
++#include "imx6qdl-victgo.dtsi"
+ 
+ / {
+ 	model = "Kverneland TGO";
+ 	compatible = "kvg,victgo", "fsl,imx6dl";
+ 
+-	chosen {
+-		stdout-path = &uart4;
+-	};
+-
+-	backlight_lcd: backlight {
+-		compatible = "pwm-backlight";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_backlight>;
+-		pwms = <&pwm1 0 5000000 0>;
+-		brightness-levels = <0 16 64 255>;
+-		num-interpolated-steps = <16>;
+-		default-brightness-level = <48>;
+-		power-supply = <&reg_3v3>;
+-		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
+-	};
+-
+-	backlight_led: backlight_led {
+-		compatible = "pwm-backlight";
+-		pwms = <&pwm3 0 5000000 0>;
+-		brightness-levels = <0 16 64 255>;
+-		num-interpolated-steps = <16>;
+-		default-brightness-level = <48>;
+-		power-supply = <&reg_3v3>;
+-	};
+-
+-	connector {
+-		compatible = "composite-video-connector";
+-		label = "Composite0";
+-		sdtv-standards = <SDTV_STD_PAL_B>;
+-
+-		port {
+-			comp0_out: endpoint {
+-				remote-endpoint = <&tvp5150_comp0_in>;
+-			};
+-		};
+-	};
+-
+-	counter-0 {
+-		compatible = "interrupt-counter";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_counter0>;
+-		gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
+-	};
+-
+-	counter-1 {
+-		compatible = "interrupt-counter";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_counter1>;
+-		gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
+-	};
+-
+-	counter-2 {
+-		compatible = "interrupt-counter";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_counter2>;
+-		gpios = <&gpio2 2 GPIO_ACTIVE_LOW>;
+-	};
+-
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		pinctrl-names = "default";
+@@ -101,33 +38,6 @@ iio-hwmon {
+ 		io-channels = <&vdiv_vaccu>, <&vdiv_hitch_pos>;
+ 	};
+ 
+-	leds {
+-		compatible = "gpio-leds";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_leds>;
+-
+-		led-0 {
+-			label = "debug0";
+-			function = LED_FUNCTION_HEARTBEAT;
+-			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+-		};
+-
+-		led-1 {
+-			label = "debug1";
+-			function = LED_FUNCTION_DISK;
+-			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "disk-activity";
+-		};
+-
+-		led-2 {
+-			label = "power_led";
+-			function = LED_FUNCTION_POWER;
+-			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
+-			default-state = "on";
+-		};
+-	};
+-
+ 	panel {
+ 		compatible = "lg,lb070wv8";
+ 		backlight = <&backlight_lcd>;
+@@ -146,29 +56,6 @@ clk50m_phy: phy-clock {
+ 		clock-frequency = <50000000>;
+ 	};
+ 
+-	reg_1v8: regulator-1v8 {
+-		compatible = "regulator-fixed";
+-		regulator-name = "1v8";
+-		regulator-min-microvolt = <1800000>;
+-		regulator-max-microvolt = <1800000>;
+-	};
+-
+-	reg_3v3: regulator-3v3 {
+-		compatible = "regulator-fixed";
+-		regulator-name = "3v3";
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
+-	};
+-
+-	reg_otg_vbus: regulator-otg-vbus {
+-		compatible = "regulator-fixed";
+-		regulator-name = "otg-vbus";
+-		regulator-min-microvolt = <5000000>;
+-		regulator-max-microvolt = <5000000>;
+-		gpio = <&gpio3 22 GPIO_ACTIVE_HIGH>;
+-		enable-active-high;
+-	};
+-
+ 	rotary-encoder {
+ 		compatible = "rotary-encoder";
+ 		pinctrl-0 = <&pinctrl_rotary_ch>;
+@@ -181,33 +68,6 @@ rotary-encoder {
+ 		wakeup-source;
+ 	};
+ 
+-	sound {
+-		compatible = "simple-audio-card";
+-		simple-audio-card,name = "prti6q-sgtl5000";
+-		simple-audio-card,format = "i2s";
+-		simple-audio-card,widgets =
+-			"Microphone", "Microphone Jack",
+-			"Line", "Line In Jack",
+-			"Headphone", "Headphone Jack",
+-			"Speaker", "External Speaker";
+-		simple-audio-card,routing =
+-			"MIC_IN", "Microphone Jack",
+-			"LINE_IN", "Line In Jack",
+-			"Headphone Jack", "HP_OUT",
+-			"External Speaker", "LINE_OUT";
+-
+-		simple-audio-card,cpu {
+-			sound-dai = <&ssi1>;
+-			system-clock-frequency = <0>;
+-		};
+-
+-		simple-audio-card,codec {
+-			sound-dai = <&codec>;
+-			bitclock-master;
+-			frame-master;
+-		};
+-	};
+-
+ 	thermal-zones {
+ 		chassis-thermal {
+ 			polling-delay = <20000>;
+@@ -275,63 +135,6 @@ vdiv_hitch_pos: voltage-divider-hitch-pos {
+ 	};
+ };
+ 
+-&audmux {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_audmux>;
+-	status = "okay";
+-
+-	mux-ssi1 {
+-		fsl,audmux-port = <0>;
+-		fsl,port-config = <
+-			IMX_AUDMUX_V2_PTCR_SYN		0
+-			IMX_AUDMUX_V2_PTCR_TFSEL(2)	0
+-			IMX_AUDMUX_V2_PTCR_TCSEL(2)	0
+-			IMX_AUDMUX_V2_PTCR_TFSDIR	0
+-			IMX_AUDMUX_V2_PTCR_TCLKDIR	IMX_AUDMUX_V2_PDCR_RXDSEL(2)
+-		>;
+-	};
+-
+-	mux-pins3 {
+-		fsl,audmux-port = <2>;
+-		fsl,port-config = <
+-			IMX_AUDMUX_V2_PTCR_SYN		IMX_AUDMUX_V2_PDCR_RXDSEL(0)
+-			0				IMX_AUDMUX_V2_PDCR_TXRXEN
+-		>;
+-	};
+-};
+-
+-&can1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_can1>;
+-	termination-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
+-	termination-ohms = <150>;
+-	status = "okay";
+-};
+-
+-&can2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_can2>;
+-	status = "okay";
+-};
+-
+-&clks {
+-	assigned-clocks = <&clks IMX6QDL_CLK_LDB_DI0_SEL>;
+-	assigned-clock-parents = <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>;
+-};
+-
+-&ecspi1 {
+-	cs-gpios = <&gpio3 19 GPIO_ACTIVE_LOW>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_ecspi1>;
+-	status = "okay";
+-
+-	flash@0 {
+-		compatible = "jedec,spi-nor";
+-		reg = <0>;
+-		spi-max-frequency = <20000000>;
+-	};
+-};
+-
+ &ecspi2 {
+ 	cs-gpios = <&gpio5 12 GPIO_ACTIVE_LOW>;
+ 	pinctrl-names = "default";
+@@ -412,25 +215,6 @@ &gpio1 {
+ 		"", "", "", "", "", "", "", "ETH_MDC";
+ };
+ 
+-&gpio2 {
+-	gpio-line-names =
+-		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
+-		"", "LED_PWM", "", "", "",
+-			"", "", "",
+-		"", "", "", "", "", "ISB_IN2", "ISB_nIN1", "ON_SWITCH",
+-		"POWER_LED", "", "", "", "", "", "", "";
+-};
+-
+-&gpio3 {
+-	gpio-line-names =
+-		"", "", "", "", "", "", "", "",
+-		"", "", "", "", "", "", "", "",
+-		"ECSPI1_SCLK", "ECSPI1_MISO", "ECSPI1_MOSI", "ECSPI1_SS1",
+-			"CPU_ON1_FB", "USB_OTG_OC", "USB_OTG_PWR", "YACO_IRQ",
+-		"TSS_TXD", "TSS_RXD", "", "", "", "", "YACO_BOOT0",
+-			"YACO_RESET";
+-};
+-
+ &gpio4 {
+ 	gpio-line-names =
+ 		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
+@@ -462,55 +246,7 @@ &gpio6 {
+ 		"", "", "", "", "", "", "", "";
+ };
+ 
+-&gpio7 {
+-	gpio-line-names =
+-		"EMMC_DAT5", "EMMC_DAT4", "EMMC_CMD", "EMMC_CLK", "EMMC_DAT0",
+-			"EMMC_DAT1", "EMMC_DAT2", "EMMC_DAT3",
+-		"EMMC_RST", "", "", "", "CAM_DETECT", "", "", "",
+-		"", "EMMC_DAT7", "EMMC_DAT6", "", "", "", "", "",
+-		"", "", "", "", "", "", "", "";
+-};
+-
+ &i2c1 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c1>;
+-	status = "okay";
+-
+-	codec: audio-codec@a {
+-		compatible = "fsl,sgtl5000";
+-		reg = <0xa>;
+-		#sound-dai-cells = <0>;
+-		clocks = <&clks 201>;
+-		VDDA-supply = <&reg_3v3>;
+-		VDDIO-supply = <&reg_3v3>;
+-		VDDD-supply = <&reg_1v8>;
+-	};
+-
+-	video-decoder@5c {
+-		compatible = "ti,tvp5150";
+-		reg = <0x5c>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		port@0 {
+-			reg = <0>;
+-
+-			tvp5150_comp0_in: endpoint {
+-				remote-endpoint = <&comp0_out>;
+-			};
+-		};
+-
+-		/* Output port 2 is video output pad */
+-		port@2 {
+-			reg = <2>;
+-
+-			tvp5151_to_ipu1_csi0_mux: endpoint {
+-				remote-endpoint = <&ipu1_csi0_mux_from_parallel_sensor>;
+-			};
+-		};
+-	};
+-
+ 	keypad@70 {
+ 		compatible = "holtek,ht16k33";
+ 		pinctrl-names = "default";
+@@ -534,236 +270,9 @@ MATRIX_KEY(5, 1, KEY_F3)
+ 			MATRIX_KEY(6, 1, KEY_F1)
+ 		      >;
+ 	};
+-
+-	/* additional i2c devices are added automatically by the boot loader */
+-};
+-
+-&i2c3 {
+-	clock-frequency = <100000>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_i2c3>;
+-	status = "okay";
+-
+-	adc@49 {
+-		compatible = "ti,ads1015";
+-		reg = <0x49>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		channel@4 {
+-			reg = <4>;
+-			ti,gain = <3>;
+-			ti,datarate = <3>;
+-		};
+-
+-		channel@5 {
+-			reg = <5>;
+-			ti,gain = <3>;
+-			ti,datarate = <3>;
+-		};
+-
+-		channel@6 {
+-			reg = <6>;
+-			ti,gain = <3>;
+-			ti,datarate = <3>;
+-		};
+-
+-		channel@7 {
+-			reg = <7>;
+-			ti,gain = <3>;
+-			ti,datarate = <3>;
+-		};
+-	};
+-
+-	rtc@51 {
+-		compatible = "nxp,pcf8563";
+-		reg = <0x51>;
+-	};
+-
+-	tsens0: temperature-sensor@70 {
+-		compatible = "ti,tmp103";
+-		reg = <0x70>;
+-		#thermal-sensor-cells = <0>;
+-	};
+-};
+-
+-&ipu1_csi0 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_ipu1_csi0>;
+-	status = "okay";
+-};
+-
+-&ipu1_csi0_mux_from_parallel_sensor {
+-	remote-endpoint = <&tvp5151_to_ipu1_csi0_mux>;
+-};
+-
+-&ldb {
+-	status = "okay";
+-
+-	lvds-channel@0 {
+-		status = "okay";
+-
+-		port@4 {
+-			reg = <4>;
+-
+-			lvds0_out: endpoint {
+-				remote-endpoint = <&panel_in>;
+-			};
+-		};
+-	};
+-};
+-
+-&pwm1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_pwm1>;
+-	status = "okay";
+-};
+-
+-&pwm3 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_pwm3>;
+-	status = "okay";
+-};
+-
+-&ssi1 {
+-	#sound-dai-cells = <0>;
+-	fsl,mode = "ac97-slave";
+-	status = "okay";
+-};
+-
+-&uart1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_uart1>;
+-	status = "okay";
+-};
+-
+-&uart3 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_uart3>;
+-	status = "okay";
+-};
+-
+-&uart4 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_uart4>;
+-	status = "okay";
+-};
+-
+-&uart5 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_uart5>;
+-	status = "okay";
+-};
+-
+-&usbh1 {
+-	pinctrl-names = "default";
+-	phy_type = "utmi";
+-	dr_mode = "host";
+-	status = "okay";
+-};
+-
+-&usbotg {
+-	vbus-supply = <&reg_otg_vbus>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usbotg>;
+-	phy_type = "utmi";
+-	dr_mode = "host";
+-	disable-over-current;
+-	status = "okay";
+-};
+-
+-&usdhc1 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usdhc1>;
+-	cd-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
+-	no-1-8-v;
+-	disable-wp;
+-	cap-sd-highspeed;
+-	no-mmc;
+-	no-sdio;
+-	status = "okay";
+-};
+-
+-&usdhc3 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usdhc3>;
+-	bus-width = <8>;
+-	no-1-8-v;
+-	non-removable;
+-	no-sd;
+-	no-sdio;
+-	status = "okay";
+ };
+ 
+ &iomuxc {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_hog>;
+-
+-	pinctrl_audmux: audmuxgrp {
+-		fsl,pins = <
+-			/* SGTL5000 sys_mclk */
+-			MX6QDL_PAD_CSI0_MCLK__CCM_CLKO1			0x030b0
+-			MX6QDL_PAD_CSI0_DAT7__AUD3_RXD			0x130b0
+-			MX6QDL_PAD_CSI0_DAT4__AUD3_TXC			0x130b0
+-			MX6QDL_PAD_CSI0_DAT5__AUD3_TXD			0x110b0
+-			MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS			0x130b0
+-		>;
+-	};
+-
+-	pinctrl_backlight: backlightgrp {
+-		fsl,pins = <
+-			MX6QDL_PAD_DISP0_DAT7__GPIO4_IO28		0x1b0b0
+-		>;
+-	};
+-
+-	pinctrl_can1: can1grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_KEY_ROW2__FLEXCAN1_RX		0x1b000
+-			MX6QDL_PAD_KEY_COL2__FLEXCAN1_TX		0x3008
+-			/* CAN1_SR */
+-			MX6QDL_PAD_KEY_COL3__GPIO4_IO12			0x13008
+-			/* CAN1_TERM */
+-			MX6QDL_PAD_GPIO_0__GPIO1_IO00			0x1b088
+-		>;
+-	};
+-
+-	pinctrl_can2: can2grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_KEY_ROW4__FLEXCAN2_RX		0x1b000
+-			MX6QDL_PAD_KEY_COL4__FLEXCAN2_TX		0x3008
+-			/* CAN2_SR */
+-			MX6QDL_PAD_KEY_ROW3__GPIO4_IO13			0x13008
+-		>;
+-	};
+-
+-	pinctrl_counter0: counter0grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_NANDF_D0__GPIO2_IO00			0x1b000
+-		>;
+-	};
+-
+-	pinctrl_counter1: counter1grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_NANDF_D1__GPIO2_IO01			0x1b000
+-		>;
+-	};
+-
+-	pinctrl_counter2: counter2grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_NANDF_D2__GPIO2_IO02			0x1b000
+-		>;
+-	};
+-
+-	pinctrl_ecspi1: ecspi1grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_EIM_D17__ECSPI1_MISO			0x100b1
+-			MX6QDL_PAD_EIM_D18__ECSPI1_MOSI			0x100b1
+-			MX6QDL_PAD_EIM_D16__ECSPI1_SCLK			0x100b1
+-			/* CS */
+-			MX6QDL_PAD_EIM_D19__GPIO3_IO19			0x000b1
+-		>;
+-	};
+-
+ 	pinctrl_ecspi2: ecspi2grp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_DISP0_DAT16__ECSPI2_MOSI		0x100b1
+@@ -802,102 +311,12 @@ MX6QDL_PAD_EIM_CS0__GPIO2_IO23			0x1b0b0
+ 		>;
+ 	};
+ 
+-	pinctrl_hog: hoggrp {
+-		fsl,pins = <
+-			/* ITU656_nRESET */
+-			MX6QDL_PAD_GPIO_2__GPIO1_IO02			0x1b0b0
+-			/* CAM1_MIRROR */
+-			MX6QDL_PAD_GPIO_3__GPIO1_IO03			0x130b0
+-			/* CAM2_MIRROR */
+-			MX6QDL_PAD_GPIO_4__GPIO1_IO04			0x130b0
+-			/* CAM_nDETECT */
+-			MX6QDL_PAD_GPIO_17__GPIO7_IO12			0x1b0b0
+-			/* ISB_IN1 */
+-			MX6QDL_PAD_EIM_A16__GPIO2_IO22			0x130b0
+-			/* ISB_nIN2 */
+-			MX6QDL_PAD_EIM_A17__GPIO2_IO21			0x1b0b0
+-			/* WARN_LIGHT */
+-			MX6QDL_PAD_EIM_A19__GPIO2_IO19			0x100b0
+-			/* ON2_FB */
+-			MX6QDL_PAD_EIM_A25__GPIO5_IO02			0x100b0
+-			/* YACO_nIRQ */
+-			MX6QDL_PAD_EIM_D23__GPIO3_IO23			0x1b0b0
+-			/* YACO_BOOT0 */
+-			MX6QDL_PAD_EIM_D30__GPIO3_IO30			0x130b0
+-			/* YACO_nRESET */
+-			MX6QDL_PAD_EIM_D31__GPIO3_IO31			0x1b0b0
+-			/* FORCE_ON1 */
+-			MX6QDL_PAD_EIM_EB2__GPIO2_IO30			0x1b0b0
+-			/* AUDIO_nRESET */
+-			MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21		0x1f0b0
+-			/* ITU656_nPDN */
+-			MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20		0x1b0b0
+-
+-			/* New in HW revision 1 */
+-			/* ON1_FB */
+-			MX6QDL_PAD_EIM_D20__GPIO3_IO20			0x100b0
+-			/* DIP1_FB */
+-			MX6QDL_PAD_DI0_PIN2__GPIO4_IO18			0x1b0b0
+-		>;
+-	};
+-
+-	pinctrl_i2c1: i2c1grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_CSI0_DAT8__I2C1_SDA		0x4001f8b1
+-			MX6QDL_PAD_CSI0_DAT9__I2C1_SCL		0x4001f8b1
+-		>;
+-	};
+-
+-	pinctrl_i2c3: i2c3grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_GPIO_5__I2C3_SCL		0x4001b8b1
+-			MX6QDL_PAD_GPIO_6__I2C3_SDA		0x4001b8b1
+-		>;
+-	};
+-
+-	pinctrl_ipu1_csi0: ipu1csi0grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_CSI0_DAT12__IPU1_CSI0_DATA12		0x1b0b0
+-			MX6QDL_PAD_CSI0_DAT13__IPU1_CSI0_DATA13		0x1b0b0
+-			MX6QDL_PAD_CSI0_DAT14__IPU1_CSI0_DATA14		0x1b0b0
+-			MX6QDL_PAD_CSI0_DAT15__IPU1_CSI0_DATA15		0x1b0b0
+-			MX6QDL_PAD_CSI0_DAT16__IPU1_CSI0_DATA16		0x1b0b0
+-			MX6QDL_PAD_CSI0_DAT17__IPU1_CSI0_DATA17		0x1b0b0
+-			MX6QDL_PAD_CSI0_DAT18__IPU1_CSI0_DATA18		0x1b0b0
+-			MX6QDL_PAD_CSI0_DAT19__IPU1_CSI0_DATA19		0x1b0b0
+-			MX6QDL_PAD_CSI0_PIXCLK__IPU1_CSI0_PIXCLK	0x1b0b0
+-		>;
+-	};
+-
+ 	pinctrl_keypad: keypadgrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_GPIO_19__GPIO4_IO05			0x1b0b0
+ 		>;
+ 	};
+ 
+-	pinctrl_leds: ledsgrp {
+-		fsl,pins = <
+-			/* DEBUG0 */
+-			MX6QDL_PAD_DI0_DISP_CLK__GPIO4_IO16		0x1b0b0
+-			/* DEBUG1 */
+-			MX6QDL_PAD_DI0_PIN15__GPIO4_IO17		0x1b0b0
+-			/* POWER_LED */
+-			MX6QDL_PAD_EIM_CS1__GPIO2_IO24			0x1b0b0
+-		>;
+-	};
+-
+-	pinctrl_pwm1: pwm1grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_DISP0_DAT8__PWM1_OUT			0x1b0b0
+-		>;
+-	};
+-
+-	pinctrl_pwm3: pwm3grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_SD4_DAT1__PWM3_OUT			0x1b0b0
+-		>;
+-	};
+-
+ 	pinctrl_rotary_ch: rotarychgrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_NANDF_D3__GPIO2_IO03			0x1b0b0
+@@ -911,70 +330,4 @@ MX6QDL_PAD_DISP0_DAT14__GPIO5_IO08		0x1b0b0
+ 			MX6QDL_PAD_DISP0_DAT15__GPIO5_IO09		0x1b0b0
+ 		>;
+ 	};
+-
+-	/* YaCO AUX Uart */
+-	pinctrl_uart1: uart1grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA		0x1b0b1
+-			MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA		0x1b0b1
+-		>;
+-	};
+-
+-	/* YaCO Touchscreen UART */
+-	pinctrl_uart3: uart3grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_EIM_D24__UART3_TX_DATA		0x1b0b1
+-			MX6QDL_PAD_EIM_D25__UART3_RX_DATA		0x1b0b1
+-		>;
+-	};
+-
+-	pinctrl_uart4: uart4grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_KEY_COL0__UART4_TX_DATA		0x1b0b1
+-			MX6QDL_PAD_KEY_ROW0__UART4_RX_DATA		0x1b0b1
+-		>;
+-	};
+-
+-	pinctrl_uart5: uart5grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_KEY_COL1__UART5_TX_DATA		0x1b0b1
+-			MX6QDL_PAD_KEY_ROW1__UART5_RX_DATA		0x1b0b1
+-		>;
+-	};
+-
+-	pinctrl_usbotg: usbotggrp {
+-		fsl,pins = <
+-			MX6QDL_PAD_EIM_D21__USB_OTG_OC			0x1b0b0
+-			/* power enable, high active */
+-			MX6QDL_PAD_EIM_D22__GPIO3_IO22			0x1b0b0
+-		>;
+-	};
+-
+-	pinctrl_usdhc1: usdhc1grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_SD1_CMD__SD1_CMD			0x170f9
+-			MX6QDL_PAD_SD1_CLK__SD1_CLK			0x100f9
+-			MX6QDL_PAD_SD1_DAT0__SD1_DATA0			0x170f9
+-			MX6QDL_PAD_SD1_DAT1__SD1_DATA1			0x170f9
+-			MX6QDL_PAD_SD1_DAT2__SD1_DATA2			0x170f9
+-			MX6QDL_PAD_SD1_DAT3__SD1_DATA3			0x170f9
+-			MX6QDL_PAD_GPIO_1__GPIO1_IO01			0x1b0b0
+-		>;
+-	};
+-
+-	pinctrl_usdhc3: usdhc3grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_SD3_CMD__SD3_CMD			0x17099
+-			MX6QDL_PAD_SD3_CLK__SD3_CLK			0x10099
+-			MX6QDL_PAD_SD3_DAT0__SD3_DATA0			0x17099
+-			MX6QDL_PAD_SD3_DAT1__SD3_DATA1			0x17099
+-			MX6QDL_PAD_SD3_DAT2__SD3_DATA2			0x17099
+-			MX6QDL_PAD_SD3_DAT3__SD3_DATA3			0x17099
+-			MX6QDL_PAD_SD3_DAT4__SD3_DATA4			0x17099
+-			MX6QDL_PAD_SD3_DAT5__SD3_DATA5			0x17099
+-			MX6QDL_PAD_SD3_DAT6__SD3_DATA6			0x17099
+-			MX6QDL_PAD_SD3_DAT7__SD3_DATA7			0x17099
+-			MX6QDL_PAD_SD3_RST__SD3_RESET			0x1b0b1
+-		>;
+-	};
+ };
+diff --git a/arch/arm/boot/dts/imx6qdl-victgo.dtsi b/arch/arm/boot/dts/imx6qdl-victgo.dtsi
+new file mode 100644
+index 000000000000..386e2ca39424
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6qdl-victgo.dtsi
+@@ -0,0 +1,658 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright (c) 2016 Protonic Holland
++ * Copyright (c) 2020 Oleksij Rempel <kernel@pengutronix.de>, Pengutronix
++ */
++
++#include <dt-bindings/display/sdtv-standards.h>
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
++#include <dt-bindings/media/tvp5150.h>
++#include <dt-bindings/sound/fsl-imx-audmux.h>
++
++/ {
++	chosen {
++		stdout-path = &uart4;
++	};
++
++	backlight_lcd: backlight {
++		compatible = "pwm-backlight";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_backlight>;
++		pwms = <&pwm1 0 5000000 0>;
++		brightness-levels = <0 16 64 255>;
++		num-interpolated-steps = <16>;
++		default-brightness-level = <48>;
++		power-supply = <&reg_3v3>;
++		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
++	};
++
++	backlight_led: backlight_led {
++		compatible = "pwm-backlight";
++		pwms = <&pwm3 0 5000000 0>;
++		brightness-levels = <0 16 64 255>;
++		num-interpolated-steps = <16>;
++		default-brightness-level = <48>;
++		power-supply = <&reg_3v3>;
++	};
++
++	connector {
++		compatible = "composite-video-connector";
++		label = "Composite0";
++		sdtv-standards = <SDTV_STD_PAL_B>;
++
++		port {
++			comp0_out: endpoint {
++				remote-endpoint = <&tvp5150_comp0_in>;
++			};
++		};
++	};
++
++	counter-0 {
++		compatible = "interrupt-counter";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_counter0>;
++		gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
++	};
++
++	counter-1 {
++		compatible = "interrupt-counter";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_counter1>;
++		gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
++	};
++
++	counter-2 {
++		compatible = "interrupt-counter";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_counter2>;
++		gpios = <&gpio2 2 GPIO_ACTIVE_LOW>;
++	};
++
++	leds {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_leds>;
++
++		led-0 {
++			label = "debug0";
++			function = LED_FUNCTION_HEARTBEAT;
++			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "heartbeat";
++		};
++
++		led-1 {
++			label = "debug1";
++			function = LED_FUNCTION_DISK;
++			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "disk-activity";
++		};
++
++		led-2 {
++			label = "power_led";
++			function = LED_FUNCTION_POWER;
++			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++	};
++
++	reg_1v8: regulator-1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "1v8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++	};
++
++	reg_3v3: regulator-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++	};
++
++	reg_otg_vbus: regulator-otg-vbus {
++		compatible = "regulator-fixed";
++		regulator-name = "otg-vbus";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		gpio = <&gpio3 22 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "prti6q-sgtl5000";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,widgets =
++			"Microphone", "Microphone Jack",
++			"Line", "Line In Jack",
++			"Headphone", "Headphone Jack",
++			"Speaker", "External Speaker";
++		simple-audio-card,routing =
++			"MIC_IN", "Microphone Jack",
++			"LINE_IN", "Line In Jack",
++			"Headphone Jack", "HP_OUT",
++			"External Speaker", "LINE_OUT";
++
++		simple-audio-card,cpu {
++			sound-dai = <&ssi1>;
++			system-clock-frequency = <0>; /* Do NOT call fsl_ssi_set_dai_sysclk! */
++		};
++
++		simple-audio-card,codec {
++			sound-dai = <&codec>;
++			bitclock-master;
++			frame-master;
++		};
++	};
++};
++
++&audmux {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_audmux>;
++	status = "okay";
++
++	mux-ssi1 {
++		fsl,audmux-port = <0>;
++		fsl,port-config = <
++			IMX_AUDMUX_V2_PTCR_SYN		0
++			IMX_AUDMUX_V2_PTCR_TFSEL(2)	0
++			IMX_AUDMUX_V2_PTCR_TCSEL(2)	0
++			IMX_AUDMUX_V2_PTCR_TFSDIR	0
++			IMX_AUDMUX_V2_PTCR_TCLKDIR	IMX_AUDMUX_V2_PDCR_RXDSEL(2)
++		>;
++	};
++
++	mux-pins3 {
++		fsl,audmux-port = <2>;
++		fsl,port-config = <
++			IMX_AUDMUX_V2_PTCR_SYN		IMX_AUDMUX_V2_PDCR_RXDSEL(0)
++			0				IMX_AUDMUX_V2_PDCR_TXRXEN
++		>;
++	};
++};
++
++&can1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_can1>;
++	termination-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
++	termination-ohms = <150>;
++	status = "okay";
++};
++
++&can2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_can2>;
++	status = "okay";
++};
++
++&clks {
++	assigned-clocks = <&clks IMX6QDL_CLK_LDB_DI0_SEL>;
++	assigned-clock-parents = <&clks IMX6QDL_CLK_PLL5_VIDEO_DIV>;
++};
++
++&ecspi1 {
++	cs-gpios = <&gpio3 19 GPIO_ACTIVE_LOW>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_ecspi1>;
++	status = "okay";
++
++	flash@0 {
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		spi-max-frequency = <20000000>;
++	};
++};
++
++&gpio2 {
++	gpio-line-names =
++		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
++		"", "LED_PWM", "", "", "",
++			"", "", "",
++		"", "", "", "", "", "ISB_IN2", "ISB_nIN1", "ON_SWITCH",
++		"POWER_LED", "", "", "", "", "", "", "";
++};
++
++&gpio3 {
++	gpio-line-names =
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"ECSPI1_SCLK", "ECSPI1_MISO", "ECSPI1_MOSI", "ECSPI1_SS1",
++			"CPU_ON1_FB", "USB_OTG_OC", "USB_OTG_PWR", "YACO_IRQ",
++		"TSS_TXD", "TSS_RXD", "", "", "", "", "YACO_BOOT0",
++			"YACO_RESET";
++};
++
++&gpio7 {
++	gpio-line-names =
++		"EMMC_DAT5", "EMMC_DAT4", "EMMC_CMD", "EMMC_CLK", "EMMC_DAT0",
++			"EMMC_DAT1", "EMMC_DAT2", "EMMC_DAT3",
++		"EMMC_RST", "", "", "", "CAM_DETECT", "", "", "",
++		"", "EMMC_DAT7", "EMMC_DAT6", "", "", "", "", "",
++		"", "", "", "", "", "", "", "";
++};
++
++&i2c1 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c1>;
++	status = "okay";
++
++	codec: audio-codec@a {
++		compatible = "fsl,sgtl5000";
++		reg = <0xa>;
++		#sound-dai-cells = <0>;
++		clocks = <&clks 201>;
++		VDDA-supply = <&reg_3v3>;
++		VDDIO-supply = <&reg_3v3>;
++		VDDD-supply = <&reg_1v8>;
++	};
++
++	video-decoder@5c {
++		compatible = "ti,tvp5150";
++		reg = <0x5c>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++
++			tvp5150_comp0_in: endpoint {
++				remote-endpoint = <&comp0_out>;
++			};
++		};
++
++		/* Output port 2 is video output pad */
++		port@2 {
++			reg = <2>;
++
++			tvp5151_to_ipu1_csi0_mux: endpoint {
++				remote-endpoint = <&ipu1_csi0_mux_from_parallel_sensor>;
++			};
++		};
++	};
++
++	/* additional i2c devices are added automatically by the boot loader */
++};
++
++&i2c3 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c3>;
++	status = "okay";
++
++	adc@49 {
++		compatible = "ti,ads1015";
++		reg = <0x49>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		channel@4 {
++			reg = <4>;
++			ti,gain = <3>;
++			ti,datarate = <3>;
++		};
++
++		channel@5 {
++			reg = <5>;
++			ti,gain = <3>;
++			ti,datarate = <3>;
++		};
++
++		channel@6 {
++			reg = <6>;
++			ti,gain = <3>;
++			ti,datarate = <3>;
++		};
++
++		channel@7 {
++			reg = <7>;
++			ti,gain = <3>;
++			ti,datarate = <3>;
++		};
++	};
++
++	rtc@51 {
++		compatible = "nxp,pcf8563";
++		reg = <0x51>;
++	};
++
++	tsens0: temperature-sensor@70 {
++		compatible = "ti,tmp103";
++		reg = <0x70>;
++		#thermal-sensor-cells = <0>;
++	};
++};
++
++&ipu1_csi0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_ipu1_csi0>;
++	status = "okay";
++};
++
++&ipu1_csi0_mux_from_parallel_sensor {
++	remote-endpoint = <&tvp5151_to_ipu1_csi0_mux>;
++};
++
++&ldb {
++	status = "okay";
++
++	lvds-channel@0 {
++		status = "okay";
++
++		port@4 {
++			reg = <4>;
++
++			lvds0_out: endpoint {
++				remote-endpoint = <&panel_in>;
++			};
++		};
++	};
++};
++
++&pwm1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pwm1>;
++	status = "okay";
++};
++
++&pwm3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pwm3>;
++	status = "okay";
++};
++
++&ssi1 {
++	status = "okay";
++};
++
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart1>;
++	status = "okay";
++};
++
++&uart3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart3>;
++	status = "okay";
++};
++
++&uart4 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart4>;
++	status = "okay";
++};
++
++&uart5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart5>;
++	status = "okay";
++};
++
++&usbh1 {
++	pinctrl-names = "default";
++	phy_type = "utmi";
++	dr_mode = "host";
++	status = "okay";
++};
++
++&usbotg {
++	vbus-supply = <&reg_otg_vbus>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usbotg>;
++	phy_type = "utmi";
++	dr_mode = "host";
++	disable-over-current;
++	status = "okay";
++};
++
++&usdhc1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc1>;
++	cd-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
++	no-1-8-v;
++	disable-wp;
++	cap-sd-highspeed;
++	no-mmc;
++	no-sdio;
++	status = "okay";
++};
++
++&usdhc3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc3>;
++	bus-width = <8>;
++	no-1-8-v;
++	non-removable;
++	no-sd;
++	no-sdio;
++	status = "okay";
++};
++
++&iomuxc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_hog>;
++
++	pinctrl_audmux: audmuxgrp {
++		fsl,pins = <
++			/* SGTL5000 sys_mclk */
++			MX6QDL_PAD_CSI0_MCLK__CCM_CLKO1			0x030b0
++			MX6QDL_PAD_CSI0_DAT7__AUD3_RXD			0x130b0
++			MX6QDL_PAD_CSI0_DAT4__AUD3_TXC			0x130b0
++			MX6QDL_PAD_CSI0_DAT5__AUD3_TXD			0x110b0
++			MX6QDL_PAD_CSI0_DAT6__AUD3_TXFS			0x130b0
++		>;
++	};
++
++	pinctrl_backlight: backlightgrp {
++		fsl,pins = <
++			MX6QDL_PAD_DISP0_DAT7__GPIO4_IO28		0x1b0b0
++		>;
++	};
++
++	pinctrl_can1: can1grp {
++		fsl,pins = <
++			MX6QDL_PAD_KEY_ROW2__FLEXCAN1_RX		0x1b000
++			MX6QDL_PAD_KEY_COL2__FLEXCAN1_TX		0x3008
++			/* CAN1_SR */
++			MX6QDL_PAD_KEY_COL3__GPIO4_IO12			0x13008
++			/* CAN1_TERM */
++			MX6QDL_PAD_GPIO_0__GPIO1_IO00			0x1b088
++		>;
++	};
++
++	pinctrl_can2: can2grp {
++		fsl,pins = <
++			MX6QDL_PAD_KEY_ROW4__FLEXCAN2_RX		0x1b000
++			MX6QDL_PAD_KEY_COL4__FLEXCAN2_TX		0x3008
++			/* CAN2_SR */
++			MX6QDL_PAD_KEY_ROW3__GPIO4_IO13			0x13008
++		>;
++	};
++
++	pinctrl_counter0: counter0grp {
++		fsl,pins = <
++			MX6QDL_PAD_NANDF_D0__GPIO2_IO00			0x1b000
++		>;
++	};
++
++	pinctrl_counter1: counter1grp {
++		fsl,pins = <
++			MX6QDL_PAD_NANDF_D1__GPIO2_IO01			0x1b000
++		>;
++	};
++
++	pinctrl_counter2: counter2grp {
++		fsl,pins = <
++			MX6QDL_PAD_NANDF_D2__GPIO2_IO02			0x1b000
++		>;
++	};
++
++	pinctrl_ecspi1: ecspi1grp {
++		fsl,pins = <
++			MX6QDL_PAD_EIM_D17__ECSPI1_MISO			0x100b1
++			MX6QDL_PAD_EIM_D18__ECSPI1_MOSI			0x100b1
++			MX6QDL_PAD_EIM_D16__ECSPI1_SCLK			0x100b1
++			/* CS */
++			MX6QDL_PAD_EIM_D19__GPIO3_IO19			0x000b1
++		>;
++	};
++
++	pinctrl_hog: hoggrp {
++		fsl,pins = <
++			/* ITU656_nRESET */
++			MX6QDL_PAD_GPIO_2__GPIO1_IO02			0x1b0b0
++			/* CAM1_MIRROR */
++			MX6QDL_PAD_GPIO_3__GPIO1_IO03			0x130b0
++			/* CAM2_MIRROR */
++			MX6QDL_PAD_GPIO_4__GPIO1_IO04			0x130b0
++			/* CAM_nDETECT */
++			MX6QDL_PAD_GPIO_17__GPIO7_IO12			0x1b0b0
++			/* ISB_IN1 */
++			MX6QDL_PAD_EIM_A16__GPIO2_IO22			0x130b0
++			/* ISB_nIN2 */
++			MX6QDL_PAD_EIM_A17__GPIO2_IO21			0x1b0b0
++			/* WARN_LIGHT */
++			MX6QDL_PAD_EIM_A19__GPIO2_IO19			0x100b0
++			/* ON2_FB */
++			MX6QDL_PAD_EIM_A25__GPIO5_IO02			0x100b0
++			/* YACO_nIRQ */
++			MX6QDL_PAD_EIM_D23__GPIO3_IO23			0x1b0b0
++			/* YACO_BOOT0 */
++			MX6QDL_PAD_EIM_D30__GPIO3_IO30			0x130b0
++			/* YACO_nRESET */
++			MX6QDL_PAD_EIM_D31__GPIO3_IO31			0x1b0b0
++			/* FORCE_ON1 */
++			MX6QDL_PAD_EIM_EB2__GPIO2_IO30			0x1b0b0
++			/* AUDIO_nRESET */
++			MX6QDL_PAD_CSI0_VSYNC__GPIO5_IO21		0x1f0b0
++			/* ITU656_nPDN */
++			MX6QDL_PAD_CSI0_DATA_EN__GPIO5_IO20		0x1b0b0
++
++			/* New in HW revision 1 */
++			/* ON1_FB */
++			MX6QDL_PAD_EIM_D20__GPIO3_IO20			0x100b0
++			/* DIP1_FB */
++			MX6QDL_PAD_DI0_PIN2__GPIO4_IO18			0x1b0b0
++		>;
++	};
++
++	pinctrl_i2c1: i2c1grp {
++		fsl,pins = <
++			MX6QDL_PAD_CSI0_DAT8__I2C1_SDA		0x4001f8b1
++			MX6QDL_PAD_CSI0_DAT9__I2C1_SCL		0x4001f8b1
++		>;
++	};
++
++	pinctrl_i2c3: i2c3grp {
++		fsl,pins = <
++			MX6QDL_PAD_GPIO_5__I2C3_SCL		0x4001b8b1
++			MX6QDL_PAD_GPIO_6__I2C3_SDA		0x4001b8b1
++		>;
++	};
++
++	pinctrl_ipu1_csi0: ipu1csi0grp {
++		fsl,pins = <
++			MX6QDL_PAD_CSI0_DAT12__IPU1_CSI0_DATA12		0x1b0b0
++			MX6QDL_PAD_CSI0_DAT13__IPU1_CSI0_DATA13		0x1b0b0
++			MX6QDL_PAD_CSI0_DAT14__IPU1_CSI0_DATA14		0x1b0b0
++			MX6QDL_PAD_CSI0_DAT15__IPU1_CSI0_DATA15		0x1b0b0
++			MX6QDL_PAD_CSI0_DAT16__IPU1_CSI0_DATA16		0x1b0b0
++			MX6QDL_PAD_CSI0_DAT17__IPU1_CSI0_DATA17		0x1b0b0
++			MX6QDL_PAD_CSI0_DAT18__IPU1_CSI0_DATA18		0x1b0b0
++			MX6QDL_PAD_CSI0_DAT19__IPU1_CSI0_DATA19		0x1b0b0
++			MX6QDL_PAD_CSI0_PIXCLK__IPU1_CSI0_PIXCLK	0x1b0b0
++		>;
++	};
++
++	pinctrl_leds: ledsgrp {
++		fsl,pins = <
++			/* DEBUG0 */
++			MX6QDL_PAD_DI0_DISP_CLK__GPIO4_IO16		0x1b0b0
++			/* DEBUG1 */
++			MX6QDL_PAD_DI0_PIN15__GPIO4_IO17		0x1b0b0
++			/* POWER_LED */
++			MX6QDL_PAD_EIM_CS1__GPIO2_IO24			0x1b0b0
++		>;
++	};
++
++	pinctrl_pwm1: pwm1grp {
++		fsl,pins = <
++			MX6QDL_PAD_DISP0_DAT8__PWM1_OUT			0x1b0b0
++		>;
++	};
++
++	pinctrl_pwm3: pwm3grp {
++		fsl,pins = <
++			MX6QDL_PAD_SD4_DAT1__PWM3_OUT			0x1b0b0
++		>;
++	};
++
++	/* YaCO AUX Uart */
++	pinctrl_uart1: uart1grp {
++		fsl,pins = <
++			MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA		0x1b0b1
++			MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA		0x1b0b1
++		>;
++	};
++
++	/* YaCO Touchscreen UART */
++	pinctrl_uart3: uart3grp {
++		fsl,pins = <
++			MX6QDL_PAD_EIM_D24__UART3_TX_DATA		0x1b0b1
++			MX6QDL_PAD_EIM_D25__UART3_RX_DATA		0x1b0b1
++		>;
++	};
++
++	pinctrl_uart4: uart4grp {
++		fsl,pins = <
++			MX6QDL_PAD_KEY_COL0__UART4_TX_DATA		0x1b0b1
++			MX6QDL_PAD_KEY_ROW0__UART4_RX_DATA		0x1b0b1
++		>;
++	};
++
++	pinctrl_uart5: uart5grp {
++		fsl,pins = <
++			MX6QDL_PAD_KEY_COL1__UART5_TX_DATA		0x1b0b1
++			MX6QDL_PAD_KEY_ROW1__UART5_RX_DATA		0x1b0b1
++		>;
++	};
++
++	pinctrl_usbotg: usbotggrp {
++		fsl,pins = <
++			MX6QDL_PAD_EIM_D21__USB_OTG_OC			0x1b0b0
++			/* power enable, high active */
++			MX6QDL_PAD_EIM_D22__GPIO3_IO22			0x1b0b0
++		>;
++	};
++
++	pinctrl_usdhc1: usdhc1grp {
++		fsl,pins = <
++			MX6QDL_PAD_SD1_CMD__SD1_CMD			0x170f9
++			MX6QDL_PAD_SD1_CLK__SD1_CLK			0x100f9
++			MX6QDL_PAD_SD1_DAT0__SD1_DATA0			0x170f9
++			MX6QDL_PAD_SD1_DAT1__SD1_DATA1			0x170f9
++			MX6QDL_PAD_SD1_DAT2__SD1_DATA2			0x170f9
++			MX6QDL_PAD_SD1_DAT3__SD1_DATA3			0x170f9
++			MX6QDL_PAD_GPIO_1__GPIO1_IO01			0x1b0b0
++		>;
++	};
++
++	pinctrl_usdhc3: usdhc3grp {
++		fsl,pins = <
++			MX6QDL_PAD_SD3_CMD__SD3_CMD			0x17099
++			MX6QDL_PAD_SD3_CLK__SD3_CLK			0x10099
++			MX6QDL_PAD_SD3_DAT0__SD3_DATA0			0x17099
++			MX6QDL_PAD_SD3_DAT1__SD3_DATA1			0x17099
++			MX6QDL_PAD_SD3_DAT2__SD3_DATA2			0x17099
++			MX6QDL_PAD_SD3_DAT3__SD3_DATA3			0x17099
++			MX6QDL_PAD_SD3_DAT4__SD3_DATA4			0x17099
++			MX6QDL_PAD_SD3_DAT5__SD3_DATA5			0x17099
++			MX6QDL_PAD_SD3_DAT6__SD3_DATA6			0x17099
++			MX6QDL_PAD_SD3_DAT7__SD3_DATA7			0x17099
++			MX6QDL_PAD_SD3_RST__SD3_RESET			0x1b0b1
++		>;
++	};
++};
+-- 
+2.30.2
 
