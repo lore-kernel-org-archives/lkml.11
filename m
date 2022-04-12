@@ -2,103 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353247AbiDLMkf (ORCPT
+        id S1353285AbiDLMkm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
+        Tue, 12 Apr 2022 08:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350598AbiDLMgE (ORCPT
+        with ESMTP id S1353623AbiDLMhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:36:04 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88506C9;
-        Tue, 12 Apr 2022 04:55:12 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5191E1570;
-        Tue, 12 Apr 2022 04:55:12 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.38.213])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5939E3F70D;
-        Tue, 12 Apr 2022 04:55:06 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-perf-users@vger.kernel.org
-Subject: [RFC V2 4/8] arm64/perf: Update struct pmu_hw_events for BRBE
-Date:   Tue, 12 Apr 2022 17:24:51 +0530
-Message-Id: <20220412115455.293119-5-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412115455.293119-1-anshuman.khandual@arm.com>
-References: <20220412115455.293119-1-anshuman.khandual@arm.com>
+        Tue, 12 Apr 2022 08:37:48 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783D95F264;
+        Tue, 12 Apr 2022 04:57:54 -0700 (PDT)
+X-UUID: 3356554d987d481ab432f18080731070-20220412
+X-UUID: 3356554d987d481ab432f18080731070-20220412
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1305055188; Tue, 12 Apr 2022 19:57:46 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 12 Apr 2022 19:57:44 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Apr 2022 19:57:44 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Ikjoon Jang <ikjn@chromium.org>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH] spi: spi-mtk-nor: initialize spi controller after resume
+Date:   Tue, 12 Apr 2022 19:57:43 +0800
+Message-ID: <20220412115743.22641-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A single perf event instance BRBE related contexts and data will be tracked
-in struct pmu_hw_events. Hence update the structure to accommodate required
-details related to BRBE.
+After system resumes, the registers of nor controller are
+initialized with default values. The nor controller will
+not function properly.
 
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+To handle both issues above, we add mtk_nor_init() in
+mtk_nor_resume after pm_runtime_force_resume().
+
+Fixes: 3bfd9103c7af ("spi: spi-mtk-nor: Add power management support")
+
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- include/linux/perf/arm_pmu.h | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/spi/spi-mtk-nor.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/perf/arm_pmu.h b/include/linux/perf/arm_pmu.h
-index 3d427ac0ca45..18e519e4e658 100644
---- a/include/linux/perf/arm_pmu.h
-+++ b/include/linux/perf/arm_pmu.h
-@@ -43,6 +43,11 @@
- 	},								\
+diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
+index 94fb09696677..d167699a1a96 100644
+--- a/drivers/spi/spi-mtk-nor.c
++++ b/drivers/spi/spi-mtk-nor.c
+@@ -960,7 +960,17 @@ static int __maybe_unused mtk_nor_suspend(struct device *dev)
+ 
+ static int __maybe_unused mtk_nor_resume(struct device *dev)
+ {
+-	return pm_runtime_force_resume(dev);
++	struct spi_controller *ctlr = dev_get_drvdata(dev);
++	struct mtk_nor *sp = spi_controller_get_devdata(ctlr);
++	int ret;
++
++	ret = pm_runtime_force_resume(dev);
++	if (ret)
++		return ret;
++
++	mtk_nor_init(sp);
++
++	return 0;
  }
  
-+/*
-+ * Maximum branch records in BRBE
-+ */
-+#define BRBE_MAX_ENTRIES 64
-+
- /* The events for a given PMU register set. */
- struct pmu_hw_events {
- 	/*
-@@ -69,6 +74,23 @@ struct pmu_hw_events {
- 	struct arm_pmu		*percpu_pmu;
- 
- 	int irq;
-+
-+	/* Detected BRBE attributes */
-+	bool				v1p1;
-+	int				brbe_cc;
-+	int				brbe_nr;
-+
-+	/* Evaluated BRBE configuration */
-+	u64				brbfcr;
-+	u64				brbcr;
-+
-+	/* Tracked BRBE context */
-+	unsigned int			brbe_users;
-+	void				*brbe_context;
-+
-+	/* Captured BRBE buffer - copied as is into perf_sample_data */
-+	struct perf_branch_stack	brbe_stack;
-+	struct perf_branch_entry	brbe_entries[BRBE_MAX_ENTRIES];
- };
- 
- enum armpmu_attr_groups {
+ static const struct dev_pm_ops mtk_nor_pm_ops = {
 -- 
-2.25.1
+2.18.0
 
