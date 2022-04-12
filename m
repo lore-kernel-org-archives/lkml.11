@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B51C3C35278
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346069AbiDLBDG (ORCPT
+        id S1347559AbiDLBDY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
+        Mon, 11 Apr 2022 21:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244237AbiDLA5L (ORCPT
+        with ESMTP id S1344531AbiDLA6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:57:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC3F26545;
-        Mon, 11 Apr 2022 17:49:48 -0700 (PDT)
+        Mon, 11 Apr 2022 20:58:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7395C286D6;
+        Mon, 11 Apr 2022 17:50:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98C0F617E7;
-        Tue, 12 Apr 2022 00:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E81EC385A3;
-        Tue, 12 Apr 2022 00:49:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D9A4B819D3;
+        Tue, 12 Apr 2022 00:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A54C385A4;
+        Tue, 12 Apr 2022 00:49:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724587;
-        bh=s9Rpwm6delKvf/66BvJD66oF5cgx4gOOaaAMGNKINik=;
+        s=k20201202; t=1649724600;
+        bh=FxXsQ/0pA/79CvGYTRmab7Da+yVjb4SEgBgD6c/awrc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LHZ1u2Qje9ssV0PHleomovcA/yS7P23cFtrrRLAC3D1VQYrXQwCjYIDJT3ETPv2We
-         lMnRr1c9FaqLrt71atDJ5kTkpF799ZqB3IzS+t07iZoG4GgbPFwIm/qeRyYO6Y2VPf
-         ZwRHlmF5tmIWZV2MW2xy4e1r974OzFz/PBGNdgamzSTKHhBg4PCKUXDbAlCSOjaLhk
-         Rn3LmVfT9kyPWqNtUDrg6a6/UajdWOQe+g+W3gWpYxdLm1o2qk05TjXvi+FgrQjjSx
-         NIHG7qjcghAmJ6cApFGUVXkISrqiyg9n7HwWCm/BQDYySTLS1aWmZ5wUmTn43KJOvJ
-         d6vj9phWa2Tiw==
+        b=XP5LL7T4xFF2ujVeyuA89uqhaEE5qzowyzEQ0o1mA9GkN8DMQqcD3ONZwvxyhKjZN
+         gev1oz4SaCeWMdbJou2YvVWZMw4ggjcwWc03OenXhXwNZCBOIu5eEW9/kWaPUMz76o
+         l//0dIX1lmz7ARrKle9Hr/Bp3T/SdH6Uz3yLH14sDVv+52f+yo2c/NGw9xrJXQCnkV
+         OrJ0SzmIy2Nb6bMMFd3CEZchyIfGEE/2NzI/shWchurgXZO29fJGEvxfeswSIAbagu
+         G9i9+fipI3+zkqu4QOy6z9bjp5ty98KljZdA+JfqKq/h5Vgtfvps7cjFJboDXb30Qb
+         4bc7R2ItT4t4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, mikecyr@linux.ibm.com,
-        jejb@linux.ibm.com, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 13/30] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
-Date:   Mon, 11 Apr 2022 20:48:47 -0400
-Message-Id: <20220412004906.350678-13-sashal@kernel.org>
+Cc:     Steve Capper <steve.capper@arm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.10 19/30] tlb: hugetlb: Add more sizes to tlb_remove_huge_tlb_entry
+Date:   Mon, 11 Apr 2022 20:48:53 -0400
+Message-Id: <20220412004906.350678-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
 References: <20220412004906.350678-1-sashal@kernel.org>
@@ -54,41 +57,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrel Datwyler <tyreld@linux.ibm.com>
+From: Steve Capper <steve.capper@arm.com>
 
-[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
+[ Upstream commit 697a1d44af8ba0477ee729e632f4ade37999249a ]
 
-The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
-currently an arbitrary value of 800. Increase this value to 1024 which
-better matches the characteristics of the typical IBMi Initiator that
-supports 32 LUNs and a queue depth of 32.
+tlb_remove_huge_tlb_entry only considers PMD_SIZE and PUD_SIZE when
+updating the mmu_gather structure.
 
-This change also has the secondary benefit of being a power of two as
-required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
-"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
-target has been rounded down to 512 when attempting to kfifo_init() those
-pools with the current request_limit size of 800.
+Unfortunately on arm64 there are two additional huge page sizes that
+need to be covered: CONT_PTE_SIZE and CONT_PMD_SIZE. Where an end-user
+attempts to employ contiguous huge pages, a VM_BUG_ON can be experienced
+due to the fact that the tlb structure hasn't been correctly updated by
+the relevant tlb_flush_p.._range() call from tlb_remove_huge_tlb_entry.
 
-Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
-Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This patch adds inequality logic to the generic implementation of
+tlb_remove_huge_tlb_entry s.t. CONT_PTE_SIZE and CONT_PMD_SIZE are
+effectively covered on arm64. Also, as well as ptes, pmds and puds;
+p4ds are now considered too.
+
+Reported-by: David Hildenbrand <david@redhat.com>
+Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/linux-mm/811c5c8e-b3a2-85d2-049c-717f17c3a03a@redhat.com/
+Signed-off-by: Steve Capper <steve.capper@arm.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220330112543.863-1-steve.capper@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/asm-generic/tlb.h | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-index cc3908c2d2f9..a3431485def8 100644
---- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-+++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-@@ -35,7 +35,7 @@
- 
- #define IBMVSCSIS_VERSION	"v0.2"
- 
--#define	INITIAL_SRP_LIMIT	800
-+#define	INITIAL_SRP_LIMIT	1024
- #define	DEFAULT_MAX_SECTORS	256
- #define MAX_TXU			1024 * 1024
+diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+index 6661ee1cff47..a0c4b99d2899 100644
+--- a/include/asm-generic/tlb.h
++++ b/include/asm-generic/tlb.h
+@@ -563,10 +563,14 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
+ #define tlb_remove_huge_tlb_entry(h, tlb, ptep, address)	\
+ 	do {							\
+ 		unsigned long _sz = huge_page_size(h);		\
+-		if (_sz == PMD_SIZE)				\
+-			tlb_flush_pmd_range(tlb, address, _sz);	\
+-		else if (_sz == PUD_SIZE)			\
++		if (_sz >= P4D_SIZE)				\
++			tlb_flush_p4d_range(tlb, address, _sz);	\
++		else if (_sz >= PUD_SIZE)			\
+ 			tlb_flush_pud_range(tlb, address, _sz);	\
++		else if (_sz >= PMD_SIZE)			\
++			tlb_flush_pmd_range(tlb, address, _sz);	\
++		else						\
++			tlb_flush_pte_range(tlb, address, _sz);	\
+ 		__tlb_remove_tlb_entry(tlb, ptep, address);	\
+ 	} while (0)
  
 -- 
 2.35.1
