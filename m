@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A45C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F368C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352610AbiDLHFp (ORCPT
+        id S1352508AbiDLHFg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        Tue, 12 Apr 2022 03:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351693AbiDLGyM (ORCPT
+        with ESMTP id S1351675AbiDLGyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBAC381B8;
-        Mon, 11 Apr 2022 23:43:34 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8BA3818D;
+        Mon, 11 Apr 2022 23:43:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90CEF6066C;
-        Tue, 12 Apr 2022 06:43:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A93D3C385A1;
-        Tue, 12 Apr 2022 06:43:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1F49DCE1C07;
+        Tue, 12 Apr 2022 06:43:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C1F7C385A1;
+        Tue, 12 Apr 2022 06:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745813;
-        bh=1sLZ0yNT1HQT11YNTpxRT/Kai97X1dQ3iApND9rJu4w=;
+        s=korg; t=1649745807;
+        bh=2Lmy5BWtN6cg/yToOVXfhNfL68kEcVZK7xgZJjL4nco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BTfFCVStAgeg1Jc1iJztyWcLBNR3uHDUq89fG42Nvvn811gnXPCUEQqBCVGs9NTi0
-         xfR8U6tRwEprgtBmnYM0i44rkA7HoTRO/O6IbJNUqGFRQbvfaq8mOKOSoJzo05/YeP
-         iTSwzcMSuWd8Js5rkT4cvlV5lrsKMqqrkef8RRFs=
+        b=jYCW3yhBS5EyKcnJIBuqcu5+Oi5vqXETygRPVavx6FUZ724GH+60MjQPDlpYhtL3B
+         N0Jp29dunjSZQZ8mXUovN3yBtTwaxXA/Ipj2eAY+N4oyzkW+YGI1AGs45YLtjbKff+
+         7gAuVPcOOjVtYMmHcnp71/SqtDiK96mftr+y8Y5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 007/277] nbd: fix possible overflow on first_minor in nbd_dev_add()
-Date:   Tue, 12 Apr 2022 08:26:50 +0200
-Message-Id: <20220412062942.244242820@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 015/277] KVM: x86/emulator: Emulate RDPID only if it is enabled in guest
+Date:   Tue, 12 Apr 2022 08:26:58 +0200
+Message-Id: <20220412062942.478850015@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,70 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Hou Wenlong <houwenlong.hwl@antgroup.com>
 
-[ Upstream commit 6d35d04a9e18990040e87d2bbf72689252669d54 ]
+[ Upstream commit a836839cbfe60dc434c5476a7429cf2bae36415d ]
 
-When 'index' is a big numbers, it may become negative which forced
-to 'int'. then 'index << part_shift' might overflow to a positive
-value that is not greater than '0xfffff', then sysfs might complains
-about duplicate creation. Because of this, move the 'index' judgment
-to the front will fix it and be better.
+When RDTSCP is supported but RDPID is not supported in host,
+RDPID emulation is available. However, __kvm_get_msr() would
+only fail when RDTSCP/RDPID both are disabled in guest, so
+the emulator wouldn't inject a #UD when RDPID is disabled but
+RDTSCP is enabled in guest.
 
-Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
-Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220310093224.4002895-1-zhangwensheng5@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: fb6d4d340e05 ("KVM: x86: emulate RDPID")
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Message-Id: <1dfd46ae5b76d3ed87bde3154d51c64ea64c99c1.1646226788.git.houwenlong.hwl@antgroup.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ arch/x86/kvm/emulate.c     | 4 +++-
+ arch/x86/kvm/kvm_emulate.h | 1 +
+ arch/x86/kvm/x86.c         | 6 ++++++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 582b23befb5c..1c62262304be 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1744,17 +1744,6 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
- 	refcount_set(&nbd->refs, 0);
- 	INIT_LIST_HEAD(&nbd->list);
- 	disk->major = NBD_MAJOR;
--
--	/* Too big first_minor can cause duplicate creation of
--	 * sysfs files/links, since index << part_shift might overflow, or
--	 * MKDEV() expect that the max bits of first_minor is 20.
--	 */
--	disk->first_minor = index << part_shift;
--	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
--		err = -EINVAL;
--		goto out_free_work;
--	}
--
- 	disk->minors = 1 << part_shift;
- 	disk->fops = &nbd_fops;
- 	disk->private_data = nbd;
-@@ -1859,8 +1848,19 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
- 		return -EPERM;
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 4cf0938a876b..3747a754a8e8 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -3514,8 +3514,10 @@ static int em_rdpid(struct x86_emulate_ctxt *ctxt)
+ {
+ 	u64 tsc_aux = 0;
  
--	if (info->attrs[NBD_ATTR_INDEX])
-+	if (info->attrs[NBD_ATTR_INDEX]) {
- 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
+-	if (ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux))
++	if (!ctxt->ops->guest_has_rdpid(ctxt))
+ 		return emulate_ud(ctxt);
 +
-+		/*
-+		 * Too big first_minor can cause duplicate creation of
-+		 * sysfs files/links, since index << part_shift might overflow, or
-+		 * MKDEV() expect that the max bits of first_minor is 20.
-+		 */
-+		if (index < 0 || index > MINORMASK >> part_shift) {
-+			printk(KERN_ERR "nbd: illegal input index %d\n", index);
-+			return -EINVAL;
-+		}
-+	}
- 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
- 		printk(KERN_ERR "nbd: must specify at least one socket\n");
- 		return -EINVAL;
++	ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux);
+ 	ctxt->dst.val = tsc_aux;
+ 	return X86EMUL_CONTINUE;
+ }
+diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
+index 68b420289d7e..fb09cd22cb7f 100644
+--- a/arch/x86/kvm/kvm_emulate.h
++++ b/arch/x86/kvm/kvm_emulate.h
+@@ -226,6 +226,7 @@ struct x86_emulate_ops {
+ 	bool (*guest_has_long_mode)(struct x86_emulate_ctxt *ctxt);
+ 	bool (*guest_has_movbe)(struct x86_emulate_ctxt *ctxt);
+ 	bool (*guest_has_fxsr)(struct x86_emulate_ctxt *ctxt);
++	bool (*guest_has_rdpid)(struct x86_emulate_ctxt *ctxt);
+ 
+ 	void (*set_nmi_mask)(struct x86_emulate_ctxt *ctxt, bool masked);
+ 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 3e606a6940dc..5e2983959f23 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -7393,6 +7393,11 @@ static bool emulator_guest_has_fxsr(struct x86_emulate_ctxt *ctxt)
+ 	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_FXSR);
+ }
+ 
++static bool emulator_guest_has_rdpid(struct x86_emulate_ctxt *ctxt)
++{
++	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_RDPID);
++}
++
+ static ulong emulator_read_gpr(struct x86_emulate_ctxt *ctxt, unsigned reg)
+ {
+ 	return kvm_register_read_raw(emul_to_vcpu(ctxt), reg);
+@@ -7475,6 +7480,7 @@ static const struct x86_emulate_ops emulate_ops = {
+ 	.guest_has_long_mode = emulator_guest_has_long_mode,
+ 	.guest_has_movbe     = emulator_guest_has_movbe,
+ 	.guest_has_fxsr      = emulator_guest_has_fxsr,
++	.guest_has_rdpid     = emulator_guest_has_rdpid,
+ 	.set_nmi_mask        = emulator_set_nmi_mask,
+ 	.get_hflags          = emulator_get_hflags,
+ 	.exiting_smm         = emulator_exiting_smm,
 -- 
 2.35.1
 
