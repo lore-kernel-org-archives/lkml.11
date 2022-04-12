@@ -2,135 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A665C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE33C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357686AbiDLJ1T (ORCPT
+        id S1359236AbiDLJ1o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
+        Tue, 12 Apr 2022 05:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356547AbiDLIKm (ORCPT
+        with ESMTP id S1356506AbiDLIKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:10:42 -0400
-Received: from outback2o.mail.yandex.net (outback2o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::502])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3D8EC
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:42:21 -0700 (PDT)
-Received: from iva4-4ce3b18c8342.qloud-c.yandex.net (iva4-4ce3b18c8342.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:1529:0:640:4ce3:b18c])
-        by outback2o.mail.yandex.net (Yandex) with ESMTP id 905F34F7EB76;
-        Tue, 12 Apr 2022 10:40:15 +0300 (MSK)
-Received: from kernel1.search.yandex.net (kernel1.search.yandex.net [2a02:6b8:c02:550:0:604:9094:6282])
-        by iva4-4ce3b18c8342.qloud-c.yandex.net (yaback/Yandex) with ESMTP id 0nC9bRUin2-eEO09gUj;
-        Tue, 12 Apr 2022 10:40:14 +0300
-X-Yandex-Fwd: 1
-Authentication-Results: iva4-4ce3b18c8342.qloud-c.yandex.net; dkim=pass
-Received: by kernel1.search.yandex.net (Postfix, from userid 55271)
-        id 030F05068E0; Tue, 12 Apr 2022 10:40:13 +0300 (MSK)
-From:   Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-To:     linux-kernel@vger.kernel.org
-Cc:     x86@kernel.org, mingo@redhat.com,
-        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-Subject: [PATCH 1/2] x86/unwind/orc: recheck address range after stack info was updated
-Date:   Tue, 12 Apr 2022 10:40:03 +0300
-Message-Id: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
-X-Mailer: git-send-email 2.7.4
+        Tue, 12 Apr 2022 04:10:37 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE8727A;
+        Tue, 12 Apr 2022 00:41:17 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KcyJp6drzzFpnS;
+        Tue, 12 Apr 2022 15:38:50 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 15:41:14 +0800
+CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>
+Subject: Re: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and
+ Trace device driver
+To:     John Garry <john.garry@huawei.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-6-yangyicong@hisilicon.com>
+ <276c24d2-daf5-5eba-26b9-55edd4a45537@huawei.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <e2b7484b-eb15-029c-b1e1-4831368f61c9@huawei.com>
+Date:   Tue, 12 Apr 2022 15:41:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
+MIME-Version: 1.0
+In-Reply-To: <276c24d2-daf5-5eba-26b9-55edd4a45537@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-get_stack_info() detects stack type only by begin address, so we must
-check that address range in question is fully covered by detected stack
+On 2022/4/12 1:19, John Garry wrote:
+> On 07/04/2022 13:58, Yicong Yang wrote:
+>> From: Qi Liu <liuqi115@huawei.com>
+>>
+>> 'perf record' and 'perf report --dump-raw-trace' supported in this
+>> patch.
+>>
+>> Example usage:
+>>
+>> Output will contain raw PTT data and its textual representation, such
+>> as:
+>>
+>> 0 0 0x5810 [0x30]: PERF_RECORD_AUXTRACE size: 0x400000  offset: 0
+>> ref: 0xa5d50c725  idx: 0  tid: -1  cpu: 0
+>> .
+>> . ... HISI PTT data: size 4194304 bytes
+>> .  00000000: 00 00 00 00                                 Prefix
+>> .  00000004: 08 20 00 60                                 Header DW0
+>> .  00000008: ff 02 00 01                                 Header DW1
+>> .  0000000c: 20 08 00 00                                 Header DW2
+>> .  00000010: 10 e7 44 ab                                 Header DW3
+>> .  00000014: 2a a8 1e 01                                 Time
+>> .  00000020: 00 00 00 00                                 Prefix
+>> .  00000024: 01 00 00 60                                 Header DW0
+>> .  00000028: 0f 1e 00 01                                 Header DW1
+>> .  0000002c: 04 00 00 00                                 Header DW2
+>> .  00000030: 40 00 81 02                                 Header DW3
+>> .  00000034: ee 02 00 00                                 Time
+>> ....
+>>
+>> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>> ---
+>>   tools/perf/arch/arm/util/auxtrace.c           |  76 +++++-
+>>   tools/perf/arch/arm/util/pmu.c                |   3 +
+>>   tools/perf/arch/arm64/util/Build              |   2 +-
+>>   tools/perf/arch/arm64/util/hisi_ptt.c         | 195 ++++++++++++++++
+>>   tools/perf/util/Build                         |   2 +
+>>   tools/perf/util/auxtrace.c                    |   4 +
+>>   tools/perf/util/auxtrace.h                    |   1 +
+>>   tools/perf/util/hisi-ptt-decoder/Build        |   1 +
+>>   .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   | 170 ++++++++++++++
+>>   .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |  28 +++
+>>   tools/perf/util/hisi_ptt.c                    | 218 ++++++++++++++++++
+>>   tools/perf/util/hisi_ptt.h                    |  28 +++
+>>   12 files changed, 724 insertions(+), 4 deletions(-)
+>>   create mode 100644 tools/perf/arch/arm64/util/hisi_ptt.c
+>>   create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
+>>   create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+>>   create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+>>   create mode 100644 tools/perf/util/hisi_ptt.c
+>>   create mode 100644 tools/perf/util/hisi_ptt.h
+>>
+>> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+>> index 5fc6a2a3dbc5..393f5757c039 100644
+>> --- a/tools/perf/arch/arm/util/auxtrace.c
+>> +++ b/tools/perf/arch/arm/util/auxtrace.c
+>> @@ -4,9 +4,11 @@
+>>    * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
+>>    */
+>>   +#include <dirent.h>
+>>   #include <stdbool.h>
+>>   #include <linux/coresight-pmu.h>
+>>   #include <linux/zalloc.h>
+>> +#include <api/fs/fs.h>
+>>     #include "../../../util/auxtrace.h"
+>>   #include "../../../util/debug.h"
+>> @@ -14,6 +16,7 @@
+>>   #include "../../../util/pmu.h"
+>>   #include "cs-etm.h"
+>>   #include "arm-spe.h"
+>> +#include "hisi_ptt.h"
+>>     static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+>>   {
+>> @@ -50,6 +53,58 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+>>       return arm_spe_pmus;
+>>   }
+>>   +static struct perf_pmu **find_all_hisi_ptt_pmus(int *nr_ptts, int *err)
+>> +{
+>> +    const char *sysfs = sysfs__mountpoint();
+>> +    struct perf_pmu **hisi_ptt_pmus = NULL;
+>> +    struct dirent *dent;
+>> +    char path[PATH_MAX];
+>> +    DIR *dir = NULL;
+>> +    int idx = 0;
+>> +
+>> +    snprintf(path, PATH_MAX, "%s" EVENT_SOURCE_DEVICE_PATH, sysfs);
+>> +    dir = opendir(path);
+>> +    if (!dir) {
+>> +        pr_err("can't read directory '%s'\n", EVENT_SOURCE_DEVICE_PATH);
+>> +        *err = -EINVAL;
+>> +        goto out;
+>> +    }
+>> +
+>> +    while ((dent = readdir(dir))) {
+>> +        if (strstr(dent->d_name, HISI_PTT_PMU_NAME))
+>> +            (*nr_ptts)++;
+>> +    }
+>> +
+>> +    if (!(*nr_ptts))
+>> +        goto out;
+>> +
+>> +    hisi_ptt_pmus = zalloc(sizeof(struct perf_pmu *) * (*nr_ptts));
+>> +    if (!hisi_ptt_pmus) {
+>> +        pr_err("hisi_ptt alloc failed\n");
+>> +        *err = -ENOMEM;
+> 
+> using PTR_ERR seems better, if possible
+> 
 
-Otherwise following crash is possible:
--> unwind_next_frame
-   case ORC_TYPE_REGS:
-     if (!deref_stack_regs(state, sp, &state->ip, &state->sp))
-     -> deref_stack_regs
-       -> stack_access_ok  <- here addr is inside stack range, but addr+len-1 is not, but we still exit with success
-     *ip = READ_ONCE_NOCHECK(regs->ip); <- Here we hit stack guard fault
-OOPS LOG:
-<0>[ 1941.845743] BUG: stack guard page was hit at 000000000dd984a2 (stack is 00000000d1caafca..00000000613712f0)
-<4>[ 1941.845744] kernel stack overflow (page fault): 0000 [#1] SMP NOPTI
-<4>[ 1941.845744] CPU: 93 PID: 23787 Comm: context_switch1 Not tainted 5.4.145 #1
-<4>[ 1941.845745] Hardware name: XXXXXXXXXXXXXX
-<4>[ 1941.845746] RIP: 0010:unwind_next_frame+0x311/0x5b0
-<4>[ 1941.845746] Code: 01 0f 84 f6 01 00 00 0f 83 cc fe ff ff e9 f9 fe ff ff ba a8 00 00 00 4c 89 fe 48 89 df e8 57 fa ff ff 84 c0 0f 84 d9 00 00 00 <49> 8b 87 80 00 00 00 48 89 43 48 49 8b 87 98 00 00 00 4c 89 7b 50
-<4>[ 1941.845747] RSP: 0018:fffffe00012908f0 EFLAGS: 00010002
-<4>[ 1941.845748] RAX: 0000000000000001 RBX: fffffe0001290930 RCX: 0000000000000001
-<4>[ 1941.845748] RDX: 0000000000000002 RSI: ffff893d94719e80 RDI: ffffc9001b9d7fc8
-<4>[ 1941.845748] RBP: 0000000000000004 R08: ffffffff81a009bf R09: ffffffff824c7c20
-<4>[ 1941.845749] R10: ffffffff824c7c1c R11: 0000000000000023 R12: ffffffff826c9cde
-<4>[ 1941.845749] R13: ffffffff81a009d2 R14: fffffe0001289ff0 R15: ffffc9001b9d7fc8
-<4>[ 1941.845749] FS:  00007f57ff9aa700(0000) GS:ffff893f6f140000(0000) knlGS:0000000000000000
-<4>[ 1941.845750] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-<4>[ 1941.845750] CR2: ffffc9001b9d8048 CR3: 000000bcd3936000 CR4: 0000000000340ee0
-<4>[ 1941.845750] Call Trace:
-<4>[ 1941.845750]  <NMI>
-<4>[ 1941.845751]  perf_callchain_kernel+0x12b/0x140
-<4>[ 1941.845751]  ? interrupt_entry+0xb2/0xc0
-<4>[ 1941.845751]  get_perf_callchain+0x10d/0x280
-<4>[ 1941.845751]  perf_callchain+0x6e/0x80
-<4>[ 1941.845752]  perf_prepare_sample+0x87/0x540
-<4>[ 1941.845752]  perf_event_output_forward+0x31/0x90
-<4>[ 1941.845752]  ? sched_clock+0x5/0x10
-<4>[ 1941.845752]  ? sched_clock_cpu+0xc/0xb0
-<4>[ 1941.845753]  ? arch_perf_update_userpage+0xd0/0xe0
-<4>[ 1941.845753]  ? sched_clock+0x5/0x10
-<4>[ 1941.845753]  ? sched_clock_cpu+0xc/0xb0
-<4>[ 1941.845753]  __perf_event_overflow+0x5a/0xf0
-<4>[ 1941.845754]  perf_ibs_handle_irq+0x340/0x5b0
-<4>[ 1941.845754]  ? interrupt_entry+0xb2/0xc0
-<4>[ 1941.845754]  ? interrupt_entry+0xb2/0xc0
-<4>[ 1941.845754]  ? __set_pte_vaddr+0x28/0x40
-<4>[ 1941.845755]  ? __set_pte_vaddr+0x28/0x40
-<4>[ 1941.845755]  ? set_pte_vaddr+0x3c/0x60
-<4>[ 1941.845755]  ? __native_set_fixmap+0x24/0x30
-<4>[ 1941.845755]  ? native_set_fixmap+0x3c/0xb0
-<4>[ 1941.845756]  ? ghes_copy_tofrom_phys+0x98/0x130
-<4>[ 1941.845756]  ? interrupt_entry+0xb2/0xc0
-<4>[ 1941.845756]  ? __ghes_peek_estatus.isra.16+0x49/0xb0
-<4>[ 1941.845756]  ? perf_ibs_nmi_handler+0x34/0x60
-<4>[ 1941.845757]  ? sched_clock+0x5/0x10
-<4>[ 1941.845757]  perf_ibs_nmi_handler+0x34/0x60
-<4>[ 1941.845757]  nmi_handle+0x79/0x190
-<4>[ 1941.845757]  default_do_nmi+0x3e/0x110
-<4>[ 1941.845758]  do_nmi+0x18d/0x1e0
-<4>[ 1941.845758]  end_repeat_nmi+0x16/0x50
-<4>[ 1941.845758] RIP: 0010:syscall_return_via_sysret+0x26/0x7f
-<4>[ 1941.845759] Code: 3e 09 00 00 41 5f 41 5e 41 5d 41 5c 5d 5b 5e 41 5a 41 59 41 58 58 5e 5a 5e 48 89 e7 65 48 8b 24 25 04 60 00 00 ff 77 28 ff 37 <50> eb 43 0f 20 df eb 34 48 89 f8 48 81 e7 ff 07 00 00 65 48 0f a3
-<4>[ 1941.845759] RSP: 0018:fffffe0001289ff0 EFLAGS: 00000046
-<4>[ 1941.845760] RAX: 0000000000000001 RBX: 0000559a21ff71d0 RCX: 00007f57ff286260
-<4>[ 1941.845760] RDX: 0000000000000001 RSI: 00007ffe43dc3d17 RDI: ffffc9001b9d7fc8
-<4>[ 1941.845760] RBP: 00007ffe43dc3d17 R08: 0000000000005ceb R09: 00007f57ff9aa700
-<4>[ 1941.845761] R10: 00007f57ff9aa9d0 R11: 0000000000000246 R12: 00007f57ff9aa698
-<4>[ 1941.845761] R13: 00007f57ff9b5d00 R14: 0000559a1d5bb070 R15: 0000000000000005
-<4>[ 1941.845761]  ? syscall_return_via_sysret+0x26/0x7f
-<4>[ 1941.845761]  ? syscall_return_via_sysret+0x26/0x7f
-<4>[ 1941.845762]  </NMI>
-<4>[ 1941.845762]  <ENTRY_TRAMPOLINE>
-<4>[ 1941.845762]  </ENTRY_TRAMPOLINE>
-<4>[ 1941.845762] Modules linked in: unix_diag ip6table_filter sch_fq_codel tcp_diag inet_diag act_police act_gact cls_u32 sch_ingress netconsole configfs 8021q garp stp mrp llc amd64_edac_mod edac_mce_amd ghash_clmulni_intel ipmi_ssif ipmi_si ipmi_devintf ipmi_msghandler sp5100_tco i2c_piix4 k10temp tcp_htcp tcp_bbr kvm_amd ccp kvm irqbypass mpls_gso mpls_iptunnel mpls_router fou6 fou ip_tunnel ip6_udp_tunnel udp_tunnel mlx4_en mlx4_core dummy msr ip6_tables ip_tables x_tables ip6_tunnel tunnel6 nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear ast drm_vram_helper i2c_algo_bit mlx5_core drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops mlxfw ttm pci_hyperv_intf tls drm
+ok will change to that. *err = -ENOMEM is used here to keep consistence with
+what spe does.
 
-Signed-off-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
----
- arch/x86/kernel/unwind_orc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+>> +        goto out;
+>> +    }
+>> +
+>> +    rewinddir(dir);
+>> +    while ((dent = readdir(dir))) {
+>> +        if (strstr(dent->d_name, HISI_PTT_PMU_NAME) && idx < (*nr_ptts)) {
+>> +            hisi_ptt_pmus[idx] = perf_pmu__find(dent->d_name);
+>> +            if (hisi_ptt_pmus[idx]) {
+>> +                pr_debug2("%s %d: hisi_ptt_pmu %d type %d name %s\n",
+> 
+> do you really need this?
+> 
 
-diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
-index 794fdef2501a..80b878772b86 100644
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -343,7 +343,9 @@ static bool stack_access_ok(struct unwind_state *state, unsigned long _addr,
- 	    (get_stack_info(addr, state->task, info, &state->stack_mask)))
- 		return false;
- 
--	return true;
-+	/* Recheck range after stack info was updated */
-+	return on_stack(info, addr, len);
-+
- }
- 
- static bool deref_stack_reg(struct unwind_state *state, unsigned long addr,
--- 
-2.7.4
+I asked Qi maybe it's unnecessary, but to keep consistence like arm spe.
+
+>> +                    __func__, __LINE__, idx,
+>> +                    hisi_ptt_pmus[idx]->type,
+>> +                    hisi_ptt_pmus[idx]->name);
+>> +                    idx++;
+>> +            }
+>> +
+>> +        }
+>> +    }
+>> +
+>> +out:
+>> +    closedir(dir);
+>> +    return hisi_ptt_pmus;
+>> +}
+>> +
+>>   struct auxtrace_record
+>>   *auxtrace_record__init(struct evlist *evlist, int *err)
+>>   {
+>> @@ -57,8 +112,12 @@ struct auxtrace_record
+>>       struct evsel *evsel;
+>>       bool found_etm = false;
+>>       struct perf_pmu *found_spe = NULL;
+>> +    struct perf_pmu *found_ptt = NULL;
+>>       struct perf_pmu **arm_spe_pmus = NULL;
+>> +    struct perf_pmu **hisi_ptt_pmus = NULL;
+>> +
+>>       int nr_spes = 0;
+>> +    int nr_ptts = 0;
+>>       int i = 0;
+>>         if (!evlist)
+>> @@ -66,13 +125,14 @@ struct auxtrace_record
+>>         cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
+>>       arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>> +    hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
+>>         evlist__for_each_entry(evlist, evsel) {
+>>           if (cs_etm_pmu &&
+>>               evsel->core.attr.type == cs_etm_pmu->type)
+>>               found_etm = true;
+>>   -        if (!nr_spes || found_spe)
+>> +        if ((!nr_spes || found_spe) && (!nr_ptts || found_ptt))
+>>               continue;
+>>             for (i = 0; i < nr_spes; i++) {
+>> @@ -81,11 +141,18 @@ struct auxtrace_record
+>>                   break;
+>>               }
+>>           }
+>> +
+>> +        for (i = 0; i < nr_ptts; i++) {
+>> +            if (evsel->core.attr.type == hisi_ptt_pmus[i]->type) {
+>> +                found_ptt = hisi_ptt_pmus[i];
+>> +                break;
+>> +            }
+>> +        }
+>>       }
+>>       free(arm_spe_pmus);
+> 
+> do you need to do something similar for hisi ptt?
+> 
+
+thanks for catching this. it's missed. will fix.
+
+>>   -    if (found_etm && found_spe) {
+>> -        pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+>> +    if (found_etm && found_spe && found_ptt) {
+>> +        pr_err("Concurrent ARM Coresight ETM ,SPE and HiSilicon PCIe Trace operation not currently supported\n");
+>>           *err = -EOPNOTSUPP;
+>>           return NULL;
+>>       }
+>> @@ -96,6 +163,9 @@ struct auxtrace_record
+>>   #if defined(__aarch64__)
+>>       if (found_spe)
+>>           return arm_spe_recording_init(err, found_spe);
+>> +
+>> +    if (found_ptt)
+>> +        return hisi_ptt_recording_init(err, found_ptt);
+>>   #endif
+>>         /*
+>> diff --git a/tools/perf/arch/arm/util/pmu.c b/tools/perf/arch/arm/util/pmu.c
+>> index b8b23b9dc598..89a3cedb4557 100644
+>> --- a/tools/perf/arch/arm/util/pmu.c
+>> +++ b/tools/perf/arch/arm/util/pmu.c
+>> @@ -10,6 +10,7 @@
+>>   #include <linux/string.h>
+>>     #include "arm-spe.h"
+>> +#include "hisi_ptt.h"
+>>   #include "../../../util/pmu.h"
+>>     struct perf_event_attr
+>> @@ -22,6 +23,8 @@ struct perf_event_attr
+>>   #if defined(__aarch64__)
+>>       } else if (strstarts(pmu->name, ARM_SPE_PMU_NAME)) {
+>>           return arm_spe_pmu_default_config(pmu);
+>> +    } else if (strstarts(pmu->name, HISI_PTT_PMU_NAME)) {
+>> +        pmu->selectable = true;
+>>   #endif
+>>       }
+>>   diff --git a/tools/perf/arch/arm64/util/Build b/tools/perf/arch/arm64/util/Build
+>> index 9fcb4e68add9..8b7fd1dc9f37 100644
+>> --- a/tools/perf/arch/arm64/util/Build
+>> +++ b/tools/perf/arch/arm64/util/Build
+>> @@ -11,4 +11,4 @@ perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
+>>   perf-$(CONFIG_AUXTRACE) += ../../arm/util/pmu.o \
+>>                     ../../arm/util/auxtrace.o \
+>>                     ../../arm/util/cs-etm.o \
+>> -                  arm-spe.o mem-events.o
+>> +                  arm-spe.o mem-events.o hisi_ptt.o
+> 
+> nit: others use '-' in the name
+> 
+
+will follow the convention.
+
+> 
+> I'll check the rest tomorrow.
+
+Thanks,
+Yicong
+
 
