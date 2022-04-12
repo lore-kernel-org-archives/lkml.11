@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B220EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B12CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350876AbiDLHJQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
+        id S244952AbiDLHJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351906AbiDLGyk (ORCPT
+        with ESMTP id S1351939AbiDLGyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE0C2E089;
-        Mon, 11 Apr 2022 23:44:17 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F752F39C;
+        Mon, 11 Apr 2022 23:44:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E005B81B49;
-        Tue, 12 Apr 2022 06:44:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 729F8C385A6;
-        Tue, 12 Apr 2022 06:44:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A9666066C;
+        Tue, 12 Apr 2022 06:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17125C385A6;
+        Tue, 12 Apr 2022 06:44:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745854;
-        bh=xzKKvEPIb9KjNF/wwMwEYc2tMJfBK/HAkE92Z6kXDEo=;
+        s=korg; t=1649745880;
+        bh=0j51b2k5USNEgRfbIAqo46KnmXhRxmSxnwI1iI9Vohc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xjWN075Ox/n7rF2vQKH7aqrLyXVNXimodONtU8lVXRccjReArdNpOXah1tZYjHD8D
-         y08YISjVSya0PwO1ZRw30cROiPUZan3MX7oGy7/XlrFUFR7SS0XT7rCUFaR4e81VoK
-         j2VeD7QRILoDldGct3/45Qw2H8e9duCBtqy0MaMc=
+        b=nmpq9BXe6h9CbwxpNy3Zps2jwuk8zvVU3dl5BQVRP4TTntr7Seiy1ayrxSpvBYI+4
+         P7WsA4abJf7FRxy+Eo+1+Cxjik0tbvMDieEjTgOnpX4HNDS92LxDi/YMrop8lyzf2s
+         W2VaMHBerOeuiNFz34yRe09R6D1s5+eUIFx5pK1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 072/277] mt76: mt7915: fix injected MPDU transmission to not use HW A-MSDU
-Date:   Tue, 12 Apr 2022 08:27:55 +0200
-Message-Id: <20220412062944.130405039@linuxfoundation.org>
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Sven Eckelmann <sven@narfation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 080/277] macvtap: advertise link netns via netlink
+Date:   Tue, 12 Apr 2022 08:28:03 +0200
+Message-Id: <20220412062944.364396880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,46 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 28225a6ef80ebf46c46e5fbd5b1ee231a0b2b5b7 ]
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-Before, the hardware would be allowed to transmit injected 802.11 MPDUs
-as A-MSDU. This resulted in corrupted frames being transmitted. Now,
-injected MPDUs are transmitted as-is, without A-MSDU.
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-The fix was verified with frame injection on MT7915 hardware, both with
-and without the injected frame being encrypted.
+Test commands:
 
-If the hardware cannot do A-MSDU aggregation on MPDUs, this problem
-would also be present in the TX path where mac80211 does the 802.11
-encapsulation. However, I have not observed any such problem when
-disabling IEEE80211_HW_SUPPORTS_TX_ENCAP_OFFLOAD to force that mode.
-Therefore this fix is isolated to injected frames only.
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
 
-The same A-MSDU logic is also present in the mt7921 driver, so it is
-likely that this fix should be applied there too. I do not have access
-to mt7921 hardware so I have not been able to test that.
+Before:
 
-Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
+
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index ff613d705611..7691292526e0 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -899,6 +899,7 @@ mt7915_mac_write_txwi_80211(struct mt7915_dev *dev, __le32 *txwi,
- 		val = MT_TXD3_SN_VALID |
- 		      FIELD_PREP(MT_TXD3_SEQ, IEEE80211_SEQ_TO_SN(seqno));
- 		txwi[3] |= cpu_to_le32(val);
-+		txwi[7] &= ~cpu_to_le32(MT_TXD7_HW_AMSDU);
- 	}
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 694e2f5dbbe5..39801c31e507 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
+ }
  
- 	val = FIELD_PREP(MT_TXD7_TYPE, fc_type) |
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
+ 
 -- 
 2.35.1
 
