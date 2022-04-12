@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB20C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550A4C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354861AbiDLIzr (ORCPT
+        id S1356229AbiDLI4E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        Tue, 12 Apr 2022 04:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359405AbiDLHnB (ORCPT
+        with ESMTP id S1359410AbiDLHnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:43:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E333A2CE0A;
-        Tue, 12 Apr 2022 00:22:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E232C11F;
+        Tue, 12 Apr 2022 00:22:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80013616B2;
-        Tue, 12 Apr 2022 07:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B754C385A5;
-        Tue, 12 Apr 2022 07:22:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C4376153F;
+        Tue, 12 Apr 2022 07:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FD39C385A1;
+        Tue, 12 Apr 2022 07:22:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748157;
-        bh=PYNQeBE5FIvK7ttjTSwyhrldUg+LR6Jt9gF2vnHvEZc=;
+        s=korg; t=1649748171;
+        bh=2R3Jg6wuXoD3K4IfpFwi6Rua3esT/XHSYiQeLfWGfd4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2S8NPbnFTJx2Mjw+EPfbBfSfn4vCkcRGjyyYXjsIsiyx+HzlVAS5JStJ3JP/jZ9/E
-         RSOBhln0oxrqWMbCdoescdD40BT8S0TsQiNSgzPtPsCawAQFz4IefvA1ItYiSaLhTh
-         W4m+qoO8wYxNDkiWdtciTyu+7jZLIErgtl6Lb9w0=
+        b=I+LzTD1xcfleitD28IwW1X+U+9QMweDkDl2BkmHJCTTDLLbfgGba6wwuIJ6AogXqW
+         lWqNNTPYMzR416syDqGfIFMOOvn7l66s1UPFLiDOaXqLe+48eDQDwE/Li48ARzVJgL
+         iu2g4IaQDn0wSUO5Fi5da9Tny+X/iK9YSDYUsNZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 5.17 323/343] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
-Date:   Tue, 12 Apr 2022 08:32:21 +0200
-Message-Id: <20220412063000.643931062@linuxfoundation.org>
+        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
+        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.17 325/343] KVM: avoid NULL pointer dereference in kvm_dirty_ring_push
+Date:   Tue, 12 Apr 2022 08:32:23 +0200
+Message-Id: <20220412063000.702105259@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -58,48 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
+commit 5593473a1e6c743764b08e3b6071cb43b5cfa6c4 upstream.
 
-Just like its done for ldopts and for both in tools/perf/Makefile.config.
+kvm_vcpu_release() will call kvm_dirty_ring_free(), freeing
+ring->dirty_gfns and setting it to NULL.  Afterwards, it calls
+kvm_arch_vcpu_destroy().
 
-Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
+However, if closing the file descriptor races with KVM_RUN in such away
+that vcpu->arch.st.preempted == 0, the following call stack leads to a
+NULL pointer dereference in kvm_dirty_run_push():
 
-  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
+ mark_page_dirty_in_slot+0x192/0x270 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3171
+ kvm_steal_time_set_preempted arch/x86/kvm/x86.c:4600 [inline]
+ kvm_arch_vcpu_put+0x34e/0x5b0 arch/x86/kvm/x86.c:4618
+ vcpu_put+0x1b/0x70 arch/x86/kvm/../../../virt/kvm/kvm_main.c:211
+ vmx_free_vcpu+0xcb/0x130 arch/x86/kvm/vmx/vmx.c:6985
+ kvm_arch_vcpu_destroy+0x76/0x290 arch/x86/kvm/x86.c:11219
+ kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
 
-And we need to do it to allow for building with versions of clang where
-some gcc options selected by distros are not available.
+The fix is to release the dirty page ring after kvm_arch_vcpu_destroy
+has run.
 
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Reported-by: Qiuhao Li <qiuhao@sysec.org>
+Reported-by: Gaoning Pan <pgn@zju.edu.cn>
+Reported-by: Yongkang Jia <kangel@zju.edu.cn>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/build/feature/Makefile |    2 +-
+ virt/kvm/kvm_main.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -217,7 +217,7 @@ strip-libs = $(filter-out -l%,$(1))
- PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
- PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
- PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
--PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
-+PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -439,8 +439,8 @@ static void kvm_vcpu_init(struct kvm_vcp
  
- ifeq ($(CC_NO_CLANG), 0)
+ static void kvm_vcpu_destroy(struct kvm_vcpu *vcpu)
+ {
+-	kvm_dirty_ring_free(&vcpu->dirty_ring);
+ 	kvm_arch_vcpu_destroy(vcpu);
++	kvm_dirty_ring_free(&vcpu->dirty_ring);
+ 
+ 	/*
+ 	 * No need for rcu_read_lock as VCPU_RUN is the only place that changes
 
 
