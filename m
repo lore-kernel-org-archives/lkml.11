@@ -2,48 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF6BC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355339AbiDLH13 (ORCPT
+        id S1355540AbiDLH1k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57354 "EHLO
+        Tue, 12 Apr 2022 03:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351555AbiDLHMp (ORCPT
+        with ESMTP id S1351708AbiDLHMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D089428E29;
-        Mon, 11 Apr 2022 23:50:25 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B819DFC0;
+        Mon, 11 Apr 2022 23:51:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E81D76103A;
-        Tue, 12 Apr 2022 06:50:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04DD6C385A6;
-        Tue, 12 Apr 2022 06:50:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17837B81B47;
+        Tue, 12 Apr 2022 06:51:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32240C385A6;
+        Tue, 12 Apr 2022 06:51:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746224;
-        bh=WGCz8dVvQY76yxRXtPlbmSDOtOsfSsjfNPBbXVdmjms=;
+        s=korg; t=1649746311;
+        bh=sXplmjtci3GWzKPGj7qmndHKq1WQI2fvhmgLsZ33CEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yg3Um/oK3YBQzN6JEc53KwqcxZGduR6eiY5e5HdW0GAiAJA/p5b+jy7S6ceyXycWR
-         iXGRdN+k6910ssj5umFs30Ic0BOwYhDjiF+R13VVIKS4X2R9sRI0cnszPADtAKtt8d
-         LjADWRt7v00JYj/Aruf0yV193Mln7rSNufIg/5Oo=
+        b=YFdQBXqG1wRcElC7ui6t+o7z/X2Y0e4XQGl1z/uPqXchEXQS13CV8h9tqq8zQ4Cmz
+         VSaq/D9spJ7TNN+XpYq8D1ydXfDz2BfZ56+j5H7BRjBgyosTN83AR+sPmmOR+Dcqyx
+         8s7tMxgUmkg43qFkOtSWJXdgpKvbi8k8EhoxjA/A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Denis Nikitin <denik@chromium.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 205/277] perf session: Remap buf if there is no space for event
-Date:   Tue, 12 Apr 2022 08:30:08 +0200
-Message-Id: <20220412062947.973450972@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
+        Zack Rusin <zackr@vmware.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>, Sam Ravnborg <sam@ravnborg.org>,
+        Zheyu Ma <zheyuma97@gmail.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH 5.15 238/277] fbdev: Fix unregistering of framebuffers without device
+Date:   Tue, 12 Apr 2022 08:30:41 +0200
+Message-Id: <20220412062948.931924795@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -55,78 +63,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis Nikitin <denik@chromium.org>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-[ Upstream commit bc21e74d4775f883ae1f542c1f1dc7205b15d925 ]
+commit 0f525289ff0ddeb380813bd81e0f9bdaaa1c9078 upstream.
 
-If a perf event doesn't fit into remaining buffer space return NULL to
-remap buf and fetch the event again.
+OF framebuffers do not have an underlying device in the Linux
+device hierarchy. Do a regular unregister call instead of hot
+unplugging such a non-existing device. Fixes a NULL dereference.
+An example error message on ppc64le is shown below.
 
-Keep the logic to error out on inadequate input from fuzzing.
+  BUG: Kernel NULL pointer dereference on read at 0x00000060
+  Faulting instruction address: 0xc00000000080dfa4
+  Oops: Kernel access of bad area, sig: 11 [#1]
+  LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
+  [...]
+  CPU: 2 PID: 139 Comm: systemd-udevd Not tainted 5.17.0-ae085d7f9365 #1
+  NIP:  c00000000080dfa4 LR: c00000000080df9c CTR: c000000000797430
+  REGS: c000000004132fe0 TRAP: 0300   Not tainted  (5.17.0-ae085d7f9365)
+  MSR:  8000000002009033 <SF,VEC,EE,ME,IR,DR,RI,LE>  CR: 28228282  XER: 20000000
+  CFAR: c00000000000c80c DAR: 0000000000000060 DSISR: 40000000 IRQMASK: 0
+  GPR00: c00000000080df9c c000000004133280 c00000000169d200 0000000000000029
+  GPR04: 00000000ffffefff c000000004132f90 c000000004132f88 0000000000000000
+  GPR08: c0000000015658f8 c0000000015cd200 c0000000014f57d0 0000000048228283
+  GPR12: 0000000000000000 c00000003fffe300 0000000020000000 0000000000000000
+  GPR16: 0000000000000000 0000000113fc4a40 0000000000000005 0000000113fcfb80
+  GPR20: 000001000f7283b0 0000000000000000 c000000000e4a588 c000000000e4a5b0
+  GPR24: 0000000000000001 00000000000a0000 c008000000db0168 c0000000021f6ec0
+  GPR28: c0000000016d65a8 c000000004b36460 0000000000000000 c0000000016d64b0
+  NIP [c00000000080dfa4] do_remove_conflicting_framebuffers+0x184/0x1d0
+  [c000000004133280] [c00000000080df9c] do_remove_conflicting_framebuffers+0x17c/0x1d0 (unreliable)
+  [c000000004133350] [c00000000080e4d0] remove_conflicting_framebuffers+0x60/0x150
+  [c0000000041333a0] [c00000000080e6f4] remove_conflicting_pci_framebuffers+0x134/0x1b0
+  [c000000004133450] [c008000000e70438] drm_aperture_remove_conflicting_pci_framebuffers+0x90/0x100 [drm]
+  [c000000004133490] [c008000000da0ce4] bochs_pci_probe+0x6c/0xa64 [bochs]
+  [...]
+  [c000000004133db0] [c00000000002aaa0] system_call_exception+0x170/0x2d0
+  [c000000004133e10] [c00000000000c3cc] system_call_common+0xec/0x250
 
-This fixes perf failing on ChromeOS (with 32b userspace):
+The bug [1] was introduced by commit 27599aacbaef ("fbdev: Hot-unplug
+firmware fb devices on forced removal"). Most firmware framebuffers
+have an underlying platform device, which can be hot-unplugged
+before loading the native graphics driver. OF framebuffers do not
+(yet) have that device. Fix the code by unregistering the framebuffer
+as before without a hot unplug.
 
-  $ perf report -v -i perf.data
-  ...
-  prefetch_event: head=0x1fffff8 event->header_size=0x30, mmap_size=0x2000000: fuzzed or compressed perf.data?
-  Error:
-  failed to process sample
+Tested with 5.17 on qemu ppc64le emulation.
 
-Fixes: 57fc032ad643ffd0 ("perf session: Avoid infinite loop when seeing invalid header.size")
-Reviewed-by: James Clark <james.clark@arm.com>
-Signed-off-by: Denis Nikitin <denik@chromium.org>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220330031130.2152327-1-denik@chromium.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Cc: Zack Rusin <zackr@vmware.com>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: stable@vger.kernel.org # v5.11+
+Cc: Helge Deller <deller@gmx.de>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Zheyu Ma <zheyuma97@gmail.com>
+Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Link: https://lore.kernel.org/all/YkHXO6LGHAN0p1pq@debian/ # [1]
+Link: https://patchwork.freedesktop.org/patch/msgid/20220404194402.29974-1-tzimmermann@suse.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/session.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/core/fbmem.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index 352f16076e01..562e9b808027 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -2076,6 +2076,7 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	       bool needs_swap, union perf_event *error)
- {
- 	union perf_event *event;
-+	u16 event_size;
- 
- 	/*
- 	 * Ensure we have enough space remaining to read
-@@ -2088,15 +2089,23 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
- 
--	if (head + event->header.size <= mmap_size)
-+	event_size = event->header.size;
-+	if (head + event_size <= mmap_size)
- 		return event;
- 
- 	/* We're not fetching the event so swap back again */
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
- 
--	pr_debug("%s: head=%#" PRIx64 " event->header_size=%#x, mmap_size=%#zx:"
--		 " fuzzed or compressed perf.data?\n",__func__, head, event->header.size, mmap_size);
-+	/* Check if the event fits into the next mmapped buf. */
-+	if (event_size <= mmap_size - head % page_size) {
-+		/* Remap buf and fetch again. */
-+		return NULL;
-+	}
-+
-+	/* Invalid input. Event size should never exceed mmap_size. */
-+	pr_debug("%s: head=%#" PRIx64 " event->header.size=%#x, mmap_size=%#zx:"
-+		 " fuzzed or compressed perf.data?\n", __func__, head, event_size, mmap_size);
- 
- 	return error;
- }
--- 
-2.35.1
-
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1581,7 +1581,14 @@ static void do_remove_conflicting_frameb
+ 			 * If it's not a platform device, at least print a warning. A
+ 			 * fix would add code to remove the device from the system.
+ 			 */
+-			if (dev_is_platform(device)) {
++			if (!device) {
++				/* TODO: Represent each OF framebuffer as its own
++				 * device in the device hierarchy. For now, offb
++				 * doesn't have such a device, so unregister the
++				 * framebuffer as before without warning.
++				 */
++				do_unregister_framebuffer(registered_fb[i]);
++			} else if (dev_is_platform(device)) {
+ 				registered_fb[i]->forced_out = true;
+ 				platform_device_unregister(to_platform_device(device));
+ 			} else {
 
 
