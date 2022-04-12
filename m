@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85235C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D689C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357509AbiDLHkZ (ORCPT
+        id S1357419AbiDLHkN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
+        Tue, 12 Apr 2022 03:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353069AbiDLHOs (ORCPT
+        with ESMTP id S1353049AbiDLHOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD20525291;
-        Mon, 11 Apr 2022 23:56:13 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898C2326FD;
+        Mon, 11 Apr 2022 23:55:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84626B81B43;
-        Tue, 12 Apr 2022 06:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB3CEC385A1;
-        Tue, 12 Apr 2022 06:56:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2372D61531;
+        Tue, 12 Apr 2022 06:55:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C776C385A1;
+        Tue, 12 Apr 2022 06:55:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746571;
-        bh=g0S1xJM0BJ86DQH0IZzY6uj6KRFPYEHUsBoXY82RMEc=;
+        s=korg; t=1649746554;
+        bh=AiekbiEOD7YNnfozgEkJd6jeEjAXBe/LDrKi7V9rpSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nT5V/OaYrgKZ8qN8smnTC2Rx1RWODfjPS6FqlzAQekC9JL6RQN9G9bBiEucH2kDb8
-         Q5qBjuu+94kGb7ZDxcxJ40y8DnIr7TuKQBUR/1VLm2Yf1bZ/KzvR2ilzF9dr5ZJRU+
-         nKneX/8/xGDeDGXkMeyuWl5Iok6SCGC9884tCYII=
+        b=MYKScya9GtBXzzGzp5C+7OPktjPn9Nl/JZ9/kkDJuBmlAyArbkMZp+efV+DqPGISd
+         TUN7MOcl9JdRxlC4WJKT/4CiBm7xyagH/ODcz50j32PQyuKxg1LWMkDQ29AJ4zaCMR
+         TgtMHv8r7l5FG+Tfeyyt58h9vluuqMvi+Tf4MBXw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 053/285] scsi: mpi3mr: Fix reporting of actual data transfer size
-Date:   Tue, 12 Apr 2022 08:28:30 +0200
-Message-Id: <20220412062945.202371210@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Guanghui <zhouguanghui1@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 047/285] iommu/arm-smmu-v3: fix event handling soft lockup
+Date:   Tue, 12 Apr 2022 08:28:24 +0200
+Message-Id: <20220412062945.032760966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,35 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Zhou Guanghui <zhouguanghui1@huawei.com>
 
-[ Upstream commit 9992246127246a27cc7184f05cce6f62ac48f84e ]
+[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
 
-The driver is missing to set the residual size while completing an
-I/O. Ensure proper data transfer size is reported to the kernel on I/O
-completion based on the transfer length reported by the firmware.
+During event processing, events are read from the event queue one
+by one until the queue is empty.If the master device continuously
+requests address access at the same time and the SMMU generates
+events, the cyclic processing of the event takes a long time and
+softlockup warnings may be reported.
 
-Link: https://lore.kernel.org/r/20220210095817.22828-7-sreekanth.reddy@broadcom.com
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
+watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
+Call trace:
+ _dev_info+0x7c/0xa0
+ arm_smmu_evtq_thread+0x1c0/0x230
+ irq_thread_fn+0x30/0x80
+ irq_thread+0x128/0x210
+ kthread+0x134/0x138
+ ret_from_fork+0x10/0x1c
+Kernel panic - not syncing: softlockup: hung tasks
+
+Fix this by calling cond_resched() after the event information is
+printed.
+
+Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
+Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpi3mr/mpi3mr_os.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/mpi3mr/mpi3mr_os.c b/drivers/scsi/mpi3mr/mpi3mr_os.c
-index fe10f257b5a4..224a4155d9b4 100644
---- a/drivers/scsi/mpi3mr/mpi3mr_os.c
-+++ b/drivers/scsi/mpi3mr/mpi3mr_os.c
-@@ -2204,6 +2204,8 @@ void mpi3mr_process_op_reply_desc(struct mpi3mr_ioc *mrioc,
- 		scmd->result = DID_OK << 16;
- 		goto out_success;
- 	}
-+
-+	scsi_set_resid(scmd, scsi_bufflen(scmd) - xfer_count);
- 	if (ioc_status == MPI3_IOCSTATUS_SCSI_DATA_UNDERRUN &&
- 	    xfer_count == 0 && (scsi_status == MPI3_SCSI_STATUS_BUSY ||
- 	    scsi_status == MPI3_SCSI_STATUS_RESERVATION_CONFLICT ||
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index f5848b351b19..af00714c8056 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1558,6 +1558,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+ 					 (unsigned long long)evt[i]);
+ 
++			cond_resched();
+ 		}
+ 
+ 		/*
 -- 
 2.35.1
 
