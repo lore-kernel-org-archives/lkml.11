@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A96C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C17C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356558AbiDLHi6 (ORCPT
+        id S1356748AbiDLHjS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
+        Tue, 12 Apr 2022 03:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352682AbiDLHOP (ORCPT
+        with ESMTP id S1352825AbiDLHOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11082F038;
-        Mon, 11 Apr 2022 23:54:59 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8046EE0EB;
+        Mon, 11 Apr 2022 23:55:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5C29B81B50;
-        Tue, 12 Apr 2022 06:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640F8C385A6;
-        Tue, 12 Apr 2022 06:54:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94D0E61451;
+        Tue, 12 Apr 2022 06:55:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47ADC385B6;
+        Tue, 12 Apr 2022 06:55:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746496;
-        bh=RgR/bhlckyUFWZryIL/9PaFrl2riAKvcRqAMLZbrrAo=;
+        s=korg; t=1649746510;
+        bh=dlwLqBXYP8OkZ069bvbEEpvkzus7DEWuXsJub3j4qr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mtSi/LyMDlDig9uquGV/2lXTpkwfYGEp+87sZ4dfpyGO7a+FihISeRgKodKL6v9qK
-         ScT3nND5nqVlu6Loqs4u0VkWvY+C9hZ9vylpNDcKYEtmFMsZ+DgwH3AwsFBgtO3qvy
-         0o9RUu840piTdJqY18wOM5F7qr5M3Xpa2Tt2p/CU=
+        b=hm3P3445RuM/VSD1+/gJVxcHDZ301ro/DbqbPpw8FcJ20t0CRdJ9Kw51TOzHG9oSZ
+         /ZFFlQBmJZlTo81cZrTdgYeyi5UL+gt6PTtvL/yq7XcoQln2WjEdDIjfiOjjmTo9ni
+         pNXjPrnAaLPWzHtqpfJoUKrDflrPGRItTYIS/sIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Venkateswara Naralasetty <quic_vnaralas@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
+        Jim Mattson <jmattson@google.com>,
+        Like Xu <likexu@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 026/285] ath11k: fix kernel panic during unload/load ath11k modules
-Date:   Tue, 12 Apr 2022 08:28:03 +0200
-Message-Id: <20220412062944.433540459@linuxfoundation.org>
+Subject: [PATCH 5.16 007/285] KVM: x86/pmu: Fix and isolate TSX-specific performance event logic
+Date:   Tue, 12 Apr 2022 08:27:44 +0200
+Message-Id: <20220412062943.886304721@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,63 +52,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
+From: Like Xu <likexu@tencent.com>
 
-[ Upstream commit 22b59cb965f79ee1accf83172441c9ca0ecb632a ]
+[ Upstream commit e644896f5106aa3f6d7e8c7adf2e4dc0fce53555 ]
 
-Call netif_napi_del() from ath11k_ahb_free_ext_irq() to fix
-the following kernel panic when unload/load ath11k modules
-for few iterations.
+HSW_IN_TX* bits are used in generic code which are not supported on
+AMD. Worse, these bits overlap with AMD EventSelect[11:8] and hence
+using HSW_IN_TX* bits unconditionally in generic code is resulting in
+unintentional pmu behavior on AMD. For example, if EventSelect[11:8]
+is 0x2, pmc_reprogram_counter() wrongly assumes that
+HSW_IN_TX_CHECKPOINTED is set and thus forces sampling period to be 0.
 
-[  971.201365] Unable to handle kernel paging request at virtual address 6d97a208
-[  971.204227] pgd = 594c2919
-[  971.211478] [6d97a208] *pgd=00000000
-[  971.214120] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-[  971.412024] CPU: 2 PID: 4435 Comm: insmod Not tainted 5.4.89 #0
-[  971.434256] Hardware name: Generic DT based system
-[  971.440165] PC is at napi_by_id+0x10/0x40
-[  971.445019] LR is at netif_napi_add+0x160/0x1dc
+Also per the SDM, both bits 32 and 33 "may only be set if the processor
+supports HLE or RTM" and for "IN_TXCP (bit 33): this bit may only be set
+for IA32_PERFEVTSEL2."
 
-[  971.743127] (napi_by_id) from [<807d89a0>] (netif_napi_add+0x160/0x1dc)
-[  971.751295] (netif_napi_add) from [<7f1209ac>] (ath11k_ahb_config_irq+0xf8/0x414 [ath11k_ahb])
-[  971.759164] (ath11k_ahb_config_irq [ath11k_ahb]) from [<7f12135c>] (ath11k_ahb_probe+0x40c/0x51c [ath11k_ahb])
-[  971.768567] (ath11k_ahb_probe [ath11k_ahb]) from [<80666864>] (platform_drv_probe+0x48/0x94)
-[  971.779670] (platform_drv_probe) from [<80664718>] (really_probe+0x1c8/0x450)
-[  971.789389] (really_probe) from [<80664cc4>] (driver_probe_device+0x15c/0x1b8)
-[  971.797547] (driver_probe_device) from [<80664f60>] (device_driver_attach+0x44/0x60)
-[  971.805795] (device_driver_attach) from [<806650a0>] (__driver_attach+0x124/0x140)
-[  971.814822] (__driver_attach) from [<80662adc>] (bus_for_each_dev+0x58/0xa4)
-[  971.823328] (bus_for_each_dev) from [<80663a2c>] (bus_add_driver+0xf0/0x1e8)
-[  971.831662] (bus_add_driver) from [<806658a4>] (driver_register+0xa8/0xf0)
-[  971.839822] (driver_register) from [<8030269c>] (do_one_initcall+0x78/0x1ac)
-[  971.847638] (do_one_initcall) from [<80392524>] (do_init_module+0x54/0x200)
-[  971.855968] (do_init_module) from [<803945b0>] (load_module+0x1e30/0x1ffc)
-[  971.864126] (load_module) from [<803948b0>] (sys_init_module+0x134/0x17c)
-[  971.871852] (sys_init_module) from [<80301000>] (ret_fast_syscall+0x0/0x50)
+Opportunistically eliminate code redundancy, because if the HSW_IN_TX*
+bit is set in pmc->eventsel, it is already set in attr.config.
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.6.0.1-00760-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1642583973-21599-1-git-send-email-quic_vnaralas@quicinc.com
+Reported-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Reported-by: Jim Mattson <jmattson@google.com>
+Fixes: 103af0a98788 ("perf, kvm: Support the in_tx/in_tx_cp modifiers in KVM arch perfmon emulation v5")
+Co-developed-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Like Xu <likexu@tencent.com>
+Message-Id: <20220309084257.88931-1-likexu@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/ahb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/pmu.c           | 15 +++++----------
+ arch/x86/kvm/vmx/pmu_intel.c | 13 ++++++++++---
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 3fb0aa000825..24bd0520926b 100644
---- a/drivers/net/wireless/ath/ath11k/ahb.c
-+++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -391,6 +391,8 @@ static void ath11k_ahb_free_ext_irq(struct ath11k_base *ab)
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 255ef63a4354..227b06dd1fea 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -96,8 +96,7 @@ static void kvm_perf_overflow_intr(struct perf_event *perf_event,
  
- 		for (j = 0; j < irq_grp->num_irq; j++)
- 			free_irq(ab->irq_num[irq_grp->irqs[j]], irq_grp);
-+
-+		netif_napi_del(&irq_grp->napi);
+ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+ 				  u64 config, bool exclude_user,
+-				  bool exclude_kernel, bool intr,
+-				  bool in_tx, bool in_tx_cp)
++				  bool exclude_kernel, bool intr)
+ {
+ 	struct perf_event *event;
+ 	struct perf_event_attr attr = {
+@@ -113,16 +112,14 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+ 
+ 	attr.sample_period = get_sample_period(pmc, pmc->counter);
+ 
+-	if (in_tx)
+-		attr.config |= HSW_IN_TX;
+-	if (in_tx_cp) {
++	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
++	    guest_cpuid_is_intel(pmc->vcpu)) {
+ 		/*
+ 		 * HSW_IN_TX_CHECKPOINTED is not supported with nonzero
+ 		 * period. Just clear the sample period so at least
+ 		 * allocating the counter doesn't fail.
+ 		 */
+ 		attr.sample_period = 0;
+-		attr.config |= HSW_IN_TX_CHECKPOINTED;
  	}
- }
  
+ 	event = perf_event_create_kernel_counter(&attr, -1, current,
+@@ -229,9 +226,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 	pmc_reprogram_counter(pmc, type, config,
+ 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
+ 			      !(eventsel & ARCH_PERFMON_EVENTSEL_OS),
+-			      eventsel & ARCH_PERFMON_EVENTSEL_INT,
+-			      (eventsel & HSW_IN_TX),
+-			      (eventsel & HSW_IN_TX_CHECKPOINTED));
++			      eventsel & ARCH_PERFMON_EVENTSEL_INT);
+ }
+ EXPORT_SYMBOL_GPL(reprogram_gp_counter);
+ 
+@@ -267,7 +262,7 @@ void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int idx)
+ 			      kvm_x86_ops.pmu_ops->find_fixed_event(idx),
+ 			      !(en_field & 0x2), /* exclude user */
+ 			      !(en_field & 0x1), /* exclude kernel */
+-			      pmi, false, false);
++			      pmi);
+ }
+ EXPORT_SYMBOL_GPL(reprogram_fixed_counter);
+ 
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 9e380a939c72..ee2452215e93 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -395,6 +395,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	struct kvm_pmc *pmc;
+ 	u32 msr = msr_info->index;
+ 	u64 data = msr_info->data;
++	u64 reserved_bits;
+ 
+ 	switch (msr) {
+ 	case MSR_CORE_PERF_FIXED_CTR_CTRL:
+@@ -449,7 +450,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		} else if ((pmc = get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0))) {
+ 			if (data == pmc->eventsel)
+ 				return 0;
+-			if (!(data & pmu->reserved_bits)) {
++			reserved_bits = pmu->reserved_bits;
++			if ((pmc->idx == 2) &&
++			    (pmu->raw_event_mask & HSW_IN_TX_CHECKPOINTED))
++				reserved_bits ^= HSW_IN_TX_CHECKPOINTED;
++			if (!(data & reserved_bits)) {
+ 				reprogram_gp_counter(pmc, data);
+ 				return 0;
+ 			}
+@@ -523,8 +528,10 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	entry = kvm_find_cpuid_entry(vcpu, 7, 0);
+ 	if (entry &&
+ 	    (boot_cpu_has(X86_FEATURE_HLE) || boot_cpu_has(X86_FEATURE_RTM)) &&
+-	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM)))
+-		pmu->reserved_bits ^= HSW_IN_TX|HSW_IN_TX_CHECKPOINTED;
++	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM))) {
++		pmu->reserved_bits ^= HSW_IN_TX;
++		pmu->raw_event_mask |= (HSW_IN_TX|HSW_IN_TX_CHECKPOINTED);
++	}
+ 
+ 	bitmap_set(pmu->all_valid_pmc_idx,
+ 		0, pmu->nr_arch_gp_counters);
 -- 
 2.35.1
 
