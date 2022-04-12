@@ -2,149 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE56EC3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8853EC47084
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354212AbiDLJSs (ORCPT
+        id S1388096AbiDLJVm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
+        Tue, 12 Apr 2022 05:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357662AbiDLHkg (ORCPT
+        with ESMTP id S1377914AbiDLHyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E53326F2;
-        Tue, 12 Apr 2022 00:16:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56290B81B60;
-        Tue, 12 Apr 2022 07:16:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDF57C385A5;
-        Tue, 12 Apr 2022 07:16:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747778;
-        bh=WxPLjrKQ8eRD1EGKTuVP56FWs6l0pz+Qv7AArwyle8Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uo9R4QbcQkB8lJWmW/1cxnCAG6JjpVS7jAUNIbNOTNvTkXdxXNBAd6wqgrpaSS8T4
-         mL91MMml+evxQCmy6W3YYp9RVNIhvl1bH3I39uT0jYcZnq+6vCx8yUokwXwr/mi8Zx
-         ItSuDXoMIWbjWq7kphBG7rzJoS+9LuGwDbNxhJEE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 203/343] vdpa: mlx5: prevent cvq work from hogging CPU
-Date:   Tue, 12 Apr 2022 08:30:21 +0200
-Message-Id: <20220412062957.212295308@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:54:40 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E425450461;
+        Tue, 12 Apr 2022 00:31:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649748713; x=1681284713;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mbeK8xN/aT2y1KDi4aPNjhyj0fgSsuJe8W4E5qdpHtU=;
+  b=DYRKegG3L/eT8AE8O2/AWbeUhlPqn6oBCTapUW/9Zgaa7kee7NNvw8vw
+   h/BXLBPNJBd2JQqDAS+d3ibZg7pbjbHQZoz7bS0WmytU/AvRxFedAbQrf
+   v2dWC94VTLXYemeYnN2hUKSjxSXLgZtQrYn2385MSNxEY2RVZwoCQr4tW
+   8ZSEt00LoWr4dU7xbnhG7z7jJSZAPwKOkqoM4SUakajxvLSiMXCZSmZI4
+   XmVGyu5LmqObe0a9db7CFXgBPJ92Mqi8/+YIzYwrJQqlaQSuC0Nz04W43
+   xeBseQ5Sy7shRZ7Zq5f8gn/xrr/SVQDY07u/wCHe/515ol9ultOj8QY0e
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242239700"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="242239700"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:31:53 -0700
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="724328119"
+Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.249.202.123]) ([10.249.202.123])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:31:50 -0700
+Message-ID: <59376a41-65a9-0efa-dad6-b5906d89fb3c@intel.com>
+Date:   Tue, 12 Apr 2022 15:31:48 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 102/104] KVM: TDX: Add methods to ignore accesses
+ to CPU state
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <3a278829a8617b86b36c32b68a82bc727013ace8.1646422845.git.isaku.yamahata@intel.com>
+ <ec60ba8e-3ed9-1d06-d8c2-4db9529daf93@intel.com>
+ <6e0fd8ac-5f17-44d9-97b7-285d4cbe6bcf@redhat.com>
+From:   Xiaoyao Li <xiaoyao.li@intel.com>
+In-Reply-To: <6e0fd8ac-5f17-44d9-97b7-285d4cbe6bcf@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+On 4/12/2022 2:52 PM, Paolo Bonzini wrote:
+> On 4/12/22 08:49, Xiaoyao Li wrote:
+>>
+>>> +void tdx_cache_reg(struct kvm_vcpu *vcpu, enum kvm_reg reg)
+>>> +{
+>>> +    kvm_register_mark_available(vcpu, reg);
+>>> +    switch (reg) {
+>>> +    case VCPU_REGS_RSP:
+>>> +    case VCPU_REGS_RIP:
+>>> +    case VCPU_EXREG_PDPTR:
+>>> +    case VCPU_EXREG_CR0:
+>>> +    case VCPU_EXREG_CR3:
+>>> +    case VCPU_EXREG_CR4:
+>>> +        break;
+>>> +    default:
+>>> +        KVM_BUG_ON(1, vcpu->kvm);
+>>> +        break;
+>>> +    }
+>>> +}
+>>
+>> Isaku,
+>>
+>> We missed one case that some GPRs are accessible by KVM/userspace for 
+>> TDVMCALL exit.
+> 
+> If a register is not in the VMX_REGS_LAZY_LOAD_SET it will never be 
+> passed to tdx_cache_reg.  As far as I understand those TDVMCALL 
+> registers do not include either RSP or RIP.
 
-[ Upstream commit 55ebf0d60e3cc6c9e8593399e185842c00e12f36 ]
+Sorry, I should not keep the code snippet of tdx_cache_reg() as 
+reference to mislead you and other people.
 
-A userspace triggerable infinite loop could happen in
-mlx5_cvq_kick_handler() if userspace keeps sending a huge amount of
-cvq requests.
+I just want to remind that in the certain case of TDVMCALL, GPRs might 
+be accessible.
 
-Fixing this by introducing a quota and re-queue the work if we're out
-of the budget (currently the implicit budget is one) . While at it,
-using a per device work struct to avoid on demand memory allocation
-for cvq.
-
-Fixes: 5262912ef3cfc ("vdpa/mlx5: Add support for control VQ and MAC setting")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220329042109.4029-1-jasowang@redhat.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Eli Cohen <elic@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index 9fe1071a9644..1b5de3af1a62 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -163,6 +163,7 @@ struct mlx5_vdpa_net {
- 	u32 cur_num_vqs;
- 	struct notifier_block nb;
- 	struct vdpa_callback config_cb;
-+	struct mlx5_vdpa_wq_ent cvq_ent;
- };
- 
- static void free_resources(struct mlx5_vdpa_net *ndev);
-@@ -1616,10 +1617,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
- 	ndev = to_mlx5_vdpa_ndev(mvdev);
- 	cvq = &mvdev->cvq;
- 	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
--		goto out;
-+		return;
- 
- 	if (!cvq->ready)
--		goto out;
-+		return;
- 
- 	while (true) {
- 		err = vringh_getdesc_iotlb(&cvq->vring, &cvq->riov, &cvq->wiov, &cvq->head,
-@@ -1653,9 +1654,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
- 
- 		if (vringh_need_notify_iotlb(&cvq->vring))
- 			vringh_notify(&cvq->vring);
-+
-+		queue_work(mvdev->wq, &wqent->work);
-+		break;
- 	}
--out:
--	kfree(wqent);
- }
- 
- static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
-@@ -1663,7 +1665,6 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
- 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
- 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
- 	struct mlx5_vdpa_virtqueue *mvq;
--	struct mlx5_vdpa_wq_ent *wqent;
- 
- 	if (!is_index_valid(mvdev, idx))
- 		return;
-@@ -1672,13 +1673,7 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
- 		if (!mvdev->wq || !mvdev->cvq.ready)
- 			return;
- 
--		wqent = kzalloc(sizeof(*wqent), GFP_ATOMIC);
--		if (!wqent)
--			return;
--
--		wqent->mvdev = mvdev;
--		INIT_WORK(&wqent->work, mlx5_cvq_kick_handler);
--		queue_work(mvdev->wq, &wqent->work);
-+		queue_work(mvdev->wq, &ndev->cvq_ent.work);
- 		return;
- 	}
- 
-@@ -2668,6 +2663,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
- 	if (err)
- 		goto err_mr;
- 
-+	ndev->cvq_ent.mvdev = mvdev;
-+	INIT_WORK(&ndev->cvq_ent.work, mlx5_cvq_kick_handler);
- 	mvdev->wq = create_singlethread_workqueue("mlx5_vdpa_wq");
- 	if (!mvdev->wq) {
- 		err = -ENOMEM;
--- 
-2.35.1
-
-
+> Paolo
+> 
 
