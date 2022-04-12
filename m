@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C20C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6245C4707F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385951AbiDLIxs (ORCPT
+        id S1386040AbiDLIx4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
+        Tue, 12 Apr 2022 04:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359254AbiDLHmw (ORCPT
+        with ESMTP id S1359393AbiDLHnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F106529CA8;
-        Tue, 12 Apr 2022 00:21:01 -0700 (PDT)
+        Tue, 12 Apr 2022 03:43:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083752CCA6;
+        Tue, 12 Apr 2022 00:22:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B4D36153F;
-        Tue, 12 Apr 2022 07:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92F26C385A1;
-        Tue, 12 Apr 2022 07:21:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB537B81B4F;
+        Tue, 12 Apr 2022 07:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31232C385A5;
+        Tue, 12 Apr 2022 07:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748061;
-        bh=sW6g/q1XVSJnxHMPRxwCpYDjZPxGu1a7vykgCB/r26Y=;
+        s=korg; t=1649748141;
+        bh=gG2l95nc3o6r+Na0a2Vg2hAkYDSYrk+WcrC0aYTmvr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aSlBhsb8nocprRD/d+iYdvm82cmGVxsZ2roqu5PX6aaPndOTciRd88rv2b/HT+TjK
-         yUWvG6R5Q4ZaELARC8acdlTRHiCiD3+PyF/0Ud4RG0oyIBQvdFwqOllfIsiLrzvAjv
-         iUZLqExn9if76LvsT82mLryRFp6AfrLoaD/klcYk=
+        b=KdW5GiT1D0exoHLmo/S3MUSBzB3SvWi18J0z/GF/Qw4Bpjd7gZAb1+V7CK0b+Llsk
+         u+Q60+gFx0Gxr7Fz2pJAqlM6aEynQ4DOuTej/wHCsTtXOX/DM6x7YZaClZRyOoJXkd
+         sPWPBW7tOL3OfEturxtrdB1mhZsqU5GT90ZrrAq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        CHANDAN VURDIGERE NATARAJ <chandan.vurdigerenataraj@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 305/343] drm/amd/display: Fix by adding FPU protection for dcn30_internal_validate_bw
-Date:   Tue, 12 Apr 2022 08:32:03 +0200
-Message-Id: <20220412063000.127605016@linuxfoundation.org>
+        stable@vger.kernel.org, Jingyi Wang <wangjingyi11@huawei.com>,
+        Nianyao Tang <tangnianyao@huawei.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.17 335/343] irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to clear before descheduling
+Date:   Tue, 12 Apr 2022 08:32:33 +0200
+Message-Id: <20220412063000.988387489@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,91 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: CHANDAN VURDIGERE NATARAJ <chandan.vurdigerenataraj@amd.com>
+From: Marc Zyngier <maz@kernel.org>
 
-commit ca1198849ab0e7af5efb392ef6baf1138f6fc086 upstream.
+commit af27e41612ec7e5b4783f589b753a7c31a37aac8 upstream.
 
-[Why]
-Below general protection fault observed when WebGL Aquarium is run for
-longer duration. If drm debug logs are enabled and set to 0x1f then the
-issue is observed within 10 minutes of run.
+The way KVM drives GICv4.{0,1} is as follows:
+- vcpu_load() makes the VPE resident, instructing the RD to start
+  scanning for interrupts
+- just before entering the guest, we check that the RD has finished
+  scanning and that we can start running the vcpu
+- on preemption, we deschedule the VPE by making it invalid on
+  the RD
 
-[  100.717056] general protection fault, probably for non-canonical address 0x2d33302d32323032: 0000 [#1] PREEMPT SMP NOPTI
-[  100.727921] CPU: 3 PID: 1906 Comm: DrmThread Tainted: G        W         5.15.30 #12 d726c6a2d6ebe5cf9223931cbca6892f916fe18b
-[  100.754419] RIP: 0010:CalculateSwathWidth+0x1f7/0x44f
-[  100.767109] Code: 00 00 00 f2 42 0f 11 04 f0 48 8b 85 88 00 00 00 f2 42 0f 10 04 f0 48 8b 85 98 00 00 00 f2 42 0f 11 04 f0 48 8b 45 10 0f 57 c0 <f3> 42 0f 2a 04 b0 0f 57 c9 f3 43 0f 2a 0c b4 e8 8c e2 f3 ff 48 8b
-[  100.781269] RSP: 0018:ffffa9230079eeb0 EFLAGS: 00010246
-[  100.812528] RAX: 2d33302d32323032 RBX: 0000000000000500 RCX: 0000000000000000
-[  100.819656] RDX: 0000000000000001 RSI: ffff99deb712c49c RDI: 0000000000000000
-[  100.826781] RBP: ffffa9230079ef50 R08: ffff99deb712460c R09: ffff99deb712462c
-[  100.833907] R10: ffff99deb7124940 R11: ffff99deb7124d70 R12: ffff99deb712ae44
-[  100.841033] R13: 0000000000000001 R14: 0000000000000000 R15: ffffa9230079f0a0
-[  100.848159] FS:  00007af121212640(0000) GS:ffff99deba780000(0000) knlGS:0000000000000000
-[  100.856240] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  100.861980] CR2: 0000209000fe1000 CR3: 000000011b18c000 CR4: 0000000000350ee0
-[  100.869106] Call Trace:
-[  100.871555]  <TASK>
-[  100.873655]  ? asm_sysvec_reschedule_ipi+0x12/0x20
-[  100.878449]  CalculateSwathAndDETConfiguration+0x1a3/0x6dd
-[  100.883937]  dml31_ModeSupportAndSystemConfigurationFull+0x2ce4/0x76da
-[  100.890467]  ? kallsyms_lookup_buildid+0xc8/0x163
-[  100.895173]  ? kallsyms_lookup_buildid+0xc8/0x163
-[  100.899874]  ? __sprint_symbol+0x80/0x135
-[  100.903883]  ? dm_update_plane_state+0x3f9/0x4d2
-[  100.908500]  ? symbol_string+0xb7/0xde
-[  100.912250]  ? number+0x145/0x29b
-[  100.915566]  ? vsnprintf+0x341/0x5ff
-[  100.919141]  ? desc_read_finalized_seq+0x39/0x87
-[  100.923755]  ? update_load_avg+0x1b9/0x607
-[  100.927849]  ? compute_mst_dsc_configs_for_state+0x7d/0xd5b
-[  100.933416]  ? fetch_pipe_params+0xa4d/0xd0c
-[  100.937686]  ? dc_fpu_end+0x3d/0xa8
-[  100.941175]  dml_get_voltage_level+0x16b/0x180
-[  100.945619]  dcn30_internal_validate_bw+0x10e/0x89b
-[  100.950495]  ? dcn31_validate_bandwidth+0x68/0x1fc
-[  100.955285]  ? resource_build_scaling_params+0x98b/0xb8c
-[  100.960595]  ? dcn31_validate_bandwidth+0x68/0x1fc
-[  100.965384]  dcn31_validate_bandwidth+0x9a/0x1fc
-[  100.970001]  dc_validate_global_state+0x238/0x295
-[  100.974703]  amdgpu_dm_atomic_check+0x9c1/0xbce
-[  100.979235]  ? _printk+0x59/0x73
-[  100.982467]  drm_atomic_check_only+0x403/0x78b
-[  100.986912]  drm_mode_atomic_ioctl+0x49b/0x546
-[  100.991358]  ? drm_ioctl+0x1c1/0x3b3
-[  100.994936]  ? drm_atomic_set_property+0x92a/0x92a
-[  100.999725]  drm_ioctl_kernel+0xdc/0x149
-[  101.003648]  drm_ioctl+0x27f/0x3b3
-[  101.007051]  ? drm_atomic_set_property+0x92a/0x92a
-[  101.011842]  amdgpu_drm_ioctl+0x49/0x7d
-[  101.015679]  __se_sys_ioctl+0x7c/0xb8
-[  101.015685]  do_syscall_64+0x5f/0xb8
-[  101.015690]  ? __irq_exit_rcu+0x34/0x96
+However, we are preemptible between the first two steps. If it so
+happens *and* that the RD was still scanning, we nonetheless write
+to the GICR_VPENDBASER register while Dirty is set, and bad things
+happen (we're in UNPRED land).
 
-[How]
-It calles populate_dml_pipes which uses doubles to initialize.
-Adding FPU protection avoids context switch and probable loss of vba context
-as there is potential contention while drm debug logs are enabled.
+This affects both the 4.0 and 4.1 implementations.
 
-Signed-off-by: CHANDAN VURDIGERE NATARAJ <chandan.vurdigerenataraj@amd.com>
-Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Make sure Dirty is cleared before performing the deschedule,
+meaning that its_clear_vpend_valid() becomes a sort of full VPE
+residency barrier.
+
+Reported-by: Jingyi Wang <wangjingyi11@huawei.com>
+Tested-by: Nianyao Tang <tangnianyao@huawei.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the GICR_VPENDBASER.Dirty bit")
+Link: https://lore.kernel.org/r/4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/irqchip/irq-gic-v3-its.c |   28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-@@ -2025,7 +2025,9 @@ bool dcn31_validate_bandwidth(struct dc
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -3011,18 +3011,12 @@ static int __init allocate_lpi_tables(vo
+ 	return 0;
+ }
  
- 	BW_VAL_TRACE_COUNT();
+-static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++static u64 read_vpend_dirty_clear(void __iomem *vlpi_base)
+ {
+ 	u32 count = 1000000;	/* 1s! */
+ 	bool clean;
+ 	u64 val;
  
-+	DC_FP_START();
- 	out = dcn30_internal_validate_bw(dc, context, pipes, &pipe_cnt, &vlevel, fast_validate);
-+	DC_FP_END();
+-	val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+-	val &= ~GICR_VPENDBASER_Valid;
+-	val &= ~clr;
+-	val |= set;
+-	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
+-
+ 	do {
+ 		val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+ 		clean = !(val & GICR_VPENDBASER_Dirty);
+@@ -3033,10 +3027,26 @@ static u64 its_clear_vpend_valid(void __
+ 		}
+ 	} while (!clean && count);
  
- 	// Disable fast_validate to set min dcfclk in alculate_wm_and_dlg
- 	if (pipe_cnt == 0)
+-	if (unlikely(val & GICR_VPENDBASER_Dirty)) {
++	if (unlikely(!clean))
+ 		pr_err_ratelimited("ITS virtual pending table not cleaning\n");
++
++	return val;
++}
++
++static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++{
++	u64 val;
++
++	/* Make sure we wait until the RD is done with the initial scan */
++	val = read_vpend_dirty_clear(vlpi_base);
++	val &= ~GICR_VPENDBASER_Valid;
++	val &= ~clr;
++	val |= set;
++	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
++
++	val = read_vpend_dirty_clear(vlpi_base);
++	if (unlikely(val & GICR_VPENDBASER_Dirty))
+ 		val |= GICR_VPENDBASER_PendingLast;
+-	}
+ 
+ 	return val;
+ }
 
 
