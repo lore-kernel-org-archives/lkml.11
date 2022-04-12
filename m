@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8A8C46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B76FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376823AbiDLIuY (ORCPT
+        id S1376847AbiDLIu3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        Tue, 12 Apr 2022 04:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358235AbiDLHlM (ORCPT
+        with ESMTP id S1358261AbiDLHlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CB742A36;
-        Tue, 12 Apr 2022 00:17:38 -0700 (PDT)
+        Tue, 12 Apr 2022 03:41:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9FA424A3;
+        Tue, 12 Apr 2022 00:17:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B8CF616E7;
-        Tue, 12 Apr 2022 07:17:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C83AC385A1;
-        Tue, 12 Apr 2022 07:17:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C6FB6153F;
+        Tue, 12 Apr 2022 07:17:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4408CC385A6;
+        Tue, 12 Apr 2022 07:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747857;
-        bh=r8a9lHuAGZPUTvvW+D5b/UG4FvvagGtzxKifdNP/HL8=;
+        s=korg; t=1649747860;
+        bh=sB3ctKJpeWozzwijECZo6jSzehzrqz0vt3jr47udbag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bWygdz0vvz1npoX1TJeYV4XXQBjxIt0zelLZDfGBzO0bSFztYMtG3cLZN3Pv7S2pI
-         aiuOQ1kjSfX0P1zdW4Kusb76ZpXKm84YAFYWPiwqCa3srrp31bULerxTIMC5jIaYzd
-         VdUPyPhKk/MeiXdM9Bw9oemCyMxX3SZt0gu/JpwM=
+        b=GfE+22lkoNrx8NTnyYffPW/G754CCwj7Ku1jjwx4TiJps231SLYkZ6S91V2y2523k
+         danR6VqCweqDOagS8OsvIFLkomlRAnww8ptxmZRGrBMrZXqZXm6oy97HBhMifSjHeU
+         jbg/N61RHocOixFli35vCw2662PRnW8dg8Satb54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org,
+        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 230/343] IB/rdmavt: add lock to call to rvt_error_qp to prevent a race condition
-Date:   Tue, 12 Apr 2022 08:30:48 +0200
-Message-Id: <20220412062957.976208346@linuxfoundation.org>
+Subject: [PATCH 5.17 231/343] sctp: count singleton chunks in assoc user stats
+Date:   Tue, 12 Apr 2022 08:30:49 +0200
+Message-Id: <20220412062958.004460356@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,44 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
 
-[ Upstream commit 4d809f69695d4e7d1378b3a072fa9aef23123018 ]
+[ Upstream commit e3d37210df5c41c51147a2d5d465de1a4d77be7a ]
 
-The documentation of the function rvt_error_qp says both r_lock and s_lock
-need to be held when calling that function.  It also asserts using lockdep
-that both of those locks are held.  However, the commit I referenced in
-Fixes accidentally makes the call to rvt_error_qp in rvt_ruc_loopback no
-longer covered by r_lock.  This results in the lockdep assertion failing
-and also possibly in a race condition.
+Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
+COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
+counter available to the assoc owner.
 
-Fixes: d757c60eca9b ("IB/rdmavt: Fix concurrency panics in QP post_send and modify to error")
-Link: https://lore.kernel.org/r/20220228165330.41546-1-dossche.niels@gmail.com
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+These are all control chunks so they should be counted as such.
+
+Add counting of singleton chunks so they are properly accounted for.
+
+Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
+Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Link: https://lore.kernel.org/r/c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
+ net/sctp/outqueue.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
-index ae50b56e8913..8ef112f883a7 100644
---- a/drivers/infiniband/sw/rdmavt/qp.c
-+++ b/drivers/infiniband/sw/rdmavt/qp.c
-@@ -3190,7 +3190,11 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	spin_lock_irqsave(&sqp->s_lock, flags);
- 	rvt_send_complete(sqp, wqe, send_status);
- 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
--		int lastwqe = rvt_error_qp(sqp, IB_WC_WR_FLUSH_ERR);
-+		int lastwqe;
-+
-+		spin_lock(&sqp->r_lock);
-+		lastwqe = rvt_error_qp(sqp, IB_WC_WR_FLUSH_ERR);
-+		spin_unlock(&sqp->r_lock);
+diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
+index a18609f608fb..e213aaf45d67 100644
+--- a/net/sctp/outqueue.c
++++ b/net/sctp/outqueue.c
+@@ -914,6 +914,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
+ 				ctx->asoc->base.sk->sk_err = -error;
+ 				return;
+ 			}
++			ctx->asoc->stats.octrlchunks++;
+ 			break;
  
- 		sqp->s_flags &= ~RVT_S_BUSY;
- 		spin_unlock_irqrestore(&sqp->s_lock, flags);
+ 		case SCTP_CID_ABORT:
+@@ -938,7 +939,10 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
+ 
+ 		case SCTP_CID_HEARTBEAT:
+ 			if (chunk->pmtu_probe) {
+-				sctp_packet_singleton(ctx->transport, chunk, ctx->gfp);
++				error = sctp_packet_singleton(ctx->transport,
++							      chunk, ctx->gfp);
++				if (!error)
++					ctx->asoc->stats.octrlchunks++;
+ 				break;
+ 			}
+ 			fallthrough;
 -- 
 2.35.1
 
