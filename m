@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 282C4C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A907BC3527E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352459AbiDLHOD (ORCPT
+        id S1352708AbiDLHOQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
+        Tue, 12 Apr 2022 03:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352423AbiDLGzp (ORCPT
+        with ESMTP id S1352548AbiDLG4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:55:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EB23A701;
-        Mon, 11 Apr 2022 23:45:31 -0700 (PDT)
+        Tue, 12 Apr 2022 02:56:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E26822519;
+        Mon, 11 Apr 2022 23:46:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89CDC60B5E;
-        Tue, 12 Apr 2022 06:45:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADCCC385A8;
-        Tue, 12 Apr 2022 06:45:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CA4CB81B43;
+        Tue, 12 Apr 2022 06:46:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74CC2C385A1;
+        Tue, 12 Apr 2022 06:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745931;
-        bh=pY4QV7aUWhR+x8fT1/v/jYPAQBiSOMIuk64AYnF/ntw=;
+        s=korg; t=1649745958;
+        bh=eyF2VnUNxOloLVIPfKJn9iNPrihstZvyrnDzYF9Nnbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jkdvoch2Fhq0/59IFaogRL/p9wV78/ZUSKeiYl2AVh+nfjzSaLIDkL3SjHjZQaNOY
-         mIo6iLFIAG1taGrMDe/MYws5t4mcaolVEP08KPnSpkSz/yd4nOOBtePb70zomYAMla
-         FGcNcrClrEIFTI4I6JHsLhKdJ8bgKyuDbLY4llV0=
+        b=tnwJtzl7UpDNFxdK0ns58nNC8EykBLeQ82cFzRgw2h5CHCY5ePjROegkfO0Q1zIKi
+         GC9EtBRabrGKySU3U5/Y9nlp3g0JsdKaSy7d4nKxMUg3gP3dzhHktxYkfzV6JxHnRb
+         d+x8sTjAI8hK6dUg8gT66YUgPZXkx3ZGuZw6D6E4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 059/277] iwlwifi: mvm: Correctly set fragmented EBS
-Date:   Tue, 12 Apr 2022 08:27:42 +0200
-Message-Id: <20220412062943.757256668@linuxfoundation.org>
+Subject: [PATCH 5.15 110/277] clk: si5341: fix reported clk_rate when output divider is 2
+Date:   Tue, 12 Apr 2022 08:28:33 +0200
+Message-Id: <20220412062945.223193810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,40 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Adam Wujek <dev_public@wujek.eu>
 
-[ Upstream commit d8d4dd26b9e0469baf5017f0544d852fd4e3fb6d ]
+[ Upstream commit 2a8b539433e111c4de364237627ef219d2f6350a ]
 
-Currently, fragmented EBS was set for a channel only if the 'hb_type'
-was set to fragmented or balanced scan. However, 'hb_type' is set only
-in case of CDB, and thus fragmented EBS is never set for a channel for
-non-CDB devices. Fix it.
+SI5341_OUT_CFG_RDIV_FORCE2 shall be checked first to distinguish whether
+a divider for a given output is set to 2 (SI5341_OUT_CFG_RDIV_FORCE2
+is set) or the output is disabled (SI5341_OUT_CFG_RDIV_FORCE2 not set,
+SI5341_OUT_R_REG is set 0).
+Before the change, divider set to 2 (SI5341_OUT_R_REG set to 0) was
+interpreted as output is disabled.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.a6165ac9b9d5.I654eafa62fd647030ae6d4f07f32c96c3171decb@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20211203141125.2447520-1-dev_public@wujek.eu
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/clk/clk-si5341.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 5461bf399959..65e382756de6 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1890,7 +1890,10 @@ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
- 			IWL_SCAN_CHANNEL_FLAG_CACHE_ADD;
+diff --git a/drivers/clk/clk-si5341.c b/drivers/clk/clk-si5341.c
+index f7b41366666e..4de098b6b0d4 100644
+--- a/drivers/clk/clk-si5341.c
++++ b/drivers/clk/clk-si5341.c
+@@ -798,6 +798,15 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	u32 r_divider;
+ 	u8 r[3];
  
- 	/* set fragmented ebs for fragmented scan on HB channels */
--	if (iwl_mvm_is_scan_fragmented(params->hb_type))
-+	if ((!iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->type)) ||
-+	    (iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->hb_type)))
- 		flags |= IWL_SCAN_CHANNEL_FLAG_EBS_FRAG;
++	err = regmap_read(output->data->regmap,
++			SI5341_OUT_CONFIG(output), &val);
++	if (err < 0)
++		return err;
++
++	/* If SI5341_OUT_CFG_RDIV_FORCE2 is set, r_divider is 2 */
++	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
++		return parent_rate / 2;
++
+ 	err = regmap_bulk_read(output->data->regmap,
+ 			SI5341_OUT_R_REG(output), r, 3);
+ 	if (err < 0)
+@@ -814,13 +823,6 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	r_divider += 1;
+ 	r_divider <<= 1;
  
- 	return flags;
+-	err = regmap_read(output->data->regmap,
+-			SI5341_OUT_CONFIG(output), &val);
+-	if (err < 0)
+-		return err;
+-
+-	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
+-		r_divider = 2;
+ 
+ 	return parent_rate / r_divider;
+ }
 -- 
 2.35.1
 
