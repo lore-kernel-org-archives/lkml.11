@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D08EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 625E6C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386408AbiDLI5z (ORCPT
+        id S1386437AbiDLI6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
+        Tue, 12 Apr 2022 04:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359386AbiDLHm7 (ORCPT
+        with ESMTP id S1359266AbiDLHmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44EB2CC92;
-        Tue, 12 Apr 2022 00:22:01 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CD82CE17;
+        Tue, 12 Apr 2022 00:21:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BF19B81B60;
-        Tue, 12 Apr 2022 07:22:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA537C385A1;
-        Tue, 12 Apr 2022 07:21:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C78CB81B60;
+        Tue, 12 Apr 2022 07:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B428CC385A1;
+        Tue, 12 Apr 2022 07:21:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748119;
-        bh=oVLVH4dSiXl6ZrohuS/jFnrjBXXcyG7ewltwzTF8/vg=;
+        s=korg; t=1649748091;
+        bh=a4WlgdswZu7LbTJK3BT3VYBsUoQBdktmcSJKsA6vEkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B4xkqMnbkuJZNxSwkicNWWjdhRWBPJseJrp3DOrT26MpLBDWM2y9Ax5BT2Tckphp6
-         +K3vOnkScPRtLz4A8Nkyfhe0SFVBo0VuNblf1WAKXRGACZ63o+THWAsDaiJHK52VVT
-         ZFu3c2yGmj53OSf9YnC3ai4HQmM3k7dYyPn6+RL4=
+        b=S6qx3eOvwN/AT4Pi6j7362RR+kWjFZmyUkoTNiXsTwMabYNUwMmu3FiDF4jwQa4Jj
+         mHvxzqNnAkuEYLlgScckru9J1/0Px8Xf/OcFv5hdT2S0ubu7G/KiAHazxTVWVf/y2K
+         NuKJPwOECn8sshW5uD6C1AUV0kYU6FcxzgPEfccE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 286/343] btrfs: avoid defragging extents whose next extents are not targets
-Date:   Tue, 12 Apr 2022 08:31:44 +0200
-Message-Id: <20220412062959.581114826@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.17 315/343] net/smc: send directly on setting TCP_NODELAY
+Date:   Tue, 12 Apr 2022 08:32:13 +0200
+Message-Id: <20220412063000.414743238@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,107 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-commit 75a36a7d3ea904cef2e5b56af0c58cc60dcf947a upstream.
+commit b70a5cc045197aad9c159042621baf3c015f6cc7 upstream.
 
-[BUG]
-There is a report that autodefrag is defragging single sector, which
-is completely waste of IO, and no help for defragging:
+In commit ea785a1a573b("net/smc: Send directly when
+TCP_CORK is cleared"), we don't use delayed work
+to implement cork.
 
-   btrfs-cleaner-808 defrag_one_locked_range: root=256 ino=651122 start=0 len=4096
+This patch use the same algorithm, removes the
+delayed work when setting TCP_NODELAY and send
+directly in setsockopt(). This also makes the
+TCP_NODELAY the same as TCP.
 
-[CAUSE]
-In defrag_collect_targets(), we check if the current range (A) can be merged
-with next one (B).
-
-If mergeable, we will add range A into target for defrag.
-
-However there is a catch for autodefrag, when checking mergeability
-against range B, we intentionally pass 0 as @newer_than, hoping to get a
-higher chance to merge with the next extent.
-
-But in the next iteration, range B will looked up by defrag_lookup_extent(),
-with non-zero @newer_than.
-
-And if range B is not really newer, it will rejected directly, causing
-only range A being defragged, while we expect to defrag both range A and
-B.
-
-[FIX]
-Since the root cause is the difference in check condition of
-defrag_check_next_extent() and defrag_collect_targets(), we fix it by:
-
-1. Pass @newer_than to defrag_check_next_extent()
-2. Pass @extent_thresh to defrag_check_next_extent()
-
-This makes the check between defrag_collect_targets() and
-defrag_check_next_extent() more consistent.
-
-While there is still some minor difference, the remaining checks are
-focus on runtime flags like writeback/delalloc, which are mostly
-transient and safe to be checked only in defrag_collect_targets().
-
-Link: https://github.com/btrfs/linux/issues/423#issuecomment-1066981856
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Cc: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ioctl.c |   20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ net/smc/af_smc.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -1215,7 +1215,7 @@ static u32 get_extent_max_capacity(const
- }
- 
- static bool defrag_check_next_extent(struct inode *inode, struct extent_map *em,
--				     bool locked)
-+				     u32 extent_thresh, u64 newer_than, bool locked)
- {
- 	struct extent_map *next;
- 	bool ret = false;
-@@ -1225,11 +1225,12 @@ static bool defrag_check_next_extent(str
- 		return false;
- 
- 	/*
--	 * We want to check if the next extent can be merged with the current
--	 * one, which can be an extent created in a past generation, so we pass
--	 * a minimum generation of 0 to defrag_lookup_extent().
-+	 * Here we need to pass @newer_then when checking the next extent, or
-+	 * we will hit a case we mark current extent for defrag, but the next
-+	 * one will not be a target.
-+	 * This will just cause extra IO without really reducing the fragments.
- 	 */
--	next = defrag_lookup_extent(inode, em->start + em->len, 0, locked);
-+	next = defrag_lookup_extent(inode, em->start + em->len, newer_than, locked);
- 	/* No more em or hole */
- 	if (!next || next->block_start >= EXTENT_MAP_LAST_BYTE)
- 		goto out;
-@@ -1241,6 +1242,13 @@ static bool defrag_check_next_extent(str
- 	 */
- 	if (next->len >= get_extent_max_capacity(em))
- 		goto out;
-+	/* Skip older extent */
-+	if (next->generation < newer_than)
-+		goto out;
-+	/* Also check extent size */
-+	if (next->len >= extent_thresh)
-+		goto out;
-+
- 	ret = true;
- out:
- 	free_extent_map(next);
-@@ -1446,7 +1454,7 @@ static int defrag_collect_targets(struct
- 			goto next;
- 
- 		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
--							  locked);
-+						extent_thresh, newer_than, locked);
- 		if (!next_mergeable) {
- 			struct defrag_target_range *last;
- 
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2625,8 +2625,8 @@ static int smc_setsockopt(struct socket
+ 		    sk->sk_state != SMC_CLOSED) {
+ 			if (val) {
+ 				SMC_STAT_INC(smc, ndly_cnt);
+-				mod_delayed_work(smc->conn.lgr->tx_wq,
+-						 &smc->conn.tx_work, 0);
++				smc_tx_pending(&smc->conn);
++				cancel_delayed_work(&smc->conn.tx_work);
+ 			}
+ 		}
+ 		break;
 
 
