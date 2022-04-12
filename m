@@ -2,100 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4DD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 03:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B75BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 03:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344549AbiDLDgx (ORCPT
+        id S1344563AbiDLDiT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 23:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
+        Mon, 11 Apr 2022 23:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235124AbiDLDgu (ORCPT
+        with ESMTP id S229550AbiDLDiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 23:36:50 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8000862F2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 20:34:32 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id w7so16290973pfu.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 20:34:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W91zGX6dxqFiUGCVRFx8D5Y3JbxYlKOB4mae7fFQFkw=;
-        b=M4te89kKfRRP3IQZ+pPD/ZCR1cnLVFC58CmRISFXb9dlt/pJ6VBLmDYjCon0jTPgjU
-         Z4H4AsJu0vsD5WUQJnFbemzZ8RnhHf0TNWVlzPi5gYTziqMZrHW5Sh/Gzpa3AOAI92jv
-         gZJ6IbZVLzNh+jSooGBtrEn5s6W+sN7BP36/GBwc4w/tLacbiaGX25Q/RbN/skMVrAjP
-         TaAxYGesrh37wLZv5Ta660NiltkYnscgilGcfakHvwh3+nQ7g+a396yokCe8T7QTNdIC
-         dorMgE6D7xsuwMo/53FiakaMVx4GrwFXb8RZO3qQGzkNJGo+sgQVIv1NEtyuDjja+Zal
-         kL1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W91zGX6dxqFiUGCVRFx8D5Y3JbxYlKOB4mae7fFQFkw=;
-        b=SILdDXQnAKTPXQHUeiIJkejiMViE2iw4BprPdpxd+K4fFW0WCEC4N1a7b5Z+wHSLKv
-         tYm0iYNifG5Xa5ldS7U8coXldYWTVE60fHE4ZUGe/SS1hFb/ovsZUc0sucjVnrbVk+mo
-         vH+nq/SIMTzmRTx48jM/WupMpXbco/Rg2vzr9Y3xfoNXSy6826hbQbjWaQTX2Z5ctLXd
-         wylPRzuUIq5o3fXJb2YdTqEJkltC3MkrXcXxqJE3h7Vn7ko5Fi/lK3kZ60LGYzguty22
-         0yhz1XrXcBuYG1+DsE6NeXn3n/viBUrWXKKfbES9l3LMm81V2/IP/umWiRN5PqHL8Rgl
-         54Jw==
-X-Gm-Message-State: AOAM531ZyAiaQw7iNThYM84OBNxxkNOATNSt63a2kNz0vszg8cJLIXno
-        u8UjlOgdpZROSeHmCWr7FwXOnA==
-X-Google-Smtp-Source: ABdhPJyNrYndvPxD87g8DNwkXldbNmo7CJejXuvSm48T9zQr26C0WvdTw2yhxfYNDDyTHGcLu5llBw==
-X-Received: by 2002:a05:6a00:1956:b0:505:c8d2:d610 with SMTP id s22-20020a056a00195600b00505c8d2d610mr7105171pfk.71.1649734471975;
-        Mon, 11 Apr 2022 20:34:31 -0700 (PDT)
-Received: from localhost.localdomain ([122.182.197.47])
-        by smtp.gmail.com with ESMTPSA id u10-20020a17090a890a00b001cb14240c4csm1178441pjn.1.2022.04.11.20.34.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 20:34:31 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Cc:     Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>,
-        Mayuresh Chitale <mchitale@ventanamicro.com>
-Subject: [PATCH] RISC-V: mm: Fix set_satp_mode() for platform not having Sv57
-Date:   Tue, 12 Apr 2022 09:03:35 +0530
-Message-Id: <20220412033335.1384230-1-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Apr 2022 23:38:14 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0589186D2;
+        Mon, 11 Apr 2022 20:35:57 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9sqOTP_1649734551;
+Received: from 30.225.24.141(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9sqOTP_1649734551)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 12 Apr 2022 11:35:53 +0800
+Message-ID: <a20ca50f-1d1a-d09e-75da-f6ced65f6c93@linux.alibaba.com>
+Date:   Tue, 12 Apr 2022 11:35:51 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v8 04/20] cachefiles: notify user daemon when withdrawing
+ cookie
+Content-Language: en-US
+To:     David Howells <dhowells@redhat.com>
+Cc:     linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
+        linux-erofs@lists.ozlabs.org, torvalds@linux-foundation.org,
+        gregkh@linuxfoundation.org, willy@infradead.org,
+        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com,
+        tianzichen@kuaishou.com, fannaihao@baidu.com
+References: <542f749c-b0f1-1de6-cb41-26e296afb2df@linux.alibaba.com>
+ <20220406075612.60298-5-jefflexu@linux.alibaba.com>
+ <20220406075612.60298-1-jefflexu@linux.alibaba.com>
+ <1091405.1649680508@warthog.procyon.org.uk>
+ <1094493.1649684554@warthog.procyon.org.uk>
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+In-Reply-To: <1094493.1649684554@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When Sv57 is not available the satp.MODE test in set_satp_mode() will
-fail and lead to pgdir re-programming for Sv48. The pgdir re-programming
-will fail as well due to pre-existing pgdir entry used for Sv57 and as
-a result kernel fails to boot on RISC-V platform not having Sv57.
 
-To fix above issue, we should clear the pgdir memory in set_satp_mode()
-before re-programming.
 
-Fixes: 011f09d12052 ("riscv: mm: Set sv57 on defaultly")
-Reported-by: Mayuresh Chitale <mchitale@ventanamicro.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/mm/init.c | 1 +
- 1 file changed, 1 insertion(+)
+On 4/11/22 9:42 PM, David Howells wrote:
+> JeffleXu <jefflexu@linux.alibaba.com> wrote:
+> 
+>>>
+>>>> +	if (fd == 0)
+>>>> +		return -ENOENT;
+>>>
+>>> 0 is a valid fd.
+>>
+>> Yeah, but IMHO fd 0 is always for stdin? I think the allocated anon_fd
+>> won't install at fd 0. Please correct me if I'm wrong.
+> 
+> If someone has closed 0, then you'll get 0 next, I'm pretty sure.  Try it and
+> see.
 
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index 9535bea8688c..b0793dc0c291 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -718,6 +718,7 @@ static __init void set_satp_mode(void)
- 		if (!check_l4) {
- 			disable_pgtable_l5();
- 			check_l4 = true;
-+			memset(early_pg_dir, 0, PAGE_SIZE);
- 			goto retry;
- 		}
- 		disable_pgtable_l4();
+Good catch.
+
+> 
+>> In fact I wanna use "fd == 0" as the initial state as struct
+>> cachefiles_object is allocated with kmem_cache_zalloc().
+> 
+> I would suggest presetting it to something like -2 to avoid confusion.
+
+Okay, as described in the previous email, I'm going to replace @fd to
+@object_id. I will define some symbols to make it more readable,
+something like
+
+```
+struct cachefiles_object {
+	...
+#ifdef CONFIG_CACHEFILES_ONDEMAND
+#define CACHEFILES_OBJECT_ID_DEFAULT -2
+#define CACHEFILES_OBJECT_ID_DEAD    -1
+	int object_id;
+#endif
+	...
+}
+```
+
+Thanks for your time.
+
 -- 
-2.25.1
-
+Thanks,
+Jeffle
