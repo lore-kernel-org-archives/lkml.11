@@ -2,85 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E59C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3243C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbiDLXck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
+        id S231222AbiDLXcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiDLXb6 (ORCPT
+        with ESMTP id S230405AbiDLXb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:31:58 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70CBD90FC8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:17:53 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 8D1B592009C; Wed, 13 Apr 2022 00:17:50 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 7EA6492009B;
-        Tue, 12 Apr 2022 23:17:50 +0100 (BST)
-Date:   Tue, 12 Apr 2022 23:17:50 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Thomas Gleixner <tglx@linutronix.de>
-cc:     Daniel Vacek <neelx@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] x86/apic: Clarify i82489DX bit overlap in APIC_LVT0
-In-Reply-To: <87ee22f3ci.ffs@tglx>
-Message-ID: <alpine.DEB.2.21.2204122235140.9383@angie.orcam.me.uk>
-References: <20220202140244.1681140-1-neelx@redhat.com> <874k361liu.ffs@tglx> <CACjP9X_A7aLmvypyOz1UrXM571gx_X5q7=w-1j+G+MSbCteiEw@mail.gmail.com> <87ee22f3ci.ffs@tglx>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Tue, 12 Apr 2022 19:31:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C468FE76;
+        Tue, 12 Apr 2022 15:17:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7B5EB82052;
+        Tue, 12 Apr 2022 21:42:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C00C385A5;
+        Tue, 12 Apr 2022 21:42:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649799734;
+        bh=Qh6+GqKN5meXd+LrkS0vT//U/JIDvmn9UR+juFg+GOM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BNWc2i8NJ+1xk3Yc5bV/Y4/0DVgsiI/qFCzSa6+4eaO/L0OOYDqRIKL8eCEU7JK6N
+         v8iObN66NfBfCTlbiBuRNpdNXoMXG6e5AztgPW2fI7e7Fx0r/ZsEoCyl7UWTXjp1p6
+         /ZPQJffSRcbFZMpZBKDIQek+1HsyHqh5YlZL5wFfUDvWi1RObgDeq1q2rbazpvzgNS
+         we9pmNCoho5u+Fh8ddWbULv6+PDMWIXFlaAMC0UGqCm5JjBFaOMjzvG5mOCwLJR/ts
+         1rFZBGeePi9JcTqg/VIH4gbPoSWMsAHDOIbB0e8s9pORF3itl+TErmZaJCmVDjQVeW
+         ertRqqXzWy5aA==
+Date:   Tue, 12 Apr 2022 14:42:11 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Tom Rix <trix@redhat.com>
+Cc:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org,
+        ndesaulniers@google.com, sven@svenpeter.dev, alyssa@rosenzweig.io,
+        marcan@marcan.st, martink@posteo.de, saranya.gopal@intel.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] usb: typec: tipd: improve handling of failures in
+ interrupt handlers
+Message-ID: <YlXyM7e+Bkqa3HCZ@dev-arch.thelio-3990X>
+References: <20220409130013.1474412-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220409130013.1474412-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022, Thomas Gleixner wrote:
+Hi Tom,
 
-> Daniel stumbled over the undocumented bit overlap of the i82498DX external
-> APIC and the TSC deadline timer configuration bit in modern APICs.
+Thanks for the patch!
 
- For the record, it's documented in the i82498DX datasheet[1] and user 
-manual[2]:
+On Sat, Apr 09, 2022 at 09:00:13AM -0400, Tom Rix wrote:
+> clang static analysis reports this representative issue
+> core.c:516:6: warning: Branch condition evaluates
+>   to a garbage value
+>   if (event)
+>       ^~~~~
+> 
+> In cd321x_interrupt(), a successful call to
+> tps6598x_read64() is the only way event is set,
+> and if a failure happens the irq should not be
+> reported as handled.
+> 
+> Instead of initializing event, rework the
+> usage of ret by initializing it to IRQ_NONE
+> and then setting it when event is known to
+> be not zero.  This removes the if-statement
+> before the return.
+> 
+> tps6598x_interrupt() is similar.
+> 
+> Fixes: 0a4c005bd171 ("usb: typec: driver for TI TPS6598x USB Power Delivery controllers")
 
-'Bits [19:18] Timer Base: This field selects the time base input to be 
-used by the timer.
+I am not sure this fixes tag is accurate. At that point in time,
+tps6598x_interrupt() did not have any use of event1 or event2 that was
+uninitialized.
 
-  00: (Base 0): Uses "CLKIN" as input.
+I think
 
-  01: (Base 1): Uses "TMBASE".
+Fixes: c7260e29dd20 ("usb: typec: tipd: Add short-circuit for no irqs")
+Fixes: 45188f27b3d0 ("usb: typec: tipd: Add support for Apple CD321X")
 
-  10: (Base 2): Uses the output of the divider (Base 2).'
+is a more accurate set, as these changes made it possible for the event
+variables to be used uninitialized.
 
-(the wording is virtually the same in both sources).  Base 2 setting is 
-compatible with later APIC implementations. 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
- Since you're removing the macros and the documents referred aren't easily 
-available it may be worth to mention the settings somewhere, such as the 
-comment you're adding.
+I found one issue below. With that addressed, feel free to carry
+forward:
 
- Intel indeed did not document the two-bit field in any later literature, 
-and the i82498DX part cannot be used with any other APIC device due to a 
-protocol (and also wiring) difference in the inter-APIC communication bus.
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
- There's also bit 2 of the Divide Configuration Register.  That bit is 
-hardwired to 0 in later APIC versions, however in the i82498DX it selects 
-the time base input to be used by the divider, 0 for CLK (CLKIN) or 1 for 
-TMBASE.  Conversely bit 3 is hardwired to 0 in the i82498DX.
+> ---
+>  drivers/usb/typec/tipd/core.c | 24 +++++++++++-------------
+>  1 file changed, 11 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
+> index 16b4560216ba..88a20cc15da4 100644
+> --- a/drivers/usb/typec/tipd/core.c
+> +++ b/drivers/usb/typec/tipd/core.c
+> @@ -478,12 +478,11 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
+>  	struct tps6598x *tps = data;
+>  	u64 event;
+>  	u32 status;
+> -	int ret;
+> +	int ret = IRQ_NONE;
+>  
+>  	mutex_lock(&tps->lock);
+>  
+> -	ret = tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event);
+> -	if (ret) {
+> +	if (tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event)) {
+>  		dev_err(tps->dev, "%s: failed to read events\n", __func__);
+>  		goto err_unlock;
+>  	}
+> @@ -492,6 +491,8 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
+>  	if (!event)
+>  		goto err_unlock;
+>  
+> +	ret = IRQ_HANDLED;
+> +
+>  	if (!tps6598x_read_status(tps, &status))
+>  		goto err_clear_ints;
+>  
+> @@ -513,9 +514,7 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
+>  err_unlock:
+>  	mutex_unlock(&tps->lock);
+>  
+> -	if (event)
+> -		return IRQ_HANDLED;
+> -	return IRQ_NONE;
+> +	return ret;
+>  }
+>  
+>  static irqreturn_t tps6598x_interrupt(int irq, void *data)
+> @@ -524,13 +523,12 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+>  	u64 event1;
+>  	u64 event2;
+>  	u32 status;
+> -	int ret;
+> +	int ret = IRQ_NONE;
+>  
+>  	mutex_lock(&tps->lock);
+>  
+> -	ret = tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event1);
+> -	ret |= tps6598x_read64(tps, TPS_REG_INT_EVENT2, &event2);
+> -	if (ret) {
+> +	if (tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event1) ||
+> +	    tps6598x_read64(tps, TPS_REG_INT_EVENT2, &event2)) {
 
-References:
+This change is incorrect. If the first tps6598x_read64() call succeeds,
+then the second tps6598x_read64() will not be called, which would leave
+event2 uninitialized. This should be a bitwise OR so that both calls to
+tps6598x_read64() occur.
 
-[1] "82489DX Advanced Programmable Interrupt Controller", Intel 
-    Corporation, Order Number: 290446-002, October 1993, Section 6.12 
-    "Timer Registers", p.27
-
-[2] M. Jayakumar, "AP-388 82489DX User's Manual", Multiprocessor 
-    Technology Group, Intel Corporation, Order Number: 292116-002, 
-    November 1995, Section "Register Programming Details", p.22
-
- FWIW,
-
-  Maciej
+>  		dev_err(tps->dev, "%s: failed to read events\n", __func__);
+>  		goto err_unlock;
+>  	}
+> @@ -539,6 +537,8 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+>  	if (!(event1 | event2))
+>  		goto err_unlock;
+>  
+> +	ret = IRQ_HANDLED;
+> +
+>  	if (!tps6598x_read_status(tps, &status))
+>  		goto err_clear_ints;
+>  
+> @@ -561,9 +561,7 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+>  err_unlock:
+>  	mutex_unlock(&tps->lock);
+>  
+> -	if (event1 | event2)
+> -		return IRQ_HANDLED;
+> -	return IRQ_NONE;
+> +	return ret;
+>  }
+>  
+>  static int tps6598x_check_mode(struct tps6598x *tps)
+> -- 
+> 2.27.0
+> 
+> 
