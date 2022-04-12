@@ -2,115 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC87C47093
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 628A4C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378800AbiDLINO (ORCPT
+        id S1378729AbiDLIMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
+        Tue, 12 Apr 2022 04:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355641AbiDLH1w (ORCPT
+        with ESMTP id S1355654AbiDLH1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:27:52 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805344EDD5;
-        Tue, 12 Apr 2022 00:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=C3gL28B3Gc2aOWbp9TEABQMn0ckE3NlAT3ZMfiId2yM=; b=NX/1HLFCyl0vrt8Ykxe6Lw8tiL
-        ibR3HLppnOGAHLzmEZvRQ/ps/npWEuslAuQ2wxMgrPuhsEQkGaiMW2OiO1XheO1U3zr16ITSbJ8Y+
-        Ae9IZrmFSo1ePtVSKuXbWenTKQO/im6/8EfYem0M57zrvOvDuysy2DB2JtTtAHbPS0gJvq3rTLGCn
-        JABlC1yiyKBFK2laSPj5AeOq1wFEjyTxA5jmTRL8kbQ6/qmVUwnY4arjso2s6ilmC/rusTxHmZQPf
-        mW1ZsqDJP4bqkJcpLqsI2kQVkPz/MBRWHAqfCiikArrTB2F6+jnEO3oGsTxbLbckXcGPgQ4wZQLg5
-        o54RZ5SQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neAbS-004F4r-Tz; Tue, 12 Apr 2022 07:06:19 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6172F98619A; Tue, 12 Apr 2022 09:06:16 +0200 (CEST)
-Date:   Tue, 12 Apr 2022 09:06:16 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Yu Zhao <yuzhao@google.com>, Stephen Rothwell <sfr@rothwell.id.au>,
-        linux-mm@kvack.org, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, page-reclaim@google.com,
-        x86@kernel.org, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Subject: Re: [PATCH v10 05/14] mm: multi-gen LRU: groundwork
-Message-ID: <20220412070616.GT2731@worktop.programming.kicks-ass.net>
-References: <20220407031525.2368067-1-yuzhao@google.com>
- <20220407031525.2368067-6-yuzhao@google.com>
- <20220411191615.a34959bdcc25ef3f9c16a7ce@linux-foundation.org>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A970E4EDE0;
+        Tue, 12 Apr 2022 00:07:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAA70B81B54;
+        Tue, 12 Apr 2022 07:07:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B69EC385A8;
+        Tue, 12 Apr 2022 07:07:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747272;
+        bh=GKounZqJS96t0E4wQdvhNBG6ZpQrjW2xlU2vl6Bc/jc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XG+ZwYWlmP+1S2M1aw2PYOvLDhl6NZuFYLDj+VXMGQsx1knlXo3/8LaUHjnG8VRJ+
+         50Wxg+lhdHSrkNKmHzkOgP8U1Qk318ZRCNJ1wOFMS0hofzzFRe0GqvFexiXBzs0JHy
+         mG8p0Q0Bgg2pGYAEazUYsPsrJ9EPjKxiMBWd3gOk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 004/343] net: dsa: felix: fix possible NULL pointer dereference
+Date:   Tue, 12 Apr 2022 08:27:02 +0200
+Message-Id: <20220412062951.228586224@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411191615.a34959bdcc25ef3f9c16a7ce@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 07:16:15PM -0700, Andrew Morton wrote:
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-> > +{
-> > +	int gen;
-> > +	unsigned long old_flags, new_flags;
-> > +
-> > +	do {
-> > +		new_flags = old_flags = READ_ONCE(folio->flags);
-> > +		if (!(new_flags & LRU_GEN_MASK))
-> > +			return false;
-> > +
-> > +		VM_BUG_ON_FOLIO(folio_test_active(folio), folio);
-> > +		VM_BUG_ON_FOLIO(folio_test_unevictable(folio), folio);
-> > +
-> > +		gen = ((new_flags & LRU_GEN_MASK) >> LRU_GEN_PGOFF) - 1;
-> > +
-> > +		new_flags &= ~LRU_GEN_MASK;
-> > +		/* for shrink_page_list() */
-> > +		if (reclaiming)
-> > +			new_flags &= ~(BIT(PG_referenced) | BIT(PG_reclaim));
-> > +		else if (lru_gen_is_active(lruvec, gen))
-> > +			new_flags |= BIT(PG_active);
-> > +	} while (cmpxchg(&folio->flags, old_flags, new_flags) != old_flags);
+[ Upstream commit 866b7a278cdb51eb158cd8513bc7438fc857804a ]
 
-Also; please use the form:
+As the possible failure of the allocation, kzalloc() may return NULL
+pointer.
+Therefore, it should be better to check the 'sgi' in order to prevent
+the dereference of NULL pointer.
 
-	unsigned long new, old = READ_ONCE(folio->flags);
+Fixes: 23ae3a7877718 ("net: dsa: felix: add stream gate settings for psfp").
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220329090800.130106-1-zhengyongjun3@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-	do {
-		new = /* something */ old;
-	} while (!try_cmpxchg(&folio->flags, &old, new))
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 33f0ceae381d..2875b5250856 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1940,6 +1940,10 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
+ 		case FLOW_ACTION_GATE:
+ 			size = struct_size(sgi, entries, a->gate.num_entries);
+ 			sgi = kzalloc(size, GFP_KERNEL);
++			if (!sgi) {
++				ret = -ENOMEM;
++				goto err;
++			}
+ 			vsc9959_psfp_parse_gate(a, sgi);
+ 			ret = vsc9959_psfp_sgi_table_add(ocelot, sgi);
+ 			if (ret) {
+-- 
+2.35.1
+
+
 
