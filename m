@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECEEFC41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C24C3525B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348612AbiDLIQj (ORCPT
+        id S1356861AbiDLIQ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
+        Tue, 12 Apr 2022 04:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355283AbiDLH1X (ORCPT
+        with ESMTP id S1351733AbiDLH2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:23 -0400
+        Tue, 12 Apr 2022 03:28:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C075A48E6F;
-        Tue, 12 Apr 2022 00:07:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549DB4F441;
+        Tue, 12 Apr 2022 00:08:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14E28B81B50;
-        Tue, 12 Apr 2022 07:07:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80AD0C385A8;
-        Tue, 12 Apr 2022 07:07:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1264FB81B4F;
+        Tue, 12 Apr 2022 07:08:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7203FC385AA;
+        Tue, 12 Apr 2022 07:08:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747241;
-        bh=MaMuRVLYeWJvIEXFBlSue+ZzZeLHC/BTw0ChrLm0IUU=;
+        s=korg; t=1649747283;
+        bh=ZwVlB8Plku3sRdnB7LcIRszBYxi8dkTfTjHNj36+0GQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CBdrUYH3cZvZLLcgr0TQNDTy9Gd3cb8pTi0Tqx2AgJoAZYizw0h1BMat4ydfEjsmV
-         Aya1Y1RKYvFtOiCFNqG7vO1lriBOTkLRtxDnbIK/zW6MsFNRQKGr6WPmwpLwDNyFYl
-         8PRoR0CrAZPhWpgy2l256t1YF8Cw0K3u/prZicB4=
+        b=r3F6kKPEMbHd14vFAj1Lm3ltPH03qMXQcl9CeAEbDa7fid9XNym7YmR2adlmq9VvY
+         FGVryiAUVJbeRxXK06U0Eo727RVgL7ict7Aq7KZAJ9mDD9vWOlRpSNT1FjKpkEJrut
+         e0ji9Hl2wQUKv3NVbUgujBHcyTKBS2LhBQFAR19E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Lotus Fenn <lotusf@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        Like Xu <likexu@tencent.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 001/343] lib/logic_iomem: correct fallback config references
-Date:   Tue, 12 Apr 2022 08:26:59 +0200
-Message-Id: <20220412062951.141994326@linuxfoundation.org>
+Subject: [PATCH 5.17 008/343] KVM: x86/svm: Clear reserved bits written to PerfEvtSeln MSRs
+Date:   Tue, 12 Apr 2022 08:27:06 +0200
+Message-Id: <20220412062951.343821780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,64 +53,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Jim Mattson <jmattson@google.com>
 
-[ Upstream commit 2a6852cb8ff0c8c1363cac648d68489343813212 ]
+[ Upstream commit 9b026073db2f1ad0e4d8b61c83316c8497981037 ]
 
-Due to some renaming, we ended up with the "indirect iomem"
-naming in Kconfig, following INDIRECT_PIO. However, clearly
-I missed following through on that in the ifdefs, but so far
-INDIRECT_IOMEM_FALLBACK isn't used by any architecture.
+AMD EPYC CPUs never raise a #GP for a WRMSR to a PerfEvtSeln MSR. Some
+reserved bits are cleared, and some are not. Specifically, on
+Zen3/Milan, bits 19 and 42 are not cleared.
 
-Reported-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Fixes: ca2e334232b6 ("lib: add iomem emulation (logic_iomem)")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+When emulating such a WRMSR, KVM should not synthesize a #GP,
+regardless of which bits are set. However, undocumented bits should
+not be passed through to the hardware MSR. So, rather than checking
+for reserved bits and synthesizing a #GP, just clear the reserved
+bits.
+
+This may seem pedantic, but since KVM currently does not support the
+"Host/Guest Only" bits (41:40), it is necessary to clear these bits
+rather than synthesizing #GP, because some popular guests (e.g Linux)
+will set the "Host Only" bit even on CPUs that don't support
+EFER.SVME, and they don't expect a #GP.
+
+For example,
+
+root@Ubuntu1804:~# perf stat -e r26 -a sleep 1
+
+ Performance counter stats for 'system wide':
+
+                 0      r26
+
+       1.001070977 seconds time elapsed
+
+Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379957] unchecked MSR access error: WRMSR to 0xc0010200 (tried to write 0x0000020000130026) at rIP: 0xffffffff9b276a28 (native_write_msr+0x8/0x30)
+Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379958] Call Trace:
+Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379963]  amd_pmu_disable_event+0x27/0x90
+
+Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
+Reported-by: Lotus Fenn <lotusf@google.com>
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Reviewed-by: Like Xu <likexu@tencent.com>
+Reviewed-by: David Dunn <daviddunn@google.com>
+Message-Id: <20220226234131.2167175-1-jmattson@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/logic_iomem.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/svm/pmu.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/lib/logic_iomem.c b/lib/logic_iomem.c
-index 8c3365f26e51..b247d412ddef 100644
---- a/lib/logic_iomem.c
-+++ b/lib/logic_iomem.c
-@@ -68,7 +68,7 @@ int logic_iomem_add_region(struct resource *resource,
- }
- EXPORT_SYMBOL(logic_iomem_add_region);
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index 7cc664b4472a..ba40b7fced5a 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -262,12 +262,10 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	/* MSR_EVNTSELn */
+ 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_EVNTSEL);
+ 	if (pmc) {
+-		if (data == pmc->eventsel)
+-			return 0;
+-		if (!(data & pmu->reserved_bits)) {
++		data &= ~pmu->reserved_bits;
++		if (data != pmc->eventsel)
+ 			reprogram_gp_counter(pmc, data);
+-			return 0;
+-		}
++		return 0;
+ 	}
  
--#ifndef CONFIG_LOGIC_IOMEM_FALLBACK
-+#ifndef CONFIG_INDIRECT_IOMEM_FALLBACK
- static void __iomem *real_ioremap(phys_addr_t offset, size_t size)
- {
- 	WARN(1, "invalid ioremap(0x%llx, 0x%zx)\n",
-@@ -81,7 +81,7 @@ static void real_iounmap(volatile void __iomem *addr)
- 	WARN(1, "invalid iounmap for addr 0x%llx\n",
- 	     (unsigned long long)(uintptr_t __force)addr);
- }
--#endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
-+#endif /* CONFIG_INDIRECT_IOMEM_FALLBACK */
- 
- void __iomem *ioremap(phys_addr_t offset, size_t size)
- {
-@@ -168,7 +168,7 @@ void iounmap(volatile void __iomem *addr)
- }
- EXPORT_SYMBOL(iounmap);
- 
--#ifndef CONFIG_LOGIC_IOMEM_FALLBACK
-+#ifndef CONFIG_INDIRECT_IOMEM_FALLBACK
- #define MAKE_FALLBACK(op, sz) 						\
- static u##sz real_raw_read ## op(const volatile void __iomem *addr)	\
- {									\
-@@ -213,7 +213,7 @@ static void real_memcpy_toio(volatile void __iomem *addr, const void *buffer,
- 	WARN(1, "Invalid memcpy_toio at address 0x%llx\n",
- 	     (unsigned long long)(uintptr_t __force)addr);
- }
--#endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
-+#endif /* CONFIG_INDIRECT_IOMEM_FALLBACK */
- 
- #define MAKE_OP(op, sz) 						\
- u##sz __raw_read ## op(const volatile void __iomem *addr)		\
+ 	return 1;
 -- 
 2.35.1
 
