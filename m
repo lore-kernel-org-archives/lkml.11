@@ -2,52 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12160C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8B8C48BD2
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352626AbiDLHYW (ORCPT
+        id S1352904AbiDLHYx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57262 "EHLO
+        Tue, 12 Apr 2022 03:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347691AbiDLHJM (ORCPT
+        with ESMTP id S1351431AbiDLHLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:09:12 -0400
+        Tue, 12 Apr 2022 03:11:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F30849F1F;
-        Mon, 11 Apr 2022 23:49:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E44449F87;
+        Mon, 11 Apr 2022 23:49:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47D43B81B35;
-        Tue, 12 Apr 2022 06:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913BCC385A1;
-        Tue, 12 Apr 2022 06:49:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4928B818BD;
+        Tue, 12 Apr 2022 06:49:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC64C385A6;
+        Tue, 12 Apr 2022 06:49:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746168;
-        bh=RiLSKr4bPia4+WtT/d78uazNGyfqTpLSiw8pG2sy0Cw=;
+        s=korg; t=1649746190;
+        bh=9tdgX1V5Bem82saVSSSJ4Hf097XhJQA6DN1w7j8Kulw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gYoJMXPVx+dP/bmar1ww2FD0W2wtGGsdQyf3+uppmaYkTJNp5uH9LvZD02HftZz9K
-         qyRwX1b6LoSk0TEiNhbcO5WxKAxxEc1M2EGOQ8WbuTmDmiU2KPIa2MRMoyy2kYJyRH
-         sLf4wOnKlYrJgvcwcC5XTiWqNeTVogsAqn+3oRP0=
+        b=gzIGvflABMn4YGVtmSLRaB2gIwIWhz6H8OkLGgc6B3aGpFu/qxHPxHrvKIcCtXmfp
+         S4lLZ5GUFTA4X147RlxoN1LnhTcrvPagJU4QHfN/upTHqIvRf76pzOTAhpdl+8KZVg
+         8DpHV2O7AMyoNuwbpZgj/1sgI83DuGcdWrrqWcUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-alpha@vger.kernel.org, x86@kernel.org,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Arthur Fabre <afabre@cloudflare.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 145/277] rtc: Check return value from mc146818_get_time()
-Date:   Tue, 12 Apr 2022 08:29:08 +0200
-Message-Id: <20220412062946.231414058@linuxfoundation.org>
+Subject: [PATCH 5.15 194/277] bpf: Support dual-stack sockets in bpf_tcp_check_syncookie
+Date:   Tue, 12 Apr 2022 08:29:57 +0200
+Message-Id: <20220412062947.653712116@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -59,153 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 0dd8d6cb9eddfe637bcd821bbfd40ebd5a0737b9 ]
+[ Upstream commit 2e8702cc0cfa1080f29fd64003c00a3e24ac38de ]
 
-There are 4 users of mc146818_get_time() and none of them was checking
-the return value from this function. Change this.
+bpf_tcp_gen_syncookie looks at the IP version in the IP header and
+validates the address family of the socket. It supports IPv4 packets in
+AF_INET6 dual-stack sockets.
 
-Print the appropriate warnings in callers of mc146818_get_time() instead
-of in the function mc146818_get_time() itself, in order not to add
-strings to rtc-mc146818-lib.c, which is kind of a library.
+On the other hand, bpf_tcp_check_syncookie looks only at the address
+family of the socket, ignoring the real IP version in headers, and
+validates only the packet size. This implementation has some drawbacks:
 
-The callers of alpha_rtc_read_time() and cmos_read_time() may use the
-contents of (struct rtc_time *) even when the functions return a failure
-code. Therefore, set the contents of (struct rtc_time *) to 0x00,
-which looks more sensible then 0xff and aligns with the (possibly
-stale?) comment in cmos_read_time:
+1. Packets are not validated properly, allowing a BPF program to trick
+   bpf_tcp_check_syncookie into handling an IPv6 packet on an IPv4
+   socket.
 
-	/*
-	 * If pm_trace abused the RTC for storage, set the timespec to 0,
-	 * which tells the caller that this RTC value is unusable.
-	 */
+2. Dual-stack sockets fail the checks on IPv4 packets. IPv4 clients end
+   up receiving a SYNACK with the cookie, but the following ACK gets
+   dropped.
 
-For consistency, do this in mc146818_get_time().
+This patch fixes these issues by changing the checks in
+bpf_tcp_check_syncookie to match the ones in bpf_tcp_gen_syncookie. IP
+version from the header is taken into account, and it is validated
+properly with address family.
 
-Note: hpet_rtc_interrupt() may call mc146818_get_time() many times a
-second. It is very unlikely, though, that the RTC suddenly stops
-working and mc146818_get_time() would consistently fail.
-
-Only compile-tested on alpha.
-
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: x86@kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-4-mat.jonczyk@o2.pl
+Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Acked-by: Arthur Fabre <afabre@cloudflare.com>
+Link: https://lore.kernel.org/bpf/20220406124113.2795730-1-maximmi@nvidia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/alpha/kernel/rtc.c        | 7 ++++++-
- arch/x86/kernel/hpet.c         | 8 ++++++--
- drivers/base/power/trace.c     | 6 +++++-
- drivers/rtc/rtc-cmos.c         | 9 ++++++++-
- drivers/rtc/rtc-mc146818-lib.c | 2 +-
- 5 files changed, 26 insertions(+), 6 deletions(-)
+ net/core/filter.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
-index ce3077946e1d..fb3025396ac9 100644
---- a/arch/alpha/kernel/rtc.c
-+++ b/arch/alpha/kernel/rtc.c
-@@ -80,7 +80,12 @@ init_rtc_epoch(void)
- static int
- alpha_rtc_read_time(struct device *dev, struct rtc_time *tm)
- {
--	mc146818_get_time(tm);
-+	int ret = mc146818_get_time(tm);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index a65de7ac60aa..fbde862e3e82 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6719,24 +6719,33 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
+ 	if (!th->ack || th->rst || th->syn)
+ 		return -ENOENT;
+ 
++	if (unlikely(iph_len < sizeof(struct iphdr)))
++		return -EINVAL;
 +
-+	if (ret < 0) {
-+		dev_err_ratelimited(dev, "unable to read current time\n");
-+		return ret;
-+	}
+ 	if (tcp_synq_no_recent_overflow(sk))
+ 		return -ENOENT;
  
- 	/* Adjust for non-default epochs.  It's easier to depend on the
- 	   generic __get_rtc_time and adjust the epoch here than create
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 882213df3713..71f336425e58 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -1435,8 +1435,12 @@ irqreturn_t hpet_rtc_interrupt(int irq, void *dev_id)
- 	hpet_rtc_timer_reinit();
- 	memset(&curr_time, 0, sizeof(struct rtc_time));
+ 	cookie = ntohl(th->ack_seq) - 1;
  
--	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE))
--		mc146818_get_time(&curr_time);
-+	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE)) {
-+		if (unlikely(mc146818_get_time(&curr_time) < 0)) {
-+			pr_err_ratelimited("unable to read current time from RTC\n");
-+			return IRQ_HANDLED;
-+		}
-+	}
+-	switch (sk->sk_family) {
+-	case AF_INET:
+-		if (unlikely(iph_len < sizeof(struct iphdr)))
++	/* Both struct iphdr and struct ipv6hdr have the version field at the
++	 * same offset so we can cast to the shorter header (struct iphdr).
++	 */
++	switch (((struct iphdr *)iph)->version) {
++	case 4:
++		if (sk->sk_family == AF_INET6 && ipv6_only_sock(sk))
+ 			return -EINVAL;
  
- 	if (hpet_rtc_flags & RTC_UIE &&
- 	    curr_time.tm_sec != hpet_prev_update_sec) {
-diff --git a/drivers/base/power/trace.c b/drivers/base/power/trace.c
-index 94665037f4a3..72b7a92337b1 100644
---- a/drivers/base/power/trace.c
-+++ b/drivers/base/power/trace.c
-@@ -120,7 +120,11 @@ static unsigned int read_magic_time(void)
- 	struct rtc_time time;
- 	unsigned int val;
+ 		ret = __cookie_v4_check((struct iphdr *)iph, th, cookie);
+ 		break;
  
--	mc146818_get_time(&time);
-+	if (mc146818_get_time(&time) < 0) {
-+		pr_err("Unable to read current time from RTC\n");
-+		return 0;
-+	}
+ #if IS_BUILTIN(CONFIG_IPV6)
+-	case AF_INET6:
++	case 6:
+ 		if (unlikely(iph_len < sizeof(struct ipv6hdr)))
+ 			return -EINVAL;
+ 
++		if (sk->sk_family != AF_INET6)
++			return -EINVAL;
 +
- 	pr_info("RTC time: %ptRt, date: %ptRd\n", &time, &time);
- 	val = time.tm_year;				/* 100 years */
- 	if (val > 100)
-diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
-index dc3f8b0dde98..d0f58cca5c20 100644
---- a/drivers/rtc/rtc-cmos.c
-+++ b/drivers/rtc/rtc-cmos.c
-@@ -222,6 +222,8 @@ static inline void cmos_write_bank2(unsigned char val, unsigned char addr)
- 
- static int cmos_read_time(struct device *dev, struct rtc_time *t)
- {
-+	int ret;
-+
- 	/*
- 	 * If pm_trace abused the RTC for storage, set the timespec to 0,
- 	 * which tells the caller that this RTC value is unusable.
-@@ -229,7 +231,12 @@ static int cmos_read_time(struct device *dev, struct rtc_time *t)
- 	if (!pm_trace_rtc_valid())
- 		return -EIO;
- 
--	mc146818_get_time(t);
-+	ret = mc146818_get_time(t);
-+	if (ret < 0) {
-+		dev_err_ratelimited(dev, "unable to read current time\n");
-+		return ret;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
-index bd48cee3027e..97e3cebb4da9 100644
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -24,7 +24,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
- 	/* Ensure that the RTC is accessible. Bit 6 must be 0! */
- 	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
- 		spin_unlock_irqrestore(&rtc_lock, flags);
--		memset(time, 0xff, sizeof(*time));
-+		memset(time, 0, sizeof(*time));
- 		return -EIO;
- 	}
- 
+ 		ret = __cookie_v6_check((struct ipv6hdr *)iph, th, cookie);
+ 		break;
+ #endif /* CONFIG_IPV6 */
 -- 
 2.35.1
 
