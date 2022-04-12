@@ -2,102 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BF6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09998C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349934AbiDLSE3 (ORCPT
+        id S1350983AbiDLSG2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 14:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46694 "EHLO
+        Tue, 12 Apr 2022 14:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232756AbiDLSEY (ORCPT
+        with ESMTP id S1351377AbiDLSGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 14:04:24 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080395A15D;
-        Tue, 12 Apr 2022 11:02:06 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so3790076pjb.0;
-        Tue, 12 Apr 2022 11:02:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KD3zlhA4cnu+F8Ye3bhSZQoi9dOhZ7oX6Of6NoxUUuk=;
-        b=iCV26r+EyhOpvQyEn8WdLCWBOQ4OpaL8UodOn8ua4BC/Q/QHEOiVx5lPx/ZLNmhkr3
-         z+juAfN3JLD9T5FhqgJRBwEqc0LKZnjU2fSzjGEFGDJMEbOJd4jtE9YPC0w5FnNiGMvk
-         4RkbVGo09yl2USiIoe/oMQfhxY1Pef+eCmp8tDE5vDiLu2q0U2/QZazh/ayjMJj47/UL
-         UtCBr0ROq5yagnvTt4xiLC4Ut52nYyab2dCgb8921SBD/ydYeP/+8ltyei70aJ6ZNSe0
-         eBbYeU89jNImPvSLIDF4JIUuluccMh43n13h0XJaomdvq0nDzlONJZ6S/87nRRCr/eud
-         Iz8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KD3zlhA4cnu+F8Ye3bhSZQoi9dOhZ7oX6Of6NoxUUuk=;
-        b=tjdXmagNocT1UQHBKiyC1rO3DvCyQkGrf1PPCHw/csTZg3hynpTCg1Zii3HYYFIlKb
-         xb42WrDNYvrOByCPY20eP88k2eJoZJLol8y32WWWYu6jLYfHIVfd7bK68CGSubat2sqB
-         WWYf7smkl8Y0713SkHNGntnKMHuD2ICPIReH6N268xifTFXQkcNy4ZtQ1qn8t94G1bID
-         0KP+ZO4lZpgpuFpvO+tXoGs3nwxdi91kVcepuBg+p+j7CUqWqntzQGTDLwyqyU+fAeTh
-         jC3UNktXwlHzawTTAE+OkBNYV0Qkv/f69jADyLegP1cxQDbeFF7CaAwgRVoNM8qkzQz4
-         9sgg==
-X-Gm-Message-State: AOAM530yqT/8PR8t8ke+LKSxY4dfmFYo7umLg9JTpsOqyCmmsGU5jk3G
-        NLvVwAHXSaBhhziXyWizvp97y2/fDBI=
-X-Google-Smtp-Source: ABdhPJza/agHmGrmFLgonFL7VOBBA4SS8lMXCPSs9MfxWwOxa5kiBqig+Iy0FNNkQutRNULcGytwDw==
-X-Received: by 2002:a17:90a:d584:b0:1bc:e520:91f2 with SMTP id v4-20020a17090ad58400b001bce52091f2mr6402022pju.192.1649786525466;
-        Tue, 12 Apr 2022 11:02:05 -0700 (PDT)
-Received: from 9a2d8922b8f1 ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id m13-20020a62a20d000000b004fe0ce6d7a1sm30027607pff.193.2022.04.12.11.02.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 11:02:05 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 23:31:59 +0530
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dmaengine@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] dt-bindings: dma: Convert Qualcomm BAM DMA
- binding to json format
-Message-ID: <20220412180159.GA29479@9a2d8922b8f1>
-References: <20220410175056.79330-1-singh.kuldeep87k@gmail.com>
- <20220410175056.79330-7-singh.kuldeep87k@gmail.com>
- <14ecb746-56f0-2d3b-2f93-1af9407de4b7@linaro.org>
- <20220411105810.GB33220@9a2d8922b8f1>
- <50defa36-3d91-80ea-e303-abaade1c1f7e@linaro.org>
- <20220412061953.GA95928@9a2d8922b8f1>
- <8ff07720-3c52-99e6-8046-501f4ae28518@linaro.org>
+        Tue, 12 Apr 2022 14:06:23 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 114DB300;
+        Tue, 12 Apr 2022 11:04:02 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 49E3513D5;
+        Tue, 12 Apr 2022 11:04:02 -0700 (PDT)
+Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.27.129])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DEDE93F5A1;
+        Tue, 12 Apr 2022 11:03:59 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 19:03:53 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH bpf v2 0/4] kprobes: rethook,ARM,arm64: Replace kretprobe
+ trampoline with rethook
+Message-ID: <YlW/CdzKGeSYqtHY@FVFF77S0Q05N.cambridge.arm.com>
+References: <164937903547.1272679.7244379141135199176.stgit@devnote2>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8ff07720-3c52-99e6-8046-501f4ae28518@linaro.org>
+In-Reply-To: <164937903547.1272679.7244379141135199176.stgit@devnote2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > Which example schema are you talking about?
+On Fri, Apr 08, 2022 at 09:50:35AM +0900, Masami Hiramatsu wrote:
+> Hi,
+
+Hi,
+
+> Here is the 2nd version of the series for replacing kretprobe trampoline
+> with rethook on ARM/arm64. I fixed some compiler warnings in this version.
+
+What tree is this based on? It doesn't cleanly apply atop v5.18-rc1:
+
+| [mark@lakrids:~/src/linux]% git am v2_20220408_mhiramat_kprobes_rethook_arm_arm64_replace_kretprobe_trampoline_with_rethook.mbx
+| Applying: ARM: unwind: Initialize the lr_addr field of unwind_ctrl_block
+| Applying: rethook,fprobe,kprobes: Check a failure in the rethook_hook()
+| Applying: ARM: rethook: Replace kretprobe trampoline with rethook
+| error: patch failed: arch/arm/kernel/stacktrace.c:66
+| error: arch/arm/kernel/stacktrace.c: patch does not apply
+| Patch failed at 0003 ARM: rethook: Replace kretprobe trampoline with rethook
+| hint: Use 'git am --show-current-patch=diff' to see the failed patch
+| When you have resolved this problem, run "git am --continue".
+| If you prefer to skip this patch, run "git am --skip" instead.
+| To restore the original branch and stop patching, run "git am --abort".
+
+I've done a `git am -3` locally to make that work for now.
+
+> The previous version is here[1];
 > 
-> There is only one example-schema.
-> $ find ./linux -name 'example-schema*'
-
-Example seems good to me. I will change to boolean.
-
-> > Anyway Krzysztof, can you confirm the same as you have been actively
-> > contributing to Qcom peripherals. I will add credit in follow-up
-> > submission.
+> [1] https://lore.kernel.org/all/164915121498.982637.12787715964983738566.stgit@devnote2/T/#u
 > 
-> Honestly not now, because I don't have access to related datasheets (I
-> am working on this).
+> This series includes a trivial bugfix for the arm unwinder to initialize
+> an internal data structure([1/4]). This is not critical for stack trace,
+> but required for rethook to find the LR register from the stack.
+> This also have an update for the rethook interface, which allows us to
+> check the rethook_hook() failure ([2/4]). This is also required for the
+> rethook on arm because unwinder is able to fail.
+> The rest of patches are replacing kretprobe trampoline with rethook on
+> ARM ([3/4]) and arm64 ([4/4]).
 
-Yes definitely and you also must be having bunch of items in your todo list.
-Actually, I also don't have access to datasheets that's why was looking
-for inputs.
+Generally, the arm and arm64 bits go via different trees, and for unwinding the
+two are quite different.
 
-> You can though try to look at original (vendor) sources:
-> https://git.codelinaro.org/clo/la/kernel/msm-4.19 (sdm845)
-> https://git.codelinaro.org/clo/la/kernel/msm-3.18 (msm8996)
+IIUC the dependency between the two is just because patch 2 changes the
+prototypes of some functions. Is that right?
 
-Great. I'll see if I can make most out of it.
+
+> Background:
+> 
+> This rethook came from Jiri's request of multiple kprobe for bpf[2].
+> He tried to solve an issue that starting bpf with multiple kprobe will
+> take a long time because bpf-kprobe will wait for RCU grace period for
+> sync rcu events.
+> 
+> Jiri wanted to attach a single bpf handler to multiple kprobes and
+> he tried to introduce multiple-probe interface to kprobe. So I asked
+> him to use ftrace and kretprobe-like hook if it is only for the
+> function entry and exit, instead of adding ad-hoc interface
+> to kprobes.
+> For this purpose, I introduced the fprobe (kprobe like interface for
+> ftrace) with the rethook (this is a generic return hook feature for
+> fprobe exit handler)[3].
+> 
+> [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
+> [3] https://lore.kernel.org/all/164191321766.806991.7930388561276940676.stgit@devnote2/T/#u
+> 
+> The rethook is basically same as the kretprobe trampoline. I just made
+> it decoupled from kprobes. Eventually, the all arch dependent kretprobe
+> trampolines will be replaced with the rethook trampoline instead of
+> cloning the code.
+> 
+> When I port the rethook for all arch which supports kretprobe, the
+> legacy kretprobe specific code (which is for CONFIG_KRETPROBE_ON_RETHOOK=n)
+> will be removed eventually.
+> 
+> BTW, the arm Clang support for rethook is for kretprobes only. fprobe
+> and ftrace seems not working with Clang yet.
+
+Do you mean that's an existing issue?
+
+Thanks,
+Mark.
+
+> 
+> Thank you,
+> 
+> ---
+> 
+> Masami Hiramatsu (4):
+>       ARM: unwind: Initialize the lr_addr field of unwind_ctrl_block
+>       rethook,fprobe,kprobes: Check a failure in the rethook_hook()
+>       ARM: rethook: Replace kretprobe trampoline with rethook
+>       arm64: rethook: Replace kretprobe trampoline with rethook
+> 
+> 
+>  arch/arm/Kconfig                              |    1 
+>  arch/arm/include/asm/stacktrace.h             |    5 +
+>  arch/arm/kernel/stacktrace.c                  |   13 +--
+>  arch/arm/kernel/unwind.c                      |    1 
+>  arch/arm/probes/Makefile                      |    1 
+>  arch/arm/probes/kprobes/core.c                |   62 ------------
+>  arch/arm/probes/rethook.c                     |  127 +++++++++++++++++++++++++
+>  arch/arm64/Kconfig                            |    1 
+>  arch/arm64/include/asm/kprobes.h              |    2 
+>  arch/arm64/include/asm/stacktrace.h           |    2 
+>  arch/arm64/kernel/Makefile                    |    1 
+>  arch/arm64/kernel/probes/Makefile             |    1 
+>  arch/arm64/kernel/probes/kprobes.c            |   15 ---
+>  arch/arm64/kernel/probes/kprobes_trampoline.S |   86 -----------------
+>  arch/arm64/kernel/rethook.c                   |   28 ++++++
+>  arch/arm64/kernel/rethook_trampoline.S        |   87 +++++++++++++++++
+>  arch/arm64/kernel/stacktrace.c                |    9 +-
+>  arch/x86/kernel/rethook.c                     |    4 +
+>  include/linux/rethook.h                       |    4 -
+>  kernel/kprobes.c                              |    8 +-
+>  kernel/trace/fprobe.c                         |    5 +
+>  kernel/trace/rethook.c                        |   12 ++
+>  22 files changed, 287 insertions(+), 188 deletions(-)
+>  create mode 100644 arch/arm/probes/rethook.c
+>  delete mode 100644 arch/arm64/kernel/probes/kprobes_trampoline.S
+>  create mode 100644 arch/arm64/kernel/rethook.c
+>  create mode 100644 arch/arm64/kernel/rethook_trampoline.S
+> 
+> --
+> Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
