@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCDBC38A02
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD33C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384677AbiDLImO (ORCPT
+        id S1384330AbiDLIlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52436 "EHLO
+        Tue, 12 Apr 2022 04:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357251AbiDLHjy (ORCPT
+        with ESMTP id S1357218AbiDLHjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131D6264C;
-        Tue, 12 Apr 2022 00:14:21 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E33015724;
+        Tue, 12 Apr 2022 00:13:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF849B81B66;
-        Tue, 12 Apr 2022 07:14:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04EEDC385A5;
-        Tue, 12 Apr 2022 07:14:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2868D61701;
+        Tue, 12 Apr 2022 07:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36A2CC385A5;
+        Tue, 12 Apr 2022 07:13:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747658;
-        bh=XfMjc/mEojywwv+HmJCaUPY9r9cNx70P9ORURw+i7N0=;
+        s=korg; t=1649747630;
+        bh=dZarbFzJ2SmFz2NpPCeU+jku5aUbzpxIrwl8F+N21Ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UP2g7MUPB/nL/z9coLR+Vt+nLGZhthQnns6OWz9Wuvawj/NMqijv8s7LcJvPxUJqx
-         wOc0mK4DFOgcOhH+eTGZE0cpj6akwxHLNp6PKqw8RllWvsmFxZiLuSmKocysGA8VvV
-         APQ3a7hUXRqs4hHvZeTbMQeFKocN0Th0yzKARwU8=
+        b=lDbNBKLqPqgNe2TKsG0Q1p5wi83fAvfFfr5QKlmmOVRgevvYnfr5/9KoFjx3971Hu
+         vpnUPcuAIa91MLvQP5scDVyBH1EFoewz2Z0VkWsKxr2yX1G41eq22ut+H2ELofYL/D
+         z5ymB0UP4F/cp0fvXDI2e1jPrgbwg7uAa3YQ4YeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 160/343] phy: amlogic: phy-meson-gxl-usb2: fix shared reset controller use
-Date:   Tue, 12 Apr 2022 08:29:38 +0200
-Message-Id: <20220412062955.992671708@linuxfoundation.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 147/343] MIPS: ingenic: correct unit node address
+Date:   Tue, 12 Apr 2022 08:29:25 +0200
+Message-Id: <20220412062955.624518273@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -54,55 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 2f87727130ce17ffefecd0895eeebf22d5a36f6f ]
+[ Upstream commit 8931ddd8d6a55fcefb20f44a38ba42bb746f0b62 ]
 
-Use reset_control_rearm() call if an error occurs in case
-phy_meson_gxl_usb2_init() fails after reset() has been called ; or in case
-phy_meson_gxl_usb2_exit() is called i.e the resource is no longer used
-and the reset line may be triggered again by other devices.
+Unit node addresses should not have leading 0x:
 
-reset_control_rearm() keeps use of triggered_count sane in the reset
-framework. Therefore, use of reset_control_reset() on shared reset line
-should be balanced with reset_control_rearm().
+  Warning (unit_address_format): /nemc@13410000/efuse@d0/eth-mac-addr@0x22: unit name should not have leading "0x"
 
-Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Reported-by: Jerome Brunet <jbrunet@baylibre.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220111095255.176141-2-aouledameur@baylibre.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/amlogic/phy-meson-gxl-usb2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/amlogic/phy-meson-gxl-usb2.c b/drivers/phy/amlogic/phy-meson-gxl-usb2.c
-index 2b3c0d730f20..db17c3448bfe 100644
---- a/drivers/phy/amlogic/phy-meson-gxl-usb2.c
-+++ b/drivers/phy/amlogic/phy-meson-gxl-usb2.c
-@@ -114,8 +114,10 @@ static int phy_meson_gxl_usb2_init(struct phy *phy)
- 		return ret;
+diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
+index 3f9ea47a10cd..b998301f179c 100644
+--- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
++++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
+@@ -510,7 +510,7 @@
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
  
- 	ret = clk_prepare_enable(priv->clk);
--	if (ret)
-+	if (ret) {
-+		reset_control_rearm(priv->reset);
- 		return ret;
-+	}
- 
- 	return 0;
- }
-@@ -125,6 +127,7 @@ static int phy_meson_gxl_usb2_exit(struct phy *phy)
- 	struct phy_meson_gxl_usb2_priv *priv = phy_get_drvdata(phy);
- 
- 	clk_disable_unprepare(priv->clk);
-+	reset_control_rearm(priv->reset);
- 
- 	return 0;
- }
+-			eth0_addr: eth-mac-addr@0x22 {
++			eth0_addr: eth-mac-addr@22 {
+ 				reg = <0x22 0x6>;
+ 			};
+ 		};
 -- 
 2.35.1
 
