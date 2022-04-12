@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E2DC46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 559C7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377645AbiDLHvE (ORCPT
+        id S1377658AbiDLHvI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32808 "EHLO
+        Tue, 12 Apr 2022 03:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351976AbiDLHXG (ORCPT
+        with ESMTP id S1352967AbiDLHZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:23:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07582CE35;
-        Mon, 11 Apr 2022 23:59:51 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779CE4D259;
+        Tue, 12 Apr 2022 00:00:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE151615B9;
-        Tue, 12 Apr 2022 06:59:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB481C385A1;
-        Tue, 12 Apr 2022 06:59:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B89160B2E;
+        Tue, 12 Apr 2022 07:00:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7996C385A6;
+        Tue, 12 Apr 2022 07:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746790;
-        bh=JyGYJOthK6nmcElE9g3HqhMrgYpXY4Choqn2XsHK3f8=;
+        s=korg; t=1649746804;
+        bh=1YEvUP9NlFFBdqZn6SBtnrwsBJ7gRqODYMFSXLkxBKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r/TYlGwqn2DnVRvXie1TSvwnC0n3W36HR/WZ0Y46zWKJxy0hRH9RuBIDja3vAoejS
-         dktueQ1c5U/eaFmMy9KLDrRrCzccGg/7FUmvpKRvXc1qsEGsA1W0H0+4Dj74kHd+im
-         BzyoOKbd1oezSJ4Pk2CendsqB0WMYrtvlPgOpha4=
+        b=IepEqv46kGQlIlQv0RIMlfBa+dsmTfJ5pG8o0sXMMUvJw923OPVjl9xs2PUwoWU+k
+         nN3vFbXXcJeHkDHz6qcYpi38HPRXstbdn/AppzsqUbQjhrSF7HogoSnjFQfMQYjjX/
+         QPppqU/gM7uxRNAQ8dKO7O4Li/dElV/pbj8a7hHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 132/285] clk: Enforce that disjoints limits are invalid
-Date:   Tue, 12 Apr 2022 08:29:49 +0200
-Message-Id: <20220412062947.476367506@linuxfoundation.org>
+Subject: [PATCH 5.16 136/285] NFS: swap-out must always use STABLE writes.
+Date:   Tue, 12 Apr 2022 08:29:53 +0200
+Message-Id: <20220412062947.591753699@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,101 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit 10c46f2ea914202482d19cf80dcc9c321c9ff59b ]
+[ Upstream commit c265de257f558a05c1859ee9e3fed04883b9ec0e ]
 
-If we were to have two users of the same clock, doing something like:
+The commit handling code is not safe against memory-pressure deadlocks
+when writing to swap.  In particular, nfs_commitdata_alloc() blocks
+indefinitely waiting for memory, and this can consume all available
+workqueue threads.
 
-clk_set_rate_range(user1, 1000, 2000);
-clk_set_rate_range(user2, 3000, 4000);
+swap-out most likely uses STABLE writes anyway as COND_STABLE indicates
+that a stable write should be used if the write fits in a single
+request, and it normally does.  However if we ever swap with a small
+wsize, or gather unusually large numbers of pages for a single write,
+this might change.
 
-The second call would fail with -EINVAL, preventing from getting in a
-situation where we end up with impossible limits.
+For safety, make it explicit in the code that direct writes used for swap
+must always use FLUSH_STABLE.
 
-However, this is never explicitly checked against and enforced, and
-works by relying on an undocumented behaviour of clk_set_rate().
-
-Indeed, on the first clk_set_rate_range will make sure the current clock
-rate is within the new range, so it will be between 1000 and 2000Hz. On
-the second clk_set_rate_range(), it will consider (rightfully), that our
-current clock is outside of the 3000-4000Hz range, and will call
-clk_core_set_rate_nolock() to set it to 3000Hz.
-
-clk_core_set_rate_nolock() will then call clk_calc_new_rates() that will
-eventually check that our rate 3000Hz rate is outside the min 3000Hz max
-2000Hz range, will bail out, the error will propagate and we'll
-eventually return -EINVAL.
-
-This solely relies on the fact that clk_calc_new_rates(), and in
-particular clk_core_determine_round_nolock(), won't modify the new rate
-allowing the error to be reported. That assumption won't be true for all
-drivers, and most importantly we'll break that assumption in a later
-patch.
-
-It can also be argued that we shouldn't even reach the point where we're
-calling clk_core_set_rate_nolock().
-
-Let's make an explicit check for disjoints range before we're doing
-anything.
-
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220225143534.405820-4-maxime@cerno.tech
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ fs/nfs/direct.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index 2c5db2df9d42..aaf2793ef638 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -631,6 +631,24 @@ static void clk_core_get_boundaries(struct clk_core *core,
- 		*max_rate = min(*max_rate, clk_user->max_rate);
- }
- 
-+static bool clk_core_check_boundaries(struct clk_core *core,
-+				      unsigned long min_rate,
-+				      unsigned long max_rate)
-+{
-+	struct clk *user;
-+
-+	lockdep_assert_held(&prepare_lock);
-+
-+	if (min_rate > core->max_rate || max_rate < core->min_rate)
-+		return false;
-+
-+	hlist_for_each_entry(user, &core->clks, clks_node)
-+		if (min_rate > user->max_rate || max_rate < user->min_rate)
-+			return false;
-+
-+	return true;
-+}
-+
- void clk_hw_set_rate_range(struct clk_hw *hw, unsigned long min_rate,
- 			   unsigned long max_rate)
+diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
+index e6f104b6f065..737b30792ac4 100644
+--- a/fs/nfs/direct.c
++++ b/fs/nfs/direct.c
+@@ -793,7 +793,7 @@ static const struct nfs_pgio_completion_ops nfs_direct_write_completion_ops = {
+  */
+ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+ 					       struct iov_iter *iter,
+-					       loff_t pos)
++					       loff_t pos, int ioflags)
  {
-@@ -2347,6 +2365,11 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
- 	clk->min_rate = min;
- 	clk->max_rate = max;
+ 	struct nfs_pageio_descriptor desc;
+ 	struct inode *inode = dreq->inode;
+@@ -801,7 +801,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+ 	size_t requested_bytes = 0;
+ 	size_t wsize = max_t(size_t, NFS_SERVER(inode)->wsize, PAGE_SIZE);
  
-+	if (!clk_core_check_boundaries(clk->core, min, max)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	rate = clk_core_get_rate_nolock(clk->core);
- 	if (rate < min || rate > max) {
- 		/*
-@@ -2375,6 +2398,7 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
- 		}
- 	}
+-	nfs_pageio_init_write(&desc, inode, FLUSH_COND_STABLE, false,
++	nfs_pageio_init_write(&desc, inode, ioflags, false,
+ 			      &nfs_direct_write_completion_ops);
+ 	desc.pg_dreq = dreq;
+ 	get_dreq(dreq);
+@@ -947,11 +947,13 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
+ 	pnfs_init_ds_commit_info_ops(&dreq->ds_cinfo, inode);
  
-+out:
- 	if (clk->exclusive_count)
- 		clk_core_rate_protect(clk->core);
+ 	if (swap) {
+-		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
++							    FLUSH_STABLE);
+ 	} else {
+ 		nfs_start_io_direct(inode);
  
+-		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
++							    FLUSH_COND_STABLE);
+ 
+ 		if (mapping->nrpages) {
+ 			invalidate_inode_pages2_range(mapping,
 -- 
 2.35.1
 
