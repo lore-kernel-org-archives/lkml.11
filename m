@@ -2,119 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B92C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356809AbiDLPB6 (ORCPT
+        id S1345499AbiDLPCC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35362 "EHLO
+        Tue, 12 Apr 2022 11:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242923AbiDLPBy (ORCPT
+        with ESMTP id S229515AbiDLPBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 11:01:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A8EC4D63A
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649775575;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+RMao/icjZOR7b/VhfyeZ5DmNqqniWO1wzUexEJFUx4=;
-        b=S4wSXCm0SR7AjQ9MIFwGdJ9ko96+zYmLN2/mHS6CTvl0t+WPHvC/Siat34vSbkLDzRni7D
-        6/egsv+jgS93LBFmY4xL2JDVFCWeBwUWKbKHZThkBxoDGqItLN6ip7nq08nHPcVmN/RleJ
-        iBfBZLf9fPoOl0umCEnEa+E6vMOy6aM=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-394-iUNEU0ziNruloCAoZ778BQ-1; Tue, 12 Apr 2022 10:59:34 -0400
-X-MC-Unique: iUNEU0ziNruloCAoZ778BQ-1
-Received: by mail-wr1-f70.google.com with SMTP id j67-20020adf9149000000b00203e6b7d151so4106293wrj.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:59:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=+RMao/icjZOR7b/VhfyeZ5DmNqqniWO1wzUexEJFUx4=;
-        b=srK5KMeIs2i3pMD4e7dAJSwobEPnc3785JyAI8dQelZa2O+VqzD+M8IyKDbY3+3qGP
-         iyoTlRcumUTfjIDIQqnLQipDIEtaayurW2a9djkkfTAhdGOSCixEiqOkTSAkcG22bKPh
-         wrDBnKdMfbUII87H6bGO6ugXIsaq4uIf4gP8f9I2kqJ0rpOdKyeQ1giUppkpwf8bNOTI
-         v+DImyEJK2qh3JX/Jl+g5Vu5mnLnqC3d4Xi6mC3964IDvP3/9dbC8KiTOx4GKXtC6FQw
-         mTvgiMf6GyS47FxX3GDSGCkX9YCd2QJA4BwqDhaHSGiAiOIcrFl/fgF6q2Hps9idZp4j
-         teFg==
-X-Gm-Message-State: AOAM533tLU8JsB3501XUHhMJOUNCxnm2lgsMbD+FGli25i/O0ta30RMP
-        5qBV91nppUcDSPeWDc70wKyfWayN7pmKgb1bw3OD9aU/NylKpT+0ViMirKBtwjUKA+4G+WL6pRw
-        RIU5r5oIH7uml2W+gLduqcWw9
-X-Received: by 2002:adf:ed8f:0:b0:207:ac33:801f with SMTP id c15-20020adfed8f000000b00207ac33801fmr4562910wro.453.1649775573381;
-        Tue, 12 Apr 2022 07:59:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxLIpWvCj37SohK2EXJPy09eJg+fXmpEUsKlr6HFfmxumMiwnsh1WJNnv09XjQ/431Bs8Hs9A==
-X-Received: by 2002:adf:ed8f:0:b0:207:ac33:801f with SMTP id c15-20020adfed8f000000b00207ac33801fmr4562895wro.453.1649775573157;
-        Tue, 12 Apr 2022 07:59:33 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:1800:7c14:16cc:5291:a9f3? (p200300cbc70718007c1416cc5291a9f3.dip0.t-ipconnect.de. [2003:cb:c707:1800:7c14:16cc:5291:a9f3])
-        by smtp.gmail.com with ESMTPSA id b14-20020a7bc24e000000b003899c8053e1sm2742525wmj.41.2022.04.12.07.59.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 07:59:32 -0700 (PDT)
-Message-ID: <b153b758-ce11-364a-2699-753b21250508@redhat.com>
-Date:   Tue, 12 Apr 2022 16:59:31 +0200
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2084.outbound.protection.outlook.com [40.107.243.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BB04BFDE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:59:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PBlnekEcW8mh3j8shoCJhosQkrH8izFPVpmMIKtBBY3RL8a/DSVOpN8SDxJmP9GyOI8tDDVEB+ZATdnD8iChUZh/mgTLR+3g0Qcz+/W9eMO/F/+dNRdtZ4j8dUq4KWWh6dZLjqS5cuuRUvRqL7dehlBn5j8q2X0V9yDlvzBZtf/edEMW5Fm6t9kAT8xTkgvX9HrVFA7iDy2WwioisgEOTO1gqcQbk7nNGu7c50mO1M2c6h9xlGD4bjZ2Apu5gGOe/qxrRN2/0I7Kc+uwuWP4vY5rzu+tUwvQiramkSCOd0wb4/F/Kj+CXyMYf20Q5RDrZ0jMcAmN9GNLgpS0+mzqrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HpCtgxfrI0pU+sx5/bPjf6iSGeK1D/DCo6LbvntKJfA=;
+ b=RS9boC5/jeu7e9gWVH96hcWfbImUhLIN4qEULUr8poT37FVA0mAc/T0uBT0wa9UX7FNaf7fyMvCpFNK+l1h5i8AtwKe5kcaTaK3GNhMlEIHYJTxQsYabVyCBi0Id5njl1W2R7TljFVb2a8gCkoCiwsGOJ7WLYG/rtFZf/hNiVosNu6i38XqjtPqXjC7JW8kINP1x2KszX5UYKuA+cY2KkO6lk2q/eua/liN8Gk5anPjiw92PQ1GzaAMfWyrIfhFTdDdFh+97LtilHj3IrSWyXC7aLnaN2/I/fGfT95CbL14fUvZhgPXkXK4n3zfMXhp1uegfkdrEhH3YL85UIEmQtQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linux.ie smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HpCtgxfrI0pU+sx5/bPjf6iSGeK1D/DCo6LbvntKJfA=;
+ b=wqXiHu5bD+//y7ZqcJYM1sNwxdmKWM+Fk+Bjai4nPg0vQx4GZ9GLNFUYznc6k+aeyZ8kprpzifLGSHu9o9UZUDCAARvR/jok5jAtJV+9klpRbkUD+QeqCHNlJJQEFbe6aGEmg0lD0P8TflcDMQ79y4kfBaFcgEdSzNj5N+qs5bU=
+Received: from DS7PR06CA0037.namprd06.prod.outlook.com (2603:10b6:8:54::12) by
+ DM5PR1201MB0058.namprd12.prod.outlook.com (2603:10b6:4:50::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5164.18; Tue, 12 Apr 2022 14:59:31 +0000
+Received: from DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:54:cafe::fa) by DS7PR06CA0037.outlook.office365.com
+ (2603:10b6:8:54::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18 via Frontend
+ Transport; Tue, 12 Apr 2022 14:59:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT047.mail.protection.outlook.com (10.13.172.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5144.20 via Frontend Transport; Tue, 12 Apr 2022 14:59:31 +0000
+Received: from doryam3r2rack03-34.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 09:59:29 -0500
+From:   Richard Gong <richard.gong@amd.com>
+To:     <alexander.deucher@amd.com>, <christian.koenig@amd.com>,
+        <xinhui.pan@amd.com>, <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     <amd-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-kernel@vger.kernel.org>, <mario.limonciello@amd.com>,
+        <richard.gong@amd.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCHv3] drm/amdgpu: disable ASPM on Intel Alder Lake based systems
+Date:   Tue, 12 Apr 2022 09:53:50 -0500
+Message-ID: <20220412145350.2843514-1-richard.gong@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v2 2/9] mm/vmscan: remove unneeded can_split_huge_page
- check
-Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>,
-        Oscar Salvador <osalvador@suse.de>
-Cc:     akpm@linux-foundation.org, ying.huang@intel.com,
-        songmuchun@bytedance.com, hch@infradead.org, willy@infradead.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220409093500.10329-1-linmiaohe@huawei.com>
- <20220409093500.10329-3-linmiaohe@huawei.com>
- <YlU/h0fdE1L846Bd@localhost.localdomain>
- <7455b680-3d89-5d3e-ba0e-6e4358b114a2@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <7455b680-3d89-5d3e-ba0e-6e4358b114a2@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 604aa64f-ed80-4a07-e1a4-08da1c950c84
+X-MS-TrafficTypeDiagnostic: DM5PR1201MB0058:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR1201MB005816F57130BBA7E8DF87D695ED9@DM5PR1201MB0058.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BHGYcmC8V7Jh9w6LlDL3Tg2I2YEYmLm4THv0JwHftnORKdkr2FvTzZHzsCNf22pswzeWF5zCxCHo7jP7k3oS/er7m5gtpMvEcXHrRSAsayQQY67emifvhEtkLG87juap0t6H2uUUZ9nK4wUfFpJXDuHOcpO5TOeluNvqS4Dh7zT7iSl7ppdgDXaTR5uUoj0M/O/WAESNkCIYUWMnZoN6C8pDr0jntWv+VDV2mlqcJ98+tkzMCHF28eKJAdLOrlN7tHi8KYGs+lVOxWUOw697c/VW+IRN98KBJcT4hJudTIHyXtEcntp3OFZ/XxgOkAQfbEFGjZ+NQWSngF508gGe8zJGUnO6MO36Cy5g4v2VDwFUnBQU0FxyLvc+7aDeNhPKtwz5ACwldfGDLl4xp2AsUnB0wEHVJqGJKvCWpp1bd53A0bQJeuCgNmNRB9p32TPS9R659dd5Xewfa5uWLEN3/W+RJv44cBkhPUuyaND9/xO9NKFIa+ZthNX6+oYLRuPm1CW7m6LYsitmT5zzqULIF8z4GwS2sQAUfPduRYiwkRBzTCqoMihUKrqNiwDirvtsr/bFWBatGOWnH2rLOOfJgI8xCKBKONcGXIOfSOVeENRXKo85frdsnYnSmB/u851Wk3Lrh34oai+ULflf8TMLj9AchvRg3XuLLdL13Ol0YGV1wzdJruY7RDFQQnYn+XfMhZWZ3WdwnBplnSuxCv/P8A==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(508600001)(2906002)(26005)(7696005)(6666004)(54906003)(36756003)(8676002)(4326008)(82310400005)(70206006)(70586007)(8936002)(966005)(5660300002)(110136005)(316002)(44832011)(356005)(81166007)(83380400001)(40460700003)(36860700001)(86362001)(1076003)(2616005)(426003)(16526019)(336012)(186003)(47076005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 14:59:31.0680
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 604aa64f-ed80-4a07-e1a4-08da1c950c84
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12.04.22 15:42, Miaohe Lin wrote:
-> On 2022/4/12 16:59, Oscar Salvador wrote:
->> On Sat, Apr 09, 2022 at 05:34:53PM +0800, Miaohe Lin wrote:
->>> We don't need to check can_split_folio() because folio_maybe_dma_pinned()
->>> is checked before. It will avoid the long term pinned pages to be swapped
->>> out. And we can live with short term pinned pages. Without can_split_folio
->>> checking we can simplify the code. Also activate_locked can be changed to
->>> keep_locked as it's just short term pinning.
->>
->> What do you mean by "we can live with short term pinned pages"?
->> Does it mean that it was not pinned when we check
->> folio_maybe_dma_pinned() but now it is?
->>
->> To me it looks like the pinning is fluctuating and we rely on
->> split_folio_to_list() to see whether we succeed or not, and if not
->> we give it another spin in the next round?
-> 
-> Yes. Short term pinned pages is relative to long term pinned pages and these pages won't be
-> pinned for a noticeable time. So it's expected to split the folio successfully in the next
-> round as the pinning is really fluctuating. Or am I miss something?
-> 
+Active State Power Management (ASPM) feature is enabled since kernel 5.14.
+There are some AMD GFX cards (such as WX3200 and RX640) that won't work
+with ASPM-enabled Intel Alder Lake based systems. Using these GFX cards as
+video/display output, Intel Alder Lake based systems will hang during
+suspend/resume.
 
-Just so we're on the same page. folio_maybe_dma_pinned() only capture
-FOLL_PIN, but not FOLL_GET. You can have long-term FOLL_GET right now
-via vmsplice().
+The issue was initially reported on one system (Dell Precision 3660 with
+BIOS version 0.14.81), but was later confirmed to affect at least 4 Alder
+Lake based systems.
 
-can_split_folio() is more precise then folio_maybe_dma_pinned(), but
-both are racy as long as the page is still mapped.
+Add extra check to disable ASPM on Intel Alder Lake based systems.
 
+Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Richard Gong <richard.gong@amd.com>
+---
+v3: s/intel_core_asom_chk/aspm_support_quirk_check
+    correct build error with W=1 option
+v2: correct commit description
+    move the check from chip family to problematic platform
+---
+ drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
+index 039b90cdc3bc..b0b6353b48b9 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vi.c
++++ b/drivers/gpu/drm/amd/amdgpu/vi.c
+@@ -81,6 +81,10 @@
+ #include "mxgpu_vi.h"
+ #include "amdgpu_dm.h"
+ 
++#if IS_ENABLED(CONFIG_X86_64)
++#include <asm/intel-family.h>
++#endif
++
+ #define ixPCIE_LC_L1_PM_SUBSTATE	0x100100C6
+ #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK	0x00000001L
+ #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK	0x00000002L
+@@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_device *adev)
+ 		WREG32_PCIE(ixPCIE_LC_CNTL, data);
+ }
+ 
++static bool aspm_support_quirk_check(void)
++{
++	if (IS_ENABLED(CONFIG_X86_64)) {
++		struct cpuinfo_x86 *c = &cpu_data(0);
++
++		return (c->x86 == 6 && c->x86_model != INTEL_FAM6_ALDERLAKE);
++	}
++
++	return true;
++}
++
+ static void vi_program_aspm(struct amdgpu_device *adev)
+ {
+ 	u32 data, data1, orig;
+ 	bool bL1SS = false;
+ 	bool bClkReqSupport = true;
+ 
+-	if (!amdgpu_device_should_use_aspm(adev))
++	if (!amdgpu_device_should_use_aspm(adev) || !aspm_support_quirk_check())
+ 		return;
+ 
+ 	if (adev->flags & AMD_IS_APU ||
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
