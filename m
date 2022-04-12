@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62726C3A5A3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D40C3A59F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358284AbiDLHlW (ORCPT
+        id S1358075AbiDLHlD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:41:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45716 "EHLO
+        Tue, 12 Apr 2022 03:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353160AbiDLHOx (ORCPT
+        with ESMTP id S1353119AbiDLHOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B9C37A3F;
-        Mon, 11 Apr 2022 23:56:39 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2309377FF;
+        Mon, 11 Apr 2022 23:56:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3227561572;
-        Tue, 12 Apr 2022 06:56:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E0EBC385A1;
-        Tue, 12 Apr 2022 06:56:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C5F7B81B35;
+        Tue, 12 Apr 2022 06:56:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17DDEC385A6;
+        Tue, 12 Apr 2022 06:56:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746598;
-        bh=4C9l3ozTCA7bF8Ub+SzXQVBfPrIj+YQioOgIA03OWB0=;
+        s=korg; t=1649746587;
+        bh=eM1K8P5zqIAJD0+Seq9LKWKSArSlKpfYialiGujAYB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2XoqtE/grAi92lWry2QkFjFZWbMKmWw9ByWTZyHQMKcRb1YbBGaU+cYTWqw2g8ctZ
-         jWauMuSPG5qurx+G+bQhxEwIRey1uB6xF5SMdczP7vWYJmy4zuoJlgRry6x34fxXgz
-         n58lB3DokZc8lqjITebu2rlQQi32XMBohVMQx7w4=
+        b=yW96Cx/PmWGhJzvKrhVMt6Jt/KKGyRWVe6LRlpd2E06lEYAaaE/m64u6ytyIHHzM4
+         9irA/A92/bX0ZsuwXJmAYHEXMWrKlqvCHaQqUe5tHVXx16aTMvKr3UDpXGX73vTq3x
+         2IsrWL60ZD3Vc9TzPmRtLAo8Q7KnglYjei1iIxiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 062/285] iwlwifi: mvm: move only to an enabled channel
-Date:   Tue, 12 Apr 2022 08:28:39 +0200
-Message-Id: <20220412062945.459531152@linuxfoundation.org>
+Subject: [PATCH 5.16 058/285] net/mlx5e: Disable TX queues before registering the netdev
+Date:   Tue, 12 Apr 2022 08:28:35 +0200
+Message-Id: <20220412062945.344893622@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,78 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit e04135c07755d001b5cde61048c69a7cc84bb94b ]
+[ Upstream commit d08c6e2a4d0308a7922d7ef3b1b3af45d4096aad ]
 
-During disassociation we're decreasing the phy's ref count.
-If the ref count becomes 0, we're configuring the phy ctxt
-to the default channel (the lowest channel which the device
-can operate on). Currently we're not checking whether the
-the default channel is enabled or not. Fix it by configuring
-the phy ctxt to the lowest channel which is enabled.
+Normally, the queues are disabled when the channels are deactivated, and
+enabled when the channels are activated. However, on register, the
+channels are not active, but the queues are enabled by default. This
+change fixes it, preventing mlx5e_xmit from running when the channels
+are deactivated in the beginning.
 
-Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220210181930.03f281b6a6bc.I5b63d43ec41996d599e6f37ec3f32e878b3e405e@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 31 +++++++++++++------
- 1 file changed, 22 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-index 035336a9e755..6d82725cb87d 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /*
-- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
-+ * Copyright (C) 2012-2014, 2018-2022 Intel Corporation
-  * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
-  * Copyright (C) 2017 Intel Deutschland GmbH
-  */
-@@ -295,18 +295,31 @@ void iwl_mvm_phy_ctxt_unref(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt)
- 	 * otherwise we might not be able to reuse this phy.
- 	 */
- 	if (ctxt->ref == 0) {
--		struct ieee80211_channel *chan;
-+		struct ieee80211_channel *chan = NULL;
- 		struct cfg80211_chan_def chandef;
--		struct ieee80211_supported_band *sband = NULL;
--		enum nl80211_band band = NL80211_BAND_2GHZ;
-+		struct ieee80211_supported_band *sband;
-+		enum nl80211_band band;
-+		int channel;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 22de7327c5a8..4730d6c14aeb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -5223,6 +5223,7 @@ mlx5e_create_netdev(struct mlx5_core_dev *mdev, const struct mlx5e_profile *prof
+ 	}
  
--		while (!sband && band < NUM_NL80211_BANDS)
--			sband = mvm->hw->wiphy->bands[band++];
-+		for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
-+			sband = mvm->hw->wiphy->bands[band];
+ 	netif_carrier_off(netdev);
++	netif_tx_disable(netdev);
+ 	dev_net_set(netdev, mlx5_core_net(mdev));
  
--		if (WARN_ON(!sband))
--			return;
-+			if (!sband)
-+				continue;
-+
-+			for (channel = 0; channel < sband->n_channels; channel++)
-+				if (!(sband->channels[channel].flags &
-+						IEEE80211_CHAN_DISABLED)) {
-+					chan = &sband->channels[channel];
-+					break;
-+				}
- 
--		chan = &sband->channels[0];
-+			if (chan)
-+				break;
-+		}
-+
-+		if (WARN_ON(!chan))
-+			return;
- 
- 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
- 		iwl_mvm_phy_ctxt_changed(mvm, ctxt, &chandef, 1, 1);
+ 	return netdev;
 -- 
 2.35.1
 
