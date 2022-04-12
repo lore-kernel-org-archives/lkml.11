@@ -2,119 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C283EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2B2C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352198AbiDLMaZ (ORCPT
+        id S1351767AbiDLMaT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
+        Tue, 12 Apr 2022 08:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353258AbiDLM16 (ORCPT
+        with ESMTP id S1353672AbiDLM2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:27:58 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E073182;
-        Tue, 12 Apr 2022 04:37:43 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id o2so10035784lfu.13;
-        Tue, 12 Apr 2022 04:37:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5aneK7Rl07kK1qGmCVmUb7811DnxlqneA9Z72R6PRJc=;
-        b=HxQcMx486YxA3qXMLBqpak4qkZIVxLl/ycmPCLsPG+cpIO8n/09K/HAcK5/LPYhkxZ
-         oq8z7qo/cw9fpuSHQikyXY7xnWM4u84DnBmJGaOOR7KYFNWv8vfHGrbYpMikl5RswyaF
-         FnB+0zQGyFpE2J1RuTAE/CqtzQa5937jjDUwRhsSMwnrZl5EKqjUI5XrfoE+YqriPfr7
-         jVHKnK5k0q2pRgZXwIZBCTZYPizAB0a7OzPn1fLDety23eDV2k95zPfdJhgKn/WCdV+4
-         h7Y/xkdQLhKCwxLttf1slKfwUEnES7YAA5d3ogJH1/OIqgYCW/0Y+hHrg3v1MlpVN12l
-         Gnbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5aneK7Rl07kK1qGmCVmUb7811DnxlqneA9Z72R6PRJc=;
-        b=3JQ/rbJVZRVfBXDjqXKDZJzNb/ayFNkulKuEXznxKbbFwgJhjr0PERQcxIy/PrB18L
-         w5pRc6rqvsi2Bvg0lCBkDfRr0fZDsMdGm4W0uBg+VKsKdeCwLHAVRHA4BBUe3KgtZiKM
-         7U0TEyTjdWe+qhFQcO9PeNip+pnbBTyafeEoQbd7bFhrmaEy5HDCFIqGaH2C5TSrcRCu
-         0amn3vviPOTqnsqq8j70jC/ss+UkDP3lKRfdDeSiNp2T2fRSUecn/BODJ0PP0Mk+gVt1
-         +henfqIGdoMyQMvDURG06MSh4QEeq3NE35Ntsb70sTpYvMzqacF515HOHUlUWLq6gAgC
-         6w5A==
-X-Gm-Message-State: AOAM5303864SCDCXUX+IzWJxiiv2mAb3qtNRubX30msJ1It4xiROltT/
-        1pgMLxToyNdhq5AmhyHEBtg=
-X-Google-Smtp-Source: ABdhPJxAmdxPltsou8uUUjeWnJuCK2JK93YfESll7d9K7ZQG+0dZuU+DhMEF1dNWNnaVHcgqlzdCPg==
-X-Received: by 2002:a05:6512:c18:b0:44a:9992:28bc with SMTP id z24-20020a0565120c1800b0044a999228bcmr25269448lfu.641.1649763461666;
-        Tue, 12 Apr 2022 04:37:41 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id bq8-20020a056512150800b00448ab58bd53sm3618431lfb.40.2022.04.12.04.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 04:37:41 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 14:37:39 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Brad Larson <brad@pensando.io>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        linux-arm-kernel@lists.infradead.org, arnd@arndb.de,
-        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
-        broonie@kernel.org, adrian.hunter@intel.com,
-        ulf.hansson@linaro.org, olof@lixom.net, dac2@pensando.io,
-        linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/11] dt-bindings: spi: Add compatible for Pensando Elba
- SoC
-Message-ID: <20220412113739.xczqscungojcitrm@mobilestation>
-References: <20220406233648.21644-1-brad@pensando.io>
- <20220406233648.21644-5-brad@pensando.io>
+        Tue, 12 Apr 2022 08:28:15 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C856EB7F7;
+        Tue, 12 Apr 2022 04:39:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649763564;
+        bh=PhM8epyNMetmc7GMso7wIi9MAUvxCU1ngTOcIcDRFUQ=;
+        h=X-UI-Sender-Class:Date:From:Subject:To:Cc;
+        b=JOy6qILe7JdPfLRYdgQem8wS+05FEmWFq1zfIAhs7jS6h1SqmRn5mgViKe6bsWLX7
+         urZE72e+acIsOMwgRfVoDZYwpWDmiAvnGrWn56y4+lIRwUqUswMWmBe2pKlsA8TMK8
+         vWRNhqtC593hqUgzsOAL5blKJGwcZh8mCWdg5E/Y=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.35.129]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MaJ3t-1nPZj43Rbh-00WHQp; Tue, 12
+ Apr 2022 13:39:23 +0200
+Message-ID: <8541c671-8b0b-0311-b72c-def0ab8aaba8@gmx.de>
+Date:   Tue, 12 Apr 2022 13:39:23 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406233648.21644-5-brad@pensando.io>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+Subject: Re: [PATCH 5.17 000/343] 5.17.3-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:lnhlkoe+hQq5Um5NMUdLRLb3jh2MlExUewspBFngsiEB7xP7N3S
+ wNUVp5OY5H2ZMWuQ4b8dlsJzrzifNO1CJngHXe/TtUyRLBHm/sF9dNP3drTGZSx7BZMmV1G
+ zny/EN6vbqDIaTuJn0lmQiwmYLdCe+cFgoz/rMRM3ToZeRnlxprgBfnJB5pyM+rUHD9bHKr
+ UJdweqV3e73oR+yPocuXw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PvJho4+mXOQ=:fd5gN6Etv6mwK9ZDox9DvZ
+ tLBdj1qGXe6Z7l5LokZRq0E5D1b7bwPCH61sv6lEbumxECJKRcxIzf59/UBNApDMDbh/0daVE
+ NYuTeWPNQn9shhbzvvWTgiffrUcTzPGYdWTrx5hOO4MdZs8GNJMCfUfj6mAvFVfeJ4WppM5Uc
+ 1yqR9dx0o+SdW/Yjz/8jBCYv22no76lEwekqc1KI9VV19VRsAzqrocAu7uPjoWAN6JwyGC41I
+ cdbacuJt48LmMs0QJ8O4pQobzxk79n7GtkosFQlEG9i+LYgaxT5D+izL6ZhrpFc5fJkltzJ6z
+ +WM50ADrJruOykmHu0RXlku6Ry4uOPDKDEkmcMTERsLNgMEK1oFI81qgqUwieAlmE1TWAgd0V
+ zgIHiJMNy5C65tVR36SKQHj+7ih8uNAwTnGK4numrTfeWE7IyZ//0cFp3fuhPxTRqXDAxxdbQ
+ 3ll51GlF1e16q1PsQKWErXsUgW0wCw9p2EaZhNdW6/LWGl4re93NAGwamjyUceDmWGjpP35Us
+ jxKJP+rkzgAaPjgO4hpfmfgM/t/unH2P6F+X971pxlnCzG4NA5uUXW1PjvfEeUMx4ilfHZmwb
+ u+LdSU1LZXFBpTgXK9cVPErQcx0t2vme+8SoDxRdm0WgsNip6/JrHFzzIr40KCe0LMNkGm7w3
+ a5d/czCjGUCAVdQdYXQoLrpSz7matQvoBq3JDfHkPNjka5eN8iKDDfxCQredun5JqIdd7n+40
+ 0nDSf9ncM1WvJJDwAtpJhITcXSnmP24aP/sEuhFnIhathza663GvAaSvsm2It/m4o5mHxkMF7
+ 56Q6F0YFlK8b5cABhIa08M2fVd1eDktZ7MHZAXK8f2q33MwVkW8q4WCDgfZ5LTeo8H2AFm5P3
+ dcPKh57CsLksKbMEvGOQR6vuS4Y+E8h7Nd7w0O9/FiiG3YrmWRMPurThWdy363kSAZvWRGPmZ
+ /mCj1DwxOS0rfCJJrkRMSXCA26AoHEcx8o1nxbIvoO02ZYw8RzZ3+KKTG24LIHnIaeuahKgya
+ HY8egq/B22b4sbChjCnIiJbKAUleB2dQbDt4yAB1IAb87eYZxshGmnONEKg1i+snodQKWvnVp
+ bhkx6y0hHU0M10=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> [PATCH 04/11] dt-bindings: spi: Add compatible for Pensando Elba SoC
+hallo Greg
 
-I think you need to be more specific in the patch title to what bindings
-you are adding the new compatible string. Something like this
-"dt-bindings: spi: cdns: ..."
-The same concerns the patch "[PATCH 03/11] dt-bindings: mmc: Add Pensando
-Elba SoC binding".
-Otherwise it isn't clear to what schema you are adding the Elba SoC
-support to.
+5.17.3-rc1
 
--Sergey
+compiles, boots and runs on my x86_64
+(Intel i5-11400, Fedora 36 Beta)
 
-On Wed, Apr 06, 2022 at 04:36:41PM -0700, Brad Larson wrote:
-> Document the cadence qspi controller compatible for Pensando Elba SoC
-> boards.  The Elba qspi fifo size is 1024.
-> 
-> Signed-off-by: Brad Larson <brad@pensando.io>
-> ---
->  Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-> index 0a537fa3a641..bc298e413842 100644
-> --- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-> +++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-> @@ -30,6 +30,7 @@ properties:
->                - intel,lgm-qspi
->                - xlnx,versal-ospi-1.0
->                - intel,socfpga-qspi
-> +              - pensando,elba-qspi
->            - const: cdns,qspi-nor
->        - const: cdns,qspi-nor
->  
-> @@ -48,7 +49,7 @@ properties:
->      description:
->        Size of the data FIFO in words.
->      $ref: "/schemas/types.yaml#/definitions/uint32"
-> -    enum: [ 128, 256 ]
-> +    enum: [ 128, 256, 1024 ]
->      default: 128
->  
->    cdns,fifo-width:
-> -- 
-> 2.17.1
-> 
+Thanks
+
+Tested-by: Ronald Warsow <rwarsow@gmx.de>
+
+Ronald
