@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D484BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6663C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356522AbiDLHis (ORCPT
+        id S1356670AbiDLHjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:38:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
+        Tue, 12 Apr 2022 03:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352665AbiDLHOP (ORCPT
+        with ESMTP id S1352755AbiDLHOV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12CE2F03A;
-        Mon, 11 Apr 2022 23:55:00 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9AC3057B;
+        Mon, 11 Apr 2022 23:55:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F094861531;
-        Tue, 12 Apr 2022 06:54:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE85C385A6;
-        Tue, 12 Apr 2022 06:54:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FB1EB81B58;
+        Tue, 12 Apr 2022 06:55:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640CEC385A8;
+        Tue, 12 Apr 2022 06:55:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746499;
-        bh=t0g3o+vjO6oyTmJLg+UH2gahFuYs6k7jNgBfmjGR/W4=;
+        s=korg; t=1649746504;
+        bh=vybQH3WAbxLgOAVrLtEeY+o9UeXLxHV9W7C9J12Q6Sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iHzZSKYNTTBEjkCC9mNgiyPuA1NOcTcztk0E5cHhb0NKxxLWviBDRD6ErCqVBH1js
-         gTOMCsik/rdTMC62fwfIXijY5TA2I8FHKJUvzPB3V4WrU465+4xJJgYBQMtHQq0S+P
-         V+dWmOhpg5HiniPOuWSRNaFbAxaNmr1UXevauAlk=
+        b=d34eIitu/6UdqSlkN/fXbl+gEusAJ88MURYl0K67/2UXIqfchrsjVYDfawHxIQCrq
+         RGtRYwnt4IvTl9RoJNNIwKcxFfCs122Ojy7lI8ELmUzFOqPeGEhXMkOqejK7zpUfOy
+         qtyU6Xmtz/jD5hxkajT8ypgRO3puGxHyx6cr2H00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        Peter Gonda <pgonda@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 003/285] rtc: wm8350: Handle error for wm8350_register_irq
-Date:   Tue, 12 Apr 2022 08:27:40 +0200
-Message-Id: <20220412062943.773641655@linuxfoundation.org>
+Subject: [PATCH 5.16 005/285] KVM: SVM: Fix kvm_cache_regs.h inclusions for is_guest_mode()
+Date:   Tue, 12 Apr 2022 08:27:42 +0200
+Message-Id: <20220412062943.829667081@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,53 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Peter Gonda <pgonda@google.com>
 
-[ Upstream commit 43f0269b6b89c1eec4ef83c48035608f4dcdd886 ]
+[ Upstream commit 4a9e7b9ea252842bc8b14d495706ac6317fafd5d ]
 
-As the potential failure of the wm8350_register_irq(),
-it should be better to check it and return error if fails.
-Also, it need not free 'wm_rtc->rtc' since it will be freed
-automatically.
+Include kvm_cache_regs.h to pick up the definition of is_guest_mode(),
+which is referenced by nested_svm_virtualize_tpr() in svm.h. Remove
+include from svm_onhpyerv.c which was done only because of lack of
+include in svm.h.
 
-Fixes: 077eaf5b40ec ("rtc: rtc-wm8350: add support for WM8350 RTC")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220303085030.291793-1-jiasheng@iscas.ac.cn
+Fixes: 883b0a91f41ab ("KVM: SVM: Move Nested SVM Implementation to nested.c")
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Peter Gonda <pgonda@google.com>
+Message-Id: <20220304161032.2270688-1-pgonda@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-wm8350.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ arch/x86/kvm/svm/svm.h          | 2 ++
+ arch/x86/kvm/svm/svm_onhyperv.c | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/rtc/rtc-wm8350.c b/drivers/rtc/rtc-wm8350.c
-index 2018614f258f..6eaa9321c074 100644
---- a/drivers/rtc/rtc-wm8350.c
-+++ b/drivers/rtc/rtc-wm8350.c
-@@ -432,14 +432,21 @@ static int wm8350_rtc_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 1b460e539926..01d35efaa646 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -22,6 +22,8 @@
+ #include <asm/svm.h>
+ #include <asm/sev-common.h>
  
--	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
- 			    wm8350_rtc_update_handler, 0,
- 			    "RTC Seconds", wm8350);
-+	if (ret)
-+		return ret;
++#include "kvm_cache_regs.h"
 +
- 	wm8350_mask_irq(wm8350, WM8350_IRQ_RTC_SEC);
+ #define __sme_page_pa(x) __sme_set(page_to_pfn(x) << PAGE_SHIFT)
  
--	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
- 			    wm8350_rtc_alarm_handler, 0,
- 			    "RTC Alarm", wm8350);
-+	if (ret) {
-+		wm8350_free_irq(wm8350, WM8350_IRQ_RTC_SEC, wm8350);
-+		return ret;
-+	}
+ #define	IOPM_SIZE PAGE_SIZE * 3
+diff --git a/arch/x86/kvm/svm/svm_onhyperv.c b/arch/x86/kvm/svm/svm_onhyperv.c
+index 98aa981c04ec..8cdc62c74a96 100644
+--- a/arch/x86/kvm/svm/svm_onhyperv.c
++++ b/arch/x86/kvm/svm/svm_onhyperv.c
+@@ -4,7 +4,6 @@
+  */
  
- 	return 0;
- }
+ #include <linux/kvm_host.h>
+-#include "kvm_cache_regs.h"
+ 
+ #include <asm/mshyperv.h>
+ 
 -- 
 2.35.1
 
