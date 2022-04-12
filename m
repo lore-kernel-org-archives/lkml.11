@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50421C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 753E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343600AbiDLA4I (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
+        id S244469AbiDLA4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245208AbiDLAxG (ORCPT
+        with ESMTP id S1345082AbiDLAxi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:53:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A103150F;
-        Mon, 11 Apr 2022 17:47:53 -0700 (PDT)
+        Mon, 11 Apr 2022 20:53:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707F33464F;
+        Mon, 11 Apr 2022 17:48:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD3C2617E7;
-        Tue, 12 Apr 2022 00:47:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28588C385A3;
-        Tue, 12 Apr 2022 00:47:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18B0AB8198C;
+        Tue, 12 Apr 2022 00:48:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18C5FC385A9;
+        Tue, 12 Apr 2022 00:48:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724472;
-        bh=g9xA4Z958SwzJiov5Xvy3braVNOc8Gmzi+GDvD2yjeM=;
+        s=k20201202; t=1649724523;
+        bh=Q1HQeDFU9x7Fs+XYhAq+f0rh0AAVChmCSP3pcSdxFy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=asPZD6SxK23zTZIHdH3OCBPw2/UZjZ5ZPLDMv62lwGCJASno/7ybC8iVkBTJLQ/tZ
-         f7v9m8g7X0W8UydSyujrodQK96ywKBiJ2CN2fHxHC4qQewMErcPH53I9xiBHpsq9Xh
-         Z5WQ11Y+IbEdgX7iiR927QPW7bExU1SztelS1cn6PSCXa6WeGz+R9artnoev4pqwBV
-         EI+vUsbFxzbCAX9tU0pgWUNZPcSgh8Dmt23pLb9hXaQU2hg9IgmkoZQ72devgbcTrj
-         HYFPw4SNomC3I1YiFMxtsQPECBm/8Isn5Whq5ONnsIPjx+5+OV3dkYUYCH60CsDCU6
-         KF+MAWkofGsjQ==
+        b=IRitT71fPSPhxiLxsHBp7+nP9c7S8Y73wYEox+0r5oTDEQmSsFDBx2ySpxUuhKM+P
+         PisW4QyhapDlj9ffN8PdX53m8qgzp4kfpGT4ZZmQgXqbv2ravlibxv/ul0qp+dm3EE
+         NSF1h3OkrOlDgpnwzAt1Mfeh3XyuRuNdUMjbKmF3ONoFwErPZ2fxQYTXUpbu8g/PA3
+         WHi4/7vkVnblvdIqqOy8lb0iKubJhlcIHa/xEnQ5VMbmdGihjeXdc0NbrcVRZyjlpT
+         OUurdAAlDeq1HA9ZkrGT7Xg29yIq8MJKPTSpicEwiAKYgGwXskmbePPtbbvSbGTTNy
+         FX29WhH2nw18w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 16/41] scsi: lpfc: Fix queue failures when recovering from PCI parity error
-Date:   Mon, 11 Apr 2022 20:46:28 -0400
-Message-Id: <20220412004656.350101-16-sashal@kernel.org>
+Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 33/41] powerpc: Fix virt_addr_valid() for 64-bit Book3E & 32-bit
+Date:   Mon, 11 Apr 2022 20:46:45 -0400
+Message-Id: <20220412004656.350101-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004656.350101-1-sashal@kernel.org>
 References: <20220412004656.350101-1-sashal@kernel.org>
@@ -55,44 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-[ Upstream commit df0101197c4d9596682901631f3ee193ed354873 ]
+[ Upstream commit ffa0b64e3be58519ae472ea29a1a1ad681e32f48 ]
 
-When recovering from a pci-parity error the driver is failing to re-create
-queues, causing recovery to fail. Looking deeper, it was found that the
-interrupt vector count allocated on the recovery was fewer than the vectors
-originally allocated. This disparity resulted in CPU map entries with stale
-information. When the driver tries to re-create the queues, it attempts to
-use the stale information which indicates an eq/interrupt vector that was
-no longer created.
+mpe: On 64-bit Book3E vmalloc space starts at 0x8000000000000000.
 
-Fix by clearng the cpup map array before enabling and requesting the IRQs
-in the lpfc_sli_reset_slot_s4 routine().
+Because of the way __pa() works we have:
+  __pa(0x8000000000000000) == 0, and therefore
+  virt_to_pfn(0x8000000000000000) == 0, and therefore
+  virt_addr_valid(0x8000000000000000) == true
 
-Link: https://lore.kernel.org/r/20220317032737.45308-4-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Which is wrong, virt_addr_valid() should be false for vmalloc space.
+In fact all vmalloc addresses that alias with a valid PFN will return
+true from virt_addr_valid(). That can cause bugs with hardened usercopy
+as described below by Kefeng Wang:
+
+  When running ethtool eth0 on 64-bit Book3E, a BUG occurred:
+
+    usercopy: Kernel memory exposure attempt detected from SLUB object not in SLUB page?! (offset 0, size 1048)!
+    kernel BUG at mm/usercopy.c:99
+    ...
+    usercopy_abort+0x64/0xa0 (unreliable)
+    __check_heap_object+0x168/0x190
+    __check_object_size+0x1a0/0x200
+    dev_ethtool+0x2494/0x2b20
+    dev_ioctl+0x5d0/0x770
+    sock_do_ioctl+0xf0/0x1d0
+    sock_ioctl+0x3ec/0x5a0
+    __se_sys_ioctl+0xf0/0x160
+    system_call_exception+0xfc/0x1f0
+    system_call_common+0xf8/0x200
+
+  The code shows below,
+
+    data = vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
+    copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
+
+  The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
+  on 64-bit Book3E, which leads to the panic.
+
+  As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
+  and __pa addresses") does, make sure the virt addr above PAGE_OFFSET in
+  the virt_addr_valid() for 64-bit, also add upper limit check to make
+  sure the virt is below high_memory.
+
+  Meanwhile, for 32-bit PAGE_OFFSET is the virtual address of the start
+  of lowmem, high_memory is the upper low virtual address, the check is
+  suitable for 32-bit, this will fix the issue mentioned in commit
+  602946ec2f90 ("powerpc: Set max_mapnr correctly") too.
+
+On 32-bit there is a similar problem with high memory, that was fixed in
+commit 602946ec2f90 ("powerpc: Set max_mapnr correctly"), but that
+commit breaks highmem and needs to be reverted.
+
+We can't easily fix __pa(), we have code that relies on its current
+behaviour. So for now add extra checks to virt_addr_valid().
+
+For 64-bit Book3S the extra checks are not necessary, the combination of
+virt_to_pfn() and pfn_valid() should yield the correct result, but they
+are harmless.
+
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[mpe: Add additional change log detail]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220406145802.538416-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_init.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/include/asm/page.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index 3eebcae52784..16246526e4c1 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -15105,6 +15105,8 @@ lpfc_io_slot_reset_s4(struct pci_dev *pdev)
- 	psli->sli_flag &= ~LPFC_SLI_ACTIVE;
- 	spin_unlock_irq(&phba->hbalock);
+diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
+index 254687258f42..f2c5c26869f1 100644
+--- a/arch/powerpc/include/asm/page.h
++++ b/arch/powerpc/include/asm/page.h
+@@ -132,7 +132,11 @@ static inline bool pfn_valid(unsigned long pfn)
+ #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+ #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
  
-+	/* Init cpu_map array */
-+	lpfc_cpu_map_array_init(phba);
- 	/* Configure and enable interrupt */
- 	intr_mode = lpfc_sli4_enable_intr(phba, phba->intr_mode);
- 	if (intr_mode == LPFC_INTR_ERROR) {
+-#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
++#define virt_addr_valid(vaddr)	({					\
++	unsigned long _addr = (unsigned long)vaddr;			\
++	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
++	pfn_valid(virt_to_pfn(_addr));					\
++})
+ 
+ /*
+  * On Book-E parts we need __va to parse the device tree and we can't
 -- 
 2.35.1
 
