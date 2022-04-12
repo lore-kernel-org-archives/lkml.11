@@ -2,89 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84277C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D456C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354065AbiDLMmj (ORCPT
+        id S1353992AbiDLMme (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
+        Tue, 12 Apr 2022 08:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355417AbiDLMjK (ORCPT
+        with ESMTP id S1355484AbiDLMjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:39:10 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C54E03F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:00:46 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id l7so31408569ejn.2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:00:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4XT57RJ2zR0pUw59EDpBr/xnn0uf45XYMH4qW2Nnhag=;
-        b=PjTkhyxG9YnT/WRgCigk6dnjQLEqvWLBnqJI2oxk5GEFzh065/3zJ6/VA5+CQBLpKU
-         ljnXnp3/rV4PlaXn22l0r6QtObTkHsit4HWew6uxkt95zQF27zPcfeMrGu1zLQxT067i
-         Vnb36PyoD+EwmuEiS0iLt+ph45Vo5xXTIjcLOg4tzTp2rpSSH9dOf/ofFNfk6B6Siigc
-         /BSb05fegwqITJVh7KcYQaq4ovOkCP93LqIZR+8XpYs87wTg2nwjn1wsEOoy9EVhzdf5
-         MCoUdVSyTzcG0bX89zamHIuTF1qRxE7G+9cKyrOte0dGyY2UgpMeINiTXpG9D9Ce5usj
-         zdCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4XT57RJ2zR0pUw59EDpBr/xnn0uf45XYMH4qW2Nnhag=;
-        b=g72Jcmcj792IKnNDqmrJhsnqiMz106HaJvkNsVEIXJpgN8mQobECCE+CqB82nVsJsZ
-         SE5CsH+gdwxlhFFO0u4v/BWe5S2lvh4xyBU7HUJ0Yt9hadxEl7sybdA58lu+/FVGbEhu
-         w6VQ4Rqycvb67TZ8BA7yqCFhchIHMvD/Hf0F21ciWvifLJU4NqUtYbffP3PkndJVUK51
-         k4dr9gVb4fQUZdgVlUCoUg9Fh/8nN5O0mQZLmEPDSHivpWm9rnTVA1yMhUHYMnc1Jpq9
-         uZ+v0ylDS6YpYOcI1V+UZob7mZ34bQRJkO5Vo7XPr0mdz+j9c3WSfoLDK0fdOGdkPU50
-         h1tQ==
-X-Gm-Message-State: AOAM532lM7Ayv9BzmgYae+DRPylH+qwevWDCue0v1zcKSe2kiYmOk9GN
-        qJRmQAw5tOXxtbX+tv8cjCeIgQ==
-X-Google-Smtp-Source: ABdhPJz5Rcv2dy4vHSQGWUoNuyDX38ldlJdyBOsnSd7fJARXObJEOMnlXSoDY/87s+k5IVcc4n2vbQ==
-X-Received: by 2002:a17:906:3082:b0:6e0:111f:8986 with SMTP id 2-20020a170906308200b006e0111f8986mr33086544ejv.677.1649764845598;
-        Tue, 12 Apr 2022 05:00:45 -0700 (PDT)
-Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id l14-20020a170906644e00b006e4dae79576sm12802578ejn.14.2022.04.12.05.00.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 05:00:45 -0700 (PDT)
-Message-ID: <54abc3c6-959f-58df-337b-dc847e9d7b1d@linaro.org>
-Date:   Tue, 12 Apr 2022 14:00:44 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: ASoC: fix invalid yaml
-Content-Language: en-US
-To:     Corentin Labbe <clabbe@baylibre.com>, broonie@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lgirdwood@gmail.com,
-        robh+dt@kernel.org
-Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        Tue, 12 Apr 2022 08:39:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0024C32D
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:02:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FDA961017
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:02:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B70BC385A5;
+        Tue, 12 Apr 2022 12:02:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649764941;
+        bh=RL0TS6TyTsdDUGUm/EuXSEF8ETZ+oamHhp+RILM0/YA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=u3mHLMHoovRPWuJ8y8P/Vdf5aWsXfBlbwPd/Lv1CC2gAYrz46aDVuZy2dSkGLSWmE
+         hpBubU2oQjoy5rFdmrvHhehRBFD4euGUaRkf+8y/ARPVcMFqqMajIZJKh10O45Oc9C
+         VsxROyNh+ZUUyk13ISrKKT92HWZsCR8RKZeqBRIs=
+Date:   Tue, 12 Apr 2022 14:02:18 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Liu Junqi <liujunqi@pku.edu.cn>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@intel.com>,
+        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
         linux-kernel@vger.kernel.org
-References: <20220411194409.3390002-1-clabbe@baylibre.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220411194409.3390002-1-clabbe@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] MAINTAINERS: Remove D. Kershner from Unisys S-PAR
+ maintainers
+Message-ID: <YlVqStHr6acHnF5o@kroah.com>
+References: <20220412103629.8029-1-fmdefrancesco@gmail.com>
+ <YlVXV4J41KBzKHtm@kroah.com>
+ <2976258.CbtlEUcBR6@leap>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2976258.CbtlEUcBR6@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/04/2022 21:44, Corentin Labbe wrote:
-> The word "or" is useless and breaks yaml validation.
+On Tue, Apr 12, 2022 at 01:08:28PM +0200, Fabio M. De Francesco wrote:
+> On marted? 12 aprile 2022 12:41:27 CEST Greg Kroah-Hartman wrote:
+> > On Tue, Apr 12, 2022 at 12:36:29PM +0200, Fabio M. De Francesco wrote:
+> > > The email address of David Kershner is no more reachable. Remove his
+> > > entry from the MAINTAINERS file for UNISYS S-PAR DRIVERS and change
+> > > the status to "Orphan".
+> > > 
+> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > > ---
+> > > 
+> > > v1->v2: Change also the status of the entry to "Orphan" and rework the
+> > > commit message. (Thanks to Greg Kroah-Hartman).
+> > > 
+> > >  MAINTAINERS | 3 +--
+> > >  1 file changed, 1 insertion(+), 2 deletions(-)
+> > > 
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index 3ed62dcd144e..9283c63565b3 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -20184,9 +20184,8 @@ F:	include/linux/cdrom.h
+> > >  F:	include/uapi/linux/cdrom.h
+> > >  
+> > >  UNISYS S-PAR DRIVERS
+> > > -M:	David Kershner <david.kershner@unisys.com>
+> > >  L:	sparmaintainer@unisys.com (Unisys internal)
+> > 
+> > Again, please drop this "list" as it obviously is not going to anyone.
 > 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
->  Documentation/devicetree/bindings/sound/tas27xx.yaml | 1 -
->  1 file changed, 1 deletion(-)
+> OK, I'll also drop the "L:" line. I wasn't sure about it because I see 
+> that there are other entries marked as "Orphan" and the list is still
+> there. But you are right: although the "sparmaintainer" list address is
+> not bouncing, it looks like nobody care to read messages there.
+>   
+> > And really, this whole code should be removed, no one seems to be using
+> > it, and if they are, we can easily revert the removal and mark them as
+> > the maintainer.
 > 
+> 1) If I remove the entire drivers/staging/unisys/ I suppose that, in 
+> MAINTAINERS I should also remove the whole entry called "UNISYS S-PAR 
+> DRIVERS", not only the "L:" line. 
 
-Subject should be reversed for this subsystem, so:
-"ASoC; dt-bindings: tas27xx:"
+Yes, _AND_ you need to also remove all files that are listed for that
+entry.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 2) Furthermore, I understand that I should also should change the relevant 
+> Kbuild files, otherwise all builds of staging would fail. 
 
+Yes.
 
-Best regards,
-Krzysztof
+thanks,
+
+greg k-h
