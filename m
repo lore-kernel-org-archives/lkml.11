@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC9CFC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC12CC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383866AbiDLJMT (ORCPT
+        id S1384850AbiDLJM3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        Tue, 12 Apr 2022 05:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358757AbiDLHmK (ORCPT
+        with ESMTP id S1358730AbiDLHmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63971004;
-        Tue, 12 Apr 2022 00:19:08 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C8E23A;
+        Tue, 12 Apr 2022 00:19:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BB22B81B62;
-        Tue, 12 Apr 2022 07:19:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C510C385A1;
-        Tue, 12 Apr 2022 07:19:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FD5D616E7;
+        Tue, 12 Apr 2022 07:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3142CC385A1;
+        Tue, 12 Apr 2022 07:19:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747945;
-        bh=8Vq4tCwQN/t2nUnt+x188nmWSw9x8VrD9CrYBjvJx5c=;
+        s=korg; t=1649747940;
+        bh=hlP2sze5FnxNqcBlA5c2Y8VQGE+NWL4VnSSqf3dvcBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EllwIk88S2tzYP0mvuzecSTRPV/nFrJZAXnRCT77IC+L1R4UozfaNSkuRN4eqf20q
-         f8mgPctz+yA8ra68dqJP5OOIx+L5mK1da76fjWGYna6PmvgSbP4pnBqbozRw3fj5m7
-         OsqP8qUL0BogUCMXMiCKvWH/i/xn0h9dnjscY3w4=
+        b=TFN3hEfTjhQXMUUd+ZDid3P2ZWtq74u59JqQ3U6GrRDxAi8AI6VRFaQpn39/mguWz
+         5TwMKGyMfpV3Y6IURdWvbH1w1EjrJwcGnH+Zazm0OdCKEy2d2blOyixHguY3Q0fpEJ
+         GuNQyLB3v+SEbJbQTJ8b/ihy6tV3DSYFuCfJU4rY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Chanho Park <chanho61.park@samsung.com>
-Subject: [PATCH 5.17 263/343] arm64: Add part number for Arm Cortex-A78AE
-Date:   Tue, 12 Apr 2022 08:31:21 +0200
-Message-Id: <20220412062958.915706060@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 261/343] perf tools: Fix perfs libperf_print callback
+Date:   Tue, 12 Apr 2022 08:31:19 +0200
+Message-Id: <20220412062958.858571132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,56 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit 83bea32ac7ed37bbda58733de61fc9369513f9f9 upstream.
+[ Upstream commit aeee9dc53ce405d2161f9915f553114e94e5b677 ]
 
-Add the MIDR part number info for the Arm Cortex-A78AE[1] and add it to
-spectre-BHB affected list[2].
+eprintf() does not expect va_list as the type of the 4th parameter.
 
-[1]: https://developer.arm.com/Processors/Cortex-A78AE
-[2]: https://developer.arm.com/Arm%20Security%20Center/Spectre-BHB
+Use veprintf() because it does.
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: James Morse <james.morse@arm.com>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220407091128.8700-1-chanho61.park@samsung.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Fixes: 428dab813a56ce94 ("libperf: Merge libperf_set_print() into libperf_init()")
+Cc: Jiri Olsa <jolsa@kernel.org>
+Link: https://lore.kernel.org/r/20220408132625.2451452-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/cputype.h |    2 ++
- arch/arm64/kernel/proton-pack.c  |    1 +
- 2 files changed, 3 insertions(+)
+ tools/perf/perf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -75,6 +75,7 @@
- #define ARM_CPU_PART_CORTEX_A77		0xD0D
- #define ARM_CPU_PART_NEOVERSE_V1	0xD40
- #define ARM_CPU_PART_CORTEX_A78		0xD41
-+#define ARM_CPU_PART_CORTEX_A78AE	0xD42
- #define ARM_CPU_PART_CORTEX_X1		0xD44
- #define ARM_CPU_PART_CORTEX_A510	0xD46
- #define ARM_CPU_PART_CORTEX_A710	0xD47
-@@ -123,6 +124,7 @@
- #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
- #define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
- #define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
-+#define MIDR_CORTEX_A78AE	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78AE)
- #define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
- #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
- #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -853,6 +853,7 @@ u8 spectre_bhb_loop_affected(int scope)
- 	if (scope == SCOPE_LOCAL_CPU) {
- 		static const struct midr_range spectre_bhb_k32_list[] = {
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78AE),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
+diff --git a/tools/perf/perf.c b/tools/perf/perf.c
+index 2f6b67189b42..6aae7b6c376b 100644
+--- a/tools/perf/perf.c
++++ b/tools/perf/perf.c
+@@ -434,7 +434,7 @@ void pthread__unblock_sigwinch(void)
+ static int libperf_print(enum libperf_print_level level,
+ 			 const char *fmt, va_list ap)
+ {
+-	return eprintf(level, verbose, fmt, ap);
++	return veprintf(level, verbose, fmt, ap);
+ }
+ 
+ int main(int argc, const char **argv)
+-- 
+2.35.1
+
 
 
