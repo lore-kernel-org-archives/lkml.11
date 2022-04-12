@@ -2,113 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5536C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E520BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbiDLBMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S233200AbiDLBMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348455AbiDLA7V (ORCPT
+        with ESMTP id S1348294AbiDLA7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:59:21 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121DA36E21
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:52:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649724758; x=1681260758;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xfxJtTXIuRttIzRBDb+X6akqcsjXQHvcov6CBWoB9aU=;
-  b=kbElOvLGHE9ltBd9uZIwrwjpmlYmtezXbsHsBrKidgQI7HhS6VgVFgr7
-   NXwcevHM4Ck8vhPRt9yHWAvljgxL0N6W7dR3bOWptbtwPGZ9KlSVYs4yL
-   x7URbeGk4zTjcV+db3hq6Wn1rbjp66aEhHG649oE9hjT5o5TYpMpntvbL
-   y7z1FhnYUSlpHjMMZe68yXwVtaxBUxqvrHaU2ZBrsK5QEyeDGRKtExjtP
-   th1Wd1AARj40ByWk0np13SyKaCq8NP7h36ozCvZ9F8czwGkZif9qdY5QM
-   2Hr4S0AIX2/l9OYZgyPxrSzalacGh8vfRcphSZcCnxx7HmgvRd4TpCHVs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="287260789"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="287260789"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:52:35 -0700
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="572492458"
-Received: from joliu-mobl2.ccr.corp.intel.com ([10.254.214.243])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:52:33 -0700
-Message-ID: <8a4a0426c81f13d70d2c82b7adbc957e3e953bf3.camel@intel.com>
-Subject: Re: [PATCH v2 2/9] mm/vmscan: remove unneeded can_split_huge_page
- check
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     songmuchun@bytedance.com, hch@infradead.org, willy@infradead.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Date:   Tue, 12 Apr 2022 08:52:30 +0800
-In-Reply-To: <20220409093500.10329-3-linmiaohe@huawei.com>
-References: <20220409093500.10329-1-linmiaohe@huawei.com>
-         <20220409093500.10329-3-linmiaohe@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Mon, 11 Apr 2022 20:59:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CDA34B8B;
+        Mon, 11 Apr 2022 17:52:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5741960B2B;
+        Tue, 12 Apr 2022 00:52:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F833C385AA;
+        Tue, 12 Apr 2022 00:52:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649724746;
+        bh=locvj7Sw4TaJkfgrTFOol/+10RC6ZU07zfP39idlbHQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qukbT9l03oLxFHgZLytHWhTiaojaj38PYHJUauGpFV3xe50Nf1qrs827qGGlEU/p+
+         C/zjC8Y2FGBlP4wyKgGGmBdYpD0Z+fvIuXs79ptQnCPMbpEw17o/4iQCfdl1rPY8Wf
+         P3fnM2NvoFqUobACsQlKhq3x/4WixF9ILmcesYCyFmDVR/RaP6pN6yqafZdFZvHai6
+         vOB97ZeLyBj83zpzdSTv7KkjbK1dXIjP67LKNOZMHpa3PgzmIeb24GSCMlYZ88uuhX
+         DQNS+08GvaLn3QA+L13OWRPGddAeZlnJ49J9OKBiKNSyel5E/TuxoDBh0Ta+9abvU6
+         NrL/f3xHxXSRA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     QintaoShen <unSimple1993@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Felix.Kuehling@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 02/11] drm/amdkfd: Check for potential null return of kmalloc_array()
+Date:   Mon, 11 Apr 2022 20:52:11 -0400
+Message-Id: <20220412005222.351554-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412005222.351554-1-sashal@kernel.org>
+References: <20220412005222.351554-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-04-09 at 17:34 +0800, Miaohe Lin wrote:
-> We don't need to check can_split_folio() because folio_maybe_dma_pinned()
-> is checked before. It will avoid the long term pinned pages to be swapped
-> out. And we can live with short term pinned pages. Without can_split_folio
-> checking we can simplify the code. Also activate_locked can be changed to
-> keep_locked as it's just short term pinning.
-> 
-> Suggested-by: Huang, Ying <ying.huang@intel.com>
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+From: QintaoShen <unSimple1993@163.com>
 
-Look good to me.  Thanks!
+[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
 
-Reviewed-by: Huang, Ying <ying.huang@intel.com>
+As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
+Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
 
-Best Regards,
-Huang, Ying
+Signed-off-by: QintaoShen <unSimple1993@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> ---
->  mm/vmscan.c | 22 ++++++++--------------
->  1 file changed, 8 insertions(+), 14 deletions(-)
-> 
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index 4a76be47bed1..01f5db75a507 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -1711,20 +1711,14 @@ static unsigned int shrink_page_list(struct list_head *page_list,
->  					goto keep_locked;
->  				if (folio_maybe_dma_pinned(folio))
->  					goto keep_locked;
-> -				if (PageTransHuge(page)) {
-> -					/* cannot split THP, skip it */
-> -					if (!can_split_folio(folio, NULL))
-> -						goto activate_locked;
-> -					/*
-> -					 * Split pages without a PMD map right
-> -					 * away. Chances are some or all of the
-> -					 * tail pages can be freed without IO.
-> -					 */
-> -					if (!folio_entire_mapcount(folio) &&
-> -					    split_folio_to_list(folio,
-> -								page_list))
-> -						goto activate_locked;
-> -				}
-> +				/*
-> +				 * Split pages without a PMD map right
-> +				 * away. Chances are some or all of the
-> +				 * tail pages can be freed without IO.
-> +				 */
-> +				if (PageTransHuge(page) && !folio_entire_mapcount(folio) &&
-> +				    split_folio_to_list(folio, page_list))
-> +					goto keep_locked;
->  				if (!add_to_swap(page)) {
->  					if (!PageTransHuge(page))
->  						goto activate_locked_split;
-
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+index 944abfad39c1..1d8dd81dfc70 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+@@ -607,6 +607,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
+ 	event_waiters = kmalloc_array(num_events,
+ 					sizeof(struct kfd_event_waiter),
+ 					GFP_KERNEL);
++	if (!event_waiters)
++		return NULL;
+ 
+ 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
+ 		INIT_LIST_HEAD(&event_waiters[i].waiters);
+-- 
+2.35.1
 
