@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 804C2C3527C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 885BDC35280
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348929AbiDLHVY (ORCPT
+        id S1351692AbiDLHVd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
+        Tue, 12 Apr 2022 03:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352742AbiDLHFz (ORCPT
+        with ESMTP id S1352770AbiDLHF6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:05:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536F148398;
-        Mon, 11 Apr 2022 23:48:39 -0700 (PDT)
+        Tue, 12 Apr 2022 03:05:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046A64889B;
+        Mon, 11 Apr 2022 23:48:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A7E6104B;
-        Tue, 12 Apr 2022 06:48:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AB68C385A1;
-        Tue, 12 Apr 2022 06:48:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F3F8B818C8;
+        Tue, 12 Apr 2022 06:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C31C385A6;
+        Tue, 12 Apr 2022 06:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746118;
-        bh=v1fDEVwhfSlwO4xCIZtroJVpO3dg35r8s/6pXPKkWKU=;
+        s=korg; t=1649746121;
+        bh=dvOuvkLBEN4EUP6zEmDLAeop9VeIEiE+x9OuTkj65Xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UTLyGIMCfjuFqfZArVl8i1QdQieb2gQz/Ofjtkm/lxDw/KgiBJafkGWVZqDP0cMpQ
-         jcqQTT1SnztanS/OWTIrmPCK4ZMO7nUi4DGCxRFu2XixBAxRFBy9r3LxDfZvYsvoct
-         70PCvIv0ySLbb6Sqwgi7HDiVcTdVHB9ZmLaka3Hw=
+        b=GyQ0JmpqvH3ifVpbtBKW3Pbim32h/k4LljhwCTTh/rAFpNeKrZvhO3ZzqoEej2GJY
+         IM8RmI0u48giiOfsi1DFPLxlzjjVfGr6IFFaDgMT/tpis9u6+2UhgGYAWjYG7aRnbd
+         FcfpQWwWdjmwqYYbKAJfQwaepWBlMcbJSP7gDqTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 140/277] selftests: net: Add tls config dependency for tls selftests
-Date:   Tue, 12 Apr 2022 08:29:03 +0200
-Message-Id: <20220412062946.085907479@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 167/277] drm/imx: dw_hdmi-imx: Fix bailout in error cases of probe
+Date:   Tue, 12 Apr 2022 08:29:30 +0200
+Message-Id: <20220412062946.869492670@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,32 +56,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naresh Kamboju <naresh.kamboju@linaro.org>
+From: Liu Ying <victor.liu@nxp.com>
 
-[ Upstream commit d9142e1cf3bbdaf21337767114ecab26fe702d47 ]
+[ Upstream commit e8083acc3f8cc2097917018e947fd4c857f60454 ]
 
-selftest net tls test cases need TLS=m without this the test hangs.
-Enabling config TLS solves this problem and runs to complete.
-  - CONFIG_TLS=m
+In dw_hdmi_imx_probe(), if error happens after dw_hdmi_probe() returns
+successfully, dw_hdmi_remove() should be called where necessary as
+bailout.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Signed-off-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: c805ec7eb210 ("drm/imx: dw_hdmi-imx: move initialization into probe")
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220128091944.3831256-1-victor.liu@nxp.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/config | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/imx/dw_hdmi-imx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
-index 86ab429fe7f3..29fadd7512f7 100644
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -43,4 +43,5 @@ CONFIG_NET_ACT_TUNNEL_KEY=m
- CONFIG_NET_ACT_MIRRED=m
- CONFIG_BAREUDP=m
- CONFIG_IPV6_IOAM6_LWTUNNEL=y
-+CONFIG_TLS=m
- CONFIG_CRYPTO_SM4=y
+diff --git a/drivers/gpu/drm/imx/dw_hdmi-imx.c b/drivers/gpu/drm/imx/dw_hdmi-imx.c
+index 87428fb23d9f..a2277a0d6d06 100644
+--- a/drivers/gpu/drm/imx/dw_hdmi-imx.c
++++ b/drivers/gpu/drm/imx/dw_hdmi-imx.c
+@@ -222,6 +222,7 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	const struct of_device_id *match = of_match_node(dw_hdmi_imx_dt_ids, np);
+ 	struct imx_hdmi *hdmi;
++	int ret;
+ 
+ 	hdmi = devm_kzalloc(&pdev->dev, sizeof(*hdmi), GFP_KERNEL);
+ 	if (!hdmi)
+@@ -243,10 +244,15 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
+ 	hdmi->bridge = of_drm_find_bridge(np);
+ 	if (!hdmi->bridge) {
+ 		dev_err(hdmi->dev, "Unable to find bridge\n");
++		dw_hdmi_remove(hdmi->hdmi);
+ 		return -ENODEV;
+ 	}
+ 
+-	return component_add(&pdev->dev, &dw_hdmi_imx_ops);
++	ret = component_add(&pdev->dev, &dw_hdmi_imx_ops);
++	if (ret)
++		dw_hdmi_remove(hdmi->hdmi);
++
++	return ret;
+ }
+ 
+ static int dw_hdmi_imx_remove(struct platform_device *pdev)
 -- 
 2.35.1
 
