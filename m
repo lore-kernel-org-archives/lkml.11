@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C8BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B85CC4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357364AbiDLISb (ORCPT
+        id S1379085AbiDLIUA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
+        Tue, 12 Apr 2022 04:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355747AbiDLH3S (ORCPT
+        with ESMTP id S1354488AbiDLH00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:29:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478694F477;
-        Tue, 12 Apr 2022 00:08:16 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1520045AFE;
+        Tue, 12 Apr 2022 00:06:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9008616B3;
-        Tue, 12 Apr 2022 07:08:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D39FEC385A6;
-        Tue, 12 Apr 2022 07:08:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AD4C616D1;
+        Tue, 12 Apr 2022 07:06:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5710C36B1D;
+        Tue, 12 Apr 2022 07:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747295;
-        bh=sKVhV7fgBd8sxwJqL0C6kTu4zyY3fj413l1HQZdr/vY=;
+        s=korg; t=1649747178;
+        bh=QaNOR5RKZom6VvVT+7/5NSchd1phah1uvn1QBNxVMAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YK6DsxmbL+UZXcMeOYeLj9TXuY5nQjwVznlY/STaQBI73YLxNwNOOnI9RpupuSyGi
-         6dj9hES1bifPoX3ZB7H5yJsEz1b/jz0coQX3iYsutljShzelMHkBKEqjtFGqRsdj4n
-         rGvkbgtFnaUlKggSm7tpuY7Ydui+JN4v6C6FWYIs=
+        b=xKfmDW7UPC+aue6FrZ6ZAB4OQmRGAP68Rfy2YjO51EuR5/ValPd7AtqxYDYxqu7gU
+         4KWrwiLYVa3C6mcCqayyqhz174p3gJlsDuUjSf09AcjtM+/UbEY20QwNehwk79qCvs
+         mjZf0ByH++ckVDOg6y2IaRnNqCAuamQHEl+Tvdjc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 028/343] selftests, xsk: Fix bpf_res cleanup test
-Date:   Tue, 12 Apr 2022 08:27:26 +0200
-Message-Id: <20220412062951.918237990@linuxfoundation.org>
+        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.16 271/285] dmaengine: Revert "dmaengine: shdma: Fix runtime PM imbalance on error"
+Date:   Tue, 12 Apr 2022 08:32:08 +0200
+Message-Id: <20220412062951.479763686@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,225 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+From: Vinod Koul <vkoul@kernel.org>
 
-[ Upstream commit 3b22523bca02b0d5618c08b93d8fd1fb578e1cc3 ]
+commit d143f939a95696d38ff800ada14402fa50ebbd6c upstream.
 
-After commit 710ad98c363a ("veth: Do not record rx queue hint in veth_xmit"),
-veth no longer receives traffic on the same queue as it was sent on. This
-breaks the bpf_res test for the AF_XDP selftests as the socket tied to
-queue 1 will not receive traffic anymore.
+This reverts commit 455896c53d5b ("dmaengine: shdma: Fix runtime PM
+imbalance on error") as the patch wrongly reduced the count on error and
+did not bail out. So drop the count by reverting the patch .
 
-Modify the test so that two sockets are tied to queue id 0 using a shared
-umem instead. When killing the first socket enter the second socket into
-the xskmap so that traffic will flow to it. This will still test that the
-resources are not cleaned up until after the second socket dies, without
-having to rely on veth supporting rx_queue hints.
-
-Reported-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220125082945.26179-1-magnus.karlsson@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 80 +++++++++++++++---------
- tools/testing/selftests/bpf/xdpxceiver.h |  2 +-
- 2 files changed, 50 insertions(+), 32 deletions(-)
+ drivers/dma/sh/shdma-base.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index ffa5502ad95e..5f8296d29e77 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -266,22 +266,24 @@ static int xsk_configure_umem(struct xsk_umem_info *umem, void *buffer, u64 size
- }
+--- a/drivers/dma/sh/shdma-base.c
++++ b/drivers/dma/sh/shdma-base.c
+@@ -115,10 +115,8 @@ static dma_cookie_t shdma_tx_submit(stru
+ 		ret = pm_runtime_get(schan->dev);
  
- static int xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_info *umem,
--				struct ifobject *ifobject, u32 qid)
-+				struct ifobject *ifobject, bool shared)
- {
--	struct xsk_socket_config cfg;
-+	struct xsk_socket_config cfg = {};
- 	struct xsk_ring_cons *rxr;
- 	struct xsk_ring_prod *txr;
+ 		spin_unlock_irq(&schan->chan_lock);
+-		if (ret < 0) {
++		if (ret < 0)
+ 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
+-			pm_runtime_put(schan->dev);
+-		}
  
- 	xsk->umem = umem;
- 	cfg.rx_size = xsk->rxqsize;
- 	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
--	cfg.libbpf_flags = 0;
-+	cfg.libbpf_flags = XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD;
- 	cfg.xdp_flags = ifobject->xdp_flags;
- 	cfg.bind_flags = ifobject->bind_flags;
-+	if (shared)
-+		cfg.bind_flags |= XDP_SHARED_UMEM;
+ 		pm_runtime_barrier(schan->dev);
  
- 	txr = ifobject->tx_on ? &xsk->tx : NULL;
- 	rxr = ifobject->rx_on ? &xsk->rx : NULL;
--	return xsk_socket__create(&xsk->xsk, ifobject->ifname, qid, umem->umem, rxr, txr, &cfg);
-+	return xsk_socket__create(&xsk->xsk, ifobject->ifname, 0, umem->umem, rxr, txr, &cfg);
- }
- 
- static struct option long_options[] = {
-@@ -387,7 +389,6 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
- 	for (i = 0; i < MAX_INTERFACES; i++) {
- 		struct ifobject *ifobj = i ? ifobj_rx : ifobj_tx;
- 
--		ifobj->umem = &ifobj->umem_arr[0];
- 		ifobj->xsk = &ifobj->xsk_arr[0];
- 		ifobj->use_poll = false;
- 		ifobj->pacing_on = true;
-@@ -401,11 +402,12 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
- 			ifobj->tx_on = false;
- 		}
- 
-+		memset(ifobj->umem, 0, sizeof(*ifobj->umem));
-+		ifobj->umem->num_frames = DEFAULT_UMEM_BUFFERS;
-+		ifobj->umem->frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
-+
- 		for (j = 0; j < MAX_SOCKETS; j++) {
--			memset(&ifobj->umem_arr[j], 0, sizeof(ifobj->umem_arr[j]));
- 			memset(&ifobj->xsk_arr[j], 0, sizeof(ifobj->xsk_arr[j]));
--			ifobj->umem_arr[j].num_frames = DEFAULT_UMEM_BUFFERS;
--			ifobj->umem_arr[j].frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
- 			ifobj->xsk_arr[j].rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
- 		}
- 	}
-@@ -950,7 +952,10 @@ static void tx_stats_validate(struct ifobject *ifobject)
- 
- static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
- {
-+	u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
- 	int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
-+	int ret, ifindex;
-+	void *bufs;
- 	u32 i;
- 
- 	ifobject->ns_fd = switch_namespace(ifobject->nsname);
-@@ -958,23 +963,20 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
- 	if (ifobject->umem->unaligned_mode)
- 		mmap_flags |= MAP_HUGETLB;
- 
--	for (i = 0; i < test->nb_sockets; i++) {
--		u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
--		u32 ctr = 0;
--		void *bufs;
--		int ret;
-+	bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
-+	if (bufs == MAP_FAILED)
-+		exit_with_error(errno);
- 
--		bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
--		if (bufs == MAP_FAILED)
--			exit_with_error(errno);
-+	ret = xsk_configure_umem(ifobject->umem, bufs, umem_sz);
-+	if (ret)
-+		exit_with_error(-ret);
- 
--		ret = xsk_configure_umem(&ifobject->umem_arr[i], bufs, umem_sz);
--		if (ret)
--			exit_with_error(-ret);
-+	for (i = 0; i < test->nb_sockets; i++) {
-+		u32 ctr = 0;
- 
- 		while (ctr++ < SOCK_RECONF_CTR) {
--			ret = xsk_configure_socket(&ifobject->xsk_arr[i], &ifobject->umem_arr[i],
--						   ifobject, i);
-+			ret = xsk_configure_socket(&ifobject->xsk_arr[i], ifobject->umem,
-+						   ifobject, !!i);
- 			if (!ret)
- 				break;
- 
-@@ -985,8 +987,22 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
- 		}
- 	}
- 
--	ifobject->umem = &ifobject->umem_arr[0];
- 	ifobject->xsk = &ifobject->xsk_arr[0];
-+
-+	if (!ifobject->rx_on)
-+		return;
-+
-+	ifindex = if_nametoindex(ifobject->ifname);
-+	if (!ifindex)
-+		exit_with_error(errno);
-+
-+	ret = xsk_setup_xdp_prog(ifindex, &ifobject->xsk_map_fd);
-+	if (ret)
-+		exit_with_error(-ret);
-+
-+	ret = xsk_socket__update_xskmap(ifobject->xsk->xsk, ifobject->xsk_map_fd);
-+	if (ret)
-+		exit_with_error(-ret);
- }
- 
- static void testapp_cleanup_xsk_res(struct ifobject *ifobj)
-@@ -1142,14 +1158,16 @@ static void testapp_bidi(struct test_spec *test)
- 
- static void swap_xsk_resources(struct ifobject *ifobj_tx, struct ifobject *ifobj_rx)
- {
-+	int ret;
-+
- 	xsk_socket__delete(ifobj_tx->xsk->xsk);
--	xsk_umem__delete(ifobj_tx->umem->umem);
- 	xsk_socket__delete(ifobj_rx->xsk->xsk);
--	xsk_umem__delete(ifobj_rx->umem->umem);
--	ifobj_tx->umem = &ifobj_tx->umem_arr[1];
- 	ifobj_tx->xsk = &ifobj_tx->xsk_arr[1];
--	ifobj_rx->umem = &ifobj_rx->umem_arr[1];
- 	ifobj_rx->xsk = &ifobj_rx->xsk_arr[1];
-+
-+	ret = xsk_socket__update_xskmap(ifobj_rx->xsk->xsk, ifobj_rx->xsk_map_fd);
-+	if (ret)
-+		exit_with_error(-ret);
- }
- 
- static void testapp_bpf_res(struct test_spec *test)
-@@ -1408,13 +1426,13 @@ static struct ifobject *ifobject_create(void)
- 	if (!ifobj->xsk_arr)
- 		goto out_xsk_arr;
- 
--	ifobj->umem_arr = calloc(MAX_SOCKETS, sizeof(*ifobj->umem_arr));
--	if (!ifobj->umem_arr)
--		goto out_umem_arr;
-+	ifobj->umem = calloc(1, sizeof(*ifobj->umem));
-+	if (!ifobj->umem)
-+		goto out_umem;
- 
- 	return ifobj;
- 
--out_umem_arr:
-+out_umem:
- 	free(ifobj->xsk_arr);
- out_xsk_arr:
- 	free(ifobj);
-@@ -1423,7 +1441,7 @@ static struct ifobject *ifobject_create(void)
- 
- static void ifobject_delete(struct ifobject *ifobj)
- {
--	free(ifobj->umem_arr);
-+	free(ifobj->umem);
- 	free(ifobj->xsk_arr);
- 	free(ifobj);
- }
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 2f705f44b748..62a3e6388632 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -125,10 +125,10 @@ struct ifobject {
- 	struct xsk_socket_info *xsk;
- 	struct xsk_socket_info *xsk_arr;
- 	struct xsk_umem_info *umem;
--	struct xsk_umem_info *umem_arr;
- 	thread_func_t func_ptr;
- 	struct pkt_stream *pkt_stream;
- 	int ns_fd;
-+	int xsk_map_fd;
- 	u32 dst_ip;
- 	u32 src_ip;
- 	u32 xdp_flags;
--- 
-2.35.1
-
 
 
