@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA18C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B24C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345324AbiDLBEM (ORCPT
+        id S1345295AbiDLBC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
+        Mon, 11 Apr 2022 21:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345256AbiDLA6b (ORCPT
+        with ESMTP id S1343938AbiDLA5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A2A2FE76;
-        Mon, 11 Apr 2022 17:51:28 -0700 (PDT)
+        Mon, 11 Apr 2022 20:57:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE71225EA6;
+        Mon, 11 Apr 2022 17:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B2C4B815C8;
-        Tue, 12 Apr 2022 00:51:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE46AC385A4;
-        Tue, 12 Apr 2022 00:51:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 659E5617E9;
+        Tue, 12 Apr 2022 00:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE574C385AC;
+        Tue, 12 Apr 2022 00:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724685;
-        bh=Wlepa6YIr2hY5FeD4yQs2YIwB5qn8KB5kc30quQBXrE=;
+        s=k20201202; t=1649724583;
+        bh=JL1Fzm5L3B6Voqyw7R6oOuWlRX3RSRLX2xong9QrcAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sp29ux/f+ByKrw1tqDZig35b/jNAf7dvxrjR0vgnNbRRvi6Jzov75lNCyGz+AoS0y
-         RehVpAV8dtxLFIcnOQVtufvZ4W5MCV9kYsIjfTSwsuLquYPIXYhFYQNrbsA7l2e3r9
-         9e9RaZDsMypH+IB5cfxxFKLvOrIMpLe18Yl8bLfqQdbLKUW+LsQALm0Eig2U/kBr3x
-         u5DJWrW7d+Xcivsk8kKsvDP/CmKEuueGd7v6Rmm4Md6vEsS2E4MV8wC/HvnS8kRDig
-         +k0Xs1bQ6mVKDzaygkW8qUgMZ1D7ENll/GLIJv5RQdGM2WGin+vJmz2PYMHVDkc8KN
-         lzjd4bGmBrSIw==
+        b=fWu4D2SZ2koq1IGObSu/vfMDGR0u+EhsqHGZUcf9ulmAR0qZBbXMrzQQeQyF4RVd+
+         p5oKcSa7YlVMskHVdml+ks+xZ0V/FRxpmcrK3ejQa4XDFNTkJ3UnB2SvbyeHOHamtJ
+         BEbZ/WJ0hqvCS85fxlOoYOST1DzpQ7G8PBMOQr6AIrU9pX4QCaU1+4OlupC+5Q+e4Y
+         v9UfzXTvdQH9V6lwKH2hMHVqbJocVTsfyxKAEoncodzrK4yM088UqbkpWqdl9S3Wwi
+         ieKI0NYFiaCvDCWu3PjebKbBWZFjQ1fi+G5BQZMEloO/cRap86yrVVJnQmDNGfPzQ6
+         rFNGjVfdgQJwA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marcin Kozlowski <marcinguy@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 15/21] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
-Date:   Mon, 11 Apr 2022 20:50:34 -0400
-Message-Id: <20220412005042.351105-15-sashal@kernel.org>
+Cc:     Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 11/30] scsi: target: tcmu: Fix possible page UAF
+Date:   Mon, 11 Apr 2022 20:48:45 -0400
+Message-Id: <20220412004906.350678-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412005042.351105-1-sashal@kernel.org>
-References: <20220412005042.351105-1-sashal@kernel.org>
+In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
+References: <20220412004906.350678-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,54 +54,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcin Kozlowski <marcinguy@gmail.com>
+From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
 
-[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
+[ Upstream commit a6968f7a367f128d120447360734344d5a3d5336 ]
 
-aqc111_rx_fixup() contains several out-of-bounds accesses that can be
-triggered by a malicious (or defective) USB device, in particular:
+tcmu_try_get_data_page() looks up pages under cmdr_lock, but it does not
+take refcount properly and just returns page pointer. When
+tcmu_try_get_data_page() returns, the returned page may have been freed by
+tcmu_blocks_release().
 
- - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
-   causing OOB reads and (on big-endian systems) OOB endianness flips.
- - A packet can overlap the metadata array, causing a later OOB
-   endianness flip to corrupt data used by a cloned SKB that has already
-   been handed off into the network stack.
- - A packet SKB can be constructed whose tail is far beyond its end,
-   causing out-of-bounds heap data to be considered part of the SKB's
-   data.
+We need to get_page() under cmdr_lock to avoid concurrent
+tcmu_blocks_release().
 
-Found doing variant analysis. Tested it with another driver (ax88179_178a), since
-I don't have a aqc111 device to test it, but the code looks very similar.
-
-Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220311132206.24515-1-xiaoguang.wang@linux.alibaba.com
+Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
+Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/aqc111.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/target/target_core_user.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-index 7e44110746dd..68912e266826 100644
---- a/drivers/net/usb/aqc111.c
-+++ b/drivers/net/usb/aqc111.c
-@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 	if (start_of_descs != desc_offset)
- 		goto err;
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index c6950f157b99..c283e45ac300 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -1676,6 +1676,7 @@ static struct page *tcmu_try_get_block_page(struct tcmu_dev *udev, uint32_t dbi)
+ 	mutex_lock(&udev->cmdr_lock);
+ 	page = tcmu_get_block_page(udev, dbi);
+ 	if (likely(page)) {
++		get_page(page);
+ 		mutex_unlock(&udev->cmdr_lock);
+ 		return page;
+ 	}
+@@ -1714,6 +1715,7 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
+ 		/* For the vmalloc()ed cmd area pages */
+ 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
+ 		page = vmalloc_to_page(addr);
++		get_page(page);
+ 	} else {
+ 		uint32_t dbi;
  
--	/* self check desc_offset from header*/
--	if (desc_offset >= skb_len)
-+	/* self check desc_offset from header and make sure that the
-+	 * bounds of the metadata array are inside the SKB
-+	 */
-+	if (pkt_count * 2 + desc_offset >= skb_len)
- 		goto err;
+@@ -1724,7 +1726,6 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
+ 			return VM_FAULT_SIGBUS;
+ 	}
  
-+	/* Packets must not overlap the metadata array */
-+	skb_trim(skb, desc_offset);
-+
- 	if (pkt_count == 0)
- 		goto err;
- 
+-	get_page(page);
+ 	vmf->page = page;
+ 	return 0;
+ }
 -- 
 2.35.1
 
