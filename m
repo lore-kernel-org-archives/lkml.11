@@ -2,214 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2395C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF14EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356200AbiDLNpD (ORCPT
+        id S1356209AbiDLNpH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
+        Tue, 12 Apr 2022 09:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356084AbiDLNoy (ORCPT
+        with ESMTP id S1356102AbiDLNoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 09:44:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33AA44ECF9
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E7B84EDE0
         for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:42:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649770955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BBe8NJbB/NGE5hfWVeZ1eXc/XEjoOVUEazhRhSRRhFM=;
-        b=P647y1yAqB/7m8QEm5Rh1KbvIMRBn56AW4JW9fkYDcVBrnsFNupnaGVCVH0keNZtALyoD0
-        pz7K8CMcdeVdDtY+KxxtFKLixEZ5oYrq1TtaIkMZnj+sQ6V+7zvESQuAL/W2qTgk7lmykP
-        irbPTKU/1WZ0jKK3XR8lXvqRbNW8CFg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-649-g2xYTWatOzi0crlkhcxa7A-1; Tue, 12 Apr 2022 09:42:33 -0400
-X-MC-Unique: g2xYTWatOzi0crlkhcxa7A-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F15DD2999B4E;
-        Tue, 12 Apr 2022 13:42:32 +0000 (UTC)
-Received: from wtfbox.lan (unknown [10.40.192.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2BC0C9D6E;
-        Tue, 12 Apr 2022 13:42:20 +0000 (UTC)
-Date:   Tue, 12 Apr 2022 15:42:18 +0200
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, asavkov@redhat.com,
-        Eugene Syromiatnikov <esyr@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] timer: add a function to adjust timeouts to be
- upper bound
-Message-ID: <YlWBun1whllq2BDt@wtfbox.lan>
-References: <20220407075242.118253-2-asavkov@redhat.com>
- <87zgkwjtq2.ffs@tglx>
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3AE871570;
+        Tue, 12 Apr 2022 06:42:36 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.57.94.90])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0F3723F70D;
+        Tue, 12 Apr 2022 06:42:34 -0700 (PDT)
+From:   Vincent Donnefort <vincent.donnefort@arm.com>
+To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        morten.rasmussen@arm.com, chris.redpath@arm.com, qperret@google.com
+Subject: [PATCH v4 3/7] sched, drivers: Remove max param from effective_cpu_util()/sched_cpu_util()
+Date:   Tue, 12 Apr 2022 14:42:16 +0100
+Message-Id: <20220412134220.1588482-4-vincent.donnefort@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220412134220.1588482-1-vincent.donnefort@arm.com>
+References: <20220412134220.1588482-1-vincent.donnefort@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87zgkwjtq2.ffs@tglx>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 02:37:25AM +0200, Thomas Gleixner wrote:
-> On Thu, Apr 07 2022 at 09:52, Artem Savkov wrote:
-> > +	return -1;
-> > +}
-> > +
-> > +static int calc_wheel_index(unsigned long expires, unsigned long clk,
-> > +			    unsigned long *bucket_expiry)
-> > +{
-> > +	unsigned long delta = expires - clk;
-> > +	unsigned int idx;
-> > +	int lvl = get_wheel_lvl(delta);
-> > +
-> > +	if (lvl >= 0) {
-> > +		idx = calc_index(expires, lvl, bucket_expiry);
-> >  	} else if ((long) delta < 0) {
-> >  		idx = clk & LVL_MASK;
-> >  		*bucket_expiry = clk;
-> > @@ -545,6 +555,38 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
-> >  	return idx;
-> >  }
-> 
-> This generates horrible code on various compilers. I ran that through a
-> couple of perf test scenarios and came up with the following, which
-> still is a tad slower for the level 0 case depending on the branch
-> predictor state. But it at least prevents the compilers from doing
-> stupid things and on average it's on par.
-> 
-> Though the level 0 case matters because of *drumroll* networking.
-> 
-> Just for the record. I told you last time that your patch creates a
-> measurable overhead and I explained you in depth why the performance of
-> this stupid thing matters. So why are you not providing a proper
-> analysis for that?
+From: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-I did do a simple check of measuring the time it takes for
-calc_wheel_index to execute and it turned out a tad lower after the
-patch. Your measurements are sure to be much more refined so would you
-give me any pointers on what to measure and which cases to check to have
-a better view on the impact of these patches?
+effective_cpu_util() already has a `int cpu' parameter which allows to
+retrieve the CPU capacity scale factor (or maximum CPU capacity) inside
+this function via an arch_scale_cpu_capacity(cpu).
 
-> > +/**
-> > + * upper_bound_timeout - return granularity-adjusted timeout
-> > + * @timeout: timeout value in jiffies
-> > + *
-> > + * This function return supplied timeout adjusted based on timer wheel
-> > + * granularity effectively making supplied value an upper bound at which the
-> > + * timer will expire. Due to the way timer wheel works timeouts smaller than
-> > + * LVL_GRAN on their respecrive levels will be _at least_
-> > + * LVL_GRAN(lvl) - LVL_GRAN(lvl -1)) jiffies early.
-> 
-> Contrary to the simple "timeout - timeout/8" this gives better accuracy
-> as it does not converge to the early side for long timeouts.
-> 
-> With the quirk that this cuts timeout=1 to 0, which means it expires
-> immediately. The wonders of integer math avoid that with the simple
-> timeout -= timeout >> 3 approach for timeouts up to 8 ticks. :)
-> 
-> But that want's to be properly documented.
-> 
-> > +unsigned long upper_bound_timeout(unsigned long timeout)
-> > +{
-> > +	int lvl = get_wheel_lvl(timeout);
-> 
-> which is equivalent to:
-> 
->          lvl = calc_wheel_index(timeout, 0, &dummy) >> LVL_BITS;
-> 
-> Sorry, could not resist. :)
+A lot of code calling effective_cpu_util() (or the shim
+sched_cpu_util()) needs the maximum CPU capacity, i.e. it will call
+arch_scale_cpu_capacity() already.
+But not having to pass it into effective_cpu_util() will make the EAS
+wake-up code easier, especially when the maximum CPU capacity reduced
+by the thermal pressure is passed through the EAS wake-up functions.
 
-Right, but that would mean a significantly more overhead, right?
+Due to the asymmetric CPU capacity support of arm/arm64 architectures,
+arch_scale_cpu_capacity(int cpu) is a per-CPU variable read access via
+per_cpu(cpu_scale, cpu) on such a system.
+On all other architectures it is a a compile-time constant
+(SCHED_CAPACITY_SCALE).
 
-> The more interesting question is, how frequently this upper bounds
-> function is used. It's definitely not something which you want to
-> inflict onto a high frequency (re)arming timer.
+Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-As of now not that frequent. Instead of re-arming the timer networking
-code allows it to expire and makes the decisions in the handler, so it
-shouldn't be a problem because keepalives are usually quite big.
-
-> Did you analyse that? And if so, then why is that analysis missing from
-> the change log of the keepalive timer patch?
-
-I agree, this needs to be added.
-
-> Aside of that it clearly lacks any argument why the simple, stupid, but
-> fast approach of shortening the timeout by 12.5% is not good enough and
-> why we need yet another function which is just going to be another
-> source of 'optimizations' for the wrong reasons.
-
-I am just not used to this mode of thinking I guess. This will be more
-efficient at the cost of being less obvious and requiring to be
-remembered about in case the 12.5% figure changes.
-
-> Seriously, I apprecitate that you want to make this 'perfect', but it's
-> never going to be perfect and the real question is whether there is any
-> reasonable difference between 'good' and almost 'perfect'.
-> 
-> And this clearly resonates in your changelog of the network patch:
-> 
->  "Make sure TCP keepalive timer does not expire late. Switching to upper
->   bound timers means it can fire off early but in case of keepalive
->   tcp_keepalive_timer() handler checks elapsed time and resets the timer
->   if it was triggered early. This results in timer "cascading" to a
->   higher precision and being just a couple of milliseconds off it's
->   original mark."
-> 
-> Which reinvents the cascading effect of the original timer wheel just
-> with more overhead. Where is the justification for this?
-> 
-> Is this really true for all the reasons where the keep alive timers are
-> armed? I seriously doubt that. Why?
-> 
-> On the end which waits for the keep alive packet to arrive in time it
-> does not matter at all, whether the cutoff is a bit later than defined.
-> 
->      So why do you want to let the timer fire early just to rearm it? 
-> 
-> But it matters a lot on the sender side. If that is late and the other
-> end is strict about the timeout then you lost. But does it matter
-> whether you send the packet too early? No, it does not matter at all
-> because the important point is that you send it _before_ the other side
-> decides to give up.
-> 
->      So why do you want to let the timer fire precise?
-> 
-> You are solving the sender side problem by introducing a receiver side
-> problem and both suffer from the overhead for no reason.
-
-I was hoping to discuss this during the second patch review. Keepalive
-timer handler complexity makes me think that it handles a lot of cases I
-am not currently aware of and dropping the "cascading" code would result
-in problems in places not obvious to me.
-
-Josh's point also makes sense to me. For cases when keepalive is used to
-check for dead clients I don't think we want to be early.
-
-> Aside of the theoerical issue why this matters at all I have yet ot see
-> a reasonable argument what the practical problen is. If this would be a
-> real problem in the wild then why haven't we ssen a reassonable bug
-> report within 6 years?
-
-I think it is unusual for keepalive timers to be set so close to the
-timeout so it is not an easy problem to hit. But regardless of that from
-what I saw in related discussions nobody sees this keepalive timer behavior
-as normal let alone expected. If you think it is better to keep it as is
-this will need to be clearly described/justified somewhere, but I am not
-sure how one would approach that.
-
+diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
+index bca2f912d349..024dba4e6575 100644
+--- a/drivers/powercap/dtpm_cpu.c
++++ b/drivers/powercap/dtpm_cpu.c
+@@ -71,34 +71,19 @@ static u64 set_pd_power_limit(struct dtpm *dtpm, u64 power_limit)
+ 
+ static u64 scale_pd_power_uw(struct cpumask *pd_mask, u64 power)
+ {
+-	unsigned long max = 0, sum_util = 0;
++	unsigned long max, sum_util = 0;
+ 	int cpu;
+ 
+-	for_each_cpu_and(cpu, pd_mask, cpu_online_mask) {
+-
+-		/*
+-		 * The capacity is the same for all CPUs belonging to
+-		 * the same perf domain, so a single call to
+-		 * arch_scale_cpu_capacity() is enough. However, we
+-		 * need the CPU parameter to be initialized by the
+-		 * loop, so the call ends up in this block.
+-		 *
+-		 * We can initialize 'max' with a cpumask_first() call
+-		 * before the loop but the bits computation is not
+-		 * worth given the arch_scale_cpu_capacity() just
+-		 * returns a value where the resulting assembly code
+-		 * will be optimized by the compiler.
+-		 */
+-		max = arch_scale_cpu_capacity(cpu);
+-		sum_util += sched_cpu_util(cpu, max);
+-	}
+-
+ 	/*
+-	 * In the improbable case where all the CPUs of the perf
+-	 * domain are offline, 'max' will be zero and will lead to an
+-	 * illegal operation with a zero division.
++	 * The capacity is the same for all CPUs belonging to
++	 * the same perf domain.
+ 	 */
+-	return max ? (power * ((sum_util << 10) / max)) >> 10 : 0;
++	max = arch_scale_cpu_capacity(cpumask_first(pd_mask));
++
++	for_each_cpu_and(cpu, pd_mask, cpu_online_mask)
++		sum_util += sched_cpu_util(cpu);
++
++	return (power * ((sum_util << 10) / max)) >> 10;
+ }
+ 
+ static u64 get_pd_power_uw(struct dtpm *dtpm)
+diff --git a/drivers/thermal/cpufreq_cooling.c b/drivers/thermal/cpufreq_cooling.c
+index 0bfb8eebd126..3f514ff3d9aa 100644
+--- a/drivers/thermal/cpufreq_cooling.c
++++ b/drivers/thermal/cpufreq_cooling.c
+@@ -137,11 +137,9 @@ static u32 cpu_power_to_freq(struct cpufreq_cooling_device *cpufreq_cdev,
+ static u32 get_load(struct cpufreq_cooling_device *cpufreq_cdev, int cpu,
+ 		    int cpu_idx)
+ {
+-	unsigned long max = arch_scale_cpu_capacity(cpu);
+-	unsigned long util;
++	unsigned long util = sched_cpu_util(cpu);
+ 
+-	util = sched_cpu_util(cpu, max);
+-	return (util * 100) / max;
++	return (util * 100) / arch_scale_cpu_capacity(cpu);
+ }
+ #else /* !CONFIG_SMP */
+ static u32 get_load(struct cpufreq_cooling_device *cpufreq_cdev, int cpu,
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 67f06f72c50e..c1705effb3a4 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -2255,7 +2255,7 @@ static inline bool owner_on_cpu(struct task_struct *owner)
+ }
+ 
+ /* Returns effective CPU energy utilization, as seen by the scheduler */
+-unsigned long sched_cpu_util(int cpu, unsigned long max);
++unsigned long sched_cpu_util(int cpu);
+ #endif /* CONFIG_SMP */
+ 
+ #ifdef CONFIG_RSEQ
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 068c088e9584..a62d25ec5b0d 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -7061,12 +7061,14 @@ struct task_struct *idle_task(int cpu)
+  * required to meet deadlines.
+  */
+ unsigned long effective_cpu_util(int cpu, unsigned long util_cfs,
+-				 unsigned long max, enum cpu_util_type type,
++				 enum cpu_util_type type,
+ 				 struct task_struct *p)
+ {
+-	unsigned long dl_util, util, irq;
++	unsigned long dl_util, util, irq, max;
+ 	struct rq *rq = cpu_rq(cpu);
+ 
++	max = arch_scale_cpu_capacity(cpu);
++
+ 	if (!uclamp_is_used() &&
+ 	    type == FREQUENCY_UTIL && rt_rq_is_runnable(&rq->rt)) {
+ 		return max;
+@@ -7146,10 +7148,9 @@ unsigned long effective_cpu_util(int cpu, unsigned long util_cfs,
+ 	return min(max, util);
+ }
+ 
+-unsigned long sched_cpu_util(int cpu, unsigned long max)
++unsigned long sched_cpu_util(int cpu)
+ {
+-	return effective_cpu_util(cpu, cpu_util_cfs(cpu), max,
+-				  ENERGY_UTIL, NULL);
++	return effective_cpu_util(cpu, cpu_util_cfs(cpu), ENERGY_UTIL, NULL);
+ }
+ #endif /* CONFIG_SMP */
+ 
+diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
+index 3dbf351d12d5..1207c78f85c1 100644
+--- a/kernel/sched/cpufreq_schedutil.c
++++ b/kernel/sched/cpufreq_schedutil.c
+@@ -157,11 +157,10 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
+ static void sugov_get_util(struct sugov_cpu *sg_cpu)
+ {
+ 	struct rq *rq = cpu_rq(sg_cpu->cpu);
+-	unsigned long max = arch_scale_cpu_capacity(sg_cpu->cpu);
+ 
+-	sg_cpu->max = max;
++	sg_cpu->max = arch_scale_cpu_capacity(sg_cpu->cpu);
+ 	sg_cpu->bw_dl = cpu_bw_dl(rq);
+-	sg_cpu->util = effective_cpu_util(sg_cpu->cpu, cpu_util_cfs(sg_cpu->cpu), max,
++	sg_cpu->util = effective_cpu_util(sg_cpu->cpu, cpu_util_cfs(sg_cpu->cpu),
+ 					  FREQUENCY_UTIL, NULL);
+ }
+ 
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index e234d015657f..7cd1fb073fcf 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6697,12 +6697,11 @@ static long
+ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
+ {
+ 	struct cpumask *pd_mask = perf_domain_span(pd);
+-	unsigned long cpu_cap = arch_scale_cpu_capacity(cpumask_first(pd_mask));
+-	unsigned long max_util = 0, sum_util = 0;
+-	unsigned long _cpu_cap = cpu_cap;
++	unsigned long max_util = 0, sum_util = 0, cpu_cap;
+ 	int cpu;
+ 
+-	_cpu_cap -= arch_scale_thermal_pressure(cpumask_first(pd_mask));
++	cpu_cap = arch_scale_cpu_capacity(cpumask_first(pd_mask));
++	cpu_cap -= arch_scale_thermal_pressure(cpumask_first(pd_mask));
+ 
+ 	/*
+ 	 * The capacity state of CPUs of the current rd can be driven by CPUs
+@@ -6739,10 +6738,10 @@ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
+ 		 * is already enough to scale the EM reported power
+ 		 * consumption at the (eventually clamped) cpu_capacity.
+ 		 */
+-		cpu_util = effective_cpu_util(cpu, util_running, cpu_cap,
+-					      ENERGY_UTIL, NULL);
++		cpu_util = effective_cpu_util(cpu, util_running, ENERGY_UTIL,
++					      NULL);
+ 
+-		sum_util += min(cpu_util, _cpu_cap);
++		sum_util += min(cpu_util, cpu_cap);
+ 
+ 		/*
+ 		 * Performance domain frequency: utilization clamping
+@@ -6751,12 +6750,12 @@ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
+ 		 * NOTE: in case RT tasks are running, by default the
+ 		 * FREQUENCY_UTIL's utilization can be max OPP.
+ 		 */
+-		cpu_util = effective_cpu_util(cpu, util_freq, cpu_cap,
+-					      FREQUENCY_UTIL, tsk);
+-		max_util = max(max_util, min(cpu_util, _cpu_cap));
++		cpu_util = effective_cpu_util(cpu, util_freq, FREQUENCY_UTIL,
++					      tsk);
++		max_util = max(max_util, min(cpu_util, cpu_cap));
+ 	}
+ 
+-	return em_cpu_energy(pd->em_pd, max_util, sum_util, _cpu_cap);
++	return em_cpu_energy(pd->em_pd, max_util, sum_util, cpu_cap);
+ }
+ 
+ /*
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 2f6446295e7d..0b2eebbaa0d3 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -2874,7 +2874,7 @@ enum cpu_util_type {
+ };
+ 
+ unsigned long effective_cpu_util(int cpu, unsigned long util_cfs,
+-				 unsigned long max, enum cpu_util_type type,
++				 enum cpu_util_type type,
+ 				 struct task_struct *p);
+ 
+ static inline unsigned long cpu_bw_dl(struct rq *rq)
 -- 
-Regards,
-  Artem
+2.25.1
 
