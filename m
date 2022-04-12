@@ -2,159 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 190BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE908C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354400AbiDLMwD (ORCPT
+        id S1354380AbiDLMwM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42092 "EHLO
+        Tue, 12 Apr 2022 08:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355250AbiDLMsI (ORCPT
+        with ESMTP id S1355271AbiDLMsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:48:08 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254191EAD9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:36 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id a21so2415978pfv.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:36 -0700 (PDT)
+        Tue, 12 Apr 2022 08:48:09 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1032108;
+        Tue, 12 Apr 2022 05:16:25 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id c64so9949460edf.11;
+        Tue, 12 Apr 2022 05:16:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z9X2SrqoTs43koF8W1YEyPB7oiXm2DF9WYmlTb3V7PA=;
-        b=lQLilr+Q2g87EtVVPRkynme+ys+unhl7MuT0MI1fPPleOe3LCLXtn0geYCy4JxzqfE
-         dxUkJRUAW8BcXKan8vkglpGtWOnLfw1uW7UBvsjoAn7wjZqRu630HO5ukKaf/zUnQF41
-         hx96WGUZoVdVW0L1Zgg6ZzVQoJJEmTJWrb1NT2H7DZIgYHdw1H8uOqmgvQMhve0fSSHD
-         JYhqnA2kGKcIlewMPJoFXpSF8qwr9p4URhQl+Oz0qXWUAS+JcANj8qMDk3H7doYze6gv
-         hGf+O6aaD31GkgKtap63TvHDKeVipbnKKqGKb7gIcCTCbikv0tjAYE2E5Z9ApVOOny3E
-         74Lg==
+        bh=UiT3RVqcqw/2HXUfTd1U2cSmXIntDYXehGziaThTk/w=;
+        b=JGp/u8YOUoDMQ9pAhLEQ+0LMkcB5cI0GNQNFLXAOk4BGHADL07FszPBr5jGzRq8Tn0
+         slB2wZTGjbUgLYXJfWCTwYRsijMCC2I4oME+8AnMdSZ5bLyrxNqUjALgI/gCk/uyjsKQ
+         pcctSnVwr3XQefY2xtkgv6RvCt0K9TlCjvnqXpSlgMYnp611tNu6hmJCSZ3oLhcuLsWP
+         W0uFp//crFSEGAj02bMTUcJeIBv2pLqFJH6TeE2nZRY9ffeHW72lqboltt+IE7Dc+bqK
+         /TAVsU0AjGorOdL17dllOsWrJn1sJ/ovvtzz+Lp7xifmGMY5UHcGdTjhxtBzCW8IsN7N
+         W5BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z9X2SrqoTs43koF8W1YEyPB7oiXm2DF9WYmlTb3V7PA=;
-        b=QfrgkJk0rmQsV1C0AgqRoNP968hrODxn24IUmkcrxWm6oWDhpnCdfdj56JP7pqP+td
-         XJLG5LdbLFaQIT00ppuS1v6ZVzBnIhJ9pVvVaEdqQGLe1F3mWxllQowzCjoqlVMdRFYN
-         RjHPCt8kJl2r3AwnBcoWGNfY5JSM8RS1RMtTQzXgVB0Dm8PeRwBkyVSEDrh6V/64/Ox1
-         af+5kUJrKMTM1vGoANwYfCpQg2PSWVwRL6yzQvmhDAGERVEUKyMPDQi0c2b8RrwZfehP
-         lSk4CTeYnS5jULKrgigVkDV77S1l38jClmK/SBuxuZoFh4hMttR1jjkjFNc78nokShd7
-         R/Ew==
-X-Gm-Message-State: AOAM5323pV70Pb+RfsiqincjoNykIeTN772jGx4kYwaNsbUqs4hi713i
-        JAufZYgSJXh0TTYZ3CGr+ez7jfUix50=
-X-Google-Smtp-Source: ABdhPJwUwSEjOQ6f0fkqphrVXFPI2eKvjFOkDqm44pnqo65ZzNs8bqOQfpk2u4QAWn9N7S5xk/kh6Q==
-X-Received: by 2002:a05:6a00:1ac8:b0:4fa:917f:c1aa with SMTP id f8-20020a056a001ac800b004fa917fc1aamr4312157pfv.2.1649765735470;
-        Tue, 12 Apr 2022 05:15:35 -0700 (PDT)
-Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id ng17-20020a17090b1a9100b001c9f79927bfsm3060878pjb.25.2022.04.12.05.15.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Apr 2022 05:15:35 -0700 (PDT)
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Juergen Gross <jgross@suse.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>
-Subject: [PATCH V5 6/7] x86/entry: Convert SWAPGS to swapgs and remove the definition of SWAPGS
-Date:   Tue, 12 Apr 2022 20:15:40 +0800
-Message-Id: <20220412121541.4595-7-jiangshanlai@gmail.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
-In-Reply-To: <20220412121541.4595-1-jiangshanlai@gmail.com>
-References: <20220412121541.4595-1-jiangshanlai@gmail.com>
+        bh=UiT3RVqcqw/2HXUfTd1U2cSmXIntDYXehGziaThTk/w=;
+        b=Cg/xEoszwE03X4liShCMrfzG0dKtgNJUt5zW+v/GXmy7HP1StzlTPA65C+5DNUixH3
+         kjXnLfAFLuPXAm7i6b9N3EBQt0vxjrZJLhaHvhSMHYL6JuxNP/IGjIRPtIKTl/Hjz5kf
+         H3jipnNbdzniYs+qNSiKCK+tSE6AUhP6z61yCX/V/BecbUYQvfRzMqQd8ljjmHg6Zc+h
+         xu6jqm/sowwqqnDzjYvsSk31yguZVexSDK322uWcZXRp6s18jD/V7Kupp4SdI0jkBDEn
+         Zodsff4GiGJ5HIINSVHGPl5M+VeTtNuc7yoMhPcjLy+FSKC9M253lPeYyjWtZRpPZIBy
+         NTtQ==
+X-Gm-Message-State: AOAM533q0ytZd48mzqVgxuyRfvFyuH9yPRlrxpuld40D9NLPNZy6OeT0
+        OzGXWUfPKhUupepxEahUPBc=
+X-Google-Smtp-Source: ABdhPJzkxvCmO7JCJ6A9v7QvH5R/rXHxeTnPXkqBRtuhgJGSstAu1ZffptSNh7ksLjk7lMmqBnKyJg==
+X-Received: by 2002:a05:6402:11d0:b0:419:65c5:cde4 with SMTP id j16-20020a05640211d000b0041965c5cde4mr38884523edw.73.1649765784091;
+        Tue, 12 Apr 2022 05:16:24 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 05:16:23 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Michael Walle <michael@walle.cc>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Colin Ian King <colin.king@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next v3 02/18] net: dsa: sja1105: remove use of iterator after list_for_each_entry() loop
+Date:   Tue, 12 Apr 2022 14:15:41 +0200
+Message-Id: <20220412121557.3553555-3-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220412121557.3553555-1-jakobkoschel@gmail.com>
+References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-XENPV doesn't use swapgs_restore_regs_and_return_to_usermode(),
-error_entry() and entry_SYSENTER_compat().
+The link below explains that there is a desire to syntactically change
+list_for_each_entry() and list_for_each() such that it becomes
+impossible to use the iterator variable outside the scope of the loop.
 
-Change the PV-compatible SWAPGS to the ASM instruction swapgs in these
-functions.
+Although sja1105_insert_gate_entry() makes legitimate use of the
+iterator pointer when it breaks out, the pattern it uses may become
+illegal, so it needs to change.
 
-Also remove the definition of SWAPGS since there is no user of the
-SWAPGS anymore.
+It is deemed acceptable to use a copy of the loop iterator, and
+sja1105_insert_gate_entry() only needs to know the list_head element
+before which the list insertion should be made. So let's profit from the
+occasion and refactor the list iteration to a dedicated function.
 
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+An additional benefit is given by the fact that with the helper function
+in place, we no longer need to special-case the empty list, since it is
+equivalent to not having found any gating entry larger than the
+specified interval in the list. We just need to insert at the tail of
+that list (list_add vs list_add_tail on an empty list does the same
+thing).
+
+Link: https://patchwork.kernel.org/project/netdevbpf/patch/20220407102900.3086255-3-jakobkoschel@gmail.com/#24810127
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- arch/x86/entry/entry_64.S        | 6 +++---
- arch/x86/entry/entry_64_compat.S | 2 +-
- arch/x86/include/asm/irqflags.h  | 8 --------
- 3 files changed, 4 insertions(+), 12 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_vl.c | 46 ++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 3aca7815fe79..6611032979d9 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -1008,7 +1008,7 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 * We entered from user mode or we're pretending to have entered
- 	 * from user mode due to an IRET fault.
- 	 */
--	SWAPGS
-+	swapgs
- 	FENCE_SWAPGS_USER_ENTRY
- 	/* We have user CR3.  Change to kernel CR3. */
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
-@@ -1040,7 +1040,7 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 * gsbase and proceed.  We'll fix up the exception and land in
- 	 * .Lgs_change's error handler with kernel gsbase.
- 	 */
--	SWAPGS
-+	swapgs
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
+index b7e95d60a6e4..369be2ac3587 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.c
++++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+@@ -7,6 +7,27 @@
  
- 	/*
- 	 * Issue an LFENCE to prevent GS speculation, regardless of whether it is a
-@@ -1061,7 +1061,7 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 * We came from an IRET to user mode, so we have user
- 	 * gsbase and CR3.  Switch to kernel gsbase and CR3:
- 	 */
--	SWAPGS
-+	swapgs
- 	FENCE_SWAPGS_USER_ENTRY
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
+ #define SJA1105_SIZE_VL_STATUS			8
  
-diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
-index 4fdb007cddbd..c5aeb0819707 100644
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -50,7 +50,7 @@ SYM_CODE_START(entry_SYSENTER_compat)
- 	UNWIND_HINT_EMPTY
- 	ENDBR
- 	/* Interrupts are off on entry. */
--	SWAPGS
-+	swapgs
++static struct list_head *
++sja1105_first_entry_longer_than(struct list_head *entries,
++				s64 interval,
++				struct netlink_ext_ack *extack)
++{
++	struct sja1105_gate_entry *p;
++
++	list_for_each_entry(p, entries, list) {
++		if (p->interval == interval) {
++			NL_SET_ERR_MSG_MOD(extack, "Gate conflict");
++			return ERR_PTR(-EBUSY);
++		}
++
++		if (interval < p->interval)
++			return &p->list;
++	}
++
++	/* Empty list, or specified interval is largest within the list */
++	return entries;
++}
++
+ /* Insert into the global gate list, sorted by gate action time. */
+ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 				     struct sja1105_rule *rule,
+@@ -14,6 +35,7 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 				     struct netlink_ext_ack *extack)
+ {
+ 	struct sja1105_gate_entry *e;
++	struct list_head *pos;
+ 	int rc;
  
- 	pushq	%rax
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
-diff --git a/arch/x86/include/asm/irqflags.h b/arch/x86/include/asm/irqflags.h
-index 111104d1c2cd..7793e52d6237 100644
---- a/arch/x86/include/asm/irqflags.h
-+++ b/arch/x86/include/asm/irqflags.h
-@@ -137,14 +137,6 @@ static __always_inline void arch_local_irq_restore(unsigned long flags)
- 	if (!arch_irqs_disabled_flags(flags))
- 		arch_local_irq_enable();
- }
--#else
--#ifdef CONFIG_X86_64
--#ifdef CONFIG_XEN_PV
--#define SWAPGS	ALTERNATIVE "swapgs", "", X86_FEATURE_XENPV
--#else
--#define SWAPGS	swapgs
--#endif
--#endif
- #endif /* !__ASSEMBLY__ */
+ 	e = kzalloc(sizeof(*e), GFP_KERNEL);
+@@ -24,25 +46,15 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 	e->gate_state = gate_state;
+ 	e->interval = entry_time;
  
- #endif
+-	if (list_empty(&gating_cfg->entries)) {
+-		list_add(&e->list, &gating_cfg->entries);
+-	} else {
+-		struct sja1105_gate_entry *p;
+-
+-		list_for_each_entry(p, &gating_cfg->entries, list) {
+-			if (p->interval == e->interval) {
+-				NL_SET_ERR_MSG_MOD(extack,
+-						   "Gate conflict");
+-				rc = -EBUSY;
+-				goto err;
+-			}
+-
+-			if (e->interval < p->interval)
+-				break;
+-		}
+-		list_add(&e->list, p->list.prev);
++	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
++					      e->interval, extack);
++	if (IS_ERR(pos)) {
++		rc = PTR_ERR(pos);
++		goto err;
+ 	}
+ 
++	list_add(&e->list, pos->prev);
++
+ 	gating_cfg->num_entries++;
+ 
+ 	return 0;
 -- 
-2.19.1.6.gb485710b
+2.25.1
 
