@@ -2,76 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03EEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346545AbiDLMAZ (ORCPT
+        id S1346692AbiDLMAa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
+        Tue, 12 Apr 2022 08:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239600AbiDLL5I (ORCPT
+        with ESMTP id S1349823AbiDLL5v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:57:08 -0400
-X-Greylist: delayed 318 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 03:43:49 PDT
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050:0:465::201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82FDF28
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:43:49 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4Kd2J30hGhz9snG;
-        Tue, 12 Apr 2022 12:38:27 +0200 (CEST)
-Message-ID: <0f373548-2858-2e67-07eb-2763f4ac2a87@mailbox.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1649759904;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e8PY7GPjQD42x4v6SaG7ComMuVGBsLbkSNsoGN7tgio=;
-        b=huN3jfTMAN3WF/YzcDwjoBpo6Wc/YOJq9bhGiahq+fp0Htjw97W36dvGqqrHIYJeGcM76u
-        8s9xkpknNL2sZ7SQw3sBLyQjrbUuqyQrGOEl8TnbMZ95oC3VATLejoTYdCXyGwRiPTxwka
-        BOTb6cOxswEdw0VhLC7yd76XxlHght15hX4zz3ioJ8yUdfEckPxT6ZyshxDHx4rHvFL5Dc
-        BQyb6ZvS8CVbbDqY/m0/HB+c8V4LzRMYLfi1R6OTly+0nEwatGDmDnlj5Xq+F/obqwbH1V
-        UdChI1WGVVjsmEaid3jqFZrGLT20zAygWb36vivZtjQX4mHZkBNDaGVWz7FrYQ==
-Date:   Tue, 12 Apr 2022 12:38:13 +0200
+        Tue, 12 Apr 2022 07:57:51 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C1D61A37
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:47:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649760431; x=1681296431;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FITyXe8MFzXWfnxQq+a0yZeb4zzQpQ1NJfmontvv7vY=;
+  b=kwrVKOoZo6+cmn+oZQD5w1mCyaeX4d9JF0/A5si6jSS+RoYWalP27B6/
+   6J8bbJRad4k7yyru4mH5Jlfu2h0IeNAV/MiHbuYYAGscKWW/KFVAEoAig
+   NvUHog6N3FjHjgDBSE2clxxzQCaPLPhtRAkqTMTQhBnmdlTo4rRpoLCGt
+   R05fv6Y45iu00osfnq0gOgJoBF/edE+eUQDJEGbFllgMJNfxPK2R+ceus
+   NvIlV3iuUVh25+CGg+YfxXJ9erF/f8+H/sv7e23ubq/M74XkZngW2u3AI
+   ZrmOOBV3tq20l/gsfnGbP1YvnsuCvye+x+/qWoJq5dGsHSw/EHtNEArQs
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="322789591"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="322789591"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:47:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="660439703"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 12 Apr 2022 03:47:09 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neE3B-0002mN-1t;
+        Tue, 12 Apr 2022 10:47:09 +0000
+Date:   Tue, 12 Apr 2022 18:47:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.04.10a] BUILD SUCCESS
+ 6503dafd28b7bea4cf83261b053b76f151f2eee1
+Message-ID: <625558a6.wmYjSNcxBl78lyfO%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Subject: Re: [PATCH] dma-buf-map: remove renamed header file
-Content-Language: en-CA
-To:     Karol Herbst <kherbst@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        dri-devel@lists.freedesktop.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>
-References: <20220411134404.524776-1-kherbst@redhat.com>
-From:   =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel.daenzer@mailbox.org>
-In-Reply-To: <20220411134404.524776-1-kherbst@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-11 15:44, Karol Herbst wrote:
-> commit 7938f4218168 ("dma-buf-map: Rename to iosys-map") already renamed
-> this file, but it got brought back by a merge.
-> 
-> Delete it for real this time.
-> 
-> Fixes: 30424ebae8df ("Merge tag 'drm-intel-gt-next-2022-02-17' of git://anongit.freedesktop.org/drm/drm-intel into drm-intel-next")
-> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> Cc: Lucas De Marchi <lucas.demarchi@intel.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Signed-off-by: Karol Herbst <kherbst@redhat.com>
-> ---
->  include/linux/dma-buf-map.h | 266 ------------------------------------
->  1 file changed, 266 deletions(-)
->  delete mode 100644 include/linux/dma-buf-map.h
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.04.10a
+branch HEAD: 6503dafd28b7bea4cf83261b053b76f151f2eee1  rcu-tasks: Handle sparse cpu_possible_mask in rcu_tasks_invoke_cbs()
 
-Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
+elapsed time: 771m
 
+configs tested: 121
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                 randconfig-c001-20220411
+powerpc                      mgcoge_defconfig
+mips                  decstation_64_defconfig
+arm                     eseries_pxa_defconfig
+arm                       imx_v6_v7_defconfig
+arm                          pxa3xx_defconfig
+m68k                       m5475evb_defconfig
+sh                 kfr2r09-romimage_defconfig
+xtensa                          iss_defconfig
+parisc64                         alldefconfig
+powerpc                     ep8248e_defconfig
+arm                        realview_defconfig
+sh                          sdk7780_defconfig
+powerpc                      ppc40x_defconfig
+powerpc                      bamboo_defconfig
+powerpc                     stx_gp3_defconfig
+powerpc                     mpc83xx_defconfig
+ia64                      gensparse_defconfig
+powerpc                 mpc837x_rdb_defconfig
+sh                               j2_defconfig
+m68k                       m5249evb_defconfig
+riscv                               defconfig
+arm                  randconfig-c002-20220411
+x86_64               randconfig-c001-20220411
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+powerpc                          allyesconfig
+x86_64               randconfig-a016-20220411
+x86_64               randconfig-a012-20220411
+x86_64               randconfig-a013-20220411
+x86_64               randconfig-a014-20220411
+x86_64               randconfig-a015-20220411
+x86_64               randconfig-a011-20220411
+i386                 randconfig-a015-20220411
+i386                 randconfig-a011-20220411
+i386                 randconfig-a016-20220411
+i386                 randconfig-a012-20220411
+i386                 randconfig-a013-20220411
+i386                 randconfig-a014-20220411
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220411
+s390                 randconfig-r044-20220411
+riscv                randconfig-r042-20220411
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+
+clang tested configs:
+powerpc              randconfig-c003-20220411
+arm                  randconfig-c002-20220411
+riscv                randconfig-c006-20220411
+x86_64               randconfig-c007-20220411
+mips                 randconfig-c004-20220411
+i386                 randconfig-c001-20220411
+mips                       lemote2f_defconfig
+powerpc                    mvme5100_defconfig
+arm                        multi_v5_defconfig
+powerpc                 mpc8315_rdb_defconfig
+powerpc                     mpc512x_defconfig
+powerpc                     ppa8548_defconfig
+x86_64                           allyesconfig
+arm                           sama7_defconfig
+arm                          pxa168_defconfig
+x86_64               randconfig-a003-20220411
+x86_64               randconfig-a001-20220411
+x86_64               randconfig-a002-20220411
+x86_64               randconfig-a005-20220411
+x86_64               randconfig-a004-20220411
+x86_64               randconfig-a006-20220411
+i386                 randconfig-a004-20220411
+i386                 randconfig-a001-20220411
+i386                 randconfig-a003-20220411
+i386                 randconfig-a005-20220411
+i386                 randconfig-a006-20220411
+i386                 randconfig-a002-20220411
+hexagon              randconfig-r041-20220411
+hexagon              randconfig-r045-20220411
 
 -- 
-Earthling Michel Dänzer            |                  https://redhat.com
-Libre software enthusiast          |         Mesa and Xwayland developer
+0-DAY CI Kernel Test Service
+https://01.org/lkp
