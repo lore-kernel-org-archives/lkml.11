@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF393C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDBAC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377150AbiDLHrq (ORCPT
+        id S1377129AbiDLHrg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
+        Tue, 12 Apr 2022 03:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352970AbiDLHOm (ORCPT
+        with ESMTP id S1352874AbiDLHOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43949326CF;
-        Mon, 11 Apr 2022 23:55:33 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6757F3137A;
+        Mon, 11 Apr 2022 23:55:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B77F961451;
-        Tue, 12 Apr 2022 06:55:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6491C385A6;
-        Tue, 12 Apr 2022 06:55:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0656FB81B43;
+        Tue, 12 Apr 2022 06:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50978C385A1;
+        Tue, 12 Apr 2022 06:55:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746532;
-        bh=kyQNp63fyCRePYMvs2A+Bs74wYt6RkUsW2s/NcLjiOE=;
+        s=korg; t=1649746512;
+        bh=79S49V6b0/rMojkpv1DYVKJ96IF3SgOqW38WP5Qw2YQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kjKhSZUdynr3LtSvLAQ69lGU+qXVQhO02YZ72qvqyDlyWd7N1UQ8rNxjHa/A5xpQZ
-         MP5RQS4/G4H8BpKHV9DvNirZ3ozulWoNaV+VZg2xSIfr4Fg35Yqpe2HOZdEUn9wMtv
-         CdZqZDr7oMfUEIOaK8liNEqoS453qjksYJPCfbic=
+        b=lz1ds3huSHQmBgyPbPrEEw2+Z53gFXUPo+R6IfzhqeN+IsbdnSxbRYTeSw5dmaMNm
+         lTkoh/DdSLUb0Xweplb/Z7yLuH5DrcE7E+X/4k1vqOp/Da2tAw7hq/MgutKFIYQ90e
+         knAcB0816R71QJqE051JCcVlk8OlCQ3TkSnNGoVI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 040/285] ipv6: make mc_forwarding atomic
-Date:   Tue, 12 Apr 2022 08:28:17 +0200
-Message-Id: <20220412062944.832526741@linuxfoundation.org>
+Subject: [PATCH 5.16 008/285] KVM: x86/emulator: Emulate RDPID only if it is enabled in guest
+Date:   Tue, 12 Apr 2022 08:27:45 +0200
+Message-Id: <20220412062943.915528084@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,125 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Hou Wenlong <houwenlong.hwl@antgroup.com>
 
-[ Upstream commit 145c7a793838add5e004e7d49a67654dc7eba147 ]
+[ Upstream commit a836839cbfe60dc434c5476a7429cf2bae36415d ]
 
-This fixes minor data-races in ip6_mc_input() and
-batadv_mcast_mla_rtr_flags_softif_get_ipv6()
+When RDTSCP is supported but RDPID is not supported in host,
+RDPID emulation is available. However, __kvm_get_msr() would
+only fail when RDTSCP/RDPID both are disabled in guest, so
+the emulator wouldn't inject a #UD when RDPID is disabled but
+RDTSCP is enabled in guest.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: fb6d4d340e05 ("KVM: x86: emulate RDPID")
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Message-Id: <1dfd46ae5b76d3ed87bde3154d51c64ea64c99c1.1646226788.git.houwenlong.hwl@antgroup.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/ipv6.h       | 2 +-
- net/batman-adv/multicast.c | 2 +-
- net/ipv6/addrconf.c        | 4 ++--
- net/ipv6/ip6_input.c       | 2 +-
- net/ipv6/ip6mr.c           | 8 ++++----
- 5 files changed, 9 insertions(+), 9 deletions(-)
+ arch/x86/kvm/emulate.c     | 4 +++-
+ arch/x86/kvm/kvm_emulate.h | 1 +
+ arch/x86/kvm/x86.c         | 6 ++++++
+ 3 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index a59d25f19385..b8641dc0ee66 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -51,7 +51,7 @@ struct ipv6_devconf {
- 	__s32		use_optimistic;
- #endif
- #ifdef CONFIG_IPV6_MROUTE
--	__s32		mc_forwarding;
-+	atomic_t	mc_forwarding;
- #endif
- 	__s32		disable_ipv6;
- 	__s32		drop_unicast_in_l2_multicast;
-diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
-index f4004cf0ff6f..9f311fddfaf9 100644
---- a/net/batman-adv/multicast.c
-+++ b/net/batman-adv/multicast.c
-@@ -134,7 +134,7 @@ static u8 batadv_mcast_mla_rtr_flags_softif_get_ipv6(struct net_device *dev)
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 5705446c1213..769ba8ffd700 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -3514,8 +3514,10 @@ static int em_rdpid(struct x86_emulate_ctxt *ctxt)
  {
- 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
+ 	u64 tsc_aux = 0;
  
--	if (in6_dev && in6_dev->cnf.mc_forwarding)
-+	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
- 		return BATADV_NO_FLAGS;
- 	else
- 		return BATADV_MCAST_WANT_NO_RTR6;
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index e92ca415756a..4f64fb285af7 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -554,7 +554,7 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
- #ifdef CONFIG_IPV6_MROUTE
- 	if ((all || type == NETCONFA_MC_FORWARDING) &&
- 	    nla_put_s32(skb, NETCONFA_MC_FORWARDING,
--			devconf->mc_forwarding) < 0)
-+			atomic_read(&devconf->mc_forwarding)) < 0)
- 		goto nla_put_failure;
- #endif
- 	if ((all || type == NETCONFA_PROXY_NEIGH) &&
-@@ -5539,7 +5539,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_USE_OPTIMISTIC] = cnf->use_optimistic;
- #endif
- #ifdef CONFIG_IPV6_MROUTE
--	array[DEVCONF_MC_FORWARDING] = cnf->mc_forwarding;
-+	array[DEVCONF_MC_FORWARDING] = atomic_read(&cnf->mc_forwarding);
- #endif
- 	array[DEVCONF_DISABLE_IPV6] = cnf->disable_ipv6;
- 	array[DEVCONF_ACCEPT_DAD] = cnf->accept_dad;
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 80256717868e..d4b1e2c5aa76 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -508,7 +508,7 @@ int ip6_mc_input(struct sk_buff *skb)
- 	/*
- 	 *      IPv6 multicast router mode is now supported ;)
- 	 */
--	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
-+	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
- 	    !(ipv6_addr_type(&hdr->daddr) &
- 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
- 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 6a4065d81aa9..91f1c5f56d5f 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -739,7 +739,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
+-	if (ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux))
++	if (!ctxt->ops->guest_has_rdpid(ctxt))
+ 		return emulate_ud(ctxt);
++
++	ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux);
+ 	ctxt->dst.val = tsc_aux;
+ 	return X86EMUL_CONTINUE;
+ }
+diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
+index 68b420289d7e..fb09cd22cb7f 100644
+--- a/arch/x86/kvm/kvm_emulate.h
++++ b/arch/x86/kvm/kvm_emulate.h
+@@ -226,6 +226,7 @@ struct x86_emulate_ops {
+ 	bool (*guest_has_long_mode)(struct x86_emulate_ctxt *ctxt);
+ 	bool (*guest_has_movbe)(struct x86_emulate_ctxt *ctxt);
+ 	bool (*guest_has_fxsr)(struct x86_emulate_ctxt *ctxt);
++	bool (*guest_has_rdpid)(struct x86_emulate_ctxt *ctxt);
  
- 	in6_dev = __in6_dev_get(dev);
- 	if (in6_dev) {
--		in6_dev->cnf.mc_forwarding--;
-+		atomic_dec(&in6_dev->cnf.mc_forwarding);
- 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 					     NETCONFA_MC_FORWARDING,
- 					     dev->ifindex, &in6_dev->cnf);
-@@ -907,7 +907,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
+ 	void (*set_nmi_mask)(struct x86_emulate_ctxt *ctxt, bool masked);
  
- 	in6_dev = __in6_dev_get(dev);
- 	if (in6_dev) {
--		in6_dev->cnf.mc_forwarding++;
-+		atomic_inc(&in6_dev->cnf.mc_forwarding);
- 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 					     NETCONFA_MC_FORWARDING,
- 					     dev->ifindex, &in6_dev->cnf);
-@@ -1557,7 +1557,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
- 	} else {
- 		rcu_assign_pointer(mrt->mroute_sk, sk);
- 		sock_set_flag(sk, SOCK_RCU_FREE);
--		net->ipv6.devconf_all->mc_forwarding++;
-+		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
- 	}
- 	write_unlock_bh(&mrt_lock);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index ff181a6c1005..08522041df59 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -7466,6 +7466,11 @@ static bool emulator_guest_has_fxsr(struct x86_emulate_ctxt *ctxt)
+ 	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_FXSR);
+ }
  
-@@ -1590,7 +1590,7 @@ int ip6mr_sk_done(struct sock *sk)
- 			 * so the RCU grace period before sk freeing
- 			 * is guaranteed by sk_destruct()
- 			 */
--			net->ipv6.devconf_all->mc_forwarding--;
-+			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
- 			write_unlock_bh(&mrt_lock);
- 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
- 						     NETCONFA_MC_FORWARDING,
++static bool emulator_guest_has_rdpid(struct x86_emulate_ctxt *ctxt)
++{
++	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_RDPID);
++}
++
+ static ulong emulator_read_gpr(struct x86_emulate_ctxt *ctxt, unsigned reg)
+ {
+ 	return kvm_register_read_raw(emul_to_vcpu(ctxt), reg);
+@@ -7548,6 +7553,7 @@ static const struct x86_emulate_ops emulate_ops = {
+ 	.guest_has_long_mode = emulator_guest_has_long_mode,
+ 	.guest_has_movbe     = emulator_guest_has_movbe,
+ 	.guest_has_fxsr      = emulator_guest_has_fxsr,
++	.guest_has_rdpid     = emulator_guest_has_rdpid,
+ 	.set_nmi_mask        = emulator_set_nmi_mask,
+ 	.get_hflags          = emulator_get_hflags,
+ 	.exiting_smm         = emulator_exiting_smm,
 -- 
 2.35.1
 
