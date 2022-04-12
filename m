@@ -2,75 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FDFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A485C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352464AbiDLLmz (ORCPT
+        id S1352856AbiDLLnK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54944 "EHLO
+        Tue, 12 Apr 2022 07:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353328AbiDLLiK (ORCPT
+        with ESMTP id S1356321AbiDLLkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:38:10 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78AC2AEC
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:19:04 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1neDbi-001uO8-2v; Tue, 12 Apr 2022 20:18:47 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 12 Apr 2022 18:18:46 +0800
-Date:   Tue, 12 Apr 2022 18:18:46 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
-References: <Yk5o/lNTyiJWD4Ae@gondor.apana.org.au>
- <Yk7EbvYhwnQy+pAf@arm.com>
- <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
- <Yk8RGvF6ik34C6BO@arm.com>
- <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
- <Yk/6ts5sVDMDpKj3@arm.com>
- <Yk/8QExHlggU8KgC@gondor.apana.org.au>
- <YlVHSvkyUBXZPUr2@arm.com>
- <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
- <YlVOTsaTVkBOxthG@arm.com>
+        Tue, 12 Apr 2022 07:40:06 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C1A5AA62
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:21:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649758863; x=1681294863;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=p6V7B0yDyO7Mu+Ri/DBEsFLVGj1883OUpp9MaCUn5ns=;
+  b=XW0uXHKomP832X8Y3gNa97zQlCXZevmP8fqnUWTwCCtdrRhS5vg7LqNR
+   xRUMdiWZ1ZUl+/zwuHtiPu+Dw4skVb3Mvwhrw0Bh2h1bD7tWW8dZVFwSN
+   SeBFqQgYXcCTW6EJYpQ5c78L9G4L6n3gjyzf1SocMFRChWwnyoDXRGVv3
+   YujMX6aO6T1UIoetYFxGSvjHRArfCDgnPZdPf8gC97+rU41IJKSRnQ3v9
+   KbaDVmFUewyxcSDmC5ENJ6fEEAtbzC13raztJwhaRZ71SB4oYPkmNSwq7
+   VmncTP2n3c128lzvr9moTs5fE60lzAtnvrVNyH1CC3DtAOTj0FaxFyoMo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262085895"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="262085895"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:21:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="644657721"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Apr 2022 03:21:00 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neDdr-0002ku-KE;
+        Tue, 12 Apr 2022 10:20:59 +0000
+Date:   Tue, 12 Apr 2022 18:20:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jirislaby:devel 48/48] drivers/tty/serial/max310x.c:753:33:
+ warning: variable 'to_send' set but not used
+Message-ID: <202204121850.mWrZUR2V-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YlVOTsaTVkBOxthG@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 11:02:54AM +0100, Catalin Marinas wrote:
->
-> This series does not penalise any architecture. It doesn't even make
-> arm64 any worse than it currently is.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
+head:   ea94a80635daaf36a289f1ec1f982b1e094faeca
+commit: ea94a80635daaf36a289f1ec1f982b1e094faeca [48/48] tty: serial, use kfifo
+config: arc-buildonly-randconfig-r003-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121850.mWrZUR2V-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=ea94a80635daaf36a289f1ec1f982b1e094faeca
+        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
+        git fetch --no-tags jirislaby devel
+        git checkout ea94a80635daaf36a289f1ec1f982b1e094faeca
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/tty/serial/ kernel/time/
 
-Right, the patch as it stands doesn't change anything.  However,
-it is also broken as it stands.  As I said before, CRYPTO_MINALIGN
-is not something that is guaranteed by the Crypto API, it is simply
-a statement of whatever kmalloc returns.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-So if kmalloc is no longer returning CRYPTO_MINALIGN-aligned
-memory, then those drivers that need this alignment for DMA
-will break anyway.
+All warnings (new ones prefixed by >>):
 
-If you want the Crypto API to guarantee alignment over and above
-that returned by kmalloc, the correct way is to use cra_alignmask.
+   drivers/tty/serial/max310x.c: In function 'max310x_handle_tx':
+>> drivers/tty/serial/max310x.c:753:33: warning: variable 'to_send' set but not used [-Wunused-but-set-variable]
+     753 |         unsigned int /*txlen,*/ to_send;//, until_end;
+         |                                 ^~~~~~~
 
-Cheers,
+
+vim +/to_send +753 drivers/tty/serial/max310x.c
+
+   749	
+   750	static void max310x_handle_tx(struct uart_port *port)
+   751	{
+   752		struct tty_port *tport = &port->state->port;
+ > 753		unsigned int /*txlen,*/ to_send;//, until_end;
+   754	
+   755		if (unlikely(port->x_char)) {
+   756			max310x_port_write(port, MAX310X_THR_REG, port->x_char);
+   757			port->icount.tx++;
+   758			port->x_char = 0;
+   759			return;
+   760		}
+   761	
+   762		if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port))
+   763			return;
+   764	
+   765		/* Get length of data pending in circular buffer */
+   766		to_send = kfifo_len(&tport->xmit_fifo);
+   767	#ifdef UNFINISHED
+   768		until_end = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
+   769		if (likely(to_send)) {
+   770			/* Limit to size of TX FIFO */
+   771			txlen = max310x_port_read(port, MAX310X_TXFIFOLVL_REG);
+   772			txlen = port->fifosize - txlen;
+   773			to_send = (to_send > txlen) ? txlen : to_send;
+   774	
+   775			if (until_end < to_send) {
+   776				/* It's a circ buffer -- wrap around.
+   777				 * We could do that in one SPI transaction, but meh. */
+   778				max310x_batch_write(port, xmit->buf + xmit->tail, until_end);
+   779				max310x_batch_write(port, xmit->buf, to_send - until_end);
+   780			} else {
+   781				max310x_batch_write(port, xmit->buf + xmit->tail, to_send);
+   782			}
+   783	
+   784			/* Add data to send */
+   785			port->icount.tx += to_send;
+   786			xmit->tail = (xmit->tail + to_send) & (UART_XMIT_SIZE - 1);
+   787		}
+   788	#endif
+   789	
+   790		if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
+   791			uart_write_wakeup(port);
+   792	}
+   793	
+
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+0-DAY CI Kernel Test Service
+https://01.org/lkp
