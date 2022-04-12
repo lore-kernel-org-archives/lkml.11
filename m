@@ -2,93 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB10C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA554C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbiDLX1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S230154AbiDLX1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbiDLX0Z (ORCPT
+        with ESMTP id S229976AbiDLX0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 19:26:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900C9C9B49;
-        Tue, 12 Apr 2022 15:12:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DC3261C54;
-        Tue, 12 Apr 2022 21:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41B9CC385A5;
-        Tue, 12 Apr 2022 21:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649798949;
-        bh=kpS0EcU/RLQzTaKo85ZEC/dgBcrpXX2fe+n6wE10HoY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GaLCgYlHxpFu6dokBt6GCrmgjotR4ofYQfGcSFBOLeVJbLpcwYNstaIrRFFIghgom
-         d4/BYVT4yedX7dhBWKTquSxLJru2kufnM1pSd6adoQdHT5dspvAHMXGF+D7LBSbyGy
-         uqwHRxFNdMWVDYxR0VfF+2gKqAXrxjAQgzuLbxkHXicMZ4BZiA4YlOWRDTjH9tpsz+
-         lFMd8q2AcF3LrzmBQ/fhVQi3g0E+SpAYkcw2R0hXBqNrKSdDI4R0a0zA/04HGUFz7K
-         uaJaecV/iiyppRN+sMAt+0yP/ErIwQTkaBGZvf6wgKDX4lLyfLcopor9Ly3uCGIfYU
-         NpNRnUyxLeliQ==
-Date:   Tue, 12 Apr 2022 14:29:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michael Walle <michael@walle.cc>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Colin Ian King <colin.king@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH net-next v3 14/18] sfc: Remove usage of list iterator
- for list_add() after the loop body
-Message-ID: <20220412142905.54489567@kernel.org>
-In-Reply-To: <20220412121557.3553555-15-jakobkoschel@gmail.com>
-References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
-        <20220412121557.3553555-15-jakobkoschel@gmail.com>
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F64C76645
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:30 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id i20so504620ybj.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxtx.org; s=google;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xmRmkkroX/ZukAgPQbgu7GtPsckYSYxEzxmb7aKkIko=;
+        b=ZR7DAm07c+QEkfiyPHmQCfDS7timLcGfYeugikAQaMwU5Vit90FIFszf5HT8IqDTN6
+         MlDYXRrRhfYEJ4DRsY1nVyh5QoVxbY43AJ2//P+ZernsR/FLHrckT1w6XF1e9+YlnHK9
+         7gN820jcbxY2GEZcn5feLjjKV0aY9lY2dtVyU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=xmRmkkroX/ZukAgPQbgu7GtPsckYSYxEzxmb7aKkIko=;
+        b=lIlroZV6WBMN27ySPXtfNK8uZgMgkncwucGBPPT4BReV6nLHROUtlMdY5JvN5oSi9I
+         5HOzovE6bhVWGVtYp2jGD9oB/DM+wtZi5KhqVqQaNC8r7f8pWmni5jywQ7BJO7aT48dy
+         wx5sz83al8dzgI8b8zZujEoSAsUYZj/jpVKXKpbr8xOWiLZsd5gaN/dYjSJw3b6AYo5w
+         hmMNMj69zZPBE9FqEceyeUCyS7GtxUA88DiNSqFO5Ft5n3e/JkIzdAumiwFeCW0BtO+F
+         AF1RFyjFKKFhjZtMUwSIWLr6zASpMHXSKQ+8LRvBjdGCo7Y2E27y6bj6CfTz9S1/56uL
+         C7/g==
+X-Gm-Message-State: AOAM5328IznxBHtRbBbV/p/P4v8+Kj9mATNuzmFHNxhyfkJaB622Pdyp
+        spp2rrzpazkmLAQ/6S2726A1M3YmAHB3mFRB
+X-Google-Smtp-Source: ABdhPJzbwC3w2M+vc7pyB5lM/HW6D/4TCKadUkygTIT+t7hZVldVzOyZ115iTy8XP73vsW0amgCbkA==
+X-Received: by 2002:a4a:d109:0:b0:321:28d0:b7fa with SMTP id k9-20020a4ad109000000b0032128d0b7famr12254834oor.17.1649794132285;
+        Tue, 12 Apr 2022 13:08:52 -0700 (PDT)
+Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
+        by smtp.gmail.com with ESMTPSA id b188-20020aca34c5000000b002da579c994dsm12690706oia.31.2022.04.12.13.08.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 13:08:51 -0700 (PDT)
+Sender: Justin Forbes <jmforbes@linuxtx.org>
+Date:   Tue, 12 Apr 2022 15:08:49 -0500
+From:   Justin Forbes <jforbes@fedoraproject.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.17 000/343] 5.17.3-rc1 review
+Message-ID: <YlXcUXUjSumMUipj@fedora64.linuxtx.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 14:15:53 +0200 Jakob Koschel wrote:
-> -	struct list_head *head = &efx->rss_context.list;
-> +	struct list_head *head = *pos = &efx->rss_context.list;
+On Tue, Apr 12, 2022 at 08:26:58AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.17.3 release.
+> There are 343 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.3-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-ENOTBUILT, please wait with the reposting. Since you posted two
-versions today I guess that's 2x 24h? :)
+Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
+s390x, x86_64), and boot tested x86_64. No regressions noted.
+
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
