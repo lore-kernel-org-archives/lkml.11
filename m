@@ -2,169 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86793C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiDLXXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
+        id S229853AbiDLXXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbiDLXWm (ORCPT
+        with ESMTP id S229848AbiDLXW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:22:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E71DC4;
-        Tue, 12 Apr 2022 15:50:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A105161CB6;
-        Tue, 12 Apr 2022 22:50:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBDC8C385A1;
-        Tue, 12 Apr 2022 22:50:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649803849;
-        bh=qT1HHgdYzFd0FlgtfwqtDoefeQb+fd5285v/Cp2+Hwo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=eSLTP/jAO4DSU/9JfWQCq76W+fOxlgqL0DR5qTTz/mu3MAUA9tJScKEUoxknoeETd
-         hKb3gaNKbbuYQZhTI2SjYXA2w/4c5cwIlhODGOh5pVd02JrM5Uw5oxuiqam2snqhPX
-         9XGlOVAE1bfwSdw8Hp4mUN0uJL3T+LwNWZZbijg2AxD6cN1hOLC3PlQU7noEBP0ght
-         7lJ6XGhH/lCvNHsab8MtwWfIjrmdPAa6o96ZxdjuYSx+qzeBCe7jUXt+G2xJX695U7
-         QGDX/ktEK8RD2Hmo5S20z2lLfmF4yu4xWX9FljZllCBEIgRMk82Tg4x+6Z0OUMzoig
-         LwrKABckLltVA==
-Date:   Tue, 12 Apr 2022 17:50:47 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Vidya Sagar <vidyas@nvidia.com>
-Cc:     "Kenneth R. Crudup" <kenny@panix.com>, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, hkallweit1@gmail.com,
-        wangxiongfeng2@huawei.com, mika.westerberg@linux.intel.com,
-        kai.heng.feng@canonical.com, chris.packham@alliedtelesis.co.nz,
-        yangyicong@hisilicon.com, treding@nvidia.com, jonathanh@nvidia.com,
-        abhsahu@nvidia.com, sagupta@nvidia.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kthota@nvidia.com,
-        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
-        Ricky Wu <ricky_wu@realtek.com>,
-        Rajat Jain <rajatja@google.com>,
-        Prasad Malisetty <quic_pmaliset@quicinc.com>,
-        Victor Ding <victording@google.com>
-Subject: Re: [PATCH V1] PCI/ASPM: Save/restore L1SS Capability for
- suspend/resume
-Message-ID: <20220412225047.GA627910@bhelgaas>
+        Tue, 12 Apr 2022 19:22:58 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8675E142
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:09:55 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id e22so226262qvf.9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:09:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vCDAOLehwCcYWONpYO55pEeYX9bgO2K2M5jLJHp+bpI=;
+        b=f3wqgGp7zhfxxmUYx2wFIqyhK/dVBaSlOkIhRroiZYAKd56bRrIV6waKSNZ/2tsGv0
+         Nw3QwGhQIWVYMCrfS8K7BlNJlyiFETnfKvQJlD7NcKbbpBxSuinhvljRQg1gG7HPZSLK
+         Ili7D5D8shmf7l6YI7ifS+mCwSe1cVfvLtAZw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vCDAOLehwCcYWONpYO55pEeYX9bgO2K2M5jLJHp+bpI=;
+        b=hZqRfDhWWNDu8IejdfGF4TO2RFR0dVhQ0UH0sHmLzlrDsLbWkQJhQx4ULvwrCkple3
+         rSUEb/54s92dxwS/brfT7WU/Lwt+GrMNM++LFhOiJsxSnNZha/SplLT9FRXcplRUWYzZ
+         Ntu6A1Fh29R3QYwVZDxDBqD29AUeUjeJjRFZ3Uw9KHilHnHiLoEIsHZq4sHtGoi8NEEj
+         +/bU4aarCkxwrn2Q9yi7J9ussN6qSt0a6rliqW2lZdrPfzWZFTwlsmPfDibFEmr+i7+T
+         jpOCPulB3pYF3z6FF7KWGAgaR+CfzxNT3+vtWz38HtypF28F3j5akopgYU35j1mTjQu7
+         tLMQ==
+X-Gm-Message-State: AOAM53092Oc0khb+xtYTDcPrptOEEOxQaFXoLtBugZuN3k7t1zjgIwN1
+        KNYUQp2x4PyouUmqgku0TIzi3mWAEGoLjw==
+X-Google-Smtp-Source: ABdhPJzNEbYMytxD9EJ57XxGpAfifgM7NYJofzitQ2bTxFGc+O+FdsXfJu8X/2J7qcNA1BQorC6MMQ==
+X-Received: by 2002:a17:902:e0c9:b0:158:9b65:aab with SMTP id e9-20020a170902e0c900b001589b650aabmr1738597pla.18.1649800836581;
+        Tue, 12 Apr 2022 15:00:36 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:e880:a5db:8eff:6b6a])
+        by smtp.gmail.com with ESMTPSA id p13-20020a056a000b4d00b004faecee6e89sm40565288pfo.208.2022.04.12.15.00.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 15:00:35 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Georgi Djakov <djakov@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        Alex Elder <elder@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Taniya Das <quic_tdas@quicinc.com>,
+        Mike Tipton <quic_mdtipton@quicinc.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 0/2] interconnect: qcom: Remove IP0 resource
+Date:   Tue, 12 Apr 2022 15:00:31 -0700
+Message-Id: <20220412220033.1273607-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d8cc8c0-31a1-0290-5aa5-0c7b16db1edb@nvidia.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Ricky for rtsx_pci ASPM behavior, Rajat, Prasad for L1 SS stuff,
-Victor for interest in disabling ASPM during save/restore]
+These two patches remove the IP0 interconnect used for IPA because
+they're also present in the clk-rpmh driver. I see there are some more
+IP0 usages in the interconnect drivers, but I don't see a corresponding
+IPA clk in clk-rpmh, so I left these out. We can remove all of them if
+desired, but the sc7180 patch is most important to me as it fixes
+boot on my trogdor lazor device.
+ 
+Stephen Boyd (2):
+  interconnect: qcom: sc7180: Drop IP0 interconnects
+  interconnect: qcom: sdx55: Drop IP0 interconnects
 
-On Wed, Feb 16, 2022 at 06:41:39PM +0530, Vidya Sagar wrote:
-> On 2/16/2022 11:30 AM, Kenneth R. Crudup wrote:
-> > On Wed, 16 Feb 2022, Vidya Sagar wrote:
-> > 
-> > > I see that the ASPM-L1 state of Realtek NIC which was in
-> > > disabled state before hibernate got enabled after hibernate.
-> > 
-> > That's actually my SD-Card reader; there's a good chance the BIOS
-> > does "something" to it at boot time, as it's possible to boot from
-> > SD-Card on my laptop.
-> > 
-> > > This patch doesn't do anything to LnkCtl register which has
-> > > control for ASPM L1 state.
-> > 
-> > > Could you please check why ASPM L1 got enabled post hibernation?
-> > 
-> > I wouldn't know how to do that; if you're still interested in that
-> > let me know what to do to determine that.
+ drivers/interconnect/qcom/sc7180.c | 21 ---------------------
+ drivers/interconnect/qcom/sdx55.c  | 21 ---------------------
+ 2 files changed, 42 deletions(-)
 
-> I would like Bjorn to take a call on it.
-> At this point, there are contradictions in observations.
+Cc: Alex Elder <elder@linaro.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Taniya Das <quic_tdas@quicinc.com>
+Cc: Mike Tipton <quic_mdtipton@quicinc.com>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Remind me what contradictions you see?  I know Kenny saw NVMe errors
-on a kernel that included 4257f7e008ea ("PCI/ASPM: Save/restore L1SS
-Capability for suspend/resume") in December 2020 [1], and that he did
-*not* see those errors on 4257f7e008ea in February 2022 [2].  Is that
-what you mean?
+base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+-- 
+https://chromeos.dev
 
-> Just to summarize,
-> - The root ports in your laptop don't have support for L1SS
-> - With the same old code base with which the errors were observed plus my
-> patch on top of it, I see that ASPM-L1 state getting enabled for one of the
-> endpoints (Realtek SD-Card reader) after system comes out of hibernation
-> even though ASPM-L1 was disabled before the system enter into hibernation.
-> No errors are reported now.
-
-I assume you refer to [2], where on 4257f7e008ea ("PCI/ASPM:
-Save/restore L1SS Capability for suspend/resume"), Kenny saw ASPM L1
-disabled before hibernate and enabled afterwards:
-
-  --- pre-hibernate
-  +++ post-hibernate
-    00:1d.7 PCI bridge [0604]: Intel [8086:34b7]
-      Bus: primary=00, secondary=58, subordinate=58
-	LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
-    58:00.0 RTS525A PCI Express Card Reader [10ec:525a]
-  -     LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk-
-  -             ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
-  +     LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk-
-  +             ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt-
-
-Per PCIe r6.0, sec 7.5.3.7, "ASPM L1 must be enabled by software in
-the Upstream component on a Link prior to enabling ASPM L1 in the
-Downstream component on that Link," so this definitely seems broken,
-but wouldn't explain the NVMe issue.
-
-The PCI core (pcie_config_aspm_link()) always enables L1 in the
-upstream component before the downstream one, but 58:00.0 uses the
-rtsx_pci driver, which does a lot of its own ASPM fiddling, so my
-guess is that it's doing something wrong here.
-
-> - With the linux-next top of the tree plus my patch, no change in the ASPM
-> states and no errors also reported.
-
-I don't know which report this refers to.
-
-> This points to BIOS being buggy (both old and new with new one being less
-> problematic)
-
-I agree that a BIOS change between [1] and [2] seems plausible, but I
-don't think we can prove that yet.  I'm slightly queasy because while
-Kenny may have updated his BIOS, most people will not have.
-
-I think we should try this patch again with some changes and maybe
-some debug logging:
-
-  - I wonder if we should integrate the LTR, L1 SS, and Link Control
-    ASPM restore instead of having them spread around through
-    pci_restore_ltr_state(), pci_restore_aspm_l1ss_state(), and
-    pci_restore_pcie_state().  Maybe a new pci_restore_aspm() that
-    would be called from pci_restore_pcie_state()?
-
-  - For L1 PM Substates configuration, sec 5.5.4 says that both ports
-    must be configured while ASPM L1 is disabled, but I don't think we
-    currently guarantee this: we restore all the upstream component
-    state first, and we don't know the ASPM state of the downstream
-    one.  Maybe we need to:
-
-      * When restoring upstream component,
-          + disable its ASPM
-
-      * When restoring downstream component,
-          + disable its ASPM
-	  + restore upstream component's LTR, L1SS
-	  + restore downstream component's LTR, L1SS
-	  + restore upstream component's ASPM
-	  + restore downstream component's ASPM
-
-      This seems pretty messy, but seems like what the spec requires.
-
-    - Add some pci_dbg() logging of all these save/restore values to
-      help debug any issues.
-
-Bjorn
-
-[1] https://lore.kernel.org/r/20201228040513.GA611645@bjorn-Precision-5520
-[2] https://lore.kernel.org/r/3ca14a7-b726-8430-fe61-a3ac183a1088@panix.com
