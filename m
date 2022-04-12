@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4ADCC47081
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8612FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387281AbiDLJGc (ORCPT
+        id S1386979AbiDLJFH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
+        Tue, 12 Apr 2022 05:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359185AbiDLHmk (ORCPT
+        with ESMTP id S1359276AbiDLHmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C36F554A1;
-        Tue, 12 Apr 2022 00:20:23 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B35D55778;
+        Tue, 12 Apr 2022 00:21:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDFFD61045;
-        Tue, 12 Apr 2022 07:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7DB8C385A5;
-        Tue, 12 Apr 2022 07:20:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AD87B81B62;
+        Tue, 12 Apr 2022 07:21:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75BC2C385A6;
+        Tue, 12 Apr 2022 07:21:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748022;
-        bh=U2/FILndl4co+BlYvc00C3mSRpRj6SmZahSvs4PQbsE=;
+        s=korg; t=1649748093;
+        bh=uBHQLW5+mpdPRS3b2MbTke8aMBxhdOu3bzGGetA00PQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zCmE1VjWh8ZSjvlyNgtKa7EIKWoZY1vhdMyO0uGYU6bewvbaMFPrNQvZQQfYDiw4A
-         GCMEJwfKVDLg985EjXCYO5YtBPTjdynkoKgNGWZrQIU+omzfuO9Px+cFMWjbJvqGXl
-         HE0GlVQT6jBVgPhaqi7eivw9RSgV4V8eCHe8hKvI=
+        b=ucQEU+cjfqvXWX/AMgXU4tezp0oeB9wEgwVODD2CnO/E1buQQu1JawAAiGRmqnZRg
+         M6+SjvRFYtwc/zV/RQSzxfGxO/E34l/F2m4c1uwYLxItZAXHxVpIxV79REIvXcHLEi
+         5oMcIaI4/+v6Z6vSLzakneTHkKT5hLdSiL4HzXZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.17 292/343] RDMA/hfi1: Fix use-after-free bug for mm struct
-Date:   Tue, 12 Apr 2022 08:31:50 +0200
-Message-Id: <20220412062959.756103757@linuxfoundation.org>
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 316/343] Revert "selftests: net: Add tls config dependency for tls selftests"
+Date:   Tue, 12 Apr 2022 08:32:14 +0200
+Message-Id: <20220412063000.443238078@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,51 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-commit 2bbac98d0930e8161b1957dc0ec99de39ade1b3c upstream.
+commit 20695e9a9fd39103d1b0669470ae74030b7aa196 upstream.
 
-Under certain conditions, such as MPI_Abort, the hfi1 cleanup code may
-represent the last reference held on the task mm.
-hfi1_mmu_rb_unregister() then drops the last reference and the mm is freed
-before the final use in hfi1_release_user_pages().  A new task may
-allocate the mm structure while it is still being used, resulting in
-problems. One manifestation is corruption of the mmap_sem counter leading
-to a hang in down_write().  Another is corruption of an mm struct that is
-in use by another task.
+This reverts commit d9142e1cf3bbdaf21337767114ecab26fe702d47.
 
-Fixes: 3d2a9d642512 ("IB/hfi1: Ensure correct mm is used at all times")
-Link: https://lore.kernel.org/r/20220408133523.122165.72975.stgit@awfm-01.cornelisnetworks.com
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+The test is supposed to run cleanly with TLS is disabled,
+to test compatibility with TCP behavior. I can't repro
+the failure [1], the problem should be debugged rather
+than papered over.
+
+Link: https://lore.kernel.org/all/20220325161203.7000698c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/ [1]
+Fixes: d9142e1cf3bb ("selftests: net: Add tls config dependency for tls selftests")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220328212904.2685395-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/mmu_rb.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/testing/selftests/net/config |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/infiniband/hw/hfi1/mmu_rb.c
-+++ b/drivers/infiniband/hw/hfi1/mmu_rb.c
-@@ -80,6 +80,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
- 	unsigned long flags;
- 	struct list_head del_list;
- 
-+	/* Prevent freeing of mm until we are completely finished. */
-+	mmgrab(handler->mn.mm);
-+
- 	/* Unregister first so we don't get any more notifications. */
- 	mmu_notifier_unregister(&handler->mn, handler->mn.mm);
- 
-@@ -102,6 +105,9 @@ void hfi1_mmu_rb_unregister(struct mmu_r
- 
- 	do_remove(handler, &del_list);
- 
-+	/* Now the mm may be freed. */
-+	mmdrop(handler->mn.mm);
-+
- 	kfree(handler);
- }
- 
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -43,6 +43,5 @@ CONFIG_NET_ACT_TUNNEL_KEY=m
+ CONFIG_NET_ACT_MIRRED=m
+ CONFIG_BAREUDP=m
+ CONFIG_IPV6_IOAM6_LWTUNNEL=y
+-CONFIG_TLS=m
+ CONFIG_CRYPTO_SM4=y
+ CONFIG_AMT=m
 
 
