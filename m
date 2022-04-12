@@ -2,64 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85657C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351455AbiDLJk7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50166 "EHLO
+        id S243070AbiDLJlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389004AbiDLJXT (ORCPT
+        with ESMTP id S1388758AbiDLJWp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:23:19 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA325132B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:30:09 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id md4so9466028pjb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:30:09 -0700 (PDT)
+        Tue, 12 Apr 2022 05:22:45 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0D94CD54
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:29:28 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso2115752pjf.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=m+EBqN3UPFUGLYVFLyAS2kc4ocqBW5MswCAjPd97TUw=;
-        b=Bguj7CwrjTc+mzk+TmB7JVFoPyy0Zskev01NAMeOClCzjpw2E1k0tA1zrwPWhRhZYh
-         8MxY/6opBxkk5Cb81qAM+dgfsdS/yu/xmJntl8ipYL+X6CYZL5nZYM4ob0ElVhk/spAo
-         w0KsetW8iDqNEbwwyi3/I/y+s+75Vel4sYcox7oKIuFBWC7xIB72GjJ2KVsMY9joDV74
-         e5HGMB3Thh/AHmZmAeBUntojUpjX9wxCLnru9Wa56l1wzN7avN+EAlLlCCMfhA/kCzb1
-         GAO4g8VZO+eFrbmYO4t/SMgdj1KfOVEThMrxSUjoR1GlAFTkOYlFrQkW8vHAO4qXlpct
-         jdOw==
+        bh=0dFyqLvQ2p1xNfcfzu7O9DJMNp2UmrxAZtgZZyFjc4U=;
+        b=QJycfqPJQWovgMgDFefko+ZRTgkQeqaDHh4yrF684RIOJqogHdrZXuNkJWtD1e86CH
+         JfhnULKhAQyzatcivRyRpLB1X6sxBZzUwJuEV+o9PvY4Qt50KpyO+B3dFnvqWNVDe6Aa
+         vRjjk1DEXQMKON402pyAAp0fWh2szazajsdfotENvQ6Nz3IsZDa9hd7JPyssGJ0bQ2xb
+         jyuOpHy5EPHjebY5hjNMbvD8dTk17H7KqFEu3M5JbAwRMe/MpZ3DXdRNiHJDKUpXKkng
+         UwDmjD/Pwh/gx2kdhOHF6NWCr19mYdVlJEtcEho1XjNFtn6QY2WkYeJkr6BVWciQwijO
+         nTug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=m+EBqN3UPFUGLYVFLyAS2kc4ocqBW5MswCAjPd97TUw=;
-        b=cn2VzEO/1j+IcL+hKyE14yVsRFy3FtobTgC6pSzz//mMMdOd8wVFo5/JF+qIwVP51V
-         kz7NTxdSxZ9X8+ZqUa51us9UwHfthpd88qk5mdSHpWXagfkJ8bJYlKyv9aFMVcP5Dl86
-         LitfBPY4LknFd8Wi3zPJNf2EUa98cs4sK48e2+vLOi9hftqnJpSWhDQSQLWVfcljRgzN
-         Ru2UW1f2xJ1jiHj+T8Owv0ltnvymAhbhc4iztvQ3btCH3pW9Qq3H0cRgx6m7260kiPE+
-         2esGHT+y+X+EXHP3K4giyyq9wTT4Xx/5dJBH85tAjUy4MZelGsBNnzg3vaUfZOoDHBsg
-         9+Sw==
-X-Gm-Message-State: AOAM530FewiRwTACosrBgvntIU2Y9Qep4O+gdqZ7vwM0XYP00YSHlxDa
-        dof4Z4A/Rhve8PKv79xx4TYe9+BQG20=
-X-Google-Smtp-Source: ABdhPJwJPW0ts18fTByd2sl+p9939cGGiOvxLr5m0ZbLLv7Y4tadnT8ZE6+LYBT85nwWVa/BpG9kkg==
-X-Received: by 2002:a17:90b:3e8c:b0:1c7:3001:f359 with SMTP id rj12-20020a17090b3e8c00b001c73001f359mr3699846pjb.179.1649752208998;
-        Tue, 12 Apr 2022 01:30:08 -0700 (PDT)
+        bh=0dFyqLvQ2p1xNfcfzu7O9DJMNp2UmrxAZtgZZyFjc4U=;
+        b=gaZB30DP4sQFSHEGObQwEtSJnLsbXY5dxGmlRHMIw65Nf6f12FfgTwJn90+ax6tqQ6
+         tavhBWrLxoVPDYgokWzKIY71EcOfYSGDfm0o49Eomwnru0rQbsR/KCCVkUtlSU4r3BHm
+         NKw9IEEAiFealGgwW5wfTeuLcdQ8bNHv+fRkn6/MaIcfoH9luQw9D2aVQ5BJz4A5PsHO
+         HAW2JOrapHH4+gTBH8X8ulMywKBMBr2WWBD1TiQIkGlsuJpHuobZtniAC1ynau1hmKWp
+         wLUg2QxES1CGuYJzP6ddGFJm7s9OVkv8yKRuiLZgFKd/IJVGcjY1WHSwifE8yQDHR5Ap
+         nYJQ==
+X-Gm-Message-State: AOAM531S5TMMbcMz/DSYHzH5ckLq1wVyRixDx6GqCjBRbQhpbPwB+DiU
+        3C1bZMhROd0rAHYjLO9B5fw=
+X-Google-Smtp-Source: ABdhPJwFEUBPcpn/+JQSCImfBLLqIXo/H9gF9nfIejTfltPkVQGUiz6pmaIRVoVcSfDik/juAAZfWg==
+X-Received: by 2002:a17:902:7006:b0:156:3cbe:6b04 with SMTP id y6-20020a170902700600b001563cbe6b04mr35586867plk.68.1649752167314;
+        Tue, 12 Apr 2022 01:29:27 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m13-20020aa7900d000000b00505fa4c7ba6sm1654089pfo.35.2022.04.12.01.30.04
+        by smtp.gmail.com with ESMTPSA id j18-20020a633c12000000b0038204629cc9sm2093888pga.10.2022.04.12.01.29.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 01:30:08 -0700 (PDT)
+        Tue, 12 Apr 2022 01:29:27 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     shengjiu.wang@gmail.com
-Cc:     Xiubo.Lee@gmail.com, festevam@gmail.com, nicoleotsuka@gmail.com,
-        lgirdwood@gmail.com, broonie@kernel.org,
-        alsa-devel@alsa-project.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+To:     nm@ti.com
+Cc:     ssantosh@kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] ASoC: fsl: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Tue, 12 Apr 2022 08:30:00 +0000
-Message-Id: <20220412083000.2532711-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] soc: ti: knav_dma: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Tue, 12 Apr 2022 08:29:23 +0000
+Message-Id: <20220412082923.2532649-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -75,27 +73,24 @@ for simplifing code
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- sound/soc/fsl/fsl_esai.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/soc/ti/knav_dma.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_esai.c b/sound/soc/fsl/fsl_esai.c
-index ed444e8f1d6b..1a2bdf8e76f0 100644
---- a/sound/soc/fsl/fsl_esai.c
-+++ b/sound/soc/fsl/fsl_esai.c
-@@ -1050,11 +1050,9 @@ static int fsl_esai_probe(struct platform_device *pdev)
- 			goto err_pm_disable;
+diff --git a/drivers/soc/ti/knav_dma.c b/drivers/soc/ti/knav_dma.c
+index 700d8eecd8c4..061f92c8cf7d 100644
+--- a/drivers/soc/ti/knav_dma.c
++++ b/drivers/soc/ti/knav_dma.c
+@@ -747,9 +747,8 @@ static int knav_dma_probe(struct platform_device *pdev)
+ 	INIT_LIST_HEAD(&kdev->list);
+ 
+ 	pm_runtime_enable(kdev->dev);
+-	ret = pm_runtime_get_sync(kdev->dev);
++	ret = pm_runtime_resume_and_get(kdev->dev);
+ 	if (ret < 0) {
+-		pm_runtime_put_noidle(kdev->dev);
+ 		dev_err(kdev->dev, "unable to enable pktdma, err %d\n", ret);
+ 		goto err_pm_disable;
  	}
- 
--	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(&pdev->dev);
-+	ret = pm_runtime_resume_and_get(&pdev->dev);
-+	if (ret < 0)
- 		goto err_pm_get_sync;
--	}
- 
- 	ret = fsl_esai_hw_init(esai_priv);
- 	if (ret)
 -- 
 2.25.1
 
