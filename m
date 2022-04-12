@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F40F5C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BA2C35295
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345177AbiDLIZv (ORCPT
+        id S1379831AbiDLIVA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
+        Tue, 12 Apr 2022 04:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353689AbiDLHZw (ORCPT
+        with ESMTP id S1345177AbiDLHbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:52 -0400
+        Tue, 12 Apr 2022 03:31:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90081275E3;
-        Tue, 12 Apr 2022 00:03:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE86150058;
+        Tue, 12 Apr 2022 00:08:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4069DB81B4E;
-        Tue, 12 Apr 2022 07:03:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A9AC385A6;
-        Tue, 12 Apr 2022 07:03:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47248B81B4E;
+        Tue, 12 Apr 2022 07:08:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3A1BC385B7;
+        Tue, 12 Apr 2022 07:08:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747024;
-        bh=QhsvxtWGhK5wtgUU105j/Ut1BdLJxJR/yoBWlg8U0ts=;
+        s=korg; t=1649747309;
+        bh=h1/zFxNl/9AODl5mu6g3Vx4iIcbiKVoR2kXvfkVY7UY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TiaoUEBSkIPZs4W0+sdi0XngpxNaTD6u/ckF+ZuMhhaaM/eEKHheplFj6osOGmC87
-         moJJ8ZM+ExEhQifNy/MA7Dep30tXlCyaeMpC0NyiBnPN023dYtA2P28NU/nKJa1uCJ
-         oV9dGMCVCO6P0+i+s9K0ozRi36isrjqFodO5Dows=
+        b=ql95LVOiyFF2/zHywtuAjRI5hKez0WuxzvkSpVlZsaWbKO1Q8PrynGrt18cd/kxiS
+         Ek8XTf0nPDuH9pUpTe1XkWg2wYOafxCf696CapApNIPKSO1bndvDz75QsA4h5AAGa1
+         /tHwrkjoEqGkLQ1Iu0y7TlZFJcTCrPpH2BthYafY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yann Gautier <yann.gautier@foss.st.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.16 217/285] mmc: mmci: stm32: correctly check all elements of sg list
-Date:   Tue, 12 Apr 2022 08:31:14 +0200
-Message-Id: <20220412062949.921671236@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Yang Wang <kevinyang.wang@amd.com>,
+        "Tianci.Yin" <tianci.yin@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 033/343] drm/amdgpu: Fix an error message in rmmod
+Date:   Tue, 12 Apr 2022 08:27:31 +0200
+Message-Id: <20220412062952.062299541@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,46 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yann Gautier <yann.gautier@foss.st.com>
+From: Tianci.Yin <tianci.yin@amd.com>
 
-commit 0d319dd5a27183b75d984e3dc495248e59f99334 upstream.
+[ Upstream commit 7270e8957eb9aacf5914605d04865f3829a14bce ]
 
-Use sg and not data->sg when checking sg list elements. Else only the
-first element alignment is checked.
-The last element should be checked the same way, for_each_sg already set
-sg to sg_next(sg).
+[why]
+In rmmod procedure, kfd sends cp a dequeue request, but the
+request does not get response, then an error message "cp
+queue pipe 4 queue 0 preemption failed" printed.
 
-Fixes: 46b723dd867d ("mmc: mmci: add stm32 sdmmc variant")
-Cc: stable@vger.kernel.org
-Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
-Link: https://lore.kernel.org/r/20220317111944.116148-2-yann.gautier@foss.st.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[how]
+Performing kfd suspending after disabling gfxoff can fix it.
+
+Acked-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
+Signed-off-by: Tianci.Yin <tianci.yin@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/mmci_stm32_sdmmc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/mmci_stm32_sdmmc.c
-+++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
-@@ -62,8 +62,8 @@ static int sdmmc_idma_validate_data(stru
- 	 * excepted the last element which has no constraint on idmasize
- 	 */
- 	for_each_sg(data->sg, sg, data->sg_len - 1, i) {
--		if (!IS_ALIGNED(data->sg->offset, sizeof(u32)) ||
--		    !IS_ALIGNED(data->sg->length, SDMMC_IDMA_BURST)) {
-+		if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
-+		    !IS_ALIGNED(sg->length, SDMMC_IDMA_BURST)) {
- 			dev_err(mmc_dev(host->mmc),
- 				"unaligned scatterlist: ofst:%x length:%d\n",
- 				data->sg->offset, data->sg->length);
-@@ -71,7 +71,7 @@ static int sdmmc_idma_validate_data(stru
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index f18c698137a6..b87dca6d09fa 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -2723,11 +2723,11 @@ static int amdgpu_device_ip_fini_early(struct amdgpu_device *adev)
  		}
  	}
  
--	if (!IS_ALIGNED(data->sg->offset, sizeof(u32))) {
-+	if (!IS_ALIGNED(sg->offset, sizeof(u32))) {
- 		dev_err(mmc_dev(host->mmc),
- 			"unaligned last scatterlist: ofst:%x length:%d\n",
- 			data->sg->offset, data->sg->length);
+-	amdgpu_amdkfd_suspend(adev, false);
+-
+ 	amdgpu_device_set_pg_state(adev, AMD_PG_STATE_UNGATE);
+ 	amdgpu_device_set_cg_state(adev, AMD_CG_STATE_UNGATE);
+ 
++	amdgpu_amdkfd_suspend(adev, false);
++
+ 	/* Workaroud for ASICs need to disable SMC first */
+ 	amdgpu_device_smu_fini_early(adev);
+ 
+-- 
+2.35.1
+
 
 
