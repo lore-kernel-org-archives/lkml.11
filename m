@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA8FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352042AbiDLIAE (ORCPT
+        id S1348211AbiDLIAd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
+        Tue, 12 Apr 2022 04:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353589AbiDLHZr (ORCPT
+        with ESMTP id S1353650AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5368D2611F;
-        Tue, 12 Apr 2022 00:02:01 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF5E26120;
+        Tue, 12 Apr 2022 00:02:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E1D6B81B4D;
-        Tue, 12 Apr 2022 07:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574E2C385A1;
-        Tue, 12 Apr 2022 07:01:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6991960B65;
+        Tue, 12 Apr 2022 07:02:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7688DC385A1;
+        Tue, 12 Apr 2022 07:02:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746918;
-        bh=2iUMAivM5OcC/XYFeQNoON5q/FeRFZMAPLQB86xdYuA=;
+        s=korg; t=1649746967;
+        bh=FMkKOxNXuSPaY8/85RCsgzknjKn0BHCPuz34Amk2MNw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNjTECMQgRTsNFwpEYWozvy2A8VQhOxfzXttCFTVdxrlkMLbPAWOjJw46G/8OsSDQ
-         5wYmtFT8BzxAzdyYJSnkHiFRLwBiShuJV6TnikGwBMqEGEr6TIR+ZyKSl2XfqQFytY
-         buO0EYtIuSCUplTPAdrthRSOsj3xeDwcMzPPkyAY=
+        b=1wblQjTIBn02c+xHhc+rxioJXzUMVeb2sWM5M+VFGuTMrSntaISdw8+f2VzxHmbfi
+         R1xCDpBx27Ajv8Qgc0pkNXgPFZJkHFZTE4DddwsqnRES6FAvMPFHV2VGD8DDr5PVBd
+         YfcKq1YclLd5CStXdAH+peIRWlF+GSJCIK4X0nRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, syzbot <syzkaller@googlegroups.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 177/285] bnxt_en: Prevent XDP redirect from running when stopping TX queue
-Date:   Tue, 12 Apr 2022 08:30:34 +0200
-Message-Id: <20220412062948.776369767@linuxfoundation.org>
+Subject: [PATCH 5.16 194/285] rxrpc: fix a race in rxrpc_exit_net()
+Date:   Tue, 12 Apr 2022 08:30:51 +0200
+Message-Id: <20220412062949.261182454@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -53,52 +53,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ray Jui <ray.jui@broadcom.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 27d4073f8d9af0340362554414f4961643a4f4de ]
+[ Upstream commit 1946014ca3b19be9e485e780e862c375c6f98bad ]
 
-Add checks in the XDP redirect callback to prevent XDP from running when
-the TX ring is undergoing shutdown.
+Current code can lead to the following race:
 
-Also remove redundant checks in the XDP redirect callback to validate the
-txr and the flag that indicates the ring supports XDP. The modulo
-arithmetic on 'tx_nr_rings_xdp' already guarantees the derived TX
-ring is an XDP ring.  txr is also guaranteed to be valid after checking
-BNXT_STATE_OPEN and within RCU grace period.
+CPU0                                                 CPU1
 
-Fixes: f18c2b77b2e4 ("bnxt_en: optimized XDP_REDIRECT support")
-Reviewed-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
-Signed-off-by: Ray Jui <ray.jui@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+rxrpc_exit_net()
+                                                     rxrpc_peer_keepalive_worker()
+                                                       if (rxnet->live)
+
+  rxnet->live = false;
+  del_timer_sync(&rxnet->peer_keepalive_timer);
+
+                                                             timer_reduce(&rxnet->peer_keepalive_timer, jiffies + delay);
+
+  cancel_work_sync(&rxnet->peer_keepalive_work);
+
+rxrpc_exit_net() exits while peer_keepalive_timer is still armed,
+leading to use-after-free.
+
+syzbot report was:
+
+ODEBUG: free active (active state 0) object type: timer_list hint: rxrpc_peer_keepalive_timeout+0x0/0xb0
+WARNING: CPU: 0 PID: 3660 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Modules linked in:
+CPU: 0 PID: 3660 Comm: kworker/u4:6 Not tainted 5.17.0-syzkaller-13993-g88e6c0207623 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 00 1c 26 8a 4c 89 ee 48 c7 c7 00 10 26 8a e8 b1 e7 28 05 <0f> 0b 83 05 15 eb c5 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc9000353fb00 EFLAGS: 00010082
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: ffff888029196140 RSI: ffffffff815efad8 RDI: fffff520006a7f52
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815ea4ae R11: 0000000000000000 R12: ffffffff89ce23e0
+R13: ffffffff8a2614e0 R14: ffffffff816628c0 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fe1f2908924 CR3: 0000000043720000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __debug_check_no_obj_freed lib/debugobjects.c:992 [inline]
+ debug_check_no_obj_freed+0x301/0x420 lib/debugobjects.c:1023
+ kfree+0xd6/0x310 mm/slab.c:3809
+ ops_free_list.part.0+0x119/0x370 net/core/net_namespace.c:176
+ ops_free_list net/core/net_namespace.c:174 [inline]
+ cleanup_net+0x591/0xb00 net/core/net_namespace.c:598
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
+
+Fixes: ace45bec6d77 ("rxrpc: Fix firewall route keepalive")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Marc Dionne <marc.dionne@auristor.com>
+Cc: linux-afs@lists.infradead.org
+Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/rxrpc/net_ns.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index c59e46c7a1ca..148b58f3468b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -229,14 +229,16 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
- 	ring = smp_processor_id() % bp->tx_nr_rings_xdp;
- 	txr = &bp->tx_ring[ring];
+diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
+index 25bbc4cc8b13..f15d6942da45 100644
+--- a/net/rxrpc/net_ns.c
++++ b/net/rxrpc/net_ns.c
+@@ -113,8 +113,8 @@ static __net_exit void rxrpc_exit_net(struct net *net)
+ 	struct rxrpc_net *rxnet = rxrpc_net(net);
  
-+	if (READ_ONCE(txr->dev_state) == BNXT_DEV_STATE_CLOSING)
-+		return -EINVAL;
-+
- 	if (static_branch_unlikely(&bnxt_xdp_locking_key))
- 		spin_lock(&txr->xdp_tx_lock);
- 
- 	for (i = 0; i < num_frames; i++) {
- 		struct xdp_frame *xdp = frames[i];
- 
--		if (!txr || !bnxt_tx_avail(bp, txr) ||
--		    !(bp->bnapi[ring]->flags & BNXT_NAPI_FLAG_XDP))
-+		if (!bnxt_tx_avail(bp, txr))
- 			break;
- 
- 		mapping = dma_map_single(&pdev->dev, xdp->data, xdp->len,
+ 	rxnet->live = false;
+-	del_timer_sync(&rxnet->peer_keepalive_timer);
+ 	cancel_work_sync(&rxnet->peer_keepalive_work);
++	del_timer_sync(&rxnet->peer_keepalive_timer);
+ 	rxrpc_destroy_all_calls(rxnet);
+ 	rxrpc_destroy_all_connections(rxnet);
+ 	rxrpc_destroy_all_peers(rxnet);
 -- 
 2.35.1
 
