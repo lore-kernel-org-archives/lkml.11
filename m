@@ -2,135 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C4BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F902C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237958AbiDLIOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
+        id S1357815AbiDLITO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355380AbiDLH1d (ORCPT
+        with ESMTP id S1354953AbiDLH1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F21249902;
-        Tue, 12 Apr 2022 00:07:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93527616DC;
-        Tue, 12 Apr 2022 07:07:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A08DFC385B1;
-        Tue, 12 Apr 2022 07:07:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747253;
-        bh=R9mjCXueA1qBXKoLhaHdg7MAgOdRuTR951goVImsFDM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TPipMCrSguw44NbJucDDeivMHTs5OO5+k2t8Osh10wQIEajbRBJJoN2U4yFyyVe9n
-         54eFyI9GoVY1hj9v3YVsJE7rRjqo0HpSed7+eaudFC5AilK3yCwE8/tvCJdaLeLXUO
-         tPSXz6huw/0W7s/0ZlRS1r9MQ9EI49mdxXtPbadI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 013/343] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
-Date:   Tue, 12 Apr 2022 08:27:11 +0200
-Message-Id: <20220412062951.488256178@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:27:00 -0400
+Received: from m228-62.mailgun.net (m228-62.mailgun.net [159.135.228.62])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id D139247553
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:06:55 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
+ s=smtp; t=1649747215; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Subject: Cc: To: To: From: From: Date:
+ Sender: Sender; bh=fvgEOeU8QI1dhGiQvK+nRA/UPCGXfJKOpsdVofoakIo=; b=NvGv8dEjAAp3+VikOfUObAxYtrnLW9QAOOGMeh/7ELD/XyzyaKSNVHMn0CATTdFo76WVcK5F
+ u9wE02pYhBY8/XWTK6F846LO3zgn7wIvmlyEZsLgctaLPYn6w9TX3TWgZS69ZaI3XrE968qv
+ 8oKDBGa99Hyrmw+lOyc8yQTX7qATSRxUX2SRLpl0AukHcM0HrRYcnOpVcoEhg+XBW9Gg8XLf
+ guUPLpQTfhqAERLhzrqrRMP2K04yuZ8UztSOAxKyxK5CWvjGRWd90eqzFaIMCW2hXqZ4TgOQ
+ rOTnEAZLAGJRtzG+Y3B+c/l+uEgFtfR/9cDyaAQYGJ27Kn/YhwB8FQ==
+X-Mailgun-Sending-Ip: 159.135.228.62
+X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
+Received: from AN5Bruno (186-250-90-1.mhnet.com.br [186.250.90.1]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 625522b5487c9ee854845f89 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
+ Tue, 12 Apr 2022 06:56:53 GMT
+Sender: codeagain@codeagain.dev
+Date:   Tue, 12 Apr 2022 03:56:43 -0300
+From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Cc:     Bruno's Patch Watchbox <patch-reply@codeagain.dev>
+Subject: [PATCH v2 2/3] staging: vme: Fix missing `depends on` at KConfig
+Message-ID: <aab0591ac73a54059621c722a63635d43a446fd2.1649721450.git.codeagain@codeagain.dev>
+References: <cover.1649721450.git.codeagain@codeagain.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="r67e4p532boyyctc"
+Content-Disposition: inline
+In-Reply-To: <cover.1649721450.git.codeagain@codeagain.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 564d4eceb97eaf381dd6ef6470b06377bb50c95a ]
+--r67e4p532boyyctc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The bug was found during fuzzing. Stacktrace locates it in
-ath5k_eeprom_convert_pcal_info_5111.
-When none of the curve is selected in the loop, idx can go
-up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
-pd = &chinfo[pier].pd_curves[idx];
+Originally, the KConfig file for VME_USER
+("drivers/staging/vme/devices/Kconfig") was sourced at
+"drivers/vme/boards/KConfig". It misses a `depends on` line for VME_BUS,
+which went unnoticeable for a menuconfig user who wouldn't be able to
+select it through this interface without selecting the CONFIG_VME_BUS
+option because it was nested on its menu.
 
-There are many OOB writes using pd later in the code. So I
-added a sanity check for idx. Checks for other loops involving
-AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
-used outside the loops.
+A patch to move appropriately this driver to the "Staging" submenu[1],
+however, unveiled this missing `depends on` line, since it moved the
+`source` line for VME_USER's KConfig to somewhere else, allowing it to
+be compiled without the support for VME_BRIDGE. While it compiles fine
+and seems to initialize the driver fine[2], it seems to make no sense
+having VME_USER without VME_BUS.
 
-The patch is NOT tested with real device.
+This patches addresses it by adding the VME_BUS to the `depends on` line
+at "drivers/staging/vme/devices/Kconfig".
 
-The following is the fuzzing report
+CHANGELOG:
+v2:
+- Added this patch to the patchset
 
-BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
-Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
+REFERENCES AND NOTES
+[1] First commit in this patch, originally submitted at
+https://lore.kernel.org/linux-staging/3fbc5325e94b9ae0666a1f5a56a4e5372bfce=
+a1d.camel@codeagain.dev/T/#t
+[2] Tested both as module and as built-in.
 
-CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
-Call Trace:
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- __kasan_report.cold+0x37/0x7c
- ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- kasan_report+0xe/0x20
- ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
- ? apic_timer_interrupt+0xa/0x20
- ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
- ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
- ath5k_eeprom_init+0x2513/0x6290 [ath5k]
- ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
- ? usleep_range+0xb8/0x100
- ? apic_timer_interrupt+0xa/0x20
- ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
- ath5k_hw_init+0xb60/0x1970 [ath5k]
- ath5k_init_ah+0x6fe/0x2530 [ath5k]
- ? kasprintf+0xa6/0xe0
- ? ath5k_stop+0x140/0x140 [ath5k]
- ? _dev_notice+0xf6/0xf6
- ? apic_timer_interrupt+0xa/0x20
- ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
- ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
- ? mutex_lock+0x89/0xd0
- ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
- local_pci_probe+0xd3/0x160
- pci_device_probe+0x23f/0x3e0
- ? pci_device_remove+0x280/0x280
- ? pci_device_remove+0x280/0x280
- really_probe+0x209/0x5d0
-
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
 ---
- drivers/net/wireless/ath/ath5k/eeprom.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/staging/vme/devices/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath5k/eeprom.c b/drivers/net/wireless/ath/ath5k/eeprom.c
-index 1fbc2c19848f..d444b3d70ba2 100644
---- a/drivers/net/wireless/ath/ath5k/eeprom.c
-+++ b/drivers/net/wireless/ath/ath5k/eeprom.c
-@@ -746,6 +746,9 @@ ath5k_eeprom_convert_pcal_info_5111(struct ath5k_hw *ah, int mode,
- 			}
- 		}
- 
-+		if (idx == AR5K_EEPROM_N_PD_CURVES)
-+			goto err_out;
-+
- 		ee->ee_pd_gains[mode] = 1;
- 
- 		pd = &chinfo[pier].pd_curves[idx];
--- 
+diff --git a/drivers/staging/vme/devices/Kconfig b/drivers/staging/vme/devi=
+ces/Kconfig
+index 5651bb16b28b..e8b4461bf27f 100644
+--- a/drivers/staging/vme/devices/Kconfig
++++ b/drivers/staging/vme/devices/Kconfig
+@@ -3,7 +3,7 @@ comment "VME Device Drivers"
+=20
+ config VME_USER
+ 	tristate "VME user space access driver"
+-	depends on STAGING
++	depends on STAGING && VME_BUS
+ 	help
+ 	  If you say Y here you want to be able to access a limited number of
+ 	  VME windows in a manner at least semi-compatible with the interface
+--=20
 2.35.1
 
 
+--r67e4p532boyyctc
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYlUiqwAKCRAZtd3tyEY2
+kh7WAQDnPJNUjIPGKOS6iN5nijD+bLt8dlNylHDXGzcDp/x21QEAttFRYM5TnNEi
+Wn7P5NtTX55JavXFp1wmv2lUDtDWZww=
+=So4f
+-----END PGP SIGNATURE-----
+
+--r67e4p532boyyctc--
