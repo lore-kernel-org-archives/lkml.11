@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2856C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355590AbiDLH1q (ORCPT
+        id S1351668AbiDLH2M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57104 "EHLO
+        Tue, 12 Apr 2022 03:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351715AbiDLHMv (ORCPT
+        with ESMTP id S1351752AbiDLHMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3752216585;
-        Mon, 11 Apr 2022 23:51:57 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E639217A8A;
+        Mon, 11 Apr 2022 23:52:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC302B81B47;
-        Tue, 12 Apr 2022 06:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C96BC385A1;
-        Tue, 12 Apr 2022 06:51:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3F5DB81B35;
+        Tue, 12 Apr 2022 06:52:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E92E2C385A1;
+        Tue, 12 Apr 2022 06:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746314;
-        bh=l46cSs6DjSOBqAacpO48W9M8+IBy8zm1uWvxKy7t0Bk=;
+        s=korg; t=1649746331;
+        bh=HYUEX2kYwW/fwRXKxRfNw0x/SATn9LUwe4xOoGFsWFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b9MBWCoggNFOVwDf34ALpe5exgxU8Ol/nmg4U2tGmHrYuhOXFYZz9jyV+08fErNPo
-         Kl9a9dAhlK3eLaTHsZ1MNM76WrevyESYXeZgc98xlxfNsv87vGbJpTv1UYSjU+Q9Xj
-         4Hcve47DPR5bYKq84UZYrH1yuWJNrn1v9Eh+TILU=
+        b=MyDKZUn1nmqWJdJaxpEz82z2o3efnB4MDDHGiOyidbqLXL45/9m6uhLFEOJJ0KOHz
+         3qPNLZCRlHRO9EeIoD/PAaEoRQo707OEte+ST0eh9zEyelj5hWaO7wuFTBC08xz6YF
+         EKSiejii8WtMTHo9Rj8kavPmVOw/r5stSvv8pzK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shirish S <shirish.s@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
+        stable@vger.kernel.org, Emily Deng <Emily.Deng@amd.com>,
+        James Zhu <James.Zhu@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 239/277] amd/display: set backlight only if required
-Date:   Tue, 12 Apr 2022 08:30:42 +0200
-Message-Id: <20220412062948.962324739@linuxfoundation.org>
+Subject: [PATCH 5.15 244/277] drm/amdgpu/vcn: Fix the register setting for vcn1
+Date:   Tue, 12 Apr 2022 08:30:47 +0200
+Message-Id: <20220412062949.104005239@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,77 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shirish S <shirish.s@amd.com>
+From: Emily Deng <Emily.Deng@amd.com>
 
-commit 4052287a75eb3fc0f487fcc5f768a38bede455c8 upstream.
+commit 02fc996d5098f4c3f65bdf6cdb6b28e3f29ba789 upstream.
 
-[Why]
-comparing pwm bl values (coverted) with user brightness(converted)
-levels in commit_tail leads to continuous setting of backlight via dmub
-as they don't to match.
-This leads overdrive in queuing of commands to DMCU that sometimes lead
-to depending on load on DMCU fw:
+Correct the code error for setting register UVD_GFX10_ADDR_CONFIG.
+Need to use inst_idx, or it only will set VCN0.
 
-"[drm:dc_dmub_srv_wait_idle] *ERROR* Error waiting for DMUB idle: status=3"
-
-[How]
-Store last successfully set backlight value and compare with it instead
-of pwm reads which is not what we should compare with.
-
-Signed-off-by: Shirish S <shirish.s@amd.com>
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Emily Deng <Emily.Deng@amd.com>
+Reviewed-by: James Zhu <James.Zhu@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    7 ++++---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h |    6 ++++++
- 2 files changed, 10 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -3522,7 +3522,7 @@ static u32 convert_brightness_to_user(co
- 				 max - min);
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+@@ -601,8 +601,8 @@ static void vcn_v3_0_mc_resume_dpg_mode(
+ 			AMDGPU_GPU_PAGE_ALIGN(sizeof(struct amdgpu_fw_shared)), 0, indirect);
+ 
+ 	/* VCN global tiling registers */
+-	WREG32_SOC15_DPG_MODE(0, SOC15_DPG_MODE_OFFSET(
+-		UVD, 0, mmUVD_GFX10_ADDR_CONFIG), adev->gfx.config.gb_addr_config, 0, indirect);
++	WREG32_SOC15_DPG_MODE(inst_idx, SOC15_DPG_MODE_OFFSET(
++		UVD, inst_idx, mmUVD_GFX10_ADDR_CONFIG), adev->gfx.config.gb_addr_config, 0, indirect);
  }
  
--static int amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
-+static void amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
- 					 int bl_idx,
- 					 u32 user_brightness)
- {
-@@ -3550,7 +3550,8 @@ static int amdgpu_dm_backlight_set_level
- 			DRM_DEBUG("DM: Failed to update backlight on eDP[%d]\n", bl_idx);
- 	}
- 
--	return rc ? 0 : 1;
-+	if (rc)
-+		dm->actual_brightness[bl_idx] = user_brightness;
- }
- 
- static int amdgpu_dm_backlight_update_status(struct backlight_device *bd)
-@@ -9316,7 +9317,7 @@ static void amdgpu_dm_atomic_commit_tail
- 	/* restore the backlight level */
- 	for (i = 0; i < dm->num_of_edps; i++) {
- 		if (dm->backlight_dev[i] &&
--		    (amdgpu_dm_backlight_get_level(dm, i) != dm->brightness[i]))
-+		    (dm->actual_brightness[i] != dm->brightness[i]))
- 			amdgpu_dm_backlight_set_level(dm, i, dm->brightness[i]);
- 	}
- #endif
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
-@@ -446,6 +446,12 @@ struct amdgpu_display_manager {
- 	 * cached backlight values.
- 	 */
- 	u32 brightness[AMDGPU_DM_MAX_NUM_EDP];
-+	/**
-+	 * @actual_brightness:
-+	 *
-+	 * last successfully applied backlight values.
-+	 */
-+	u32 actual_brightness[AMDGPU_DM_MAX_NUM_EDP];
- };
- 
- enum dsc_clock_force_state {
+ static void vcn_v3_0_disable_static_power_gating(struct amdgpu_device *adev, int inst)
 
 
