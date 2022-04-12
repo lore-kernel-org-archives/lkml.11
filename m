@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 187BEC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 544C3C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354825AbiDLH0w (ORCPT
+        id S1355077AbiDLH1H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        Tue, 12 Apr 2022 03:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351670AbiDLHMv (ORCPT
+        with ESMTP id S1351688AbiDLHMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CA513CFD;
-        Mon, 11 Apr 2022 23:51:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0F515A1F;
+        Mon, 11 Apr 2022 23:51:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9400761045;
-        Tue, 12 Apr 2022 06:51:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B98C385A8;
-        Tue, 12 Apr 2022 06:51:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2016DB81B35;
+        Tue, 12 Apr 2022 06:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7908BC385A6;
+        Tue, 12 Apr 2022 06:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746282;
-        bh=vr7Wo20zHLHWbtiSd/Y1L2t36ZxOiBHBQ+ROACpAYAE=;
+        s=korg; t=1649746300;
+        bh=J+TnkjUnUJTPTjWdY0vnCLiIu4RAOPI2eSIf3Ml9EyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N2EZF2Du3lZvRhV4SpLDPnQPW8/xhimVO91SN51U3ADNUHER2dR+Y3S3IWi8cdEsi
-         0dNWDdsOaMmm7sxZofBJCTAGBCQhaREF/SdBoZbgCA3H8yTSZz0GazHhMFiio0evlE
-         3E5IbUrE5BJXvJ73Qa0OcIgV27XZSp2aW7L1kKW0=
+        b=Hx97yE6oo9qPF3A4bGQhGP1fppcEFSnO97pl175FDv8WhGlz16hBvr/Ecal1PeQFX
+         sl9LK7pSmDwL8mVzJ6JYzG3dxWBY2qx27yGm0j98F10C4YXjUKHFDg+lV29T7SRLv+
+         Hl/jJkwZrYXEPUlZrUOtBq3qpxX5ty1HDToiCFPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 186/277] net: openvswitch: dont send internal clone attribute to the userspace.
-Date:   Tue, 12 Apr 2022 08:29:49 +0200
-Message-Id: <20220412062947.418963941@linuxfoundation.org>
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@kernel.org
+Subject: [PATCH 5.15 234/277] ata: sata_dwc_460ex: Fix crash due to OOB write
+Date:   Tue, 12 Apr 2022 08:30:37 +0200
+Message-Id: <20220412062948.815687349@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,78 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Maximets <i.maximets@ovn.org>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
+commit 7aa8104a554713b685db729e66511b93d989dd6a upstream.
 
-'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
-performance optimization inside the kernel.  It's added by the kernel
-while parsing user-provided actions and should not be sent during the
-flow dump as it's not part of the uAPI.
+the driver uses libata's "tag" values from in various arrays.
+Since the mentioned patch bumped the ATA_TAG_INTERNAL to 32,
+the value of the SATA_DWC_QCMD_MAX needs to account for that.
 
-The issue doesn't cause any significant problems to the ovs-vswitchd
-process, because reported actions are not really used in the
-application lifecycle and only supposed to be shown to a human via
-ovs-dpctl flow dump.  However, the action list is still incorrect
-and causes the following error if the user wants to look at the
-datapath flows:
+Otherwise ATA_TAG_INTERNAL usage cause similar crashes like
+this as reported by Tice Rex on the OpenWrt Forum and
+reproduced (with symbols) here:
 
-  # ovs-dpctl add-dp system@ovs-system
-  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
-  # ovs-dpctl dump-flows
-  <flow match>, packets:0, bytes:0, used:never,
-    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
-                  ct(commit),0)
+| BUG: Kernel NULL pointer dereference at 0x00000000
+| Faulting instruction address: 0xc03ed4b8
+| Oops: Kernel access of bad area, sig: 11 [#1]
+| BE PAGE_SIZE=4K PowerPC 44x Platform
+| CPU: 0 PID: 362 Comm: scsi_eh_1 Not tainted 5.4.163 #0
+| NIP:  c03ed4b8 LR: c03d27e8 CTR: c03ed36c
+| REGS: cfa59950 TRAP: 0300   Not tainted  (5.4.163)
+| MSR:  00021000 <CE,ME>  CR: 42000222  XER: 00000000
+| DEAR: 00000000 ESR: 00000000
+| GPR00: c03d27e8 cfa59a08 cfa55fe0 00000000 0fa46bc0 [...]
+| [..]
+| NIP [c03ed4b8] sata_dwc_qc_issue+0x14c/0x254
+| LR [c03d27e8] ata_qc_issue+0x1c8/0x2dc
+| Call Trace:
+| [cfa59a08] [c003f4e0] __cancel_work_timer+0x124/0x194 (unreliable)
+| [cfa59a78] [c03d27e8] ata_qc_issue+0x1c8/0x2dc
+| [cfa59a98] [c03d2b3c] ata_exec_internal_sg+0x240/0x524
+| [cfa59b08] [c03d2e98] ata_exec_internal+0x78/0xe0
+| [cfa59b58] [c03d30fc] ata_read_log_page.part.38+0x1dc/0x204
+| [cfa59bc8] [c03d324c] ata_identify_page_supported+0x68/0x130
+| [...]
 
-With the fix:
+This is because sata_dwc_dma_xfer_complete() NULLs the
+dma_pending's next neighbour "chan" (a *dma_chan struct) in
+this '32' case right here (line ~735):
+> hsdevp->dma_pending[tag] = SATA_DWC_DMA_PENDING_NONE;
 
-  # ovs-dpctl dump-flows
-  <flow match>, packets:0, bytes:0, used:never,
-    actions:clone(ct(commit),0)
+Then the next time, a dma gets issued; dma_dwc_xfer_setup() passes
+the NULL'd hsdevp->chan to the dmaengine_slave_config() which then
+causes the crash.
 
-Additionally fixed an incorrect attribute name in the comment.
+With this patch, SATA_DWC_QCMD_MAX is now set to ATA_MAX_QUEUE + 1.
+This avoids the OOB. But please note, there was a worthwhile discussion
+on what ATA_TAG_INTERNAL and ATA_MAX_QUEUE is. And why there should not
+be a "fake" 33 command-long queue size.
 
-Fixes: b233504033db ("openvswitch: kernel datapath clone action")
-Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-Acked-by: Aaron Conole <aconole@redhat.com>
-Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Ideally, the dw driver should account for the ATA_TAG_INTERNAL.
+In Damien Le Moal's words: "... having looked at the driver, it
+is a bigger change than just faking a 33rd "tag" that is in fact
+not a command tag at all."
+
+Fixes: 28361c403683c ("libata: add extra internal command")
+Cc: stable@kernel.org # 4.18+
+BugLink: https://github.com/openwrt/openwrt/issues/9505
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/actions.c      | 2 +-
- net/openvswitch/flow_netlink.c | 4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/ata/sata_dwc_460ex.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 780d9e2246f3..8955f31fa47e 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -1051,7 +1051,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
- 	int rem = nla_len(attr);
- 	bool dont_clone_flow_key;
+--- a/drivers/ata/sata_dwc_460ex.c
++++ b/drivers/ata/sata_dwc_460ex.c
+@@ -145,7 +145,11 @@ struct sata_dwc_device {
+ #endif
+ };
  
--	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
-+	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
- 	clone_arg = nla_data(attr);
- 	dont_clone_flow_key = nla_get_u32(clone_arg);
- 	actions = nla_next(clone_arg, &rem);
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index 0d677c9c2c80..2679007f8aeb 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -3429,7 +3429,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
- 	if (!start)
- 		return -EMSGSIZE;
+-#define SATA_DWC_QCMD_MAX	32
++/*
++ * Allow one extra special slot for commands and DMA management
++ * to account for libata internal commands.
++ */
++#define SATA_DWC_QCMD_MAX	(ATA_MAX_QUEUE + 1)
  
--	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
-+	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
-+	attr = nla_next(nla_data(attr), &rem);
-+	err = ovs_nla_put_actions(attr, rem, skb);
- 
- 	if (err)
- 		nla_nest_cancel(skb, start);
--- 
-2.35.1
-
+ struct sata_dwc_device_port {
+ 	struct sata_dwc_device	*hsdev;
 
 
