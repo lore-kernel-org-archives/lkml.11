@@ -2,105 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55587C47080
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAF7C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383563AbiDLIhU (ORCPT
+        id S1383736AbiDLIiH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        Tue, 12 Apr 2022 04:38:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356777AbiDLHjU (ORCPT
+        with ESMTP id S1357060AbiDLHjp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:20 -0400
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A164D52B32;
-        Tue, 12 Apr 2022 00:10:13 -0700 (PDT)
-Received: by mail-qv1-f42.google.com with SMTP id e22so15455778qvf.9;
-        Tue, 12 Apr 2022 00:10:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=un7uuVJLSD5oo1I82UIYzEg0eG1oNWsHj8ZvVK3CntI=;
-        b=L+hQHeYSmVigFt+b6xeULgFH4nuk9cg4I8asH7SB04/jw8SBFeK2zB6J0M6ov9Vcsd
-         RKOO4dyxqAQcO1+PuL1LZpYPwoGc8+eyl4eSpuNaIMcrRzpYacUPsxfigUs/KxoYtGol
-         Qsl6jXScFMlz3dIAd60qgGBIBOfEIkzsmgkEJHNp+sPRfA45XYfUfEYpSJr9wpOIvloH
-         fdVxHlavV+n6uDIoWeC/i53bky0CMr8AnT8rMpvqbXPv/n2W/3nILainmXdjF5nzBMDx
-         3SV+qg2KPx3kZ5VHB6LpnAZFYKOGgcnZ+NwJ5YM5DnpmGZ5GeT1VrDp2tBeAskvfGajo
-         Z3Jw==
-X-Gm-Message-State: AOAM5308p3o4/xg/krRis3Ems4A7m+3zIsg6M/2pOS6jHtEIB90V3nH5
-        TkwpAQB6i974Mo1PxrklDjVznfrn9Av5qW3h
-X-Google-Smtp-Source: ABdhPJxLBv5cJryliABFuSMeFqzI6FAkMvdmUBuPpxF87f7gHMxfjytV7n5g7KedxEeK3xmhc9gGlQ==
-X-Received: by 2002:ad4:5f0f:0:b0:441:1e3a:dbc with SMTP id fo15-20020ad45f0f000000b004411e3a0dbcmr29779951qvb.99.1649747411863;
-        Tue, 12 Apr 2022 00:10:11 -0700 (PDT)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id y66-20020a37af45000000b0067dc0fc539fsm20767890qke.86.2022.04.12.00.10.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 00:10:11 -0700 (PDT)
-Received: by mail-yb1-f176.google.com with SMTP id p65so13282791ybp.9;
-        Tue, 12 Apr 2022 00:10:10 -0700 (PDT)
-X-Received: by 2002:a25:29c2:0:b0:641:224f:17d6 with SMTP id
- p185-20020a2529c2000000b00641224f17d6mr10469449ybp.546.1649747410632; Tue, 12
- Apr 2022 00:10:10 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57231BF6F;
+        Tue, 12 Apr 2022 00:11:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEB9461701;
+        Tue, 12 Apr 2022 07:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB41C385A5;
+        Tue, 12 Apr 2022 07:11:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747472;
+        bh=yLn6bZ4He80CPFSWZpCphVsn2it17qouwBsuhYYoByg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PACBWbcfw3/BgTXMAXfVG5OqScxsCB1trDZtmvWwm5ThcF1mhYSZquUjwB5gNIxpO
+         b/SwNJX2UPVwCNbpaMnMDhGXTRZE2tW8sjc+bgRMdsWlpsyv4H0bwgcDick8cRTKuG
+         RGyjqKt7Wn/FSHLF9YYkDF/R9fuq33+fvbSPfbO4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Andrew Jones <drjones@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 064/343] kvm: selftests: aarch64: fix some vgic related comments
+Date:   Tue, 12 Apr 2022 08:28:02 +0200
+Message-Id: <20220412062952.952216614@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CAHk-=wh0+DYC2+Aeu2=vfUtGaDqVuKxKrxyhwQFoG89rcynzww@mail.gmail.com>
- <20220411103528.2187797-1-geert@linux-m68k.org> <alpine.DEB.2.22.394.2204111240560.38484@ramsan.of.borg>
- <87zgkrqyff.fsf@tynnyri.adurom.net>
-In-Reply-To: <87zgkrqyff.fsf@tynnyri.adurom.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 12 Apr 2022 09:09:59 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUgdPBTwg8LN8x_sZRWWzdE9ZKytZuAna+qdKL1Ced5Vw@mail.gmail.com>
-Message-ID: <CAMuHMdUgdPBTwg8LN8x_sZRWWzdE9ZKytZuAna+qdKL1Ced5Vw@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.18-rc2
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalle,
+From: Ricardo Koller <ricarkol@google.com>
 
-On Mon, Apr 11, 2022 at 8:15 PM Kalle Valo <kvalo@kernel.org> wrote:
-> Geert Uytterhoeven <geert@linux-m68k.org> writes:
-> > On Mon, 11 Apr 2022, Geert Uytterhoeven wrote:
-> >> JFYI, when comparing v5.18-rc2[1] to v5.18-rc1[3], the summaries are:
+[ Upstream commit a5cd38fd9c47b23abc6df08d6ee6a71b39038185 ]
 
-> >   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_491' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
-> >   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_520' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
-> >
-> > mipsel/mips-allmodconfig
-> > arm64-gcc5.4/arm64-allmodconfig
-> >
-> > Actual error is:
-> >
-> >     /kisskb/src/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function 'mt76x2e_probe':
-> >     /kisskb/src/include/linux/compiler_types.h:352:38: error: call to '__compiletime_assert_520' declared with attribute error: FIELD_PREP: mask is not constant
->
-> Does this commit fix it:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git/commit/?id=dbc2b1764734857d68425468ffa8486e97ab89df
->
-> Or is this another issue?
+Fix the formatting of some comments and the wording of one of them (in
+gicv3_access_reg).
 
-I'm not in a position to verify this, but given both configs used gcc-5,
-I assume this will fix the issue.
+Signed-off-by: Ricardo Koller <ricarkol@google.com>
+Reported-by: Reiji Watanabe <reijiw@google.com>
+Cc: Andrew Jones <drjones@redhat.com>
+Reviewed-by: Andrew Jones <drjones@redhat.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220127030858.3269036-5-ricarkol@google.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/kvm/aarch64/vgic_irq.c   | 12 ++++++++----
+ tools/testing/selftests/kvm/lib/aarch64/gic_v3.c | 10 ++++++----
+ tools/testing/selftests/kvm/lib/aarch64/vgic.c   |  3 ++-
+ 3 files changed, 16 insertions(+), 9 deletions(-)
 
-Thanks!
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_irq.c b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
+index 48e43e24d240..554ca649d470 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_irq.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
+@@ -306,7 +306,8 @@ static void guest_restore_active(struct test_args *args,
+ 	uint32_t prio, intid, ap1r;
+ 	int i;
+ 
+-	/* Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
++	/*
++	 * Set the priorities of the first (KVM_NUM_PRIOS - 1) IRQs
+ 	 * in descending order, so intid+1 can preempt intid.
+ 	 */
+ 	for (i = 0, prio = (num - 1) * 8; i < num; i++, prio -= 8) {
+@@ -315,7 +316,8 @@ static void guest_restore_active(struct test_args *args,
+ 		gic_set_priority(intid, prio);
+ 	}
+ 
+-	/* In a real migration, KVM would restore all GIC state before running
++	/*
++	 * In a real migration, KVM would restore all GIC state before running
+ 	 * guest code.
+ 	 */
+ 	for (i = 0; i < num; i++) {
+@@ -503,7 +505,8 @@ static void guest_code(struct test_args *args)
+ 		test_injection_failure(args, f);
+ 	}
+ 
+-	/* Restore the active state of IRQs. This would happen when live
++	/*
++	 * Restore the active state of IRQs. This would happen when live
+ 	 * migrating IRQs in the middle of being handled.
+ 	 */
+ 	for_each_supported_activate_fn(args, set_active_fns, f)
+@@ -844,7 +847,8 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
+-	/* If the user just specified nr_irqs and/or gic_version, then run all
++	/*
++	 * If the user just specified nr_irqs and/or gic_version, then run all
+ 	 * combinations.
+ 	 */
+ 	if (default_args) {
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
+index e4945fe66620..263bf3ed8fd5 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/gic_v3.c
+@@ -19,7 +19,7 @@ struct gicv3_data {
+ 	unsigned int nr_spis;
+ };
+ 
+-#define sgi_base_from_redist(redist_base) 	(redist_base + SZ_64K)
++#define sgi_base_from_redist(redist_base)	(redist_base + SZ_64K)
+ #define DIST_BIT				(1U << 31)
+ 
+ enum gicv3_intid_range {
+@@ -105,7 +105,8 @@ static void gicv3_set_eoi_split(bool split)
+ {
+ 	uint32_t val;
+ 
+-	/* All other fields are read-only, so no need to read CTLR first. In
++	/*
++	 * All other fields are read-only, so no need to read CTLR first. In
+ 	 * fact, the kernel does the same.
+ 	 */
+ 	val = split ? (1U << 1) : 0;
+@@ -160,8 +161,9 @@ static void gicv3_access_reg(uint32_t intid, uint64_t offset,
+ 
+ 	GUEST_ASSERT(bits_per_field <= reg_bits);
+ 	GUEST_ASSERT(!write || *val < (1U << bits_per_field));
+-	/* Some registers like IROUTER are 64 bit long. Those are currently not
+-	 * supported by readl nor writel, so just asserting here until then.
++	/*
++	 * This function does not support 64 bit accesses. Just asserting here
++	 * until we implement readq/writeq.
+ 	 */
+ 	GUEST_ASSERT(reg_bits == 32);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/vgic.c b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+index f5cd0c536d85..7c876ccf9294 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/vgic.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/vgic.c
+@@ -152,7 +152,8 @@ static void vgic_poke_irq(int gic_fd, uint32_t intid,
+ 		attr += SZ_64K;
+ 	}
+ 
+-	/* All calls will succeed, even with invalid intid's, as long as the
++	/*
++	 * All calls will succeed, even with invalid intid's, as long as the
+ 	 * addr part of the attr is within 32 bits (checked above). An invalid
+ 	 * intid will just make the read/writes point to above the intended
+ 	 * register space (i.e., ICPENDR after ISPENDR).
+-- 
+2.35.1
 
-Gr{oetje,eeting}s,
 
-                        Geert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
