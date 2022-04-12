@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4ABBC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E65C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382170AbiDLJMG (ORCPT
+        id S1376862AbiDLJLn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
+        Tue, 12 Apr 2022 05:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358769AbiDLHmL (ORCPT
+        with ESMTP id S1358786AbiDLHmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:11 -0400
+        Tue, 12 Apr 2022 03:42:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FB812ADB;
-        Tue, 12 Apr 2022 00:19:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFD525EBF;
+        Tue, 12 Apr 2022 00:19:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B7BBB81B62;
-        Tue, 12 Apr 2022 07:19:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0592CC385A1;
-        Tue, 12 Apr 2022 07:19:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9862FB81B4F;
+        Tue, 12 Apr 2022 07:19:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D70E3C385A1;
+        Tue, 12 Apr 2022 07:19:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747951;
-        bh=xQWayGB+6f6hpATCzHMRRQ/8HztQFzBaPi4TXBjj1bo=;
+        s=korg; t=1649747954;
+        bh=XAj7FCfm0M/jy4rFK9gDsnIs+X5IJ8/MZGnWY/bFg0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mV40kF5JrxJ39W8b0qg3mp0BK0/wQLUo02iXEuPFxlioswdT/jIZzo2Njk9dxx8vR
-         MnI6XQW5JjSVhltKwzVX6TifCd1LrBftUB/y2FxsxqxNvxWkQhGkM1taCNvLjC2CEO
-         yssuOQ8TX/8KXcdE0WzdXycAxiEdVCGlAo6nrOMQ=
+        b=maE+O00AmceMTC6XkjLveanuFUAztSEqmBbczZfPFWN5ujI2X87PsHtZ19UzAbp7b
+         1x49EFqlCTfjiXSGLTKda0BgdFaNLmdXP3qgQtKFHADiMoRFc26SI/X839oKbdlENl
+         /Jr1TpqhdFDfVEIqVTZJJ96bBp3uPs+Zmtsj6HzI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Shwetha Nagaraju <shwetha.nagaraju@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 238/343] ice: clear cmd_type_offset_bsz for TX rings
-Date:   Tue, 12 Apr 2022 08:30:56 +0200
-Message-Id: <20220412062958.203119397@linuxfoundation.org>
+        stable@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 265/343] scsi: ufs: ufs-pci: Add support for Intel MTL
+Date:   Tue, 12 Apr 2022 08:31:23 +0200
+Message-Id: <20220412062958.972479689@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,44 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit e19778e6c911691856447c3bf9617f00b3e1347f ]
+commit 4049f7acef3eb37c1ea0df45f3ffc29404f4e708 upstream.
 
-Currently when XDP rings are created, each descriptor gets its DD bit
-set, which turns out to be the wrong approach as it can lead to a
-situation where more descriptors get cleaned than it was supposed to,
-e.g. when AF_XDP busy poll is run with a large batch size. In this
-situation, the driver would request for more buffers than it is able to
-handle.
+Add PCI ID and callbacks to support Intel Meteor Lake (MTL).
 
-Fix this by not setting the DD bits in ice_xdp_alloc_setup_rings(). They
-should be initialized to zero instead.
-
-Fixes: 9610bd988df9 ("ice: optimize XDP_TX workloads")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Shwetha Nagaraju <shwetha.nagaraju@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220404055038.2208051-1-adrian.hunter@intel.com
+Cc: stable@vger.kernel.org # v5.15+
+Reviewed-by: Avri Altman <avri.altman@wdc.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/ufs/ufshcd-pci.c |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 5229bce1a4ab..db2e02e673a7 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2546,7 +2546,7 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
- 		spin_lock_init(&xdp_ring->tx_lock);
- 		for (j = 0; j < xdp_ring->count; j++) {
- 			tx_desc = ICE_TX_DESC(xdp_ring, j);
--			tx_desc->cmd_type_offset_bsz = cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE);
-+			tx_desc->cmd_type_offset_bsz = 0;
- 		}
- 	}
+--- a/drivers/scsi/ufs/ufshcd-pci.c
++++ b/drivers/scsi/ufs/ufshcd-pci.c
+@@ -428,6 +428,12 @@ static int ufs_intel_adl_init(struct ufs
+ 	return ufs_intel_common_init(hba);
+ }
  
--- 
-2.35.1
-
++static int ufs_intel_mtl_init(struct ufs_hba *hba)
++{
++	hba->caps |= UFSHCD_CAP_CRYPTO | UFSHCD_CAP_WB_EN;
++	return ufs_intel_common_init(hba);
++}
++
+ static struct ufs_hba_variant_ops ufs_intel_cnl_hba_vops = {
+ 	.name                   = "intel-pci",
+ 	.init			= ufs_intel_common_init,
+@@ -465,6 +471,16 @@ static struct ufs_hba_variant_ops ufs_in
+ 	.device_reset		= ufs_intel_device_reset,
+ };
+ 
++static struct ufs_hba_variant_ops ufs_intel_mtl_hba_vops = {
++	.name                   = "intel-pci",
++	.init			= ufs_intel_mtl_init,
++	.exit			= ufs_intel_common_exit,
++	.hce_enable_notify	= ufs_intel_hce_enable_notify,
++	.link_startup_notify	= ufs_intel_link_startup_notify,
++	.resume			= ufs_intel_resume,
++	.device_reset		= ufs_intel_device_reset,
++};
++
+ #ifdef CONFIG_PM_SLEEP
+ static int ufshcd_pci_restore(struct device *dev)
+ {
+@@ -579,6 +595,7 @@ static const struct pci_device_id ufshcd
+ 	{ PCI_VDEVICE(INTEL, 0x98FA), (kernel_ulong_t)&ufs_intel_lkf_hba_vops },
+ 	{ PCI_VDEVICE(INTEL, 0x51FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
+ 	{ PCI_VDEVICE(INTEL, 0x54FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
++	{ PCI_VDEVICE(INTEL, 0x7E47), (kernel_ulong_t)&ufs_intel_mtl_hba_vops },
+ 	{ }	/* terminate list */
+ };
+ 
 
 
