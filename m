@@ -2,101 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7F1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CE1C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:48:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349529AbiDLJtA (ORCPT
+        id S1377550AbiDLJuH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        Tue, 12 Apr 2022 05:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350623AbiDLJkx (ORCPT
+        with ESMTP id S1351629AbiDLJmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:40:53 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F93692B3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:46:09 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C8k19Y115994;
-        Tue, 12 Apr 2022 03:46:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649753161;
-        bh=3K51sbmQ8lmy2+7Rao3B6SkJ5pZ/iOE/xz34xa/ZFW0=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=XIDM+pO6PvMLF2MyGFNcfrwFsAcmont47iAL1gn9vu9Z4q0rxyKNwKIF+06LjSb1g
-         +S1d8ETZd42TsAsasheGqeNpIungiVl05EV2XhEd8IKTmmgw9cuGrALeqK1b4lFUei
-         9sUriGoGvetcDLkTnvjW7+k1bv9g9oOWtOXs30uE=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C8k1Qb104814
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 Apr 2022 03:46:01 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
- Apr 2022 03:46:01 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 12 Apr 2022 03:46:01 -0500
-Received: from [10.249.96.184] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C8jwep053060;
-        Tue, 12 Apr 2022 03:45:59 -0500
-Message-ID: <48939b53-ede5-103a-ceae-9d7b9dcc4a1b@ti.com>
-Date:   Tue, 12 Apr 2022 11:46:00 +0300
+        Tue, 12 Apr 2022 05:42:33 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFB952E51;
+        Tue, 12 Apr 2022 01:50:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649753455;
+  x=1681289455;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=uLQdlfAQXlCN4pf6t7na9yusjUfO4K5tqg+Dz7YUDFM=;
+  b=Rr4kEVfRpFsMjSaJj/0JFOFNCi8+JOAdv6lqvppuw5AS2jvUp1il8T7f
+   j7mNOyFEO0TM+JiQYcD5RfuTUO1tWMGKpMtAA8Hi0OkYChMgIhpVD3fg4
+   Qrv3bP+NZhEROqKfIjP/sO4UHmJDGhrvs9xu2Exal3vRZH7IWa21X6a5+
+   6OsI00oMHRqcFOH09wnr6WXqJR4Oly4KUnzSR/J3gP5uMdhCyYK/C6u0X
+   UgUrvdT+1uOTMej86LF2+0dszNno9Ve7yFVsDZb/baXLYbasuQ754Fq9R
+   44IpE9R6jtqbJ+NCl0JFYOtv9E6FFU0jcVDLIVNtGWbelhD6T6ROPnr0R
+   Q==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <wsa@kernel.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <krzk+dt@kernel.org>, <robh+dt@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 2/2] i2c: core: support no-detect property
+Date:   Tue, 12 Apr 2022 10:50:46 +0200
+Message-ID: <20220412085046.1110127-3-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220412085046.1110127-1-vincent.whitchurch@axis.com>
+References: <20220412085046.1110127-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] soc: ti: knav_dma: using pm_runtime_resume_and_get
- instead of pm_runtime_get_sync
-Content-Language: en-US
-To:     <cgel.zte@gmail.com>, <nm@ti.com>
-CC:     <ssantosh@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220412082923.2532649-1-chi.minghao@zte.com.cn>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-In-Reply-To: <20220412082923.2532649-1-chi.minghao@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+If the devicetree specifies the no-detect property, we know that there
+are no other devices on the bus other than the ones listed in the
+devicetree, so avoid calling drivers' detect callback and wasting time
+probing for devices which do not exist.
 
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
+ drivers/i2c/i2c-core-base.c | 8 +++++++-
+ include/linux/i2c.h         | 1 +
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-On 12/04/2022 11:29, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->   drivers/soc/ti/knav_dma.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/soc/ti/knav_dma.c b/drivers/soc/ti/knav_dma.c
-> index 700d8eecd8c4..061f92c8cf7d 100644
-> --- a/drivers/soc/ti/knav_dma.c
-> +++ b/drivers/soc/ti/knav_dma.c
-> @@ -747,9 +747,8 @@ static int knav_dma_probe(struct platform_device *pdev)
->   	INIT_LIST_HEAD(&kdev->list);
->   
->   	pm_runtime_enable(kdev->dev);
-> -	ret = pm_runtime_get_sync(kdev->dev);
-> +	ret = pm_runtime_resume_and_get(kdev->dev);
->   	if (ret < 0) {
-> -		pm_runtime_put_noidle(kdev->dev);
->   		dev_err(kdev->dev, "unable to enable pktdma, err %d\n", ret);
->   		goto err_pm_disable;
->   	}
-
-Thank you.
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
-
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index d43db2c3876e..d43025b84546 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -1341,7 +1341,8 @@ static int i2c_do_add_adapter(struct i2c_driver *driver,
+ 			      struct i2c_adapter *adap)
+ {
+ 	/* Detect supported devices on that bus, and instantiate them */
+-	i2c_detect(adap, driver);
++	if (adap->detect)
++		i2c_detect(adap, driver);
+ 
+ 	return 0;
+ }
+@@ -1432,6 +1433,7 @@ EXPORT_SYMBOL_GPL(i2c_handle_smbus_host_notify);
+ 
+ static int i2c_register_adapter(struct i2c_adapter *adap)
+ {
++	struct device_node *np = adap->dev.of_node;
+ 	int res = -EINVAL;
+ 
+ 	/* Can't register until after driver model init */
+@@ -1502,6 +1504,10 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
+ 			 "Failed to create compatibility class link\n");
+ #endif
+ 
++	adap->detect = true;
++	if (np && of_property_read_bool(np, "no-detect"))
++		adap->detect = false;
++
+ 	/* create pre-declared device nodes */
+ 	of_i2c_register_devices(adap);
+ 	i2c_acpi_install_space_handler(adap);
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index fbda5ada2afc..8fad5fe85685 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -728,6 +728,7 @@ struct i2c_adapter {
+ 	struct rt_mutex bus_lock;
+ 	struct rt_mutex mux_lock;
+ 
++	bool detect;
+ 	int timeout;			/* in jiffies */
+ 	int retries;
+ 	struct device dev;		/* the adapter device */
 -- 
-Best regards,
-Grygorii, Ukraine
+2.34.1
+
