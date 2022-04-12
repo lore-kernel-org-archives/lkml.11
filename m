@@ -2,174 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6623CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 102E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355205AbiDLNI2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
+        id S245582AbiDLNIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 09:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356980AbiDLNEM (ORCPT
+        with ESMTP id S1357136AbiDLNES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:04:12 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573F539B8C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:48:23 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id bg24so5982112pjb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:48:23 -0700 (PDT)
+        Tue, 12 Apr 2022 09:04:18 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE534889E;
+        Tue, 12 Apr 2022 05:48:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SBWFAF/XPapM1EK+gmdZ5oUq3bsgCRTxORe+fGjXmTg=;
-        b=hS5tvpYdRrcQrLpo6fyXay4Ko5tB5b0Tk9kxF6AXKdzCyRXRoKXlRtxnU0LPrXzC2T
-         RVrBLWWd7e5dI5mwyLXJfdQOLRQ//pBARSuvuIAsUb5g2IxgOjr9QCmNueWBYCULomA8
-         JI0C1mUlAXbCR9eLQBpFpfhJOQqV0yvnJb3pFmJ+s16ppdIZVkB2ds8cI3pf65QacvAH
-         MwIQEUA1PjaP3S/rvKF7GavLtSJ7gdJWbWt1zRMQm/Muu1YuL8TxSDjlIfq3RQXNXLyf
-         WY0a+kjOgpq7UvXsef0O5WHaQxgE04XbXEBmlHn1C2FVjiuI2V5pHcLuhbk8IBpg3pEn
-         sGCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SBWFAF/XPapM1EK+gmdZ5oUq3bsgCRTxORe+fGjXmTg=;
-        b=Q4xRjOrtGbxA7vsgBzXXTZlk7+gK2qcLRyTno3EazF+0V7G3B4dfUV0QGCyVtKeOGh
-         p88tdY/51rifAx/vcm6ITPAgoT7O+jf5APDiSEJUYRLJsy6BoHzNgaMiOp9SXNYJ2q6A
-         Pba0dvdYdyI91rVaWhehVwwR2hBO2XbknXR3c7cBckdBFSdqn+pBeecMCGcbk8Tk/i/6
-         VhZWDdAnTxALftQlQ8zWr1fs/mdTac8qSNE9d8CqbolBgzH+9c2y96H7ogIVpkmxHLil
-         keHUQOX7NpBPGA4glhPT8dbHVHlTTdgL3uITH2heLP1LfTjYqf7t+PuVgiz8RYndHOJS
-         tVqQ==
-X-Gm-Message-State: AOAM530Wn88OWEjTVBt9bSvtCEsaBkhglCp60xe8VjRMXYM/LpFi1NKd
-        1DMKkj7hBjq51hzC4JTIr8qmCzWyG9c=
-X-Google-Smtp-Source: ABdhPJw9nAilFk9LEP5VDPn8u/Q1uNGHuCf5UWZLKTzXDnHNJJE78DTtE3aajXwFTiKfSlgWF+YjvA==
-X-Received: by 2002:a17:902:c94d:b0:158:4e50:7a32 with SMTP id i13-20020a170902c94d00b001584e507a32mr13357373pla.163.1649767702559;
-        Tue, 12 Apr 2022 05:48:22 -0700 (PDT)
-Received: from localhost ([47.251.4.198])
-        by smtp.gmail.com with ESMTPSA id n24-20020aa79058000000b00505686a982asm17899192pfo.125.2022.04.12.05.48.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Apr 2022 05:48:22 -0700 (PDT)
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     x86@kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Oleg Nesterov <oleg@redhat.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH V2] x86/sev: Mark the code returning to user space as syscall gap
-Date:   Tue, 12 Apr 2022 20:49:08 +0800
-Message-Id: <20220412124909.10467-1-jiangshanlai@gmail.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649767722; x=1681303722;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=cm3PPGsEggVzdfAIEGNXgkOFvvQIheAXiWAEGXuoj/U=;
+  b=AOedOl4ctC2tgjQLlLpVWhDnfOXaQVa4FbkqdJd0Ovl/OKSdg43LWJEH
+   ETHhRnk28H4zJO6fVm8adbEh1wMRd/FWOPCelFCKY9QpE5ket6E1y7/+X
+   IdRCajgFv/8s19mRH84uwQcHl5kZ4BwYfT6bXeVh6mJiFU8lnCjW9TcSp
+   4=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 12 Apr 2022 05:48:41 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:48:40 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 12 Apr 2022 05:48:40 -0700
+Received: from [10.216.28.9] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Apr
+ 2022 05:48:36 -0700
+Message-ID: <9bacee6d-ab44-2975-c523-38164d016af5@quicinc.com>
+Date:   Tue, 12 Apr 2022 18:18:33 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v7 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin
+ controller node
+Content-Language: en-US
+To:     Matthias Kaehlcke <mka@chromium.org>
+CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1649685184-8448-1-git-send-email-quic_srivasam@quicinc.com>
+ <1649685184-8448-3-git-send-email-quic_srivasam@quicinc.com>
+ <YlSCWC47tITuW/BZ@google.com>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <YlSCWC47tITuW/BZ@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-When returning to user space, the %rsp is user controlled value.
+On 4/12/2022 1:02 AM, Matthias Kaehlcke wrote:
+Thanks for your time Matthias!!!
+> On Mon, Apr 11, 2022 at 07:23:04PM +0530, Srinivasa Rao Mandadapu wrote:
+>> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
+>> based platforms.
+>>
+>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> ---
+>>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  84 ++++++++++++++++++++++++
+>>   arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
+>>   2 files changed, 191 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+>> index 4ba2274..ea751dc 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+>> @@ -238,6 +238,90 @@
+>>   	modem-init;
+>>   };
+>>   
+>> +&dmic01 {
+> Shouldn't these nodes be in the PINCTRL section at their respective
+> positions in alphabetical order?
 
-If it is SNP-guest and the hypervisor decides to mess with the code-page
-for this path while a CPU is executing it.  This will cause a #VC on
-that CPU and that could hit in the syscall return path and mislead
-the #VC handler.
+These are not part of tlmm pin control section. These are part of 
+lpass_tlmm section.
 
-So make ip_within_syscall_gap() return true in this case.
+In your previous comment you asked to remove &lpass_tlmm. Hence brought out.
 
-Cc: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
----
-[V1]: https://lore.kernel.org/lkml/20211213042215.3096-4-jiangshanlai@gmail.com/
-
-Changed from V1:
-	Update changelog.
-
- arch/x86/entry/entry_64.S        | 2 ++
- arch/x86/entry/entry_64_compat.S | 2 ++
- arch/x86/include/asm/proto.h     | 4 ++++
- arch/x86/include/asm/ptrace.h    | 4 ++++
- 4 files changed, 12 insertions(+)
-
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 4faac48ebec5..4f678b6045cd 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -215,8 +215,10 @@ syscall_return_via_sysret:
- 
- 	popq	%rdi
- 	popq	%rsp
-+SYM_INNER_LABEL(entry_SYSRETQ_unsafe_stack, SYM_L_GLOBAL)
- 	swapgs
- 	sysretq
-+SYM_INNER_LABEL(entry_SYSRETQ_end, SYM_L_GLOBAL)
- SYM_CODE_END(entry_SYSCALL_64)
- 
- /*
-diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
-index 4fdb007cddbd..3c0e14960e2b 100644
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -297,6 +297,7 @@ sysret32_from_system_call:
- 	 * code.  We zero R8-R10 to avoid info leaks.
-          */
- 	movq	RSP-ORIG_RAX(%rsp), %rsp
-+SYM_INNER_LABEL(entry_SYSRETL_compat_unsafe_stack, SYM_L_GLOBAL)
- 
- 	/*
- 	 * The original userspace %rsp (RSP-ORIG_RAX(%rsp)) is stored
-@@ -314,6 +315,7 @@ sysret32_from_system_call:
- 	xorl	%r10d, %r10d
- 	swapgs
- 	sysretl
-+SYM_INNER_LABEL(entry_SYSRETL_compat_end, SYM_L_GLOBAL)
- SYM_CODE_END(entry_SYSCALL_compat)
- 
- /*
-diff --git a/arch/x86/include/asm/proto.h b/arch/x86/include/asm/proto.h
-index 0f899c8d7a4e..647d71535ce3 100644
---- a/arch/x86/include/asm/proto.h
-+++ b/arch/x86/include/asm/proto.h
-@@ -13,6 +13,8 @@ void syscall_init(void);
- #ifdef CONFIG_X86_64
- void entry_SYSCALL_64(void);
- void entry_SYSCALL_64_safe_stack(void);
-+void entry_SYSRETQ_unsafe_stack(void);
-+void entry_SYSRETQ_end(void);
- long do_arch_prctl_64(struct task_struct *task, int option, unsigned long arg2);
- #endif
- 
-@@ -28,6 +30,8 @@ void entry_SYSENTER_compat(void);
- void __end_entry_SYSENTER_compat(void);
- void entry_SYSCALL_compat(void);
- void entry_SYSCALL_compat_safe_stack(void);
-+void entry_SYSRETL_compat_unsafe_stack(void);
-+void entry_SYSRETL_compat_end(void);
- void entry_INT80_compat(void);
- #ifdef CONFIG_XEN_PV
- void xen_entry_INT80_compat(void);
-diff --git a/arch/x86/include/asm/ptrace.h b/arch/x86/include/asm/ptrace.h
-index 4357e0f2cd5f..f4db78b09c8f 100644
---- a/arch/x86/include/asm/ptrace.h
-+++ b/arch/x86/include/asm/ptrace.h
-@@ -186,9 +186,13 @@ static __always_inline bool ip_within_syscall_gap(struct pt_regs *regs)
- 	bool ret = (regs->ip >= (unsigned long)entry_SYSCALL_64 &&
- 		    regs->ip <  (unsigned long)entry_SYSCALL_64_safe_stack);
- 
-+	ret = ret || (regs->ip >= (unsigned long)entry_SYSRETQ_unsafe_stack &&
-+		      regs->ip <  (unsigned long)entry_SYSRETQ_end);
- #ifdef CONFIG_IA32_EMULATION
- 	ret = ret || (regs->ip >= (unsigned long)entry_SYSCALL_compat &&
- 		      regs->ip <  (unsigned long)entry_SYSCALL_compat_safe_stack);
-+	ret = ret || (regs->ip >= (unsigned long)entry_SYSRETL_compat_unsafe_stack &&
-+		      regs->ip <  (unsigned long)entry_SYSRETL_compat_end);
- #endif
- 
- 	return ret;
--- 
-2.19.1.6.gb485710b
-
+>
+> nit: since you are keeping the groups the group names are a bit generic IMO.
+> e.g. it is fairly obvious that 'dmic01_clk' refers to a clock pin, however
+> just 'dmic01' is a bit vague. You could consider adding the prefix 'lpass_'
+> to the group names for more clarity.
+as dmic01 has both clk and data section, I don't think keeping clk is 
+appropriate here.
+>
+>> +	clk {
+>> +		drive-strength = <8>;
+>> +	};
+>> +};
+>> +
+>> +&dmic01_sleep {
+>> +	clk {
+>> +		drive-strength = <2>;
+>> +		bias-disable;
+>> +	};
+>> +
+>> +	data {
+>> +		pull-down;
+>> +	};
+>> +};
+>> +
+>> +&dmic23 {
+>> +	clk {
+>> +		drive-strength = <8>;
+>> +	};
+>> +};
+>> +
+>> +&dmic23_sleep {
+>> +	clk {
+>> +		drive-strength = <2>;
+>> +		bias-disable;
+>> +	};
+>> +
+>> +	data {
+>> +		pull-down;
+>> +	};
+>> +};
+>> +
+>> +&rx_swr {
+>> +	clk {
+>> +		drive-strength = <2>;
+>> +		slew-rate = <1>;
+>> +		bias-disable;
+>> +	};
+>> +
+>> +	data {
+>> +		drive-strength = <2>;
+>> +		slew-rate = <1>;
+>> +		bias-bus-hold;
+>> +	};
+>> +};
+>> +
+>> +&rx_swr_sleep {
+>> +	clk {
+>> +		drive-strength = <2>;
+>> +		bias-pull-down;
+>> +	};
+>> +
+>> +	data {
+>> +		drive-strength = <2>;
+>> +		bias-pull-down;
+>> +	};
+>> +};
+>> +
+>> +&tx_swr {
+>> +	clk {
+>> +		drive-strength = <2>;
+>> +		slew-rate = <1>;
+>> +		bias-disable;
+>> +	};
+>> +
+>> +	data {
+>> +		slew-rate = <1>;
+>> +		bias-bus-hold;
+>> +	};
+>> +};
+>> +
+>> +&tx_swr_sleep {
+>> +	clk {
+>> +		drive-strength = <2>;
+>> +		bias-pull-down;
+>> +	};
+>> +
+>> +	data {
+>> +		bias-bus-hold;
+>> +	};
+>> +};
+>> +
+>>   &pcie1 {
+>>   	status = "okay";
+>>   	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+>> index 8099c80..c692420 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+>> @@ -1987,6 +1987,113 @@
+>>   			qcom,bcm-voters = <&apps_bcm_voter>;
+>>   		};
+>>   
+>> +		lpass_tlmm: pinctrl@33c0000 {
+>> +			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
+>> +			reg = <0 0x033c0000 0x0 0x20000>,
+>> +				<0 0x03550000 0x0 0x10000>;
+>> +			gpio-controller;
+>> +			#gpio-cells = <2>;
+>> +			gpio-ranges = <&lpass_tlmm 0 0 15>;
+>> +
+>> +			#clock-cells = <1>;
+>> +
+>> +			dmic01: dmic01 {
+>> +				clk {
+>> +					pins = "gpio6";
+>  From the schematics I interpret that the LPASS GPIOs 0-9 are mapped to the
+> SC7280 GPIOs 144-153. Is that correct?
+Yes. But we refer with GPIOs 0-9 in driver.
+>
+>> +					function = "dmic1_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio7";
+>> +					function = "dmic1_data";
+>> +				};
+>> +			};
+>> +
+>> +			dmic01_sleep: dmic01-sleep {
+>> +				clk {
+>> +					pins = "gpio6";
+>> +					function = "dmic1_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio7";
+>> +					function = "dmic1_data";
+>> +				};
+>> +			};
+>> +
+>> +			dmic23: dmic23 {
+>> +				clk {
+>> +					pins = "gpio8";
+>> +					function = "dmic2_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio9";
+>> +					function = "dmic2_data";
+>> +				};
+>> +			};
+>> +
+>> +			dmic23_sleep: dmic23_sleep {
+> s/dmic23_sleep/dmic23-sleep/ for the node name.
+Okay.
+>
+>> +				clk {
+>> +					pins = "gpio8";
+>> +					function = "dmic2_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio9";
+>> +					function = "dmic2_data";
+>> +				};
+>> +			};
+>> +
+>> +			rx_swr: rx-swr {
+>> +				clk {
+>> +					pins = "gpio3";
+>> +					function = "swr_rx_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio4", "gpio5";
+>> +					function = "swr_rx_data";
+>> +				};
+>> +			};
+>> +
+>> +			rx_swr_sleep: rx-swr-sleep {
+>> +				clk {
+>> +					pins = "gpio3";
+>> +					function = "swr_rx_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio4", "gpio5";
+>> +					function = "swr_rx_data";
+>> +				};
+>> +			};
+>> +
+>> +			tx_swr: tx-swr {
+>> +				clk {
+>> +					pins = "gpio0";
+>> +					function = "swr_tx_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio1", "gpio2", "gpio14";
+>> +					function = "swr_tx_data";
+>> +				};
+>> +			};
+>> +
+>> +			tx_swr_sleep: tx-swr-sleep {
+>> +				clk {
+>> +					pins = "gpio0";
+>> +					function = "swr_tx_clk";
+>> +				};
+>> +
+>> +				data {
+>> +					pins = "gpio1", "gpio2", "gpio14";
+>> +					function = "swr_tx_data";
+>> +				};
+>> +			};
+>> +		};
+>> +
+>>   		gpu: gpu@3d00000 {
+>>   			compatible = "qcom,adreno-635.0", "qcom,adreno";
+>>   			reg = <0 0x03d00000 0 0x40000>,
+>> -- 
+>> 2.7.4
+>>
