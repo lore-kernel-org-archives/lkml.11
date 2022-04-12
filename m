@@ -2,359 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E21EC38A2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F207DC47091
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389343AbiDLJXm (ORCPT
+        id S1390305AbiDLJYn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
+        Tue, 12 Apr 2022 05:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357090AbiDLHjq (ORCPT
+        with ESMTP id S1356171AbiDLIJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EFBA190;
-        Tue, 12 Apr 2022 00:11:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81D6C6153F;
-        Tue, 12 Apr 2022 07:11:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91609C385A1;
-        Tue, 12 Apr 2022 07:11:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747510;
-        bh=H0DjKy6Nwqc8oMmhiQthRhWVO2XkEzQnxtL4GLgLCiA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tZWVT7s3MBziK/7P8LwkwjUGpLGeO32r9HClsTpz0dc5oUjdCs8FuQnG7Wg4L0Lvh
-         jvm6xSOFir6CCC0SG2L4jZy6GX0WLB6eWWpEE7XWXWAE9xRYTjoEeG9i844dP2cidE
-         82ng9kTTCLrYZxKANSQx731WDaV59ajcFOOjGeds=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 103/343] scsi: pm8001: Fix tag values handling
-Date:   Tue, 12 Apr 2022 08:28:41 +0200
-Message-Id: <20220412062954.071874684@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 04:09:08 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2EF7DEEA
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:39:39 -0700 (PDT)
+X-UUID: 476df98acc14430c9712202fa00f6542-20220412
+X-UUID: 476df98acc14430c9712202fa00f6542-20220412
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1947215072; Tue, 12 Apr 2022 15:39:31 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 12 Apr 2022 15:39:30 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Apr 2022 15:39:30 +0800
+Message-ID: <152363cfcfe240f9249fb08f06442d2ab9286900.camel@mediatek.com>
+Subject: Re: [PATCH v4,4/4] drm/mediatek: Add pull-down MIPI operation in
+ mtk_dsi_poweroff function
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <matthias.bgg@gmail.com>
+CC:     <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <jitao.shi@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 12 Apr 2022 15:39:30 +0800
+In-Reply-To: <1649644308-8455-5-git-send-email-xinlei.lee@mediatek.com>
+References: <1649644308-8455-1-git-send-email-xinlei.lee@mediatek.com>
+         <1649644308-8455-5-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+On Mon, 2022-04-11 at 10:31 +0800, xinlei.lee@mediatek.com wrote:
+> From: Xinlei Lee <xinlei.lee@mediatek.com>
+> 
+> In the dsi_enable function, mtk_dsi_rxtx_control is to
+> pull up the MIPI signal operation. Before dsi_disable,
+> MIPI should also be pulled down by writing a register 
+> instead of disabling dsi.
+> 
+> If disable dsi without pulling the mipi signal low, the value of
+> the register will still maintain the setting of the mipi signal being
+> pulled high.
+> After resume, even if the mipi signal is not pulled high, it will
+> still
+> be in the high state.
+> 
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> index 9ad6f08c8bfe..e35343357f90 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> @@ -676,6 +676,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+>  	mtk_dsi_reset_engine(dsi);
+>  	mtk_dsi_lane0_ulp_mode_enter(dsi);
+>  	mtk_dsi_clk_ulp_mode_enter(dsi);
+> +	/* set the lane number as 0 to pull down mipi */
+> +	writel(0, dsi->regs + DSI_TXRX_CTRL);
+>  
+>  	mtk_dsi_disable(dsi);
+>  
 
-[ Upstream commit 7fb23a785ba38dea907323a039123f231195b297 ]
-
-The function pm8001_tag_alloc() determines free tags using the function
-find_first_zero_bit() which can return 0 when the first bit of the bitmap
-being inspected is 0. As such, tag 0 is a valid tag value that should not
-be dismissed as invalid. Fix the functions pm8001_work_fn(),
-mpi_sata_completion(), pm8001_mpi_task_abort_resp() and
-pm8001_open_reject_retry() to not dismiss 0 tags as invalid.
-
-The value 0xffffffff is used for invalid tags for unused ccb information
-structures. Add the macro definition PM8001_INVALID_TAG to define this
-value.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-20-damien.lemoal@opensource.wdc.com
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/pm8001/pm8001_hwi.c  | 52 +++++++++++--------------------
- drivers/scsi/pm8001/pm8001_init.c |  3 +-
- drivers/scsi/pm8001/pm8001_sas.c  | 13 ++++----
- drivers/scsi/pm8001/pm8001_sas.h  |  2 ++
- drivers/scsi/pm8001/pm80xx_hwi.c  |  5 ---
- 5 files changed, 28 insertions(+), 47 deletions(-)
-
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 4f4a9dcb6a1e..d244231e62f9 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1522,7 +1522,6 @@ void pm8001_work_fn(struct work_struct *work)
- 	case IO_XFER_ERROR_BREAK:
- 	{	/* This one stashes the sas_task instead */
- 		struct sas_task *t = (struct sas_task *)pm8001_dev;
--		u32 tag;
- 		struct pm8001_ccb_info *ccb;
- 		struct pm8001_hba_info *pm8001_ha = pw->pm8001_ha;
- 		unsigned long flags, flags1;
-@@ -1544,8 +1543,8 @@ void pm8001_work_fn(struct work_struct *work)
- 		/* Search for a possible ccb that matches the task */
- 		for (i = 0; ccb = NULL, i < PM8001_MAX_CCB; i++) {
- 			ccb = &pm8001_ha->ccb_info[i];
--			tag = ccb->ccb_tag;
--			if ((tag != 0xFFFFFFFF) && (ccb->task == t))
-+			if ((ccb->ccb_tag != PM8001_INVALID_TAG) &&
-+			    (ccb->task == t))
- 				break;
- 		}
- 		if (!ccb) {
-@@ -1567,11 +1566,11 @@ void pm8001_work_fn(struct work_struct *work)
- 			spin_unlock_irqrestore(&t->task_state_lock, flags1);
- 			pm8001_dbg(pm8001_ha, FAIL, "task 0x%p done with event 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
- 				   t, pw->handler, ts->resp, ts->stat);
--			pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
-+			pm8001_ccb_task_free(pm8001_ha, t, ccb, ccb->ccb_tag);
- 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
- 		} else {
- 			spin_unlock_irqrestore(&t->task_state_lock, flags1);
--			pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
-+			pm8001_ccb_task_free(pm8001_ha, t, ccb, ccb->ccb_tag);
- 			mb();/* in order to force CPU ordering */
- 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
- 			t->task_done(t);
-@@ -1580,7 +1579,6 @@ void pm8001_work_fn(struct work_struct *work)
- 	case IO_XFER_OPEN_RETRY_TIMEOUT:
- 	{	/* This one stashes the sas_task instead */
- 		struct sas_task *t = (struct sas_task *)pm8001_dev;
--		u32 tag;
- 		struct pm8001_ccb_info *ccb;
- 		struct pm8001_hba_info *pm8001_ha = pw->pm8001_ha;
- 		unsigned long flags, flags1;
-@@ -1614,8 +1612,8 @@ void pm8001_work_fn(struct work_struct *work)
- 		/* Search for a possible ccb that matches the task */
- 		for (i = 0; ccb = NULL, i < PM8001_MAX_CCB; i++) {
- 			ccb = &pm8001_ha->ccb_info[i];
--			tag = ccb->ccb_tag;
--			if ((tag != 0xFFFFFFFF) && (ccb->task == t))
-+			if ((ccb->ccb_tag != PM8001_INVALID_TAG) &&
-+			    (ccb->task == t))
- 				break;
- 		}
- 		if (!ccb) {
-@@ -1686,19 +1684,13 @@ void pm8001_work_fn(struct work_struct *work)
- 		struct task_status_struct *ts;
- 		struct sas_task *task;
- 		int i;
--		u32 tag, device_id;
-+		u32 device_id;
- 
- 		for (i = 0; ccb = NULL, i < PM8001_MAX_CCB; i++) {
- 			ccb = &pm8001_ha->ccb_info[i];
- 			task = ccb->task;
- 			ts = &task->task_status;
--			tag = ccb->ccb_tag;
--			/* check if tag is NULL */
--			if (!tag) {
--				pm8001_dbg(pm8001_ha, FAIL,
--					"tag Null\n");
--				continue;
--			}
-+
- 			if (task != NULL) {
- 				dev = task->dev;
- 				if (!dev) {
-@@ -1707,10 +1699,11 @@ void pm8001_work_fn(struct work_struct *work)
- 					continue;
- 				}
- 				/*complete sas task and update to top layer */
--				pm8001_ccb_task_free(pm8001_ha, task, ccb, tag);
-+				pm8001_ccb_task_free(pm8001_ha, task, ccb,
-+						     ccb->ccb_tag);
- 				ts->resp = SAS_TASK_COMPLETE;
- 				task->task_done(task);
--			} else if (tag != 0xFFFFFFFF) {
-+			} else if (ccb->ccb_tag != PM8001_INVALID_TAG) {
- 				/* complete the internal commands/non-sas task */
- 				pm8001_dev = ccb->device;
- 				if (pm8001_dev->dcompletion) {
-@@ -1718,7 +1711,7 @@ void pm8001_work_fn(struct work_struct *work)
- 					pm8001_dev->dcompletion = NULL;
- 				}
- 				complete(pm8001_ha->nvmd_completion);
--				pm8001_tag_free(pm8001_ha, tag);
-+				pm8001_tag_free(pm8001_ha, ccb->ccb_tag);
- 			}
- 		}
- 		/* Deregister all the device ids  */
-@@ -2316,11 +2309,6 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	param = le32_to_cpu(psataPayload->param);
- 	tag = le32_to_cpu(psataPayload->tag);
- 
--	if (!tag) {
--		pm8001_dbg(pm8001_ha, FAIL, "tag null\n");
--		return;
--	}
--
- 	ccb = &pm8001_ha->ccb_info[tag];
- 	t = ccb->task;
- 	pm8001_dev = ccb->device;
-@@ -3056,7 +3044,7 @@ void pm8001_mpi_set_dev_state_resp(struct pm8001_hba_info *pm8001_ha,
- 		   device_id, pds, nds, status);
- 	complete(pm8001_dev->setds_completion);
- 	ccb->task = NULL;
--	ccb->ccb_tag = 0xFFFFFFFF;
-+	ccb->ccb_tag = PM8001_INVALID_TAG;
- 	pm8001_tag_free(pm8001_ha, tag);
- }
- 
-@@ -3074,7 +3062,7 @@ void pm8001_mpi_set_nvmd_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 				dlen_status);
- 	}
- 	ccb->task = NULL;
--	ccb->ccb_tag = 0xFFFFFFFF;
-+	ccb->ccb_tag = PM8001_INVALID_TAG;
- 	pm8001_tag_free(pm8001_ha, tag);
- }
- 
-@@ -3101,7 +3089,7 @@ pm8001_mpi_get_nvmd_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 		 * freed by requesting path anywhere.
- 		 */
- 		ccb->task = NULL;
--		ccb->ccb_tag = 0xFFFFFFFF;
-+		ccb->ccb_tag = PM8001_INVALID_TAG;
- 		pm8001_tag_free(pm8001_ha, tag);
- 		return;
- 	}
-@@ -3147,7 +3135,7 @@ pm8001_mpi_get_nvmd_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	complete(pm8001_ha->nvmd_completion);
- 	pm8001_dbg(pm8001_ha, MSG, "Get nvmd data complete!\n");
- 	ccb->task = NULL;
--	ccb->ccb_tag = 0xFFFFFFFF;
-+	ccb->ccb_tag = PM8001_INVALID_TAG;
- 	pm8001_tag_free(pm8001_ha, tag);
- }
- 
-@@ -3560,7 +3548,7 @@ int pm8001_mpi_reg_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	}
- 	complete(pm8001_dev->dcompletion);
- 	ccb->task = NULL;
--	ccb->ccb_tag = 0xFFFFFFFF;
-+	ccb->ccb_tag = PM8001_INVALID_TAG;
- 	pm8001_tag_free(pm8001_ha, htag);
- 	return 0;
- }
-@@ -3632,7 +3620,7 @@ int pm8001_mpi_fw_flash_update_resp(struct pm8001_hba_info *pm8001_ha,
- 	}
- 	kfree(ccb->fw_control_context);
- 	ccb->task = NULL;
--	ccb->ccb_tag = 0xFFFFFFFF;
-+	ccb->ccb_tag = PM8001_INVALID_TAG;
- 	pm8001_tag_free(pm8001_ha, tag);
- 	complete(pm8001_ha->nvmd_completion);
- 	return 0;
-@@ -3668,10 +3656,6 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 
- 	status = le32_to_cpu(pPayload->status);
- 	tag = le32_to_cpu(pPayload->tag);
--	if (!tag) {
--		pm8001_dbg(pm8001_ha, FAIL, " TAG NULL. RETURNING !!!\n");
--		return -1;
--	}
- 
- 	scp = le32_to_cpu(pPayload->scp);
- 	ccb = &pm8001_ha->ccb_info[tag];
-diff --git a/drivers/scsi/pm8001/pm8001_init.c b/drivers/scsi/pm8001/pm8001_init.c
-index d8a2121cb8d9..d2a2593f669d 100644
---- a/drivers/scsi/pm8001/pm8001_init.c
-+++ b/drivers/scsi/pm8001/pm8001_init.c
-@@ -1216,10 +1216,11 @@ pm8001_init_ccb_tag(struct pm8001_hba_info *pm8001_ha, struct Scsi_Host *shost,
- 			goto err_out;
- 		}
- 		pm8001_ha->ccb_info[i].task = NULL;
--		pm8001_ha->ccb_info[i].ccb_tag = 0xffffffff;
-+		pm8001_ha->ccb_info[i].ccb_tag = PM8001_INVALID_TAG;
- 		pm8001_ha->ccb_info[i].device = NULL;
- 		++pm8001_ha->tags_num;
- 	}
-+
- 	return 0;
- 
- err_out_noccb:
-diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
-index 32edda3e55c6..c1f871561b32 100644
---- a/drivers/scsi/pm8001/pm8001_sas.c
-+++ b/drivers/scsi/pm8001/pm8001_sas.c
-@@ -567,7 +567,7 @@ void pm8001_ccb_task_free(struct pm8001_hba_info *pm8001_ha,
- 
- 	task->lldd_task = NULL;
- 	ccb->task = NULL;
--	ccb->ccb_tag = 0xFFFFFFFF;
-+	ccb->ccb_tag = PM8001_INVALID_TAG;
- 	ccb->open_retry = 0;
- 	pm8001_tag_free(pm8001_ha, ccb_idx);
- }
-@@ -952,9 +952,11 @@ void pm8001_open_reject_retry(
- 		struct task_status_struct *ts;
- 		struct pm8001_device *pm8001_dev;
- 		unsigned long flags1;
--		u32 tag;
- 		struct pm8001_ccb_info *ccb = &pm8001_ha->ccb_info[i];
- 
-+		if (ccb->ccb_tag == PM8001_INVALID_TAG)
-+			continue;
-+
- 		pm8001_dev = ccb->device;
- 		if (!pm8001_dev || (pm8001_dev->dev_type == SAS_PHY_UNUSED))
- 			continue;
-@@ -966,9 +968,6 @@ void pm8001_open_reject_retry(
- 				continue;
- 		} else if (pm8001_dev != device_to_close)
- 			continue;
--		tag = ccb->ccb_tag;
--		if (!tag || (tag == 0xFFFFFFFF))
--			continue;
- 		task = ccb->task;
- 		if (!task || !task->task_done)
- 			continue;
-@@ -989,11 +988,11 @@ void pm8001_open_reject_retry(
- 				& SAS_TASK_STATE_ABORTED))) {
- 			spin_unlock_irqrestore(&task->task_state_lock,
- 				flags1);
--			pm8001_ccb_task_free(pm8001_ha, task, ccb, tag);
-+			pm8001_ccb_task_free(pm8001_ha, task, ccb, ccb->ccb_tag);
- 		} else {
- 			spin_unlock_irqrestore(&task->task_state_lock,
- 				flags1);
--			pm8001_ccb_task_free(pm8001_ha, task, ccb, tag);
-+			pm8001_ccb_task_free(pm8001_ha, task, ccb, ccb->ccb_tag);
- 			mb();/* in order to force CPU ordering */
- 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
- 			task->task_done(task);
-diff --git a/drivers/scsi/pm8001/pm8001_sas.h b/drivers/scsi/pm8001/pm8001_sas.h
-index a17da1cebce1..1791cdf30276 100644
---- a/drivers/scsi/pm8001/pm8001_sas.h
-+++ b/drivers/scsi/pm8001/pm8001_sas.h
-@@ -738,6 +738,8 @@ void pm8001_free_dev(struct pm8001_device *pm8001_dev);
- /* ctl shared API */
- extern const struct attribute_group *pm8001_host_groups[];
- 
-+#define PM8001_INVALID_TAG	((u32)-1)
-+
- static inline void
- pm8001_ccb_task_free_done(struct pm8001_hba_info *pm8001_ha,
- 			struct sas_task *task, struct pm8001_ccb_info *ccb,
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 9a0d65ac0174..728190b26924 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -2404,11 +2404,6 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha,
- 	param = le32_to_cpu(psataPayload->param);
- 	tag = le32_to_cpu(psataPayload->tag);
- 
--	if (!tag) {
--		pm8001_dbg(pm8001_ha, FAIL, "tag null\n");
--		return;
--	}
--
- 	ccb = &pm8001_ha->ccb_info[tag];
- 	t = ccb->task;
- 	pm8001_dev = ccb->device;
--- 
-2.35.1
-
-
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
