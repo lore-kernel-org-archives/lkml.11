@@ -2,189 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A95C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4306C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354977AbiDLNCT (ORCPT
+        id S1358032AbiDLNFS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37514 "EHLO
+        Tue, 12 Apr 2022 09:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351833AbiDLNCJ (ORCPT
+        with ESMTP id S1356355AbiDLND0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:02:09 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528466007E;
-        Tue, 12 Apr 2022 05:40:09 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id l7so31625313ejn.2;
-        Tue, 12 Apr 2022 05:40:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lAPe5KLDjByGGButyDlRAtwWbq0RQOm3lpOxpFEkjZM=;
-        b=kKKwpQym3uM9gA+kAZ3Q2JSdsU6Fj13jhXXwUYhelJ5h/YQZEprLlEo+NFEtbmiZmb
-         y7FUXefqMvevdwxFGVjdfb6xAp/KmwM4zkuCD+WMSH/r1TnwetcGp1wAxzmEW2/kvOSv
-         Y1pZwhX+4+kI83Wy7JLpCIuhjZSaxu+C6fuZoxFVUzNp0rD6ScFbKUtjrLTQJjmhAWiY
-         WDRZuF9Q5s2UhZu8takRrpu9uZvmzbnSm/IiO7OiTFzBtmAFGclpbZkO2DjEtwy5jogu
-         e5lwEvNvy4Vl3vR5hTgFANtMltR9b75mDMSeJIsBdi79bLQ/vpTOZBB+kpEHQhVeiXk0
-         GLlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lAPe5KLDjByGGButyDlRAtwWbq0RQOm3lpOxpFEkjZM=;
-        b=XB+UfidMhpcMlAxRAOIB/sAB30uZDZ0/s9ULG3IIP8RaMLPu5h+RzJxMhhxSJe++Lz
-         Y7SETiJHQMymZa4VS9CvBb+ouqv79hskcgTpEjr/Rtm/Xid035ni56JbQNnp1yIcYnOT
-         ooMiAih+HIXj03td/yP+h90hosrdq3pFBjYoq567ZyB5OVt3zGfUCKrxwP9q/qJHLVfR
-         SVP2Uw7AXTX+qPn0/KTuk5k0AOPO2anDo8WY7pnSFopigI89vUS4pdFd9QaiHT1B80EH
-         72DjZiYayP6PSzwSLtqMLtryQzNU1E8bUbwOeZ6HP3bQiagRc1dL68hBLO6Nj97gG7Zi
-         jVEA==
-X-Gm-Message-State: AOAM532AA/KP/2BcacQIKsETUdDt0O/H6soCn1CAAeQ8a8o2sJoriOWp
-        9Xh5LkIYjIGPjuDKrOhzbDI=
-X-Google-Smtp-Source: ABdhPJw3sN0aGYU973pQYZXJ+Nb9hMtQkycLysUpJUaV6hrNy+Bnjgkud/YC0BhJwZzJKUgmkOz3fA==
-X-Received: by 2002:a17:907:160a:b0:6e8:3c5d:9ce5 with SMTP id hb10-20020a170907160a00b006e83c5d9ce5mr23576285ejc.606.1649767207759;
-        Tue, 12 Apr 2022 05:40:07 -0700 (PDT)
-Received: from localhost.localdomain (host-82-60-208-254.retail.telecomitalia.it. [82.60.208.254])
-        by smtp.gmail.com with ESMTPSA id kv22-20020a17090778d600b006e8a072fb1dsm1670417ejc.172.2022.04.12.05.40.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:40:06 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        SeongJae Park <sj@kernel.org>,
-        Jiajian Ye <yejiajian2018@email.szu.edu.cn>,
-        Alistair Popple <apopple@nvidia.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Tue, 12 Apr 2022 09:03:26 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F5F426E6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:14 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C83E6150C;
+        Tue, 12 Apr 2022 05:45:13 -0700 (PDT)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 765653F70D;
+        Tue, 12 Apr 2022 05:45:11 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH v2] Documentation/vm: Extend "Temporary Virtual Mappings" section in highmem.rst
-Date:   Tue, 12 Apr 2022 14:40:03 +0200
-Message-Id: <20220412124003.10736-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: [PATCH v4 10/21] x86/resctrl: Abstract and use supports_mba_mbps()
+Date:   Tue, 12 Apr 2022 12:44:08 +0000
+Message-Id: <20220412124419.30689-11-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
+References: <20220412124419.30689-1-james.morse@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend and rework the "Temporary Virtual Mappings" section of the highmem.rst
-documentation.
+To determine whether the mba_MBps option to resctrl should be supported,
+resctrl tests the boot CPUs' x86_vendor.
 
-Do a partial rework of the paragraph related to kmap() and add a new paragraph
-in order to document the set of kmap_local_*() functions. Re-order paragraphs
-in decreasing order of preference of usage.
+This isn't portable, and needs abstracting behind a helper so this check
+can be part of the filesystem code that moves to /fs/.
 
-Despite the local kmaps were introduced by Thomas Gleixner in October 2020,
-documentation was still missing information about them. These additions rely
-largely on Gleixner's patches, Jonathan Corbet's LWN articles, comments by
-Ira Weiny and Matthew Wilcox, and in-code comments from
-./include/linux/highmem.h.
+Re-use the tests set_mba_sc() does to determine if the mba_sc is supported
+on this system. An 'alloc_capable' test is added so that support for the
+controls isn't implied by the 'delay_linear' property, which is always
+true for MPAM.
 
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
 ---
+Changes since v3:
+ * Added use in resctrle_online_domain()
 
-v1->v2: According to comments on v1 by Mattew Wilcox and Ira Weiny,
-correct a mistake in text, format paragraphs to stay within the 75
-characters limit, re-order the flow of the same paragraphs in decreasing
-order of preference of usage.
+Changes since v1:
+ * Capitalisation
+ * Added MPAM example in commit message
+ * Fixed supports_mba_mbps() logic error in rdt_parse_param()
+---
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
- Documentation/vm/highmem.rst | 67 ++++++++++++++++++++++++++++++------
- 1 file changed, 56 insertions(+), 11 deletions(-)
-
-diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/highmem.rst
-index 0f69a9fec34d..12dcfbee094d 100644
---- a/Documentation/vm/highmem.rst
-+++ b/Documentation/vm/highmem.rst
-@@ -52,24 +52,69 @@ Temporary Virtual Mappings
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index 441c1b7981c2..f494ca6b8bdd 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -1922,17 +1922,26 @@ static void mba_sc_domain_destroy(struct rdt_resource *r,
+ }
  
- The kernel contains several ways of creating temporary mappings:
+ /*
+- * Enable or disable the MBA software controller
+- * which helps user specify bandwidth in MBps.
+  * MBA software controller is supported only if
+  * MBM is supported and MBA is in linear scale.
+  */
++static bool supports_mba_mbps(void)
++{
++	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
++
++	return (is_mbm_enabled() &&
++		r->alloc_capable && is_mba_linear());
++}
++
++/*
++ * Enable or disable the MBA software controller
++ * which helps user specify bandwidth in MBps.
++ */
+ static int set_mba_sc(bool mba_sc)
+ {
+ 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
  
--* vmap().  This can be used to make a long duration mapping of multiple
--  physical pages into a contiguous virtual space.  It needs global
--  synchronization to unmap.
--
--* kmap().  This permits a short duration mapping of a single page.  It needs
--  global synchronization, but is amortized somewhat.  It is also prone to
--  deadlocks when using in a nested fashion, and so it is not recommended for
--  new code.
-+* kmap_local_*().  These provide a set of functions that are used to require
-+  short term mappings. They can be invoked from any context (including
-+  interrupts) but the mappings can only be used in the context which acquired
-+  it.
-+
-+  These mappings are per thread, CPU local (i.e., migration from one CPU to
-+  another is disabled - this is why they are called "local"), but they don't
-+  disable preemption. It's valid to take pagefaults in a local kmap region,
-+  unless the context in which the local mapping is acquired does not allow
-+  it for other reasons.
-+
-+  If a task holding local kmaps is preempted, the maps are removed on context
-+  switch and restored when the task comes back on the CPU. As the maps are
-+  strictly CPU local, it is guaranteed that the task stays on the CPU and
-+  that the CPU cannot be unplugged until the local kmaps are released.
-+
-+  Nesting kmap_local.*() and kmap_atomic.*() mappings is allowed to a certain
-+  extent (up to KMAP_TYPE_NR). Nested kmap_local.*() and kunmap_local.*()
-+  invocations have to be strictly ordered because the map implementation is
-+  stack based.
+-	if (!is_mbm_enabled() || !is_mba_linear() ||
+-	    mba_sc == is_mba_sc(r))
++	if (!supports_mba_mbps() || mba_sc == is_mba_sc(r))
+ 		return -EINVAL;
  
- * kmap_atomic().  This permits a very short duration mapping of a single
-   page.  Since the mapping is restricted to the CPU that issued it, it
-   performs well, but the issuing task is therefore required to stay on that
-   CPU until it has finished, lest some other task displace its mappings.
+ 	r->membw.mba_sc = mba_sc;
+@@ -2287,7 +2296,7 @@ static int rdt_parse_param(struct fs_context *fc, struct fs_parameter *param)
+ 		ctx->enable_cdpl2 = true;
+ 		return 0;
+ 	case Opt_mba_mbps:
+-		if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL)
++		if (!supports_mba_mbps())
+ 			return -EINVAL;
+ 		ctx->enable_mba_mbps = true;
+ 		return 0;
+@@ -3336,7 +3345,7 @@ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
  
--  kmap_atomic() may also be used by interrupt contexts, since it is does not
--  sleep and the caller may not sleep until after kunmap_atomic() is called.
-+  kmap_atomic() may also be used by interrupt contexts, since it does not
-+  sleep and the caller too can not sleep until after kunmap_atomic() is called.
-+  Each call of kmap_atomic() in the kernel creates a non-preemptible section and
-+  disable pagefaults.
-+
-+  This could be a source of unwanted latency, so it should be only used if it is
-+  absolutely required, otherwise the corresponding kmap_local_*() variant should
-+  be used if it is feasible.
-+
-+  On 64-bit systems, calls to kmap() and kmap_atomic() have no real work to do
-+  because a 64-bit address space is more than sufficient to address all the
-+  physical memory, so all of physical memory appears in the direct mapping.
-+
-+  It is assumed that k[un]map_atomic() won't fail.
+ 	lockdep_assert_held(&rdtgroup_mutex);
  
--  It may be assumed that k[un]map_atomic() won't fail.
-+* kmap().  This should be used to make short duration mapping of a single
-+  page with no restrictions on preemption or migration. It comes with an
-+  overhead as mapping space is restricted and protected by a global lock
-+  for synchronization. When mapping is no more needed, the address that
-+  the page was mapped to must be released with kunmap().
-+
-+  Mapping changes must be propagated across all the CPUs. kmap() also
-+  requires global TLB invalidation when the kmap's pool wraps and it might
-+  block when the mapping space is fully utilized until a slot becomes
-+  available. Therefore, kmap() is only callable from preemptible context.
-+
-+  All the above work is necessary if a mapping must last for a relatively
-+  long time but the bulk of high-memory mappings in the kernel are
-+  short-lived and only used in one place. This means that the cost of
-+  kmap() is mostly wasted in such cases. kmap() was not intended for long
-+  term mappings but it has morphed in that direction and its use is
-+  strongly discouraged in newer code and the set of the preceding functions
-+  should be preferred.
-+
-+* vmap().  This can be used to make a long duration mapping of multiple
-+  physical pages into a contiguous virtual space.  It needs global
-+  synchronization to unmap.
- 
- 
- Using kmap_atomic
+-	if (is_mbm_enabled() && r->rid == RDT_RESOURCE_MBA) {
++	if (supports_mba_mbps() && r->rid == RDT_RESOURCE_MBA) {
+ 		err = mba_sc_domain_allocate(r, d);
+ 		if (err)
+ 			return err;
 -- 
-2.34.1
+2.30.2
 
