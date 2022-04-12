@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E47CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D330C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376291AbiDLItP (ORCPT
+        id S1385336AbiDLIvd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
+        Tue, 12 Apr 2022 04:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357613AbiDLHkc (ORCPT
+        with ESMTP id S1358638AbiDLHmB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:32 -0400
+        Tue, 12 Apr 2022 03:42:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF6C31DC2;
-        Tue, 12 Apr 2022 00:16:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566FB53718;
+        Tue, 12 Apr 2022 00:18:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 299C46176E;
-        Tue, 12 Apr 2022 07:16:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A65EC385A1;
-        Tue, 12 Apr 2022 07:16:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D896D6153F;
+        Tue, 12 Apr 2022 07:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E401AC385A1;
+        Tue, 12 Apr 2022 07:18:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747772;
-        bh=vSEirDE08DDshdO7veGpX3SMni+/P5RvHskaZiqXZ6o=;
+        s=korg; t=1649747913;
+        bh=n98lA43wKBdGXVA3oyELJbScFNNwEk6KqYd/TBIVAmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zJSN30QrFuICAXt+O/AsjFzOvoEhCt/iLyxtsziA+f7juTArQnfAisXza1wBjhJs0
-         NOCOVf1nhAciz9m1j0hZx0BgSzKXPFuv6tJqKIdBTkTZHVP/7y2dLeU7fIaKtsPtk3
-         pTZhdp7nE72YB2dATKK1JJatV0qWaeIfk11c5J4I=
+        b=Tl2Q1WmICp/BzE3p8F2TH7nbt681uA3cyZ2MCtHS7qMDXy2Q4g0TO5D0qtUQHZWhC
+         iFNEr0533tuXGjXau3xY0P/hTPKlxJgCeUpa3YiYESGoduBJ4VlU4Nrx/z1PVKnjAZ
+         F/I/OtZXiOmupCw2YX2TGrkTZ9SQbdb+tOfaDgnc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Daejun Park <daejun7.park@samsung.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 193/343] drm/amdgpu: fix off by one in amdgpu_gfx_kiq_acquire()
-Date:   Tue, 12 Apr 2022 08:30:11 +0200
-Message-Id: <20220412062956.928663949@linuxfoundation.org>
+Subject: [PATCH 5.17 252/343] scsi: ufs: ufshpb: Fix a NULL check on list iterator
+Date:   Tue, 12 Apr 2022 08:31:10 +0200
+Message-Id: <20220412062958.599553703@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,34 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 1647b54ed55d4d48c7199d439f8834626576cbe9 ]
+[ Upstream commit bfb7789bcbd901caead43861461bc8f334c90d3b ]
 
-This post-op should be a pre-op so that we do not pass -1 as the bit
-number to test_bit().  The current code will loop downwards from 63 to
--1.  After changing to a pre-op, it loops from 63 to 0.
+The list iterator is always non-NULL so the check 'if (!rgn)' is always
+false and the dev_err() is never called. Move the check outside the loop
+and determine if 'victim_rgn' is NULL, to fix this bug.
 
-Fixes: 71c37505e7ea ("drm/amdgpu/gfx: move more common KIQ code to amdgpu_gfx.c")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://lore.kernel.org/r/20220320150733.21824-1-xiam0nd.tong@gmail.com
+Fixes: 4b5f49079c52 ("scsi: ufs: ufshpb: L2P map management for HPB read")
+Reviewed-by: Daejun Park <daejun7.park@samsung.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/ufs/ufshpb.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-index 1916ec84dd71..e7845df6cad2 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-@@ -266,7 +266,7 @@ static int amdgpu_gfx_kiq_acquire(struct amdgpu_device *adev,
- 		    * adev->gfx.mec.num_pipe_per_mec
- 		    * adev->gfx.mec.num_queue_per_pipe;
+diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
+index 2d36a0715fca..b34feba1f53d 100644
+--- a/drivers/scsi/ufs/ufshpb.c
++++ b/drivers/scsi/ufs/ufshpb.c
+@@ -869,12 +869,6 @@ static struct ufshpb_region *ufshpb_victim_lru_info(struct ufshpb_lu *hpb)
+ 	struct ufshpb_region *rgn, *victim_rgn = NULL;
  
--	while (queue_bit-- >= 0) {
-+	while (--queue_bit >= 0) {
- 		if (test_bit(queue_bit, adev->gfx.mec.queue_bitmap))
+ 	list_for_each_entry(rgn, &lru_info->lh_lru_rgn, list_lru_rgn) {
+-		if (!rgn) {
+-			dev_err(&hpb->sdev_ufs_lu->sdev_dev,
+-				"%s: no region allocated\n",
+-				__func__);
+-			return NULL;
+-		}
+ 		if (ufshpb_check_srgns_issue_state(hpb, rgn))
  			continue;
+ 
+@@ -890,6 +884,11 @@ static struct ufshpb_region *ufshpb_victim_lru_info(struct ufshpb_lu *hpb)
+ 		break;
+ 	}
+ 
++	if (!victim_rgn)
++		dev_err(&hpb->sdev_ufs_lu->sdev_dev,
++			"%s: no region allocated\n",
++			__func__);
++
+ 	return victim_rgn;
+ }
  
 -- 
 2.35.1
