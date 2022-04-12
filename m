@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A022C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF40C46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352482AbiDLHFb (ORCPT
+        id S1352541AbiDLHFl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48360 "EHLO
+        Tue, 12 Apr 2022 03:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351647AbiDLGyJ (ORCPT
+        with ESMTP id S1351688AbiDLGyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C304A37BDD;
-        Mon, 11 Apr 2022 23:43:26 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECFC3819C;
+        Mon, 11 Apr 2022 23:43:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75E1560B90;
-        Tue, 12 Apr 2022 06:43:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86995C385A1;
-        Tue, 12 Apr 2022 06:43:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FBC7B818BD;
+        Tue, 12 Apr 2022 06:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0430BC385A1;
+        Tue, 12 Apr 2022 06:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745804;
-        bh=SlgZdNp5xhD9Mr9FZhkiF1Dnqn/AYwdx7Q2czhz00eQ=;
+        s=korg; t=1649745810;
+        bh=hlqg9P0tk9dzhD9oMocgyBmlvqdOFAOmODcn6fGLW5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0SJrg6fPVLBerWVmRVS38Q5GEe2zqmoSaEvS/hqaeNxZRpbusLZ5NHgmlAYm0HyxT
-         a22wqT3pjXEZvKMyJF8Jy0rhJPXWnTlaLDXvjIjCLCT4qdXvRvcm/2BQ3QPzqrt4gd
-         5RrFcOZ8Q5mjnjIv1F0q5s+U2tuP1o+qZ8WzSQas=
+        b=ooIZ+6IF7kvpLeVa3Kor3RB8NB+ENrNBNHlvVUbj5MtiJ7rTTGVvUYM448+bmKB4M
+         g8Jen8+lw8KG+cUXIcI9rGzu+dUAeSRhAF0MNd1hIqC4O+T8SXOYmY106CUfKwj6Cr
+         6BKVb0yqbhiTjzr5SDFKwqsLrQmx0oK7R4bLnUZc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
-        Jim Mattson <jmattson@google.com>,
-        Like Xu <likexu@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Anisse Astier <anisse@astier.eu>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jani Nikula <jani.nikula@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 014/277] KVM: x86/pmu: Fix and isolate TSX-specific performance event logic
-Date:   Tue, 12 Apr 2022 08:26:57 +0200
-Message-Id: <20220412062942.449531344@linuxfoundation.org>
+Subject: [PATCH 5.15 016/277] drm: Add orientation quirk for GPD Win Max
+Date:   Tue, 12 Apr 2022 08:26:59 +0200
+Message-Id: <20220412062942.507496593@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,129 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Anisse Astier <anisse@astier.eu>
 
-[ Upstream commit e644896f5106aa3f6d7e8c7adf2e4dc0fce53555 ]
+[ Upstream commit 0b464ca3e0dd3cec65f28bc6d396d82f19080f69 ]
 
-HSW_IN_TX* bits are used in generic code which are not supported on
-AMD. Worse, these bits overlap with AMD EventSelect[11:8] and hence
-using HSW_IN_TX* bits unconditionally in generic code is resulting in
-unintentional pmu behavior on AMD. For example, if EventSelect[11:8]
-is 0x2, pmc_reprogram_counter() wrongly assumes that
-HSW_IN_TX_CHECKPOINTED is set and thus forces sampling period to be 0.
+Panel is 800x1280, but mounted on a laptop form factor, sideways.
 
-Also per the SDM, both bits 32 and 33 "may only be set if the processor
-supports HLE or RTM" and for "IN_TXCP (bit 33): this bit may only be set
-for IA32_PERFEVTSEL2."
-
-Opportunistically eliminate code redundancy, because if the HSW_IN_TX*
-bit is set in pmc->eventsel, it is already set in attr.config.
-
-Reported-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Reported-by: Jim Mattson <jmattson@google.com>
-Fixes: 103af0a98788 ("perf, kvm: Support the in_tx/in_tx_cp modifiers in KVM arch perfmon emulation v5")
-Co-developed-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
-Message-Id: <20220309084257.88931-1-likexu@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Anisse Astier <anisse@astier.eu>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211229222200.53128-3-anisse@astier.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/pmu.c           | 15 +++++----------
- arch/x86/kvm/vmx/pmu_intel.c | 13 ++++++++++---
- 2 files changed, 15 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 44a5ab91a99d..62333f9756a3 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -96,8 +96,7 @@ static void kvm_perf_overflow_intr(struct perf_event *perf_event,
- 
- static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 				  u64 config, bool exclude_user,
--				  bool exclude_kernel, bool intr,
--				  bool in_tx, bool in_tx_cp)
-+				  bool exclude_kernel, bool intr)
- {
- 	struct perf_event *event;
- 	struct perf_event_attr attr = {
-@@ -113,16 +112,14 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 
- 	attr.sample_period = get_sample_period(pmc, pmc->counter);
- 
--	if (in_tx)
--		attr.config |= HSW_IN_TX;
--	if (in_tx_cp) {
-+	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
-+	    guest_cpuid_is_intel(pmc->vcpu)) {
- 		/*
- 		 * HSW_IN_TX_CHECKPOINTED is not supported with nonzero
- 		 * period. Just clear the sample period so at least
- 		 * allocating the counter doesn't fail.
- 		 */
- 		attr.sample_period = 0;
--		attr.config |= HSW_IN_TX_CHECKPOINTED;
- 	}
- 
- 	event = perf_event_create_kernel_counter(&attr, -1, current,
-@@ -229,9 +226,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- 	pmc_reprogram_counter(pmc, type, config,
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_OS),
--			      eventsel & ARCH_PERFMON_EVENTSEL_INT,
--			      (eventsel & HSW_IN_TX),
--			      (eventsel & HSW_IN_TX_CHECKPOINTED));
-+			      eventsel & ARCH_PERFMON_EVENTSEL_INT);
- }
- EXPORT_SYMBOL_GPL(reprogram_gp_counter);
- 
-@@ -267,7 +262,7 @@ void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int idx)
- 			      kvm_x86_ops.pmu_ops->find_fixed_event(idx),
- 			      !(en_field & 0x2), /* exclude user */
- 			      !(en_field & 0x1), /* exclude kernel */
--			      pmi, false, false);
-+			      pmi);
- }
- EXPORT_SYMBOL_GPL(reprogram_fixed_counter);
- 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index db1b88445acb..7abe77c8b5d0 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -396,6 +396,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	struct kvm_pmc *pmc;
- 	u32 msr = msr_info->index;
- 	u64 data = msr_info->data;
-+	u64 reserved_bits;
- 
- 	switch (msr) {
- 	case MSR_CORE_PERF_FIXED_CTR_CTRL:
-@@ -451,7 +452,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		} else if ((pmc = get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0))) {
- 			if (data == pmc->eventsel)
- 				return 0;
--			if (!(data & pmu->reserved_bits)) {
-+			reserved_bits = pmu->reserved_bits;
-+			if ((pmc->idx == 2) &&
-+			    (pmu->raw_event_mask & HSW_IN_TX_CHECKPOINTED))
-+				reserved_bits ^= HSW_IN_TX_CHECKPOINTED;
-+			if (!(data & reserved_bits)) {
- 				reprogram_gp_counter(pmc, data);
- 				return 0;
- 			}
-@@ -525,8 +530,10 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	entry = kvm_find_cpuid_entry(vcpu, 7, 0);
- 	if (entry &&
- 	    (boot_cpu_has(X86_FEATURE_HLE) || boot_cpu_has(X86_FEATURE_RTM)) &&
--	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM)))
--		pmu->reserved_bits ^= HSW_IN_TX|HSW_IN_TX_CHECKPOINTED;
-+	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM))) {
-+		pmu->reserved_bits ^= HSW_IN_TX;
-+		pmu->raw_event_mask |= (HSW_IN_TX|HSW_IN_TX_CHECKPOINTED);
-+	}
- 
- 	bitmap_set(pmu->all_valid_pmc_idx,
- 		0, pmu->nr_arch_gp_counters);
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 448c2f2d803a..f5ab891731d0 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -166,6 +166,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "MicroPC"),
+ 		},
+ 		.driver_data = (void *)&lcd720x1280_rightside_up,
++	}, {	/* GPD Win Max */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "GPD"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G1619-01"),
++		},
++		.driver_data = (void *)&lcd800x1280_rightside_up,
+ 	}, {	/*
+ 		 * GPD Pocket, note that the the DMI data is less generic then
+ 		 * it seems, devices with a board-vendor of "AMI Corporation"
 -- 
 2.35.1
 
