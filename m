@@ -2,188 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3243C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF147C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231222AbiDLXcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
+        id S230470AbiDLXfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230405AbiDLXb5 (ORCPT
+        with ESMTP id S230372AbiDLXbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:31:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C468FE76;
-        Tue, 12 Apr 2022 15:17:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7B5EB82052;
-        Tue, 12 Apr 2022 21:42:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C00C385A5;
-        Tue, 12 Apr 2022 21:42:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649799734;
-        bh=Qh6+GqKN5meXd+LrkS0vT//U/JIDvmn9UR+juFg+GOM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BNWc2i8NJ+1xk3Yc5bV/Y4/0DVgsiI/qFCzSa6+4eaO/L0OOYDqRIKL8eCEU7JK6N
-         v8iObN66NfBfCTlbiBuRNpdNXoMXG6e5AztgPW2fI7e7Fx0r/ZsEoCyl7UWTXjp1p6
-         /ZPQJffSRcbFZMpZBKDIQek+1HsyHqh5YlZL5wFfUDvWi1RObgDeq1q2rbazpvzgNS
-         we9pmNCoho5u+Fh8ddWbULv6+PDMWIXFlaAMC0UGqCm5JjBFaOMjzvG5mOCwLJR/ts
-         1rFZBGeePi9JcTqg/VIH4gbPoSWMsAHDOIbB0e8s9pORF3itl+TErmZaJCmVDjQVeW
-         ertRqqXzWy5aA==
-Date:   Tue, 12 Apr 2022 14:42:11 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Tom Rix <trix@redhat.com>
-Cc:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org,
-        ndesaulniers@google.com, sven@svenpeter.dev, alyssa@rosenzweig.io,
-        marcan@marcan.st, martink@posteo.de, saranya.gopal@intel.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH] usb: typec: tipd: improve handling of failures in
- interrupt handlers
-Message-ID: <YlXyM7e+Bkqa3HCZ@dev-arch.thelio-3990X>
-References: <20220409130013.1474412-1-trix@redhat.com>
+        Tue, 12 Apr 2022 19:31:55 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E558B15B98E;
+        Tue, 12 Apr 2022 15:27:14 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-df02f7e2c9so210636fac.10;
+        Tue, 12 Apr 2022 15:27:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=S/S1o5ASOF7/8+YPA6CC4QojK42QqA6NiYVB93lMJDo=;
+        b=oRi4haQUGRGrCQh0wYV3BTazqTC9XUUIzyDmdDu+lbC33wLWEXwwhbfO+OTmtE2RrZ
+         PKIpW+KI8mY5P9iwPUlEz4kKk2gGp0Hr61zWNYyG2SjVkJvlYx+x6b90RBAgAR5ukspr
+         rwQhkMMf5kbd0QGhX7spm0uUQkwFgwe7Ow9+K1LbRqSQGT7Wl8TK/APP8momOXboN/xL
+         YT6Apj+ng06gbfwWVqy27zjgasEmFJycm4jnAPvHJClAChLrIeDadfVHhqJj2Z+vKISL
+         E/x0/Z9ocwAl1I3Kizj7o81ue/r04P1TSJ37Zl9MvLN9Wj4wdh/+f1yTZ8aZWEsEXHhl
+         CR3Q==
+X-Gm-Message-State: AOAM530B2nZK1CmQNY5NPt8pRiNGE7jdO2who1j3mkR+2S+VW50elW/0
+        Tnx6UcPczMoz0EuJnVfmY4h7ufi35w==
+X-Google-Smtp-Source: ABdhPJyu7Bikhshe6ov3GObcYk/5A9g9nL4qq8yl2XXXI+kqjY71yYo8BHWvINy+xvK8bsm7vZ/l1A==
+X-Received: by 2002:a05:6870:1793:b0:de:a69a:118d with SMTP id r19-20020a056870179300b000dea69a118dmr3115029oae.163.1649798562760;
+        Tue, 12 Apr 2022 14:22:42 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x24-20020a056870a79800b000e2e53716fbsm2218502oao.31.2022.04.12.14.22.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 14:22:42 -0700 (PDT)
+Received: (nullmailer pid 965665 invoked by uid 1000);
+        Tue, 12 Apr 2022 21:22:41 -0000
+Date:   Tue, 12 Apr 2022 16:22:41 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     wsa@kernel.org, kernel@axis.com, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, krzk+dt@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: i2c: add property to avoid device
+ detection
+Message-ID: <YlXtobiXIyObF/7+@robh.at.kernel.org>
+References: <20220412085046.1110127-1-vincent.whitchurch@axis.com>
+ <20220412085046.1110127-2-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220409130013.1474412-1-trix@redhat.com>
+In-Reply-To: <20220412085046.1110127-2-vincent.whitchurch@axis.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom,
-
-Thanks for the patch!
-
-On Sat, Apr 09, 2022 at 09:00:13AM -0400, Tom Rix wrote:
-> clang static analysis reports this representative issue
-> core.c:516:6: warning: Branch condition evaluates
->   to a garbage value
->   if (event)
->       ^~~~~
+On Tue, Apr 12, 2022 at 10:50:45AM +0200, Vincent Whitchurch wrote:
+> When drivers with ->detect callbacks are loaded, the I2C core does a
+> bunch of transactions to try to probe for these devices, regardless of
+> whether they are specified in the devicetree or not.  (This only happens
+> on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
+> is the case for generic drivers like i2c-gpio.)
 > 
-> In cd321x_interrupt(), a successful call to
-> tps6598x_read64() is the only way event is set,
-> and if a failure happens the irq should not be
-> reported as handled.
+> These kinds of transactions are unnecessary on systems where the
+> devicetree specifies all the devices on the I2C bus, so add a property
+> to indicate that the devicetree description of the hardware is complete
+> and thus allow this discovery to be disabled.
 > 
-> Instead of initializing event, rework the
-> usage of ret by initializing it to IRQ_NONE
-> and then setting it when event is known to
-> be not zero.  This removes the if-statement
-> before the return.
-> 
-> tps6598x_interrupt() is similar.
-> 
-> Fixes: 0a4c005bd171 ("usb: typec: driver for TI TPS6598x USB Power Delivery controllers")
-
-I am not sure this fixes tag is accurate. At that point in time,
-tps6598x_interrupt() did not have any use of event1 or event2 that was
-uninitialized.
-
-I think
-
-Fixes: c7260e29dd20 ("usb: typec: tipd: Add short-circuit for no irqs")
-Fixes: 45188f27b3d0 ("usb: typec: tipd: Add support for Apple CD321X")
-
-is a more accurate set, as these changes made it possible for the event
-variables to be used uninitialized.
-
-> Signed-off-by: Tom Rix <trix@redhat.com>
-
-I found one issue below. With that addressed, feel free to carry
-forward:
-
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 > ---
->  drivers/usb/typec/tipd/core.c | 24 +++++++++++-------------
->  1 file changed, 11 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
-> index 16b4560216ba..88a20cc15da4 100644
-> --- a/drivers/usb/typec/tipd/core.c
-> +++ b/drivers/usb/typec/tipd/core.c
-> @@ -478,12 +478,11 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
->  	struct tps6598x *tps = data;
->  	u64 event;
->  	u32 status;
-> -	int ret;
-> +	int ret = IRQ_NONE;
+> Notes:
+>     v2:
+>     - Change subject prefix
+>     - Reword description of property
+> 
+>  Documentation/devicetree/bindings/i2c/i2c.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
+> index fc3dd7ec0445..960d1d5c9362 100644
+> --- a/Documentation/devicetree/bindings/i2c/i2c.txt
+> +++ b/Documentation/devicetree/bindings/i2c/i2c.txt
+> @@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
+>  	this information to adapt power management to keep the arbitration awake
+>  	all the time, for example. Can not be combined with 'single-master'.
 >  
->  	mutex_lock(&tps->lock);
->  
-> -	ret = tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event);
-> -	if (ret) {
-> +	if (tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event)) {
->  		dev_err(tps->dev, "%s: failed to read events\n", __func__);
->  		goto err_unlock;
->  	}
-> @@ -492,6 +491,8 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
->  	if (!event)
->  		goto err_unlock;
->  
-> +	ret = IRQ_HANDLED;
-> +
->  	if (!tps6598x_read_status(tps, &status))
->  		goto err_clear_ints;
->  
-> @@ -513,9 +514,7 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
->  err_unlock:
->  	mutex_unlock(&tps->lock);
->  
-> -	if (event)
-> -		return IRQ_HANDLED;
-> -	return IRQ_NONE;
-> +	return ret;
->  }
->  
->  static irqreturn_t tps6598x_interrupt(int irq, void *data)
-> @@ -524,13 +523,12 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
->  	u64 event1;
->  	u64 event2;
->  	u32 status;
-> -	int ret;
-> +	int ret = IRQ_NONE;
->  
->  	mutex_lock(&tps->lock);
->  
-> -	ret = tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event1);
-> -	ret |= tps6598x_read64(tps, TPS_REG_INT_EVENT2, &event2);
-> -	if (ret) {
-> +	if (tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event1) ||
-> +	    tps6598x_read64(tps, TPS_REG_INT_EVENT2, &event2)) {
+> +- no-detect
+> +	states that no other devices are present on this bus other than the
+> +	ones listed in the devicetree.
 
-This change is incorrect. If the first tps6598x_read64() call succeeds,
-then the second tps6598x_read64() will not be called, which would leave
-event2 uninitialized. This should be a bitwise OR so that both calls to
-tps6598x_read64() occur.
+This belongs in the schema instead:
 
->  		dev_err(tps->dev, "%s: failed to read events\n", __func__);
->  		goto err_unlock;
->  	}
-> @@ -539,6 +537,8 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
->  	if (!(event1 | event2))
->  		goto err_unlock;
->  
-> +	ret = IRQ_HANDLED;
-> +
->  	if (!tps6598x_read_status(tps, &status))
->  		goto err_clear_ints;
->  
-> @@ -561,9 +561,7 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
->  err_unlock:
->  	mutex_unlock(&tps->lock);
->  
-> -	if (event1 | event2)
-> -		return IRQ_HANDLED;
-> -	return IRQ_NONE;
-> +	return ret;
->  }
->  
->  static int tps6598x_check_mode(struct tps6598x *tps)
-> -- 
-> 2.27.0
-> 
-> 
+https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/i2c/i2c-controller.yaml
+
+Rob
