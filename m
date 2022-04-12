@@ -2,102 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD76C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C4E4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350886AbiDLL0T (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
+        id S243201AbiDLL0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352737AbiDLLZl (ORCPT
+        with ESMTP id S1352781AbiDLLZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 07:25:41 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A6C237E5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:08:27 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id ll10so9580533pjb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:08:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=y8/JYtLwGTr+r9WhKddIHXBLC5TCTeFp3FTZ8BAk6HA=;
-        b=BWQF6hyEhV41fw/Vfjf8js/WHVuO3KDWVkQ8iaSse8fQWRUMxww5Qo6CNykQ17EiqJ
-         R9plY4ivF9hhzBQTg1z4+y6mKIq64h787PG2tMSkM21BHRwuDGku3NMVlkP3l2pUgZOr
-         0uS52KvkqEcGka6JR8QD5Suprc65T9w/aFdLzxiyKHmZYNHvqkwYPzD3ZC1QXAMSuioi
-         oxCseOUn1dQARtF/OdcH0P1WWbsgSOSymXv1WylLOHKcVTOM1K+1+5zNFRKwXh3K8CHw
-         P2lU4Oksd7J26mj5hEnZmKUemEGP293GCRcM9Ix94AXPVy8w6j8ZGMy7mTjFDfuo4kOt
-         j01w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=y8/JYtLwGTr+r9WhKddIHXBLC5TCTeFp3FTZ8BAk6HA=;
-        b=LD+Zke4kjgkWF+3XE5kCpPUQCsr83gFQnpQxCnKs85pLPfvVLCh72diY15l4LGssRf
-         N43jrNMTRMFKAjImHS1FYiY1kX+PL6x+aN1kN5cWnriDqGxBhYR0XoAraPXcAxgKE8C1
-         IQPYmdOVNH1LET3miwgRR+F4Egn564QbcusxjpicQCyCGUIcy7djv5E1BP6dSlMae4ol
-         BM3ihIQhgUYpvJDb6cscu4OlaJ+n3sU76Nh2WVeupQ9Xoc00b9W1JdxqnYbaRyuz+kWi
-         4mzxXR2rE1Syktc7h8ol/MlB8YMLUqs4XhnjHzuCOfGP6fauvlmb7PGuselp+ZJTFoQW
-         Rd8g==
-X-Gm-Message-State: AOAM530+z9af+Lg5wBuUz2OMgFWqCPEIxYv5aykcrLhFf4Lqk8UuMynC
-        lUHZHXIYjA3DxOE5vkgN1G5YzQ==
-X-Google-Smtp-Source: ABdhPJz9BsX5BLP589MLDfJnGsKt1qLr3mtq0HfL/T8EgEobf38Mq+9s+26t59TCgZOSJxq3Z6xS9g==
-X-Received: by 2002:a17:902:8684:b0:154:af35:82ce with SMTP id g4-20020a170902868400b00154af3582cemr37178055plo.137.1649758106758;
-        Tue, 12 Apr 2022 03:08:26 -0700 (PDT)
-Received: from localhost.localdomain ([122.182.197.47])
-        by smtp.gmail.com with ESMTPSA id j9-20020a056a00130900b004f73df40914sm37515088pfu.82.2022.04.12.03.08.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:08:25 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Atish Patra <atishp@atishpatra.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>, kvm@vger.kernel.org,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH 0/6] KVM RISC-V Sv57x4 support and HFENCE improvements
-Date:   Tue, 12 Apr 2022 15:37:07 +0530
-Message-Id: <20220412100713.1415094-1-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52743275F5;
+        Tue, 12 Apr 2022 03:08:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649758109; x=1681294109;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pC4oMCwiVQJHi/ouQqRKkAncvNZ0T2XkSEgopnaDXwk=;
+  b=OqL8dcoBrZnmxoe5yZIC/ltuXWtxg83ePG33r/EHXJxf8tP6EnxDekhy
+   CEqIOoaZyepPuarkxBzJcTHbNDYOCLDGOFqxe58dwJF/g2nBZKT5LZnsx
+   FzhKNTLDg1UqSHVky6EuqTEQoYEeEPbdf01chRgjxWuUR+IT4c9yPIwAM
+   cttTzqqZHru79BvdVzltwxGM9a6KGMURo8kAEMemmfJSgfWbzlGLMi4HO
+   rSKujCi3+Zaxe/hzRdNc8vYFfdv/jwRQ4onoUGMniAlYH5gPUaaFIIsX5
+   M5ZQauDlSbZesS/Tf7FbZ1ADhzsWAVTYv9nTgp1h7ujgAvkiFvTDzX5kk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262517009"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="262517009"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:08:09 -0700
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="802174815"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:08:06 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 12 Apr 2022 13:08:04 +0300
+Date:   Tue, 12 Apr 2022 13:08:04 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v2 0/9] PCI/PM: Improvements related to device
+ transitions into D0
+Message-ID: <YlVPhCLcFVbFPN36@lahna>
+References: <4419002.LvFx2qVVIh@kreacher>
+ <11975904.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <11975904.O9o76ZdvQC@kreacher>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds Sv57x4 support for KVM RISC-V G-stage and various
-HFENCE related improvements.
+Hi Rafael,
 
-These patches can also be found in riscv_kvm_sv57_plus_v1 branch at:
-https://github.com/avpatel/linux.git
+On Mon, Apr 11, 2022 at 04:17:41PM +0200, Rafael J. Wysocki wrote:
+> Hi All,
+> 
+> On Saturday, April 9, 2022 3:03:14 PM CEST Rafael J. Wysocki wrote:
+> > Hi All,
+> > 
+> > This series supersedes the one at
+> > 
+> > https://lore.kernel.org/linux-pm/4198163.ejJDZkT8p0@kreacher
+> > 
+> > It addresses some potential issues related to PCI device transitions from
+> > low-power states into D0 and makes the related code more straightforward
+> > and so easier to follow.
+> > 
+> > Please refer to the patch changelogs for details.
+> 
+> Here's a v2 of this patch series which is being sent, because I realized that
+> one of the checks in pci_power_up() added by patch [4/7] in v1 was redundant
+> and can be dropped, but that affected the last 3 patches in the series and
+> then I noticed that more improvements were possible and hence the new patches
+> [2/9].
 
-Anup Patel (6):
-  RISC-V: KVM: Use G-stage name for hypervisor page table
-  RISC-V: KVM: Add Sv57x4 mode support for G-stage
-  RISC-V: KVM: Treat SBI HFENCE calls as NOPs
-  RISC-V: KVM: Introduce range based local HFENCE functions
-  RISC-V: KVM: Reduce KVM_MAX_VCPUS value
-  RISC-V: KVM: Add remote HFENCE functions based on VCPU requests
+I sent a few minor nits separately. The series looks good to me in
+general and certainly improves readability :)
 
- arch/riscv/include/asm/csr.h      |   1 +
- arch/riscv/include/asm/kvm_host.h | 119 ++++++--
- arch/riscv/kvm/main.c             |  11 +-
- arch/riscv/kvm/mmu.c              | 264 ++++++++---------
- arch/riscv/kvm/tlb.S              |  74 -----
- arch/riscv/kvm/tlb.c              | 456 ++++++++++++++++++++++++++++++
- arch/riscv/kvm/vcpu.c             |  34 ++-
- arch/riscv/kvm/vcpu_exit.c        |   6 +-
- arch/riscv/kvm/vcpu_sbi_replace.c |  40 ++-
- arch/riscv/kvm/vcpu_sbi_v01.c     |  35 ++-
- arch/riscv/kvm/vm.c               |   8 +-
- arch/riscv/kvm/vmid.c             |  30 +-
- 12 files changed, 791 insertions(+), 287 deletions(-)
- delete mode 100644 arch/riscv/kvm/tlb.S
- create mode 100644 arch/riscv/kvm/tlb.c
-
--- 
-2.25.1
-
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
