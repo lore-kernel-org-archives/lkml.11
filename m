@@ -2,107 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81150C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355495AbiDLNUJ (ORCPT
+        id S1354819AbiDLNUR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
+        Tue, 12 Apr 2022 09:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356251AbiDLNS3 (ORCPT
+        with ESMTP id S1357115AbiDLNTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:18:29 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8033FDFD8;
-        Tue, 12 Apr 2022 06:05:41 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id bn33so23974930ljb.6;
-        Tue, 12 Apr 2022 06:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eyx7jx3Bxa8aJ84dmQEsWoZnHMTKlMH7KFc98MfZ1Ew=;
-        b=etUELTtc7ZUzwQYlTZcXQTuS1XTRZ9jSEwK2mb9O3YgUGFPbgaCbOkiCnBPYsOpY8S
-         qJuHsUiwXS8UletsDtxfI/OhIoSTNIk2tBrz90OKIImhygl8dx3rgOLra4VQqHauj+Ro
-         b3yGYKbdK+kIh1SMq8BAdDObgPTePZSuK1g5PqKmu0iAReixQAKcYH1VcC4KNZyjCLFW
-         UjUxpNf25i9VlmVkDojOGyVs+iVSPg8XoOFnjFX20p0xPVTblEM625/VBs5l1TFQrwIS
-         LPbLQzl9+W1eXEQN/LAGjM/dL87GxdhIRpT2g0Uvbx5hnKMTnBNHUXdx0UYZND5fqxfW
-         sFRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eyx7jx3Bxa8aJ84dmQEsWoZnHMTKlMH7KFc98MfZ1Ew=;
-        b=X5twpXaEsf5o5a34kx7GhmGLr4vAes3TGkAa60kbaIUbMuv4yJWI/OK8tRBgXXKPlu
-         wfOlNB/b5sF2Ta4I5/ywjqxduxKmRJypJFRMBaHTPlQ3P0NsWfLEV/EDoFCBIJLAUBHb
-         0Jzv7P/z4AtfL0iTmGxu46DkYXEfrZyZ85sG508Uoi5aT0WBS0uSY39AcUDyxaR792mL
-         NEEWm5NwXEQPCMiHbvjcrlILxE0Tvw2Lpv5TptmDp3fccvGzsAXU1qewVs39Ns43ZY8n
-         OdpZiK/nvjMvbL9jzSSCtac2g+JHahoHrX+HA9cLkqevF4kc6O/hRAcvcZ2LuJBcaEfY
-         dP/A==
-X-Gm-Message-State: AOAM532Bg0ofIwLyNl72zPMqjkg2dI5sZ46SrgWsUtdC3et0KSO0zOhb
-        lYEmH9Yj52hpjiLevtyQRlY=
-X-Google-Smtp-Source: ABdhPJwC56MTs9uBvmSVaRYYFXWBu0GjZz04pY3OLyb9pqq9TRVOWO3jO5XgPA5PR1F54IvOkM8D+g==
-X-Received: by 2002:a2e:a4a8:0:b0:249:6444:d29a with SMTP id g8-20020a2ea4a8000000b002496444d29amr23826825ljm.447.1649768739813;
-        Tue, 12 Apr 2022 06:05:39 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id m13-20020ac2424d000000b0044859fdd0b7sm3641431lfl.301.2022.04.12.06.05.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 06:05:39 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 16:05:37 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Yuanjun Gong <ruc_gongyuanjun@163.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Tue, 12 Apr 2022 09:19:17 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E1B35DE3;
+        Tue, 12 Apr 2022 06:07:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=hpGCLbrOzXS09YNJzkrxH5woyVIGrdo/h+bTCZ2VPog=; b=A8Q15kXmugOYdyZuQhnZ7fYmpc
+        jIA0/p9MCphVCHBxqqjjHVwPkEp2RiAZMcydJDZ34X/6/EC49NevaOkS6zcx+x8GGG4Y8geFneRBl
+        1yRpOymkqZRNNwRKUH7X1uXsHdhLSzgd7BXzRAq+n+GTF9lQf4hgKnd4Kyxnfq5VgJM4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1neGEu-00FSH7-Ux; Tue, 12 Apr 2022 15:07:24 +0200
+Date:   Tue, 12 Apr 2022 15:07:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] mips: cpc: Fix refcount leak in
- mips_cpc_default_phys_base
-Message-ID: <20220412130537.j4mlsz2xzuk4t3lw@mobilestation>
-References: <20220407042657.28614-1-ruc_gongyuanjun@163.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v2 14/14] net: ethernet: mtk_eth_soc: support creating
+ mac address based offload entries
+Message-ID: <YlV5jEzNZT1aKmNL@lunn.ch>
+References: <20220405195755.10817-1-nbd@nbd.name>
+ <20220405195755.10817-15-nbd@nbd.name>
+ <Yk8pJRxnVCfdk8xi@lunn.ch>
+ <f25a6278-1baf-cc27-702a-5d93eedda438@nbd.name>
+ <YlQmf7qGAnq/3nW0@lunn.ch>
+ <ece29b0d-bbbe-7c03-a6b4-60e44453ca31@nbd.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220407042657.28614-1-ruc_gongyuanjun@163.com>
+In-Reply-To: <ece29b0d-bbbe-7c03-a6b4-60e44453ca31@nbd.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To += @Thomas
+> > > > > I'm trying to understand the architecture here.
+> > > > > We have an Ethernet interface and a Wireless interface. The slow
+> > > path
+> > > > is that frames ingress from one of these interfaces, Linux decides
+> > > > what to do with them, either L2 or L3, and they then egress probably
+> > > > out the other interface.
+> > > > > The hardware will look at the frames and try to spot flows? It
+> > > will
+> > > > then report any it finds. You can then add an offload, telling it for
+> > > > a flow it needs to perform L2 or L3 processing, and egress out a
+> > > > specific port? Linux then no longer sees the frame, the hardware
+> > > > handles it, until the flow times out?
+> > > Yes, the hw handles it until either the flow times out, or the corresponding
+> > > offload entry is removed.
+> > > 
+> > > For OpenWrt I also wrote a daemon that uses tc classifier BPF to accelerate
+> > > the software bridge and create hardware offload entries as well via hardware
+> > > TC flower rules: https://github.com/nbd168/bridger
+> > > It works in combination with these changes.
+> > 
+> > What about the bridge? In Linux, it is the software bridge which
+> > controls all this at L2, and it should be offloading the flows, via
+> > switchdev. The egress port you derive here is from the software bridge
+> > FDB?
 
-On Thu, Apr 07, 2022 at 12:26:57PM +0800, Yuanjun Gong wrote:
-> From: Gong Yuanjun <ruc_gongyuanjun@163.com>
-> 
+> My code uses netlink to fetch and monitor the bridge configuration,
+> including fdb, port state, vlans, etc. and it uses that for the offload path
+> - no extra configuration needed.
 
-> Add the missing of_node_put() to release the refcount incremented
-> by of_find_compatible_node().
+So this is where we get into architecture issues. Do we really want
+Linux to have two ways for setting up L2 networking? It was decided
+that users should not need to know about how to use an accelerator,
+they should not use additional tools, it should just look like
+linux. The user should just add the WiFi netdev to the bridge and
+switchdev will do the rest to offload L2 switching to the hardware.
 
-Right, the same bug was fixed in the CDMM driver:
-https://lore.kernel.org/linux-mips/20220309091711.3850-1-linmq006@gmail.com/
+You appear to be saying you need a daemon in userspace. That is not
+how every other accelerate works in Linux networking.
 
-Good catch. Thanks.
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+We the Linux network community need to decided if we want this?
 
--Sergey
-
-> 
-> Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-> ---
->  arch/mips/kernel/mips-cpc.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/mips/kernel/mips-cpc.c b/arch/mips/kernel/mips-cpc.c
-> index 17aff13cd7ce..3e386f7e1545 100644
-> --- a/arch/mips/kernel/mips-cpc.c
-> +++ b/arch/mips/kernel/mips-cpc.c
-> @@ -28,6 +28,7 @@ phys_addr_t __weak mips_cpc_default_phys_base(void)
->  	cpc_node = of_find_compatible_node(of_root, NULL, "mti,mips-cpc");
->  	if (cpc_node) {
->  		err = of_address_to_resource(cpc_node, 0, &res);
-> +		of_node_put(cpc_node);
->  		if (!err)
->  			return res.start;
->  	}
-> -- 
-> 2.17.1
-> 
+    Andrew
