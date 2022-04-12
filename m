@@ -2,283 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40066C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355007AbiDLNGy (ORCPT
+        id S1347507AbiDLNHB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
+        Tue, 12 Apr 2022 09:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356311AbiDLNDY (ORCPT
+        with ESMTP id S1356618AbiDLND4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:24 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09C496C978
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:44:56 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BDCDE1570;
-        Tue, 12 Apr 2022 05:44:55 -0700 (PDT)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C64C3F70D;
-        Tue, 12 Apr 2022 05:44:53 -0700 (PDT)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
-        baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 03/21] x86/resctrl: Add domain online callback for resctrl work
-Date:   Tue, 12 Apr 2022 12:44:01 +0000
-Message-Id: <20220412124419.30689-4-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
-References: <20220412124419.30689-1-james.morse@arm.com>
+        Tue, 12 Apr 2022 09:03:56 -0400
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78407DF38;
+        Tue, 12 Apr 2022 05:47:41 -0700 (PDT)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2ebf3746f87so104918667b3.6;
+        Tue, 12 Apr 2022 05:47:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WkUiUdHoDpNAi0zdRE9ANpSiniGW0nNNuGE1NcaA95g=;
+        b=gWjcCu10Px+LOvFKkiouMLdDu/etUh9mMnmtPTUjWcamfHIO3o7kKCY38mZVvbpMJD
+         rqzgvqJC8TWXxxe56pTqK82DiN9s3ZN47I3cCrE76WwrOSDIBHzwaFivGrC6u0XMWMBx
+         hkxNsjZxAOE79T/HI0px3tnoytWwecbQuac9ES3x/QXhYfiAxZRsXnBRcRmwEweYHlEU
+         U4EBFyLQIg3QSN+8DuQlr6uiimoO39ts0/mkbmTbpKvHMAMthljutztjgusWWpRCA1dk
+         xib5jymJBhVhxono0FwmmkL30lPaEmCmHEAZzU7lTaxu92OpyxXynLJLsc60KY95MP03
+         hmIw==
+X-Gm-Message-State: AOAM530iave7ZTpxohdlQ6nbytHX7RjBhevmh72KkWdYWUehlzQeuyru
+        bS9rUS8FSSdZ9ymjSgJVLj6jPZApJlS7bx+nBqwNhgGP
+X-Google-Smtp-Source: ABdhPJzqMRaCdna/2UYv9JsfsWjK4Bxln8AmtcV2uN/a+VAXsHvJMw4uCW2Lg3nDHyZCTmndPY/RhPSzoDb3lcuzUQ4=
+X-Received: by 2002:a81:7c45:0:b0:2eb:4759:cc32 with SMTP id
+ x66-20020a817c45000000b002eb4759cc32mr30158169ywc.515.1649767660662; Tue, 12
+ Apr 2022 05:47:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <22622452.6Emhk5qWAg@kreacher> <202204121052.HOrN6tpw-lkp@intel.com>
+In-Reply-To: <202204121052.HOrN6tpw-lkp@intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 12 Apr 2022 14:47:29 +0200
+Message-ID: <CAJZ5v0jMXBC63aPdt5FuMqC9sDN_avNbRaPyXjjyVkESMCxkXw@mail.gmail.com>
+Subject: Re: [PATCH 14/20] ACPICA: executer/exsystem: Inform users about ACPI
+ spec violation
+To:     kernel test robot <lkp@intel.com>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux ACPI <linux-acpi@vger.kernel.org>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, LKML <linux-kernel@vger.kernel.org>,
+        Bob Moore <robert.moore@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because domains are exposed to user-space via resctrl, the filesystem
-must update its state when CPU hotplug callbacks are triggered.
+On Tue, Apr 12, 2022 at 4:54 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi "Rafael,
+>
+> Thank you for the patch! Yet something to improve:
 
-Some of this work is common to any architecture that would support
-resctrl, but the work is tied up with the architecture code to
-allocate the memory.
+This is addressed by one of the subsequent patches in the series.
 
-Move domain_setup_mon_state(), the monitor subdir creation call and the
-mbm/limbo workers into a new resctrl_online_domain() call. These bits
-are not specific to the architecture. Grouping them in one function
-allows that code to be moved to /fs/ and re-used by another architecture.
-
-Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
-Tested-by: Xin Hao <xhao@linux.alibaba.com>
-Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
----
-Changes since v2:
- * Fixed kfree(d) rebase artefact.
-
-Changes since v1:
- * Capitalisation
- * Removed inline comment
- * Added to the commit message
----
- arch/x86/kernel/cpu/resctrl/core.c     | 57 ++++------------------
- arch/x86/kernel/cpu/resctrl/internal.h |  2 -
- arch/x86/kernel/cpu/resctrl/rdtgroup.c | 65 ++++++++++++++++++++++++--
- include/linux/resctrl.h                |  1 +
- 4 files changed, 69 insertions(+), 56 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
-index 2f87177f1f69..25f30148478b 100644
---- a/arch/x86/kernel/cpu/resctrl/core.c
-+++ b/arch/x86/kernel/cpu/resctrl/core.c
-@@ -443,42 +443,6 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
- 	return 0;
- }
- 
--static int domain_setup_mon_state(struct rdt_resource *r, struct rdt_domain *d)
--{
--	size_t tsize;
--
--	if (is_llc_occupancy_enabled()) {
--		d->rmid_busy_llc = bitmap_zalloc(r->num_rmid, GFP_KERNEL);
--		if (!d->rmid_busy_llc)
--			return -ENOMEM;
--		INIT_DELAYED_WORK(&d->cqm_limbo, cqm_handle_limbo);
--	}
--	if (is_mbm_total_enabled()) {
--		tsize = sizeof(*d->mbm_total);
--		d->mbm_total = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
--		if (!d->mbm_total) {
--			bitmap_free(d->rmid_busy_llc);
--			return -ENOMEM;
--		}
--	}
--	if (is_mbm_local_enabled()) {
--		tsize = sizeof(*d->mbm_local);
--		d->mbm_local = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
--		if (!d->mbm_local) {
--			bitmap_free(d->rmid_busy_llc);
--			kfree(d->mbm_total);
--			return -ENOMEM;
--		}
--	}
--
--	if (is_mbm_enabled()) {
--		INIT_DELAYED_WORK(&d->mbm_over, mbm_handle_overflow);
--		mbm_setup_overflow_handler(d, MBM_OVERFLOW_INTERVAL);
--	}
--
--	return 0;
--}
--
- /*
-  * domain_add_cpu - Add a cpu to a resource's domain list.
-  *
-@@ -498,6 +462,7 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
- 	struct list_head *add_pos = NULL;
- 	struct rdt_hw_domain *hw_dom;
- 	struct rdt_domain *d;
-+	int err;
- 
- 	d = rdt_find_domain(r, id, &add_pos);
- 	if (IS_ERR(d)) {
-@@ -527,21 +492,15 @@ static void domain_add_cpu(int cpu, struct rdt_resource *r)
- 		return;
- 	}
- 
--	if (r->mon_capable && domain_setup_mon_state(r, d)) {
--		kfree(hw_dom->ctrl_val);
--		kfree(hw_dom->mbps_val);
--		kfree(hw_dom);
--		return;
--	}
--
- 	list_add_tail(&d->list, add_pos);
- 
--	/*
--	 * If resctrl is mounted, add
--	 * per domain monitor data directories.
--	 */
--	if (static_branch_unlikely(&rdt_mon_enable_key))
--		mkdir_mondata_subdir_allrdtgrp(r, d);
-+	err = resctrl_online_domain(r, d);
-+	if (err) {
-+		list_del(&d->list);
-+		kfree(hw_dom->ctrl_val);
-+		kfree(hw_dom->mbps_val);
-+		kfree(hw_dom);
-+	}
- }
- 
- static void domain_remove_cpu(int cpu, struct rdt_resource *r)
-diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index 8828b5c1b6d2..be48a682dbdb 100644
---- a/arch/x86/kernel/cpu/resctrl/internal.h
-+++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -524,8 +524,6 @@ void mon_event_count(void *info);
- int rdtgroup_mondata_show(struct seq_file *m, void *arg);
- void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
- 				    unsigned int dom_id);
--void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
--				    struct rdt_domain *d);
- void mon_event_read(struct rmid_read *rr, struct rdt_resource *r,
- 		    struct rdt_domain *d, struct rdtgroup *rdtgrp,
- 		    int evtid, int first);
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index 651ff5288e85..53bdc07f9dac 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -2565,16 +2565,13 @@ static int mkdir_mondata_subdir(struct kernfs_node *parent_kn,
-  * Add all subdirectories of mon_data for "ctrl_mon" groups
-  * and "monitor" groups with given domain id.
-  */
--void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
--				    struct rdt_domain *d)
-+static void mkdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
-+					   struct rdt_domain *d)
- {
- 	struct kernfs_node *parent_kn;
- 	struct rdtgroup *prgrp, *crgrp;
- 	struct list_head *head;
- 
--	if (!r->mon_capable)
--		return;
--
- 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
- 		parent_kn = prgrp->mon.mon_data_kn;
- 		mkdir_mondata_subdir(parent_kn, d, r, prgrp);
-@@ -3236,6 +3233,64 @@ static int __init rdtgroup_setup_root(void)
- 	return ret;
- }
- 
-+static int domain_setup_mon_state(struct rdt_resource *r, struct rdt_domain *d)
-+{
-+	size_t tsize;
-+
-+	if (is_llc_occupancy_enabled()) {
-+		d->rmid_busy_llc = bitmap_zalloc(r->num_rmid, GFP_KERNEL);
-+		if (!d->rmid_busy_llc)
-+			return -ENOMEM;
-+	}
-+	if (is_mbm_total_enabled()) {
-+		tsize = sizeof(*d->mbm_total);
-+		d->mbm_total = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
-+		if (!d->mbm_total) {
-+			bitmap_free(d->rmid_busy_llc);
-+			return -ENOMEM;
-+		}
-+	}
-+	if (is_mbm_local_enabled()) {
-+		tsize = sizeof(*d->mbm_local);
-+		d->mbm_local = kcalloc(r->num_rmid, tsize, GFP_KERNEL);
-+		if (!d->mbm_local) {
-+			bitmap_free(d->rmid_busy_llc);
-+			kfree(d->mbm_total);
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d)
-+{
-+	int err;
-+
-+	lockdep_assert_held(&rdtgroup_mutex);
-+
-+	if (!r->mon_capable)
-+		return 0;
-+
-+	err = domain_setup_mon_state(r, d);
-+	if (err)
-+		return err;
-+
-+	if (is_mbm_enabled()) {
-+		INIT_DELAYED_WORK(&d->mbm_over, mbm_handle_overflow);
-+		mbm_setup_overflow_handler(d, MBM_OVERFLOW_INTERVAL);
-+	}
-+
-+	if (is_llc_occupancy_enabled())
-+		INIT_DELAYED_WORK(&d->cqm_limbo, cqm_handle_limbo);
-+
-+	/* If resctrl is mounted, add per domain monitor data directories. */
-+	if (static_branch_unlikely(&rdt_mon_enable_key))
-+		mkdir_mondata_subdir_allrdtgrp(r, d);
-+
-+	return 0;
-+}
-+
- /*
-  * rdtgroup_init - rdtgroup initialization
-  *
-diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index 8180c539800d..d512455b4c3a 100644
---- a/include/linux/resctrl.h
-+++ b/include/linux/resctrl.h
-@@ -192,5 +192,6 @@ u32 resctrl_arch_get_num_closid(struct rdt_resource *r);
- int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid);
- u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
- 			    u32 closid, enum resctrl_conf_type type);
-+int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
- 
- #endif /* _RESCTRL_H */
--- 
-2.30.2
-
+> [auto build test ERROR on rafael-pm/linux-next]
+> [also build test ERROR on linus/master linux/master v5.18-rc2 next-20220411]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/Rafael-J-Wysocki/ACPICA-ACPICA-20220331/20220412-030922
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
+> config: i386-randconfig-a006-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121052.HOrN6tpw-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/5cdc6166cc35043a80f5f328d6e6b58190c4e46c
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Rafael-J-Wysocki/ACPICA-ACPICA-20220331/20220412-030922
+>         git checkout 5cdc6166cc35043a80f5f328d6e6b58190c4e46c
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> Note: the linux-review/Rafael-J-Wysocki/ACPICA-ACPICA-20220331/20220412-030922 HEAD 32181ae3d3173aeee41f709612dfa4d52951b39d builds fine.
+>       It only hurts bisectability.
+>
+> All errors (new ones prefixed by >>):
+>
+> >> drivers/acpi/acpica/exsystem.c:140:7: error: use of undeclared identifier 'how_long_US'; did you mean 'how_long_us'?
+>                    if (how_long_US > 100) {
+>                        ^~~~~~~~~~~
+>                        how_long_us
+>    drivers/acpi/acpica/exsystem.c:123:41: note: 'how_long_us' declared here
+>    acpi_status acpi_ex_system_do_stall(u32 how_long_us)
+>                                            ^
+>    1 error generated.
+>
+>
+> vim +140 drivers/acpi/acpica/exsystem.c
+>
+>    105
+>    106  /*******************************************************************************
+>    107   *
+>    108   * FUNCTION:    acpi_ex_system_do_stall
+>    109   *
+>    110   * PARAMETERS:  how_long_us     - The amount of time to stall,
+>    111   *                                in microseconds
+>    112   *
+>    113   * RETURN:      Status
+>    114   *
+>    115   * DESCRIPTION: Suspend running thread for specified amount of time.
+>    116   *              Note: ACPI specification requires that Stall() does not
+>    117   *              relinquish the processor, and delays longer than 100 usec
+>    118   *              should use Sleep() instead. We allow stalls up to 255 usec
+>    119   *              for compatibility with other interpreters and existing BIOSs.
+>    120   *
+>    121   ******************************************************************************/
+>    122
+>    123  acpi_status acpi_ex_system_do_stall(u32 how_long_us)
+>    124  {
+>    125          acpi_status status = AE_OK;
+>    126
+>    127          ACPI_FUNCTION_ENTRY();
+>    128
+>    129          if (how_long_us > 255) {
+>    130                  /*
+>    131                   * Longer than 255 microseconds, this is an error
+>    132                   *
+>    133                   * (ACPI specifies 100 usec as max, but this gives some slack in
+>    134                   * order to support existing BIOSs)
+>    135                   */
+>    136                  ACPI_ERROR((AE_INFO,
+>    137                              "Time parameter is too large (%u)", how_long_us));
+>    138                  status = AE_AML_OPERAND_VALUE;
+>    139          } else {
+>  > 140                  if (how_long_US > 100) {
+>    141                          ACPI_WARNING((AE_INFO,
+>    142                                        "Time parameter %u us > 100 us violating ACPI spec, please fix the firmware.",
+>    143                                        how_long_us));
+>    144                  }
+>    145                  acpi_os_stall(how_long_us);
+>    146          }
+>    147
+>    148          return (status);
+>    149  }
+>    150
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
