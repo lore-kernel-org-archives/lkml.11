@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0819C4707E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EEFBC47080
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355208AbiDLIHc (ORCPT
+        id S1355322AbiDLIHy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
+        Tue, 12 Apr 2022 04:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354736AbiDLH0k (ORCPT
+        with ESMTP id S1354958AbiDLH1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:40 -0400
+        Tue, 12 Apr 2022 03:27:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C51246B20;
-        Tue, 12 Apr 2022 00:06:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A672381B3;
+        Tue, 12 Apr 2022 00:06:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC4FDB81B4F;
-        Tue, 12 Apr 2022 07:06:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F41C7C385A1;
-        Tue, 12 Apr 2022 07:06:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF2C5B81B4E;
+        Tue, 12 Apr 2022 07:06:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CBBFC385A6;
+        Tue, 12 Apr 2022 07:06:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747189;
-        bh=blGm2AT+cTPGsrJEUISAdrsP2vZTBXy06uJ2DzObYds=;
+        s=korg; t=1649747214;
+        bh=9mAMX+W24OCA95cx699ZaYW3YeLYJ/bq7p8AxFlJT7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aHtEH8mewo7ghXeJhZS8POGc26y3Okkoh8ULsCmUqQ/MioWjgX654oWbxUA+9vHEk
-         /oX9QJ797CXD/ISwYuFzMAigizYSZqwaA/TCv2Q+RtXArXfJQOJthAvp3ZeUq5ZoyS
-         bQYks7aPXTvk708FF044yyFnUoVwf1jl/Mb9NCFk=
+        b=Hw4nl2HfAlBGKM3i1Ly0xGOEFTT/OIKs/Fn7RJivbruS6rw7v8k5Nx2IlqV53LP+w
+         SP8arTEZumjuGPxfYkkKIV2Dx0hJvmpLXPfWMipH+t+3450oz4jZlX5GOzuQoJVNsm
+         v4u49kFyX1EqsxURDwPUOtgRYWRjOerCK53xKZC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Zhong <yang.zhong@intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paolo Bonzini <bonzini@gnu.org>
-Subject: [PATCH 5.16 274/285] x86/fpu/xstate: Fix the ARCH_REQ_XCOMP_PERM implementation
-Date:   Tue, 12 Apr 2022 08:32:11 +0200
-Message-Id: <20220412062951.564252341@linuxfoundation.org>
+        stable@vger.kernel.org, Namhyung Kim <namhyung@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.16 247/285] perf/core: Inherit event_caps
+Date:   Tue, 12 Apr 2022 08:31:44 +0200
+Message-Id: <20220412062950.787962308@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,40 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Zhong <yang.zhong@intel.com>
+From: Namhyung Kim <namhyung@kernel.org>
 
-commit 063452fd94d153d4eb38ad58f210f3d37a09cca4 upstream.
+commit e3265a4386428d3d157d9565bb520aabff8b4bf0 upstream.
 
-ARCH_REQ_XCOMP_PERM is supposed to add the requested feature to the
-permission bitmap of thread_group_leader()->fpu. But the code overwrites
-the bitmap with the requested feature bit only rather than adding it.
+It was reported that some perf event setup can make fork failed on
+ARM64.  It was the case of a group of mixed hw and sw events and it
+failed in perf_event_init_task() due to armpmu_event_init().
 
-Fix the code to add the requested feature bit to the master bitmask.
+The ARM PMU code checks if all the events in a group belong to the
+same PMU except for software events.  But it didn't set the event_caps
+of inherited events and no longer identify them as software events.
+Therefore the test failed in a child process.
 
-Fixes: db8268df0983 ("x86/arch_prctl: Add controls for dynamic XSTATE components")
-Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Paolo Bonzini <bonzini@gnu.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220129173647.27981-2-chang.seok.bae@intel.com
-[chang: Backport for 5.16]
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+A simple reproducer is:
+
+  $ perf stat -e '{cycles,cs,instructions}' perf bench sched messaging
+  # Running 'sched/messaging' benchmark:
+  perf: fork(): Invalid argument
+
+The perf stat was fine but the perf bench failed in fork().  Let's
+inherit the event caps from the parent.
+
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/20220328200112.457740-1-namhyung@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/fpu/xstate.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/events/core.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/x86/kernel/fpu/xstate.c
-+++ b/arch/x86/kernel/fpu/xstate.c
-@@ -1626,7 +1626,7 @@ static int __xstate_request_perm(u64 per
- 		return ret;
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -11626,6 +11626,9 @@ perf_event_alloc(struct perf_event_attr
  
- 	/* Pairs with the READ_ONCE() in xstate_get_group_perm() */
--	WRITE_ONCE(fpu->perm.__state_perm, requested);
-+	WRITE_ONCE(fpu->perm.__state_perm, mask);
- 	/* Protected by sighand lock */
- 	fpu->perm.__state_size = ksize;
- 	fpu->perm.__user_state_size = usize;
+ 	event->state		= PERF_EVENT_STATE_INACTIVE;
+ 
++	if (parent_event)
++		event->event_caps = parent_event->event_caps;
++
+ 	if (event->attr.sigtrap)
+ 		atomic_set(&event->event_limit, 1);
+ 
 
 
