@@ -2,141 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EBEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07540C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354447AbiDLMyq (ORCPT
+        id S1354607AbiDLMy4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
+        Tue, 12 Apr 2022 08:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356439AbiDLMtD (ORCPT
+        with ESMTP id S1355223AbiDLMsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:49:03 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A73D522FB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:21:10 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id d10so22188448edj.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:21:10 -0700 (PDT)
+        Tue, 12 Apr 2022 08:48:07 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63D01BE95
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:16 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id s137so14360105pgs.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EPjj/sFnkjhGM2biUN3Tl6oPqdHpDSyFwE2ONZLcGJo=;
-        b=nuTbpnQoPTPHlZCQtpdrFqrjjSokDH8oF8Eu2o2WLYoqmEHIkDhTOuF039KVucaFH6
-         BiczPoEs5gfaNzxNJUdvjC2IH/rDt/I6cCOm+qjv8KzyPreJCl9C559kDfo0/21dJDXM
-         TFPdoQvV1MQqCdHrnvCiug+M/3GKfTehLjVb7t30V6sY2sJ94MODDCJOe9tZzImjm2ZI
-         +tfSeBh+JacFHvBsgFGH/ftHk5h1jgpa8sugL55YcszggbPTC8QMPTWtdCPyUC2/4F34
-         noYFuNE7fhk+7gaSwdJCjUfHrJR78UOq4JcFJPiDaYcoqUm65Y9AsDwHtW16XGrwhKlw
-         UZZw==
+        bh=Q5RIw3Y6iFyQPwywIArOqCVkO5sLf9t/GzdrB82aITI=;
+        b=I1wYevuxtaS9lLUaPCx+RCwFaW38RY7DlLemfEmzjcYFDvvTkcgeY1LaNtemO00ecC
+         TdSRY0Oa9GNs2MJ/5xNISNYYpP9Rh6s6rAjBpnRvztHk/Gj5hDZUcJlYyGDsYeTb1mCu
+         9obdPHkW+ixlUWB+NjAypOeSbA88if21PMufKT61cgY4xWNkOJNJZ8IOq4JuVglNNfG8
+         0B2Tu6jrYo6XQcXT100W0X0pE9h8XZfjXenqK2PlsWyfn6frDFzoQpDsnHUXPkYIHNfN
+         I7h1WuwXFc6SnAlCga9YYmV5Jdj9oj7pri48IqYeYkFOhNbXGed9UzjoS7zsEI12Pa2+
+         /NYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EPjj/sFnkjhGM2biUN3Tl6oPqdHpDSyFwE2ONZLcGJo=;
-        b=zgoaLF1ZQ55I31S009kchoiiiLrcwFkKe6Rmf5SIaXbrfnDJ0WmVZbUyF1KawCcWOI
-         RoGFh6uTK9G/GfWgDP08XmdWKKKGS4lJ1CR0xcO4umsWBdtXA6uqb1P876qNGznfbCaQ
-         kcg3rxBedoPe1laQ3O/z+MWoK4Ub6zQtbkuPDjDmI5Qb3/qbatS2L6vKrBbEC9qjGNNr
-         3JvzcA5bfH+MSIhdkgvMW6VRWJK08TsFIcY/QmEYiG+ibvzJM3tdJu61uFw428CQi4Oo
-         eqakvCLoagCJqn+lUNRYscLcvRNGw/wHQiONVgGr5t8dgwshLZKxX9bNQCTK2BJO2qVh
-         QKqQ==
-X-Gm-Message-State: AOAM530UXznBW4cA2gCwZ/4bNkKKXtWZmRXumTm53o8Uo3pIwQCe6I5N
-        eQsueUYSRyhymQDRSxTo4t8=
-X-Google-Smtp-Source: ABdhPJyCNnVdUgHBuoYZ5573qvtHmSJN7I9YwbEFcLdy45eTKGjB+NhKYFi8H5zsYU/qiEIyy4vzaw==
-X-Received: by 2002:a05:6402:1753:b0:41d:7a22:3822 with SMTP id v19-20020a056402175300b0041d7a223822mr10867791edx.247.1649766068696;
-        Tue, 12 Apr 2022 05:21:08 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id op12-20020a170906bcec00b006e89b09a238sm1954081ejb.4.2022.04.12.05.21.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:21:08 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     Chao Yu <chao@kernel.org>, linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH v2 2/2] f2fs: replace usage of found with dedicated list iterator variable
-Date:   Tue, 12 Apr 2022 14:20:40 +0200
-Message-Id: <20220412122040.3555423-2-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412122040.3555423-1-jakobkoschel@gmail.com>
-References: <20220412122040.3555423-1-jakobkoschel@gmail.com>
+        bh=Q5RIw3Y6iFyQPwywIArOqCVkO5sLf9t/GzdrB82aITI=;
+        b=n4+1it2mooR1CvW9SxotF5ZQEd/gs/xCwauOy1nHUt23CD+FaeCwkFcE0UFFuDfuRH
+         sNF2lWjmoO5Zc+PTeXI2g3AOwTf1E0APdjHicwRbeYILiWQTApReHoaMlvR2BtZQjgoa
+         n5Zllqjjo/6eDj4JaFkK8aDUxxQkO5BeiM4rpZrwfjpjJe42dJYWBMVzoQaxTAForkIJ
+         BbSoVUTONvyhd+p1pxoXIDof0a1MRZ/9+s4oKBud7R219bcOHU8JFxRrONTywSWIFGHi
+         KCnWT6txuow+LJ0tMiz3twgx/QBfwke0ndeMwTXVkVM/GAQlZsTS4sup/MOdupvj3Wny
+         5yug==
+X-Gm-Message-State: AOAM530DczURmAuVCxQdZvW0PDjAW5qYEBJf7m7gPgtBMh2JAVJViasm
+        HwS6hR2Pi+lwdVq2CMdxbiNLn/lmHZg=
+X-Google-Smtp-Source: ABdhPJy8cZBru6/sIUb5kyQTBRAn1lSqPhw5iX3k5evZnJuDmrM/zdH2RXN4krEK1uS+vJfcuU6KJw==
+X-Received: by 2002:a65:6951:0:b0:381:f10:ccaa with SMTP id w17-20020a656951000000b003810f10ccaamr29687821pgq.587.1649765715900;
+        Tue, 12 Apr 2022 05:15:15 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id u18-20020a056a00125200b004fb112ee9b7sm35342414pfi.75.2022.04.12.05.15.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Apr 2022 05:15:15 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH V5 3/7] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
+Date:   Tue, 12 Apr 2022 20:15:37 +0800
+Message-Id: <20220412121541.4595-4-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220412121541.4595-1-jiangshanlai@gmail.com>
+References: <20220412121541.4595-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+error_entry() doesn't handle the stack balanced.  It includes
+PUSH_AND_CLEAR_REGS which is commonly needed for all IDT entries and
+can't pop the regs before it returns.
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+Move PUSH_AND_CLEAR_REGS out of error_entry() and make error_entry()
+works on the stack normally.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
+After this, XENPV doesn't need error_entry() since PUSH_AND_CLEAR_REGS
+is moved out and error_entry() can be converted to C code in future
+since it doesn't fiddle the stack.
+
+The text size will be enlarged:
+
+size arch/x86/entry/entry_64.o.before:
+   text	   data	    bss	    dec	    hex	filename
+  17916	    384	      0	  18300	   477c	arch/x86/entry/entry_64.o
+
+size --format=SysV arch/x86/entry/entry_64.o.before:
+.entry.text                      5528      0
+.orc_unwind                      6456      0
+.orc_unwind_ip                   4304      0
+
+size arch/x86/entry/entry_64.o.after:
+   text	   data	    bss	    dec	    hex	filename
+  26868	    384	      0	  27252	   6a74	arch/x86/entry/entry_64.o
+
+size --format=SysV arch/x86/entry/entry_64.o.after:
+.entry.text                      8200      0
+.orc_unwind                     10224      0
+.orc_unwind_ip                   6816      0
+
+The tables .orc_unwind[_ip] are enlarged due to it adds many pushes.
+
+But .entry.text in x86_64 is 2M aligned, enlarging it to 8.2k doesn't
+enlarge the final text size.
+
+And it will only increase the footprint when different interrupts and
+exceptions happen unlikely heavily at the same time.
+
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
- fs/f2fs/segment.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ arch/x86/entry/entry_64.S | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 7ec1a2ef2167..7c52e352a356 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -1666,33 +1666,32 @@ static unsigned int __wait_discard_cmd_range(struct f2fs_sb_info *sbi,
- 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
- 	struct list_head *wait_list = (dpolicy->type == DPOLICY_FSTRIM) ?
- 					&(dcc->fstrim_list) : &(dcc->wait_list);
--	struct discard_cmd *dc, *tmp;
--	bool need_wait;
-+	struct discard_cmd *dc = NULL, *iter, *tmp;
- 	unsigned int trimmed = 0;
-
- next:
--	need_wait = false;
-+	dc = NULL;
-
- 	mutex_lock(&dcc->cmd_lock);
--	list_for_each_entry_safe(dc, tmp, wait_list, list) {
--		if (dc->lstart + dc->len <= start || end <= dc->lstart)
-+	list_for_each_entry_safe(iter, tmp, wait_list, list) {
-+		if (iter->lstart + iter->len <= start || end <= iter->lstart)
- 			continue;
--		if (dc->len < dpolicy->granularity)
-+		if (iter->len < dpolicy->granularity)
- 			continue;
--		if (dc->state == D_DONE && !dc->ref) {
--			wait_for_completion_io(&dc->wait);
--			if (!dc->error)
--				trimmed += dc->len;
--			__remove_discard_cmd(sbi, dc);
-+		if (iter->state == D_DONE && !iter->ref) {
-+			wait_for_completion_io(&iter->wait);
-+			if (!iter->error)
-+				trimmed += iter->len;
-+			__remove_discard_cmd(sbi, iter);
- 		} else {
--			dc->ref++;
--			need_wait = true;
-+			iter->ref++;
-+			dc = iter;
- 			break;
- 		}
- 	}
- 	mutex_unlock(&dcc->cmd_lock);
-
--	if (need_wait) {
-+	if (dc) {
- 		trimmed += __wait_one_discard_bio(sbi, dc);
- 		goto next;
- 	}
---
-2.25.1
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index e1efc56fbcd4..835b798556fb 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -325,6 +325,9 @@ SYM_CODE_END(ret_from_fork)
+  */
+ .macro idtentry_body cfunc has_error_code:req
+ 
++	PUSH_AND_CLEAR_REGS
++	ENCODE_FRAME_POINTER
++
+ 	call	error_entry
+ 	movq	%rax, %rsp			/* switch to the task stack if from userspace */
+ 	ENCODE_FRAME_POINTER
+@@ -987,8 +990,6 @@ SYM_CODE_END(paranoid_exit)
+ SYM_CODE_START_LOCAL(error_entry)
+ 	UNWIND_HINT_FUNC
+ 	cld
+-	PUSH_AND_CLEAR_REGS save_ret=1
+-	ENCODE_FRAME_POINTER 8
+ 	testb	$3, CS+8(%rsp)
+ 	jz	.Lerror_kernelspace
+ 
+-- 
+2.19.1.6.gb485710b
 
