@@ -2,100 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD7AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA64CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343685AbiDLCY6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 22:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        id S245741AbiDLC1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 22:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243459AbiDLCYu (ORCPT
+        with ESMTP id S238083AbiDLC1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 22:24:50 -0400
-Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E21E62E9D2;
-        Mon, 11 Apr 2022 19:22:34 -0700 (PDT)
-IronPort-Data: =?us-ascii?q?A9a23=3AytdQmaA2u98BCBVW//Dhw5YqxClBgxIJ4g17XOL?=
- =?us-ascii?q?fBAXrhTIl02YGyWVLWDqOPv2LZ2akLotxaozg/UoAsMOAx9UxeLYW3SszFioV8?=
- =?us-ascii?q?6IpJjg4wn/YZnrUdouaJK5ex512huLocYZkHhcwmj/3auK79SMkjPnRLlbBILW?=
- =?us-ascii?q?s1h5ZFFYMpBgJ2UoLd94R2uaEsPDha++/kYqaT/73ZDdJ7wVJ3lc8sMpvnv/AU?=
- =?us-ascii?q?MPa41v0tnRmDRxCUcS3e3M9VPrzLonpR5f0rxU9IwK0ewrD5OnREmLx9BFrBM6?=
- =?us-ascii?q?nk6rgbwsBRbu60Qqm0yIQAvb9xEMZ4HFaPqUTbZLwbW9TiieJntJwwdNlu4GyS?=
- =?us-ascii?q?BsyI+vHn+F1vxxwSnslYf0WpOWXSZS4mYnJp6HcSFP+0vd8HUNsZdVA0ulyCGB?=
- =?us-ascii?q?Ks/cfLVglahGFmvLzw7+hTORortosIdOtP44FvHxkizbDAp4ORZHFXrWP/9Nd1?=
- =?us-ascii?q?R8uic1UW/XTfcwUbXxodhuoSx9ANX8FCZ8mkaGjjxHCn5dwwL6OjfNvpTGNk0o?=
- =?us-ascii?q?qi/6wWOc5s+eiHa199nt0bEqal4ghPiwnCQ=3D=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A6EyDRqvw/Yzs9+eQQw1pcvwj7skDStV00zEX?=
- =?us-ascii?q?/kB9WHVpm62j5qSTdZEguCMc5wx+ZJheo7q90cW7IE80lqQFhLX5X43SPzUO0V?=
- =?us-ascii?q?HARO5fBODZsl/d8kPFltJ15ONJdqhSLJnKB0FmsMCS2mKFOudl7N6Z0K3Av4vj?=
- =?us-ascii?q?80s=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
-   d="scan'208";a="123488428"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 12 Apr 2022 10:22:31 +0800
-Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
-        by cn.fujitsu.com (Postfix) with ESMTP id EA3E74D16FC6;
-        Tue, 12 Apr 2022 10:22:27 +0800 (CST)
-Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
- G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Tue, 12 Apr 2022 10:22:27 +0800
-Received: from localhost.localdomain (10.167.225.141) by
- G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Tue, 12 Apr 2022 10:22:26 +0800
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     <zyjzyj2000@gmail.com>, <jgg@ziepe.ca>,
-        <linux-rdma@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
-Subject: [PATCH 1/3] RDMA/rxe: Remove useless parameters for update_state()
-Date:   Tue, 12 Apr 2022 10:29:01 +0800
-Message-ID: <20220412022903.574238-1-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 11 Apr 2022 22:27:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4934DBC83
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:24:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649730290;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=U91PiURNFV2fKxTIEP7GO5tX2GZNd7Bfp7ekztFiEcU=;
+        b=HiOB0yGOniOKHBcsXmsQmYknMIF9hga060rCgwWOiLCCvVot8iz4r5W8LuHMkN3xB0sLmR
+        feqsjc0EaQWsHsv6y4nJ56acaIJz7IPBy2nOey1H9xaQUahVBtKztYBDsIgx9cfmRqTOt7
+        hqjo+n39u/MYWFvw1re3XW1Ophm+y68=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-272-McGLCUiePOmc6y9X3Qh3eQ-1; Mon, 11 Apr 2022 22:24:48 -0400
+X-MC-Unique: McGLCUiePOmc6y9X3Qh3eQ-1
+Received: by mail-lj1-f197.google.com with SMTP id p9-20020a2ea4c9000000b0024b62f1ddebso1582194ljm.23
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:24:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=U91PiURNFV2fKxTIEP7GO5tX2GZNd7Bfp7ekztFiEcU=;
+        b=bSJxXqaraeWhw4R6cAz4gcFKCJFrNxr9Cml72S4Xyr/NCPahsZGh6EJD/PeJldXR68
+         hF7fiDR6KveKwEHkwAjlsnhX2RKozTk7Cxqxy9wwsMM74dzBSBuCN/tMdyywhVMcyAsz
+         /bTryyYLvT/3W6YJ/N1FGtSg8mT3MeoBvk8lUcSEaXq2KWVGWz4oD5cmaabW+KKr1guC
+         CSDd2lMSOrmIRl75VgUj0prE18gSFccFThQHGf8LlUu3Qu6McaCtS044xbsP2j2nJ4Yv
+         qeRhdhXI1o9e/HTlP1WBlZsfWY8XlXG2ZrHnlDV2/4t1hAxhcvQ1GzIYN6UvdoVXvZuc
+         3csA==
+X-Gm-Message-State: AOAM532FpaUVX9ogHAWAZmomuwCSZ5lql1x6yoAhTysqitQnGf3Wv921
+        swTquAGDqd3MEstIKd6hSuWRRoUUIKWQ+7/xpvnnhKu9b/ijygPGf4NivBFqiXasQlB9S+JOa0r
+        3AjHqBlYUz5sizX1N4GdJwIuWGPJCv0hyOUNJjfTp
+X-Received: by 2002:a05:6512:b81:b0:448:b342:513c with SMTP id b1-20020a0565120b8100b00448b342513cmr23533665lfv.257.1649730287279;
+        Mon, 11 Apr 2022 19:24:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyriilgsCa0fnjLvRc9+m4ztpQqX137F7IBRBNtJ2Ku+BVjGMKTZvwHHTDT7U+xGoryLTsKpDLdOUKsJnHhYd8=
+X-Received: by 2002:a05:6512:b81:b0:448:b342:513c with SMTP id
+ b1-20020a0565120b8100b00448b342513cmr23533653lfv.257.1649730287091; Mon, 11
+ Apr 2022 19:24:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: EA3E74D16FC6.A02E7
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+References: <20220406083538.16274-1-jasowang@redhat.com> <20220406083538.16274-5-jasowang@redhat.com>
+ <20220406075952-mutt-send-email-mst@kernel.org> <87wng2e527.fsf@redhat.com>
+ <20220408150307.24b6b99f.pasic@linux.ibm.com> <20220410034556-mutt-send-email-mst@kernel.org>
+ <CACGkMEtarZb6g3ij5=+As17+d9jtdAqNa1EzSuTXc7Pq_som0Q@mail.gmail.com>
+ <877d7vbspu.fsf@redhat.com> <20220412020145.32e26e5a.pasic@linux.ibm.com>
+In-Reply-To: <20220412020145.32e26e5a.pasic@linux.ibm.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 12 Apr 2022 10:24:35 +0800
+Message-ID: <CACGkMEvDSv+sZwLYqqfP-jzDzonmon+CxeSXkvyd6F-CbfV3tQ@mail.gmail.com>
+Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
+To:     Halil Pasic <pasic@linux.ibm.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-wqe was not used by update_state() so far.
+On Tue, Apr 12, 2022 at 8:02 AM Halil Pasic <pasic@linux.ibm.com> wrote:
+>
+> On Mon, 11 Apr 2022 16:27:41 +0200
+> Cornelia Huck <cohuck@redhat.com> wrote:
+>
+> > On Mon, Apr 11 2022, Jason Wang <jasowang@redhat.com> wrote:
+> >
+> > > On Sun, Apr 10, 2022 at 3:51 PM Michael S. Tsirkin <mst@redhat.com> w=
+rote:
+> > >>
+> > >> On Fri, Apr 08, 2022 at 03:03:07PM +0200, Halil Pasic wrote:
+> > >> > On Wed, 06 Apr 2022 15:04:32 +0200
+> > >> > Cornelia Huck <cohuck@redhat.com> wrote:
+> > >> >
+> > >> > > On Wed, Apr 06 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote=
+:
+> > >> > >
+> > >> > > > On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:
+> > >> > > >> This patch implements PCI version of synchronize_vqs().
+> > >> > > >>
+> > >> > > >> Cc: Thomas Gleixner <tglx@linutronix.de>
+> > >> > > >> Cc: Peter Zijlstra <peterz@infradead.org>
+> > >> > > >> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> > >> > > >> Cc: Marc Zyngier <maz@kernel.org>
+> > >> > > >> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > >> > > >
+> > >> > > > Please add implementations at least for ccw and mmio.
+> > >> > >
+> > >> > > I'm not sure what (if anything) can/should be done for ccw...
+> > >> >
+> > >> > If nothing needs to be done I would like to have at least a commen=
+t in
+> > >> > the code that explains why. So that somebody who reads the code
+> > >> > doesn't wonder: why is virtio-ccw not implementing that callback.
+> > >>
+> > >> Right.
+> > >>
+> > >> I am currently thinking instead of making this optional in the
+> > >> core we should make it mandatory, and have transports which do not
+> > >> need to sync have an empty stub with documentation explaining why.
+> >
+> > Yes, that makes sense to me. If we can explain why we don't need to do
+> > anything, we should keep that explanation easily accessible.
+> >
+> > >>
+> > >> Also, do we want to document this sync is explicitly for irq enable/=
+disable?
+> > >> synchronize_irq_enable_disable?
+> > >
+> > > I would not since the transport is not guaranteed to use an interrupt
+> > > for callbacks.
+> > >
+> > >>
+> > >>
+> > >> > >
+> > >> > > >
+> > >> > > >> ---
+> > >> > > >>  drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
+> > >> > > >>  drivers/virtio/virtio_pci_common.h |  2 ++
+> > >> > > >>  drivers/virtio/virtio_pci_legacy.c |  1 +
+> > >> > > >>  drivers/virtio/virtio_pci_modern.c |  2 ++
+> > >> > > >>  4 files changed, 19 insertions(+)
+> > >> > > >>
+> > >> > > >> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/vir=
+tio/virtio_pci_common.c
+> > >> > > >> index d724f676608b..b78c8bc93a97 100644
+> > >> > > >> --- a/drivers/virtio/virtio_pci_common.c
+> > >> > > >> +++ b/drivers/virtio/virtio_pci_common.c
+> > >> > > >> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_=
+device *vdev)
+> > >> > > >>                  synchronize_irq(pci_irq_vector(vp_dev->pci_d=
+ev, i));
+> > >> > > >>  }
+> > >> > > >>
+> > >> > > >> +void vp_synchronize_vqs(struct virtio_device *vdev)
+> > >> > > >> +{
+> > >> > > >> +        struct virtio_pci_device *vp_dev =3D to_vp_device(vd=
+ev);
+> > >> > > >> +        int i;
+> > >> > > >> +
+> > >> > > >> +        if (vp_dev->intx_enabled) {
+> > >> > > >> +                synchronize_irq(vp_dev->pci_dev->irq);
+> > >> > > >> +                return;
+> > >> > > >> +        }
+> > >> > > >> +
+> > >> > > >> +        for (i =3D 0; i < vp_dev->msix_vectors; ++i)
+> > >> > > >> +                synchronize_irq(pci_irq_vector(vp_dev->pci_d=
+ev, i));
+> > >> > > >> +}
+> > >> > > >> +
+> > >> > >
+> > >> > > ...given that this seems to synchronize threaded interrupt handl=
+ers?
+> > >> > > Halil, do you think ccw needs to do anything? (AFAICS, we only h=
+ave one
+> > >> > > 'irq' for channel devices anyway, and the handler just calls the
+> > >> > > relevant callbacks directly.)
+> > >> >
+> > >> > Sorry I don't understand enough yet. A more verbose documentation =
+on
+> > >> > "virtio_synchronize_vqs - synchronize with virtqueue callbacks" wo=
+uld
+> > >> > surely benefit me. It may be more than enough for a back-belt but =
+it
+> > >> > ain't enough for me to tell what is the callback supposed to accom=
+plish.
+> >
+> > +1 for more explanations.
+> >
+> > >> >
+> > >> > I will have to study this discussion and the code more thoroughly.
+> > >> > Tentatively I side with Jason and Michael in a sense, that I don't
+> > >> > believe virtio-ccw is safe against rough interrupts.
+> > >
+> > > That's my feeling as well.
+> >
+> > I'd say ccw is safe against "notification interrupts before indicators
+> > have been registered".
+>
+> I believe Jason's scope is broader than that. Let me try to explain. A
+> quote form the standard:
+> """
+> 3.1.1 Driver Requirements: Device Initialization
+> The driver MUST follow this sequence to initialize a device:
+>     1. Reset the device.
+>     2. Set the ACKNOWLEDGE status bit: the guest OS has noticed the devic=
+e.
+>     3. Set the DRIVER status bit: the guest OS knows how to drive the dev=
+ice.
+>     4. Read device feature bits, and write the subset of feature bits und=
+erstood by the OS and driver to the device. During this step the driver MAY=
+ read (but MUST NOT write) the device-specific configuration fields to chec=
+k that it can support the device before accepting it.
+>     5. Set the FEATURES_OK status bit. The driver MUST NOT accept new fea=
+ture bits after this step.
+>     6. Re-read device status to ensure the FEATURES_OK bit is still set: =
+otherwise, the device does not support our subset of features and the devic=
+e is unusable.
+>     7. Perform device-specific setup, including discovery of virtqueues f=
+or the device, optional per-bus setup, reading and possibly writing the dev=
+ice=E2=80=99s virtio configuration space, and population of virtqueues.
+>     8. Set the DRIVER_OK status bit. At this point the device is =E2=80=
+=9Clive=E2=80=9D.
+> """
+>
+> That means stuff may happen between "discovery of virtqueues" and "DRIVER=
+_OK". So it
+> is not sufficient to be "safe against notifications before indicators
+> have been registered", but we want to be also safe between "indicators ha=
+ve
+> been registered" and "DRIVER_OK status has been set".
+>
+> @Jason: can you confirm?
 
-aaaf62e06623 ("RDMA/rxe: Remove useless argument for update_state()")
-just did a partial fixes.
+Exactly.
 
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
----
- drivers/infiniband/sw/rxe/rxe_req.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> Regarding the question "are we safe against notifications before
+> indicators have been registered" I think we really need to think about
+> something like Secure Execution. We don't have, and we are unlikely
+> to have in hardware virtio-ccw implementations, and for a malicious hyper=
+visor
+> that has full access to the guest memory hardening makes no sense.
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
-index 5f7348b11268..bf7493bab9b9 100644
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -525,8 +525,7 @@ static void rollback_state(struct rxe_send_wqe *wqe,
- 	qp->req.psn    = rollback_psn;
- }
- 
--static void update_state(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
--			 struct rxe_pkt_info *pkt)
-+static void update_state(struct rxe_qp *qp, struct rxe_pkt_info *pkt)
- {
- 	qp->req.opcode = pkt->opcode;
- 
-@@ -753,7 +752,7 @@ int rxe_requester(void *arg)
- 		goto err;
- 	}
- 
--	update_state(qp, wqe, &pkt);
-+	update_state(qp, &pkt);
- 
- 	goto next_wqe;
- 
--- 
-2.31.1
+Does s390 have something like memory encryption? (I guess yes). In the
+case of x86 VM encryption, the I/O buffers were now done via software
+IOTLB, that's why hardening of the virtio driver is needed to prevent
+the hypervisor to poke the swiotlb etc.
 
+Thanks
 
+>
+> But if we assume that an attacker can inject adapter interrupts for an ar=
+bitrary
+> ISC, and can poke any shared memory (notifier bits are shared)... Things =
+might
+> become critical already when register_adapter_interrupt() does it's magic=
+.
+>
+>
+> > For the reverse case, maybe we should always
+> > invalidate the indicators in the reset case? More information regarding
+> > the attack vector would help here :)
+> >
+> > My main concern is that we would need to synchronize against a single
+> > interrupt that covers all kinds of I/O interrupts, not just a single
+> > device...
+> >
+>
+> Could we synchronize on struct airq_info's lock member? If we were
+> to grab all of these that might be involved...
+>
+> AFAIU for the synchronize implementation we need a lock or a set of locks
+> that contain all the possible vring_interrupt() calls with the queuues
+> that belong to the given device as a critical section. That way, one
+> has the acquire's and release's in place so that the vrign_interrupt()
+> either guaranteed to finish before the change of driver_ready is
+> guaranteed to be complete, or it is guaranteed to see the change.
+>
+> In any case, I guess we should first get clear on the first part. I.e.
+> when do we want to allow host->guest notifications.
+>
+> Regards,
+> Halil
+>
 
