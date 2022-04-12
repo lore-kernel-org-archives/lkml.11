@@ -2,48 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B74E8C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243193AbiDLAwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        id S232748AbiDLAwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243802AbiDLAuE (ORCPT
+        with ESMTP id S244213AbiDLAup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:50:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D092FFEA;
-        Mon, 11 Apr 2022 17:46:47 -0700 (PDT)
+        Mon, 11 Apr 2022 20:50:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6C931DFA;
+        Mon, 11 Apr 2022 17:46:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAEACB8186F;
-        Tue, 12 Apr 2022 00:46:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF65CC385AA;
-        Tue, 12 Apr 2022 00:46:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67177B819C1;
+        Tue, 12 Apr 2022 00:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85ABCC385AB;
+        Tue, 12 Apr 2022 00:46:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724404;
-        bh=21ORkHa4XkYsDGywZhe+134XzrVwi/UAbC8QYcURzzs=;
+        s=k20201202; t=1649724413;
+        bh=0w5fkYWRq9t9bwKn/65Gjp/8xhsgA6n0+Ym3YnpIS4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r7kY2+de17exRX5qmw+g3GPz1BYLHn3tj8J0k2E4Dyr7mIFzLjMJ/WmI7DvtM6f4h
-         XQksBak3eXqBLVQaqkhiFA+T5v589D1xQYug9asImCL2py2dN9p6usxnEuroT2YKof
-         +SL2OvgPlpsK0pt4nwk6vH+Z7d6ZVAFJAxEMUP9lAJEkddyGDwLAlrXYpVFm53sKtA
-         /j5zIRs903/qX/nNra3zuRTAw7ZoQ+UpfsTIn0RacHrWPGtgSrBnF10F0xt5dO+USz
-         pEwb77XwJuFv9sEVO+CmfSK2B/OhuqBUC3XpNx/M/lVoqHelobPndHRRxi01+C1FxT
-         5spnHZGc4AqtQ==
+        b=BBR5QgQ717gYhD6qL04QoH9T9SiBhM2VAAr79BsjMQlvB2Z4mSEK0ybwfYLhxbejj
+         cDFn/aez/NZXe1O67/etIBAIA+Sz0KxpCTLRn1qaHE6jiASeXNFKMLd5fPP92C4q2/
+         nC1IiqBsKXJLZf049aqQrJGKcnHPngHBmnubSElZPuG1rGP18ZTAD2VZWKtxTwE9up
+         qsKRIDFm9cGyo7sg6l2znly7SlSPUGam0eOkN33B3sdpuBLkItJZot2KlVwW273pOz
+         fzQV7oR37/5cubrP9LlxZS+T1JfrULOyeLyWAccDyl5bruHYCcLTa5+KWr166cObSa
+         cMAHZ+/vHTCxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        io-uring@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 46/49] io_uring: zero tag on rsrc removal
-Date:   Mon, 11 Apr 2022 20:44:04 -0400
-Message-Id: <20220412004411.349427-46-sashal@kernel.org>
+Cc:     Borislav Petkov <bp@suse.de>, Frank Li <Frank.li@nxp.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 49/49] perf/imx_ddr: Fix undefined behavior due to shift overflowing the constant
+Date:   Mon, 11 Apr 2022 20:44:07 -0400
+Message-Id: <20220412004411.349427-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004411.349427-1-sashal@kernel.org>
 References: <20220412004411.349427-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,43 +59,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 8f0a24801bb44aa58496945aabb904c729176772 ]
+[ Upstream commit d02b4dd84e1a90f7f1444d027c0289bf355b0d5a ]
 
-Automatically default rsrc tag in io_queue_rsrc_removal(), it's safer
-than leaving it there and relying on the rest of the code to behave and
-not use it.
+Fix:
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/1cf262a50df17478ea25b22494dcc19f3a80301f.1649336342.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+  In file included from <command-line>:0:0:
+  In function ‘ddr_perf_counter_enable’,
+      inlined from ‘ddr_perf_irq_handler’ at drivers/perf/fsl_imx8_ddr_perf.c:651:2:
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_729’ \
+	declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+...
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Frank Li <Frank.li@nxp.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220405151517.29753-10-bp@alien8.de
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/perf/fsl_imx8_ddr_perf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 5e6788ab188f..d203bbb7b965 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8529,13 +8529,15 @@ static int io_sqe_file_register(struct io_ring_ctx *ctx, struct file *file,
- static int io_queue_rsrc_removal(struct io_rsrc_data *data, unsigned idx,
- 				 struct io_rsrc_node *node, void *rsrc)
- {
-+	u64 *tag_slot = io_get_tag_slot(data, idx);
- 	struct io_rsrc_put *prsrc;
+diff --git a/drivers/perf/fsl_imx8_ddr_perf.c b/drivers/perf/fsl_imx8_ddr_perf.c
+index 94ebc1ecace7..b1b2a55de77f 100644
+--- a/drivers/perf/fsl_imx8_ddr_perf.c
++++ b/drivers/perf/fsl_imx8_ddr_perf.c
+@@ -29,7 +29,7 @@
+ #define CNTL_OVER_MASK		0xFFFFFFFE
  
- 	prsrc = kzalloc(sizeof(*prsrc), GFP_KERNEL);
- 	if (!prsrc)
- 		return -ENOMEM;
+ #define CNTL_CSV_SHIFT		24
+-#define CNTL_CSV_MASK		(0xFF << CNTL_CSV_SHIFT)
++#define CNTL_CSV_MASK		(0xFFU << CNTL_CSV_SHIFT)
  
--	prsrc->tag = *io_get_tag_slot(data, idx);
-+	prsrc->tag = *tag_slot;
-+	*tag_slot = 0;
- 	prsrc->rsrc = rsrc;
- 	list_add(&prsrc->list, &node->rsrc_list);
- 	return 0;
+ #define EVENT_CYCLES_ID		0
+ #define EVENT_CYCLES_COUNTER	0
 -- 
 2.35.1
 
