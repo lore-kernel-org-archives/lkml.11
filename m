@@ -2,157 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5780BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8475C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbiDLVGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 17:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57962 "EHLO
+        id S231599AbiDLVGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 17:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231388AbiDLVGa (ORCPT
+        with ESMTP id S231437AbiDLVGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 17:06:30 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2062.outbound.protection.outlook.com [40.107.212.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDDF1557C8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:54:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S09im/zCASItpwSKAEDTOzZI86azw6NXwQKlvLh+k1PMuAjkBOsAu3rQOvMyR51nIRwk3PxI5is8hxDLjERqAMn01TnqF0qROgZmeUp7Vp7nFqVwteZy8aRVd6uKznfAzJr5xXg65CxA0CkJuwDp5+N4mJgrHg/02p9IUh+67LuImn39Uq8JC8S2RjVz559PZBHo5Tkk6OZauLpwAQ2bIXdqdKLrc+FeX7V9H1RJ7XXW4pyFanjlH2UdO8S2KB+rZ7SsPGpEgfCJsBbV76E81WmWjenpCzPAZXa+j+B9+f8fzTm17Py250MqVPdh2XVIS6ICZWwTQ/Zy3HAZB1hiTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IfVWEuGEmICti832VpE4k8TKv6BaSwcstmam9+2KYVs=;
- b=bAMb7FanxSdhSVY0M6L9k0AaI997zBxTH1b3ktP6qMTKgeUfR9kybg440dY6hp7ZlJ+skwaK2+mU6T5wlkCUnGAplml8301LRE3G4njpoMZCLg4femzGPdPsO9kS+eseCsdYRFG4asY2kZwR/6mWVo/nqK/k8mQ0uBnICFdaaEtDAI8rVE7DVPbS8hLe4KygGRQDcJqmRbWzKbounZ28jFx0tHMMmjsLvjEMmwUrNgmpsQSIEYiU5/RHHJGZd2gjtsCvLkiVQNOihqRh7ppEn+Jdku2+rmJgyBpT23IZTFahmPXsLB5ZaFFEXaE/8mDolkFVM824JsgwrUS/qzXi6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IfVWEuGEmICti832VpE4k8TKv6BaSwcstmam9+2KYVs=;
- b=LiknDqzVTkNMl4evPt00R9ToU+lknAws0qLExc6tK6K85s/ZH73kuewlTMWSXXd/CdBCGYqW6aS6KH77bUJf8mPmlk635qVKpwzyulqhfualus+cumb+dn2QVkJgBYFDuFOOOlVMdUlO1gN2G9rtT46KS5hNb5QtLvOgZI7gvnaIaZclKT/kn3u5TmwF63mdMprcm5QCY/A6m0z/ZcoPP0rbzoPatdtPSwdfqq6MB7jEy3EGPXSG+BGT+s2NJ3FJSIYtr2D5aNo4QDj3Gw96kSusL/wSBgezs1p4ED1CJHTEqiWbkIk65FBk4bctLg0So24jtns4IgI+wJugfniAiw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4206.namprd12.prod.outlook.com (2603:10b6:208:1d5::18)
- by CH2PR12MB5529.namprd12.prod.outlook.com (2603:10b6:610:36::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 20:52:35 +0000
-Received: from MN2PR12MB4206.namprd12.prod.outlook.com
- ([fe80::211e:d78f:c944:6665]) by MN2PR12MB4206.namprd12.prod.outlook.com
- ([fe80::211e:d78f:c944:6665%7]) with mapi id 15.20.5144.030; Tue, 12 Apr 2022
- 20:52:35 +0000
-Message-ID: <c66642f9-2e8f-8c0c-d9d0-91489fe1413d@nvidia.com>
-Date:   Wed, 13 Apr 2022 02:22:21 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH 33/34] vfio/mdev: Use the driver core to create the
- 'remove' file
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>, intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20220411141403.86980-1-hch@lst.de>
- <20220411141403.86980-34-hch@lst.de>
-X-Nvconfidentiality: public
-From:   Kirti Wankhede <kwankhede@nvidia.com>
-In-Reply-To: <20220411141403.86980-34-hch@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Tue, 12 Apr 2022 17:06:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B918115470D;
+        Tue, 12 Apr 2022 13:54:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5352761C54;
+        Tue, 12 Apr 2022 20:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A248C385A1;
+        Tue, 12 Apr 2022 20:41:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649796069;
+        bh=YBvi7BvRSFhTBMnNDQglW7gASkP9HGdcSPqceH085lI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aeILG2DvCifC4VQbXqYyZL6IYHEItaTTEt7soKXalXltcIDglD7Pna4yAKKMsn/qG
+         lKQ8QtJofwT1FT1yzZo8Mi9p+ZqJxF5eoa1ZHH3WyZe0DYWjM71Bi+BbiVwJa8bDmW
+         jgI2XdYfWONemapxaloIcZy26WSTHGHRN+kxBy4o=
+Date:   Tue, 12 Apr 2022 13:41:08 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Axel Rasmussen <axelrasmussen@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <namit@vmware.com>, Peter Xu <peterx@redhat.com>,
+        Shuah Khan <shuah@kernel.org>, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 1/2] userfaultfd: add /dev/userfaultfd for fine grained
+ access control
+Message-Id: <20220412134108.b95b6c92183b3d9c1dd11b47@linux-foundation.org>
+In-Reply-To: <20220412202942.386981-1-axelrasmussen@google.com>
+References: <20220412202942.386981-1-axelrasmussen@google.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA1PR0101CA0049.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:20::11) To MN2PR12MB4206.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::18)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 49de4d41-3007-4a02-f92f-08da1cc65ee5
-X-MS-TrafficTypeDiagnostic: CH2PR12MB5529:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB5529909C8658A0C2A70BF570DCED9@CH2PR12MB5529.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lDigYH6e5sxUv38FL3l80mlLQ4Ud9BIUOUHHuo4BgI9a+CXkC/VUKETXecLK2aalJfDSnh76pVEFNia764Wv7H9gp/fryC139LgVozX8UNGN7300rMAzieMajiMYAWw3W+yur/Llx9M7JJ6MVR5/NDKzLPxesxBbQDocOtWM7jWZsrpEndeBfMec1b6v2JYd+PgQlfSi/1bO/iSXWsmxF5ftm7VonkxnEXFSwgaccbBbhKMEKMbM5W+7OsXDBtEt/cQQ9x/XWfKJdVKv5Rnstflr2slIqrSpgQKWTdj3vYsRy9rtn5fpcPW6FbiHUcTALrcqqXS5REh7oUZuuGzHpWeiM4ig4DzZ9r59P4Ih4QsFjizH5o8/ggDtiOvMkYl8pQT6nv0Gfkm3xvhznwDycNwTorjlHA+iqxAHmcj2HZQaNJGHr9eaHL0Y0TTBXxAO4hsVEHF5DY5on9ATo21MaO8rBq9B35rLzwiQxxSJw2FkszvKLgrQMOqU3miwWEYmtLmwtYFPEJYon4c5MfqVxjrfyAPWVi3Xjt9JDbB4W+BK83AagGQGszFPdx2KDApjkXGrc3clm60dTtiMO0E3XhoOJtIblfiFhc39pG6v+6kuCHdonAh/JJe/qVUY+3cbRhJmT2I9AwPqwxRb3rwQtZEMS1aEckSYWEHDePKrrfQSwx2tpvgntksfCPfycnM4PA892lUapCAurpM5+LFECZJBS6wNCe3/BYmwydL6JH8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4206.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(110136005)(38100700002)(66556008)(66946007)(36756003)(316002)(86362001)(31696002)(4326008)(8676002)(508600001)(6486002)(83380400001)(66476007)(5660300002)(7416002)(8936002)(53546011)(26005)(6506007)(186003)(55236004)(6666004)(6512007)(31686004)(2616005)(4744005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Rk9hdnE3Ujh6cldnRmt2VUxJWk91aHJTRFpzd3RENDhITjU4czRYV2pnb1R1?=
- =?utf-8?B?aVdySUxZVzVRVlVjT2x5bXA1aHJIWDZCajFaeEVuS1lsR2gxWGIzSExkbFIz?=
- =?utf-8?B?WHJ5ZlFUcnkyejQwOWYwMFdjK2d3NzRaM01XenVTdlMranh5R2lncmJZaFlZ?=
- =?utf-8?B?dlg2VTQ1UTZJQ1U5aDFLTUdFVnl0S1VLc2N6Zkhudm14am9UOUhOSGpmdGtr?=
- =?utf-8?B?STgvRmVwVGNiWXMyWndTa3pkMjZ3Ulc1NWhjWjd3SlAzcWVNOWtPOC9MOUgy?=
- =?utf-8?B?Y3ErekorWmdiQVI3VjJDTFV3K253bFY5UWtuMUNCZGJJWklMWDlYbHVPN3ZP?=
- =?utf-8?B?cE9JbFovM3hESmhCVlBEZkZJdVVYdHpzakRKL1hNdTJYai9BTHdxU1h0L1Ri?=
- =?utf-8?B?aGQ5Y1BkNUc0U2hmbjhmdWh0VER0RTlVNERoSFc4YlNFTEE4THliVVRRaTMx?=
- =?utf-8?B?OWxSTm9NdGpZalVsVnJkNURtc2syRVlkOWdOWVNDOWFtT05uR2J5VjRJbURz?=
- =?utf-8?B?N3BPN1kyU2ZxK24rdXhlY1ZwK2F2ditHOTdWV24rYlRhNmE3WDB5Z0VWSHl6?=
- =?utf-8?B?ajFOV0pKcEwvcTFFNElEYU8vNDRsRGlIVXJTS1I2VktibzVibE56cS9KV2F2?=
- =?utf-8?B?OGNwUHBKV0RKSEVrOHE1VS9ha3NvUGlldjBFYjRrMGN5K2lidmk3dzRmd0ZV?=
- =?utf-8?B?N1d5VURhc2t2VkZlOHVReHAwNVNYN1F3VnVaeXY5SmRnV1hXYWFSeDNEeERu?=
- =?utf-8?B?SzZTYW5ITmM0SFFSOFR2N0pNb3NHQ1Z6TWVMaldnMllkN0gzY2NEczlQMzZZ?=
- =?utf-8?B?QVp1Y09PZmt4Rm1Bb0NOT2ZsSXBxSytCbmx3MmRKL2Zkdm0wdStyTE1YK0pu?=
- =?utf-8?B?bzZlcmxkVHo0ZXY2bUZvL0E2S3ExclZPNkhacHMyc3ZaOENyVGgraCtJSXEv?=
- =?utf-8?B?ekdrNC9MTUM2MzNnV0F2Snd0WjI3Z0V0WjFhOTF5M2xVT2VxMVVXK2xNa0Q3?=
- =?utf-8?B?QmRLWE1uM01MSThoYlFQNTZUL2hvcmY1aTB6SHk4SEt6RTVlblJSc2tQbXRs?=
- =?utf-8?B?cENScDAzNWZRemt6aWxGNjVxMHVSWWN2VUlPbkxZZGFrRmhYOGFsbFJlL0sy?=
- =?utf-8?B?NGJCWlZKTTg5RndXWGZRK0JPQnFiL0doUXd3MVd6bjNKMlV5QmZUV1hlOFZZ?=
- =?utf-8?B?SzVUZ2ZrN2Q3aEQwYVFuNkhMMUpMNmk0Y09UeTR5TFgwMGpnQmpSdkRPRlRt?=
- =?utf-8?B?OVJqR2MwcyswbVY1cG9VVDJvb0ZiL1pldktQM0FWSzhlQys2Y2VWQXdjWFY4?=
- =?utf-8?B?S1FIMGN1aU9NODN2WHJRakwvbXROYVpqVktSQXNuTlpZRzFpTWwzSWVIeU9G?=
- =?utf-8?B?Y0tPRDI0YlJSQkFmblQ5YkdnNzlJdGlKVnZTdzFFTDA4cG8rdUVuU0FBcXRB?=
- =?utf-8?B?R1NWNWptOWgyOW1EVk5zWkY0a29jd1ZCdVIrRmxrMUNpdks5c3M3V1hYdENS?=
- =?utf-8?B?SU14eU9vWFI2ZDdmNEZsU1dUckZiaVZsaHIrOXdhWHVKbzkveVp2ZjZjQVhr?=
- =?utf-8?B?TUpaVnc1T1B6K1RWOS9pMUxibkcycENqR1FNZFFBRWk4ZkNJN2dqZ2tSc3M4?=
- =?utf-8?B?eXk5QU1GQVhoVmYweFlodkxNUW1Dd1lTNFE1azkvT3JHSEFWakxqTHJzWFpH?=
- =?utf-8?B?Um5oUVVwZUNYbks1bHNUOFhMaEhyalFRM2dzWUkzWDNCU1UrOFErV0VVWHN4?=
- =?utf-8?B?Mkk4T2NGdDBhYmtJT3l6anJQdm5hZUZmdk1lNVd1V2RFLzQ4b201TFNCM1J6?=
- =?utf-8?B?VFRtYmRmQjhLOEgvaFBOUlp3RFlZeml3YjJSNXU2NndmMUFSYkdyaU5VRGd5?=
- =?utf-8?B?YkFjVzV4L043STBkQ1ZMYmJGYnUyTmZ1ZzBBcUxpVEFGM1RzZjk4SDF6WTds?=
- =?utf-8?B?NGJ1L3NXcEQ1b1U2TEhOOFRWYUJvV3p6eFhHa3dNZHZYMjFEajVsaHBoa3dl?=
- =?utf-8?B?Zlp3R2hncXJjWGZNRXpQT21OYW1yc0FWZXhPd3dJcGgvMW85ZUR3Q1hiekxR?=
- =?utf-8?B?Rm9HZkZtYU9wYVZ4MWM2S2V5SFZOUDlEMEVJS1paU1JEaXdzRTRURVdycklD?=
- =?utf-8?B?NWNWdkJSTENtVU1BMy93cndGb3JNZTdaeEMyczN4V1FDUTZhTHFCSjcxNXdI?=
- =?utf-8?B?TmZyK0lxWlZWSzFaTDJ5b3BtOVNhOVA1c1dyRzJwcWxjUU5vU3RNRHU3bllZ?=
- =?utf-8?B?SmZYZmdMM0pBVmxrM2lnb0ZVTUxmQjYrdDlJUW8vUzZlK2ttN01uSVdrRnFl?=
- =?utf-8?B?dU85RGJOekc4cjBqZkM1MmNrbmNaUnBDbU0zYlczRVMzbUd2OFpZdz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49de4d41-3007-4a02-f92f-08da1cc65ee5
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4206.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 20:52:35.1015
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: P2SLjwJks7BIL2b0UQ9LUIeXwjIpNEKhn8xvOpqWrVTMSMiCZxCmAQmVh7AuD4/ceW0aPxrlABmK1KelPpDUvg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB5529
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 12 Apr 2022 13:29:41 -0700 Axel Rasmussen <axelrasmussen@google.com> wrote:
 
+> To achieve this, add a /dev/userfaultfd misc device.
 
-On 4/11/2022 7:44 PM, Christoph Hellwig wrote:
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> The device creator is supposed to use the dev.groups value to add sysfs
-> files before device_add is called, not call sysfs_create_files() after
-> device_add() returns. This creates a race with uevent delivery where the
-> extra attribute will not be visible.
-> 
-> This was being done because the groups had been co-opted by the mdev
-> driver, now that prior patches have moved the driver's groups to the
-> struct device_driver the dev.group is properly free for use here.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   drivers/vfio/mdev/mdev_core.c    |  1 +
->   drivers/vfio/mdev/mdev_private.h |  2 ++
->   drivers/vfio/mdev/mdev_sysfs.c   | 19 ++++++++++---------
->   3 files changed, 13 insertions(+), 9 deletions(-)
-> 
-
-Reviewed-by: Kirti Wankhede <kwankhede@nvidia.com>
+An update to $(grep -rl userfault Documentation/) seems appropriate?
