@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 275BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351290AbiDLHKS (ORCPT
+        id S1351313AbiDLHKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49002 "EHLO
+        Tue, 12 Apr 2022 03:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352018AbiDLGyz (ORCPT
+        with ESMTP id S1352141AbiDLGzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB5B31DEF;
-        Mon, 11 Apr 2022 23:44:50 -0700 (PDT)
+        Tue, 12 Apr 2022 02:55:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F86D393C6;
+        Mon, 11 Apr 2022 23:45:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 835866066C;
-        Tue, 12 Apr 2022 06:44:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90081C385A6;
-        Tue, 12 Apr 2022 06:44:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C0A6ECE1C0A;
+        Tue, 12 Apr 2022 06:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF33AC385A1;
+        Tue, 12 Apr 2022 06:44:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745888;
-        bh=/+J4flAbrEVSrs96FLfEomDJOTs87FLvhb+iButocxw=;
+        s=korg; t=1649745897;
+        bh=Nq4PFmOn6Y0TxJ4NhDk0XkoQCdlfSaGTmCaEbHTGe/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EeZt/6u5llkUbGiif3Z/uj3HHCZHTWxpWZw8npSLjwXqFluCfaCevc10vmyyYWwC5
-         vwlANcilzMewdQshvl/d4TU/3ENFb3Egbvx2q6FGJf2o+YdRLRgjFUwsDCXoxFw+vp
-         gblqn+F41vqHHCmPJKgQRi7axT+kNMwMuMY791f8=
+        b=OucAgQPm02OFvip5UGCgEeB/h5fsSVXgY4Ym/ClrictWg+gxyDnlv7979gB97ty1e
+         pCdO3vCaImL2ZUEHBnIgUwi6BKmC8r4KyK7FbZz1B2oCNrPtpewi5UTFMhqYAgXBf0
+         liZXlbSb5BhC2l7+EGz6Gv5qq8+oynEJGO4kl2Yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Alexander Lobakin <alobakin@pm.me>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/277] Bluetooth: use memset avoid memory leaks
-Date:   Tue, 12 Apr 2022 08:28:06 +0200
-Message-Id: <20220412062944.450290194@linuxfoundation.org>
+Subject: [PATCH 5.15 086/277] MIPS: fix fortify panic when copying asm exception handlers
+Date:   Tue, 12 Apr 2022 08:28:09 +0200
+Message-Id: <20220412062944.536324914@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,33 +50,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+From: Alexander Lobakin <alobakin@pm.me>
 
-[ Upstream commit d3715b2333e9a21692ba16ef8645eda584a9515d ]
+[ Upstream commit d17b66417308996e7e64b270a3c7f3c1fbd4cfc8 ]
 
-Use memset to initialize structs to prevent memory leaks
-in l2cap_ecred_connect
+With KCFLAGS="-O3", I was able to trigger a fortify-source
+memcpy() overflow panic on set_vi_srs_handler().
+Although O3 level is not supported in the mainline, under some
+conditions that may've happened with any optimization settings,
+it's just a matter of inlining luck. The panic itself is correct,
+more precisely, 50/50 false-positive and not at the same time.
+>From the one side, no real overflow happens. Exception handler
+defined in asm just gets copied to some reserved places in the
+memory.
+But the reason behind is that C code refers to that exception
+handler declares it as `char`, i.e. something of 1 byte length.
+It's obvious that the asm function itself is way more than 1 byte,
+so fortify logics thought we are going to past the symbol declared.
+The standard way to refer to asm symbols from C code which is not
+supposed to be called from C is to declare them as
+`extern const u8[]`. This is fully correct from any point of view,
+as any code itself is just a bunch of bytes (including 0 as it is
+for syms like _stext/_etext/etc.), and the exact size is not known
+at the moment of compilation.
+Adjust the type of the except_vec_vi_*() and related variables.
+Make set_handler() take `const` as a second argument to avoid
+cast-away warnings and give a little more room for optimization.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/include/asm/setup.h |  2 +-
+ arch/mips/kernel/traps.c      | 22 +++++++++++-----------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 77ba68209dbd..c57a45df7a26 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1436,6 +1436,7 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
+diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
+index bb36a400203d..8c56b862fd9c 100644
+--- a/arch/mips/include/asm/setup.h
++++ b/arch/mips/include/asm/setup.h
+@@ -16,7 +16,7 @@ static inline void setup_8250_early_printk_port(unsigned long base,
+ 	unsigned int reg_shift, unsigned int timeout) {}
+ #endif
  
- 	l2cap_ecred_init(chan, 0);
+-extern void set_handler(unsigned long offset, void *addr, unsigned long len);
++void set_handler(unsigned long offset, const void *addr, unsigned long len);
+ extern void set_uncached_handler(unsigned long offset, void *addr, unsigned long len);
  
-+	memset(&data, 0, sizeof(data));
- 	data.pdu.req.psm     = chan->psm;
- 	data.pdu.req.mtu     = cpu_to_le16(chan->imtu);
- 	data.pdu.req.mps     = cpu_to_le16(chan->mps);
+ typedef void (*vi_handler_t)(void);
+diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
+index 6f07362de5ce..edd93430b954 100644
+--- a/arch/mips/kernel/traps.c
++++ b/arch/mips/kernel/traps.c
+@@ -2085,19 +2085,19 @@ static void *set_vi_srs_handler(int n, vi_handler_t addr, int srs)
+ 		 * If no shadow set is selected then use the default handler
+ 		 * that does normal register saving and standard interrupt exit
+ 		 */
+-		extern char except_vec_vi, except_vec_vi_lui;
+-		extern char except_vec_vi_ori, except_vec_vi_end;
+-		extern char rollback_except_vec_vi;
+-		char *vec_start = using_rollback_handler() ?
+-			&rollback_except_vec_vi : &except_vec_vi;
++		extern const u8 except_vec_vi[], except_vec_vi_lui[];
++		extern const u8 except_vec_vi_ori[], except_vec_vi_end[];
++		extern const u8 rollback_except_vec_vi[];
++		const u8 *vec_start = using_rollback_handler() ?
++				      rollback_except_vec_vi : except_vec_vi;
+ #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_BIG_ENDIAN)
+-		const int lui_offset = &except_vec_vi_lui - vec_start + 2;
+-		const int ori_offset = &except_vec_vi_ori - vec_start + 2;
++		const int lui_offset = except_vec_vi_lui - vec_start + 2;
++		const int ori_offset = except_vec_vi_ori - vec_start + 2;
+ #else
+-		const int lui_offset = &except_vec_vi_lui - vec_start;
+-		const int ori_offset = &except_vec_vi_ori - vec_start;
++		const int lui_offset = except_vec_vi_lui - vec_start;
++		const int ori_offset = except_vec_vi_ori - vec_start;
+ #endif
+-		const int handler_len = &except_vec_vi_end - vec_start;
++		const int handler_len = except_vec_vi_end - vec_start;
+ 
+ 		if (handler_len > VECTORSPACING) {
+ 			/*
+@@ -2305,7 +2305,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
+ }
+ 
+ /* Install CPU exception handler */
+-void set_handler(unsigned long offset, void *addr, unsigned long size)
++void set_handler(unsigned long offset, const void *addr, unsigned long size)
+ {
+ #ifdef CONFIG_CPU_MICROMIPS
+ 	memcpy((void *)(ebase + offset), ((unsigned char *)addr - 1), size);
 -- 
 2.35.1
 
