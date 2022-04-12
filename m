@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD4AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEA4C3525B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383126AbiDLIft (ORCPT
+        id S1383169AbiDLIgB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
+        Tue, 12 Apr 2022 04:36:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356345AbiDLHfS (ORCPT
+        with ESMTP id S1356353AbiDLHfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:35:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB88F50E2E;
-        Tue, 12 Apr 2022 00:09:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E777649F99;
+        Tue, 12 Apr 2022 00:09:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B978616E3;
-        Tue, 12 Apr 2022 07:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A961EC385A5;
-        Tue, 12 Apr 2022 07:09:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FAB0B81B54;
+        Tue, 12 Apr 2022 07:09:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDDABC385A5;
+        Tue, 12 Apr 2022 07:09:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747361;
-        bh=ml72iPm2ujhvVrlOqTzu2cWjMgaiiwbonFftTOGfFDo=;
+        s=korg; t=1649747347;
+        bh=tOio+VmNko1UzUjmLWTcQDjPm3ck2VQexHps4VvQ8wM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hlVC9e2XmEh927T042mUJOUbm5p/5D2pagEdHpCaJ9C5TJHcfFKebNEbykHc9qfys
-         bIfcMPcps75ZCC+heaUdX2gk+dmtce7GBEZMF/yu60qeHcD2KkhcFiLmJscn0sw0m9
-         5UMaCWGezafkDKIAXyFw1UQvYMhKQoRzOh5ERHO4=
+        b=lIBVYePR2RCdel2wN2t4j74OOIcz8cfFSpzP+vIevGoYhVrABxh26vKrYzE3+OXj/
+         Z04/dVh2HTodKYR6B5Qgh3zsqqKs1N0o1PBCZKeaGD+pWGkTFvu0hQpGPiqoJsZOpq
+         mkOvo3bdmMOFq/O5W6f8atqmDpFWIom3zVSpYhh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Witold Fijalkowski <witoldx.fijalkowski@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
+        Melissa Wen <mwen@igalia.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 050/343] i40e: Add sending commands in atomic context
-Date:   Tue, 12 Apr 2022 08:27:48 +0200
-Message-Id: <20220412062952.550900069@linuxfoundation.org>
+Subject: [PATCH 5.17 046/343] drm/v3d: fix missing unlock
+Date:   Tue, 12 Apr 2022 08:27:44 +0200
+Message-Id: <20220412062952.436777574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,91 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit 59b3d7350ff35c939b8e173eb2eecac80a5ee046 ]
+[ Upstream commit e57c1a3bd5e8e0c7181f65ae55581f0236a8f284 ]
 
-Change functions:
-- i40e_aq_add_macvlan
-- i40e_aq_remove_macvlan
-- i40e_aq_delete_element
-- i40e_aq_add_vsi
-- i40e_aq_update_vsi_params
-to explicitly use i40e_asq_send_command_atomic(..., true)
-instead of i40e_asq_send_command, as they use mutexes and do some
-work in an atomic context.
-Without this change setting vlan via netdev will fail with
-call trace cased by bug "BUG: scheduling while atomic".
+[why]
+Unlock is needed on the error handling path to prevent dead lock.
+v3d_submit_cl_ioctl and v3d_submit_csd_ioctl is missing unlock.
 
-Signed-off-by: Witold Fijalkowski <witoldx.fijalkowski@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+[how]
+Fix this by changing goto target on the error handling path. So
+changing the goto to target an error handling path
+that includes drm_gem_unlock reservations.
+
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
+Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/1643377262-109975-1-git-send-email-lyz_cs@pku.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_common.c | 21 +++++++++++--------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/v3d/v3d_gem.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_common.c b/drivers/net/ethernet/intel/i40e/i40e_common.c
-index 9ddeb015eb7e..e830987a8c6d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_common.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_common.c
-@@ -1899,8 +1899,9 @@ i40e_status i40e_aq_add_vsi(struct i40e_hw *hw,
+diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
+index c7ed2e1cbab6..92bc0faee84f 100644
+--- a/drivers/gpu/drm/v3d/v3d_gem.c
++++ b/drivers/gpu/drm/v3d/v3d_gem.c
+@@ -798,7 +798,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
  
- 	desc.flags |= cpu_to_le16((u16)(I40E_AQ_FLAG_BUF | I40E_AQ_FLAG_RD));
+ 		if (!render->base.perfmon) {
+ 			ret = -ENOENT;
+-			goto fail;
++			goto fail_perfmon;
+ 		}
+ 	}
  
--	status = i40e_asq_send_command(hw, &desc, &vsi_ctx->info,
--				    sizeof(vsi_ctx->info), cmd_details);
-+	status = i40e_asq_send_command_atomic(hw, &desc, &vsi_ctx->info,
-+					      sizeof(vsi_ctx->info),
-+					      cmd_details, true);
+@@ -847,6 +847,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
  
- 	if (status)
- 		goto aq_add_vsi_exit;
-@@ -2287,8 +2288,9 @@ i40e_status i40e_aq_update_vsi_params(struct i40e_hw *hw,
+ fail_unreserve:
+ 	mutex_unlock(&v3d->sched_lock);
++fail_perfmon:
+ 	drm_gem_unlock_reservations(last_job->bo,
+ 				    last_job->bo_count, &acquire_ctx);
+ fail:
+@@ -1027,7 +1028,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
+ 						     args->perfmon_id);
+ 		if (!job->base.perfmon) {
+ 			ret = -ENOENT;
+-			goto fail;
++			goto fail_perfmon;
+ 		}
+ 	}
  
- 	desc.flags |= cpu_to_le16((u16)(I40E_AQ_FLAG_BUF | I40E_AQ_FLAG_RD));
+@@ -1056,6 +1057,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
  
--	status = i40e_asq_send_command(hw, &desc, &vsi_ctx->info,
--				    sizeof(vsi_ctx->info), cmd_details);
-+	status = i40e_asq_send_command_atomic(hw, &desc, &vsi_ctx->info,
-+					      sizeof(vsi_ctx->info),
-+					      cmd_details, true);
- 
- 	vsi_ctx->vsis_allocated = le16_to_cpu(resp->vsi_used);
- 	vsi_ctx->vsis_unallocated = le16_to_cpu(resp->vsi_free);
-@@ -2673,8 +2675,8 @@ i40e_status i40e_aq_add_macvlan(struct i40e_hw *hw, u16 seid,
- 	if (buf_size > I40E_AQ_LARGE_BUF)
- 		desc.flags |= cpu_to_le16((u16)I40E_AQ_FLAG_LB);
- 
--	status = i40e_asq_send_command(hw, &desc, mv_list, buf_size,
--				       cmd_details);
-+	status = i40e_asq_send_command_atomic(hw, &desc, mv_list, buf_size,
-+					      cmd_details, true);
- 
- 	return status;
- }
-@@ -2715,8 +2717,8 @@ i40e_status i40e_aq_remove_macvlan(struct i40e_hw *hw, u16 seid,
- 	if (buf_size > I40E_AQ_LARGE_BUF)
- 		desc.flags |= cpu_to_le16((u16)I40E_AQ_FLAG_LB);
- 
--	status = i40e_asq_send_command(hw, &desc, mv_list, buf_size,
--				       cmd_details);
-+	status = i40e_asq_send_command_atomic(hw, &desc, mv_list, buf_size,
-+					      cmd_details, true);
- 
- 	return status;
- }
-@@ -3868,7 +3870,8 @@ i40e_status i40e_aq_delete_element(struct i40e_hw *hw, u16 seid,
- 
- 	cmd->seid = cpu_to_le16(seid);
- 
--	status = i40e_asq_send_command(hw, &desc, NULL, 0, cmd_details);
-+	status = i40e_asq_send_command_atomic(hw, &desc, NULL, 0,
-+					      cmd_details, true);
- 
- 	return status;
- }
+ fail_unreserve:
+ 	mutex_unlock(&v3d->sched_lock);
++fail_perfmon:
+ 	drm_gem_unlock_reservations(clean_job->bo, clean_job->bo_count,
+ 				    &acquire_ctx);
+ fail:
 -- 
 2.35.1
 
