@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCF1C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376411AbiDLItZ (ORCPT
+        id S1376612AbiDLItz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
+        Tue, 12 Apr 2022 04:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357678AbiDLHkh (ORCPT
+        with ESMTP id S1357860AbiDLHkt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E8637A3F;
-        Tue, 12 Apr 2022 00:16:37 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC22E3A182;
+        Tue, 12 Apr 2022 00:17:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8454B81B62;
-        Tue, 12 Apr 2022 07:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F77BC385A5;
-        Tue, 12 Apr 2022 07:16:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4863D617D2;
+        Tue, 12 Apr 2022 07:17:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50AE8C385A6;
+        Tue, 12 Apr 2022 07:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747794;
-        bh=6Gj3u1l9n/DaLADElMNFEcYCcb3QHToLKpQJMhKKuwU=;
+        s=korg; t=1649747821;
+        bh=QglxR7xqTgao+Mu3n8Nk9NbuD0NuJMjSZJ6+4whERrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s6iKZB91Ve+saFj6wHXOAGDOR9BrYCj5n48jgNUeATEF41xiq1gops8FDxiJYrSTM
-         nfkZaY0Fx/6EYtTXcPCKThT1LIsBtxOil9d5G9zjdqwD7Cj1KGvZEv/y8/a//hHHW2
-         RyVfug/WrCNN+fvU+FAAoaep9o9+PYde2aMOW14Q=
+        b=rrO3PYIEqIwOXpkIxLIPAsVCdsmDpMuAEsT4qbBGXj2bZ+Neq1MDOpheZMC1gu/+p
+         nrfVfvNFZVJ+EyFZ/GJ0+hLieVYiqrw5Dr4UTfIsVu+msvTmnwLOjPvaLDZXmUKhgI
+         oPF4prDsEDFicL23yGcn1asMRVBY8klhHU9tZoxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Axel Lin <axel.lin@ingics.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 209/343] ice: Clear default forwarding VSI during VSI release
-Date:   Tue, 12 Apr 2022 08:30:27 +0200
-Message-Id: <20220412062957.381340949@linuxfoundation.org>
+Subject: [PATCH 5.17 218/343] regulator: rtq2134: Fix missing active_discharge_on setting
+Date:   Tue, 12 Apr 2022 08:30:36 +0200
+Message-Id: <20220412062957.635055412@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,63 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+From: Axel Lin <axel.lin@ingics.com>
 
-[ Upstream commit bd8c624c0cd59de0032752ba3001c107bba97f7b ]
+[ Upstream commit 17049bf9de55a42ee96fd34520aff8a484677675 ]
 
-VSI is set as default forwarding one when promisc mode is set for
-PF interface, when PF is switched to switchdev mode or when VF
-driver asks to enable allmulticast or promisc mode for the VF
-interface (when vf-true-promisc-support priv flag is off).
-The third case is buggy because in that case VSI associated with
-VF remains as default one after VF removal.
+The active_discharge_on setting was missed, so output discharge resistor
+is always disabled. Fix it.
 
-Reproducer:
-1. Create VF
-   echo 1 > sys/class/net/ens7f0/device/sriov_numvfs
-2. Enable allmulticast or promisc mode on VF
-   ip link set ens7f0v0 allmulticast on
-   ip link set ens7f0v0 promisc on
-3. Delete VF
-   echo 0 > sys/class/net/ens7f0/device/sriov_numvfs
-4. Try to enable promisc mode on PF
-   ip link set ens7f0 promisc on
-
-Although it looks that promisc mode on PF is enabled the opposite
-is true because ice_vsi_sync_fltr() responsible for IFF_PROMISC
-handling first checks if any other VSI is set as default forwarding
-one and if so the function does not do anything. At this point
-it is not possible to enable promisc mode on PF without re-probe
-device.
-
-To resolve the issue this patch clear default forwarding VSI
-during ice_vsi_release() when the VSI to be released is the default
-one.
-
-Fixes: 01b5e89aab49 ("ice: Add VF promiscuous support")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 0555d41497de ("regulator: rtq2134: Add support for Richtek RTQ2134 SubPMIC")
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Link: https://lore.kernel.org/r/20220404022514.449231-1-axel.lin@ingics.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/regulator/rtq2134-regulator.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 53256aca27c7..20d755822d43 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -3147,6 +3147,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 		}
- 	}
- 
-+	if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
-+		ice_clear_dflt_vsi(pf->first_sw);
- 	ice_fltr_remove_all(vsi);
- 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
- 	err = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
+diff --git a/drivers/regulator/rtq2134-regulator.c b/drivers/regulator/rtq2134-regulator.c
+index f21e3f8b21f2..8e13dea354a2 100644
+--- a/drivers/regulator/rtq2134-regulator.c
++++ b/drivers/regulator/rtq2134-regulator.c
+@@ -285,6 +285,7 @@ static const unsigned int rtq2134_buck_ramp_delay_table[] = {
+ 		.enable_mask = RTQ2134_VOUTEN_MASK, \
+ 		.active_discharge_reg = RTQ2134_REG_BUCK##_id##_CFG0, \
+ 		.active_discharge_mask = RTQ2134_ACTDISCHG_MASK, \
++		.active_discharge_on = RTQ2134_ACTDISCHG_MASK, \
+ 		.ramp_reg = RTQ2134_REG_BUCK##_id##_RSPCFG, \
+ 		.ramp_mask = RTQ2134_RSPUP_MASK, \
+ 		.ramp_delay_table = rtq2134_buck_ramp_delay_table, \
 -- 
 2.35.1
 
