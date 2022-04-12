@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D26C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F272FC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354152AbiDLHvN (ORCPT
+        id S1354269AbiDLHvR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
+        Tue, 12 Apr 2022 03:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353182AbiDLHZQ (ORCPT
+        with ESMTP id S1353137AbiDLHZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E99F4DF7F;
-        Tue, 12 Apr 2022 00:00:15 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF964DF50;
+        Tue, 12 Apr 2022 00:00:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74A91B81B50;
-        Tue, 12 Apr 2022 07:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70049C385A1;
-        Tue, 12 Apr 2022 07:00:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6565160B2E;
+        Tue, 12 Apr 2022 07:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D7CEC385A1;
+        Tue, 12 Apr 2022 07:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746813;
-        bh=70BB2ZdU8LXd9g3WarWB6RpWlbn48f4rcF6DTDdhgfA=;
+        s=korg; t=1649746809;
+        bh=q3Kyt35+RyOWN4PHSNq70tj32/ShD76s9auqfXCFT48=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hF2R6F6bjlnUpubQGVSa28zrLOcqvwL2jGZPv4IBhQzPd9KJr5b50hm+RrYRLXJb2
-         9MZh9pIHb8MENl1tBxfjhplzMZzMDZOs/1yW7aovfqwHI8pR+YKDkJbVyXXwUiey3T
-         IscQdYf4TdmDQBVYpWq5hO91H8pWVstZw6V8Bc1M=
+        b=toV0fQMqD3oylNtclKwS8nXtN46fceAKPVCCFA+cdq9JS4tEN0QYwB04aWDwChmSk
+         RPnv1g8uy62SOQd5jgnAey1wQt4CpgyyR49onJ1ML4kRn/WYLbaNMEw7MQAHr7Lhsy
+         L91RQL8nsKuxAjEash2sz8SGZCPDQXlORjUwUbK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Abraham <thomas.abraham@linaro.org>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Hyeonkook Kim <hk619.kim@samsung.com>,
-        Jiri Slaby <jslaby@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 139/285] serial: samsung_tty: do not unlock port->lock for uart_write_wakeup()
-Date:   Tue, 12 Apr 2022 08:29:56 +0200
-Message-Id: <20220412062947.680160322@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 138/285] x86/Kconfig: Do not allow CONFIG_X86_X32_ABI=y with llvm-objcopy
+Date:   Tue, 12 Apr 2022 08:29:55 +0200
+Message-Id: <20220412062947.650788370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,51 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 988c7c00691008ea1daaa1235680a0da49dab4e8 ]
+[ Upstream commit aaeed6ecc1253ce1463fa1aca0b70a4ccbc9fa75 ]
 
-The commit c15c3747ee32 (serial: samsung: fix potential soft lockup
-during uart write) added an unlock of port->lock before
-uart_write_wakeup() and a lock after it. It was always problematic to
-write data from tty_ldisc_ops::write_wakeup and it was even documented
-that way. We fixed the line disciplines to conform to this recently.
-So if there is still a missed one, we should fix them instead of this
-workaround.
+There are two outstanding issues with CONFIG_X86_X32_ABI and
+llvm-objcopy, with similar root causes:
 
-On the top of that, s3c24xx_serial_tx_dma_complete() in this driver
-still holds the port->lock while calling uart_write_wakeup().
+1. llvm-objcopy does not properly convert .note.gnu.property when going
+   from x86_64 to x86_x32, resulting in a corrupted section when
+   linking:
 
-So revert the wrap added by the commit above.
+   https://github.com/ClangBuiltLinux/linux/issues/1141
 
-Cc: Thomas Abraham <thomas.abraham@linaro.org>
-Cc: Kyungmin Park <kyungmin.park@samsung.com>
-Cc: Hyeonkook Kim <hk619.kim@samsung.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220308115153.4225-1-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+2. llvm-objcopy produces corrupted compressed debug sections when going
+   from x86_64 to x86_x32, also resulting in an error when linking:
+
+   https://github.com/ClangBuiltLinux/linux/issues/514
+
+After commit 41c5ef31ad71 ("x86/ibt: Base IBT bits"), the
+.note.gnu.property section is always generated when
+CONFIG_X86_KERNEL_IBT is enabled, which causes the first issue to become
+visible with an allmodconfig build:
+
+  ld.lld: error: arch/x86/entry/vdso/vclock_gettime-x32.o:(.note.gnu.property+0x1c): program property is too short
+
+To avoid this error, do not allow CONFIG_X86_X32_ABI to be selected when
+using llvm-objcopy. If the two issues ever get fixed in llvm-objcopy,
+this can be turned into a feature check.
+
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220314194842.3452-3-nathan@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung_tty.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ arch/x86/Kconfig | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index ca084c10d0bb..78f01ddab1c6 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -922,11 +922,8 @@ static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport)
- 		return;
- 	}
- 
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
--		spin_unlock(&port->lock);
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
--		spin_lock(&port->lock);
--	}
- 
- 	if (uart_circ_empty(xmit))
- 		s3c24xx_serial_stop_tx(port);
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 5c2ccb85f2ef..d377d8af5a9f 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2827,6 +2827,11 @@ config IA32_AOUT
+ config X86_X32
+ 	bool "x32 ABI for 64-bit mode"
+ 	depends on X86_64
++	# llvm-objcopy does not convert x86_64 .note.gnu.property or
++	# compressed debug sections to x86_x32 properly:
++	# https://github.com/ClangBuiltLinux/linux/issues/514
++	# https://github.com/ClangBuiltLinux/linux/issues/1141
++	depends on $(success,$(OBJCOPY) --version | head -n1 | grep -qv llvm)
+ 	help
+ 	  Include code to run binaries for the x32 native 32-bit ABI
+ 	  for 64-bit processors.  An x32 process gets access to the
 -- 
 2.35.1
 
