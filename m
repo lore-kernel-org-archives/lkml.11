@@ -2,157 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCD0C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2A2C47080
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359667AbiDLJUg (ORCPT
+        id S1359094AbiDLJUW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        Tue, 12 Apr 2022 05:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356953AbiDLHjg (ORCPT
+        with ESMTP id S1357024AbiDLHjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:36 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9158289B2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:10:37 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id c1so1692839qkf.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:10:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Oakkso+e+qhsN2ZmTPlz+KXAhhWn3wzRJANvdCpqxYk=;
-        b=Q+HOoAU3/nLyYd9yfYUohPKt65udJu10tbdVwUJryH80QoNi65kxmmTeCr9w9bzzlw
-         9+CcPTMIxqaDMabg2+1y9dXeGATDuh201jif5CmGHIeqDdX0cH6DbiImoYLmwC/lc2jl
-         R/wSyhKXfQMCMUFavhPHAShEs055XqvOqGD0YXq3jA8L/pEcv1WjVETenvk1nthFTAUo
-         zismcqyOqf+cfe2yh4uTtdBlq9bnut9NBhOM0DBK2RoAZzSFxc8remZ/aznsK0JCKl+g
-         Hv/5GL8gyYCqSaLkH6Qn8hXutJ7r2UL3WIOaOwPf0iu26PdDdkLhXONNAT/cCLc8y1B8
-         p1+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Oakkso+e+qhsN2ZmTPlz+KXAhhWn3wzRJANvdCpqxYk=;
-        b=knnvF+T5uExi8fcuaDBdWNgLYR5p1Za5kyCmriZniZIEuhV5mZ1gT2SuNdie2guF7/
-         DESEXCw6yzFybdQiXDqeIkV+wrGxK07akXhqELsKQ4fJrKMSX7B9z052hy3/rnowzYSy
-         zh8baw1ilXIPu4GWkrpW/N8SWOnwcfpiRB5dl/PEmxdnG7b5tMVnNZKrxcNx1J4w40NX
-         qFYubAJyyyYybMk9gfCpfou/TqzUKhPN65fMe+Fy9uVxBJbigqPtPxAW0dTWcb1aspqd
-         IirxRlWAp33Rj8QpJSWVfs8rttWyCZk0BdOIYWRGF8NYF3C5bcycpEf0n1IWq1uCA52/
-         D5RA==
-X-Gm-Message-State: AOAM532Msf537ChEXVrLeYCLKTYawbTt1UNfpek9ya+cBOuQ0nc1CkK0
-        +0O8YfP1U3E5snRSaPCIazs=
-X-Google-Smtp-Source: ABdhPJz9HpruIk48ZvRlIQ4rkcyvLj2AR76zs2UjUSXZUe6ZnqXu1WL6aSY3Fc6MNlZTyztR5C57zw==
-X-Received: by 2002:a05:620a:2848:b0:67d:35de:bb5b with SMTP id h8-20020a05620a284800b0067d35debb5bmr2092273qkp.499.1649747436883;
-        Tue, 12 Apr 2022 00:10:36 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id f6-20020ac859c6000000b002ee0948f1aesm4653771qtf.72.2022.04.12.00.10.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 00:10:36 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     lgirdwood@gmail.com
-Cc:     broonie@kernel.org, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] regulator: stm32-vrefbuf: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Tue, 12 Apr 2022 07:10:30 +0000
-Message-Id: <20220412071030.2532230-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Apr 2022 03:39:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2B2532C2;
+        Tue, 12 Apr 2022 00:10:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26196B81A8F;
+        Tue, 12 Apr 2022 07:10:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F876C385A5;
+        Tue, 12 Apr 2022 07:10:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747451;
+        bh=6x8yKFGa5U5mRxTV0zTicniMpUeHjVzDeMdNkP+EaOU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RVfwNrioM9CGtgBjd5b5SXATmKSh4pVd7W1VH+JUZGf9T5l+sKtUC13D9hzd25WcQ
+         vHfnxgncKWjm/5Ymx4B4khcxAdLgG0j86Zzq7jpSWC7++VwxcZZ/VPrBxYi5O0aWgo
+         nZRqgyenqddK7ISQvMkZ4sWeNlpS08nQk8hlFEmY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 084/343] HID: apple: Report Magic Keyboard 2021 battery over USB
+Date:   Tue, 12 Apr 2022 08:28:22 +0200
+Message-Id: <20220412062953.524501912@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: José Expósito <jose.exposito89@gmail.com>
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+[ Upstream commit 8ae5c16c9d421d43f32f66d2308031f1bd3f9336 ]
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Like the Apple Magic Keyboard 2015, when connected over USB, the 2021
+version registers 2 different interfaces. One of them is used to report
+the battery level.
+
+However, unlike when connected over Bluetooth, the battery level is not
+reported automatically and it is required to fetch it manually.
+
+Add the APPLE_RDESC_BATTERY quirk to fix the battery report descriptor
+and manually fetch the battery level.
+
+Tested with the ANSI, ISO and JIS variants of the keyboard.
+
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/stm32-vrefbuf.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+ drivers/hid/hid-apple.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/regulator/stm32-vrefbuf.c b/drivers/regulator/stm32-vrefbuf.c
-index 161622ea7259..30ea3bc8ca19 100644
---- a/drivers/regulator/stm32-vrefbuf.c
-+++ b/drivers/regulator/stm32-vrefbuf.c
-@@ -44,11 +44,9 @@ static int stm32_vrefbuf_enable(struct regulator_dev *rdev)
- 	u32 val;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(priv->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(priv->dev);
-+	ret = pm_runtime_resume_and_get(priv->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
- 	val = (val & ~STM32_HIZ) | STM32_ENVR;
-@@ -81,11 +79,9 @@ static int stm32_vrefbuf_disable(struct regulator_dev *rdev)
- 	u32 val;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(priv->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(priv->dev);
-+	ret = pm_runtime_resume_and_get(priv->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
- 	val &= ~STM32_ENVR;
-@@ -102,11 +98,9 @@ static int stm32_vrefbuf_is_enabled(struct regulator_dev *rdev)
- 	struct stm32_vrefbuf *priv = rdev_get_drvdata(rdev);
- 	int ret;
- 
--	ret = pm_runtime_get_sync(priv->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(priv->dev);
-+	ret = pm_runtime_resume_and_get(priv->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	ret = readl_relaxed(priv->base + STM32_VREFBUF_CSR) & STM32_ENVR;
- 
-@@ -123,11 +117,9 @@ static int stm32_vrefbuf_set_voltage_sel(struct regulator_dev *rdev,
- 	u32 val;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(priv->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(priv->dev);
-+	ret = pm_runtime_resume_and_get(priv->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
- 	val = (val & ~STM32_VRS) | FIELD_PREP(STM32_VRS, sel);
-@@ -145,11 +137,9 @@ static int stm32_vrefbuf_get_voltage_sel(struct regulator_dev *rdev)
- 	u32 val;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(priv->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(priv->dev);
-+	ret = pm_runtime_resume_and_get(priv->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	val = readl_relaxed(priv->base + STM32_VREFBUF_CSR);
- 	ret = FIELD_GET(STM32_VRS, val);
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 7dc89dc6b0f0..18de4ccb0fb2 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -748,7 +748,7 @@ static const struct hid_device_id apple_devices[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER1_TP_ONLY),
+ 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
+-		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
++		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
+ 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
 -- 
-2.25.1
+2.35.1
+
+
 
