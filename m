@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C416DC47082
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 732CCC38A04
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357162AbiDLIlB (ORCPT
+        id S1384608AbiDLImJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        Tue, 12 Apr 2022 04:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357221AbiDLHjx (ORCPT
+        with ESMTP id S1357241AbiDLHjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4901D1582D;
-        Tue, 12 Apr 2022 00:13:57 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74978DB1;
+        Tue, 12 Apr 2022 00:14:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D766461045;
-        Tue, 12 Apr 2022 07:13:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E335CC385A1;
-        Tue, 12 Apr 2022 07:13:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D937B81B4F;
+        Tue, 12 Apr 2022 07:14:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92C64C385A1;
+        Tue, 12 Apr 2022 07:14:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747636;
-        bh=Hh8TQDDukf6SBZKFe+GfLCSWmvkOIWW41tky6bIOHxg=;
+        s=korg; t=1649747650;
+        bh=qTmYQrOjWDd3Zahu3bZmLVJ06wcEPA21y1qIWN7atiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w5f4NSYM0fJ/iefeF4bI70uYnrHRpzSAwVZt4bIPShIxrDPkgQtiWbRryoI7hFmna
-         XDTDgEKjyXWnBYrarGnRpmPAGKaKCtgqzD9z2Y52xHbvQUTMioQfL3X56JqXvINexl
-         pdbXKBIwCd31m3eQMtRMUAtyH/1j3z3PFrtqfQak=
+        b=lKvfQ/Fs/BiNRpDgJPMA5u8a77nTTB/e9EViRGtdZERjVaU9K6C+CX2tCfSir/WwO
+         PO7yW9Sp2bc5yapK7BN8j7JtXYC4+rsSzK9TDc01cl9GAS2HfdMUIwxmB1FS7oGwec
+         BKeP88ltEe5fADP04UzGbPs6TzOjkORDNU02Hzs4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Karel Rericha <karel@maxtel.cz>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 111/343] power: supply: axp288_charger: Use acpi_quirk_skip_acpi_ac_and_battery()
-Date:   Tue, 12 Apr 2022 08:28:49 +0200
-Message-Id: <20220412062954.597367971@linuxfoundation.org>
+Subject: [PATCH 5.17 149/343] netfilter: conntrack: revisit gc autotuning
+Date:   Tue, 12 Apr 2022 08:29:27 +0200
+Message-Id: <20220412062955.680707128@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,63 +53,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 00d0566614b7bb7b226cb5a6895b0180ffe6915a ]
+[ Upstream commit 2cfadb761d3d0219412fd8150faea60c7e863833 ]
 
-Normally the native AXP288 fg/charger drivers are preferred but one some
-devices the ACPI drivers should be used instead.
+as of commit 4608fdfc07e1
+("netfilter: conntrack: collect all entries in one cycle")
+conntrack gc was changed to run every 2 minutes.
 
-The ACPI battery/ac drivers use the acpi_quirk_skip_acpi_ac_and_battery()
-helper to determine if they should skip loading because native fuel-gauge/
-charger drivers like the AXP288 drivers will be used.
+On systems where conntrack hash table is set to large value, most evictions
+happen from gc worker rather than the packet path due to hash table
+distribution.
 
-The new acpi_quirk_skip_acpi_ac_and_battery() helper includes a list of
-exceptions for boards where the ACPI drivers should be used instead.
+This causes netlink event overflows when events are collected.
 
-Use this new helper to avoid loading on such boards. Note this requires
-adding a Kconfig dependency on ACPI, this is not a problem because ACPI
-should be enabled on all boards with an AXP288 PMIC anyways.
+This change collects average expiry of scanned entries and
+reschedules to the average remaining value, within 1 to 60 second interval.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+To avoid event overflows, reschedule after each bucket and add a
+limit for both run time and number of evictions per run.
+
+If more entries have to be evicted, reschedule and restart 1 jiffy
+into the future.
+
+Reported-by: Karel Rericha <karel@maxtel.cz>
+Cc: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Cc: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/Kconfig          | 2 +-
- drivers/power/supply/axp288_charger.c | 7 +++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ net/netfilter/nf_conntrack_core.c | 85 ++++++++++++++++++++++++-------
+ 1 file changed, 68 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index b366e2fd8e97..d7534f12e9ef 100644
---- a/drivers/power/supply/Kconfig
-+++ b/drivers/power/supply/Kconfig
-@@ -351,7 +351,7 @@ config AXP20X_POWER
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index bf1e17c678f1..7552e1e9fd62 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -67,6 +67,8 @@ EXPORT_SYMBOL_GPL(nf_conntrack_hash);
+ struct conntrack_gc_work {
+ 	struct delayed_work	dwork;
+ 	u32			next_bucket;
++	u32			avg_timeout;
++	u32			start_time;
+ 	bool			exiting;
+ 	bool			early_drop;
+ };
+@@ -78,8 +80,19 @@ static __read_mostly bool nf_conntrack_locks_all;
+ /* serialize hash resizes and nf_ct_iterate_cleanup */
+ static DEFINE_MUTEX(nf_conntrack_mutex);
  
- config AXP288_CHARGER
- 	tristate "X-Powers AXP288 Charger"
--	depends on MFD_AXP20X && EXTCON_AXP288 && IOSF_MBI
-+	depends on MFD_AXP20X && EXTCON_AXP288 && IOSF_MBI && ACPI
- 	help
- 	  Say yes here to have support X-Power AXP288 power management IC (PMIC)
- 	  integrated charger.
-diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
-index c498e62ab4e2..19746e658a6a 100644
---- a/drivers/power/supply/axp288_charger.c
-+++ b/drivers/power/supply/axp288_charger.c
-@@ -838,6 +838,13 @@ static int axp288_charger_probe(struct platform_device *pdev)
- 	struct power_supply_config charger_cfg = {};
- 	unsigned int val;
- 
-+	/*
-+	 * Normally the native AXP288 fg/charger drivers are preferred but
-+	 * on some devices the ACPI drivers should be used instead.
-+	 */
-+	if (!acpi_quirk_skip_acpi_ac_and_battery())
-+		return -ENODEV;
+-#define GC_SCAN_INTERVAL	(120u * HZ)
++#define GC_SCAN_INTERVAL_MAX	(60ul * HZ)
++#define GC_SCAN_INTERVAL_MIN	(1ul * HZ)
 +
- 	/*
- 	 * On some devices the fuelgauge and charger parts of the axp288 are
- 	 * not used, check that the fuelgauge is enabled (CC_CTRL != 0).
++/* clamp timeouts to this value (TCP unacked) */
++#define GC_SCAN_INTERVAL_CLAMP	(300ul * HZ)
++
++/* large initial bias so that we don't scan often just because we have
++ * three entries with a 1s timeout.
++ */
++#define GC_SCAN_INTERVAL_INIT	INT_MAX
++
+ #define GC_SCAN_MAX_DURATION	msecs_to_jiffies(10)
++#define GC_SCAN_EXPIRED_MAX	(64000u / HZ)
+ 
+ #define MIN_CHAINLEN	8u
+ #define MAX_CHAINLEN	(32u - MIN_CHAINLEN)
+@@ -1421,16 +1434,28 @@ static bool gc_worker_can_early_drop(const struct nf_conn *ct)
+ 
+ static void gc_worker(struct work_struct *work)
+ {
+-	unsigned long end_time = jiffies + GC_SCAN_MAX_DURATION;
+ 	unsigned int i, hashsz, nf_conntrack_max95 = 0;
+-	unsigned long next_run = GC_SCAN_INTERVAL;
++	u32 end_time, start_time = nfct_time_stamp;
+ 	struct conntrack_gc_work *gc_work;
++	unsigned int expired_count = 0;
++	unsigned long next_run;
++	s32 delta_time;
++
+ 	gc_work = container_of(work, struct conntrack_gc_work, dwork.work);
+ 
+ 	i = gc_work->next_bucket;
+ 	if (gc_work->early_drop)
+ 		nf_conntrack_max95 = nf_conntrack_max / 100u * 95u;
+ 
++	if (i == 0) {
++		gc_work->avg_timeout = GC_SCAN_INTERVAL_INIT;
++		gc_work->start_time = start_time;
++	}
++
++	next_run = gc_work->avg_timeout;
++
++	end_time = start_time + GC_SCAN_MAX_DURATION;
++
+ 	do {
+ 		struct nf_conntrack_tuple_hash *h;
+ 		struct hlist_nulls_head *ct_hash;
+@@ -1447,6 +1472,7 @@ static void gc_worker(struct work_struct *work)
+ 
+ 		hlist_nulls_for_each_entry_rcu(h, n, &ct_hash[i], hnnode) {
+ 			struct nf_conntrack_net *cnet;
++			unsigned long expires;
+ 			struct net *net;
+ 
+ 			tmp = nf_ct_tuplehash_to_ctrack(h);
+@@ -1456,11 +1482,29 @@ static void gc_worker(struct work_struct *work)
+ 				continue;
+ 			}
+ 
++			if (expired_count > GC_SCAN_EXPIRED_MAX) {
++				rcu_read_unlock();
++
++				gc_work->next_bucket = i;
++				gc_work->avg_timeout = next_run;
++
++				delta_time = nfct_time_stamp - gc_work->start_time;
++
++				/* re-sched immediately if total cycle time is exceeded */
++				next_run = delta_time < (s32)GC_SCAN_INTERVAL_MAX;
++				goto early_exit;
++			}
++
+ 			if (nf_ct_is_expired(tmp)) {
+ 				nf_ct_gc_expired(tmp);
++				expired_count++;
+ 				continue;
+ 			}
+ 
++			expires = clamp(nf_ct_expires(tmp), GC_SCAN_INTERVAL_MIN, GC_SCAN_INTERVAL_CLAMP);
++			next_run += expires;
++			next_run /= 2u;
++
+ 			if (nf_conntrack_max95 == 0 || gc_worker_skip_ct(tmp))
+ 				continue;
+ 
+@@ -1478,8 +1522,10 @@ static void gc_worker(struct work_struct *work)
+ 				continue;
+ 			}
+ 
+-			if (gc_worker_can_early_drop(tmp))
++			if (gc_worker_can_early_drop(tmp)) {
+ 				nf_ct_kill(tmp);
++				expired_count++;
++			}
+ 
+ 			nf_ct_put(tmp);
+ 		}
+@@ -1492,33 +1538,38 @@ static void gc_worker(struct work_struct *work)
+ 		cond_resched();
+ 		i++;
+ 
+-		if (time_after(jiffies, end_time) && i < hashsz) {
++		delta_time = nfct_time_stamp - end_time;
++		if (delta_time > 0 && i < hashsz) {
++			gc_work->avg_timeout = next_run;
+ 			gc_work->next_bucket = i;
+ 			next_run = 0;
+-			break;
++			goto early_exit;
+ 		}
+ 	} while (i < hashsz);
+ 
++	gc_work->next_bucket = 0;
++
++	next_run = clamp(next_run, GC_SCAN_INTERVAL_MIN, GC_SCAN_INTERVAL_MAX);
++
++	delta_time = max_t(s32, nfct_time_stamp - gc_work->start_time, 1);
++	if (next_run > (unsigned long)delta_time)
++		next_run -= delta_time;
++	else
++		next_run = 1;
++
++early_exit:
+ 	if (gc_work->exiting)
+ 		return;
+ 
+-	/*
+-	 * Eviction will normally happen from the packet path, and not
+-	 * from this gc worker.
+-	 *
+-	 * This worker is only here to reap expired entries when system went
+-	 * idle after a busy period.
+-	 */
+-	if (next_run) {
++	if (next_run)
+ 		gc_work->early_drop = false;
+-		gc_work->next_bucket = 0;
+-	}
++
+ 	queue_delayed_work(system_power_efficient_wq, &gc_work->dwork, next_run);
+ }
+ 
+ static void conntrack_gc_work_init(struct conntrack_gc_work *gc_work)
+ {
+-	INIT_DEFERRABLE_WORK(&gc_work->dwork, gc_worker);
++	INIT_DELAYED_WORK(&gc_work->dwork, gc_worker);
+ 	gc_work->exiting = false;
+ }
+ 
 -- 
 2.35.1
 
