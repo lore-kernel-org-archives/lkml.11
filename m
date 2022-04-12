@@ -2,179 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F9CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377295AbiDLJ2B (ORCPT
+        id S1383370AbiDLJ2J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
+        Tue, 12 Apr 2022 05:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379577AbiDLIUj (ORCPT
+        with ESMTP id S1380805AbiDLIWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:20:39 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD78B46154
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:48:27 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0A4B9FF80A;
-        Tue, 12 Apr 2022 07:48:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649749706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YW/FpTIll39+9L5ULUaE9f07ZfIeCCQhSd38iCsA3pg=;
-        b=aXzEGK9EGcOVOJifzQG1YR9RgJX9bx4SRppY92QDfZCpkF7UG+SuAE+Vt3fD+s4lUG9Dp/
-        6E2GOvRJUD3BrQQRuyBjEG+aPdyB+l36E0p6D5FAv0+/lUp9U/0BO+UexyjYN4nbjbBKi3
-        yKTP2jtMkAMg4BZuEJtHoDGlf3stW/95B1L1ZFDcIx1wGTsTUjAmLnV+PLRNQbOc8s11D6
-        FHRkgZg4BlnxjYRczCsHCgpPCxz242Zd0t2mGEjZrB8JJvC4krFD1gtGPAUu6q1j90u+c/
-        8BFlf51DjUxZS/ikaKKj/5jV85k1S3INssgYwm81Xq1Zsnt5wDKZwG/775U/ug==
-Date:   Tue, 12 Apr 2022 09:48:22 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Bastian Hecht <hechtb@googlemail.com>,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
-        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mtd: rawnand: Fix return value check of
- wait_for_completion_timeout
-Message-ID: <20220412094822.3818ebc2@xps13>
-In-Reply-To: <61783400-4df2-47af-78a7-7acb715c3a71@gmail.com>
-References: <202204121253.NcZifMQi-lkp@intel.com>
-        <20220412063703.8537-1-linmq006@gmail.com>
-        <20220412090649.33bb3f8b@xps13>
-        <61783400-4df2-47af-78a7-7acb715c3a71@gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 12 Apr 2022 04:22:41 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E077E527D7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:51:17 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2ec0bb4b715so63658847b3.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=o4OAO7nnZ8OX/KlCcPdZAiTQkP3Ef4YaiBMzQMe37GA=;
+        b=XHFbMCuk71uIwAmqpOLD+1cpGGkLISo3rmscX0zDWdVz+rawJMip57rBRdFqM564Ka
+         IDEMXvaUDLMk4/MRFkETpelYTzl0BpQuKd+bOXpm3O7cpB1FTZS3E2tLJnv2mk1ezK+w
+         jhWqehoogEsX+UvQnb8ZbQ2YHfQqKprWe6T0M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=o4OAO7nnZ8OX/KlCcPdZAiTQkP3Ef4YaiBMzQMe37GA=;
+        b=Yk5qpiEf2Mn2V6lzmjKx1AyekSQm5wslO9FV3P9rEQyfdhJLVfbpNOz3kDY5vE9eN1
+         mFG2Kxdhy1YGZBk3RyxffyXqTdNdSJyP1D0fdpFQ8EAZ0ju5cmIXFbnrcft+FJqBqiRZ
+         ZiFZivAHOWLA0ahgGeuZ9KTlQN3vB4TLZtdyMuh54ul96U+hNgsMPNQO+za5Pv5eM/2u
+         0HjVsx1nLRBJ71Q9verNFKaCbTN4nAoGHqTtGp9eWVwsikVUxno6zBDEQFF6sdS/UowH
+         8/GKv/nugNzp1bOi+LgxMVhpSFCDeaVMB1jLNqj91erwsgZKhpxzd3Kw+DGCGLaXp9nZ
+         Vqnw==
+X-Gm-Message-State: AOAM5321QNhOFoHIkagQNhe809p357oOtb/b9GeZkdLVTqfjRsgMOiUV
+        mHpgoxHW8IIXG/BatUZ1zDiakqig+yw8UVL4+h408Q==
+X-Google-Smtp-Source: ABdhPJx8GUgxqrrj69ZZQNPISfHn9KL6DvhPn2Cv2JdROrKaOtRIGldYKBZP82LLkXg7BbRzgXz7VneADNL7bKux8Qo=
+X-Received: by 2002:a0d:c602:0:b0:2ec:472:5e32 with SMTP id
+ i2-20020a0dc602000000b002ec04725e32mr9740269ywd.364.1649749877009; Tue, 12
+ Apr 2022 00:51:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20220406071131.2930035-1-stevensd@google.com> <Yk1KveOnYfSrUJLD@kroah.com>
+ <20220406131300.7pgdcpdhexwvczsb@pali>
+In-Reply-To: <20220406131300.7pgdcpdhexwvczsb@pali>
+From:   David Stevens <stevensd@chromium.org>
+Date:   Tue, 12 Apr 2022 16:51:06 +0900
+Message-ID: <CAD=HUj5rSDGCgfLM8_waTcdMzDYp2=cnG5XpBN=4j3JMyN9g6g@mail.gmail.com>
+Subject: Re: [RFC] PCI: sysfs: add bypass for config read admin check
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miaoqian,
-
-linmq006@gmail.com wrote on Tue, 12 Apr 2022 15:42:02 +0800:
-
-> Hi Miquel,
->=20
-> Thanks for your reply.
->=20
-> On 2022/4/12 15:06, Miquel Raynal wrote:
-> > Hi Miaoqian,
+On Wed, Apr 6, 2022 at 10:13 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+>
+> On Wednesday 06 April 2022 10:09:33 Greg Kroah-Hartman wrote:
+> > On Wed, Apr 06, 2022 at 04:11:31PM +0900, David Stevens wrote:
+> > > From: David Stevens <stevensd@chromium.org>
+> > >
+> > > Add a moduleparam that can be set to bypass the check that limits use=
+rs
+> > > without CAP_SYS_ADMIN to only being able to read the first 64 bytes o=
+f
+> > > the config space. This allows systems without problematic hardware to=
+ be
+> > > configured to allow users without CAP_SYS_ADMIN to read PCI
+> > > capabilities.
+> > >
+> > > Signed-off-by: David Stevens <stevensd@chromium.org>
+> > > ---
+> > >  drivers/pci/pci-sysfs.c | 10 +++++++++-
+> > >  1 file changed, 9 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+> > > index 602f0fb0b007..162423b3c052 100644
+> > > --- a/drivers/pci/pci-sysfs.c
+> > > +++ b/drivers/pci/pci-sysfs.c
+> > > @@ -28,10 +28,17 @@
+> > >  #include <linux/pm_runtime.h>
+> > >  #include <linux/msi.h>
+> > >  #include <linux/of.h>
+> > > +#include <linux/moduleparam.h>
+> > >  #include "pci.h"
+> > >
+> > >  static int sysfs_initialized;      /* =3D 0 */
+> > >
+> > > +static bool allow_unsafe_config_reads;
+> > > +module_param_named(allow_unsafe_config_reads,
+> > > +              allow_unsafe_config_reads, bool, 0644);
+> > > +MODULE_PARM_DESC(allow_unsafe_config_reads,
+> > > +            "Enable full read access to config space without CAP_SYS=
+_ADMIN.");
 > >
-> > linmq006@gmail.com wrote on Tue, 12 Apr 2022 06:36:52 +0000:
-> > =20
-> >> wait_for_completion_timeout() returns unsigned long not int.
-> >> It returns 0 if timed out, and positive if completed.
-> >> The check for <=3D 0 is ambiguous and should be =3D=3D 0 here
-> >> indicating timeout which is the only error case.
-> >>
-> >> Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
-> >> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> >> ---
-> >> change in v2:
-> >> - initialize ret to 1.
-> >> ---
-> >>  drivers/mtd/nand/raw/sh_flctl.c | 8 +++++---
-> >>  1 file changed, 5 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh=
-_flctl.c
-> >> index b85b9c6fcc42..2373251f585b 100644
-> >> --- a/drivers/mtd/nand/raw/sh_flctl.c
-> >> +++ b/drivers/mtd/nand/raw/sh_flctl.c
-> >> @@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flct=
-l *flctl, unsigned long *buf,
-> >>  	dma_addr_t dma_addr;
-> >>  	dma_cookie_t cookie;
-> >>  	uint32_t reg;
-> >> -	int ret;
-> >> +	int ret =3D 1; =20
-> > Does not look right. I know this function returns > 0 on positive
-> > outcomes but this does not make any sense in the first place. =20
->=20
-> Yes, I made a mistake, Now I realize that in v2, it will return 1 in erro=
-r path
->=20
-> when DMA submit failed.
-
-Not 1, but a proper error code please (-ETIMEDOUT, -EINVAL, whatever)
-
->=20
-> And for patch v1, it will return 0=C2=A0 if calls wait_for_completion_tim=
-eout succeeds.
->=20
-> > This function is static and only called twice, please turn it into
-> > something like:
+> > No, this is not the 1990's, please do not add system-wide module
+> > parameters like this.  Especially ones that circumvent security
+> > protections.
 > >
-> > if (dma_fifo_transfer())
-> > 	error
-> > else
-> > 	ok =20
->=20
-> So I want to keep ret>0 means success.
->=20
-> Or could I set ret > 0 after in wait_for_completion_timeout() success pat=
-h?
->=20
-> like:
->=20
-> =C2=A0=C2=A0=C2=A0 if(time_left =3D=3D 0)
->=20
-> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 ret =3D -ETIMEDO=
-UT;
->=20
-> =C2=A0=C2=A0=C2=A0 else
->=20
-> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =C2=A0 ret =3D 1;
-
-You can initialize ret to zero at to top. So that anything !=3D 0 is an
-error (like a lot of functions in the kernel). And use:
-
-	if (dma_fifo_transfer())
-		error();
-
->=20
-> What do you think?
->=20
->=20
-> Thanks,
->=20
-> >> +	unsigned long time_left;
-> >> =20
-> >>  	if (dir =3D=3D DMA_FROM_DEVICE) {
-> >>  		chan =3D flctl->chan_fifo0_rx;
-> >> @@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_fl=
-ctl *flctl, unsigned long *buf,
-> >>  		goto out;
-> >>  	}
-> >> =20
-> >> -	ret =3D
-> >> +	time_left =3D
-> >>  	wait_for_completion_timeout(&flctl->dma_complete,
-> >>  				msecs_to_jiffies(3000));
-> >> =20
-> >> -	if (ret <=3D 0) {
-> >> +	if (time_left =3D=3D 0) {
-> >>  		dmaengine_terminate_all(chan);
-> >>  		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
-> >> +		ret =3D -ETIMEDOUT;
-> >>  	}
-> >> =20
-> >>  out: =20
+> > Also, where did you document this new option?
 > >
-> > Thanks,
-> > Miqu=C3=A8l =20
+> > Why not just add this to a LSM instead?
+> >
+> > >  /* show configuration fields */
+> > >  #define pci_config_attr(field, format_string)                       =
+       \
+> > >  static ssize_t                                                      =
+       \
+> > > @@ -696,7 +703,8 @@ static ssize_t pci_read_config(struct file *filp,=
+ struct kobject *kobj,
+> > >     u8 *data =3D (u8 *) buf;
+> > >
+> > >     /* Several chips lock up trying to read undefined config space */
+> > > -   if (file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
+> > > +   if (allow_unsafe_config_reads ||
+> > > +       file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
+> >
+> > This feels really dangerous.  What benifit are you getting here by
+> > allowing an unpriviliged user to read this information?
+>
+> Hello! This is really dangerous.
+>
+> Nowadays operating systems are in progress to completely disallow PCI
+> config space access from userspace. So doing opposite thing and even
+> enable it for unprivileged users in Linux is hazard.
+>
+> For example NT kernel in Windows 11 already completely disallowed access
+> to PCI config space from userspace unless NT kernel is booted in mode
+> for local debugging with disabled UEFI secure boot. And access in this
+> case is only for highly privileged processes (debug privilege in access
+> token).
+>
+> So... should not we move into same direction like other operating system
+> and start disallowing access to PCI config space from userspace
+> completely too? For example when kernel lockdown feature is enabled?
+>
+> In PCI config space of some devices are stored also non-PCI registers
+> and accessing them was not really mean for userspace and for sure not
+> for unprivileged users. On AMD x86 platforms is into PCI config space of
+> some device mapped for example CPU MSR registers (at fixed offset, after
+> linked listed of capabilities). Probably in Intel x86 is something
+> similar too. On Synopsis Designware based PCIe HW is into PCI config
+> space of Root Port mapped large range of IP configuration registers.
+>
+> So "This allows systems without problematic hardware" means that such
+> system must be non-AMD, non-Designware and probably also non-Intel.
 
+It's interesting to hear that what seems to have been added 18 years
+ago as a safeguard against faulty hardware (i.e. "Several chips lock
+up trying to read undefined config space") has become a load bearing
+security check. I guess because that check is there, it wasn't worth
+adding a LOCKDOWN_PCI_ACCESS check to pci_read_config?
 
-Thanks,
-Miqu=C3=A8l
+Regardless, I've found that with a bit of work in userspace, vfio is
+sufficient for my use case.
+
+-David
