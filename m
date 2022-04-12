@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE010C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED94EC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353321AbiDLHPM (ORCPT
+        id S1353420AbiDLHPV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:15:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
+        Tue, 12 Apr 2022 03:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351458AbiDLG6b (ORCPT
+        with ESMTP id S1351128AbiDLHAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:58:31 -0400
+        Tue, 12 Apr 2022 03:00:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3FD42A0E;
-        Mon, 11 Apr 2022 23:46:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BFA42EF3;
+        Mon, 11 Apr 2022 23:46:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74C6660A21;
-        Tue, 12 Apr 2022 06:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A50DC385A1;
-        Tue, 12 Apr 2022 06:46:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A06D61093;
+        Tue, 12 Apr 2022 06:46:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDA1C385A8;
+        Tue, 12 Apr 2022 06:46:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745991;
-        bh=xFvb53Si9ghVV5c0ZgaZzZneJoNLT2VDq2rumVQsZ/I=;
+        s=korg; t=1649746000;
+        bh=UXOL9ozP+2qJrD/MwC8apLa02lpVVWnL6ePTyLoqf4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MbwUvZk7Jz3da+/kG4VNLHz/bYgVztjeuOOUWWU6JtwJZGoSyajljvhNGMYCRSmNh
-         A1B90//VH4mZbC2/HAn2NIQGgHY9Ek14+Uo0iASRFLyMMlR1tz7xwzJJL2v2j8rINb
-         zUBb+GvDF2EYPgToshnVGhP2733xK6Pxle1k3uYg=
+        b=VRFWvCiw8/e5ymjqp3bs2ZObnZmeiCSUtZzILFgSoY7JrtKtVN0blH7lFn4vjnPYz
+         ulqXR5qqRLMoqnK3Kh4zSYTjmWFyqBtgBtUsCBz9n76UVirqDT32pI8jqwTXkFKNv/
+         iAcHPhlDRNaIgbYYXVQkgfcxAS64XEUUf3AgvoIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Ohad Sharabi <osharabi@habana.ai>,
+        Oded Gabbay <ogabbay@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 121/277] NFSv4.2: fix reference count leaks in _nfs42_proc_copy_notify()
-Date:   Tue, 12 Apr 2022 08:28:44 +0200
-Message-Id: <20220412062945.542618278@linuxfoundation.org>
+Subject: [PATCH 5.15 123/277] habanalabs: fix possible memory leak in MMU DR fini
+Date:   Tue, 12 Apr 2022 08:28:46 +0200
+Message-Id: <20220412062945.601076144@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,64 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Ohad Sharabi <osharabi@habana.ai>
 
-[ Upstream commit b7f114edd54326f730a754547e7cfb197b5bc132 ]
+[ Upstream commit eb85eec858c1a5c11d3a0bff403f6440b05b40dc ]
 
-[You don't often get email from xiongx18@fudan.edu.cn. Learn why this is important at http://aka.ms/LearnAboutSenderIdentification.]
+This patch fixes what seems to be copy paste error.
 
-The reference counting issue happens in two error paths in the
-function _nfs42_proc_copy_notify(). In both error paths, the function
-simply returns the error code and forgets to balance the refcount of
-object `ctx`, bumped by get_nfs_open_context() earlier, which may
-cause refcount leaks.
+We will have a memory leak if the host-resident shadow is NULL (which
+will likely happen as the DR and HR are not dependent).
 
-Fix it by balancing refcount of the `ctx` object before the function
-returns in both error paths.
-
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs42proc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/misc/habanalabs/common/mmu/mmu_v1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs42proc.c b/fs/nfs/nfs42proc.c
-index 9865b5c37d88..93f4d8257525 100644
---- a/fs/nfs/nfs42proc.c
-+++ b/fs/nfs/nfs42proc.c
-@@ -586,8 +586,10 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
+diff --git a/drivers/misc/habanalabs/common/mmu/mmu_v1.c b/drivers/misc/habanalabs/common/mmu/mmu_v1.c
+index 0f536f79dd9c..e68e9f71c546 100644
+--- a/drivers/misc/habanalabs/common/mmu/mmu_v1.c
++++ b/drivers/misc/habanalabs/common/mmu/mmu_v1.c
+@@ -467,7 +467,7 @@ static void hl_mmu_v1_fini(struct hl_device *hdev)
+ {
+ 	/* MMU H/W fini was already done in device hw_fini() */
  
- 	ctx = get_nfs_open_context(nfs_file_open_context(src));
- 	l_ctx = nfs_get_lock_context(ctx);
--	if (IS_ERR(l_ctx))
--		return PTR_ERR(l_ctx);
-+	if (IS_ERR(l_ctx)) {
-+		status = PTR_ERR(l_ctx);
-+		goto out;
-+	}
+-	if (!ZERO_OR_NULL_PTR(hdev->mmu_priv.hr.mmu_shadow_hop0)) {
++	if (!ZERO_OR_NULL_PTR(hdev->mmu_priv.dr.mmu_shadow_hop0)) {
+ 		kvfree(hdev->mmu_priv.dr.mmu_shadow_hop0);
+ 		gen_pool_destroy(hdev->mmu_priv.dr.mmu_pgt_pool);
  
- 	status = nfs4_set_rw_stateid(&args->cna_src_stateid, ctx, l_ctx,
- 				     FMODE_READ);
-@@ -595,7 +597,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
- 	if (status) {
- 		if (status == -EAGAIN)
- 			status = -NFS4ERR_BAD_STATEID;
--		return status;
-+		goto out;
- 	}
- 
- 	status = nfs4_call_sync(src_server->client, src_server, &msg,
-@@ -603,6 +605,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
- 	if (status == -ENOTSUPP)
- 		src_server->caps &= ~NFS_CAP_COPY_NOTIFY;
- 
-+out:
- 	put_nfs_open_context(nfs_file_open_context(src));
- 	return status;
- }
 -- 
 2.35.1
 
