@@ -2,198 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 831D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B82C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:05:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356670AbiDLSGs (ORCPT
+        id S1358578AbiDLSH5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 14:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
+        Tue, 12 Apr 2022 14:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352428AbiDLSGp (ORCPT
+        with ESMTP id S1358606AbiDLSHh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 14:06:45 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36C914012
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:04:25 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id c23so17529683plo.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:04:25 -0700 (PDT)
+        Tue, 12 Apr 2022 14:07:37 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9C41A073;
+        Tue, 12 Apr 2022 11:05:19 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id g20so23316907edw.6;
+        Tue, 12 Apr 2022 11:05:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=Uk7HGQjUL7qBYUmyOj8OBJBQSHFN+LzVXSnG4qGNbTE=;
-        b=jFr35tndWJ0nAVVDICGQAaEYIMMXzjz9fKlaFJ8w7nhIihwifPjt1rLJuHO7qRsPaG
-         MLEJvbPP7Tuvgl3zCD1VuFPVfFJPnGpG4ktjUjMmoagMYYki7X+05OLs08wQKbsf1RfQ
-         zcCaIw/M8l9yCTPfehnrhArzHLMVr6AsJBsc5J5JKXOgWCj46cAd8dr3CBlBwYdlyOtG
-         4E1MGgUHyxL+p3looTbwHcp9rCRYQ7OXCe3PDq32Ud6WVK6P7ewbp3QcDDbr0QVw0Bmz
-         G1X2C7h2FKGUIHUQZweZyh8vcCyJQKnBZUDV5OQlVHgKkmL1LVevEtn64v5xzNys9pLU
-         5HOA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=z9NQi1ml/pNs6k8iFZmY0TUp/xSTyZP8LgV9/lOgFis=;
+        b=ibbIomvT/EBEch/llY78xJmulZ6hYp7HHP+xatYlWvfOAVZaMu1EhWY8jc0lv4Jh4g
+         GymFM0rd62Sn4GwW1d00Z62p2GB+vvAzB9Mq6tuLl/a2YImSPXlmnILZ0U/0+tsGX2C4
+         0ry5snn1VT9Ppa7YQuZ4cFMx2hcC4f8GOZ6s/P5NzUsp1Q33Zfohn1sVO3FPr2GEOgeb
+         hKHHSJOSooTO+QD883W6AEWaphQF+c4/tNqemtsf/2E9ThCJ7brKloKqE/D4qyKs+t9u
+         uwieWr2UPUwEG9X7EJ5iRD9bAZNpMl2iFqmatRoiTS4+94TWeFKiLbpEfFcQ5AcKykJQ
+         DuJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Uk7HGQjUL7qBYUmyOj8OBJBQSHFN+LzVXSnG4qGNbTE=;
-        b=xPQnoLebWjVRM44dZwWHndh6AiQW3h8QN2EfB7xksUH9kMv6R5XzasO8X9t2NhzUfx
-         eldiqPu3oAAJ9XqoNwUcwhy5Naqiei+MumkiAq/LjtNE1vCkmv+G11EGpqV/XAXBvi2m
-         hhRYq0bT23hUSrh9HibhZppGy0LkRTRrRaBcpK2IQ9O7tXCwdiVvabbtoVpcyrhdAUl5
-         SWyakxLh64+1mrn4mvnlFCs+52Kigt4vgcGwI0LhbKNOEdsTcUm1HZfrFmiieBX5pELM
-         V72GU2rgz7CXvZDByrNnwIAwOYfqA1riLtHwGBNo80nLiJVzcf8DTApYQLIJhh5otHa2
-         h8UQ==
-X-Gm-Message-State: AOAM532+uo49a5G5QhBAlpS4w/ztBeFTWhs6nPUTch8ntTwpABE/YzBM
-        0ua9eNHLRnU1+rAhuANciKFAbAIfhFmKYQ==
-X-Google-Smtp-Source: ABdhPJw18lgMRgcMa0PPrG0eQ4wWbvTFhILQ4ylHJMGkTSBxH4VIo/Y9Yzc7COxYGeKXAg/XXfScbw==
-X-Received: by 2002:a17:90b:380e:b0:1c7:74f6:ae60 with SMTP id mq14-20020a17090b380e00b001c774f6ae60mr6198048pjb.5.1649786665161;
-        Tue, 12 Apr 2022 11:04:25 -0700 (PDT)
-Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id p10-20020a056a0026ca00b004fb266fb186sm40276496pfw.73.2022.04.12.11.04.24
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=z9NQi1ml/pNs6k8iFZmY0TUp/xSTyZP8LgV9/lOgFis=;
+        b=dahcl3BvYRChPl5PnNu5lEH2kE8sKypAMhxw3t3dEMuZAdKSW2b48G0M1aJSzm7s90
+         Qr4meI/mVXXOHZnXPDcEtQclQE3WAgJHA22SKkLVxXCwtG8AGEvYIdevlFqP1Cpw4+PD
+         vprXDql4ZSQ7uxuZ7o6/SEWpKf2/Yxj+Fvj+r5NFRPwqesYdhZNmGaOspBezLlbYt2JT
+         tJ7DvqHESofP78m2GgQuKP2TGppG5faM0tB27r/9AGt1KJhpxbLujNS76FlL7AnI2MsL
+         //m+ToM5sxRsSp7vSVaLYT2HYvDsS4AEGp6bpfdEmSXM9WmxJ4mz6bbzcNXBlTAXBkPW
+         2yzw==
+X-Gm-Message-State: AOAM533P2ik9A7sTIu8gX+YfOhXyc/GpAA5OJGiVT5hoZz/d1Itn5JQT
+        76Hh3QYSEb9i+OTfNEoZqKI=
+X-Google-Smtp-Source: ABdhPJyIABxge0CAv6F9qxtvjbzi7Tdb8OYw4iQMENg06sAb5pGDm4C5oS30mSLjHnonVoaiUhP0+w==
+X-Received: by 2002:a05:6402:644:b0:41d:77bb:d36d with SMTP id u4-20020a056402064400b0041d77bbd36dmr13842082edx.381.1649786717735;
+        Tue, 12 Apr 2022 11:05:17 -0700 (PDT)
+Received: from szeder.dev (62-165-238-123.pool.digikabel.hu. [62.165.238.123])
+        by smtp.gmail.com with ESMTPSA id bn3-20020a170906c0c300b006e50416e24bsm12673650ejb.98.2022.04.12.11.05.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 11:04:24 -0700 (PDT)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
-        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
-        roger.lu@mediatek.com, hsinyi@google.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>
-Subject: Re: [PATCH V2 07/15] cpufreq: mediatek: Add opp notification for
- SVS support
-In-Reply-To: <dfe2d3e3401a6f2a7be9db4e8a0590d3dd9a6969.camel@mediatek.com>
-References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
- <20220408045908.21671-8-rex-bc.chen@mediatek.com>
- <7hsfqn5nft.fsf@baylibre.com>
- <3b7bf25a3da6c8f780c87784c1f796bf1e464238.camel@mediatek.com>
- <7hzgkr4hmc.fsf@baylibre.com>
- <dfe2d3e3401a6f2a7be9db4e8a0590d3dd9a6969.camel@mediatek.com>
-Date:   Tue, 12 Apr 2022 11:04:23 -0700
-Message-ID: <7ho81641qw.fsf@baylibre.com>
+        Tue, 12 Apr 2022 11:05:17 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 20:05:10 +0200
+From:   SZEDER =?utf-8?B?R8OhYm9y?= <szeder.dev@gmail.com>
+To:     Junio C Hamano <gitster@pobox.com>
+Cc:     git@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>,
+        git-packagers@googlegroups.com
+Subject: Re: [ANNOUNCE] Git v2.35.2 and below for CVE-2022-24765
+Message-ID: <20220412180510.GA2173@szeder.dev>
+References: <xmqqv8veb5i6.fsf@gitster.g>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <xmqqv8veb5i6.fsf@gitster.g>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
+On Tue, Apr 12, 2022 at 10:01:21AM -0700, Junio C Hamano wrote:
+> The latest maintenance release Git v2.35.2, together with releases
+> for older maintenance tracks v2.30.3, v2.31.2, v2.32.1, v2.33.2, and
+> v2.34.2, are now available at the usual places.
+> 
+> These maintenance releases are to address the security issues
+> described in CVE-2022-24765.  Please update at your earliest
+> opportunity.
+> 
+> The tarballs are found at:
+> 
+>     https://www.kernel.org/pub/software/scm/git/
+> 
+> The following public repositories all have a copy of the 'v2.35.2',
+> 'v2.34.2', 'v2.33.2', 'v2.32.1', 'v2.31.2', and 'v2.30.3' tags.
+> 
+>   url = https://git.kernel.org/pub/scm/git/git
+>   url = https://kernel.googlesource.com/pub/scm/git/git
+>   url = https://github.com/gitster/git
+> 
+> CVE-2022-24765:
+>    On multi-user machines, Git users might find themselves
+>    unexpectedly in a Git worktree, e.g. when another user created a
+>    repository in `C:\.git`, in a mounted network drive or in a
+>    scratch space. Merely having a Git-aware prompt that runs `git
+>    status` (or `git diff`) and navigating to a directory which is
+>    supposedly not a Git worktree, or opening such a directory in an
+>    editor or IDE such as VS Code or Atom, will potentially run
+>    commands defined by that other user.
+> 
+> Credit for finding this vulnerability goes to 俞晨东; the fix was
+> authored by Johannes Schindelin.
 
-> On Mon, 2022-04-11 at 11:09 -0700, Kevin Hilman wrote:
->> Hi Rex,
->> 
->> Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
->> 
->> > On Fri, 2022-04-08 at 13:29 -0700, Kevin Hilman wrote:
->> > > Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
->> > > 
->> > > > From: "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>
->> > > > 
->> > > > The Smart Voltage Scaling (SVS) is a hardware which calculates
->> > > > suitable
->> > > > SVS bank voltages to OPP voltage table.
->> > > > 
->> > > > When the SVS is enabled, cpufreq should listen to opp
->> > > > notification
->> > > > and do
->> > > > proper actions when receiving events of disable and voltage
->> > > > adjustment.
->> > > 
->> > > So listenting for OPP notifications should be done only when SVS
->> > > is
->> > > enabled...
->> > > 
->> > 
->> > Thanks for your review.
->> > Yes, the OPP notification is only called from MediaTek SVS.
->> > 
->> > > [...]
->> > > 
->> > > >  static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info
->> > > > *info,
->> > > > int cpu)
->> > > >  {
->> > > >  	struct device *cpu_dev;
->> > > > @@ -392,6 +455,17 @@ static int mtk_cpu_dvfs_info_init(struct
->> > > > mtk_cpu_dvfs_info *info, int cpu)
->> > > >  	info->intermediate_voltage =
->> > > > dev_pm_opp_get_voltage(opp);
->> > > >  	dev_pm_opp_put(opp);
->> > > >  
->> > > > +	info->opp_cpu = cpu;
->> > > > +	info->opp_nb.notifier_call = mtk_cpufreq_opp_notifier;
->> > > > +	ret = dev_pm_opp_register_notifier(cpu_dev, &info-
->> > > > >opp_nb);
->> > > 
->> > > ...but here youlisten to OPP notifications
->> > > unconditionally.  Seems
->> > > there
->> > > should be a check whether SVS is enabled before deciding to
->> > > register.
->> > > 
->> > > Kevin
->> > > 
->> > 
->> > Do you think it's ok that we wrap it with the SVS Kconfig define?
->> > like
->> > #ifdef CONFIG_MTK_SVS
->> > mtk_cpufreq_opp_notifier()
->> > ...
->> > dev_pm_opp_register_notifier()
->> > #endif
->> 
->> Generally, we don't like to see #ifdefs in C files[1].
->> 
->> But more importantly, compile-time check is not enough, because SVS
->> feature could be compiled into kernel, but not actually enabled for
->> an
->> SoC (e.g. DT node not enabled, etc.) so checking this at compile time
->> is
->> not enough.
->> 
->> Ideally, the SVSdriver should provide a function that allows others
->> to
->> check if it's enabled.  That function needs to know not only if it's
->> compile in, but if it's enabled/running.  If SVS is not compiled in,
->> then that function just returns false.
->> 
->> Kevin
->> 
->> [1] 
->> https://urldefense.com/v3/__https://www.kernel.org/doc/html/latest/process/4.Coding.html?highlight=ifdef*ifdef-and-preprocessor-use-in-general__;Iw!!CTRNKA9wMg0ARbw!z6SrEcQOLu2u-R1OLedrRUXHYXCzuQoK3F_h9Bhzv8jNFmjV5mdNVy41eND67CuV9uIS$
->> 
->
-> Hello Kevin,
->
-> After our internal discussion, we think the register of notifier should
-> not be bound for certain module.
-> If we provide the moethod to adjust voltage/disable opp, we think if
-> anyone call dev_pm_opp_adjust_voltage and dev_pm_opp_disable, it could
-> be used.
+This fix causes trouble when attempting to 'sudo make install' any
+non-tagged Git revision:
 
-I don't think I understand what you mean.
-
-Do you mean that this OPP notifier could be registered all the time,
-even if SVS is not enabled?
-
-That's fine with me.  If SVS is not compiled or enabled, then the
-notifiers will never be called, so that's fine.
-
-> May I ask what is your concern?
-
-My concern was primarily that the changelog description did not match
-the code.  The changelog says "when SVS is enabled, CPUfreq should
-listen to OPP notifications."
-
-But if I understand you correctly above, I think what you mean is that
-CPUfreq should always listen to OPP notifications because there are
-other users (e.g. SVS) that could change the OPP outside of this driver.
-
-If that's what you mean, then I think the only thing to change is the
-wording of the changelog.
-
-Thanks,
-
-Kevin
-
+  $ git checkout v2.36.0-rc2 
+  HEAD is now at 11cfe55261 Git 2.36-rc2
+  $ git commit --allow-empty -m foo
+  [detached HEAD 237ee2a6ef] foo
+  $ make
+  GIT_VERSION = 2.36.0.rc2.1.g237ee2a6ef
+  [...]
+  $ sudo make install
+  GIT_VERSION = 2.36.0-rc2
+      CC version.o
 
 
