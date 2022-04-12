@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FFFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3588C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355637AbiDLH1v (ORCPT
+        id S1351788AbiDLH15 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57298 "EHLO
+        Tue, 12 Apr 2022 03:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351756AbiDLHMx (ORCPT
+        with ESMTP id S1351690AbiDLHMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B962E7E;
-        Mon, 11 Apr 2022 23:52:19 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4DF15A18;
+        Mon, 11 Apr 2022 23:51:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15F51B81B35;
-        Tue, 12 Apr 2022 06:52:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5337BC385A1;
-        Tue, 12 Apr 2022 06:52:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38B5C6146F;
+        Tue, 12 Apr 2022 06:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44014C385A1;
+        Tue, 12 Apr 2022 06:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746336;
-        bh=sXMl2ZYE8rt5NfFeBPGIcHAYJuUylPNTH8SOiNKZ7n8=;
+        s=korg; t=1649746303;
+        bh=MIJOt/rCjVZ1I/G8JnoYtBGZqGnfCfzujr8/xisSegw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k1YRz/10U/v+kTdtnD8Z6F8W7S6sBDSePnzWreeJbPn3oV4yRdqED7qG/ApQc80sY
-         Nd9YjVLtnzTjPYR6mEj3DPThe6IRmdLa7oizw5GnnNDEheqfN4eBZZDR10EgRrWwrK
-         lRpbQqyKqcoASjqIuPsw/vzaieiIub/4T087GX3E=
+        b=hqZyjym/ECeHkbtYHhYSCvJls3XNxYOdj/GCseQ/4UNNwlcdQbqQS+yXfkFWSRfRi
+         +Z7qDAeZ8J/qyIfX51eQLmuW1r2PJX7RRplIFww1iwXUsDMsDtHWo7ngHXsNmE0J6u
+         /O8+VHIHQ4nlegyg2e0y1lD+VYtWg8QG/gV25E50=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.15 246/277] drm/amdkfd: Create file descriptor after client is added to smi_clients list
-Date:   Tue, 12 Apr 2022 08:30:49 +0200
-Message-Id: <20220412062949.161563012@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.15 235/277] perf: qcom_l2_pmu: fix an incorrect NULL check on list iterator
+Date:   Tue, 12 Apr 2022 08:30:38 +0200
+Message-Id: <20220412062948.845383567@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -54,70 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lee Jones <lee.jones@linaro.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit e79a2398e1b2d47060474dca291542368183bc0f upstream.
+commit 2012a9e279013933885983cbe0a5fe828052563b upstream.
 
-This ensures userspace cannot prematurely clean-up the client before
-it is fully initialised which has been proven to cause issues in the
-past.
+The bug is here:
+	return cluster;
 
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: amd-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The list iterator value 'cluster' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
+
+To fix the bug, return 'cluster' when found, otherwise return NULL.
+
 Cc: stable@vger.kernel.org
+Fixes: 21bdbb7102ed ("perf: add qcom l2 cache perf events driver")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327055733.4070-1-xiam0nd.tong@gmail.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c |   24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ drivers/perf/qcom_l2_pmu.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-@@ -270,15 +270,6 @@ int kfd_smi_event_open(struct kfd_dev *d
- 		return ret;
+--- a/drivers/perf/qcom_l2_pmu.c
++++ b/drivers/perf/qcom_l2_pmu.c
+@@ -736,7 +736,7 @@ static struct cluster_pmu *l2_cache_asso
+ {
+ 	u64 mpidr;
+ 	int cpu_cluster_id;
+-	struct cluster_pmu *cluster = NULL;
++	struct cluster_pmu *cluster;
+ 
+ 	/*
+ 	 * This assumes that the cluster_id is in MPIDR[aff1] for
+@@ -758,10 +758,10 @@ static struct cluster_pmu *l2_cache_asso
+ 			 cluster->cluster_id);
+ 		cpumask_set_cpu(cpu, &cluster->cluster_cpus);
+ 		*per_cpu_ptr(l2cache_pmu->pmu_cluster, cpu) = cluster;
+-		break;
++		return cluster;
  	}
  
--	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
--			       O_RDWR);
--	if (ret < 0) {
--		kfifo_free(&client->fifo);
--		kfree(client);
--		return ret;
--	}
--	*fd = ret;
--
- 	init_waitqueue_head(&client->wait_queue);
- 	spin_lock_init(&client->lock);
- 	client->events = 0;
-@@ -288,5 +279,20 @@ int kfd_smi_event_open(struct kfd_dev *d
- 	list_add_rcu(&client->list, &dev->smi_clients);
- 	spin_unlock(&dev->smi_lock);
- 
-+	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
-+			       O_RDWR);
-+	if (ret < 0) {
-+		spin_lock(&dev->smi_lock);
-+		list_del_rcu(&client->list);
-+		spin_unlock(&dev->smi_lock);
-+
-+		synchronize_rcu();
-+
-+		kfifo_free(&client->fifo);
-+		kfree(client);
-+		return ret;
-+	}
-+	*fd = ret;
-+
- 	return 0;
+-	return cluster;
++	return NULL;
  }
+ 
+ static int l2cache_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 
 
