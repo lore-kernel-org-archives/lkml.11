@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DA2C47096
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A763EC48BCB
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351622AbiDLG6i (ORCPT
+        id S1351061AbiDLG67 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47910 "EHLO
+        Tue, 12 Apr 2022 02:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351403AbiDLGxc (ORCPT
+        with ESMTP id S1351449AbiDLGxh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:32 -0400
+        Tue, 12 Apr 2022 02:53:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B703BA5D;
-        Mon, 11 Apr 2022 23:40:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0AD3E5EC;
+        Mon, 11 Apr 2022 23:40:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85EAA60A6A;
-        Tue, 12 Apr 2022 06:40:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D14CC385A6;
-        Tue, 12 Apr 2022 06:40:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA8736066C;
+        Tue, 12 Apr 2022 06:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4222C385A6;
+        Tue, 12 Apr 2022 06:40:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745627;
-        bh=ceuZB43P3gznOIMJ1ac94fowj66kFvngyDn8duaS0J0=;
+        s=korg; t=1649745647;
+        bh=hKdxZwU0ltT5TrhzWdok61+z8veuHgq/0KsNSfr1RXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NrTzcxH5CKA6A9Ml5j0v1IgvXVs7iMYvk8NDAmRUJJNlDPKzSHBh3J7A8B9Ze3F7X
-         ePkVX7DkoZFsmVL29alNCnhEGDkmLGOHW5wTZFmBLxucqzo3FhkA7Gf2FA2L3klcal
-         lioooI1zbALkpGYdUhVSGVsPedwwbsulzkUeBYKw=
+        b=iZG1LfOa5oBZlVXYX35CH0XA0fip1yIvPOrT4ThbFQWpUAD/41VjjyMGFWuo7fI7+
+         6jRIlsyoq+8lbTX5gddzwL60vV7Mqf9dRwKI1EgywVA/F+euLIi8RfuJTjaGKsuV4B
+         rI1DNglD/7H0GckFndiaAjDIFR2iJMSLjmBnjFzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 122/171] qede: confirm skb is allocated before using
-Date:   Tue, 12 Apr 2022 08:30:13 +0200
-Message-Id: <20220412062931.415031684@linuxfoundation.org>
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Justin Forbes <jforbes@redhat.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Rafael Aquini <aquini@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 170/171] mm/sparsemem: fix mem_section will never be NULL gcc 12 warning
+Date:   Tue, 12 Apr 2022 08:31:01 +0200
+Message-Id: <20220412062932.820079107@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,42 +54,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit 4e910dbe36508654a896d5735b318c0b88172570 ]
+commit a431dbbc540532b7465eae4fc8b56a85a9fc7d17 upstream.
 
-qede_build_skb() assumes build_skb() always works and goes straight
-to skb_reserve(). However, build_skb() can fail under memory pressure.
-This results in a kernel panic because the skb to reserve is NULL.
+The gcc 12 compiler reports a "'mem_section' will never be NULL" warning
+on the following code:
 
-Add a check in case build_skb() failed to allocate and return NULL.
+    static inline struct mem_section *__nr_to_section(unsigned long nr)
+    {
+    #ifdef CONFIG_SPARSEMEM_EXTREME
+        if (!mem_section)
+                return NULL;
+    #endif
+        if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+                return NULL;
+       :
 
-The NULL return is handled correctly in callers to qede_build_skb().
+It happens with CONFIG_SPARSEMEM_EXTREME off.  The mem_section definition
+is
 
-Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    #ifdef CONFIG_SPARSEMEM_EXTREME
+    extern struct mem_section **mem_section;
+    #else
+    extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
+    #endif
+
+In the !CONFIG_SPARSEMEM_EXTREME case, mem_section is a static
+2-dimensional array and so the check "!mem_section[SECTION_NR_TO_ROOT(nr)]"
+doesn't make sense.
+
+Fix this warning by moving the "!mem_section[SECTION_NR_TO_ROOT(nr)]"
+check up inside the CONFIG_SPARSEMEM_EXTREME block and adding an
+explicit NR_SECTION_ROOTS check to make sure that there is no
+out-of-bound array access.
+
+Link: https://lkml.kernel.org/r/20220331180246.2746210-1-longman@redhat.com
+Fixes: 3e347261a80b ("sparsemem extreme implementation")
+Signed-off-by: Waiman Long <longman@redhat.com>
+Reported-by: Justin Forbes <jforbes@redhat.com>
+Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Rafael Aquini <aquini@redhat.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/mmzone.h |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index 21c906200e79..d210632676d3 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -752,6 +752,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
- 	buf = page_address(bd->data) + bd->page_offset;
- 	skb = build_skb(buf, rxq->rx_buf_seg_size);
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1252,13 +1252,16 @@ static inline unsigned long *section_to_
  
-+	if (unlikely(!skb))
+ static inline struct mem_section *__nr_to_section(unsigned long nr)
+ {
++	unsigned long root = SECTION_NR_TO_ROOT(nr);
++
++	if (unlikely(root >= NR_SECTION_ROOTS))
 +		return NULL;
 +
- 	skb_reserve(skb, pad);
- 	skb_put(skb, len);
- 
--- 
-2.35.1
-
+ #ifdef CONFIG_SPARSEMEM_EXTREME
+-	if (!mem_section)
++	if (!mem_section || !mem_section[root])
+ 		return NULL;
+ #endif
+-	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+-		return NULL;
+-	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
++	return &mem_section[root][nr & SECTION_ROOT_MASK];
+ }
+ extern unsigned long __section_nr(struct mem_section *ms);
+ extern size_t mem_section_usage_size(void);
 
 
