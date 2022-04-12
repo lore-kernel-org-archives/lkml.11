@@ -2,64 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B49C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91830C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236028AbiDLLLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47810 "EHLO
+        id S1345595AbiDLLPm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241733AbiDLLKK (ORCPT
+        with ESMTP id S1354444AbiDLLPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:10:10 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB50485945
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:01:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ctcFTn0w6V6dn60hCVOeQY6EpY2IAZwsL/yX59ESRQ8=; b=dOK9E5lZyl1dz7vt9gPzx3CK1M
-        1F801At0ybIZuqpDkKGuxj4PwTUF7x2EqJ+/uU/bZQqSY1DEPp5dh/qZ3BiQ4Iz4If9nDsc7mi6d7
-        I7xJ9/uJRDQ2EB76fDW7JoydZ+k/u7XWYogrJkZnJZXHFMwi09ZDRri2GM4vz0lTRH54V0aT1EBOb
-        HABTFQrrP0gjWF3Zes79lkFGydbodovm74L0laTZ9rY5Gvyi2IfWOhF7fb+rdknRmgXxQBP/8Roix
-        44DIsw8JA48FVAQWbec3NQAQnW1q7D+84sjkE6s1DtY8XqJDUXbrXRbtq5ubl0jAHzkGLMjtO0Vzn
-        pWjPWv3g==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neDLC-004HeE-5W; Tue, 12 Apr 2022 10:01:42 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id BC9D4300250;
-        Tue, 12 Apr 2022 12:01:39 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 944022DB89DC9; Tue, 12 Apr 2022 12:01:39 +0200 (CEST)
-Date:   Tue, 12 Apr 2022 12:01:39 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org, mingo@redhat.com
-Subject: Re: [PATCH 2/2] x86/unwind/orc: Fix address check size for
- deref_stack_iret_regs
-Message-ID: <YlVOAw9yUbivp7Ki@hirez.programming.kicks-ass.net>
-References: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
- <1649749204-186363-2-git-send-email-dmtrmonakhov@yandex-team.ru>
+        Tue, 12 Apr 2022 07:15:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AFC939D9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:03:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57BC561530
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:03:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 946C8C385A5;
+        Tue, 12 Apr 2022 10:02:58 +0000 (UTC)
+Date:   Tue, 12 Apr 2022 11:02:54 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <YlVOTsaTVkBOxthG@arm.com>
+References: <Yk1UJs6eZMoIp3Eh@arm.com>
+ <Yk5o/lNTyiJWD4Ae@gondor.apana.org.au>
+ <Yk7EbvYhwnQy+pAf@arm.com>
+ <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
+ <Yk8RGvF6ik34C6BO@arm.com>
+ <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
+ <Yk/6ts5sVDMDpKj3@arm.com>
+ <Yk/8QExHlggU8KgC@gondor.apana.org.au>
+ <YlVHSvkyUBXZPUr2@arm.com>
+ <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1649749204-186363-2-git-send-email-dmtrmonakhov@yandex-team.ru>
+In-Reply-To: <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:40:04AM +0300, Dmitry Monakhov wrote:
-> For historical reasons we check only IRET_FRAME_OFFSET, but this check
-> is no longer valid because  we also access regs->sp field which is
-> located beyond IRET_FRAME, so it is reasonable to validate full structure.
+On Tue, Apr 12, 2022 at 05:40:58PM +0800, Herbert Xu wrote:
+> On Tue, Apr 12, 2022 at 10:32:58AM +0100, Catalin Marinas wrote:
+> > At a quick grep, most cra_alignmask values are currently 15 or smaller.
+> > I'm not convinced the driver needs to know about the CPU cache
+> > alignment. We could set cra_alignmask to CRYPTO_MINALIGN but that would
+> > incur unnecessary overhead via function like setkey_unaligned() when the
+> > arch_kmalloc_minalign() was already sufficient for DMA safety.
+> > 
+> > Maybe I miss some use-cases or I focus too much on DMA safety.
+> 
+> The alignment was never designed for DMA.  It's mainly for CPUs
+> that provide accelerated instructions that require a certain
+> amount of alignment, most commonly 16 bytes.
+> 
+> Therefore CRYPTO_MINALIGN was never meant to be a guarantee for
+> DMA alignment.  Any drivers relying on this is simply broken.
 
-Uuuh, what? IRET frame is:
+Thanks for the clarification (the comment in crypto.h implies that it
+covers this aspect as well).
 
- ss, sp, flags, cs, ip
+> I understand that on ARM for historical reasons you have had a
+> situation that CRYPTO_MINALIGN happened to be large enough to
+> guarantee DMA alignment.  I totally agree with your patch to
+> try to fix this but it should not penalise other architectures
+> and raise the CRYPTO_MINALIGN unnecessarily.
 
-that very much includes sp.
+This series does not penalise any architecture. It doesn't even make
+arm64 any worse than it currently is.
+
+For arm64, before the series:
+
+  ARCH_DMA_MINALIGN == 128
+  ARCH_KMALLOC_MINALIGN == 128
+  CRYPTO_MINALIGN == 128
+
+After the series, on arm64:
+
+  ARCH_DMA_MINALIGN == 128
+  ARCH_KMALLOC_MINALIGN == 64
+  CRYPTO_MINALIGN == 128
+
+For x86, before the series:
+
+  ARCH_DMA_MINALIGN undefined
+  ARCH_KMALLOC_MINALIGN == 8
+  CRYPTO_MINALIGN == 8
+
+After the series, on x86 (or any architecture that doesn't define
+ARCH_DMA_MINALIGN):
+
+  ARCH_DMA_MINALIGN == 8
+  ARCH_KMALLOC_MINALIGN == 8
+  CRYPTO_MINALIGN == 8
+
+For other architectures that define ARCH_DMA_MINALIGN to 'N' but do not
+define ARCH_KMALLOC_MINALIGN, before and after this series:
+
+  ARCH_DMA_MINALIGN == N
+  ARCH_KMALLOC_MINALIGN == N
+  CRYPTO_MINALIGN == N
+
+> I think if CRYPTO_MINALIGN makes those drivers work then so
+> should cra_alignmask.  And that would be a relatively easy
+> patch to do.
+
+Yes, the patch would be simple, subject to figuring out which drivers
+and what alignment they actually need (any help appreciated).
+
+There are already arm64 vendor kernels that change ARCH_DMA_MINALIGN to
+64, hence ARCH_KMALLOC_MINALIGN and CRYPTO_MINALIGN become 64. We also
+discussed a Kconfig option for this in the past. Would that have broken
+any crypto drivers that rely on a strict 128 byte alignment?
+
+Thanks.
+
+-- 
+Catalin
