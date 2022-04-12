@@ -2,96 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27CFBC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E02C3527D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389832AbiDLJYO (ORCPT
+        id S1390062AbiDLJYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
+        Tue, 12 Apr 2022 05:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352957AbiDLIDP (ORCPT
+        with ESMTP id S1355539AbiDLIIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:03:15 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BF4580D3;
-        Tue, 12 Apr 2022 00:35:48 -0700 (PDT)
-X-UUID: 7cba71d56fb7494cb4f3d71a18242d68-20220412
-X-UUID: 7cba71d56fb7494cb4f3d71a18242d68-20220412
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <powen.kao@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 307447765; Tue, 12 Apr 2022 15:35:38 +0800
+        Tue, 12 Apr 2022 04:08:31 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E867CB78
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:37:54 -0700 (PDT)
+X-UUID: a112a8e74bcc4e8cafd2fe0dbea82415-20220412
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:0009f623-99a6-4f2d-b87c-b7bf1ad04e0d,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:14,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:59
+X-CID-INFO: VERSION:1.1.4,REQID:0009f623-99a6-4f2d-b87c-b7bf1ad04e0d,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:14,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:59
+X-CID-META: VersionHash:faefae9,CLOUDID:d549dea8-d103-4e36-82b9-b0e86991b3df,C
+        OID:6db2902810e7,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:3,EDM:-3,Fi
+        le:nil,QS:0,BEC:nil
+X-UUID: a112a8e74bcc4e8cafd2fe0dbea82415-20220412
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 204760330; Tue, 12 Apr 2022 15:37:49 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 12 Apr 2022 15:35:37 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ Tue, 12 Apr 2022 15:37:48 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 15:35:37 +0800
-From:   Po-Wen Kao <powen.kao@mediatek.com>
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <wsd_upstream@mediatek.com>, <peter.wang@mediatek.com>,
-        <stanley.chu@mediatek.com>, <powen.kao@mediatek.com>,
-        <alice.chao@mediatek.com>, <chun-hung.wu@mediatek.com>,
-        <cc.chou@mediatek.com>, <chaotian.jing@mediatek.com>,
-        <jiajie.hao@mediatek.com>, <huobean@gmail.com>,
-        <yohan.joung@sk.com>, <jason.li@sk.com>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH 1/1] scsi: ufs: remove redundant HPB unmap
-Date:   Tue, 12 Apr 2022 15:31:28 +0800
-Message-ID: <20220412073131.10644-1-powen.kao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+ Transport; Tue, 12 Apr 2022 15:37:48 +0800
+Message-ID: <db475c5f8ff801ca0e48d89f5257de491f173b0b.camel@mediatek.com>
+Subject: Re: [PATCH v4,1/4] drm/mediatek: Adjust the timing of mipi signal
+ from LP00 to LP11
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <matthias.bgg@gmail.com>
+CC:     <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <jitao.shi@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 12 Apr 2022 15:37:48 +0800
+In-Reply-To: <1649644308-8455-2-git-send-email-xinlei.lee@mediatek.com>
+References: <1649644308-8455-1-git-send-email-xinlei.lee@mediatek.com>
+         <1649644308-8455-2-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the HPB mapping is already reset in ufshpb_init by setting
-flag QUERY_FLAG_IDN_HPB_RESET, there is no need doing so again in
-ufshpb_hpb_lu_prepared.
+On Mon, 2022-04-11 at 10:31 +0800, xinlei.lee@mediatek.com wrote:
+> From: Jitao Shi <jitao.shi@mediatek.com>
+> 
+> Old sequence:
+> 1. Pull the MIPI signal high
+> 2. Delay & Dsi_reset
+> 3. Set the dsi timing register
+> 4. dsi clk & lanes leave ulp mode and enter hs mode
+> 
+> The sequence after patching is:
+> 1. Set the dsi timing register
+> 2. Pull the MIPI signal high
+> 3. Delay & Dsi_reset
+> 4. dsi clk & lanes leave ulp mode and enter hs mode
+> 
+> Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge
+> API")
+> 
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dsi.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> index ccb0511b9cd5..262c027d8c2f 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> @@ -649,14 +649,14 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
+>  	mtk_dsi_reset_engine(dsi);
+>  	mtk_dsi_phy_timconfig(dsi);
+>  
+> -	mtk_dsi_rxtx_control(dsi);
+> -	usleep_range(30, 100);
+> -	mtk_dsi_reset_dphy(dsi);
+>  	mtk_dsi_ps_control_vact(dsi);
+>  	mtk_dsi_set_vm_cmd(dsi);
+>  	mtk_dsi_config_vdo_timing(dsi);
+>  	mtk_dsi_set_interrupt_enable(dsi);
+>  
+> +	mtk_dsi_rxtx_control(dsi);
+> +	usleep_range(30, 100);
+> +	mtk_dsi_reset_dphy(dsi);
+>  	mtk_dsi_clk_ulp_mode_leave(dsi);
+>  	mtk_dsi_lane0_ulp_mode_leave(dsi);
+>  	mtk_dsi_clk_hs_mode(dsi, 0);
 
-This would also resolve the issue where HPB WRTIE BUFFER is issued
-before UAC being cleared.
-
-Signed-off-by: Po-Wen Kao <powen.kao@mediatek.com>
----
- drivers/scsi/ufs/ufshpb.c | 7 -------
- 1 file changed, 7 deletions(-)
-
-diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
-index a86d0cc50de2..5c09d44c4bd5 100644
---- a/drivers/scsi/ufs/ufshpb.c
-+++ b/drivers/scsi/ufs/ufshpb.c
-@@ -934,11 +934,6 @@ static int ufshpb_issue_umap_single_req(struct ufshpb_lu *hpb,
- 	return ufshpb_issue_umap_req(hpb, rgn, true);
- }
- 
--static int ufshpb_issue_umap_all_req(struct ufshpb_lu *hpb)
--{
--	return ufshpb_issue_umap_req(hpb, NULL, false);
--}
--
- static void __ufshpb_evict_region(struct ufshpb_lu *hpb,
- 				 struct ufshpb_region *rgn)
- {
-@@ -2459,8 +2454,6 @@ static void ufshpb_hpb_lu_prepared(struct ufs_hba *hba)
- 			ufshpb_set_state(hpb, HPB_PRESENT);
- 			if ((hpb->lu_pinned_end - hpb->lu_pinned_start) > 0)
- 				queue_work(ufshpb_wq, &hpb->map_work);
--			if (!hpb->is_hcm)
--				ufshpb_issue_umap_all_req(hpb);
- 		} else {
- 			dev_err(hba->dev, "destroy HPB lu %d\n", hpb->lun);
- 			ufshpb_destroy_lu(hba, sdev);
--- 
-2.18.0
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
