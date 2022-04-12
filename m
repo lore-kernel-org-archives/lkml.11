@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F957C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0829C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358600AbiDLSI7 (ORCPT
+        id S1358606AbiDLSJ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 14:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
+        Tue, 12 Apr 2022 14:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239431AbiDLSI4 (ORCPT
+        with ESMTP id S239431AbiDLSJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 14:08:56 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E85E4CD5C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:06:38 -0700 (PDT)
+        Tue, 12 Apr 2022 14:09:55 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE854CD5C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:07:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649786798; x=1681322798;
+  t=1649786857; x=1681322857;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=IeaSKSuXPhVpXFM/OGOekdHqEQjfF86SwDcNvu0ysGk=;
-  b=nggviThdHYwy2EYrznEuH+LirmSCGdvzQWuh9LdWXX2dDajsy+lUNYgS
-   kMErNyHoIR90U0JLjDvRdHVl5G3CzUxx6Y5u6/51M7aY89H8YebASj/+6
-   yYW+pMgyy2N0je3SZkWwG8mLzBwIw2/8XMVUpvYostnb2xM34WYyvddVK
-   D98cpNkUWaz4Jfc1UJb4As1/T5iBSi4ATs8c1brkvwAKex20liBxqvuIt
-   Tnn2lPXjKmhf4BvfwZeZHT7yMHsC37kcuync3BvPHqWi+4O6kE7howvqY
-   3Nc7FEvGYuVHkIcVEUu2h8FQp3VIFMb40OQMdwPNKeM1gbNKsQT/lydLf
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="244347985"
+  bh=KAG5O+Uw+D2QHrHyu7UtILoUVvKnaKhfn+G8WwPaG38=;
+  b=EFy/kufGybwAw57fsQQCOU3+yzsc2rW8KW/CLUw8aAWx0bnd+uWorh8S
+   MA1COXFKhmn7lbPX1Hz6tQ7yD3E1hPx4PxFH0l6KgRw9Qn9JJcc+R0Uan
+   xCzvG9w2/GnJze23olEK1qeAWkGewPOVlicF92dGc2g0cZctqErE5yklR
+   ifCAMyEsRAIjlzAz+dYwiSYxkfG7gBevasL6rpGPEjanZzZ/TTRqirBWe
+   s67DnExLpyfRUZVSj92Y/3LfjiNxuMGX97m1FUIdsLl3+TFL8JhaKJPQy
+   +o1NYAvwq3FbVKPM6ZbAHrE4+W3FyJmEVrdh8deeBlClv+j4Gkcyp35AG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="260061244"
 X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="244347985"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 10:57:25 -0700
+   d="scan'208";a="260061244"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:01:53 -0700
 X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="724563522"
+   d="scan'208";a="526600127"
 Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 10:57:23 -0700
-Date:   Tue, 12 Apr 2022 10:59:17 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:01:53 -0700
+Date:   Tue, 12 Apr 2022 11:03:50 -0700
 From:   Alison Schofield <alison.schofield@intel.com>
 To:     Bruno Moreira-Guedes <codeagain@codeagain.dev>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -47,102 +47,27 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         outreachy@lists.linux.dev,
         Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: Re: [PATCH v2 1/3] staging: vme: Adjusted VME_USER in Kconfig
-Message-ID: <20220412175917.GA1236898@alison-desk>
+Subject: Re: [PATCH v2 2/3] staging: vme: Fix missing `depends on` at KConfig
+Message-ID: <20220412180350.GB1236898@alison-desk>
 References: <cover.1649721450.git.codeagain@codeagain.dev>
- <cfd7014e7f70cb928aa957f56bb31d8f514c2446.1649721450.git.codeagain@codeagain.dev>
+ <aab0591ac73a54059621c722a63635d43a446fd2.1649721450.git.codeagain@codeagain.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cfd7014e7f70cb928aa957f56bb31d8f514c2446.1649721450.git.codeagain@codeagain.dev>
+In-Reply-To: <aab0591ac73a54059621c722a63635d43a446fd2.1649721450.git.codeagain@codeagain.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 03:55:21AM -0300, Bruno Moreira-Guedes wrote:
+On Tue, Apr 12, 2022 at 03:56:43AM -0300, Bruno Moreira-Guedes wrote:
 
-'Adjusted' is unecessarily vague. In the commit msg try to say
-exactly what the patch did. Write in the imperative tense, like
-you are issuing commands.
+> [PATCH v2 2/3] staging: vme: Fix missing `depends on` at KConfig
 
-Something like 'Move VME staging driver to staging Kconfig' , or
-'Source vme driver from staging Kconfig'.  
+Be direct in the commit msg. Perhaps -
+'Add 'depends on' VME_BUS to Kconfig'
 
-> Currently, the VME_USER driver is in the staging tree Kconfig, unlike
-> other VME drivers already moved to the main portions of the kernel tree.
-> Its configuration is, however, nested into the VME_BUS config option,
-> which might be misleading.
-> 
-> Since the staging tree "[...] is used to hold stand-alone[1] drivers and
-> filesystem that are not ready to be merged into the main portion of the
-> Linux kernel tree [...]"[1], IMHO all staging drivers should appear
+That's all!
 
-Skip the 'IMHO'. It's all your HO and if you state anything incorrectly,
-your reviewers should catch it. If you are truly making a wild guess
-about something, either look into it further, or not it in a question
-below the '---'.
-
-This commit message is otherwise very well written. It explains the
-why of this patch nicely. 
-
-Again, for this set, perhaps the changelog in the cover letter only.
-
-> nested into the Main Menu -> Device Drivers -> Staging Drivers to make
-> sure the user don't pick it without being fully aware of its staging
-> status as it could be the case in Menu -> Device Drivers -> VME bridge
-> support (the current location).
-> 
-> With this change menuconfig users will clearly know this is not a driver
-> in the main portion of the kernel tree and decide whether to build it or
-> not with that clearly in mind.
-> 
-> This change goes into the same direction of commit 4b4cdf3979c3
-> ("STAGING: Move staging drivers back to staging-specific menu")
-> 
-> CHANGELOG
-> v1:
->  - Sourced "drivers/staging/vme/devices/Kconfig" in
->    "drivers/staging/Kconfig" and unsourced in "drivers/vme/Kconfig".
-> 
-> v2:
-> - Turned into a patchset to (1) fix missing "depends on" missing entry
->   in config VME_USER at "drivers/staging/vme/devices/Kconfig",
->   affecting the behavior of this patch, and (2) fix unnecessary
->   remaining files from the time the whole vme subtree was in staging.
-> 
-> REFERENCES
-> [1] https://lkml.org/lkml/2009/3/18/314
-> 
-> Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
-> ---
->  drivers/staging/Kconfig | 2 ++
->  drivers/vme/Kconfig     | 2 --
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-> index 932acb4e8cbc..0545850eb2ff 100644
-> --- a/drivers/staging/Kconfig
-> +++ b/drivers/staging/Kconfig
-> @@ -88,4 +88,6 @@ source "drivers/staging/qlge/Kconfig"
->  
->  source "drivers/staging/wfx/Kconfig"
->  
-> +source "drivers/staging/vme/devices/Kconfig"
-> +
->  endif # STAGING
-> diff --git a/drivers/vme/Kconfig b/drivers/vme/Kconfig
-> index 936392ca3c8c..c13dd9d2a604 100644
-> --- a/drivers/vme/Kconfig
-> +++ b/drivers/vme/Kconfig
-> @@ -15,6 +15,4 @@ source "drivers/vme/bridges/Kconfig"
->  
->  source "drivers/vme/boards/Kconfig"
->  
-> -source "drivers/staging/vme/devices/Kconfig"
-> -
->  endif # VME
-> -- 
-> 2.35.1
-> 
+snip
 
 
