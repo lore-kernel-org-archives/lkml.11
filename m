@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 728F1C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BBEC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350930AbiDLGng (ORCPT
+        id S1350891AbiDLGnd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51456 "EHLO
+        Tue, 12 Apr 2022 02:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350269AbiDLGkm (ORCPT
+        with ESMTP id S1349222AbiDLGkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:40:42 -0400
+        Tue, 12 Apr 2022 02:40:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD211117E;
-        Mon, 11 Apr 2022 23:36:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E998BFD39;
+        Mon, 11 Apr 2022 23:36:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A551618C8;
-        Tue, 12 Apr 2022 06:36:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 416EEC385A8;
-        Tue, 12 Apr 2022 06:36:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86690618FF;
+        Tue, 12 Apr 2022 06:36:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F17C385A1;
+        Tue, 12 Apr 2022 06:36:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745368;
-        bh=YUaD/gn59qpPk8qrTdcX0IIMywAjRnrug/av+Btu4Oo=;
+        s=korg; t=1649745363;
+        bh=DhUlxdcaj1L0+mbfwbwVVElEQhW8jwNGcb2RsgRP8Zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gfgcubKW0ILz6g6J64EKQ2L8HqZYLxVat7G0X6qkR/wpwK17lXd7MBas/8MrEOkZb
-         qwOF8LaBJYOq5nUgHG6EqdTsxv0YhfSoAq1S0syYV9WVWsf8yXDCHcaVEW5L6GMhCy
-         DgQYAkYEAY0KImP7VKw5OznBkGnsImEVtfS1yK5g=
+        b=XMKzJcfZ5LWv8fULP3/OMTquiCqhLzx79KOL78f1JpQDUyq9doKL+7NDjFp15cPeN
+         ZEz5r9G0pbd7TDuLCNKQm0yhSVaDlad40BcoleGKfz3jb8fMtISMri0/1fJVWLjSRM
+         ufunj5PdzuMawQO8FgQHUqQPUX65SQrYC+kecan4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Xiubo Li <xiubli@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 033/171] PCI: pciehp: Add Qualcomm quirk for Command Completed erratum
-Date:   Tue, 12 Apr 2022 08:28:44 +0200
-Message-Id: <20220412062928.845641694@linuxfoundation.org>
+Subject: [PATCH 5.10 069/171] ceph: fix memory leak in ceph_readdir when note_last_dentry returns error
+Date:   Tue, 12 Apr 2022 08:29:20 +0200
+Message-Id: <20220412062929.880436025@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,42 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 9f72d4757cbe4d1ed669192f6d23817c9e437c4b ]
+[ Upstream commit f639d9867eea647005dc824e0e24f39ffc50d4e4 ]
 
-The Qualcomm PCI bridge device (Device ID 0x0110) found in chipsets such as
-SM8450 does not set the Command Completed bit unless writes to the Slot
-Command register change "Control" bits.
+Reset the last_readdir at the same time, and add a comment explaining
+why we don't free last_readdir when dir_emit returns false.
 
-This results in timeouts like below:
-
-  pcieport 0001:00:00.0: pciehp: Timeout on hotplug command 0x03c0 (issued 2020 msec ago)
-
-Add the device to the Command Completed quirk to mark commands "completed"
-immediately unless they change the "Control" bits.
-
-Link: https://lore.kernel.org/r/20220210145003.135907-1-manivannan.sadhasivam@linaro.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/ceph/dir.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
-index af4c4cc837fc..dda952357747 100644
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -1060,6 +1060,8 @@ static void quirk_cmd_compl(struct pci_dev *pdev)
- }
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
- 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
-+DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0110,
-+			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0400,
- 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0401,
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index f63c1a090139..1fddb9cd3e88 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -478,8 +478,11 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 					2 : (fpos_off(rde->offset) + 1);
+ 			err = note_last_dentry(dfi, rde->name, rde->name_len,
+ 					       next_offset);
+-			if (err)
++			if (err) {
++				ceph_mdsc_put_request(dfi->last_readdir);
++				dfi->last_readdir = NULL;
+ 				return err;
++			}
+ 		} else if (req->r_reply_info.dir_end) {
+ 			dfi->next_offset = 2;
+ 			/* keep last name */
+@@ -520,6 +523,12 @@ static int ceph_readdir(struct file *file, struct dir_context *ctx)
+ 		if (!dir_emit(ctx, rde->name, rde->name_len,
+ 			      ceph_present_ino(inode->i_sb, le64_to_cpu(rde->inode.in->ino)),
+ 			      le32_to_cpu(rde->inode.in->mode) >> 12)) {
++			/*
++			 * NOTE: Here no need to put the 'dfi->last_readdir',
++			 * because when dir_emit stops us it's most likely
++			 * doesn't have enough memory, etc. So for next readdir
++			 * it will continue.
++			 */
+ 			dout("filldir stopping us...\n");
+ 			return 0;
+ 		}
 -- 
 2.35.1
 
