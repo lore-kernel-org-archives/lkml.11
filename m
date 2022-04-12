@@ -2,141 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBAA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED9C9C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357438AbiDLJtN (ORCPT
+        id S1377346AbiDLJt3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
+        Tue, 12 Apr 2022 05:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238384AbiDLJm2 (ORCPT
+        with ESMTP id S1351941AbiDLJmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:42:28 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B341B60DAE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:47:22 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 6CD2C21608;
-        Tue, 12 Apr 2022 08:47:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649753241; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E33CS35xOqn/0jMFES+ln46MItDGxXtgyeeOFfPSYHg=;
-        b=vD1JMVqoVHrbSfjApv7zRM1vbaDtxY2qKh1Zce3DSp8pnGDyANmbL1p5hISeBHomCZVDsU
-        A7B6gQgHXbrKEyQvU+SYNmsHmEFhYfadfMIRf7KMofouj5kmeLIjTfUsZjyMwD433DfsF6
-        xUiuImzo3IiDtvuN/G+SFzdIRjD1K70=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649753241;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E33CS35xOqn/0jMFES+ln46MItDGxXtgyeeOFfPSYHg=;
-        b=ONIhPj2uzNWCfXuwgEBX74nJ9V6mJOn8ChK8q6P9aHsUH81STTHiqLpAhmqzvVhB7D5UG5
-        6DNtM4YvDXopWHDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1770F13780;
-        Tue, 12 Apr 2022 08:47:21 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id gJPwBJk8VWKJHAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 12 Apr 2022 08:47:21 +0000
-Message-ID: <4cb92b41-95e1-1666-321e-96ff9e6095bb@suse.cz>
-Date:   Tue, 12 Apr 2022 10:47:20 +0200
+        Tue, 12 Apr 2022 05:42:33 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6821013E15;
+        Tue, 12 Apr 2022 01:51:32 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id z16so16921195pfh.3;
+        Tue, 12 Apr 2022 01:51:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3WLg00iAtfnL7pmg00LeUrTt106/C7VI+77BQXv24oU=;
+        b=hcH+S+ZkyHRqTzPb7UUggtmrBlax6NtGVOa9Cov0lkAPMN8Ne25YWc3fq5tTj1LMR/
+         Q6eXAsA/lvqkRdebokrZj918JTWERk4pPrgIc5lttKHaVRA7smmd2UTOFEuAEksOEnPc
+         dSH5xeGBmXuGWJcsDdcRcbmRfajERGMK+z8PfdoQ0aHygLBW5eM9ztnADl4MJvkJ85AE
+         NbxdcXaiCc7NnclAay1RvKLnIXnZzVlDZz6x2elapYJKAwmI0rAO6AHKUn4PUJpkDd39
+         9k2oMVm0HeV/6V0HHXOMFDHBypyQH7/Drm7IaJjIBxSBG+8kRHGzHSpv/qtRKAxlcEjI
+         gmzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3WLg00iAtfnL7pmg00LeUrTt106/C7VI+77BQXv24oU=;
+        b=igcjEKL5ZtjvNAILehx304WcMwhpFiirM9lJ9GUzJ5Sqn9zos6nH4YiTgnNzNpSNOd
+         BSjt6PSoRSe6ef0RSpcBKH2JWx+kRqQhMbtAxiInnAZU5l3nyBjlV0VXofjn43H+mM91
+         AvvghNKhVf5urpGFkfejZjKcYE39Lo1fQ0u9IZ8BiBcWVgyS+C4S2r62pufq3J5f26v6
+         N52aUAmJNPxlNyJ+edgKcTUPO0h+cE7hGTgJ66Gb1z4KlJZUp4TcEaBKl9ymM3sEk8J5
+         WE8L6TFaujDlA4WIcX+x93Y7ggVNu2pacDgT2j2cmZzE8ewcjzNGADr/WuSD1BcNpbAw
+         31ew==
+X-Gm-Message-State: AOAM532VztHRzaLFUaMSg5Ygr0WVrOeyZX6UH/mwmpI0peQ+zbb/H3xn
+        josQhGF1icApbJAUmtt7cuY=
+X-Google-Smtp-Source: ABdhPJw97PpSb4uHzXslZKqacwDVSDfJrRt/hJFxD8nU9dbNgh0hoJE+/6enklzvGXfW2UypDbuxcQ==
+X-Received: by 2002:a63:7701:0:b0:382:7f20:5f83 with SMTP id s1-20020a637701000000b003827f205f83mr29394251pgc.163.1649753491910;
+        Tue, 12 Apr 2022 01:51:31 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id b80-20020a621b53000000b005059f5d7587sm10535851pfb.60.2022.04.12.01.51.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 01:51:31 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     linus.walleij@linaro.org, arnd@arndb.de, lv.ruyi@zte.com.cn,
+        wanjiabing@vivo.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] ixp4xx_eth: fix error check return value of platform_get_irq()
+Date:   Tue, 12 Apr 2022 08:51:26 +0000
+Message-Id: <20220412085126.2532924-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 08/16] mm/rmap: drop "compound" parameter from
- page_add_new_anon_rmap()
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-9-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220329160440.193848-9-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 18:04, David Hildenbrand wrote:
-> New anonymous pages are always mapped natively: only THP/khugepagd code
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-						khugepaged ^
+platform_get_irq() return negative value on failure, so null check of
+return value is incorrect. Fix it by comparing whether it is less than
+zero.
 
-> maps a new compound anonymous page and passes "true". Otherwise, we're
-> just dealing with simple, non-compound pages.
-> 
-> Let's give the interface clearer semantics and document these.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+Fixes: 9055a2f59162 ("ixp4xx_eth: make ptp support a platform driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ drivers/net/ethernet/xscale/ptp_ixp46x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+index 1f382777aa5a..9abbdb71e629 100644
+--- a/drivers/net/ethernet/xscale/ptp_ixp46x.c
++++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
+@@ -271,7 +271,7 @@ static int ptp_ixp_probe(struct platform_device *pdev)
+ 	ixp_clock.master_irq = platform_get_irq(pdev, 0);
+ 	ixp_clock.slave_irq = platform_get_irq(pdev, 1);
+ 	if (IS_ERR(ixp_clock.regs) ||
+-	    !ixp_clock.master_irq || !ixp_clock.slave_irq)
++	    ixp_clock.master_irq < 0 || ixp_clock.slave_irq < 0)
+ 		return -ENXIO;
+ 
+ 	ixp_clock.caps = ptp_ixp_caps;
+-- 
+2.25.1
 
-Nit:
-
-> --- a/mm/rmap.c
-> +++ b/mm/rmap.c
-> @@ -1182,19 +1182,22 @@ void page_add_anon_rmap(struct page *page,
->  }
->  
->  /**
-> - * page_add_new_anon_rmap - add pte mapping to a new anonymous page
-> + * page_add_new_anon_rmap - add mapping to a new anonymous page
->   * @page:	the page to add the mapping to
->   * @vma:	the vm area in which the mapping is added
->   * @address:	the user virtual address mapped
-> - * @compound:	charge the page as compound or small page
-> + *
-> + * If it's a compound page, it is accounted as a compound page. As the page
-> + * is new, it's assume to get mapped exclusively by a single process.
->   *
->   * Same as page_add_anon_rmap but must only be called on *new* pages.
->   * This means the inc-and-test can be bypassed.
->   * Page does not have to be locked.
->   */
->  void page_add_new_anon_rmap(struct page *page,
-> -	struct vm_area_struct *vma, unsigned long address, bool compound)
-> +	struct vm_area_struct *vma, unsigned long address)
->  {
-> +	const bool compound = PageCompound(page);
->  	int nr = compound ? thp_nr_pages(page) : 1;
->  
->  	VM_BUG_ON_VMA(address < vma->vm_start || address >= vma->vm_end, vma);
-
-There's a VM_BUG_ON_PAGE(PageTransCompound(page), page); later in a
-!compound branch. Since compound is now determined by the same check, could
-be deleted.
