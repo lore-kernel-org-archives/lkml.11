@@ -2,325 +2,428 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B72D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357648AbiDLQbF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
+        id S240344AbiDLQb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 12:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357558AbiDLQaV (ORCPT
+        with ESMTP id S1343519AbiDLQby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:30:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4C925D5F3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649780876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fiitAF+obi/0SZz4a7WRaAtgx4DdchhRvhz/qzB643E=;
-        b=iz2g3j/dKCHQR1egfrYrnvjEGFUkYXJaglzyx+SNiMXu5YOx40zCipj4JLc39UZnV8emOI
-        vJmduLqpCb9P94zubTimxF2tWOpydOwOR4y/nGk7iDvie5lhtNv2ofp+RugcjQ0phRREqy
-        w2CB3qiLuxND8QiV3BpFlHNY+8KKL+c=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-663-ip6bh1ORMUqndWm_mHA6Hg-1; Tue, 12 Apr 2022 12:27:55 -0400
-X-MC-Unique: ip6bh1ORMUqndWm_mHA6Hg-1
-Received: by mail-wr1-f72.google.com with SMTP id a12-20020a5d6cac000000b002079e81d09eso1741541wra.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fiitAF+obi/0SZz4a7WRaAtgx4DdchhRvhz/qzB643E=;
-        b=Itx2DIiyR2wFKGDHcxp+DCMMMsySZH4RQIoWtgp3rGTR6pfvJIj95BkZ5RvBdrKRgR
-         INVu8ACm4czCN7OItIeYbVrjRb+a59VJk3Xs0VPqJXY2ciSpWD9U5OLnX4vt3GIedA2J
-         vUeJCR2jax9nfJ8UCVgBTpSlP6ia/jFgYa7BRxL5IjSNKh2aRoQ3vvGWL8JNUUL++Mun
-         HXnZVHZnwbkdrKui9GJw+wd7IM3muB8xkgNafs6z52dRWLeVv7o/cNX/1fHCbd96SYEf
-         iNOXsvZFIV8tUMm6QzzLTgnNKMRVNtp/bal3z0fDJ/WUZMV90lbe/3ZoMe7ZmeQ0xJkP
-         PgsA==
-X-Gm-Message-State: AOAM53203FwWcYk2WQpVOlGQLJlpp0sazmUBH3xAi0PYSNvpCstHHaGm
-        ned5Hb1LV26uneLzRZd3FC5OB+pn7meEcKCkUYrdsH6C89LrpRUOafnibU3gXG2E/HREWjzqywm
-        3gruUAxia3/tUok8FivlTNUwi7WVb3ZUqTtW7GrHDJ01hFPm+x2G5xXQqRmfHVX/BU+Vciatms1
-        E=
-X-Received: by 2002:a05:6000:1566:b0:204:20d9:a5b0 with SMTP id 6-20020a056000156600b0020420d9a5b0mr31136660wrz.207.1649780874037;
-        Tue, 12 Apr 2022 09:27:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzZk0MWTuuvHqtVROhBDnTpdj23O58Hyyzt/iYLuFJGH3Qm6i0aohCcnZ+MQb5YSi1vkdpJ4w==
-X-Received: by 2002:a05:6000:1566:b0:204:20d9:a5b0 with SMTP id 6-20020a056000156600b0020420d9a5b0mr31136615wrz.207.1649780873653;
-        Tue, 12 Apr 2022 09:27:53 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id g8-20020a5d4888000000b00207a49fa6a1sm7700358wrq.81.2022.04.12.09.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 09:27:53 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Rob Herring <robh@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Chen-Yu Tsai <wens@csie.org>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <maxime@cerno.tech>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH v3 5/5] drm/solomon: Add SSD130x OLED displays SPI support
-Date:   Tue, 12 Apr 2022 18:27:29 +0200
-Message-Id: <20220412162729.184783-6-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412162729.184783-1-javierm@redhat.com>
-References: <20220412162729.184783-1-javierm@redhat.com>
+        Tue, 12 Apr 2022 12:31:54 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3E25D664
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:29:33 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CFf5Sq029074;
+        Tue, 12 Apr 2022 16:29:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ message-id : date : subject : to : cc : references : from : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=0xfQDPgDkiBwRs44lIQMSvAMZatLd7NdTaAj77cPD00=;
+ b=iXxuVtvefV5kPIlx8GEkNpTr06ogVSJcqVoyzAKbInn7+8z7inLcd2/O38l3Q06SyvGh
+ X0lrpZEoZLwIReNVqoRvpm8tpbH/nhh+96p+OWbO+uKNnO21BOrzU3Eay6jdsW+mE3pI
+ bM6F3fvBQPfupdwAmHAX7QXkFwHb8xi0fojAfa4DC3r/8Iy0waKcJWjukSga247TrZi7
+ biDy8WIuBSyjgUEnPzSkJrv5OnriahtQYVC8xVR2jr8pvXxnF3H84zDJfhEh4mj37ov4
+ rN7X67GQ5Ed/ZEVwVx7yEZx6jVdMeqyBTG/j5X9nnlLdhEeQa7FNh86fMJx0vQe+4v5O UQ== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3fb1rs7dmb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 16:29:12 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23CGBLL4001422;
+        Tue, 12 Apr 2022 16:29:11 GMT
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2173.outbound.protection.outlook.com [104.47.73.173])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fb0k3frgn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 16:29:11 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CZim1Y5VQW3DKSEbzQkQIFiwTfQ6oBQNfIz7ml2/85IHYlCb64Svi4+fNXwlWQY36YEtrfeIv7+7IPUDL2rwwmlqPxCdcvqpPockqYL59FXq7s7lhrH6gqVzq1E2lGnjxLwtcyyCZWTcRSuQ/C7FZhq7+p3K9R0MJx4Og1ayxn3bjBPCTL7vZxNM38liHl6o9/W88N+3ly/VbLHzGsr/mD0Yje3BPDYsw8ltv+WK/jOe/SxRlCUkaZVUTwTt/RJe7HXe5wVmiU3BiMYNMb4gOUz1iKLMkBAo6FXAop5PjQ0zBuDSrofPkfG73C/rcYT3Y5Gw2cGDXK0zRXrsGELyrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0xfQDPgDkiBwRs44lIQMSvAMZatLd7NdTaAj77cPD00=;
+ b=gIBcYXMm5Ft8CIlmzTxhNaeW0U+wjsQzGkBVgEABLbCaNEep+yE4XSjytm86tcsBx0uKm8D8x/eqLdjby0k8j45mr5/CZqZrPxpqoAep5e49HKbLl57e9dU+hwm4bONmkSz6epGsmC9Qg0wh/+ZGmHe/6Nplf3z0fiQj9h18Y4UUT56EGQ/y5zkMHJXceEDlmJ94GEXz2NInDyOPQlutJAFMbJB2WKcMPoZbTV7j5A71zwswqiaXnZHMGcPYA04JZLVNklWT32WMwBcbA36UJ78qgKc6ykhqeShGLWVE/rWIp8FRc7yD7tFDXk5S0bWzDgiMWo03op4kK/PxFaM7Aw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0xfQDPgDkiBwRs44lIQMSvAMZatLd7NdTaAj77cPD00=;
+ b=kOCKPXkSZXdu9DYOigEO+PK15HQ9m71VAph0+x3dNQSifD88HYV+qVgeLAPMGcudrVcsVSea2/PxVEev9aserD/hJnOUYNLVjOdEtAEDjFynfwQymdf9it3La1HCqBELDtHW/pLfMTzCTxhSH0iQ0VP1RYeKcbtT83V0ETkroFA=
+Received: from CO1PR10MB4722.namprd10.prod.outlook.com (2603:10b6:303:9e::12)
+ by MW5PR10MB5665.namprd10.prod.outlook.com (2603:10b6:303:19a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 12 Apr
+ 2022 16:29:09 +0000
+Received: from CO1PR10MB4722.namprd10.prod.outlook.com
+ ([fe80::4427:92a2:50a5:50b6]) by CO1PR10MB4722.namprd10.prod.outlook.com
+ ([fe80::4427:92a2:50a5:50b6%6]) with mapi id 15.20.5144.030; Tue, 12 Apr 2022
+ 16:29:09 +0000
+Content-Type: multipart/mixed; boundary="------------od96F16BmcMNYjWNf40wDvbg"
+Message-ID: <2b6ed542-b3e0-1a87-33ac-d52fc0e0339c@oracle.com>
+Date:   Tue, 12 Apr 2022 11:28:58 -0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more
+ consistent
+Content-Language: en-US
+To:     Waiman Long <longman@redhat.com>,
+        chenguanyou <chenguanyou9338@gmail.com>,
+        gregkh@linuxfoundation.org
+Cc:     dave@stgolabs.net, hdanton@sina.com, linux-kernel@vger.kernel.org,
+        mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
+        quic_aiquny@quicinc.com, will@kernel.org, sashal@kernel.org
+References: <20211116012912.723980-1-longman@redhat.com>
+ <20220214154741.12399-1-chenguanyou@xiaomi.com>
+ <3f02975c-1a9d-be20-32cf-f1d8e3dfafcc@oracle.com>
+ <e873727e-22db-3330-015d-bd6581a2937a@redhat.com>
+ <31178c33-e25c-c3e8-35e2-776b5211200c@oracle.com>
+ <161c2e25-3d26-4dd7-d378-d1741f7bcca8@redhat.com>
+From:   john.p.donnelly@oracle.com
+In-Reply-To: <161c2e25-3d26-4dd7-d378-d1741f7bcca8@redhat.com>
+X-ClientProxiedBy: DM6PR07CA0125.namprd07.prod.outlook.com
+ (2603:10b6:5:330::7) To CO1PR10MB4722.namprd10.prod.outlook.com
+ (2603:10b6:303:9e::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5782c7c6-5fbc-4bbf-a46a-08da1ca191ce
+X-MS-TrafficTypeDiagnostic: MW5PR10MB5665:EE_
+X-Microsoft-Antispam-PRVS: <MW5PR10MB56657B2919B14E928FAD508BC7ED9@MW5PR10MB5665.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TOwzijzYdIfImjMphih7GGs8SLjQ8aTz44J7VVmuX1K+VClsmwG2KqvMEbIM7oIiAC26gnCZsUb4zLhE7+XgCtUIB5VPWkaUDVXCdaQ0tFyLPvgv/mnK1OF+Js/4fLiHPiIA6haB6pMi7kdCMyf0B7o0hLZwFz7SRFJblwF0LWYoaHUDXevQzEfNiaPyX6RZ0Y6SbUUrsVhyF0zv2bONG9bjdvPjVTnBZJfImXP8YEAjmdjOQflng3dbT5tNqTXSZXRcBuqcMNkU08LhN8XVUUe/+g1crJn+rT1Sfuu7bbbG2ltRG3CeMOfOrhxTOYdBHh/9BqgM7hWVP/7KxQS485ilsxgRaHm8po50ouA1qalM0w+36afYcCujb5MfnUm4E7LGxy7GGVKpz08Ckm6SSSx7fQCxRaCECpm0ixaGBEk0Xyd5o+nhmx9ens+PJ2uCNXLjkCxIfjqd+dDoOOKFkS1UZq2ATGZJuusKXJ8GExRP6L2mun2x/Ax+jMNAK4XYD10xZIRzZ9qXOdKIUBYv1YojjnUK9LqvEsPMVFEC3NoYM/C9WQBZRnXV2DZxabgzWHxzVgTF0tWSkH0RQOHoND8O4fOGr0QqhSGzhy7KnJev0pi3ce0VUiwKJ+89bAtkoPmPreWOeDQehOb7IGtKU5KGotWTA7lHyWSKDpOwbvd1szZ4oJumEXFpalFU3VI1FXc7wwEJutxcryoMcabnhw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4722.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(31696002)(6666004)(316002)(38100700002)(66556008)(66946007)(7416002)(86362001)(8936002)(9686003)(4326008)(8676002)(6486002)(235185007)(508600001)(66476007)(186003)(5660300002)(31686004)(2906002)(53546011)(2616005)(26005)(33964004)(6512007)(36756003)(83380400001)(110136005)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Wm8rdU4xRGIxVWRXY1FKVmNpNkZzRDRJdXJJbWh5UDk1R2U2K2NlMTd0L2FI?=
+ =?utf-8?B?d1VJQXJTSTY3STBCMnJFY24rZzJiZHdCMk9VNmppYWlLcElpNytjZTk4bEpW?=
+ =?utf-8?B?TzZsT2ZPbElzWnFXYkt1N2hGT0pEOEh1NmpZVWYzbFMrcS9EL1dMd0o3TmdU?=
+ =?utf-8?B?S2xrQUx6cWNVL1MvREhWOGt3dExQTzVhTGVTN1FKM2wwZjlmWUNHUk51aEl4?=
+ =?utf-8?B?RXp1eTdrTUlyb2FRSVhKU1NIL1AyZFJZYjZEY1ZUY01xS0dQWG15UUdlb3Jp?=
+ =?utf-8?B?UlRUdHJIeGlrVWNQbG0vazVuY3g2UStTWVpoQm5adXcraXJwS25iV05Bd1Ni?=
+ =?utf-8?B?OWZ0L01oU3Z6b3VieDIyVkNsSG5CTTF0OW5DNVM4dGdVdkU0TmJaS1FNZzJO?=
+ =?utf-8?B?Q3pIbGFjL3dQbU1ram5Nd1hZeDhSY25JOHJhZ2JyL2czV0RqUmNBMjNLN0or?=
+ =?utf-8?B?T21jbGVZZXowME1jR0ZTUnRmM0FtK1RmYlkxV2xmUUQ1S3laRElRUXdlZ2tD?=
+ =?utf-8?B?L1paNkczQXlucHZyU0V0MnRTVDcwTVFjT00rK2R5cnJoWWxCblNPUElKb2Ur?=
+ =?utf-8?B?aWtsVUNNalNSSFdla2Z4WktCcEd6S0g0TFF0QVMvTVBTNXJ2SlNEaWowWTdX?=
+ =?utf-8?B?eEt6dCs0cVZ3RXlJc0greE9vbnd4WEFaSiszSys0cnZ1bW5iNTZJTTFxWnYv?=
+ =?utf-8?B?WnhJMk9VRm5EcER6M21vTEk3dnAzUnIycjZ6Rit5K2JyMHJJVmtRMHl4dmlt?=
+ =?utf-8?B?ZGlBdkNYSTJ3azJLV3NoT091Uk9hNnN1QmtlVC9ZdmVUN1VFL2E5bDRYWnEy?=
+ =?utf-8?B?ZjNNaVhUQUYyRHErZ0Y0LzcyS3dhQ2ZHdys1QlpOT1Z5Y2J5dC9yWXdIc05N?=
+ =?utf-8?B?SnJ6RGpnMXlJcjBobGZuOEhJT0FoQlhuWUthK29FZWpIMEZOSDRzc1hvYVZs?=
+ =?utf-8?B?czIzWHY4RHBheGJXSHFrdzN6RUxLZVVtZFpGSzFNdC9hbTVMbjg5UFJmOFhB?=
+ =?utf-8?B?SCs5SE5mbU9xVEZycUVoaG10MXVrWmJodEdJQ0xudnh6QjRvVTdxWkJSSjFK?=
+ =?utf-8?B?U1hNek15b1JEVFF2UzJiQ0FMb01EVzNsMzJ2WGdiS214ejFqOTdNRy9XeFhy?=
+ =?utf-8?B?V29oMnhmYWNFbC9CTU1UMmxmZFBEYkJWSmlxYUhab1paSUMxcG5aK3QxTzRV?=
+ =?utf-8?B?ZTJmMlp0am0xUjRERWQxV1FYODhpQ242NUJCR2NveXVkMEV0NjdQejJMaGhQ?=
+ =?utf-8?B?akFYalFOTXdQZXR2N3ZLRVAzTWRmTWN6NXo0eFdUNkF6c1RpR1FWSVY1Mnlt?=
+ =?utf-8?B?YkZ5aG5PZysxL3plU3lHaVIxakVQRGZvZ0hKT3YyckdWMGV2OE1kcjFDNG1w?=
+ =?utf-8?B?RVVJY3BRVTlPMGZtUWpGZzZzZzZnYzI2akR0ekg2b0JVYVpTMHpNaDh2Tno4?=
+ =?utf-8?B?RjhmelZ5YnBoa09KUXo3dEZ5OUdZVVZrL3RyOWd4bnZYQzkzbEtQRDFXclEr?=
+ =?utf-8?B?eHBBWFViYVkrOFdkN3E2aFZTUlMzU3JtdlBDNDFVLzRVS2xickxBMHJOeDA0?=
+ =?utf-8?B?QThwWC9melpjWWU1SXArVGpVWEtYSzh2QVhxd2IxOHRPY0Q1dFBNYVVEUnFX?=
+ =?utf-8?B?anBqb0UxYjQ0dHNOdEE2Y3RCcmdGZExoUnhVeHNldy9XOUhGTG55aWJWWlNv?=
+ =?utf-8?B?cFpoQW1odU9sS0xJNVpHVDVrdzRMR2FyVGFmdlNZVkJLQUhEdmhhYVFNdDUz?=
+ =?utf-8?B?dWxCVThNcHBxSDhiVVhmc0pScmRzdVVGVDlFS0NQSlZHN1hKNGtlV3JLSHpM?=
+ =?utf-8?B?OFNGTW5wWGlEOTRab2lsYzNIR0VNa1F0MndmQmZPanNvMjNpQThuK0FFUXFG?=
+ =?utf-8?B?VlFBK1d2RDVWcnE4RTZ5YlhzK2ZjclhKajZhSXdRdVp4MlJQVXZ1TXE0UHo0?=
+ =?utf-8?B?aXNWanRvN1huZlhmVk0zVldNdU9mT05nVlUxVVNRV0YyWFNRRExaLzVGbktE?=
+ =?utf-8?B?MVlXWWh1SzF5RjFOZ01yc1VDSURNUEVFR1RQNGxHWHVXM2xUaUhUbjROZ0VN?=
+ =?utf-8?B?YnBnTXJMc0s3b3RvUDlHQ3M0NVU2YVpBV3QvSFVBVm04WHU0b1UzOUJUQk5q?=
+ =?utf-8?B?c3VEcnNsajhHbWFOMmFGUzZPUG14Q21aTkpvalg3OHVBSjR3aHJETFEycWNv?=
+ =?utf-8?B?cnM5SGhzZUpkZ3ZBeVZmZ2EvNnl5VXRrVk9ZVUhpWU9Ja2VmNVRXRE9WcWxS?=
+ =?utf-8?B?aWNER2dVY25OM3l2VW5aQm1Ub3pZYUpSWHhtUnZyMHNZNmVna3FyYmdabXVx?=
+ =?utf-8?B?ZlNFci9jOVNiZDBlcjQwTGNGN2d4WjJuaWxJTjEwZkRlV3ltd3FsVGllRXFa?=
+ =?utf-8?Q?23B3neHmQVcsOgwM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5782c7c6-5fbc-4bbf-a46a-08da1ca191ce
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4722.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 16:29:08.9616
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DYSvekDwgfecnrVoa6zOeZi59Hr0lYeAt2l7Qbgp627q5o0mG2LkDND/8KlgdovvKMt1G6YqpJ8MpatZvYTANAurJdsPQHQNoibl7QIoC8c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR10MB5665
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-04-12_06:2022-04-11,2022-04-12 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ malwarescore=0 mlxlogscore=999 spamscore=0 adultscore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204120078
+X-Proofpoint-ORIG-GUID: pIvj8nXrU4Q5JaX0qW80hHLERtrD5iLI
+X-Proofpoint-GUID: pIvj8nXrU4Q5JaX0qW80hHLERtrD5iLI
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ssd130x driver only provides the core support for these devices but it
-does not have any bus transport logic. Add a driver to interface over SPI.
+--------------od96F16BmcMNYjWNf40wDvbg
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-There is a difference in the communication protocol when using 4-wire SPI
-instead of I2C. For the latter, a control byte that contains a D/C# field
-has to be sent. This field tells the controller whether the data has to be
-written to the command register or to the graphics display data memory.
+On 4/11/22 4:07 PM, Waiman Long wrote:
+> 
+> On 4/11/22 17:03, john.p.donnelly@oracle.com wrote:
+>>
+>>>>
+>>>> I have reached out to Waiman and he suggested this for our next test 
+>>>> pass:
+>>>>
+>>>>
+>>>> 1ee326196c6658 locking/rwsem: Always try to wake waiters in 
+>>>> out_nolock path
+>>>
+>>> Does this commit help to avoid the lockup problem?
+>>>
+>>> Commit 1ee326196c6658 fixes a potential missed wakeup problem when a 
+>>> reader first in the wait queue is interrupted out without acquiring 
+>>> the lock. It is actually not a fix for commit d257cc8cb8d5. However, 
+>>> this commit changes the out_nolock path behavior of writers by 
+>>> leaving the handoff bit set when the wait queue isn't empty. That 
+>>> likely makes the missed wakeup problem easier to reproduce.
+>>>
+>>> Cheers,
+>>> Longman
+>>>
+>>
+>> Hi,
+>>
+>>
+>> We are testing now
+>>
+>> ETA for fio soak test completion is  ~15hr from now.
+>>
+>> I wanted to share the stack traces for future reference + occurrences.
+>>
+> I am looking forward to your testing results tomorrow.
+> 
+> Cheers,
+> Longman
+> 
+Hi
 
-But for 4-wire SPI that control byte is not used, instead a real D/C# line
-must be pulled HIGH for commands data and LOW for graphics display data.
+  Our 24hr fio soak test with :
 
-For this reason the standard SPI regmap can't be used and a custom .write
-bus handler is needed.
+  1ee326196c6658 locking/rwsem: Always try to wake waiters in out_nolock 
+path
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Mark Brown <broonie@kernel.org>
----
 
-Changes in v3:
-- Drop ssd130x_spi_get_dc() helper and open code it (Geert Uytterhoeven)
-- Export variants array and use &info[ID] in device table (Andy Shevchenko)
+  applied to 5.15.30  passed.
 
-Changes in v2:
-- Add the same compatible strings than I2C (Geert Uytterhoeven)
+  I suggest you append  1ee326196c6658 with :
 
- drivers/gpu/drm/solomon/Kconfig       |   9 ++
- drivers/gpu/drm/solomon/Makefile      |   1 +
- drivers/gpu/drm/solomon/ssd130x-spi.c | 177 ++++++++++++++++++++++++++
- 3 files changed, 187 insertions(+)
- create mode 100644 drivers/gpu/drm/solomon/ssd130x-spi.c
 
-diff --git a/drivers/gpu/drm/solomon/Kconfig b/drivers/gpu/drm/solomon/Kconfig
-index 8c0a0c788385..e170716d976b 100644
---- a/drivers/gpu/drm/solomon/Kconfig
-+++ b/drivers/gpu/drm/solomon/Kconfig
-@@ -20,3 +20,12 @@ config DRM_SSD130X_I2C
- 	  I2C bus.
- 
- 	  If M is selected the module will be called ssd130x-i2c.
-+
-+config DRM_SSD130X_SPI
-+	tristate "DRM support for Solomon SSD130X OLED displays (SPI bus)"
-+	depends on DRM_SSD130X && SPI
-+	select REGMAP
-+	help
-+	  Say Y here if the SSD130x OLED display is connected via SPI bus.
-+
-+	  If M is selected the module will be called ssd130x-spi.
-diff --git a/drivers/gpu/drm/solomon/Makefile b/drivers/gpu/drm/solomon/Makefile
-index 4bfc5acb0447..b5fc792257d7 100644
---- a/drivers/gpu/drm/solomon/Makefile
-+++ b/drivers/gpu/drm/solomon/Makefile
-@@ -1,2 +1,3 @@
- obj-$(CONFIG_DRM_SSD130X)	+= ssd130x.o
- obj-$(CONFIG_DRM_SSD130X_I2C)	+= ssd130x-i2c.o
-+obj-$(CONFIG_DRM_SSD130X_SPI)	+= ssd130x-spi.o
-diff --git a/drivers/gpu/drm/solomon/ssd130x-spi.c b/drivers/gpu/drm/solomon/ssd130x-spi.c
-new file mode 100644
-index 000000000000..4fda420ae0a6
---- /dev/null
-+++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
-@@ -0,0 +1,177 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * DRM driver for Solomon SSD130X OLED displays (SPI bus)
-+ *
-+ * Copyright 2022 Red Hat Inc.
-+ * Authors: Javier Martinez Canillas <javierm@redhat.com>
-+ */
-+#include <linux/spi/spi.h>
-+#include <linux/module.h>
-+
-+#include "ssd130x.h"
-+
-+#define DRIVER_NAME	"ssd130x-spi"
-+#define DRIVER_DESC	"DRM driver for Solomon SSD130X OLED displays (SPI)"
-+
-+struct ssd130x_spi_transport {
-+	struct spi_device *spi;
-+	struct gpio_desc *dc;
-+};
-+
-+static const struct regmap_config ssd130x_spi_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+/*
-+ * The regmap bus .write handler, it is just a wrapper around spi_write()
-+ * but toggling the Data/Command control pin (D/C#). Since for 4-wire SPI
-+ * a D/C# pin is used, in contrast with I2C where a control byte is sent,
-+ * prior to every data byte, that contains a bit with the D/C# value.
-+ *
-+ * These control bytes are considered registers by the ssd130x core driver
-+ * and can be used by the ssd130x SPI driver to determine if the data sent
-+ * is for a command register or for the Graphic Display Data RAM (GDDRAM).
-+ */
-+static int ssd130x_spi_write(void *context, const void *data, size_t count)
-+{
-+	struct ssd130x_spi_transport *t = context;
-+	struct spi_device *spi = t->spi;
-+	const u8 *reg = data;
-+
-+	if (*reg == SSD130X_COMMAND)
-+		gpiod_set_value_cansleep(t->dc, 0);
-+
-+	if (*reg == SSD130X_DATA)
-+		gpiod_set_value_cansleep(t->dc, 1);
-+
-+	/* Remove the control byte since is not used by the 4-wire SPI */
-+	return spi_write(spi, ((u8 *)data) + 1, count - 1);
-+}
-+
-+/* The ssd130x driver does not read registers but regmap expects a .read */
-+static int ssd130x_spi_read(void *context, const void *reg, size_t reg_size,
-+			    void *val, size_t val_size)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+/*
-+ * A custom bus is needed due the special write that toggles a D/C# pin,
-+ * another option could be to just have a .reg_write() callback but that
-+ * will prevent to do data writes in bulk.
-+ *
-+ * Once the regmap API is extended to support defining a bulk write handler
-+ * in the struct regmap_config, this can be simplified and the bus dropped.
-+ */
-+static struct regmap_bus regmap_ssd130x_spi_bus = {
-+	.write = ssd130x_spi_write,
-+	.read = ssd130x_spi_read,
-+};
-+
-+static int ssd130x_spi_probe(struct spi_device *spi)
-+{
-+	struct ssd130x_spi_transport *t;
-+	struct ssd130x_device *ssd130x;
-+	struct regmap *regmap;
-+	struct gpio_desc *dc;
-+	struct device *dev = &spi->dev;
-+
-+	dc = devm_gpiod_get(dev, "dc", GPIOD_OUT_LOW);
-+	if (IS_ERR(dc))
-+		return dev_err_probe(dev, PTR_ERR(dc),
-+				     "Failed to get dc gpio\n");
-+
-+	t = devm_kzalloc(dev, sizeof(*t), GFP_KERNEL);
-+	if (!t)
-+		return dev_err_probe(dev, -ENOMEM,
-+				     "Failed to allocate SPI transport data\n");
-+
-+	t->spi = spi;
-+	t->dc = dc;
-+
-+	regmap = devm_regmap_init(dev, &regmap_ssd130x_spi_bus, t,
-+				  &ssd130x_spi_regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	ssd130x = ssd130x_probe(dev, regmap);
-+	if (IS_ERR(ssd130x))
-+		return PTR_ERR(ssd130x);
-+
-+	spi_set_drvdata(spi, ssd130x);
-+
-+	return 0;
-+}
-+
-+static void ssd130x_spi_remove(struct spi_device *spi)
-+{
-+	struct ssd130x_device *ssd130x = spi_get_drvdata(spi);
-+
-+	ssd130x_remove(ssd130x);
-+}
-+
-+static void ssd130x_spi_shutdown(struct spi_device *spi)
-+{
-+	struct ssd130x_device *ssd130x = spi_get_drvdata(spi);
-+
-+	ssd130x_shutdown(ssd130x);
-+}
-+
-+static const struct of_device_id ssd130x_of_match[] = {
-+	{
-+		.compatible = "sinowealth,sh1106",
-+		.data = &ssd130x_variants[SH1106_ID],
-+	},
-+	{
-+		.compatible = "solomon,ssd1305",
-+		.data = &ssd130x_variants[SSD1305_ID],
-+	},
-+	{
-+		.compatible = "solomon,ssd1306",
-+		.data = &ssd130x_variants[SSD1306_ID],
-+	},
-+	{
-+		.compatible = "solomon,ssd1307",
-+		.data = &ssd130x_variants[SSD1307_ID],
-+	},
-+	{
-+		.compatible = "solomon,ssd1309",
-+		.data = &ssd130x_variants[SSD1309_ID],
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, ssd130x_of_match);
-+
-+/*
-+ * The SPI core always reports a MODALIAS uevent of the form "spi:<dev>", even
-+ * if the device was registered via OF. This means that the module will not be
-+ * auto loaded, unless it contains an alias that matches the MODALIAS reported.
-+ *
-+ * To workaround this issue, add a SPI device ID table. Even when this should
-+ * not be needed for this driver to match the registered SPI devices.
-+ */
-+static const struct spi_device_id ssd130x_spi_table[] = {
-+	{ "sh1106",  SH1106_ID },
-+	{ "ssd1305", SSD1305_ID },
-+	{ "ssd1306", SSD1306_ID },
-+	{ "ssd1307", SSD1307_ID },
-+	{ "ssd1309", SSD1309_ID },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(spi, ssd130x_spi_table);
-+
-+static struct spi_driver ssd130x_spi_driver = {
-+	.driver = {
-+		.name = DRIVER_NAME,
-+		.of_match_table = ssd130x_of_match,
-+	},
-+	.probe = ssd130x_spi_probe,
-+	.remove = ssd130x_spi_remove,
-+	.shutdown = ssd130x_spi_shutdown,
-+};
-+module_spi_driver(ssd130x_spi_driver);
-+
-+MODULE_DESCRIPTION(DRIVER_DESC);
-+MODULE_AUTHOR("Javier Martinez Canillas <javierm@redhat.com>");
-+MODULE_LICENSE("GPL");
--- 
-2.35.1
+  cc: stable
 
+   Fixes: d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more 
+consistent")
+
+
+I'll leave the implementation details up to the core maintainers how to 
+do that ;-)
+
+...
+
+Thank you
+
+John.
+
+--------------od96F16BmcMNYjWNf40wDvbg
+Content-Type: message/rfc822; name="[PATCH v5] locking/rwsem: Make handoff bit
+ handling more consistent.eml"
+Content-Disposition: attachment; filename*0="[PATCH v5] locking/rwsem: Make
+ handoff bit handling more con"; filename*1="sistent.eml"
+Content-Transfer-Encoding: 8bit
+
+Received: from SN6PR10MB2976.namprd10.prod.outlook.com (2603:10b6:805:d6::12)
+ by CO1PR10MB4722.namprd10.prod.outlook.com with HTTPS; Mon, 11 Apr 2022
+ 21:03:51 +0000
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oracle.com;
+Received: from CO1PR10MB4722.namprd10.prod.outlook.com (2603:10b6:303:9e::12)
+ by SN6PR10MB2976.namprd10.prod.outlook.com (2603:10b6:805:d6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
+ 2022 21:03:50 +0000
+Received: from CO1PR10MB4722.namprd10.prod.outlook.com
+ ([fe80::4427:92a2:50a5:50b6]) by CO1PR10MB4722.namprd10.prod.outlook.com
+ ([fe80::4427:92a2:50a5:50b6%6]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
+ 21:03:50 +0000
+Message-ID: <31178c33-e25c-c3e8-35e2-776b5211200c@oracle.com>
+Date: Mon, 11 Apr 2022 16:03:40 -0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more
+ consistent
+Content-Language: en-US
+To: Waiman Long <longman@redhat.com>, chenguanyou
+ <chenguanyou9338@gmail.com>, gregkh@linuxfoundation.org
+Cc: dave@stgolabs.net, hdanton@sina.com, linux-kernel@vger.kernel.org,
+ mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
+ quic_aiquny@quicinc.com, will@kernel.org, sashal@kernel.org,
+ John Donnelly <john.p.donnelly@oracle.com>
+References: <20211116012912.723980-1-longman@redhat.com>
+ <20220214154741.12399-1-chenguanyou@xiaomi.com>
+ <3f02975c-1a9d-be20-32cf-f1d8e3dfafcc@oracle.com>
+ <e873727e-22db-3330-015d-bd6581a2937a@redhat.com>
+From: john.p.donnelly@oracle.com
+In-Reply-To: <e873727e-22db-3330-015d-bd6581a2937a@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-MS-Exchange-Organization-ExpirationStartTime: 11 Apr 2022 21:03:50.3769
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id: 
+ f24d91a9-2ff3-4b28-83b6-08da1bfec72f
+X-MS-Exchange-Organization-AuthSource: CO1PR10MB4722.namprd10.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Internal
+X-MS-Exchange-Organization-AuthMechanism: 14
+X-ClientProxiedBy: DM6PR01CA0011.prod.exchangelabs.com (2603:10b6:5:296::16)
+ To CO1PR10MB4722.namprd10.prod.outlook.com (2603:10b6:303:9e::12)
+X-MS-Exchange-Organization-MessageDirectionality: Originating
+Return-Path: john.p.donnelly@oracle.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f24d91a9-2ff3-4b28-83b6-08da1bfec72f
+X-MS-TrafficTypeDiagnostic: SN6PR10MB2976:EE_
+X-Oracle-Tenancy: 1
+X-MS-Exchange-Organization-SCL: -1
+X-Microsoft-Antispam: BCL:0;
+X-Forefront-Antispam-Report: 
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:SKI;H:CO1PR10MB4722.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:;DIR:INB;
+X-MS-Exchange-CrossTenant-Network-Message-Id: f24d91a9-2ff3-4b28-83b6-08da1bfec72f
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4722.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 21:03:50.5019
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tcelX3jxfFDN045gruLrZ2dACptl396b4YXHtueSzxP2ZSdRB1JVqdtcjlyp24kTEwcFJInw++LhoR5T3dZTikO7hj3I2IQmIvfJUCVfIuI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2976
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:01.1239883
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.5144.029
+X-Microsoft-Antispam-Mailbox-Delivery: 
+ ucf:1;jmr:0;auth:0;dest:C;OFR:CustomRules;ENG:(910001)(944506458)(944626604)(920097)(425001)(930097);
+X-Microsoft-Antispam-Message-Info: 
+ AbvWkKWJpj1NTrW84R+PCJyLV1AzCqa9QzLNCPK0UmjgIkqGaisWYtx/P5zMCUWRM+ui8NdiySYW5x3Ebf7zyZViG8Do0QlmPrgsgtejHDoE/wHWnfbUfRuFjZd0gWZptxYxH87G2TY6GfERsU/DjkKnbXl1LvqlCABh0u0g2yTxRcAZIORx2ZNUdTvBgQK2bGRgEH5CXFKGC8KnLzxoMkZ2lH9E9P5c8rorz41zmuNS/l9Si181uOn2kOwFwQJI0u12AL5MNNMEn/GrYBKC4bJPTpj/nG9cid9GvwpzF23i2xVhYQ4kYpE39eH49STpnxAU9/2x3f647jKD8ZnTFXphOyqABq8TeYZBRJjGXQr1DZjDRa6+jk2940w/+YCHfBkICvjyk6E9j4603/AY/C76lY103yFaRgJo0o9kUT+SQjj6AUheBABkbqm9gn3QkraoFRyX3ji3ixrm4CBY7/U+HNzfZnCS7SHd/FJY9Uv5vzmymB7bwvarevNvzN5v1Zi7ev4y4M485tl+iBN869VX6j0sAEAAQn/Fh4lJTAudLTEfdonRIBBFG9Q3lpfUNXr+6K6C+r/2XiGhhCnCiEzX96aRgUsDi9qxxZlVFJfYGLCm0sDJIgjzn1tP03FytgcRwvMPUpzpBph0zSIbLWhAzekHPQDfXKWY/ixSkmHrhg7uLztYJFWIGCo6c6+0mDp2lmQeMhfcat9N5w0/ZGkv0ZscVtOsLsrshBBPBNY=
+MIME-Version: 1.0
+
+On 4/11/22 1:40 PM, Waiman Long wrote:
+> On 4/11/22 14:26, john.p.donnelly@oracle.com wrote:
+>> On 2/14/22 9:47 AM, chenguanyou wrote:
+>>> Hi Waiman, Greg,
+>>> This patch has been merged in branch linux-5.16.y.
+>>> Can we take it to the linux-5.10.y LTS version?
+>>>
+>>> thanks,
+>>
+>> Hi,
+>>
+>> As a FYI:
+>>
+>> We have observed that following lockup with this commit added to 
+>> 5.15.LTS:
+>>
+>> d257cc8cb8d5 - locking/rwsem: Make handoff bit handling more 
+>> consistent (4 months ago) <Waiman Long>
+>>
+>> The "fio" test suit fails with LVM devices composed of four NVME 
+>> devices with these observed lockup, panic.
+>>
+>>
+>>
+>> ext4:
+>>
+>> PID: 3682   TASK: ffff8f489ae34bc0  CPU: 2   COMMAND: "dio/dm-0"
+>>  #0 [fffffe0000083e50] crash_nmi_callback at ffffffff828772b3
+>>  #1 [fffffe0000083e58] nmi_handle at ffffffff82840778
+>>  #2 [fffffe0000083ea0] default_do_nmi at ffffffff8337a1e2
+>>  #3 [fffffe0000083ec8] exc_nmi at ffffffff8337a48d
+>>  #4 [fffffe0000083ef0] end_repeat_nmi at ffffffff8340153b
+>>     [exception RIP: _raw_spin_lock_irq+23]
+>>     RIP: ffffffff8338b2e7  RSP: ffff9c4409b47c78  RFLAGS: 00000046
+>>     RAX: 0000000000000000  RBX: ffff8f489ae34bc0  RCX: 0000000000000000
+>>     RDX: 0000000000000001  RSI: 0000000000000000  RDI: ffff8f47f7b90104
+>>     RBP: ffff9c4409b47d20   R8: 0000000000000000   R9: 0000000000000000
+>>     R10: 0000000000000000  R11: 0000000000000000  R12: ffff8f47f7b90104
+>>     R13: ffff9c4409b47cb0  R14: ffff8f47f7b900f0  R15: 0000000000000000
+>>     ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+>>     <NMI exception stack> ---
+>>  #5 [ffff9c4409b47c78] _raw_spin_lock_irq at ffffffff8338b2e7
+>>  #6 [ffff9c4409b47c78] rwsem_down_write_slowpath at ffffffff82925be9
+>>  #7 [ffff9c4409b47d28] ext4_map_blocks at ffffffffc11c26dc [ext4]
+>>  #8 [ffff9c4409b47d98] ext4_convert_unwritten_extents at
+>> ffffffffc11ad9e0 [ext4]
+>>  #9 [ffff9c4409b47df0] ext4_dio_write_end_io at ffffffffc11b22aa [ext4]
+>>
+>> xfs:
+>>
+>> PID: 3719   TASK: ffff9f81d2d74bc0  CPU: 37  COMMAND: "dio/dm-0"
+>>  #0 [fffffe0000894e50] crash_nmi_callback at ffffffffad6772b3
+>>  #1 [fffffe0000894e58] nmi_handle at ffffffffad640778
+>>  #2 [fffffe0000894ea0] default_do_nmi at ffffffffae17a1e2
+>>  #3 [fffffe0000894ec8] exc_nmi at ffffffffae17a48d
+>>  #4 [fffffe0000894ef0] end_repeat_nmi at ffffffffae20153b
+>>     [exception RIP: _raw_spin_lock_irq+23]
+>>     RIP: ffffffffae18b2e7  RSP: ffffbb7ec9637c48  RFLAGS: 00000046
+>>     RAX: 0000000000000000  RBX: ffff9f81d2d74bc0  RCX: 0000000000000000
+>>     RDX: 0000000000000001  RSI: 0000000000000000  RDI: ffff9f81c04a918c
+>>     RBP: ffffbb7ec9637ce8   R8: 0000000000000000   R9: 0000000000000000
+>>     R10: 0000000000000000  R11: 0000000000000000  R12: ffff9f81c04a918c
+>>     R13: ffffbb7ec9637c80  R14: ffff9f81c04a9178  R15: 0000000000000000
+>>     ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+>>     <NMI exception stack> ---
+>>  #5 [ffffbb7ec9637c48] _raw_spin_lock_irq at ffffffffae18b2e7
+>>  #6 [ffffbb7ec9637c48] rwsem_down_write_slowpath at ffffffffad725be9
+>>  #7 [ffffbb7ec9637cf0] xfs_trans_alloc_inode at ffffffffc074f2bd [xfs]
+>>  #8 [ffffbb7ec9637d50] xfs_iomap_write_unwritten at ffffffffc073ad15
+>> [xfs]
+>>  #9 [ffffbb7ec9637dd0] xfs_dio_write_end_io at ffffffffc072db62 [xfs]
+>>
+>>
+>> I have reached out to Waiman and he suggested this for our next test 
+>> pass:
+>>
+>>
+>> 1ee326196c6658 locking/rwsem: Always try to wake waiters in out_nolock 
+>> path
+> 
+> Does this commit help to avoid the lockup problem?
+> 
+> Commit 1ee326196c6658 fixes a potential missed wakeup problem when a 
+> reader first in the wait queue is interrupted out without acquiring the 
+> lock. It is actually not a fix for commit d257cc8cb8d5. However, this 
+> commit changes the out_nolock path behavior of writers by leaving the 
+> handoff bit set when the wait queue isn't empty. That likely makes the 
+> missed wakeup problem easier to reproduce.
+> 
+> Cheers,
+> Longman
+> 
+
+Hi,
+
+
+We are testing now
+
+ETA for fio soak test completion is  ~15hr from now.
+
+I wanted to share the stack traces for future reference + occurrences.
+
+
+Cheers.
+
+JD
+
+
+
+...
+
+
+--------------od96F16BmcMNYjWNf40wDvbg--
