@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A63C6C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C145FC48BCF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356186AbiDLHem (ORCPT
+        id S1356205AbiDLHeu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
+        Tue, 12 Apr 2022 03:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351807AbiDLHM6 (ORCPT
+        with ESMTP id S1351800AbiDLHM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01B260D2;
-        Mon, 11 Apr 2022 23:53:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD845F7E;
+        Mon, 11 Apr 2022 23:52:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 497426149D;
-        Tue, 12 Apr 2022 06:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F62AC385A1;
-        Tue, 12 Apr 2022 06:53:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0CD26149D;
+        Tue, 12 Apr 2022 06:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F70C385A6;
+        Tue, 12 Apr 2022 06:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746380;
-        bh=YbIKFM7y60MKoj8g2fObDLCsX6eNMh481mfKZ8yaewM=;
+        s=korg; t=1649746378;
+        bh=QaNOR5RKZom6VvVT+7/5NSchd1phah1uvn1QBNxVMAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cwcG+jSg2/MfuoA7A3t2bwlk4/cSUl0OIvXGXLGT6OOSEFW5Fas/C32HyViU4SHWd
-         cuIBs2B/XnVk9xvlzTYoK0VA2+LzyKs+C3y8mhtrPr7/3dr5V4mEn8H/bFB312ROQP
-         FW5JNQLIjn0d31uO3Rejba6G7mr6FFK0Cpdyg/CU=
+        b=i5XxdwfjqhKMQ++99tfk0YSQQbScKSYFmGBYWhHQvDy/EwLMK4cPwddZxhZer+ufK
+         ktHhlJ18FF8NKxwuEIj46WYaNJd1jIpl8hnPSHp3N8OsPcS0De6oOoeEBSQmG1vIFG
+         1Q5mDji+ha1rD9EhsQPenDsUVeJLfYq73NeOsw6Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
-        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 261/277] KVM: avoid NULL pointer dereference in kvm_dirty_ring_push
-Date:   Tue, 12 Apr 2022 08:31:04 +0200
-Message-Id: <20220412062949.597891763@linuxfoundation.org>
+        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 260/277] dmaengine: Revert "dmaengine: shdma: Fix runtime PM imbalance on error"
+Date:   Tue, 12 Apr 2022 08:31:03 +0200
+Message-Id: <20220412062949.569617322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,50 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Vinod Koul <vkoul@kernel.org>
 
-commit 5593473a1e6c743764b08e3b6071cb43b5cfa6c4 upstream.
+commit d143f939a95696d38ff800ada14402fa50ebbd6c upstream.
 
-kvm_vcpu_release() will call kvm_dirty_ring_free(), freeing
-ring->dirty_gfns and setting it to NULL.  Afterwards, it calls
-kvm_arch_vcpu_destroy().
+This reverts commit 455896c53d5b ("dmaengine: shdma: Fix runtime PM
+imbalance on error") as the patch wrongly reduced the count on error and
+did not bail out. So drop the count by reverting the patch .
 
-However, if closing the file descriptor races with KVM_RUN in such away
-that vcpu->arch.st.preempted == 0, the following call stack leads to a
-NULL pointer dereference in kvm_dirty_run_push():
-
- mark_page_dirty_in_slot+0x192/0x270 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3171
- kvm_steal_time_set_preempted arch/x86/kvm/x86.c:4600 [inline]
- kvm_arch_vcpu_put+0x34e/0x5b0 arch/x86/kvm/x86.c:4618
- vcpu_put+0x1b/0x70 arch/x86/kvm/../../../virt/kvm/kvm_main.c:211
- vmx_free_vcpu+0xcb/0x130 arch/x86/kvm/vmx/vmx.c:6985
- kvm_arch_vcpu_destroy+0x76/0x290 arch/x86/kvm/x86.c:11219
- kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
-
-The fix is to release the dirty page ring after kvm_arch_vcpu_destroy
-has run.
-
-Reported-by: Qiuhao Li <qiuhao@sysec.org>
-Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/sh/shdma-base.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -431,8 +431,8 @@ static void kvm_vcpu_init(struct kvm_vcp
+--- a/drivers/dma/sh/shdma-base.c
++++ b/drivers/dma/sh/shdma-base.c
+@@ -115,10 +115,8 @@ static dma_cookie_t shdma_tx_submit(stru
+ 		ret = pm_runtime_get(schan->dev);
  
- void kvm_vcpu_destroy(struct kvm_vcpu *vcpu)
- {
--	kvm_dirty_ring_free(&vcpu->dirty_ring);
- 	kvm_arch_vcpu_destroy(vcpu);
-+	kvm_dirty_ring_free(&vcpu->dirty_ring);
+ 		spin_unlock_irq(&schan->chan_lock);
+-		if (ret < 0) {
++		if (ret < 0)
+ 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
+-			pm_runtime_put(schan->dev);
+-		}
  
- 	/*
- 	 * No need for rcu_read_lock as VCPU_RUN is the only place that changes
+ 		pm_runtime_barrier(schan->dev);
+ 
 
 
