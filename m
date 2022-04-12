@@ -2,132 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079E1C38161
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D985FC352B6
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388499AbiDLJWT (ORCPT
+        id S1388352AbiDLJWF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
+        Tue, 12 Apr 2022 05:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358378AbiDLHla (ORCPT
+        with ESMTP id S1377937AbiDLHym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BC24991C;
-        Tue, 12 Apr 2022 00:17:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF5A1B81B58;
-        Tue, 12 Apr 2022 07:17:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5352AC385A5;
-        Tue, 12 Apr 2022 07:17:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747871;
-        bh=dgM8Q+aXLKtjfC1k5I0vZOUMijAJe+ijlT5S4O9WlF8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eOhnmg1DiuQZ9agv9/lsGViJByEtOYSCUsvhqEQjyfPsmTaAcCHQjzXG1Ei3GBY1E
-         ZxArLu55zlOLKYDd+R1sM1QhfIXfaBz0rDACoWui0U8071LhAC0G/Hn/TehuDnxXSa
-         DIpidGG6iiVoEoinysc78v2a1NInv6P51VFfSLRc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 234/343] ice: Do not skip not enabled queues in ice_vc_dis_qs_msg
-Date:   Tue, 12 Apr 2022 08:30:52 +0200
-Message-Id: <20220412062958.089838285@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:54:42 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724B456215;
+        Tue, 12 Apr 2022 00:32:13 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C7W0sa012289;
+        Tue, 12 Apr 2022 02:32:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649748720;
+        bh=eW8lzeaakM005YYC3nGUxibHVtMvgv2QH/HoZA6ps4E=;
+        h=From:To:CC:Subject:Date;
+        b=oF19xDgtVjIvwawiV9/9oOl8Z6RHs+gMb4E+lAbens7ksRIfxlDSWugU4rMAqCP+P
+         jljOSKtihdAP76ebpxpNkAGBgkypGW71rMpnqZD/MldHVP3QmF6apqnWx614A99GTN
+         EnqkDnr00Lk5kqxrqPkEmnoBbxPfxfSbHLd9m21c=
+Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C7W0SZ031891
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 02:32:00 -0500
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
+ Apr 2022 02:31:39 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 12 Apr 2022 02:31:39 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C7Vd4X112001;
+        Tue, 12 Apr 2022 02:31:39 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Nishanth Menon <nm@ti.com>
+Subject: [PATCH 0/2] rtc: Introduce rtc-ti-k3
+Date:   Tue, 12 Apr 2022 02:31:36 -0500
+Message-ID: <20220412073138.25027-1-nm@ti.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+Hi,
 
-[ Upstream commit 05ef6813b234db3196f083b91db3963f040b65bb ]
+This series adds support for TI K3 RTC as instantiated on TI's AM625
+SoC.
 
-Disable check for queue being enabled in ice_vc_dis_qs_msg, because
-there could be a case when queues were created, but were not enabled.
-We still need to delete those queues.
+Documentation in the current early release version of Technical
+Reference Manual is incomplete at the moment, but due to be updated
+later this year.
+https://www.ti.com/lit/pdf/spruiv7
 
-Normal workflow for VF looks like:
-Enable path:
-VIRTCHNL_OP_ADD_ETH_ADDR (opcode 10)
-VIRTCHNL_OP_CONFIG_VSI_QUEUES (opcode 6)
-VIRTCHNL_OP_ENABLE_QUEUES (opcode 8)
+Testing log can be found here (20220411 + additional patch to get mmc
+root fs): https://gist.github.com/nmenon/88c56d63c2e163e7ba1e06f30eee52cc
 
-Disable path:
-VIRTCHNL_OP_DISABLE_QUEUES (opcode 9)
-VIRTCHNL_OP_DEL_ETH_ADDR (opcode 11)
+Nishanth Menon (2):
+  dt-bindings: rtc: Add TI K3 RTC devicetree bindings documentation
+  rtc: Introduce ti-k3-rtc
 
-The issue appears only in stress conditions when VF is enabled and
-disabled very fast.
-Eventually there will be a case, when queues are created by
-VIRTCHNL_OP_CONFIG_VSI_QUEUES, but are not enabled by
-VIRTCHNL_OP_ENABLE_QUEUES.
-In turn, these queues are not deleted by VIRTCHNL_OP_DISABLE_QUEUES,
-because there is a check whether queues are enabled in
-ice_vc_dis_qs_msg.
+ .../devicetree/bindings/rtc/ti,k3-rtc.yaml    |  87 +++
+ drivers/rtc/Kconfig                           |  10 +
+ drivers/rtc/Makefile                          |   1 +
+ drivers/rtc/rtc-ti-k3.c                       | 687 ++++++++++++++++++
+ 4 files changed, 785 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/rtc/ti,k3-rtc.yaml
+ create mode 100644 drivers/rtc/rtc-ti-k3.c
 
-When we bring up the VF again, we will see the "Failed to set LAN Tx queue
-context" error during VIRTCHNL_OP_CONFIG_VSI_QUEUES step. This
-happens because old 16 queues were not deleted and VF requests to create
-16 more, but ice_sched_get_free_qparent in ice_ena_vsi_txq would fail to
-find a parent node for first newly requested queue (because all nodes
-are allocated to 16 old queues).
-
-Testing Hints:
-
-Just enable and disable VF fast enough, so it would be disabled before
-reaching VIRTCHNL_OP_ENABLE_QUEUES.
-
-while true; do
-        ip link set dev ens785f0v0 up
-        sleep 0.065 # adjust delay value for you machine
-        ip link set dev ens785f0v0 down
-done
-
-Fixes: 77ca27c41705 ("ice: add support for virtchnl_queue_select.[tx|rx]_queues bitmap")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 1be3cd4b2bef..2bee8f10ad89 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -3351,9 +3351,9 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
- 				goto error_param;
- 			}
- 
--			/* Skip queue if not enabled */
- 			if (!test_bit(vf_q_id, vf->txq_ena))
--				continue;
-+				dev_dbg(ice_pf_to_dev(vsi->back), "Queue %u on VSI %u is not enabled, but stopping it anyway\n",
-+					vf_q_id, vsi->vsi_num);
- 
- 			ice_fill_txq_meta(vsi, ring, &txq_meta);
- 
 -- 
-2.35.1
-
-
+2.31.1
 
