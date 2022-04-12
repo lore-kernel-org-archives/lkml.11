@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7987FC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA27AC47086
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355756AbiDLIIv (ORCPT
+        id S1356159AbiDLIJF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
+        Tue, 12 Apr 2022 04:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355524AbiDLH1k (ORCPT
+        with ESMTP id S1353561AbiDLHZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F704EA39;
-        Tue, 12 Apr 2022 00:07:49 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEFA25EA7;
+        Tue, 12 Apr 2022 00:01:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73071616A9;
-        Tue, 12 Apr 2022 07:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA40C385A1;
-        Tue, 12 Apr 2022 07:07:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C794DB81B35;
+        Tue, 12 Apr 2022 07:01:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EA59C385A6;
+        Tue, 12 Apr 2022 07:01:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747266;
-        bh=LAxfqD32x6ZFr0TQ72MXLdGPukvlyZn5mmFfZ5YXYLc=;
+        s=korg; t=1649746882;
+        bh=eyF2VnUNxOloLVIPfKJn9iNPrihstZvyrnDzYF9Nnbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=04DJ7WyPfh0MQ9zadbxYynNpJ+5N3dkN9aFkRk9pA/ofbcZt6bp/1N2AWuQDqtxLo
-         Cx1p8WUjBmlw6l4tIbhDAZv7iKBWXufil65SwBY4mbk657yNN5UCciJE8eJi+q2JDo
-         kFxHr6wDyoiqumxNP4CnZll+lztUeA66wmqx59f8=
+        b=HZsdwr8np/GYYJO4uQ9f2DJZ6t+pfD+AoCMijirN94XG7gL+w+cISNmAL3UgBl54s
+         VYpYSmYjjx5RJEKkAqoXl8z+taqbLKBDx02mSKiLTPyb8ycK0FNTAEZy4CLuLhePOk
+         SVAWet6tcFtRzoLQz/elHGeQXNAwWyHWKLGLsJqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 002/343] um: fix and optimize xor select template for CONFIG64 and timetravel mode
-Date:   Tue, 12 Apr 2022 08:27:00 +0200
-Message-Id: <20220412062951.172858976@linuxfoundation.org>
+Subject: [PATCH 5.16 114/285] clk: si5341: fix reported clk_rate when output divider is 2
+Date:   Tue, 12 Apr 2022 08:29:31 +0200
+Message-Id: <20220412062946.956613334@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,53 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+From: Adam Wujek <dev_public@wujek.eu>
 
-[ Upstream commit e3a33af812c611d99756e2ec61e9d7068d466bdf ]
+[ Upstream commit 2a8b539433e111c4de364237627ef219d2f6350a ]
 
-Due to dropped inclusion of asm-generic/xor.h, xor_block_8regs symbol is
-missing with CONFIG64 and break compilation, as the asm/xor_64.h also did
-not include it. The patch recreate the logic from arch/x86, which check
-whether AVX is available and add fallbacks for 32bit and 64bit config of
-um.
+SI5341_OUT_CFG_RDIV_FORCE2 shall be checked first to distinguish whether
+a divider for a given output is set to 2 (SI5341_OUT_CFG_RDIV_FORCE2
+is set) or the output is disabled (SI5341_OUT_CFG_RDIV_FORCE2 not set,
+SI5341_OUT_R_REG is set 0).
+Before the change, divider set to 2 (SI5341_OUT_R_REG set to 0) was
+interpreted as output is disabled.
 
-A very minor additional "fix" is, the return of the macro parameter
-instead of NULL, as this is the original intent of the macro, but
-this does not change the actual behavior.
-
-Fixes: c0ecca6604b8 ("um: enable the use of optimized xor routines in UML")
-Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
-Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20211203141125.2447520-1-dev_public@wujek.eu
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/asm/xor.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/clk/clk-si5341.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/arch/um/include/asm/xor.h b/arch/um/include/asm/xor.h
-index f512704a9ec7..22b39de73c24 100644
---- a/arch/um/include/asm/xor.h
-+++ b/arch/um/include/asm/xor.h
-@@ -4,8 +4,10 @@
+diff --git a/drivers/clk/clk-si5341.c b/drivers/clk/clk-si5341.c
+index f7b41366666e..4de098b6b0d4 100644
+--- a/drivers/clk/clk-si5341.c
++++ b/drivers/clk/clk-si5341.c
+@@ -798,6 +798,15 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	u32 r_divider;
+ 	u8 r[3];
  
- #ifdef CONFIG_64BIT
- #undef CONFIG_X86_32
-+#define TT_CPU_INF_XOR_DEFAULT (AVX_SELECT(&xor_block_sse_pf64))
- #else
- #define CONFIG_X86_32 1
-+#define TT_CPU_INF_XOR_DEFAULT (AVX_SELECT(&xor_block_8regs))
- #endif
++	err = regmap_read(output->data->regmap,
++			SI5341_OUT_CONFIG(output), &val);
++	if (err < 0)
++		return err;
++
++	/* If SI5341_OUT_CFG_RDIV_FORCE2 is set, r_divider is 2 */
++	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
++		return parent_rate / 2;
++
+ 	err = regmap_bulk_read(output->data->regmap,
+ 			SI5341_OUT_R_REG(output), r, 3);
+ 	if (err < 0)
+@@ -814,13 +823,6 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	r_divider += 1;
+ 	r_divider <<= 1;
  
- #include <asm/cpufeature.h>
-@@ -16,7 +18,7 @@
- #undef XOR_SELECT_TEMPLATE
- /* pick an arbitrary one - measuring isn't possible with inf-cpu */
- #define XOR_SELECT_TEMPLATE(x)	\
--	(time_travel_mode == TT_MODE_INFCPU ? &xor_block_8regs : NULL)
-+	(time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
- #endif
+-	err = regmap_read(output->data->regmap,
+-			SI5341_OUT_CONFIG(output), &val);
+-	if (err < 0)
+-		return err;
+-
+-	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
+-		r_divider = 2;
  
- #endif
+ 	return parent_rate / r_divider;
+ }
 -- 
 2.35.1
 
