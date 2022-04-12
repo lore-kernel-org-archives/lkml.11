@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACB6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA67DC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380356AbiDLI5X (ORCPT
+        id S1384610AbiDLI53 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
+        Tue, 12 Apr 2022 04:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359385AbiDLHm7 (ORCPT
+        with ESMTP id S1359383AbiDLHm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967D52B26C;
-        Tue, 12 Apr 2022 00:21:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE102C113;
+        Tue, 12 Apr 2022 00:21:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 500E0B81B58;
-        Tue, 12 Apr 2022 07:21:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7812C385A5;
-        Tue, 12 Apr 2022 07:21:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF714B81B4F;
+        Tue, 12 Apr 2022 07:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43330C385A5;
+        Tue, 12 Apr 2022 07:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748116;
-        bh=17U5fxjfDHQoUCrXh9TImuMgn8x8tcs6hOXxEMC3CU8=;
+        s=korg; t=1649748110;
+        bh=Sh3dOBmsLvqM/A9bPwyaG++I0BeeNMWpTYmy+3cxDe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PbO6MvSzvcGMFKYcRh077jsArKvSpW7ncEoBCZMj5hsby1O6bzZRFOE5lTVmAWq7P
-         saYrwkWLfhjzYpJ+6Ec/hypzDKgHyZrSh+zeJSi3flJ0++uuLbk73nG49Jenp1PCM0
-         yS7WAm6GXW8O0KJ+SH39eOrA1VsPtkWL0bo+UnDc=
+        b=ueZHA8lOhHWsMUZJ/qealdLHjaVx+Wa43Oo7kvN1dWpfxp63Y5PXC9NAhYt6sEdvH
+         1kkW1eG8unvCHYuGgzPHzRwppRJzgR175OasBlg71TcYBivbsYGIZ0E2iUEBThXInt
+         DUTkqOUBcZ4ZxqwCBzmHTsjVzA1mYCnmUdjzxMKc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Luca=20B=C3=A9la=20Palkovics?= 
-        <luca.bela.palkovics@gmail.com>,
-        Anand Jain <anand.jain@oracle.com>, Qu Wenruo <wqu@suse.com>,
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Ethan Lien <ethanlien@synology.com>,
         David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 285/343] btrfs: remove device item and update super block in the same transaction
-Date:   Tue, 12 Apr 2022 08:31:43 +0200
-Message-Id: <20220412062959.551154999@linuxfoundation.org>
+Subject: [PATCH 5.17 283/343] btrfs: fix qgroup reserve overflow the qgroup limit
+Date:   Tue, 12 Apr 2022 08:31:41 +0200
+Message-Id: <20220412062959.491813829@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,213 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Ethan Lien <ethanlien@synology.com>
 
-commit bbac58698a55cc0a6f0c0d69a6dcd3f9f3134c11 upstream.
+commit b642b52d0b50f4d398cb4293f64992d0eed2e2ce upstream.
 
-[BUG]
-There is a report that a btrfs has a bad super block num devices.
+We use extent_changeset->bytes_changed in qgroup_reserve_data() to record
+how many bytes we set for EXTENT_QGROUP_RESERVED state. Currently the
+bytes_changed is set as "unsigned int", and it will overflow if we try to
+fallocate a range larger than 4GiB. The result is we reserve less bytes
+and eventually break the qgroup limit.
 
-This makes btrfs to reject the fs completely.
+Unlike regular buffered/direct write, which we use one changeset for
+each ordered extent, which can never be larger than 256M.  For
+fallocate, we use one changeset for the whole range, thus it no longer
+respects the 256M per extent limit, and caused the problem.
 
-  BTRFS error (device sdd3): super_num_devices 3 mismatch with num_devices 2 found here
-  BTRFS error (device sdd3): failed to read chunk tree: -22
-  BTRFS error (device sdd3): open_ctree failed
+The following example test script reproduces the problem:
 
-[CAUSE]
-During btrfs device removal, chunk tree and super block num devs are
-updated in two different transactions:
+  $ cat qgroup-overflow.sh
+  #!/bin/bash
 
-  btrfs_rm_device()
-  |- btrfs_rm_dev_item(device)
-  |  |- trans = btrfs_start_transaction()
-  |  |  Now we got transaction X
-  |  |
-  |  |- btrfs_del_item()
-  |  |  Now device item is removed from chunk tree
-  |  |
-  |  |- btrfs_commit_transaction()
-  |     Transaction X got committed, super num devs untouched,
-  |     but device item removed from chunk tree.
-  |     (AKA, super num devs is already incorrect)
-  |
-  |- cur_devices->num_devices--;
-  |- cur_devices->total_devices--;
-  |- btrfs_set_super_num_devices()
-     All those operations are not in transaction X, thus it will
-     only be written back to disk in next transaction.
+  DEV=/dev/sdj
+  MNT=/mnt/sdj
 
-So after the transaction X in btrfs_rm_dev_item() committed, but before
-transaction X+1 (which can be minutes away), a power loss happen, then
-we got the super num mismatch.
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
 
-[FIX]
-Instead of starting and committing a transaction inside
-btrfs_rm_dev_item(), start a transaction in side btrfs_rm_device() and
-pass it to btrfs_rm_dev_item().
+  # Set qgroup limit to 2GiB.
+  btrfs quota enable $MNT
+  btrfs qgroup limit 2G $MNT
 
-And only commit the transaction after everything is done.
+  # Try to fallocate a 3GiB file. This should fail.
+  echo
+  echo "Try to fallocate a 3GiB file..."
+  fallocate -l 3G $MNT/3G.file
 
-Reported-by: Luca Béla Palkovics <luca.bela.palkovics@gmail.com>
-Link: https://lore.kernel.org/linux-btrfs/CA+8xDSpvdm_U0QLBAnrH=zqDq_cWCOH5TiV46CKmp3igr44okQ@mail.gmail.com/
+  # Try to fallocate a 5GiB file.
+  echo
+  echo "Try to fallocate a 5GiB file..."
+  fallocate -l 5G $MNT/5G.file
+
+  # See we break the qgroup limit.
+  echo
+  sync
+  btrfs qgroup show -r $MNT
+
+  umount $MNT
+
+When running the test:
+
+  $ ./qgroup-overflow.sh
+  (...)
+
+  Try to fallocate a 3GiB file...
+  fallocate: fallocate failed: Disk quota exceeded
+
+  Try to fallocate a 5GiB file...
+
+  qgroupid         rfer         excl     max_rfer
+  --------         ----         ----     --------
+  0/5           5.00GiB      5.00GiB      2.00GiB
+
+Since we have no control of how bytes_changed is used, it's better to
+set it to u64.
+
 CC: stable@vger.kernel.org # 4.14+
-Reviewed-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Ethan Lien <ethanlien@synology.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/volumes.c |   65 ++++++++++++++++++++++-------------------------------
- 1 file changed, 28 insertions(+), 37 deletions(-)
+ fs/btrfs/extent_io.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -1945,23 +1945,18 @@ static void update_dev_time(const char *
- 	path_put(&path);
- }
+--- a/fs/btrfs/extent_io.h
++++ b/fs/btrfs/extent_io.h
+@@ -118,7 +118,7 @@ struct btrfs_bio_ctrl {
+  */
+ struct extent_changeset {
+ 	/* How many bytes are set/cleared in this operation */
+-	unsigned int bytes_changed;
++	u64 bytes_changed;
  
--static int btrfs_rm_dev_item(struct btrfs_device *device)
-+static int btrfs_rm_dev_item(struct btrfs_trans_handle *trans,
-+			     struct btrfs_device *device)
- {
- 	struct btrfs_root *root = device->fs_info->chunk_root;
- 	int ret;
- 	struct btrfs_path *path;
- 	struct btrfs_key key;
--	struct btrfs_trans_handle *trans;
- 
- 	path = btrfs_alloc_path();
- 	if (!path)
- 		return -ENOMEM;
- 
--	trans = btrfs_start_transaction(root, 0);
--	if (IS_ERR(trans)) {
--		btrfs_free_path(path);
--		return PTR_ERR(trans);
--	}
- 	key.objectid = BTRFS_DEV_ITEMS_OBJECTID;
- 	key.type = BTRFS_DEV_ITEM_KEY;
- 	key.offset = device->devid;
-@@ -1972,21 +1967,12 @@ static int btrfs_rm_dev_item(struct btrf
- 	if (ret) {
- 		if (ret > 0)
- 			ret = -ENOENT;
--		btrfs_abort_transaction(trans, ret);
--		btrfs_end_transaction(trans);
- 		goto out;
- 	}
- 
- 	ret = btrfs_del_item(trans, root, path);
--	if (ret) {
--		btrfs_abort_transaction(trans, ret);
--		btrfs_end_transaction(trans);
--	}
--
- out:
- 	btrfs_free_path(path);
--	if (!ret)
--		ret = btrfs_commit_transaction(trans);
- 	return ret;
- }
- 
-@@ -2127,6 +2113,7 @@ int btrfs_rm_device(struct btrfs_fs_info
- 		    struct btrfs_dev_lookup_args *args,
- 		    struct block_device **bdev, fmode_t *mode)
- {
-+	struct btrfs_trans_handle *trans;
- 	struct btrfs_device *device;
- 	struct btrfs_fs_devices *cur_devices;
- 	struct btrfs_fs_devices *fs_devices = fs_info->fs_devices;
-@@ -2142,7 +2129,7 @@ int btrfs_rm_device(struct btrfs_fs_info
- 
- 	ret = btrfs_check_raid_min_devices(fs_info, num_devices - 1);
- 	if (ret)
--		goto out;
-+		return ret;
- 
- 	device = btrfs_find_device(fs_info->fs_devices, args);
- 	if (!device) {
-@@ -2150,27 +2137,22 @@ int btrfs_rm_device(struct btrfs_fs_info
- 			ret = BTRFS_ERROR_DEV_MISSING_NOT_FOUND;
- 		else
- 			ret = -ENOENT;
--		goto out;
-+		return ret;
- 	}
- 
- 	if (btrfs_pinned_by_swapfile(fs_info, device)) {
- 		btrfs_warn_in_rcu(fs_info,
- 		  "cannot remove device %s (devid %llu) due to active swapfile",
- 				  rcu_str_deref(device->name), device->devid);
--		ret = -ETXTBSY;
--		goto out;
-+		return -ETXTBSY;
- 	}
- 
--	if (test_bit(BTRFS_DEV_STATE_REPLACE_TGT, &device->dev_state)) {
--		ret = BTRFS_ERROR_DEV_TGT_REPLACE;
--		goto out;
--	}
-+	if (test_bit(BTRFS_DEV_STATE_REPLACE_TGT, &device->dev_state))
-+		return BTRFS_ERROR_DEV_TGT_REPLACE;
- 
- 	if (test_bit(BTRFS_DEV_STATE_WRITEABLE, &device->dev_state) &&
--	    fs_info->fs_devices->rw_devices == 1) {
--		ret = BTRFS_ERROR_DEV_ONLY_WRITABLE;
--		goto out;
--	}
-+	    fs_info->fs_devices->rw_devices == 1)
-+		return BTRFS_ERROR_DEV_ONLY_WRITABLE;
- 
- 	if (test_bit(BTRFS_DEV_STATE_WRITEABLE, &device->dev_state)) {
- 		mutex_lock(&fs_info->chunk_mutex);
-@@ -2183,14 +2165,22 @@ int btrfs_rm_device(struct btrfs_fs_info
- 	if (ret)
- 		goto error_undo;
- 
--	/*
--	 * TODO: the superblock still includes this device in its num_devices
--	 * counter although write_all_supers() is not locked out. This
--	 * could give a filesystem state which requires a degraded mount.
--	 */
--	ret = btrfs_rm_dev_item(device);
--	if (ret)
-+	trans = btrfs_start_transaction(fs_info->chunk_root, 0);
-+	if (IS_ERR(trans)) {
-+		ret = PTR_ERR(trans);
- 		goto error_undo;
-+	}
-+
-+	ret = btrfs_rm_dev_item(trans, device);
-+	if (ret) {
-+		/* Any error in dev item removal is critical */
-+		btrfs_crit(fs_info,
-+			   "failed to remove device item for devid %llu: %d",
-+			   device->devid, ret);
-+		btrfs_abort_transaction(trans, ret);
-+		btrfs_end_transaction(trans);
-+		return ret;
-+	}
- 
- 	clear_bit(BTRFS_DEV_STATE_IN_FS_METADATA, &device->dev_state);
- 	btrfs_scrub_cancel_dev(device);
-@@ -2273,7 +2263,8 @@ int btrfs_rm_device(struct btrfs_fs_info
- 		free_fs_devices(cur_devices);
- 	}
- 
--out:
-+	ret = btrfs_commit_transaction(trans);
-+
- 	return ret;
- 
- error_undo:
-@@ -2284,7 +2275,7 @@ error_undo:
- 		device->fs_devices->rw_devices++;
- 		mutex_unlock(&fs_info->chunk_mutex);
- 	}
--	goto out;
-+	return ret;
- }
- 
- void btrfs_rm_dev_replace_remove_srcdev(struct btrfs_device *srcdev)
+ 	/* Changed ranges */
+ 	struct ulist range_changed;
 
 
