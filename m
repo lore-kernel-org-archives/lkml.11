@@ -2,119 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38668C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9924EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378135AbiDLJVG (ORCPT
+        id S1355729AbiDLJTZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
+        Tue, 12 Apr 2022 05:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356678AbiDLHjN (ORCPT
+        with ESMTP id S1357560AbiDLHk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:13 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91937527D7;
-        Tue, 12 Apr 2022 00:09:59 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id x20so6206857qvl.10;
-        Tue, 12 Apr 2022 00:09:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YYsKfoGqtSHG7ncqqXsmjssryH5B9bgQ3YJHMg/wmuE=;
-        b=QwBDdndai0tHYI8OV/Ip9QYF6T4RV900qy1HIIeJzWQNOf8+SSUQGhtUdJC1ZhkXn/
-         PKIqCEKeJ9PSo/gMIYsj1AMK+l3XvGfdG5JVPtMEC9ehRqStvb3iyPJQtq7mscCUg7Ly
-         seZ68CyLmRp0Bf9hQGi8QMDLMpWTa4EoznfeGzSX/fChsLWaoY1+tjlzhoRxSYOtcgOn
-         bL6vDdOE5b9u8VvD04vAPkJQ3Dq+HMFSikrmGAwemVEDsIxek9lFVGHe/IvKIymk+b93
-         ZEiRMXLsAm/M00k7TbMYXGHMbhIdYrmsSsfrpjAkFVY15T+2VK4SImqlVnwoCTK7Dbxp
-         eLoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YYsKfoGqtSHG7ncqqXsmjssryH5B9bgQ3YJHMg/wmuE=;
-        b=KxOpgrIqWrlde4w6rh/KNB6CE79BOq6BFbzswe8A7Qbht3MzzMERyc7UFyme6v4e9N
-         JOco/Mt/qqroPyLnPfPY4hpbwH/rH/gzOsmQ9d5jHoKngmKjT2z1J6gqLrBUtvppuwqr
-         5DRLYxg1IG82D7QhTCoWgxLKoV6/jFDe2bUd574Pt2KmEB5qJj+NeXt7PaPP/kGnLGoA
-         rQgq05MupMjIBigwd5cxaqrKQkIDDKEXeEFx5kpEQpFszA+QVGukdrPTW+Spf260hcAr
-         5kq9Cm14IWyCXhopYBYxGW338kY4IB29oJOeoH9njDR5NiEY2X5Dtw9skB8synBIXXci
-         v4fg==
-X-Gm-Message-State: AOAM5318iC+LxTonk2b6oN3YuqfyA4RtpyTLO4D/6TxMth8ykGFmTYuR
-        N6ydE1Ogm2B8uQtyl+RAukY=
-X-Google-Smtp-Source: ABdhPJxD82QyXzIXC49kCu0uQhNuZRAkgzW0/Y+DmjAjzd5Op7VFc9g/56donMlX6v9f4IhUqwGMdQ==
-X-Received: by 2002:a05:6214:2301:b0:435:38af:2f87 with SMTP id gc1-20020a056214230100b0043538af2f87mr30014186qvb.83.1649747398424;
-        Tue, 12 Apr 2022 00:09:58 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id t3-20020a05622a148300b002ef8ff7afa1sm2317660qtx.21.2022.04.12.00.09.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 00:09:58 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     ldewangan@nvidia.com
-Cc:     broonie@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] spi: spi-tegra114: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Tue, 12 Apr 2022 07:09:51 +0000
-Message-Id: <20220412070951.2532157-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Apr 2022 03:40:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00AA30F56;
+        Tue, 12 Apr 2022 00:16:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8841E6171C;
+        Tue, 12 Apr 2022 07:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FA03C385A5;
+        Tue, 12 Apr 2022 07:16:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747764;
+        bh=eyF2VnUNxOloLVIPfKJn9iNPrihstZvyrnDzYF9Nnbs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kgTYtzIAxKPqIcFQl6DUfmlVKJXggtV5k/2LscdUpTunzMEyEoYW+F88x2SD0dGpv
+         GJScbZq8hrcUzE2BM/7UqyQr2LLkLMPdAIhXFp/ngMgpkaMcu+x/OzdnCC6ZjJJgju
+         12ld9jyzwXSvFTvdNDkg+x0zCnFiGXFa9/28GeKI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 156/343] clk: si5341: fix reported clk_rate when output divider is 2
+Date:   Tue, 12 Apr 2022 08:29:34 +0200
+Message-Id: <20220412062955.878980290@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Adam Wujek <dev_public@wujek.eu>
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+[ Upstream commit 2a8b539433e111c4de364237627ef219d2f6350a ]
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+SI5341_OUT_CFG_RDIV_FORCE2 shall be checked first to distinguish whether
+a divider for a given output is set to 2 (SI5341_OUT_CFG_RDIV_FORCE2
+is set) or the output is disabled (SI5341_OUT_CFG_RDIV_FORCE2 not set,
+SI5341_OUT_R_REG is set 0).
+Before the change, divider set to 2 (SI5341_OUT_R_REG set to 0) was
+interpreted as output is disabled.
+
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20211203141125.2447520-1-dev_public@wujek.eu
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-tegra114.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/clk/clk-si5341.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
-index 8f345247a8c3..d9be80e3e1bc 100644
---- a/drivers/spi/spi-tegra114.c
-+++ b/drivers/spi/spi-tegra114.c
-@@ -964,9 +964,8 @@ static int tegra_spi_setup(struct spi_device *spi)
- 		spi->controller_data = cdata;
- 	}
+diff --git a/drivers/clk/clk-si5341.c b/drivers/clk/clk-si5341.c
+index f7b41366666e..4de098b6b0d4 100644
+--- a/drivers/clk/clk-si5341.c
++++ b/drivers/clk/clk-si5341.c
+@@ -798,6 +798,15 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	u32 r_divider;
+ 	u8 r[3];
  
--	ret = pm_runtime_get_sync(tspi->dev);
-+	ret = pm_runtime_resume_and_get(tspi->dev);
- 	if (ret < 0) {
--		pm_runtime_put_noidle(tspi->dev);
- 		dev_err(tspi->dev, "pm runtime failed, e = %d\n", ret);
- 		if (cdata)
- 			tegra_spi_cleanup(spi);
-@@ -1394,10 +1393,9 @@ static int tegra_spi_probe(struct platform_device *pdev)
- 			goto exit_pm_disable;
- 	}
++	err = regmap_read(output->data->regmap,
++			SI5341_OUT_CONFIG(output), &val);
++	if (err < 0)
++		return err;
++
++	/* If SI5341_OUT_CFG_RDIV_FORCE2 is set, r_divider is 2 */
++	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
++		return parent_rate / 2;
++
+ 	err = regmap_bulk_read(output->data->regmap,
+ 			SI5341_OUT_R_REG(output), r, 3);
+ 	if (err < 0)
+@@ -814,13 +823,6 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	r_divider += 1;
+ 	r_divider <<= 1;
  
--	ret = pm_runtime_get_sync(&pdev->dev);
-+	ret = pm_runtime_resume_and_get(&pdev->dev);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "pm runtime get failed, e = %d\n", ret);
--		pm_runtime_put_noidle(&pdev->dev);
- 		goto exit_pm_disable;
- 	}
+-	err = regmap_read(output->data->regmap,
+-			SI5341_OUT_CONFIG(output), &val);
+-	if (err < 0)
+-		return err;
+-
+-	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
+-		r_divider = 2;
  
-@@ -1476,9 +1474,8 @@ static int tegra_spi_resume(struct device *dev)
- 	struct tegra_spi_data *tspi = spi_master_get_devdata(master);
- 	int ret;
- 
--	ret = pm_runtime_get_sync(dev);
-+	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0) {
--		pm_runtime_put_noidle(dev);
- 		dev_err(dev, "pm runtime failed, e = %d\n", ret);
- 		return ret;
- 	}
+ 	return parent_rate / r_divider;
+ }
 -- 
-2.25.1
+2.35.1
+
+
 
