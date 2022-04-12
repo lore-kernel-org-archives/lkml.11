@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB08C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235274AbiDLGsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37308 "EHLO
+        id S1350517AbiDLGsw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351207AbiDLGoS (ORCPT
+        with ESMTP id S1351252AbiDLGoX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:44:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C43839BB0;
-        Mon, 11 Apr 2022 23:37:46 -0700 (PDT)
+        Tue, 12 Apr 2022 02:44:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D065D3A19D;
+        Mon, 11 Apr 2022 23:37:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C3A61901;
-        Tue, 12 Apr 2022 06:37:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4D7C385A8;
-        Tue, 12 Apr 2022 06:37:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93758B81B29;
+        Tue, 12 Apr 2022 06:37:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A38AC385A1;
+        Tue, 12 Apr 2022 06:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745465;
-        bh=iHKTBHpLkmOnqKTXj5ViXxiSV2k9ofOSUz70d3ZLPuI=;
+        s=korg; t=1649745470;
+        bh=uh7VjpBKABOG/cam8KZIhW9PyMBPmi+m/4F7sPqmm0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oFdCctzGQTNii+5/6Aarhs0SuyV6/hzygY1QFfLPfgeoTgrK3bnuryWfvCv1Lolr9
-         6c4dFvVQYbKqZygY0pNTZsVcS4qrAyNxq4V8YWXcuwaRkj5vj3gtbqwDmqMzt2Avk/
-         bMdff8MVoPg9JI9hr+N/TwyO2zRuSbO06/Fff3ko=
+        b=AqssODPWMrzQeVj/BCdQ2CGKoD5mgLWybE1Ygr5CRYDfRrPlZTdzwtGy4gZzqIVAv
+         Ei+OnvcL9Teg8URyC3RnJHqWsZndFiQP8WSgJBCP/5Np+8hwJZkc4ET0jcbbZShJVI
+         Z1E2P2fNHfs8bMA2h42mSjc9Mq6wJRZZ2bwKWC8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 104/171] ice: Clear default forwarding VSI during VSI release
-Date:   Tue, 12 Apr 2022 08:29:55 +0200
-Message-Id: <20220412062930.892634569@linuxfoundation.org>
+Subject: [PATCH 5.10 106/171] net: stmmac: Fix unset max_speed difference between DT and non-DT platforms
+Date:   Tue, 12 Apr 2022 08:29:57 +0200
+Message-Id: <20220412062930.950430920@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -52,63 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+From: Chen-Yu Tsai <wens@csie.org>
 
-[ Upstream commit bd8c624c0cd59de0032752ba3001c107bba97f7b ]
+[ Upstream commit c21cabb0fd0b54b8b54235fc1ecfe1195a23bcb2 ]
 
-VSI is set as default forwarding one when promisc mode is set for
-PF interface, when PF is switched to switchdev mode or when VF
-driver asks to enable allmulticast or promisc mode for the VF
-interface (when vf-true-promisc-support priv flag is off).
-The third case is buggy because in that case VSI associated with
-VF remains as default one after VF removal.
+In commit 9cbadf094d9d ("net: stmmac: support max-speed device tree
+property"), when DT platforms don't set "max-speed", max_speed is set to
+-1; for non-DT platforms, it stays the default 0.
 
-Reproducer:
-1. Create VF
-   echo 1 > sys/class/net/ens7f0/device/sriov_numvfs
-2. Enable allmulticast or promisc mode on VF
-   ip link set ens7f0v0 allmulticast on
-   ip link set ens7f0v0 promisc on
-3. Delete VF
-   echo 0 > sys/class/net/ens7f0/device/sriov_numvfs
-4. Try to enable promisc mode on PF
-   ip link set ens7f0 promisc on
+Prior to commit eeef2f6b9f6e ("net: stmmac: Start adding phylink support"),
+the check for a valid max_speed setting was to check if it was greater
+than zero. This commit got it right, but subsequent patches just checked
+for non-zero, which is incorrect for DT platforms.
 
-Although it looks that promisc mode on PF is enabled the opposite
-is true because ice_vsi_sync_fltr() responsible for IFF_PROMISC
-handling first checks if any other VSI is set as default forwarding
-one and if so the function does not do anything. At this point
-it is not possible to enable promisc mode on PF without re-probe
-device.
+In commit 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
+the conversion switched completely to checking for non-zero value as a
+valid value, which caused 1000base-T to stop getting advertised by
+default.
 
-To resolve the issue this patch clear default forwarding VSI
-during ice_vsi_release() when the VSI to be released is the default
-one.
+Instead of trying to fix all the checks, simply leave max_speed alone if
+DT property parsing fails.
 
-Fixes: 01b5e89aab49 ("ice: Add VF promiscuous support")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 9cbadf094d9d ("net: stmmac: support max-speed device tree property")
+Fixes: 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220331184832.16316-1-wens@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 52ac6cc08e83..ec475353b620 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2667,6 +2667,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 		}
- 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 3183d8826981..b40b962055fa 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -432,8 +432,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ 	plat->phylink_node = np;
  
-+	if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
-+		ice_clear_dflt_vsi(pf->first_sw);
- 	ice_fltr_remove_all(vsi);
- 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
- 	ice_vsi_delete(vsi);
+ 	/* Get max speed of operation from device tree */
+-	if (of_property_read_u32(np, "max-speed", &plat->max_speed))
+-		plat->max_speed = -1;
++	of_property_read_u32(np, "max-speed", &plat->max_speed);
+ 
+ 	plat->bus_id = of_alias_get_id(np, "ethernet");
+ 	if (plat->bus_id < 0)
 -- 
 2.35.1
 
