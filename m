@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5FF1C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8ACC38162
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358735AbiDLHmK (ORCPT
+        id S1376753AbiDLHoX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
+        Tue, 12 Apr 2022 03:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353617AbiDLHPu (ORCPT
+        with ESMTP id S1354179AbiDLHRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:15:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687BB3A724;
-        Mon, 11 Apr 2022 23:57:11 -0700 (PDT)
+        Tue, 12 Apr 2022 03:17:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A2E26AF0;
+        Mon, 11 Apr 2022 23:58:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C79EB60EEB;
-        Tue, 12 Apr 2022 06:57:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC5D4C385A1;
-        Tue, 12 Apr 2022 06:57:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34A20B81B4E;
+        Tue, 12 Apr 2022 06:58:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F6FDC385A1;
+        Tue, 12 Apr 2022 06:58:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746630;
-        bh=nrsOPGqxxHc5zGk9m8VTGwzLfhtP518ODdSA1JttUR8=;
+        s=korg; t=1649746705;
+        bh=9xQ3uX4h9l1REPAIIrIh96bR7xnygsUSU5H1Cu9F32g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prDZjNOTuHCYNSr1b+5QfTK6i0AreOjrpxwya1s7cygYVzrm/wvq0TPisCuv7mi6w
-         re7bLhK8qhDoUQBtFQbqOOceUnz5leLzQFI1OCEKNe87osZr8kclnWms3Al5BOdXYo
-         lL1RtZD9Be5zXsMUOvX5NkypFbBJjO04BJmqELa8=
+        b=N0+8HHgZTO2TXGHDLvbqtMYBsW2LTdR/cO7GK/dkfZaMrTXqJyHqo0kkCTWU2ZlZE
+         xdq9MHmmBGhZwSwV7dZK5MfoKRMM+/wtdrh/CcULmzZjc6OX+JGdGquf5NLMJX9RZj
+         FQPPXoWq711NXX1cdMp12y8z/vVlS8vgw3TPMRvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Melissa Wen <mwen@igalia.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
+        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 034/285] drm/v3d: fix missing unlock
-Date:   Tue, 12 Apr 2022 08:28:11 +0200
-Message-Id: <20220412062944.661150123@linuxfoundation.org>
+Subject: [PATCH 5.16 100/285] platform/x86: hp-wmi: Fix 0x05 error code reported by several WMI calls
+Date:   Tue, 12 Apr 2022 08:29:17 +0200
+Message-Id: <20220412062946.552107925@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,66 +50,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Jorge Lopez <jorge.lopez2@hp.com>
 
-[ Upstream commit e57c1a3bd5e8e0c7181f65ae55581f0236a8f284 ]
+[ Upstream commit be9d73e64957bbd31ee9a0d11adc0f720974c558 ]
 
-[why]
-Unlock is needed on the error handling path to prevent dead lock.
-v3d_submit_cl_ioctl and v3d_submit_csd_ioctl is missing unlock.
+Several WMI queries leverage hp_wmi_read_int function to read their
+data. hp_wmi_read_int function was corrected in a previous patch.
+Now, this function invokes hp_wmi_perform_query with input parameter
+of size zero and the output buffer of size 4.
 
-[how]
-Fix this by changing goto target on the error handling path. So
-changing the goto to target an error handling path
-that includes drm_gem_unlock reservations.
+WMI commands calling hp_wmi_perform_query with input buffer size value
+of zero are listed below.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Melissa Wen <mwen@igalia.com>
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/1643377262-109975-1-git-send-email-lyz_cs@pku.edu.cn
+HPWMI_DISPLAY_QUERY
+HPWMI_HDDTEMP_QUERY
+HPWMI_ALS_QUERY
+HPWMI_HARDWARE_QUERY
+HPWMI_WIRELESS_QUERY
+HPWMI_BIOS_QUERY
+HPWMI_FEATURE_QUERY
+HPWMI_HOTKEY_QUERY
+HPWMI_FEATURE2_QUERY
+HPWMI_WIRELESS2_QUERY
+HPWMI_POSTCODEERROR_QUERY
+HPWMI_THERMAL_PROFILE_QUERY
+HPWMI_FAN_SPEED_MAX_GET_QUERY
+
+Invoking those WMI commands with an input buffer size greater
+than zero will cause error 0x05 to be returned.
+
+All WMI commands executed by the driver were reviewed and changes
+were made to ensure the expected input and output buffer size match
+the WMI specification.
+
+Changes were validated on a HP ZBook Workstation notebook,
+HP EliteBook x360, and HP EliteBook 850 G8.  Additional
+validation was included in the test process to ensure no other
+commands were incorrectly handled.
+
+Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
+Link: https://lore.kernel.org/r/20220310210853.28367-4-jorge.lopez2@hp.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/v3d/v3d_gem.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/platform/x86/hp-wmi.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
-index e47ae40a865a..91bdec3e0ef7 100644
---- a/drivers/gpu/drm/v3d/v3d_gem.c
-+++ b/drivers/gpu/drm/v3d/v3d_gem.c
-@@ -798,7 +798,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
+diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+index f822ef6eb93c..88f0bfd6ecf1 100644
+--- a/drivers/platform/x86/hp-wmi.c
++++ b/drivers/platform/x86/hp-wmi.c
+@@ -330,7 +330,7 @@ static int hp_wmi_get_fan_speed(int fan)
+ 	char fan_data[4] = { fan, 0, 0, 0 };
  
- 		if (!render->base.perfmon) {
- 			ret = -ENOENT;
--			goto fail;
-+			goto fail_perfmon;
- 		}
- 	}
+ 	int ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_GET_QUERY, HPWMI_GM,
+-				       &fan_data, sizeof(fan_data),
++				       &fan_data, sizeof(char),
+ 				       sizeof(fan_data));
  
-@@ -847,6 +847,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
+ 	if (ret != 0)
+@@ -399,7 +399,7 @@ static int omen_thermal_profile_set(int mode)
+ 		return -EINVAL;
  
- fail_unreserve:
- 	mutex_unlock(&v3d->sched_lock);
-+fail_perfmon:
- 	drm_gem_unlock_reservations(last_job->bo,
- 				    last_job->bo_count, &acquire_ctx);
- fail:
-@@ -1027,7 +1028,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
- 						     args->perfmon_id);
- 		if (!job->base.perfmon) {
- 			ret = -ENOENT;
--			goto fail;
-+			goto fail_perfmon;
- 		}
- 	}
+ 	ret = hp_wmi_perform_query(HPWMI_SET_PERFORMANCE_MODE, HPWMI_GM,
+-				   &buffer, sizeof(buffer), sizeof(buffer));
++				   &buffer, sizeof(buffer), 0);
  
-@@ -1056,6 +1057,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+@@ -436,7 +436,7 @@ static int hp_wmi_fan_speed_max_set(int enabled)
+ 	int ret;
  
- fail_unreserve:
- 	mutex_unlock(&v3d->sched_lock);
-+fail_perfmon:
- 	drm_gem_unlock_reservations(clean_job->bo, clean_job->bo_count,
- 				    &acquire_ctx);
- fail:
+ 	ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_MAX_SET_QUERY, HPWMI_GM,
+-				   &enabled, sizeof(enabled), sizeof(enabled));
++				   &enabled, sizeof(enabled), 0);
+ 
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+@@ -449,7 +449,7 @@ static int hp_wmi_fan_speed_max_get(void)
+ 	int val = 0, ret;
+ 
+ 	ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_MAX_GET_QUERY, HPWMI_GM,
+-				   &val, sizeof(val), sizeof(val));
++				   &val, 0, sizeof(val));
+ 
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+@@ -461,7 +461,7 @@ static int __init hp_wmi_bios_2008_later(void)
+ {
+ 	int state = 0;
+ 	int ret = hp_wmi_perform_query(HPWMI_FEATURE_QUERY, HPWMI_READ, &state,
+-				       sizeof(state), sizeof(state));
++				       0, sizeof(state));
+ 	if (!ret)
+ 		return 1;
+ 
+@@ -472,7 +472,7 @@ static int __init hp_wmi_bios_2009_later(void)
+ {
+ 	u8 state[128];
+ 	int ret = hp_wmi_perform_query(HPWMI_FEATURE2_QUERY, HPWMI_READ, &state,
+-				       sizeof(state), sizeof(state));
++				       0, sizeof(state));
+ 	if (!ret)
+ 		return 1;
+ 
+@@ -550,7 +550,7 @@ static int hp_wmi_rfkill2_refresh(void)
+ 	int err, i;
+ 
+ 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
+-				   sizeof(state), sizeof(state));
++				   0, sizeof(state));
+ 	if (err)
+ 		return err;
+ 
+@@ -639,7 +639,7 @@ static ssize_t als_store(struct device *dev, struct device_attribute *attr,
+ 		return ret;
+ 
+ 	ret = hp_wmi_perform_query(HPWMI_ALS_QUERY, HPWMI_WRITE, &tmp,
+-				       sizeof(tmp), sizeof(tmp));
++				       sizeof(tmp), 0);
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+ 
+@@ -660,9 +660,9 @@ static ssize_t postcode_store(struct device *dev, struct device_attribute *attr,
+ 	if (clear == false)
+ 		return -EINVAL;
+ 
+-	/* Clear the POST error code. It is kept until until cleared. */
++	/* Clear the POST error code. It is kept until cleared. */
+ 	ret = hp_wmi_perform_query(HPWMI_POSTCODEERROR_QUERY, HPWMI_WRITE, &tmp,
+-				       sizeof(tmp), sizeof(tmp));
++				       sizeof(tmp), 0);
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+ 
+@@ -952,7 +952,7 @@ static int __init hp_wmi_rfkill2_setup(struct platform_device *device)
+ 	int err, i;
+ 
+ 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
+-				   sizeof(state), sizeof(state));
++				   0, sizeof(state));
+ 	if (err)
+ 		return err < 0 ? err : -EINVAL;
+ 
 -- 
 2.35.1
 
