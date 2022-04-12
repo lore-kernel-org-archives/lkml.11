@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A30C4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838ACC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233953AbiDLJOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        id S234425AbiDLJOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:14:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358106AbiDLHlF (ORCPT
+        with ESMTP id S1358208AbiDLHlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187203BA5D;
-        Tue, 12 Apr 2022 00:17:22 -0700 (PDT)
+        Tue, 12 Apr 2022 03:41:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991CD427EB;
+        Tue, 12 Apr 2022 00:17:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 878516179E;
-        Tue, 12 Apr 2022 07:17:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A95FC385A1;
-        Tue, 12 Apr 2022 07:17:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CCD0B81B6B;
+        Tue, 12 Apr 2022 07:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3513C385A1;
+        Tue, 12 Apr 2022 07:17:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747841;
-        bh=O+IifnGMdoysyZqyVP0StvjROtzPsCC5zNF9Nr2ilEY=;
+        s=korg; t=1649747852;
+        bh=aYjbmozvRP0Y6GF6WshL6ZK6wocwCPdx4W6SMiYjpFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iv7NxVtiPCVyZQaDhaB7CU/ZnIuj7M0FK0F7sptRuTj/fsTL5+r0joVyQbL5Lv78o
-         wLy97tUdppMV0PqL9hoAa1FX04D8M0YoUEBP9GqS0ZyOFBB6O/kr0peSFsCWN4qZPi
-         G8YqO4o3vZbyH4h4zHWoWwC/jIfqkV8Rk6E1vxSE=
+        b=LyCOaXJ9BTjFJxhRF4/eWT4KjcNOmDPreN/X9+/bSmkGmMkNiPQtp9AiBOGEHt0T1
+         cmNcTXiMecvZdDyi/aCmzL4whl6+Ab3FGZr8vEFcQa3DmS3QKTwlRkyvwaV98ZD7O6
+         GDJjnquSJ3AqsEBK1YSGU3fb6axbjxYQqJGt3MAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 224/343] bnxt_en: Prevent XDP redirect from running when stopping TX queue
-Date:   Tue, 12 Apr 2022 08:30:42 +0200
-Message-Id: <20220412062957.804621407@linuxfoundation.org>
+Subject: [PATCH 5.17 228/343] IB/cm: Cancel mad on the DREQ event when the state is MRA_REP_RCVD
+Date:   Tue, 12 Apr 2022 08:30:46 +0200
+Message-Id: <20220412062957.918468994@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,52 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ray Jui <ray.jui@broadcom.com>
+From: Mark Zhang <markzhang@nvidia.com>
 
-[ Upstream commit 27d4073f8d9af0340362554414f4961643a4f4de ]
+[ Upstream commit 107dd7beba403a363adfeb3ffe3734fe38a05cce ]
 
-Add checks in the XDP redirect callback to prevent XDP from running when
-the TX ring is undergoing shutdown.
+On the passive side when the disconnectReq event comes, if the current
+state is MRA_REP_RCVD, it needs to cancel the MAD before entering the
+DREQ_RCVD and TIMEWAIT states, otherwise the destroy_id may block until
+this mad will reach timeout.
 
-Also remove redundant checks in the XDP redirect callback to validate the
-txr and the flag that indicates the ring supports XDP. The modulo
-arithmetic on 'tx_nr_rings_xdp' already guarantees the derived TX
-ring is an XDP ring.  txr is also guaranteed to be valid after checking
-BNXT_STATE_OPEN and within RCU grace period.
-
-Fixes: f18c2b77b2e4 ("bnxt_en: optimized XDP_REDIRECT support")
-Reviewed-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
-Signed-off-by: Ray Jui <ray.jui@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a977049dacde ("[PATCH] IB: Add the kernel CM implementation")
+Link: https://lore.kernel.org/r/75261c00c1d82128b1d981af9ff46e994186e621.1649062436.git.leonro@nvidia.com
+Signed-off-by: Mark Zhang <markzhang@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/infiniband/core/cm.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index c0541ff00ac8..03b1d6c04504 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -229,14 +229,16 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
- 	ring = smp_processor_id() % bp->tx_nr_rings_xdp;
- 	txr = &bp->tx_ring[ring];
- 
-+	if (READ_ONCE(txr->dev_state) == BNXT_DEV_STATE_CLOSING)
-+		return -EINVAL;
-+
- 	if (static_branch_unlikely(&bnxt_xdp_locking_key))
- 		spin_lock(&txr->xdp_tx_lock);
- 
- 	for (i = 0; i < num_frames; i++) {
- 		struct xdp_frame *xdp = frames[i];
- 
--		if (!txr || !bnxt_tx_avail(bp, txr) ||
--		    !(bp->bnapi[ring]->flags & BNXT_NAPI_FLAG_XDP))
-+		if (!bnxt_tx_avail(bp, txr))
- 			break;
- 
- 		mapping = dma_map_single(&pdev->dev, xdp->data, xdp->len,
+diff --git a/drivers/infiniband/core/cm.c b/drivers/infiniband/core/cm.c
+index 35f0d5e7533d..1c107d6d03b9 100644
+--- a/drivers/infiniband/core/cm.c
++++ b/drivers/infiniband/core/cm.c
+@@ -2824,6 +2824,7 @@ static int cm_dreq_handler(struct cm_work *work)
+ 	switch (cm_id_priv->id.state) {
+ 	case IB_CM_REP_SENT:
+ 	case IB_CM_DREQ_SENT:
++	case IB_CM_MRA_REP_RCVD:
+ 		ib_cancel_mad(cm_id_priv->msg);
+ 		break;
+ 	case IB_CM_ESTABLISHED:
+@@ -2831,8 +2832,6 @@ static int cm_dreq_handler(struct cm_work *work)
+ 		    cm_id_priv->id.lap_state == IB_CM_MRA_LAP_RCVD)
+ 			ib_cancel_mad(cm_id_priv->msg);
+ 		break;
+-	case IB_CM_MRA_REP_RCVD:
+-		break;
+ 	case IB_CM_TIMEWAIT:
+ 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
+ 						     [CM_DREQ_COUNTER]);
 -- 
 2.35.1
 
