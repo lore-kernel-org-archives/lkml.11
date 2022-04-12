@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E488CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03964C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344417AbiDLH7A (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
+        id S245734AbiDLH7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353620AbiDLHZv (ORCPT
+        with ESMTP id S1353585AbiDLHZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F3726541;
-        Tue, 12 Apr 2022 00:02:05 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B4443AE7;
+        Tue, 12 Apr 2022 00:01:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4B2C615B4;
-        Tue, 12 Apr 2022 07:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CD8C385A1;
-        Tue, 12 Apr 2022 07:02:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9331DB81B4E;
+        Tue, 12 Apr 2022 07:01:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC3C0C385A1;
+        Tue, 12 Apr 2022 07:01:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746924;
-        bh=ZQJTxnWwxn1l0rfByrfBEHx7Ho3mbw7y5PfeVOo104Q=;
+        s=korg; t=1649746913;
+        bh=0NnzGvVcTfCHc0iCRCoud8MXWwzj4d12kCfEUzZn0Ic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d8qjJp4wkexOM0JQZCEJU0b4JrbOzUKGa0OZISePMyUsf2bAW8F/9+qxrXycrzrn/
-         yybwpeAW6rdthv5iExXTwcDjfEQ7fCThUpk11UFBlfH05tS56xPZRE24dmHDYdPrkF
-         hCvcz/tfco4LzVKNC6O7yO9zi9Du0AYvc1k3Dr/I=
+        b=fs1HFF1UmgJRHw316xgeMOzbWZmJS9+g9Ifh/qcBx4sRUMI1W/PvRoRZ3H9rQ/t7/
+         Vo7eDnhPplQta4TYLsDzAuGoiyeKLg+Vx5Pa6qnL/M//ghorjFqNuFIpROQL2KP36a
+         J1n0+rCrGyek/Wns+yOu71sJ3s3pjAzKNBHMtRYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Andy Gospodarek <gospo@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 179/285] RDMA/mlx5: Dont remove cache MRs when a delay is needed
-Date:   Tue, 12 Apr 2022 08:30:36 +0200
-Message-Id: <20220412062948.832760271@linuxfoundation.org>
+Subject: [PATCH 5.16 176/285] bnxt_en: reserve space inside receive page for skb_shared_info
+Date:   Tue, 12 Apr 2022 08:30:33 +0200
+Message-Id: <20220412062948.746922597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,39 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aharon Landau <aharonl@nvidia.com>
+From: Andy Gospodarek <gospo@broadcom.com>
 
-[ Upstream commit 84c2362fb65d69c721fec0974556378cbb36a62b ]
+[ Upstream commit facc173cf700e55b2ad249ecbd3a7537f7315691 ]
 
-Don't remove MRs from the cache if need to delay the removal.
+Insufficient space was being reserved in the page used for packet
+reception, so the interface MTU could be set too large to still have
+room for the contents of the packet when doing XDP redirect.  This
+resulted in the following message when redirecting a packet between
+3520 and 3822 bytes with an MTU of 3822:
 
-Fixes: b9358bdbc713 ("RDMA/mlx5: Fix locking in MR cache work queue")
-Link: https://lore.kernel.org/r/c3087a90ff362c8796c7eaa2715128743ce36722.1649062436.git.leonro@nvidia.com
-Signed-off-by: Aharon Landau <aharonl@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+[311815.561880] XDP_WARN: xdp_update_frame_from_buff(line:200): Driver BUG: missing reserved tailroom
+
+Fixes: f18c2b77b2e4 ("bnxt_en: optimized XDP_REDIRECT support")
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/mr.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 2910d7833313..d3b2d02a4872 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -541,8 +541,10 @@ static void __cache_work_func(struct mlx5_cache_ent *ent)
- 		spin_lock_irq(&ent->lock);
- 		if (ent->disabled)
- 			goto out;
--		if (need_delay)
-+		if (need_delay) {
- 			queue_delayed_work(cache->wq, &ent->dwork, 300 * HZ);
-+			goto out;
-+		}
- 		remove_cache_mr_locked(ent);
- 		queue_adjust_cache_locked(ent);
- 	}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 5f4a0bb36af3..bbf93310da1f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -593,7 +593,8 @@ struct nqe_cn {
+ #define BNXT_MAX_MTU		9500
+ #define BNXT_MAX_PAGE_MODE_MTU	\
+ 	((unsigned int)PAGE_SIZE - VLAN_ETH_HLEN - NET_IP_ALIGN -	\
+-	 XDP_PACKET_HEADROOM)
++	 XDP_PACKET_HEADROOM - \
++	 SKB_DATA_ALIGN((unsigned int)sizeof(struct skb_shared_info)))
+ 
+ #define BNXT_MIN_PKT_SIZE	52
+ 
 -- 
 2.35.1
 
