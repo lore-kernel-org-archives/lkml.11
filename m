@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56317C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C6FC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385575AbiDLIwM (ORCPT
+        id S1385633AbiDLIwT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
+        Tue, 12 Apr 2022 04:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358894AbiDLHmT (ORCPT
+        with ESMTP id S1358960AbiDLHmW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B59546A2;
-        Tue, 12 Apr 2022 00:19:31 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E5A54BDD;
+        Tue, 12 Apr 2022 00:19:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41E196153F;
-        Tue, 12 Apr 2022 07:19:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BDA0C385A5;
-        Tue, 12 Apr 2022 07:19:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF2AAB81B66;
+        Tue, 12 Apr 2022 07:19:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44CB7C385A5;
+        Tue, 12 Apr 2022 07:19:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747970;
-        bh=GCdtRzbsd0giU9kuDnboH1OnpD7l/gKMxIAu4hzgLeM=;
+        s=korg; t=1649747981;
+        bh=vr7Wo20zHLHWbtiSd/Y1L2t36ZxOiBHBQ+ROACpAYAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EznmDd6V5AJQ6tGCZBRFpohhkoiy+w41PgDgKefef1QJoJBwdJVgqc++1ih+dFSRC
-         Gj5G8KmhFLHtGoHyrF/7/o4bCLPybEasHTUTQyFqPa2CYzRNPi8K6FU7pDiyg8xiFA
-         7eNEAOYyPmG69SwqQEIJI3BLNOI3y7sU/UGluHJ4=
+        b=oJyhQ5uv5iSsITGFYasK7pA6r2tILlebTKymbTBzdxF/0sQX8/OmpARncK2YL0h7r
+         seT6VWdKrTsomLmEnxZKniu0PCf4lwBEQuKAKRSVFS2mf685NV3NAz7MYW2UcsMm2J
+         pYDE9m1v5mJJkZaomPD3KOMwR/Qa0mMqDnqdh4Ww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Avri Altman <Avri.Altman@wdc.com>,
-        Michael Wu <michael@allwinnertech.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.17 271/343] mmc: core: Fixup support for writeback-cache for eMMC and SD
-Date:   Tue, 12 Apr 2022 08:31:29 +0200
-Message-Id: <20220412062959.145752165@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 239/343] net: openvswitch: dont send internal clone attribute to the userspace.
+Date:   Tue, 12 Apr 2022 08:30:57 +0200
+Message-Id: <20220412062958.231026041@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,73 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Wu <michael@allwinnertech.com>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-commit 08ebf903af57cda6d773f3dd1671b64f73b432b8 upstream.
+[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
 
-During the card initialization process, the mmc core checks whether the
-eMMC/SD card supports an internal writeback-cache and then enables it
-inside the card.
+'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+performance optimization inside the kernel.  It's added by the kernel
+while parsing user-provided actions and should not be sent during the
+flow dump as it's not part of the uAPI.
 
-Unfortunately, this isn't according to what the mmc core reports to the
-upper block layer. Instead, the writeback-cache support with REQ_FLUSH and
-REQ_FUA, are being enabled depending on whether the host supports the CMD23
-(MMC_CAP_CMD23) and whether an eMMC supports the reliable-write command.
+The issue doesn't cause any significant problems to the ovs-vswitchd
+process, because reported actions are not really used in the
+application lifecycle and only supposed to be shown to a human via
+ovs-dpctl flow dump.  However, the action list is still incorrect
+and causes the following error if the user wants to look at the
+datapath flows:
 
-This is wrong and it may also sound awkward. In fact, it's a remnant
-from when both eMMC/SD cards didn't have dedicated commands/support to
-control the internal writeback-cache. In other words, it was the best we
-could do at that point in time.
+  # ovs-dpctl add-dp system@ovs-system
+  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
+                  ct(commit),0)
 
-To fix the problem, but also without breaking backwards compatibility,
-let's align the REQ_FLUSH support with whether the writeback-cache became
-successfully enabled - for both eMMC and SD cards.
+With the fix:
 
-Cc: stable@kernel.org
-Fixes: 881d1c25f765 ("mmc: core: Add cache control for eMMC4.5 device")
-Fixes: 130206a615a9 ("mmc: core: Add support for cache ctrl for SD cards")
-Depends-on: 97fce126e279 ("mmc: block: Issue a cache flush only when it's enabled")
-Reviewed-by: Avri Altman <Avri.Altman@wdc.com>
-Signed-off-by: Michael Wu <michael@allwinnertech.com>
-Link: https://lore.kernel.org/r/20220331073223.106415-1-michael@allwinnertech.com
-[Ulf: Re-wrote the commit message]
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(ct(commit),0)
+
+Additionally fixed an incorrect attribute name in the comment.
+
+Fixes: b233504033db ("openvswitch: kernel datapath clone action")
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
+Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/block.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ net/openvswitch/actions.c      | 2 +-
+ net/openvswitch/flow_netlink.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -2382,6 +2382,8 @@ static struct mmc_blk_data *mmc_blk_allo
- 	struct mmc_blk_data *md;
- 	int devidx, ret;
- 	char cap_str[10];
-+	bool cache_enabled = false;
-+	bool fua_enabled = false;
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 780d9e2246f3..8955f31fa47e 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1051,7 +1051,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
+ 	int rem = nla_len(attr);
+ 	bool dont_clone_flow_key;
  
- 	devidx = ida_simple_get(&mmc_blk_ida, 0, max_devices, GFP_KERNEL);
- 	if (devidx < 0) {
-@@ -2461,13 +2463,17 @@ static struct mmc_blk_data *mmc_blk_allo
- 			md->flags |= MMC_BLK_CMD23;
- 	}
+-	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
++	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
+ 	clone_arg = nla_data(attr);
+ 	dont_clone_flow_key = nla_get_u32(clone_arg);
+ 	actions = nla_next(clone_arg, &rem);
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 0d677c9c2c80..2679007f8aeb 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -3429,7 +3429,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
+ 	if (!start)
+ 		return -EMSGSIZE;
  
--	if (mmc_card_mmc(card) &&
--	    md->flags & MMC_BLK_CMD23 &&
-+	if (md->flags & MMC_BLK_CMD23 &&
- 	    ((card->ext_csd.rel_param & EXT_CSD_WR_REL_PARAM_EN) ||
- 	     card->ext_csd.rel_sectors)) {
- 		md->flags |= MMC_BLK_REL_WR;
--		blk_queue_write_cache(md->queue.queue, true, true);
-+		fua_enabled = true;
-+		cache_enabled = true;
- 	}
-+	if (mmc_cache_enabled(card->host))
-+		cache_enabled  = true;
-+
-+	blk_queue_write_cache(md->queue.queue, cache_enabled, fua_enabled);
+-	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
++	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
++	attr = nla_next(nla_data(attr), &rem);
++	err = ovs_nla_put_actions(attr, rem, skb);
  
- 	string_get_size((u64)size, 512, STRING_UNITS_2,
- 			cap_str, sizeof(cap_str));
+ 	if (err)
+ 		nla_nest_cancel(skb, start);
+-- 
+2.35.1
+
 
 
