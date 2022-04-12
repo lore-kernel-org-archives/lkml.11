@@ -2,125 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F29C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84010C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358330AbiDLRd3 (ORCPT
+        id S1358371AbiDLRdq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
+        Tue, 12 Apr 2022 13:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358186AbiDLRdL (ORCPT
+        with ESMTP id S1358331AbiDLRda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:33:11 -0400
+        Tue, 12 Apr 2022 13:33:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D132D2F003;
-        Tue, 12 Apr 2022 10:30:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE29F5BE6A;
+        Tue, 12 Apr 2022 10:31:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5659B81F5D;
-        Tue, 12 Apr 2022 17:30:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28CC1C385A8;
-        Tue, 12 Apr 2022 17:30:45 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="T/o5MTm4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649784644;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gMuiTScdp7c+tPntikHvEFRo+YYqSeslWu8YJFI7ND8=;
-        b=T/o5MTm4nPPUUHDTZbOx4bZYhhv1IWhyqAYPcEo30+zAtqeCY9MBgw2oz3E9hK+K97B+LX
-        VzJafAUAE8rt36dyZn/uE6s64UaWvyzjbQ8gM4Zwrq3eq3GpRUCgDsLvHbbybJqL+1VMHd
-        8XCdSDUrNtcVHntc/zmYVpWb8/d62Vw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 987d3c63 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 12 Apr 2022 17:30:43 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        tglx@linutronix.de, arnd@arndb.de
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, x86@kernel.org,
-        linux-xtensa@linux-xtensa.org
-Subject: [PATCH v3 10/10] xtensa: use fallback for random_get_entropy() instead of zero
-Date:   Tue, 12 Apr 2022 19:27:54 +0200
-Message-Id: <20220412172754.149498-11-Jason@zx2c4.com>
-In-Reply-To: <20220412172754.149498-1-Jason@zx2c4.com>
-References: <20220412172754.149498-1-Jason@zx2c4.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EE0EB81F5D;
+        Tue, 12 Apr 2022 17:31:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB52EC385A5;
+        Tue, 12 Apr 2022 17:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649784660;
+        bh=Mvmfe8DoFFgIAg2F5ziwb8TSiIedoMypZAvScsFewFU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wjIp8//vAM3sAUmdS8O5w/1W6BzyxGis2Mgp9rXhiCSZeDUHH3FYM3Yn2h3V4carz
+         CFE8iOt4p1OG/sEF9DL/J1m4Lca2uzd5uBcyiGMqVGtky3iHduK2kdoSoHrCHzpk0/
+         HyqgLKU1UuwlVEeMsYW5ToATB6PO1Y1EFqhCmz5U=
+Date:   Tue, 12 Apr 2022 19:30:57 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Marco Elver <elver@google.com>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        linux-mm <linux-mm@kvack.org>
+Subject: Re: [PATCH 5.15 000/277] 5.15.34-rc1 review
+Message-ID: <YlW3UViZ2DMk8Msz@kroah.com>
+References: <20220412062942.022903016@linuxfoundation.org>
+ <CA+G9fYseyeNoxQwEWtiiU8dLs_1coNa+sdV-1nqoif6tER_46Q@mail.gmail.com>
+ <CANpmjNP4-jG=kW8FoQpmt4X64en5G=Gd-3zaBebPL7xDFFOHmA@mail.gmail.com>
+ <CA+G9fYuJKsYMR2vW+7d=xjDj9zoBtTF5=pSmcQRaiQitAjXCcw@mail.gmail.com>
+ <YlWsI/v0SWjpyofc@kroah.com>
+ <YlW1fk8TvqIxiCvr@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlW1fk8TvqIxiCvr@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+On Tue, Apr 12, 2022 at 07:23:10PM +0200, Greg Kroah-Hartman wrote:
+> On Tue, Apr 12, 2022 at 06:43:15PM +0200, Greg Kroah-Hartman wrote:
+> > On Tue, Apr 12, 2022 at 09:13:59PM +0530, Naresh Kamboju wrote:
+> > > Hi Marco
+> > > 
+> > > On Tue, 12 Apr 2022 at 20:32, Marco Elver <elver@google.com> wrote:
+> > > >
+> > > > On Tue, 12 Apr 2022 at 16:16, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > > > >
+> > > > > On Tue, 12 Apr 2022 at 12:11, Greg Kroah-Hartman
+> > > > > <gregkh@linuxfoundation.org> wrote:
+> > > > > >
+> > > > > > This is the start of the stable review cycle for the 5.15.34 release.
+> > > > > > There are 277 patches in this series, all will be posted as a response
+> > > > > > to this one.  If anyone has any issues with these being applied, please
+> > > > > > let me know.
+> > > > > >
+> > > > > > Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
+> > > > > > Anything received after that time might be too late.
+> > > > > >
+> > > > > > The whole patch series can be found in one patch at:
+> > > > > >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.34-rc1.gz
+> > > > > > or in the git tree and branch at:
+> > > > > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> > > > > > and the diffstat can be found below.
+> > > > > >
+> > > > > > thanks,
+> > > > > >
+> > > > > > greg k-h
+> > > > >
+> > > > >
+> > > > > On linux stable-rc 5.15 x86 and i386 builds failed due to below error [1]
+> > > > > with config [2].
+> > > > >
+> > > > > The finding is when kunit config is enabled the builds pass.
+> > > > > CONFIG_KUNIT=y
+> > > > >
+> > > > > But with CONFIG_KUNIT not set the builds failed.
+> > > > >
+> > > > > x86_64-linux-gnu-ld: mm/kfence/core.o: in function `__kfence_alloc':
+> > > > > core.c:(.text+0x901): undefined reference to `filter_irq_stacks'
+> > > > > make[1]: *** [/builds/linux/Makefile:1183: vmlinux] Error 1
+> > > > >
+> > > > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> > > > >
+> > > > > I see these three commits, I will bisect and get back to you
+> > > > >
+> > > > > 2f222c87ceb4 kfence: limit currently covered allocations when pool nearly full
+> > > > > e25487912879 kfence: move saving stack trace of allocations into
+> > > > > __kfence_alloc()
+> > > > > d99355395380 kfence: count unexpectedly skipped allocations
+> > > >
+> > > > My guess is that this commit is missing:
+> > > 
+> > > This patch is missing Fixes: tag.
+> > > 
+> > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f39f21b3ddc7fc0f87eb6dc75ddc81b5bbfb7672
+> > > 
+> > > For your information, I have reverted the below commit and build pass.
+> > > 
+> > > kfence: limit currently covered allocations when pool nearly full
+> > > 
+> > > [ Upstream commit 08f6b10630f284755087f58aa393402e15b92977 ]
+> > 
+> > I've added the above commit, does that fix the issue?
+> > 
+> > Hm, I can test that here, let me try it...
+> 
+> I can't duplicate the failure here with my config, let me try yours...
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+Yes, with your config before it fails, after I added the commit it
+works.  I'll push out a -rc2 soon with that added.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Max Filippov <jcmvbkbc@gmail.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- arch/xtensa/include/asm/timex.h | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+thanks,
 
-diff --git a/arch/xtensa/include/asm/timex.h b/arch/xtensa/include/asm/timex.h
-index 233ec75e60c6..3f2462f2d027 100644
---- a/arch/xtensa/include/asm/timex.h
-+++ b/arch/xtensa/include/asm/timex.h
-@@ -29,10 +29,6 @@
- 
- extern unsigned long ccount_freq;
- 
--typedef unsigned long long cycles_t;
--
--#define get_cycles()	(0)
--
- void local_timer_setup(unsigned cpu);
- 
- /*
-@@ -59,4 +55,6 @@ static inline void set_linux_timer (unsigned long ccompare)
- 	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
- }
- 
-+#include <asm-generic/timex.h>
-+
- #endif	/* _XTENSA_TIMEX_H */
--- 
-2.35.1
-
+greg k-h
