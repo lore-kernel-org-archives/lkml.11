@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 451EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358111AbiDLJBY (ORCPT
+        id S1359246AbiDLJB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45782 "EHLO
+        Tue, 12 Apr 2022 05:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357101AbiDLHjr (ORCPT
+        with ESMTP id S1357161AbiDLHju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323B7BE11;
-        Tue, 12 Apr 2022 00:12:02 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61ECB13DDF;
+        Tue, 12 Apr 2022 00:13:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B04316103A;
-        Tue, 12 Apr 2022 07:12:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7FFBC385A1;
-        Tue, 12 Apr 2022 07:12:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23819B81B60;
+        Tue, 12 Apr 2022 07:13:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F303C385A1;
+        Tue, 12 Apr 2022 07:13:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747521;
-        bh=6BkhvsDQaPwwUOomzHYlSBCe/6+7AFRdPB1xOKiYIbk=;
+        s=korg; t=1649747586;
+        bh=ZnTZ42DPMBoQ75SCZiE8sntMwYXskuJKw8g3vyalkdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qYIR2jwHtNb/rw5L+vtIKuLevVWs79abhx5Zm6bxBiVABlVSt5J/vKXCMcuSpcEnE
-         055QSjwW5iKwPmJd64lR0hNIPSFxWrnkxw55LwTaAsAC3Z3EJk4irFhUuaHr7Xtg+V
-         xl0Kf9YFK0+Sjp5quAsRjiKoUCTz7rkZC1FA//vw=
+        b=zTn4176t6qBPLlPsSzYW9GScMn6ghGJ8nrbggg8YFHAB16cKg/h3nFJOPYQvX975G
+         6WFvaoJf5uitqANNVYYhcez23n5utjGR+RPKvVV6dlpEtYHN7j4AFcQqBjYObxcihf
+         oO/uyLg+qCOu1P9cJPNWQFrEBW1miL45Q4Zor6CE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
+        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 068/343] KVM: arm64: Do not change the PMU event filter after a VCPU has run
-Date:   Tue, 12 Apr 2022 08:28:06 +0200
-Message-Id: <20220412062953.066116719@linuxfoundation.org>
+Subject: [PATCH 5.17 133/343] can: isotp: set default value for N_As to 50 micro seconds
+Date:   Tue, 12 Apr 2022 08:29:11 +0200
+Message-Id: <20220412062955.222619662@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,162 +50,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 5177fe91e4cf78a659aada2c9cf712db4d788481 ]
+[ Upstream commit 530e0d46c61314c59ecfdb8d3bcb87edbc0f85d3 ]
 
-Userspace can specify which events a guest is allowed to use with the
-KVM_ARM_VCPU_PMU_V3_FILTER attribute. The list of allowed events can be
-identified by a guest from reading the PMCEID{0,1}_EL0 registers.
+The N_As value describes the time a CAN frame needs on the wire when
+transmitted by the CAN controller. Even very short CAN FD frames need
+arround 100 usecs (bitrate 1Mbit/s, data bitrate 8Mbit/s).
 
-Changing the PMU event filter after a VCPU has run can cause reads of the
-registers performed before the filter is changed to return different values
-than reads performed with the new event filter in place. The architecture
-defines the two registers as read-only, and this behaviour contradicts
-that.
+Having N_As to be zero (the former default) leads to 'no CAN frame
+separation' when STmin is set to zero by the receiving node. This 'burst
+mode' should not be enabled by default as it could potentially dump a high
+number of CAN frames into the netdev queue from the soft hrtimer context.
+This does not affect the system stability but is just not nice and
+cooperative.
 
-Keep track when the first VCPU has run and deny changes to the PMU event
-filter to prevent this from happening.
+With this N_As/frame_txtime value the 'burst mode' is disabled by default.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-[ Alexandru E: Added commit message, updated ioctl documentation ]
-Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220127161759.53553-2-alexandru.elisei@arm.com
+As user space applications usually do not set the frame_txtime element
+of struct can_isotp_options the new in-kernel default is very likely
+overwritten with zero when the sockopt() CAN_ISOTP_OPTS is invoked.
+To make sure that a N_As value of zero is only set intentional the
+value '0' is now interpreted as 'do not change the current value'.
+When a frame_txtime of zero is required for testing purposes this
+CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
+
+Link: https://lore.kernel.org/all/20220309120416.83514-2-socketcan@hartkopp.net
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/virt/kvm/devices/vcpu.rst |  2 +-
- arch/arm64/include/asm/kvm_host.h       |  1 +
- arch/arm64/kvm/arm.c                    |  4 +++
- arch/arm64/kvm/pmu-emul.c               | 33 +++++++++++++++----------
- 4 files changed, 26 insertions(+), 14 deletions(-)
+ include/uapi/linux/can/isotp.h | 28 ++++++++++++++++++++++------
+ net/can/isotp.c                | 12 +++++++++++-
+ 2 files changed, 33 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/virt/kvm/devices/vcpu.rst b/Documentation/virt/kvm/devices/vcpu.rst
-index 60a29972d3f1..d063aaee5bb7 100644
---- a/Documentation/virt/kvm/devices/vcpu.rst
-+++ b/Documentation/virt/kvm/devices/vcpu.rst
-@@ -70,7 +70,7 @@ irqchip.
- 	 -ENODEV  PMUv3 not supported or GIC not initialized
- 	 -ENXIO   PMUv3 not properly configured or in-kernel irqchip not
- 	 	  configured as required prior to calling this attribute
--	 -EBUSY   PMUv3 already initialized
-+	 -EBUSY   PMUv3 already initialized or a VCPU has already run
- 	 -EINVAL  Invalid filter range
- 	 =======  ======================================================
+diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
+index c55935b64ccc..590f8aea2b6d 100644
+--- a/include/uapi/linux/can/isotp.h
++++ b/include/uapi/linux/can/isotp.h
+@@ -137,20 +137,16 @@ struct can_isotp_ll_options {
+ #define CAN_ISOTP_WAIT_TX_DONE	0x400	/* wait for tx completion */
+ #define CAN_ISOTP_SF_BROADCAST	0x800	/* 1-to-N functional addressing */
  
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index 031e3a2537fc..8234626a945a 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -136,6 +136,7 @@ struct kvm_arch {
+-/* default values */
++/* protocol machine default values */
  
- 	/* Memory Tagging Extension enabled for the guest */
- 	bool mte_enabled;
-+	bool ran_once;
- };
+ #define CAN_ISOTP_DEFAULT_FLAGS		0
+ #define CAN_ISOTP_DEFAULT_EXT_ADDRESS	0x00
+ #define CAN_ISOTP_DEFAULT_PAD_CONTENT	0xCC /* prevent bit-stuffing */
+-#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	0
++#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	50000 /* 50 micro seconds */
+ #define CAN_ISOTP_DEFAULT_RECV_BS	0
+ #define CAN_ISOTP_DEFAULT_RECV_STMIN	0x00
+ #define CAN_ISOTP_DEFAULT_RECV_WFTMAX	0
  
- struct kvm_vcpu_fault_info {
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index 4dca6ffd03d4..85a2a75f4498 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -634,6 +634,10 @@ int kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
- 	if (kvm_vm_is_protected(kvm))
- 		kvm_call_hyp_nvhe(__pkvm_vcpu_init_traps, vcpu);
+-#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
+-#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
+-#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
+-
+ /*
+  * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
+  *
+@@ -162,4 +158,24 @@ struct can_isotp_ll_options {
+  * consistency and copied directly into the flow control (FC) frame.
+  */
  
-+	mutex_lock(&kvm->lock);
-+	kvm->arch.ran_once = true;
-+	mutex_unlock(&kvm->lock);
++/* link layer default values => make use of Classical CAN frames */
 +
- 	return ret;
- }
- 
-diff --git a/arch/arm64/kvm/pmu-emul.c b/arch/arm64/kvm/pmu-emul.c
-index fbcfd4ec6f92..bc771bc1a041 100644
---- a/arch/arm64/kvm/pmu-emul.c
-+++ b/arch/arm64/kvm/pmu-emul.c
-@@ -924,6 +924,8 @@ static bool pmu_irq_is_valid(struct kvm *kvm, int irq)
- 
- int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
- {
-+	struct kvm *kvm = vcpu->kvm;
++#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
++#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
++#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
 +
- 	if (!kvm_vcpu_has_pmu(vcpu))
- 		return -ENODEV;
- 
-@@ -941,7 +943,7 @@ int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
- 		int __user *uaddr = (int __user *)(long)attr->addr;
- 		int irq;
- 
--		if (!irqchip_in_kernel(vcpu->kvm))
-+		if (!irqchip_in_kernel(kvm))
- 			return -EINVAL;
- 
- 		if (get_user(irq, uaddr))
-@@ -951,7 +953,7 @@ int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
- 		if (!(irq_is_ppi(irq) || irq_is_spi(irq)))
- 			return -EINVAL;
- 
--		if (!pmu_irq_is_valid(vcpu->kvm, irq))
-+		if (!pmu_irq_is_valid(kvm, irq))
- 			return -EINVAL;
- 
- 		if (kvm_arm_pmu_irq_initialized(vcpu))
-@@ -966,7 +968,7 @@ int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
- 		struct kvm_pmu_event_filter filter;
- 		int nr_events;
- 
--		nr_events = kvm_pmu_event_mask(vcpu->kvm) + 1;
-+		nr_events = kvm_pmu_event_mask(kvm) + 1;
- 
- 		uaddr = (struct kvm_pmu_event_filter __user *)(long)attr->addr;
- 
-@@ -978,12 +980,17 @@ int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
- 		     filter.action != KVM_PMU_EVENT_DENY))
- 			return -EINVAL;
- 
--		mutex_lock(&vcpu->kvm->lock);
-+		mutex_lock(&kvm->lock);
++/*
++ * The CAN_ISOTP_DEFAULT_FRAME_TXTIME has become a non-zero value as
++ * it only makes sense for isotp implementation tests to run without
++ * a N_As value. As user space applications usually do not set the
++ * frame_txtime element of struct can_isotp_options the new in-kernel
++ * default is very likely overwritten with zero when the sockopt()
++ * CAN_ISOTP_OPTS is invoked.
++ * To make sure that a N_As value of zero is only set intentional the
++ * value '0' is now interpreted as 'do not change the current value'.
++ * When a frame_txtime of zero is required for testing purposes this
++ * CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
++ */
++#define CAN_ISOTP_FRAME_TXTIME_ZERO	0xFFFFFFFF
 +
-+		if (kvm->arch.ran_once) {
-+			mutex_unlock(&kvm->lock);
-+			return -EBUSY;
+ #endif /* !_UAPI_CAN_ISOTP_H */
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index a95d171b3a64..5bce7c66c121 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -141,6 +141,7 @@ struct isotp_sock {
+ 	struct can_isotp_options opt;
+ 	struct can_isotp_fc_options rxfc, txfc;
+ 	struct can_isotp_ll_options ll;
++	u32 frame_txtime;
+ 	u32 force_tx_stmin;
+ 	u32 force_rx_stmin;
+ 	struct tpcon rx, tx;
+@@ -360,7 +361,7 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
+ 
+ 		so->tx_gap = ktime_set(0, 0);
+ 		/* add transmission time for CAN frame N_As */
+-		so->tx_gap = ktime_add_ns(so->tx_gap, so->opt.frame_txtime);
++		so->tx_gap = ktime_add_ns(so->tx_gap, so->frame_txtime);
+ 		/* add waiting time for consecutive frames N_Cs */
+ 		if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
+ 			so->tx_gap = ktime_add_ns(so->tx_gap,
+@@ -1247,6 +1248,14 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
+ 		/* no separate rx_ext_address is given => use ext_address */
+ 		if (!(so->opt.flags & CAN_ISOTP_RX_EXT_ADDR))
+ 			so->opt.rx_ext_address = so->opt.ext_address;
++
++		/* check for frame_txtime changes (0 => no changes) */
++		if (so->opt.frame_txtime) {
++			if (so->opt.frame_txtime == CAN_ISOTP_FRAME_TXTIME_ZERO)
++				so->frame_txtime = 0;
++			else
++				so->frame_txtime = so->opt.frame_txtime;
 +		}
+ 		break;
  
--		if (!vcpu->kvm->arch.pmu_filter) {
--			vcpu->kvm->arch.pmu_filter = bitmap_alloc(nr_events, GFP_KERNEL_ACCOUNT);
--			if (!vcpu->kvm->arch.pmu_filter) {
--				mutex_unlock(&vcpu->kvm->lock);
-+		if (!kvm->arch.pmu_filter) {
-+			kvm->arch.pmu_filter = bitmap_alloc(nr_events, GFP_KERNEL_ACCOUNT);
-+			if (!kvm->arch.pmu_filter) {
-+				mutex_unlock(&kvm->lock);
- 				return -ENOMEM;
- 			}
- 
-@@ -994,17 +1001,17 @@ int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
- 			 * events, the default is to allow.
- 			 */
- 			if (filter.action == KVM_PMU_EVENT_ALLOW)
--				bitmap_zero(vcpu->kvm->arch.pmu_filter, nr_events);
-+				bitmap_zero(kvm->arch.pmu_filter, nr_events);
- 			else
--				bitmap_fill(vcpu->kvm->arch.pmu_filter, nr_events);
-+				bitmap_fill(kvm->arch.pmu_filter, nr_events);
- 		}
- 
- 		if (filter.action == KVM_PMU_EVENT_ALLOW)
--			bitmap_set(vcpu->kvm->arch.pmu_filter, filter.base_event, filter.nevents);
-+			bitmap_set(kvm->arch.pmu_filter, filter.base_event, filter.nevents);
- 		else
--			bitmap_clear(vcpu->kvm->arch.pmu_filter, filter.base_event, filter.nevents);
-+			bitmap_clear(kvm->arch.pmu_filter, filter.base_event, filter.nevents);
- 
--		mutex_unlock(&vcpu->kvm->lock);
-+		mutex_unlock(&kvm->lock);
- 
- 		return 0;
- 	}
+ 	case CAN_ISOTP_RECV_FC:
+@@ -1448,6 +1457,7 @@ static int isotp_init(struct sock *sk)
+ 	so->opt.rxpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
+ 	so->opt.txpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
+ 	so->opt.frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
++	so->frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
+ 	so->rxfc.bs = CAN_ISOTP_DEFAULT_RECV_BS;
+ 	so->rxfc.stmin = CAN_ISOTP_DEFAULT_RECV_STMIN;
+ 	so->rxfc.wftmax = CAN_ISOTP_DEFAULT_RECV_WFTMAX;
 -- 
 2.35.1
 
