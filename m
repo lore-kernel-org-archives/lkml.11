@@ -2,176 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C539C47094
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD43C35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352457AbiDLHYD (ORCPT
+        id S1352498AbiDLHYJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46886 "EHLO
+        Tue, 12 Apr 2022 03:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353213AbiDLHH4 (ORCPT
+        with ESMTP id S1343548AbiDLHJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:07:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5002049F26;
-        Mon, 11 Apr 2022 23:49:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1788461014;
-        Tue, 12 Apr 2022 06:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0C8C385A1;
-        Tue, 12 Apr 2022 06:49:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746173;
-        bh=mxzMGIsc4EElzjxQs773kRlvMwo90Gx/WqNBvtQSY4k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NwWxAf+lc+Ghj/h6G7JjLP+Jx/WsKKH9G7b3JREq6fFOiGBFRyclw9gNlQfhNffKT
-         dJm35o1dG5ssyTl0lImojd6Req4yVRe/GOMUUuPmnl4q0l72xhQOU4UGq++XLtILGU
-         dv1ITtAJs+sLoWBMn5tGbaElvfA/+M6Fh6obYAHo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 137/277] SUNRPC: Fix socket waits for write buffer space
-Date:   Tue, 12 Apr 2022 08:29:00 +0200
-Message-Id: <20220412062946.000155475@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:09:08 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6207E49F31
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:49:32 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id p10so30455263lfa.12
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:49:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SAV9zD/9i3JbiiASrVcLIQyrbdWy7ico6dvybKeWvXs=;
+        b=M/AHANmKGN/x+pUfTld06wGLxBZO8idhvqokFKh3BT7GGmJsUzvYs7TnI5abkdSjIW
+         PMSxmtD12lJgdcdZ2OqdkCSLdMxu98RMRLkVkArQbM54XQ1sY2yeEjL+w00BVnLPR1SX
+         sv1fHZETALyHeOuUK7+l+iTeLbFoU0iMZrz7U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SAV9zD/9i3JbiiASrVcLIQyrbdWy7ico6dvybKeWvXs=;
+        b=fF02Mk7zV2mAAi1c6CR6gttAfsfNRXnKork0eWfrdUdrQ8AzpO5Hr+W0a0RzGjgQb4
+         N5sW55eUCQrnkrqi92WSz/jAPx/PpJBUZo6fmmrT7YVJCGOSb2uy/Oxpw4SgHzkkExhP
+         UrC3CjMi/7y+XMq3yRD+fvAHRmrznpkceU4ChwbHd7kLOOWtUSwpd/mWAaS+KMukBZG2
+         zBK82h4GfHWeMMbcbv0gXZsWkC6I3vOji6Fz0BAscRZEHqiZ9YdCZXcOHON7x7RjuL6P
+         y0ws4QVc1oOpPrXd9cYJKFvw4fJcokCBtc3CpEDBxUNS+RTSv3SiJNx8lYdLGu3w7f0U
+         ZDmA==
+X-Gm-Message-State: AOAM5334QU/morHIWbboU1GXACKqiYRKHaPi2oY+a0HwaWIthz29Lw3r
+        1nCeKzKSEeFlMUMfjIJuZDtawPl9Q4j05JOH
+X-Google-Smtp-Source: ABdhPJxtCZT+Xd9QOaYV8hT7Fv/lZpTQCI5H5M4p+s5pEMsAHV/d3wUx7454NSi6YM2m+scDqVUuQQ==
+X-Received: by 2002:a05:6512:b06:b0:44a:f7bf:a425 with SMTP id w6-20020a0565120b0600b0044af7bfa425mr24423404lfu.445.1649746170480;
+        Mon, 11 Apr 2022 23:49:30 -0700 (PDT)
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
+        by smtp.gmail.com with ESMTPSA id bq1-20020a056512150100b004481de98e5bsm3545389lfb.305.2022.04.11.23.49.29
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 23:49:29 -0700 (PDT)
+Received: by mail-lj1-f175.google.com with SMTP id r18so7210386ljp.0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:49:29 -0700 (PDT)
+X-Received: by 2002:a2e:a549:0:b0:249:9ec3:f2b with SMTP id
+ e9-20020a2ea549000000b002499ec30f2bmr22850127ljn.358.1649746169549; Mon, 11
+ Apr 2022 23:49:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <alpine.LRH.2.02.2204111023230.6206@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wijDnLH2K3Rh2JJo-SmWL_ntgzQCDxPeXbJ9A-vTF3ZvA@mail.gmail.com>
+ <alpine.LRH.2.02.2204111236390.31647@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com>
+In-Reply-To: <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 11 Apr 2022 20:49:13 -1000
+X-Gmail-Original-Message-ID: <CAHk-=wjfLQdsjMBRQm=UB+RB08Cs6G41+kk2ybe7JHuu4ydhRQ@mail.gmail.com>
+Message-ID: <CAHk-=wjfLQdsjMBRQm=UB+RB08Cs6G41+kk2ybe7JHuu4ydhRQ@mail.gmail.com>
+Subject: Re: [PATCH] stat: don't fail if the major number is >= 256
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+On Mon, Apr 11, 2022 at 7:37 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Correct. It's literally the compat structure that has no basis in reality.
+>
+> Or it might be some truly ancient thing, but I really don't think so.
 
-[ Upstream commit 7496b59f588dd52886fdbac7633608097543a0a5 ]
+I was intrigued, so I went back and checked.
 
-The socket layer requires that we use the socket lock to protect changes
-to the sock->sk_write_pending field and others.
+        unsigned short st_dev;
+        unsigned short __pad1;
 
-Reported-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/sunrpc/xprtsock.c | 54 +++++++++++++++++++++++++++++++------------
- 1 file changed, 39 insertions(+), 15 deletions(-)
+is in fact historical. But it was changed to
 
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 04f1b78bcbca..2096b26adde5 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -763,12 +763,12 @@ xs_stream_start_connect(struct sock_xprt *transport)
- /**
-  * xs_nospace - handle transmit was incomplete
-  * @req: pointer to RPC request
-+ * @transport: pointer to struct sock_xprt
-  *
-  */
--static int xs_nospace(struct rpc_rqst *req)
-+static int xs_nospace(struct rpc_rqst *req, struct sock_xprt *transport)
- {
--	struct rpc_xprt *xprt = req->rq_xprt;
--	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-+	struct rpc_xprt *xprt = &transport->xprt;
- 	struct sock *sk = transport->inet;
- 	int ret = -EAGAIN;
- 
-@@ -779,25 +779,49 @@ static int xs_nospace(struct rpc_rqst *req)
- 
- 	/* Don't race with disconnect */
- 	if (xprt_connected(xprt)) {
-+		struct socket_wq *wq;
-+
-+		rcu_read_lock();
-+		wq = rcu_dereference(sk->sk_wq);
-+		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
-+		rcu_read_unlock();
-+
- 		/* wait for more buffer space */
-+		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
- 		sk->sk_write_pending++;
- 		xprt_wait_for_buffer_space(xprt);
- 	} else
- 		ret = -ENOTCONN;
- 
- 	spin_unlock(&xprt->transport_lock);
-+	return ret;
-+}
- 
--	/* Race breaker in case memory is freed before above code is called */
--	if (ret == -EAGAIN) {
--		struct socket_wq *wq;
-+static int xs_sock_nospace(struct rpc_rqst *req)
-+{
-+	struct sock_xprt *transport =
-+		container_of(req->rq_xprt, struct sock_xprt, xprt);
-+	struct sock *sk = transport->inet;
-+	int ret = -EAGAIN;
- 
--		rcu_read_lock();
--		wq = rcu_dereference(sk->sk_wq);
--		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
--		rcu_read_unlock();
-+	lock_sock(sk);
-+	if (!sock_writeable(sk))
-+		ret = xs_nospace(req, transport);
-+	release_sock(sk);
-+	return ret;
-+}
- 
--		sk->sk_write_space(sk);
--	}
-+static int xs_stream_nospace(struct rpc_rqst *req)
-+{
-+	struct sock_xprt *transport =
-+		container_of(req->rq_xprt, struct sock_xprt, xprt);
-+	struct sock *sk = transport->inet;
-+	int ret = -EAGAIN;
-+
-+	lock_sock(sk);
-+	if (!sk_stream_memory_free(sk))
-+		ret = xs_nospace(req, transport);
-+	release_sock(sk);
- 	return ret;
- }
- 
-@@ -887,7 +911,7 @@ static int xs_local_send_request(struct rpc_rqst *req)
- 	case -ENOBUFS:
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_stream_nospace(req);
- 		break;
- 	default:
- 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
-@@ -963,7 +987,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
- 		/* Should we call xs_close() here? */
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_sock_nospace(req);
- 		break;
- 	case -ENETUNREACH:
- 	case -ENOBUFS:
-@@ -1083,7 +1107,7 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
- 		/* Should we call xs_close() here? */
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_stream_nospace(req);
- 		break;
- 	case -ECONNRESET:
- 	case -ECONNREFUSED:
--- 
-2.35.1
+        unsigned long  st_dev;
 
+(for i386, so this is a 32-bit 'unsigned long') on April 2, 2003.
 
+From the BK tree conversion:
 
+    https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git/commit/?id=e95b2065677fe32512a597a79db94b77b90c968d
+
+so I think we should just make sure that the 64-bit compat system call
+is compatible with that 2003+ state, not with some truly ancient
+state.
+
+                      Linus
