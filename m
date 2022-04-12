@@ -2,146 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D28C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE873C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiDLX1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39154 "EHLO
+        id S230073AbiDLX1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiDLX00 (ORCPT
+        with ESMTP id S230059AbiDLX0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:26:26 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F4BD111D;
-        Tue, 12 Apr 2022 15:12:39 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id n8so279751plh.1;
-        Tue, 12 Apr 2022 15:12:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3k9hJ+Jr3FLe4plE0QRojfka10o+BEOMUnL9QLr63to=;
-        b=b8xW3Xp4tiUa99A17UvGdiws13S52S4Ph71zVASv0FurDMkVncFYoaQbU6bD/bZBjL
-         2ltYlsc7ueFUx2aHnVe5j8uFZRxWF/M6qeSfoMhdUddNuBDvWczyLAdtqmpFJaMIRn+C
-         3gli4kQ0eJgbAcqbiQMqF+mWwweTLI7RLlFoBVKHRY3J2el6BES58xEdBTviXqHW1LY7
-         g/Wfus459x+a6QxlrcIu457ETAZpoSQyIH5ht6HjaRE95fQuOI9l1di7baN7dVzcPWjo
-         HSwlacoI/Cp4HeY3PKufJESJgb0DTlhl5jlkA6PteFUyrzCGveKuH9wiBafrD7lfu7Dm
-         d/4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=3k9hJ+Jr3FLe4plE0QRojfka10o+BEOMUnL9QLr63to=;
-        b=Kc/uNxhkVIus1NznT7OYUMD4WA2jiP6+gKRIQ4c7W8MiXec0Fg9EFyMrp01jI8yqtf
-         5Y3Rpe06wH44JNUMrDIaRuVHAg+Viix0S9B+Oa1Op9O1fEi0atEVIXgrrgU2yreKzZCd
-         vlRqGYpSqn0n2oIBDSTywtEndKAAUfOvH88Ms7svvb4z4rJ9XZhKa4ZDqbfx4H0IRi7m
-         vfZm5oWKlYdJF3PrpGf9UE9RNAseLpb1HdZVus9GMCJo/AAijhNLNCnwmqjvjgRJyDe2
-         JGXfwlR4qsqyYUNcWzbuwLtlj6fLsqIMdvJj+pzy1LufBy0OJaWjpoSjmLwQtpTERUr3
-         GpqQ==
-X-Gm-Message-State: AOAM531YLsIuFIGZgMX9l4NmJD15qrlhU0uzuDrYBsw6NkqW3XEDkEn4
-        Wj46E3x/3uaXwBFoqhRD5XM=
-X-Google-Smtp-Source: ABdhPJxAGq96zxVDa8TlnhlBWWqOaluWv4i1QWlDCPsTanYp9kd9IyPDkp8V90q/jKHT1oekaxOeBQ==
-X-Received: by 2002:a17:90b:2685:b0:1cb:6521:dd78 with SMTP id pl5-20020a17090b268500b001cb6521dd78mr7448005pjb.194.1649801559276;
-        Tue, 12 Apr 2022 15:12:39 -0700 (PDT)
-Received: from google.com ([2620:15c:2c1:200:af7f:9aa3:e1d:b65d])
-        by smtp.gmail.com with ESMTPSA id u17-20020a056a00159100b004faef351ebcsm38719862pfk.45.2022.04.12.15.12.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 15:12:38 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-Date:   Tue, 12 Apr 2022 15:12:35 -0700
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        Martin =?utf-8?B?TGnFoWth?= <mliska@suse.cz>,
-        William Cohen <wcohen@redhat.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Lexi Shao <shaolexi@huawei.com>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Denis Nikitin <denik@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 0/4] Tidy up symbol end fixup
-Message-ID: <YlX5U+Qelf/rBdau@google.com>
-References: <20220412154817.2728324-1-irogers@google.com>
+        Tue, 12 Apr 2022 19:26:25 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6007F21A;
+        Tue, 12 Apr 2022 15:38:46 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 1E89CC023; Wed, 13 Apr 2022 00:38:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1649803125; bh=8cKWiKZ+6BTHDIeYecZe923WDWd/fUmOnyJCVtqwQRk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mS9vU0aqfwqdsVmn1+fa/0vv8poCioV3NJDSA17DNm9q9Ze0nYISH8TNXvFDpAMS8
+         C4Jc6ONlOhQfqyomQD967RYDtuMwtHtWEGhzGcdfmWkYwbwz4GXlYNGAQ8A9U7nqpJ
+         CkpdLUAF64RbHktWdxuFbwQD4IFG4rk43Ro7+lFRMqwzTxNDwUYw2jHd2H9rz0Wpxe
+         OnMPT1HdWwcZMohiiSfMzF+sFbXKSA3j3YVKpWwZ1/w3epl5Z5jpplVdN8ywCcm9g9
+         0dGXaCsPK8357uBBuiXIE9F/syhLwChpq4NkvPhNozRKMyn6YEISHQQRWjauvMRSqs
+         MmkfW+8OEuasA==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 7F9E9C009;
+        Wed, 13 Apr 2022 00:38:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1649803123; bh=8cKWiKZ+6BTHDIeYecZe923WDWd/fUmOnyJCVtqwQRk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QIFkVHZ2ZiGbLOIJpIJcCiS1PLc/cPhwSWBrjYJf9pKPl7B7UmiOchF498QnFkb4y
+         d6SAVmOieXRM32MCO7wMHOysrLbU/K7WSjFEzaHPQYYs3ShQxhorVvthNbdgA7A/fF
+         otUGRti4jEfWxDr0jUP64iVY6uWuxbrL15XEvAWogBuvScpSDvwwSIkZP2ZokXAT+b
+         bbNaKaUl153IEmtWTExOL35yYuFKLq4RYPdrr9w3DKTN1rFppUZO5r4/lqqHEpAkLv
+         9iG0aoGGFsNboqQdBUgse5KM+QDo4HxXDYXCzGRqICleQEAS0qI8jNGqVTEIX5TVf5
+         OQXfpP3fslG+Q==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 4f5f244e;
+        Tue, 12 Apr 2022 22:38:37 +0000 (UTC)
+Date:   Wed, 13 Apr 2022 07:38:21 +0900
+From:   asmadeus@codewreck.org
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie
+ detected)
+Message-ID: <YlX/XRWwQ7eQntLr@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <1966295.VQPMLLWD4E@silver>
+ <YlNgN5f1KnT1walD@codewreck.org>
+ <3119964.Qa6D4ExsIi@silver>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220412154817.2728324-1-irogers@google.com>
+In-Reply-To: <3119964.Qa6D4ExsIi@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ian,
+Christian Schoenebeck wrote on Mon, Apr 11, 2022 at 03:41:45PM +0200:
+> I get more convinced that it's a bug on Linux kernel side. When guest is
+> booted I always immediately get a read("/var/log/wtmp") = EBADF error on
+> guest. And the 9p command sequence sent to QEMU 9p server were:
 
-On Tue, Apr 12, 2022 at 08:48:13AM -0700, Ian Rogers wrote:
-> Fixing up more symbol ends as introduced in:
-> https://lore.kernel.org/lkml/20220317135536.805-1-mpetlan@redhat.com/
-> caused perf annotate to run into memory limits - every symbol holds
-> all the disassembled code in the annotation, and so making symbols
-> ends further away dramatically increased memory usage (40MB to
->  >1GB). Modify the symbol end logic so that special kernel cases aren't
-> applied in the common case.
+Yes, I'm not pointing fingers, just trying to understand :)
+
 > 
-> v2. Drops a merged patch. Fixes a build issue with libbfd enabled.
+> ...
+> v9fs_clunk tag 0 id 120 fid 568
+> v9fs_walk tag 0 id 110 fid 1 newfid 568 nwnames 1
+> v9fs_rerror tag 0 id 110 err 2
+> v9fs_walk tag 0 id 110 fid 26 newfid 568 nwnames 1
+> v9fs_rerror tag 0 id 110 err 2
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_walk tag 0 id 110 fid 633 newfid 568 nwnames 1
+> v9fs_rerror tag 0 id 110 err 2
+> v9fs_walk tag 0 id 110 fid 875 newfid 568 nwnames 0
+> v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+> v9fs_open tag 0 id 12 fid 568 mode 32769
+> v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
+> v9fs_walk tag 0 id 110 fid 875 newfid 900 nwnames 0
+> v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+> v9fs_open tag 0 id 12 fid 900 mode 2
+> v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
+> v9fs_lock tag 0 id 52 fid 568 type 1 start 0 length 0
+> v9fs_lock_return tag 0 id 52 status 0
+> v9fs_xattrwalk tag 0 id 30 fid 568 newfid 901 name security.capability
+> v9fs_rerror tag 0 id 30 err 95
+> v9fs_read tag 0 id 116 fid 568 off 192512 max_count 256
+> 
+> So guest opens /var/log/wtmp with fid=568 mode=32769, which is write-only
+> mode, and then it tries to read that fid 568, which eventually causes the
+> read() call on host to error with EBADF. Which makes sense, as the file was
+> opened in write-only mode, hence read() is not possible with that file
+> descriptor.
 
-How about just like this?  We can get rid of arch functions as they
-mostly do the same thing (kernel vs module boundary check).
+Oh! That's something we can work on. the vfs code has different caches
+for read only and read-write fids, perhaps the new netfs code just used
+the wrong one somewhere. I'll have a look.
 
-Not tested. ;-)
+> The other things I noticed when looking at the 9p command sequence above:
+> there is a Twalk on fid 568 before, which is not clunked before reusing fid
+> 568 with Topen later. And before that Twalk on fid 568 there is a Tclunk on
+> fid 568, but apparently that fid was not used before.
 
-Thanks,
-Namhyung
+This one though is just weird, I don't see where linux would make up a fid to
+clunk like this... Could messages be ordered a bit weird through
+multithreading?
+e.g. thread 1 opens, thread 2 clunks almost immediately afterwards, and
+would be printed the other way around?
+Should still be serialized through the virtio ring buffer so I don't
+believe what I'm saying myself... It might be worth digging further as
+well.
 
---------------8<-------------
+> > Perhaps backing filesystem dependant? qemu version? virtfs access options?
+> 
+> I tried with different hardware and different file systems (ext4, btrfs), same
+> misbehaviours.
+> 
+> QEMU is latest git version. I also tried several different QEMU versions, same
+> thing.
+> 
+> QEMU command line used:
+> 
+> ~/git/qemu/build/qemu-system-x86_64 \
+> -machine pc,accel=kvm,usb=off,dump-guest-core=off -m 16384 \
+> -smp 8,sockets=8,cores=1,threads=1 -rtc base=utc -boot strict=on \
+> -kernel ~/vm/bullseye/boot/vmlinuz \
+> -initrd ~/vm/bullseye/boot/initrd.img \
+> -append 'root=fsRoot rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=4186112,cache=loose console=ttyS0' \
+> -fsdev local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=$HOME/vm/bullseye/ \
+> -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fsRoot \
+> -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+> -nographic
+> 
+> Important for reproducing this issue:
+> 
+>   * cache=loose
+>   * -smp N (with N>1)
+>   * Guest booted with Linux kernel containing commit eb497943fa21
+>     (uname >= 5.16)
+> 
+> I'm pretty sure that you can reproduce this issue with the QEMU 9p rootfs
+> setup HOWTO linked before.
 
-diff --git a/tools/perf/util/symbol.c b/tools/perf/util/symbol.c
-index dea0fc495185..df41d7266d91 100644
---- a/tools/perf/util/symbol.c
-+++ b/tools/perf/util/symbol.c
-@@ -35,6 +35,7 @@
- #include "path.h"
- #include <linux/ctype.h>
- #include <linux/zalloc.h>
-+#include <internal/lib.h>  // page_size
- 
- #include <elf.h>
- #include <limits.h>
-@@ -231,8 +226,16 @@ void symbols__fixup_end(struct rb_root_cached *symbols)
-                prev = curr;
-                curr = rb_entry(nd, struct symbol, rb_node);
- 
--               if (prev->end == prev->start || prev->end != curr->start)
--                       arch__symbols__fixup_end(prev, curr);
-+               if (prev->end == prev->start) {
-+                       /* Last kernel symbol mapped to end of page */
-+                       if (!strchr(prev->name, '[') != !strchr(curr->name, '['))
-+                               prev->end = roundup(prev->end + 1, page_size);
-+                       else
-+                               prev->end = curr->start;
-+
-+                       pr_debug4("%s sym:%s end:%#" PRIx64 "\n",
-+                                 __func__, prev->name, prev->end);
-+               }
-        }
- 
-        /* Last entry */
+Yes, I'm not sure why I can't reproduce... All my computers are pretty
+slow but the conditions should be met.
+I'll try again with a command line closer to what you just gave here.
+
+
+> > It's all extremely slow though... like the final checkout counting files
+> > at less than 10/s
+> 
+> It is VERY slow. And the weird thing is that cache=loose got much slower than
+> cache=mmap. My worst case expactation would be cache=loose at least not
+> performing worse than cache=mmap.
+
+Yes, some profiling is also in order, it didn't use to be that slow so
+it must not be reusing previously open fids as it should have or
+something..
+
+-- 
+Dominique
