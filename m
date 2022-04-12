@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEBFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4EB3C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351115AbiDLHMh (ORCPT
+        id S1351662AbiDLHMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
+        Tue, 12 Apr 2022 03:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352513AbiDLGz4 (ORCPT
+        with ESMTP id S1352521AbiDLGz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:55:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A979641337;
-        Mon, 11 Apr 2022 23:45:53 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B0241338;
+        Mon, 11 Apr 2022 23:45:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B575DB818C8;
-        Tue, 12 Apr 2022 06:45:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F19DC385A1;
-        Tue, 12 Apr 2022 06:45:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A1CFACE1ACD;
+        Tue, 12 Apr 2022 06:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC333C385A6;
+        Tue, 12 Apr 2022 06:45:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745950;
-        bh=tu0v6OA/f0IhRi7ITV468r8y59OEfqWosZdsp4d1ZN0=;
+        s=korg; t=1649745953;
+        bh=Ww2ABR0jOGrcCjgf8sorN85jiVKs8UFZOAl4vYtrdS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Ho142AK/oUWGz6aiNTl6StMgNlDqhV2zax2ZMJju5LJlvxUw/+o7JVsNAyAvr5T6
-         iC5Ii0/8VywbDwQni8OAIXZnghFzpOoZ78vlkJVMnOyuXQz4SvwKCjAc3xR2u+GhqP
-         rXhxjdJYm9j0SK6LqgnxXVPBytShErArbb86XgbI=
+        b=qricHDCIG43rCW8avnYIVZ5Sp7FXiMmpchTJT+NMmr/7lAL6QbMoUG6kHsnaAUIuZ
+         4sj6H+olH1PiscU2hKqfhtw0L7tUz70fHizFOv7oQ6v8NDXdxsmPgoyq6QI66Fr/Mc
+         ldh1l2nSZFvxkwS+GLNYsmjOlVX6mdqTIVbyPK4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Feng Tang <feng.tang@intel.com>, Guo Ren <guoren@kernel.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 107/277] lib/Kconfig.debug: add ARCH dependency for FUNCTION_ALIGN option
-Date:   Tue, 12 Apr 2022 08:28:30 +0200
-Message-Id: <20220412062945.136856860@linuxfoundation.org>
+Subject: [PATCH 5.15 108/277] init/main.c: return 1 from handled __setup() functions
+Date:   Tue, 12 Apr 2022 08:28:31 +0200
+Message-Id: <20220412062945.165453049@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,50 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feng Tang <feng.tang@intel.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 1bf18da62106225dbc47aab41efee2aeb99caccd ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-0Day robots reported there is compiling issue for 'csky' ARCH when
-CONFIG_DEBUG_FORCE_DATA_SECTION_ALIGNED is enabled [1]:
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
-All errors (new ones prefixed by >>):
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
 
-   {standard input}: Assembler messages:
->> {standard input}:2277: Error: pcrel offset for branch to .LS000B too far (0x3c)
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
 
-Which was discussed in [2].  And as there is no solution for csky yet, add
-some dependency for this config to limit it to several ARCHs which have no
-compiling issue so far.
-
-[1]. https://lore.kernel.org/lkml/202202271612.W32UJAj2-lkp@intel.com/
-[2]. https://www.spinics.net/lists/linux-kbuild/msg30298.html
-
-Link: https://lkml.kernel.org/r/20220304021100.GN4548@shbuild999.sh.intel.com
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Feng Tang <feng.tang@intel.com>
-Cc: Guo Ren <guoren@kernel.org>
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/Kconfig.debug | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 2a9b6dcdac4f..55e89b237b6f 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -414,7 +414,8 @@ config SECTION_MISMATCH_WARN_ONLY
- 	  If unsure, say Y.
+diff --git a/init/main.c b/init/main.c
+index b340d990d77c..06b98350ebd2 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1198,7 +1198,7 @@ static int __init initcall_blacklist(char *str)
+ 		}
+ 	} while (str_entry);
  
- config DEBUG_FORCE_FUNCTION_ALIGN_64B
--	bool "Force all function address 64B aligned" if EXPERT
-+	bool "Force all function address 64B aligned"
-+	depends on EXPERT && (X86_64 || ARM64 || PPC32 || PPC64 || ARC)
- 	help
- 	  There are cases that a commit from one domain changes the function
- 	  address alignment of other domains, and cause magic performance
+-	return 0;
++	return 1;
+ }
+ 
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -1460,7 +1460,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
+ {
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
+ }
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.35.1
 
