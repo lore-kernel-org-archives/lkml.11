@@ -2,115 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E02C3527D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D2FC3A59E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390062AbiDLJYa (ORCPT
+        id S1390580AbiDLJZF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
+        Tue, 12 Apr 2022 05:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355539AbiDLIIb (ORCPT
+        with ESMTP id S1353798AbiDLIKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:08:31 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E867CB78
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:37:54 -0700 (PDT)
-X-UUID: a112a8e74bcc4e8cafd2fe0dbea82415-20220412
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:0009f623-99a6-4f2d-b87c-b7bf1ad04e0d,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:14,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:59
-X-CID-INFO: VERSION:1.1.4,REQID:0009f623-99a6-4f2d-b87c-b7bf1ad04e0d,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:14,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:59
-X-CID-META: VersionHash:faefae9,CLOUDID:d549dea8-d103-4e36-82b9-b0e86991b3df,C
-        OID:6db2902810e7,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:3,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: a112a8e74bcc4e8cafd2fe0dbea82415-20220412
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 204760330; Tue, 12 Apr 2022 15:37:49 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 12 Apr 2022 15:37:48 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 15:37:48 +0800
-Message-ID: <db475c5f8ff801ca0e48d89f5257de491f173b0b.camel@mediatek.com>
-Subject: Re: [PATCH v4,1/4] drm/mediatek: Adjust the timing of mipi signal
- from LP00 to LP11
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <jitao.shi@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 12 Apr 2022 15:37:48 +0800
-In-Reply-To: <1649644308-8455-2-git-send-email-xinlei.lee@mediatek.com>
-References: <1649644308-8455-1-git-send-email-xinlei.lee@mediatek.com>
-         <1649644308-8455-2-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 12 Apr 2022 04:10:04 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFF5FF5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:18 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB8A-0007gE-Ln; Tue, 12 Apr 2022 09:40:06 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1neB89-00AQZK-Am; Tue, 12 Apr 2022 09:40:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
+Cc:     David Jander <david@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>
+Subject: [PATCH v1 05/17] arm: dts: imx6qdl-vicut1.dtsi: Fix LED names
+Date:   Tue, 12 Apr 2022 09:39:52 +0200
+Message-Id: <20220412074004.2485264-6-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-11 at 10:31 +0800, xinlei.lee@mediatek.com wrote:
-> From: Jitao Shi <jitao.shi@mediatek.com>
-> 
-> Old sequence:
-> 1. Pull the MIPI signal high
-> 2. Delay & Dsi_reset
-> 3. Set the dsi timing register
-> 4. dsi clk & lanes leave ulp mode and enter hs mode
-> 
-> The sequence after patching is:
-> 1. Set the dsi timing register
-> 2. Pull the MIPI signal high
-> 3. Delay & Dsi_reset
-> 4. dsi clk & lanes leave ulp mode and enter hs mode
-> 
-> Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge
-> API")
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index ccb0511b9cd5..262c027d8c2f 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -649,14 +649,14 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
->  	mtk_dsi_reset_engine(dsi);
->  	mtk_dsi_phy_timconfig(dsi);
->  
-> -	mtk_dsi_rxtx_control(dsi);
-> -	usleep_range(30, 100);
-> -	mtk_dsi_reset_dphy(dsi);
->  	mtk_dsi_ps_control_vact(dsi);
->  	mtk_dsi_set_vm_cmd(dsi);
->  	mtk_dsi_config_vdo_timing(dsi);
->  	mtk_dsi_set_interrupt_enable(dsi);
->  
-> +	mtk_dsi_rxtx_control(dsi);
-> +	usleep_range(30, 100);
-> +	mtk_dsi_reset_dphy(dsi);
->  	mtk_dsi_clk_ulp_mode_leave(dsi);
->  	mtk_dsi_lane0_ulp_mode_leave(dsi);
->  	mtk_dsi_clk_hs_mode(dsi, 0);
+From: David Jander <david@protonic.nl>
 
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+The names should be consistent with the names in imx6dl-victgo.dts
+
+This patch is preparation to unify vicut1 and victgo DTs.
+
+Signed-off-by: David Jander <david@protonic.nl>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index ea474aa93485..b7a705b39178 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -90,21 +90,21 @@ leds {
+ 		pinctrl-0 = <&pinctrl_leds>;
+ 
+ 		led-0 {
+-			label = "LED_DI0_DEBUG_0";
++			label = "debug0";
+ 			function = LED_FUNCTION_HEARTBEAT;
+ 			gpios = <&gpio4 16 GPIO_ACTIVE_HIGH>;
+ 			linux,default-trigger = "heartbeat";
+ 		};
+ 
+ 		led-1 {
+-			label = "LED_DI0_DEBUG_1";
++			label = "debug1";
+ 			function = LED_FUNCTION_DISK;
+ 			gpios = <&gpio4 17 GPIO_ACTIVE_HIGH>;
+ 			linux,default-trigger = "disk-activity";
+ 		};
+ 
+ 		led-2 {
+-			label = "POWER_LED";
++			label = "power_led";
+ 			function = LED_FUNCTION_POWER;
+ 			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
+ 			default-state = "on";
+-- 
+2.30.2
 
