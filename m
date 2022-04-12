@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8418C3A5A3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B46EBC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390861AbiDLJZW (ORCPT
+        id S1390776AbiDLJZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37458 "EHLO
+        Tue, 12 Apr 2022 05:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356454AbiDLIKh (ORCPT
+        with ESMTP id S1356451AbiDLIKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 04:10:37 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D92E031
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0EC5E03E
         for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:22 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1neB8F-0007gI-Ch; Tue, 12 Apr 2022 09:40:11 +0200
+        id 1neB8A-0007g9-Lm; Tue, 12 Apr 2022 09:40:06 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1neB89-00AQZu-Fv; Tue, 12 Apr 2022 09:40:05 +0200
+        id 1neB89-00AQYk-6t; Tue, 12 Apr 2022 09:40:05 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
 Cc:     David Jander <david@protonic.nl>,
@@ -33,9 +33,9 @@ Cc:     David Jander <david@protonic.nl>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v1 09/17] arm: dts: imx6q-vicut1.dts: remove sata node
-Date:   Tue, 12 Apr 2022 09:39:56 +0200
-Message-Id: <20220412074004.2485264-10-o.rempel@pengutronix.de>
+Subject: [PATCH v1 01/17] arm: dts: imx6qdl-vicut1.dtsi: remove TiWi module
+Date:   Tue, 12 Apr 2022 09:39:48 +0200
+Message-Id: <20220412074004.2485264-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
 References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
@@ -51,27 +51,97 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Jander <david@protonic.nl>
 
-Only the prototype had the SATA interface. No are no existing products
-and plans to add any.
+Only the first prototypes had a TiWi module. There is no publicly available
+hardware where this module is fitted and there are no plant to produce
+any.
 
 Signed-off-by: David Jander <david@protonic.nl>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6q-vicut1.dts | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 51 ---------------------------
+ 1 file changed, 51 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6q-vicut1.dts b/arch/arm/boot/dts/imx6q-vicut1.dts
-index 0a4e251be162..e6c5d3cb48d7 100644
---- a/arch/arm/boot/dts/imx6q-vicut1.dts
-+++ b/arch/arm/boot/dts/imx6q-vicut1.dts
-@@ -11,7 +11,3 @@ / {
- 	model = "Kverneland UT1Q Board";
- 	compatible = "kvg,vicut1q", "fsl,imx6q";
- };
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index ec39008c0950..fe2685642bf1 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -144,18 +144,6 @@ reg_otg_vbus: regulator-otg-vbus {
+ 		enable-active-high;
+ 	};
+ 
+-	reg_wifi: regulator-wifi {
+-		compatible = "regulator-fixed";
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_wifi_npd>;
+-		regulator-name = "wifi";
+-		regulator-min-microvolt = <1800000>;
+-		regulator-max-microvolt = <1800000>;
+-		gpio = <&gpio1 26 GPIO_ACTIVE_HIGH>;
+-		enable-active-high;
+-		startup-delay-us = <70000>;
+-	};
 -
--&sata {
+ 	sound {
+ 		compatible = "simple-audio-card";
+ 		simple-audio-card,name = "prti6q-sgtl5000";
+@@ -530,26 +518,6 @@ &usdhc1 {
+ 	status = "okay";
+ };
+ 
+-&usdhc2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_usdhc2>;
+-	vmmc-supply = <&reg_wifi>;
+-	non-removable;
+-	cap-power-off-card;
+-	keep-power-in-suspend;
+-	no-1-8-v;
+-	no-mmc;
+-	no-sd;
 -	status = "okay";
+-
+-	wifi {
+-		compatible = "ti,wl1271";
+-		interrupts-extended = <&gpio1 30 IRQ_TYPE_LEVEL_HIGH>;
+-		ref-clock-frequency = "38400000";
+-		tcxo-clock-frequency = "19200000";
+-	};
 -};
+-
+ &usdhc3 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_usdhc3>;
+@@ -808,19 +776,6 @@ MX6QDL_PAD_GPIO_1__GPIO1_IO01			0x1b0b0
+ 		>;
+ 	};
+ 
+-	pinctrl_usdhc2: usdhc2grp {
+-		fsl,pins = <
+-			MX6QDL_PAD_SD2_CMD__SD2_CMD			0x170b9
+-			MX6QDL_PAD_SD2_CLK__SD2_CLK			0x100b9
+-			MX6QDL_PAD_SD2_DAT0__SD2_DATA0			0x170b9
+-			MX6QDL_PAD_SD2_DAT1__SD2_DATA1			0x170b9
+-			MX6QDL_PAD_SD2_DAT2__SD2_DATA2			0x170b9
+-			MX6QDL_PAD_SD2_DAT3__SD2_DATA3			0x170b9
+-			/* WL12xx IRQ */
+-			MX6QDL_PAD_ENET_TXD0__GPIO1_IO30		0x10880
+-		>;
+-	};
+-
+ 	pinctrl_usdhc3: usdhc3grp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_SD3_CMD__SD3_CMD			0x17099
+@@ -836,10 +791,4 @@ MX6QDL_PAD_SD3_DAT7__SD3_DATA7			0x17099
+ 			MX6QDL_PAD_SD3_RST__SD3_RESET			0x1b0b1
+ 		>;
+ 	};
+-
+-	pinctrl_wifi_npd: wifinpdgrp {
+-		fsl,pins = <
+-			MX6QDL_PAD_ENET_RXD1__GPIO1_IO26		0x1b8b0
+-		>;
+-	};
+ };
 -- 
 2.30.2
 
