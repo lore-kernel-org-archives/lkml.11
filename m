@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5655DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8705C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347399AbiDLBDU (ORCPT
+        id S1344567AbiDLBDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59802 "EHLO
+        Mon, 11 Apr 2022 21:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344447AbiDLA6H (ORCPT
+        with ESMTP id S1345115AbiDLA62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144AC27FCE;
-        Mon, 11 Apr 2022 17:50:01 -0700 (PDT)
+        Mon, 11 Apr 2022 20:58:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451792FE73;
+        Mon, 11 Apr 2022 17:50:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B88B9B819B4;
-        Tue, 12 Apr 2022 00:49:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30820C385A3;
-        Tue, 12 Apr 2022 00:49:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3308B819A7;
+        Tue, 12 Apr 2022 00:50:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23673C385A4;
+        Tue, 12 Apr 2022 00:50:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724598;
-        bh=brtuF43pM50XqWsrLtaTVNwuTiY5ZTnr6ySqkkguyiw=;
+        s=k20201202; t=1649724637;
+        bh=rj7T6OOQgiD3IzTtd1FHQvgNOE0ybu1G9qy0seW6b6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gQLo+t/KwtRpyM7kcZ629SszVTcAVUd6z29nozPZ6gCdV+O2TNgOozH9771HrN0KI
-         YAr+PHNPqrM3o7egsoLaCBcH+fyJup3XDHo7EnezJhxpzhF7+tEKr317jb37fCz9Ka
-         YKQerMAKPKahs3pen+RgS2KUN40L+Acj9O8i9cll2II6zkf/viQ3byR9Ta/t6hkwhR
-         7xUiCSdaOXCesnTBWfSaLRn06nfWO3UB7/PNMRRRaWF0fw6lWckdbSVz37XuzkhoCG
-         DAygic3mLHxCxhpLOyHoLrjQETXOVdOjQRPMPovzK5KrBbgito67zkwTuP1iRGjo+t
-         8uZNUTlo6wOlQ==
+        b=rAtqZqB3f9jjFyVZmyhwBU+XI8AvltGdctpMHQjfTDLi8Ego9HJGP3f4GS//3hpS4
+         23Xj+tcEMBT+fxrGSXdPw6k5pdsG/q2NB+4+xJ7tV1ThdXjH+pZKHRKTkCAv30kmD7
+         nsZrEs3vAGw+5lwYrACe0pXJVXEvwTdBLYnlba82a3n/dLEuRnWx7sBQnbba6Ee9FD
+         27HsXFl7iaAsbJKxHSWCoJp5RbH/FkEwVybKW+If/8JbSRwglEG+cUvNh0eEdkEyfb
+         o61NGDRjok/tx5JfGNjuZ+38T0eqrG6S90wsrkk6DtUeecon060+KLab+uUIwrf5Yg
+         F9lIbnnI5gO6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joey Gouly <joey.gouly@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
+Cc:     Chanho Park <chanho61.park@samsung.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        ardb@kernel.org, tabba@google.com,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Sasha Levin <sashal@kernel.org>, suzuki.poulose@arm.com,
+        anshuman.khandual@arm.com, mathieu.poirier@linaro.org,
+        lcherian@marvell.com, rmk+kernel@armlinux.org.uk,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 18/30] arm64: alternatives: mark patch_alternative() as `noinstr`
-Date:   Mon, 11 Apr 2022 20:48:52 -0400
-Message-Id: <20220412004906.350678-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 29/30] arm64: Add part number for Arm Cortex-A78AE
+Date:   Mon, 11 Apr 2022 20:49:03 -0400
+Message-Id: <20220412004906.350678-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
 References: <20220412004906.350678-1-sashal@kernel.org>
@@ -55,84 +58,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Chanho Park <chanho61.park@samsung.com>
 
-[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
+[ Upstream commit 83bea32ac7ed37bbda58733de61fc9369513f9f9 ]
 
-The alternatives code must be `noinstr` such that it does not patch itself,
-as the cache invalidation is only performed after all the alternatives have
-been applied.
+Add the MIDR part number info for the Arm Cortex-A78AE[1] and add it to
+spectre-BHB affected list[2].
 
-Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
-and get_alt_insn() with `__always_inline` since they are both only called
-through patch_alternative().
+[1]: https://developer.arm.com/Processors/Cortex-A78AE
+[2]: https://developer.arm.com/Arm%20Security%20Center/Spectre-BHB
 
-Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
-a boot hang:
-[    0.241121] CPU: All CPU(s) started at EL2
-
-The alternatives code was patching the atomics in __tsan_read4() from LL/SC
-atomics to LSE atomics.
-
-The following fragment is using LL/SC atomics in the .text section:
-  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This LL/SC atomic sequence was to be replaced with LSE atomics. However since
-the alternatives code was instrumentable, __tsan_read4() was being called after
-only the first instruction was replaced, which led to the following code in memory:
-  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This caused an infinite loop as the `stxr` instruction never completed successfully,
-so `w7` was always 0.
-
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
 Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
 Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
+Cc: James Morse <james.morse@arm.com>
+Signed-off-by: Chanho Park <chanho61.park@samsung.com>
+Link: https://lore.kernel.org/r/20220407091128.8700-1-chanho61.park@samsung.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/alternative.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/include/asm/cputype.h | 2 ++
+ arch/arm64/kernel/proton-pack.c  | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
-index 73039949b5ce..5f8e4c2df53c 100644
---- a/arch/arm64/kernel/alternative.c
-+++ b/arch/arm64/kernel/alternative.c
-@@ -41,7 +41,7 @@ bool alternative_is_applied(u16 cpufeature)
- /*
-  * Check if the target PC is within an alternative block.
-  */
--static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
-+static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
- {
- 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
- 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
-@@ -49,7 +49,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
- 
- #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
- 
--static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
-+static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
- {
- 	u32 insn;
- 
-@@ -94,7 +94,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
- 	return insn;
- }
- 
--static void patch_alternative(struct alt_instr *alt,
-+static noinstr void patch_alternative(struct alt_instr *alt,
- 			      __le32 *origptr, __le32 *updptr, int nr_inst)
- {
- 	__le32 *replptr;
+diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+index bfbf0c4c7c5e..39f5c1672f48 100644
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -75,6 +75,7 @@
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
+ #define ARM_CPU_PART_NEOVERSE_V1	0xD40
+ #define ARM_CPU_PART_CORTEX_A78		0xD41
++#define ARM_CPU_PART_CORTEX_A78AE	0xD42
+ #define ARM_CPU_PART_CORTEX_X1		0xD44
+ #define ARM_CPU_PART_CORTEX_A510	0xD46
+ #define ARM_CPU_PART_CORTEX_A710	0xD47
+@@ -123,6 +124,7 @@
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
+ #define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
+ #define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
++#define MIDR_CORTEX_A78AE	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78AE)
+ #define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
+ #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
+diff --git a/arch/arm64/kernel/proton-pack.c b/arch/arm64/kernel/proton-pack.c
+index 3dd489b62b29..6ae53d8cd576 100644
+--- a/arch/arm64/kernel/proton-pack.c
++++ b/arch/arm64/kernel/proton-pack.c
+@@ -861,6 +861,7 @@ u8 spectre_bhb_loop_affected(int scope)
+ 	if (scope == SCOPE_LOCAL_CPU) {
+ 		static const struct midr_range spectre_bhb_k32_list[] = {
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
++			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78AE),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
+ 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
 -- 
 2.35.1
 
