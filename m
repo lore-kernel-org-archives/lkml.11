@@ -2,127 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0698C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD098C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354948AbiDLNFY (ORCPT
+        id S1355006AbiDLNFb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        Tue, 12 Apr 2022 09:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356412AbiDLND2 (ORCPT
+        with ESMTP id S1356406AbiDLND2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 09:03:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FA0713CC8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649767544;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tZ33BjHrDwv5LDhGjdBOryVj91womQA/19SWnvr7iKo=;
-        b=JToA5CBpMhbsVwOCmyGRE5/N5rv3xQWX7JF+fC83569ED4OwYTHne3sEvCKwx3bn1K+h5v
-        r5g4RHju7MxBxMjpEA1S8ddRtKcjSAN0NTzDfSVwOWdmkrOtCSepXybEdWej2GpeLrFVrC
-        cBh5XR9qnO3KcSxYZjo1RGB+w5xtcaQ=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-422-7G2Zv_EdNz2pJtFj6H4zNg-1; Tue, 12 Apr 2022 08:45:43 -0400
-X-MC-Unique: 7G2Zv_EdNz2pJtFj6H4zNg-1
-Received: by mail-wr1-f71.google.com with SMTP id r10-20020adfc10a000000b00207a2c7bcf6so1416905wre.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=tZ33BjHrDwv5LDhGjdBOryVj91womQA/19SWnvr7iKo=;
-        b=u3O4n7+ddwpTNcAqxROHHfJBZ1KJCY80dNqpj/o3rkB/M6QnARUzIXOb3X9FD7Tlnm
-         ZNPB/FFhwiqzhtbQcKFcN/B5Ygbz8IkVnLSQ7Hxn9kEW79JflTIzGxn3ZvwRdAC+SoIN
-         nddUGTBjdPVQlfkfnH1CIOZNZ4jyqhgs8Jp+Bu/ssYt3kWrRfUJMb0DTa/AMqL3eSWey
-         6ofMsnNkhO/k2/rcvs9Sy/bT6Hr76bEuIHabJG/CXAJakkZh3avEMM4+LtuzFWTcdE2f
-         xlFLu6HS44/KPdzyt+z1RdSYxGUlRtdJtxoPqpqds0o9CUUlmuF5/HEsUfCkEU7D+8kp
-         uhPQ==
-X-Gm-Message-State: AOAM531aDDB2x2BzPPE9GEzcxeeATRIa/HZdkXKEKu5VOTWJNJHCrB4T
-        tB4/GhekFTeL3XznrhH/HwgwP++C7OcKmj7lmA2OpAaQc1vBYwGYTpP3smSinf12iHFALx3+/aN
-        pPlQJ8D/+QcIBgi/TWwXyamGJ
-X-Received: by 2002:a5d:6b4c:0:b0:1e6:8ece:62e8 with SMTP id x12-20020a5d6b4c000000b001e68ece62e8mr29078280wrw.201.1649767541786;
-        Tue, 12 Apr 2022 05:45:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyUqWO+Fp2x3i5NTSt5YGXdfhi1f+8zoD8yvWBy27pRBGSkplwJquSYzx/QHYB7zw1nrfYm3Q==
-X-Received: by 2002:a5d:6b4c:0:b0:1e6:8ece:62e8 with SMTP id x12-20020a5d6b4c000000b001e68ece62e8mr29078264wrw.201.1649767541566;
-        Tue, 12 Apr 2022 05:45:41 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id q16-20020a1ce910000000b0038eabd31749sm2641252wmc.32.2022.04.12.05.45.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 05:45:41 -0700 (PDT)
-Message-ID: <eb49332b-876a-0bd6-cefe-863f03903745@redhat.com>
-Date:   Tue, 12 Apr 2022 14:45:40 +0200
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2546BDFC1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:37 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC6581570;
+        Tue, 12 Apr 2022 05:45:36 -0700 (PDT)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8B1163F70D;
+        Tue, 12 Apr 2022 05:45:34 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: [PATCH v4 19/21] x86/resctrl: Rename and change the units of resctrl_cqm_threshold
+Date:   Tue, 12 Apr 2022 12:44:17 +0000
+Message-Id: <20220412124419.30689-20-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
+References: <20220412124419.30689-1-james.morse@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 4/5] drm/solomon: Move device info from ssd130x-i2c to
- the core driver
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-References: <20220411211243.11121-1-javierm@redhat.com>
- <20220411211243.11121-5-javierm@redhat.com>
- <CAMuHMdVSsAtRLob5fLoBMNu-DRXJOaBrEHYEwG5iCA03XR5JSw@mail.gmail.com>
- <4128b288-2b9a-f9cd-01f3-a1d50d3e10bb@redhat.com>
- <YlVgpHqqqFy43L37@smile.fi.intel.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YlVgpHqqqFy43L37@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Andy,
+resctrl_cqm_threshold is stored in a hardware specific chunk size,
+but exposed to user-space as bytes.
 
-Thanks for your feedback.
+This means the filesystem parts of resctrl need to know how the hardware
+counts, to convert the user provided byte value to chunks. The interface
+between the architecture's resctrl code and the filesystem ought to
+treat everything as bytes.
 
-On 4/12/22 13:21, Andy Shevchenko wrote:
-> On Tue, Apr 12, 2022 at 10:07:02AM +0200, Javier Martinez Canillas wrote:
->> On 4/12/22 09:23, Geert Uytterhoeven wrote:
->>> On Mon, Apr 11, 2022 at 11:12 PM Javier Martinez Canillas
->>> <javierm@redhat.com> wrote:
-> 
-> ...
-> 
->>>> -       ssd130x->device_info = device_get_match_data(dev);
->>>> +
->>>> +       variant = (enum ssd130x_variants)device_get_match_data(dev);
->>>
->>> (uintptr_t), to avoid a cast from pointer to integer of different
->>> size warning.
->>>
->>
->> Indeed. The kernel test robot reported the same.
-> 
-> Not only because of this, but also with the non-NULL pointers I prefer the old
-> style without ugly castings.
-> 
-> Instead, you may export the array (in the driver's namespace) and use
-> &info[ID] pointer for the specific device info.
-> 
+Change the unit of resctrl_cqm_threshold to bytes. resctrl_arch_rmid_read()
+still returns its value in chunks, so this needs converting to bytes.
+As all the users have been touched, rename the variable to
+resctrl_rmid_realloc_threshold, which describes what the value is for.
 
-That's a great idea! I'll do that in v3.
+Neither r->num_rmid nor hw_res->mon_scale are guaranteed to be a power
+of 2, so the existing code introduces a rounding error from resctrl's
+theoretical fraction of the cache usage. This behaviour is kept as it
+ensures the user visible value matches the value read from hardware
+when the rmid will be reallocated.
 
+Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+---
+Changes since v3:
+ * Preserved the rounding errors.
+---
+ arch/x86/kernel/cpu/resctrl/internal.h |  1 -
+ arch/x86/kernel/cpu/resctrl/monitor.c  | 41 +++++++++++++++-----------
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c |  9 ++----
+ include/linux/resctrl.h                |  2 ++
+ 4 files changed, 28 insertions(+), 25 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
+index bdb55c2fbdd3..c05e9b7cf77a 100644
+--- a/arch/x86/kernel/cpu/resctrl/internal.h
++++ b/arch/x86/kernel/cpu/resctrl/internal.h
+@@ -98,7 +98,6 @@ struct rmid_read {
+ 	u64			val;
+ };
+ 
+-extern unsigned int resctrl_cqm_threshold;
+ extern bool rdt_alloc_capable;
+ extern bool rdt_mon_capable;
+ extern unsigned int rdt_mon_features;
+diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
+index 88988de0c96c..00f6e27e4e0d 100644
+--- a/arch/x86/kernel/cpu/resctrl/monitor.c
++++ b/arch/x86/kernel/cpu/resctrl/monitor.c
+@@ -37,8 +37,8 @@ static LIST_HEAD(rmid_free_lru);
+  * @rmid_limbo_count     count of currently unused but (potentially)
+  *     dirty RMIDs.
+  *     This counts RMIDs that no one is currently using but that
+- *     may have a occupancy value > intel_cqm_threshold. User can change
+- *     the threshold occupancy value.
++ *     may have a occupancy value > resctrl_rmid_realloc_threshold. User can
++ *     change the threshold occupancy value.
+  */
+ static unsigned int rmid_limbo_count;
+ 
+@@ -59,10 +59,10 @@ bool rdt_mon_capable;
+ unsigned int rdt_mon_features;
+ 
+ /*
+- * This is the threshold cache occupancy at which we will consider an
++ * This is the threshold cache occupancy in bytes at which we will consider an
+  * RMID available for re-allocation.
+  */
+-unsigned int resctrl_cqm_threshold;
++unsigned int resctrl_rmid_realloc_threshold;
+ 
+ #define CF(cf)	((unsigned long)(1048576 * (cf) + 0.5))
+ 
+@@ -223,14 +223,13 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+  */
+ void __check_limbo(struct rdt_domain *d, bool force_free)
+ {
++	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
++	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	struct rmid_entry *entry;
+-	struct rdt_resource *r;
+ 	u32 crmid = 1, nrmid;
+ 	bool rmid_dirty;
+ 	u64 val = 0;
+ 
+-	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
+-
+ 	/*
+ 	 * Skip RMID 0 and start from RMID 1 and check all the RMIDs that
+ 	 * are marked as busy for occupancy < threshold. If the occupancy
+@@ -245,10 +244,12 @@ void __check_limbo(struct rdt_domain *d, bool force_free)
+ 		entry = __rmid_entry(nrmid);
+ 
+ 		if (resctrl_arch_rmid_read(r, d, entry->rmid,
+-					   QOS_L3_OCCUP_EVENT_ID, &val))
++					   QOS_L3_OCCUP_EVENT_ID, &val)) {
+ 			rmid_dirty = true;
+-		else
+-			rmid_dirty = (val >= resctrl_cqm_threshold);
++		} else {
++			val *= hw_res->mon_scale;
++			rmid_dirty = (val >= resctrl_rmid_realloc_threshold);
++		}
+ 
+ 		if (force_free || !rmid_dirty) {
+ 			clear_bit(entry->rmid, d->rmid_busy_llc);
+@@ -289,13 +290,12 @@ int alloc_rmid(void)
+ 
+ static void add_rmid_to_limbo(struct rmid_entry *entry)
+ {
+-	struct rdt_resource *r;
++	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
++	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	struct rdt_domain *d;
+ 	int cpu, err;
+ 	u64 val = 0;
+ 
+-	r = &rdt_resources_all[RDT_RESOURCE_L3].r_resctrl;
+-
+ 	entry->busy = 0;
+ 	cpu = get_cpu();
+ 	list_for_each_entry(d, &r->domains, list) {
+@@ -303,7 +303,8 @@ static void add_rmid_to_limbo(struct rmid_entry *entry)
+ 			err = resctrl_arch_rmid_read(r, d, entry->rmid,
+ 						     QOS_L3_OCCUP_EVENT_ID,
+ 						     &val);
+-			if (err || val <= resctrl_cqm_threshold)
++			val *= hw_res->mon_scale;
++			if (err || val <= resctrl_rmid_realloc_threshold)
+ 				continue;
+ 		}
+ 
+@@ -744,6 +745,7 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
+ 	unsigned int mbm_offset = boot_cpu_data.x86_cache_mbm_width_offset;
+ 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+ 	unsigned int cl_size = boot_cpu_data.x86_cache_size;
++	unsigned int threshold;
+ 	int ret;
+ 
+ 	hw_res->mon_scale = boot_cpu_data.x86_cache_occ_scale;
+@@ -762,10 +764,15 @@ int rdt_get_mon_l3_config(struct rdt_resource *r)
+ 	 *
+ 	 * For a 35MB LLC and 56 RMIDs, this is ~1.8% of the LLC.
+ 	 */
+-	resctrl_cqm_threshold = cl_size * 1024 / r->num_rmid;
++	threshold = cl_size * 1024 / r->num_rmid;
+ 
+-	/* h/w works in units of "boot_cpu_data.x86_cache_occ_scale" */
+-	resctrl_cqm_threshold /= hw_res->mon_scale;
++	/*
++	 * Because num_rmid may not be a power of two, round the value
++	 * to the nearest multiple of hw_res->mon_scale so it matches a
++	 * value the hardware will measure. mon_scale may not be a power of 2.
++	 */
++	threshold /= hw_res->mon_scale;
++	resctrl_rmid_realloc_threshold = threshold * hw_res->mon_scale;
+ 
+ 	ret = dom_data_init(r);
+ 	if (ret)
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index f494ca6b8bdd..7c35561e5216 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -1030,10 +1030,7 @@ static int rdt_delay_linear_show(struct kernfs_open_file *of,
+ static int max_threshold_occ_show(struct kernfs_open_file *of,
+ 				  struct seq_file *seq, void *v)
+ {
+-	struct rdt_resource *r = of->kn->parent->priv;
+-	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
+-
+-	seq_printf(seq, "%u\n", resctrl_cqm_threshold * hw_res->mon_scale);
++	seq_printf(seq, "%u\n", resctrl_rmid_realloc_threshold);
+ 
+ 	return 0;
+ }
+@@ -1055,7 +1052,6 @@ static int rdt_thread_throttle_mode_show(struct kernfs_open_file *of,
+ static ssize_t max_threshold_occ_write(struct kernfs_open_file *of,
+ 				       char *buf, size_t nbytes, loff_t off)
+ {
+-	struct rdt_hw_resource *hw_res;
+ 	unsigned int bytes;
+ 	int ret;
+ 
+@@ -1066,8 +1062,7 @@ static ssize_t max_threshold_occ_write(struct kernfs_open_file *of,
+ 	if (bytes > (boot_cpu_data.x86_cache_size * 1024))
+ 		return -EINVAL;
+ 
+-	hw_res = resctrl_to_arch_res(of->kn->parent->priv);
+-	resctrl_cqm_threshold = bytes / hw_res->mon_scale;
++	resctrl_rmid_realloc_threshold = bytes;
+ 
+ 	return nbytes;
+ }
+diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
+index cc6311a40582..fc4805901f1a 100644
+--- a/include/linux/resctrl.h
++++ b/include/linux/resctrl.h
+@@ -250,4 +250,6 @@ int resctrl_arch_rmid_read(struct rdt_resource *r, struct rdt_domain *d,
+ void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
+ 			     u32 rmid, enum resctrl_event_id eventid);
+ 
++extern unsigned int resctrl_rmid_realloc_threshold;
++
+ #endif /* _RESCTRL_H */
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.30.2
 
