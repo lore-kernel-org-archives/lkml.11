@@ -2,112 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B075FC46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F10AC3527D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356121AbiDLHe1 (ORCPT
+        id S1356143AbiDLHeb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57526 "EHLO
+        Tue, 12 Apr 2022 03:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351804AbiDLHM6 (ORCPT
+        with ESMTP id S1351889AbiDLHND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DBA526E5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:52:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649746374;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U/dPMWGmVa2VGitxhMaMArDoPD5HmxhcdwxUBvot0a4=;
-        b=AG2FJ98LGgdmcuhQ1L4obAmn4ZxrhENYIKisiqGZs8pdd8pG2+ksiwZDFRE9bktF8mDOL7
-        au5oVg7749k26VLxbT2n3Ru6z7WySodOClK1f539jRf2r122CxIi/XoPeMQMictABqFiE+
-        XFTOlcUsKKD+ZK32R1XJLn53yXwyvDo=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-IKXqwtzfNL-98Sef6oiujg-1; Tue, 12 Apr 2022 02:52:52 -0400
-X-MC-Unique: IKXqwtzfNL-98Sef6oiujg-1
-Received: by mail-wm1-f72.google.com with SMTP id y11-20020a7bc18b000000b0038eac019fc0so832251wmi.9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:52:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=U/dPMWGmVa2VGitxhMaMArDoPD5HmxhcdwxUBvot0a4=;
-        b=TR9+NzH0MSSE1HA/yD6uamWyLIH3z/genjRhaIGIY2HC/DYGN5L3dcTzn0Zwn/2gsf
-         pNDxprSLVg4EYXHEQaXbgFXOa+9rHiMmkFpSQk4MXJ9qpqtLGmnZvUEOISSauE8jHJr4
-         eWIpl1+FDiZKTFMVZmZpE/Kxl5rD3zM7AUJX/Heta0dLiu7yQShiwz3stglPqkmfkyMe
-         cMbQ4MXiSZPdqtDM2hVklm0ZMNjhjdNaF15CbpozDRe7nTc8AgQjOy8YbSp43b0Ta+8B
-         DI/6S9v8XifGSxA/r3KjxwCXx38HJghs4lporw9DaX7kLFlfWmfpEFc/LS1vFH3Sq/25
-         CtRw==
-X-Gm-Message-State: AOAM532TT6+KWOxEe3Zilxoa3N5rnDYhtSrldSKL54FirTmWR7z9PCt0
-        zdXWXYZoEevyZ+K6q/AuVtXNRmlddGjOOXvinR4kDd8E+2K2OdMYZ8oDS4XH2Qvluvhchpc309v
-        gaSW2hM/A5byqPMYOsXoH3loO
-X-Received: by 2002:a05:6000:1a85:b0:205:a4f1:dba4 with SMTP id f5-20020a0560001a8500b00205a4f1dba4mr28667631wry.381.1649746371704;
-        Mon, 11 Apr 2022 23:52:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxRdqWq4OunBlCF9pVcZ+V2AKilo/61MElc17XigOtbeWrzHJ6eV9gHe9ilgUGp8E5TVegvoQ==
-X-Received: by 2002:a05:6000:1a85:b0:205:a4f1:dba4 with SMTP id f5-20020a0560001a8500b00205a4f1dba4mr28667618wry.381.1649746371513;
-        Mon, 11 Apr 2022 23:52:51 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id r17-20020a0560001b9100b00207afaa8987sm786520wru.27.2022.04.11.23.52.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 23:52:50 -0700 (PDT)
-Message-ID: <6e0fd8ac-5f17-44d9-97b7-285d4cbe6bcf@redhat.com>
-Date:   Tue, 12 Apr 2022 08:52:50 +0200
+        Tue, 12 Apr 2022 03:13:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F79114D;
+        Mon, 11 Apr 2022 23:54:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3632B81B4E;
+        Tue, 12 Apr 2022 06:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46415C385A6;
+        Tue, 12 Apr 2022 06:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746444;
+        bh=UG8E96NmWmyT1eR57RezFnkCYzgTjNbUM2DsOBIh/tU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U/F7PE9BIk28pi7Ptmi/Z9+ebvUMGVUHYae9JXcjV5YozWditT7HroxkEkZFWP+bp
+         8Hg5nCqGww1JTcKnprB83hlDTmISBuD9KaKL0mmLdBLLzeT9CoT6MYcZ7FV8F7lESU
+         ExfK7pM9RwcVZKYqRVztVNjfi9Uaz7UXjr8eh1Ow=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.15 266/277] selftests: cgroup: Test open-time cgroup namespace usage for migration checks
+Date:   Tue, 12 Apr 2022 08:31:09 +0200
+Message-Id: <20220412062949.741881644@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
+References: <20220412062942.022903016@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 102/104] KVM: TDX: Add methods to ignore accesses
- to CPU state
-Content-Language: en-US
-To:     Xiaoyao Li <xiaoyao.li@intel.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <3a278829a8617b86b36c32b68a82bc727013ace8.1646422845.git.isaku.yamahata@intel.com>
- <ec60ba8e-3ed9-1d06-d8c2-4db9529daf93@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <ec60ba8e-3ed9-1d06-d8c2-4db9529daf93@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/12/22 08:49, Xiaoyao Li wrote:
-> 
->> +void tdx_cache_reg(struct kvm_vcpu *vcpu, enum kvm_reg reg)
->> +{
->> +    kvm_register_mark_available(vcpu, reg);
->> +    switch (reg) {
->> +    case VCPU_REGS_RSP:
->> +    case VCPU_REGS_RIP:
->> +    case VCPU_EXREG_PDPTR:
->> +    case VCPU_EXREG_CR0:
->> +    case VCPU_EXREG_CR3:
->> +    case VCPU_EXREG_CR4:
->> +        break;
->> +    default:
->> +        KVM_BUG_ON(1, vcpu->kvm);
->> +        break;
->> +    }
->> +}
-> 
-> Isaku,
-> 
-> We missed one case that some GPRs are accessible by KVM/userspace for 
-> TDVMCALL exit.
+From: Tejun Heo <tj@kernel.org>
 
-If a register is not in the VMX_REGS_LAZY_LOAD_SET it will never be 
-passed to tdx_cache_reg.  As far as I understand those TDVMCALL 
-registers do not include either RSP or RIP.
+commit bf35a7879f1dfb0d050fe779168bcf25c7de66f5 upstream.
 
-Paolo
+When a task is writing to an fd opened by a different task, the perm check
+should use the cgroup namespace of the latter task. Add a test for it.
+
+Tested-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/testing/selftests/cgroup/test_core.c |   97 +++++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
+
+--- a/tools/testing/selftests/cgroup/test_core.c
++++ b/tools/testing/selftests/cgroup/test_core.c
+@@ -1,11 +1,14 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 
++#define _GNU_SOURCE
+ #include <linux/limits.h>
++#include <linux/sched.h>
+ #include <sys/types.h>
+ #include <sys/mman.h>
+ #include <sys/wait.h>
+ #include <unistd.h>
+ #include <fcntl.h>
++#include <sched.h>
+ #include <stdio.h>
+ #include <errno.h>
+ #include <signal.h>
+@@ -741,6 +744,99 @@ cleanup:
+ 	return ret;
+ }
+ 
++struct lesser_ns_open_thread_arg {
++	const char	*path;
++	int		fd;
++	int		err;
++};
++
++static int lesser_ns_open_thread_fn(void *arg)
++{
++	struct lesser_ns_open_thread_arg *targ = arg;
++
++	targ->fd = open(targ->path, O_RDWR);
++	targ->err = errno;
++	return 0;
++}
++
++/*
++ * cgroup migration permission check should be performed based on the cgroup
++ * namespace at the time of open instead of write.
++ */
++static int test_cgcore_lesser_ns_open(const char *root)
++{
++	static char stack[65536];
++	const uid_t test_euid = 65534;	/* usually nobody, any !root is fine */
++	int ret = KSFT_FAIL;
++	char *cg_test_a = NULL, *cg_test_b = NULL;
++	char *cg_test_a_procs = NULL, *cg_test_b_procs = NULL;
++	int cg_test_b_procs_fd = -1;
++	struct lesser_ns_open_thread_arg targ = { .fd = -1 };
++	pid_t pid;
++	int status;
++
++	cg_test_a = cg_name(root, "cg_test_a");
++	cg_test_b = cg_name(root, "cg_test_b");
++
++	if (!cg_test_a || !cg_test_b)
++		goto cleanup;
++
++	cg_test_a_procs = cg_name(cg_test_a, "cgroup.procs");
++	cg_test_b_procs = cg_name(cg_test_b, "cgroup.procs");
++
++	if (!cg_test_a_procs || !cg_test_b_procs)
++		goto cleanup;
++
++	if (cg_create(cg_test_a) || cg_create(cg_test_b))
++		goto cleanup;
++
++	if (cg_enter_current(cg_test_b))
++		goto cleanup;
++
++	if (chown(cg_test_a_procs, test_euid, -1) ||
++	    chown(cg_test_b_procs, test_euid, -1))
++		goto cleanup;
++
++	targ.path = cg_test_b_procs;
++	pid = clone(lesser_ns_open_thread_fn, stack + sizeof(stack),
++		    CLONE_NEWCGROUP | CLONE_FILES | CLONE_VM | SIGCHLD,
++		    &targ);
++	if (pid < 0)
++		goto cleanup;
++
++	if (waitpid(pid, &status, 0) < 0)
++		goto cleanup;
++
++	if (!WIFEXITED(status))
++		goto cleanup;
++
++	cg_test_b_procs_fd = targ.fd;
++	if (cg_test_b_procs_fd < 0)
++		goto cleanup;
++
++	if (cg_enter_current(cg_test_a))
++		goto cleanup;
++
++	if ((status = write(cg_test_b_procs_fd, "0", 1)) >= 0 || errno != ENOENT)
++		goto cleanup;
++
++	ret = KSFT_PASS;
++
++cleanup:
++	cg_enter_current(root);
++	if (cg_test_b_procs_fd >= 0)
++		close(cg_test_b_procs_fd);
++	if (cg_test_b)
++		cg_destroy(cg_test_b);
++	if (cg_test_a)
++		cg_destroy(cg_test_a);
++	free(cg_test_b_procs);
++	free(cg_test_a_procs);
++	free(cg_test_b);
++	free(cg_test_a);
++	return ret;
++}
++
+ #define T(x) { x, #x }
+ struct corecg_test {
+ 	int (*fn)(const char *root);
+@@ -757,6 +853,7 @@ struct corecg_test {
+ 	T(test_cgcore_thread_migration),
+ 	T(test_cgcore_destroy),
+ 	T(test_cgcore_lesser_euid_open),
++	T(test_cgcore_lesser_ns_open),
+ };
+ #undef T
+ 
+
 
