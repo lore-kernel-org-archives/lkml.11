@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB1BC3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F694C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355147AbiDLIHP (ORCPT
+        id S1355111AbiDLIHG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42618 "EHLO
+        Tue, 12 Apr 2022 04:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354452AbiDLH0Y (ORCPT
+        with ESMTP id S1354361AbiDLH0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B59345ACB;
-        Tue, 12 Apr 2022 00:06:16 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404C345079;
+        Tue, 12 Apr 2022 00:06:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBFDE616B5;
-        Tue, 12 Apr 2022 07:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1491C385AB;
-        Tue, 12 Apr 2022 07:06:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8F64B81B50;
+        Tue, 12 Apr 2022 07:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24139C385A1;
+        Tue, 12 Apr 2022 07:06:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747175;
-        bh=PYNQeBE5FIvK7ttjTSwyhrldUg+LR6Jt9gF2vnHvEZc=;
+        s=korg; t=1649747169;
+        bh=zfD7YjenlyUPbPHuXN1cKuXgTMmzI3+KRTFSfXHPC28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qWOlPl46JTPHtC0j7/D+wKMEh6lQYjxfwGkqzH6EziJRVVfRS8bRcFRwF35gpjQj2
-         3CjGD4qLDghYcAOU7qG5q+Wme3TTUSH5vRlfoWww0TIV61de47f4D/Sd9mdLR4SvMt
-         fvWnOuQmPAxzM8P6k7UovauMddTBhLAKMLb6THGg=
+        b=izdKqfnL5uBU0KaqfnOLa2TvdrivpsUWnARd4RQBVpWWxsF4j0F7L8y3VUdw1yL7F
+         lg0F3Bc3l1y7o0jy070hjbzLwi1JAliyBzCaeuxPKMpG7NdrFXK/U3lBYeRdIUsJam
+         E6S5gsRujBqCD52hhnwwEbLykvFn1jZl52d0d2l8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -42,11 +42,11 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Namhyung Kim <namhyung@kernel.org>,
         Nathan Chancellor <nathan@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 5.16 270/285] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
-Date:   Tue, 12 Apr 2022 08:32:07 +0200
-Message-Id: <20220412062951.450971380@linuxfoundation.org>
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 268/285] perf python: Fix probing for some clang command line options
+Date:   Tue, 12 Apr 2022 08:32:05 +0200
+Message-Id: <20220412062951.392626163@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -60,18 +60,21 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
+commit dd6e1fe91cdd52774ca642d1da75b58a86356b56 upstream.
 
-Just like its done for ldopts and for both in tools/perf/Makefile.config.
+The clang compiler complains about some options even without a source
+file being available, while others require one, so use the simple
+tools/build/feature/test-hello.c file.
 
-Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
+Then check for the "is not supported" string in its output, in addition
+to the "unknown argument" already being looked for.
 
-  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
+This was noticed when building with clang-13 where -ffat-lto-objects
+isn't supported and since we were looking just for "unknown argument"
+and not providing a source code to clang, was mistakenly assumed as
+being available and not being filtered to set of command line options
+provided to clang, leading to a build failure.
 
-And we need to do it to allow for building with versions of clang where
-some gcc options selected by distros are not available.
-
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
 Cc: Adrian Hunter <adrian.hunter@intel.com>
 Cc: Fangrui Song <maskray@google.com>
 Cc: Florian Fainelli <f.fainelli@gmail.com>
@@ -83,23 +86,32 @@ Cc: Michael Petlan <mpetlan@redhat.com>
 Cc: Namhyung Kim <namhyung@kernel.org>
 Cc: Nathan Chancellor <nathan@kernel.org>
 Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
+Cc: Sedat Dilek <sedat.dilek@gmail.com>
+Link: http://lore.kernel.org/lkml/
 Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/build/feature/Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/util/setup.py |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -217,7 +217,7 @@ strip-libs = $(filter-out -l%,$(1))
- PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
- PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
- PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
--PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
-+PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+--- a/tools/perf/util/setup.py
++++ b/tools/perf/util/setup.py
+@@ -1,12 +1,14 @@
+-from os import getenv
++from os import getenv, path
+ from subprocess import Popen, PIPE
+ from re import sub
  
- ifeq ($(CC_NO_CLANG), 0)
+ cc = getenv("CC")
+ cc_is_clang = b"clang version" in Popen([cc.split()[0], "-v"], stderr=PIPE).stderr.readline()
++src_feature_tests  = getenv('srctree') + '/tools/build/feature'
+ 
+ def clang_has_option(option):
+-    return [o for o in Popen([cc, option], stderr=PIPE).stderr.readlines() if b"unknown argument" in o] == [ ]
++    cc_output = Popen([cc, option, path.join(src_feature_tests, "test-hello.c") ], stderr=PIPE).stderr.readlines()
++    return [o for o in cc_output if ((b"unknown argument" in o) or (b"is not supported" in o))] == [ ]
+ 
+ if cc_is_clang:
+     from distutils.sysconfig import get_config_vars
 
 
