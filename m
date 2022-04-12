@@ -2,112 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4745CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FDFC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352222AbiDLLme (ORCPT
+        id S1352464AbiDLLmz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
+        Tue, 12 Apr 2022 07:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352425AbiDLLhs (ORCPT
+        with ESMTP id S1353328AbiDLLiK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:37:48 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF851B0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:17:17 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id r133-20020a1c448b000000b0038ccb70e239so1419371wma.3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:17:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FgjY7H1ZyME0qwy3R/u6paw0pnftya7ZX2HN8cgGzfA=;
-        b=ne3w86K753pIjNk60LVZmDgZk8VZDfs/glLnxVo4/VjTxiJ6UUTFrdIqsVmpW2sL/o
-         MTagu3acV1bPiyXknAH6hYt7apWs2Yrguz5IEXOA1kjzVU2QYLmyyGrdO+zWkcb5WwyA
-         TmgzpPSGfITPJtjuphY0J81bzhOdlhsOQ6dfHZ/iFjoeidISUZdair1sW3IVK8BghOW0
-         jB2b2hRCF9JtEKU6vX1NspPynkxij9wXhxT01iP/NcRT5Si1var8squBmK+g0BY1cemh
-         jEK8dRqXHKWFFF9Pv7qTmXE0tqTPo3VsiGGgo6pgzHDtaQX4FjEG8VL0ukEeGFSuX7T9
-         4PTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FgjY7H1ZyME0qwy3R/u6paw0pnftya7ZX2HN8cgGzfA=;
-        b=m6hOAejj/GNaMxCI2tr4IiDxqLjjY4E9KkebMt3qyl9NIMVKkRehWNbC2LOUzdKPZk
-         qkl5lPtYSm7E28X4SvC3KzI8iF6dOSg+moG2Wa90IJKtRm59z64rSV1JBa+XCbLU+vj6
-         TsJ+AhoCHf9ZELQ3F0UoJzbSKgxb/Z/J2ER/AlFrdaovAMTTyN5RcKIAN+alBPZEUHgN
-         yNE9mQtPN5bjlzY6RUAomLHR8mpaB6jCozYgE2ibFoHjLJGgeoRSGz2gFJQum6B1lVBO
-         u2ShSBw69ORqbkTmDx2+Pt0iMva+Z6l008jRjna+XRngZ1E9sOJsUxQ44zNfUXjh2QZk
-         ociw==
-X-Gm-Message-State: AOAM532L1zvb+wiWcqbTrOHqiyC65xIyMWPT6vQIGvUDpsSm6S4aBlY4
-        Vb08ahVKKV8Saiu6KSvZznxN9p72eGh5gCBxTNjFRg==
-X-Google-Smtp-Source: ABdhPJxFEQ5ap88OFgjsOLJn9UFZkYYgmfWEoc8ZKgSxPxYiQjW5JyNj/W++bqErekphko+y61J+q4WmOuKQF2iY9nY=
-X-Received: by 2002:a05:600c:1c9c:b0:38e:3270:373d with SMTP id
- k28-20020a05600c1c9c00b0038e3270373dmr3340130wms.199.1649758635934; Tue, 12
- Apr 2022 03:17:15 -0700 (PDT)
+        Tue, 12 Apr 2022 07:38:10 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78AC2AEC
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:19:04 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1neDbi-001uO8-2v; Tue, 12 Apr 2022 20:18:47 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 12 Apr 2022 18:18:46 +0800
+Date:   Tue, 12 Apr 2022 18:18:46 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
+References: <Yk5o/lNTyiJWD4Ae@gondor.apana.org.au>
+ <Yk7EbvYhwnQy+pAf@arm.com>
+ <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
+ <Yk8RGvF6ik34C6BO@arm.com>
+ <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
+ <Yk/6ts5sVDMDpKj3@arm.com>
+ <Yk/8QExHlggU8KgC@gondor.apana.org.au>
+ <YlVHSvkyUBXZPUr2@arm.com>
+ <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
+ <YlVOTsaTVkBOxthG@arm.com>
 MIME-Version: 1.0
-References: <20220304171913.2292458-1-james.clark@arm.com> <20220304171913.2292458-11-james.clark@arm.com>
-In-Reply-To: <20220304171913.2292458-11-james.clark@arm.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Tue, 12 Apr 2022 11:17:04 +0100
-Message-ID: <CAJ9a7VgHFcdqHyKX4R3Uv-pCNzQ=q1Zj7-798K+-FOgHMskyiQ@mail.gmail.com>
-Subject: Re: [PATCH v3 10/15] coresight: etm3x: Cleanup ETMTECR1 register accesses
-To:     James Clark <James.Clark@arm.com>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        Anshuman.Khandual@arm.com, mathieu.poirier@linaro.org,
-        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlVOTsaTVkBOxthG@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 4 Mar 2022 at 17:19, James Clark <james.clark@arm.com> wrote:
+On Tue, Apr 12, 2022 at 11:02:54AM +0100, Catalin Marinas wrote:
 >
-> This is a no-op change for style and consistency and has no effect on
-> the binary output by the compiler. These fields already have macros
-> to define them so use them instead of magic numbers.
->
-> Signed-off-by: James Clark <james.clark@arm.com>
-> ---
->  drivers/hwtracing/coresight/coresight-etm3x-core.c  | 2 +-
->  drivers/hwtracing/coresight/coresight-etm3x-sysfs.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/hwtracing/coresight/coresight-etm3x-core.c b/drivers/hwtracing/coresight/coresight-etm3x-core.c
-> index 7d413ba8b823..d0ab9933472b 100644
-> --- a/drivers/hwtracing/coresight/coresight-etm3x-core.c
-> +++ b/drivers/hwtracing/coresight/coresight-etm3x-core.c
-> @@ -204,7 +204,7 @@ void etm_set_default(struct etm_config *config)
->          *  set all bits in register 0x007, the ETMTECR2, to 0
->          *  set register 0x008, the ETMTEEVR, to 0x6F (TRUE).
->          */
-> -       config->enable_ctrl1 = BIT(24);
-> +       config->enable_ctrl1 = ETMTECR1_INC_EXC;
->         config->enable_ctrl2 = 0x0;
->         config->enable_event = ETM_HARD_WIRE_RES_A;
->
-> diff --git a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
-> index e8c7649f123e..68fcbf4ce7a8 100644
-> --- a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
-> +++ b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
-> @@ -474,7 +474,7 @@ static ssize_t addr_start_store(struct device *dev,
->         config->addr_val[idx] = val;
->         config->addr_type[idx] = ETM_ADDR_TYPE_START;
->         config->startstop_ctrl |= (1 << idx);
-> -       config->enable_ctrl1 |= BIT(25);
-> +       config->enable_ctrl1 |= ETMTECR1_START_STOP;
->         spin_unlock(&drvdata->spinlock);
->
->         return size;
-> --
-> 2.28.0
->
+> This series does not penalise any architecture. It doesn't even make
+> arm64 any worse than it currently is.
 
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Right, the patch as it stands doesn't change anything.  However,
+it is also broken as it stands.  As I said before, CRYPTO_MINALIGN
+is not something that is guaranteed by the Crypto API, it is simply
+a statement of whatever kmalloc returns.
 
+So if kmalloc is no longer returning CRYPTO_MINALIGN-aligned
+memory, then those drivers that need this alignment for DMA
+will break anyway.
+
+If you want the Crypto API to guarantee alignment over and above
+that returned by kmalloc, the correct way is to use cra_alignmask.
+
+Cheers,
 -- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
