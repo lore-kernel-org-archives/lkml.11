@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB82C38A05
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66929C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389124AbiDLJXY (ORCPT
+        id S1388631AbiDLJWf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43044 "EHLO
+        Tue, 12 Apr 2022 05:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357316AbiDLHj6 (ORCPT
+        with ESMTP id S1357907AbiDLHkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEEB245A0;
-        Tue, 12 Apr 2022 00:15:00 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32733A701;
+        Tue, 12 Apr 2022 00:17:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B36761708;
-        Tue, 12 Apr 2022 07:15:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB27C385A6;
-        Tue, 12 Apr 2022 07:14:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F66461701;
+        Tue, 12 Apr 2022 07:17:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 421FCC385AB;
+        Tue, 12 Apr 2022 07:17:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747699;
-        bh=ucfA2C2SWIQgzh8yu0sdw5aNdUWtqQHKO/aIHM0aMUo=;
+        s=korg; t=1649747824;
+        bh=537283YRBjJKgJj+Nf1tX1vYfyuMABT/nm75Jj/WTxo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C3OV+OpGyqLp5V2is4b3M+FtozUeex+n7ighfLk0yjcR1ArmZlmFF4/wtDWTTv07X
-         DTcnJgqH6nU6HM/QSuvaLGRTfCgSMHZlkKMMr6SbHui/7/jQF0xEcKxS4YK8Szd78D
-         28+qHo1ztTo7vCIKtpc0jw096CgyNn6+7dtwRcQc=
+        b=lNdFbFNz1KfjS2zH06SOw/h0HieR0fqLJyl8Q2z8SnJz6cgKGLoc1645EaFv10spH
+         ajWba4aaIxXg3GMzjuH/xRv7lNZKU0jV6jYEAErOkES5JdKv1QuHfOFE0OTJ6wBaPZ
+         JUuZE1Wkn55+fxsDhVDmG87ZwjeUzftmTZq8nNis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Jin <joe.jin@oracle.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 174/343] xen: delay xen_hvm_init_time_ops() if kdump is boot on vcpu>=32
-Date:   Tue, 12 Apr 2022 08:29:52 +0200
-Message-Id: <20220412062956.389082244@linuxfoundation.org>
+Subject: [PATCH 5.17 219/343] spi: rpc-if: Fix RPM imbalance in probe error path
+Date:   Tue, 12 Apr 2022 08:30:37 +0200
+Message-Id: <20220412062957.663302382@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,121 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongli Zhang <dongli.zhang@oracle.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit eed05744322da07dd7e419432dcedf3c2e017179 ]
+[ Upstream commit 2f8cf5f642e80f8b6b0e660a9c86924a1f41cd80 ]
 
-The sched_clock() can be used very early since commit 857baa87b642
-("sched/clock: Enable sched clock early"). In addition, with commit
-38669ba205d1 ("x86/xen/time: Output xen sched_clock time from 0"), kdump
-kernel in Xen HVM guest may panic at very early stage when accessing
-&__this_cpu_read(xen_vcpu)->time as in below:
+If rpcif_hw_init() fails, Runtime PM is left enabled.
 
-setup_arch()
- -> init_hypervisor_platform()
-     -> x86_init.hyper.init_platform = xen_hvm_guest_init()
-         -> xen_hvm_init_time_ops()
-             -> xen_clocksource_read()
-                 -> src = &__this_cpu_read(xen_vcpu)->time;
-
-This is because Xen HVM supports at most MAX_VIRT_CPUS=32 'vcpu_info'
-embedded inside 'shared_info' during early stage until xen_vcpu_setup() is
-used to allocate/relocate 'vcpu_info' for boot cpu at arbitrary address.
-
-However, when Xen HVM guest panic on vcpu >= 32, since
-xen_vcpu_info_reset(0) would set per_cpu(xen_vcpu, cpu) = NULL when
-vcpu >= 32, xen_clocksource_read() on vcpu >= 32 would panic.
-
-This patch calls xen_hvm_init_time_ops() again later in
-xen_hvm_smp_prepare_boot_cpu() after the 'vcpu_info' for boot vcpu is
-registered when the boot vcpu is >= 32.
-
-This issue can be reproduced on purpose via below command at the guest
-side when kdump/kexec is enabled:
-
-"taskset -c 33 echo c > /proc/sysrq-trigger"
-
-The bugfix for PVM is not implemented due to the lack of testing
-environment.
-
-[boris: xen_hvm_init_time_ops() returns on errors instead of jumping to end]
-
-Cc: Joe Jin <joe.jin@oracle.com>
-Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20220302164032.14569-3-dongli.zhang@oracle.com
-Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Fixes: b04cc0d912eb80d3 ("memory: renesas-rpc-if: Add support for RZ/G2L")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Link: https://lore.kernel.org/r/1c78a1f447d019bb66b6e7787f520ae78821e2ae.1648562287.git.geert+renesas@glider.be
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/xen/smp_hvm.c |  6 ++++++
- arch/x86/xen/time.c    | 24 +++++++++++++++++++++++-
- 2 files changed, 29 insertions(+), 1 deletion(-)
+ drivers/spi/spi-rpc-if.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/xen/smp_hvm.c b/arch/x86/xen/smp_hvm.c
-index 6ff3c887e0b9..b70afdff419c 100644
---- a/arch/x86/xen/smp_hvm.c
-+++ b/arch/x86/xen/smp_hvm.c
-@@ -19,6 +19,12 @@ static void __init xen_hvm_smp_prepare_boot_cpu(void)
- 	 */
- 	xen_vcpu_setup(0);
+diff --git a/drivers/spi/spi-rpc-if.c b/drivers/spi/spi-rpc-if.c
+index fe82f3575df4..24ec1c83f379 100644
+--- a/drivers/spi/spi-rpc-if.c
++++ b/drivers/spi/spi-rpc-if.c
+@@ -158,14 +158,18 @@ static int rpcif_spi_probe(struct platform_device *pdev)
  
-+	/*
-+	 * Called again in case the kernel boots on vcpu >= MAX_VIRT_CPUS.
-+	 * Refer to comments in xen_hvm_init_time_ops().
-+	 */
-+	xen_hvm_init_time_ops();
-+
- 	/*
- 	 * The alternative logic (which patches the unlock/lock) runs before
- 	 * the smp bootup up code is activated. Hence we need to set this up
-diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
-index d9c945ee1100..9ef0a5cca96e 100644
---- a/arch/x86/xen/time.c
-+++ b/arch/x86/xen/time.c
-@@ -558,6 +558,11 @@ static void xen_hvm_setup_cpu_clockevents(void)
+ 	error = rpcif_hw_init(rpc, false);
+ 	if (error)
+-		return error;
++		goto out_disable_rpm;
  
- void __init xen_hvm_init_time_ops(void)
- {
-+	static bool hvm_time_initialized;
-+
-+	if (hvm_time_initialized)
-+		return;
-+
- 	/*
- 	 * vector callback is needed otherwise we cannot receive interrupts
- 	 * on cpu > 0 and at this point we don't know how many cpus are
-@@ -567,7 +572,22 @@ void __init xen_hvm_init_time_ops(void)
- 		return;
- 
- 	if (!xen_feature(XENFEAT_hvm_safe_pvclock)) {
--		pr_info("Xen doesn't support pvclock on HVM, disable pv timer");
-+		pr_info_once("Xen doesn't support pvclock on HVM, disable pv timer");
-+		return;
-+	}
-+
-+	/*
-+	 * Only MAX_VIRT_CPUS 'vcpu_info' are embedded inside 'shared_info'.
-+	 * The __this_cpu_read(xen_vcpu) is still NULL when Xen HVM guest
-+	 * boots on vcpu >= MAX_VIRT_CPUS (e.g., kexec), To access
-+	 * __this_cpu_read(xen_vcpu) via xen_clocksource_read() will panic.
-+	 *
-+	 * The xen_hvm_init_time_ops() should be called again later after
-+	 * __this_cpu_read(xen_vcpu) is available.
-+	 */
-+	if (!__this_cpu_read(xen_vcpu)) {
-+		pr_info("Delay xen_init_time_common() as kernel is running on vcpu=%d\n",
-+			xen_vcpu_nr(0));
- 		return;
+ 	error = spi_register_controller(ctlr);
+ 	if (error) {
+ 		dev_err(&pdev->dev, "spi_register_controller failed\n");
+-		rpcif_disable_rpm(rpc);
++		goto out_disable_rpm;
  	}
  
-@@ -577,6 +597,8 @@ void __init xen_hvm_init_time_ops(void)
- 	x86_cpuinit.setup_percpu_clockev = xen_hvm_setup_cpu_clockevents;
- 
- 	x86_platform.set_wallclock = xen_set_wallclock;
++	return 0;
 +
-+	hvm_time_initialized = true;
++out_disable_rpm:
++	rpcif_disable_rpm(rpc);
+ 	return error;
  }
- #endif
  
 -- 
 2.35.1
