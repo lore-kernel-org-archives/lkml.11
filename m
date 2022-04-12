@@ -2,119 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD0FCC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80686C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357222AbiDLInz (ORCPT
+        id S1345183AbiDLIng (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
+        Tue, 12 Apr 2022 04:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357130AbiDLHjs (ORCPT
+        with ESMTP id S1357124AbiDLHjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:48 -0400
-Received: from m228-13.mailgun.net (m228-13.mailgun.net [159.135.228.13])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 3FCABE0E6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:12:31 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1649747551; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Subject: Cc: To: To: From: From: Date:
- Sender: Sender; bh=NgB4J145WK0eAdmQZ6KKPhAtsa67dfOsSoag6jWRVUs=; b=WyZ1cjrgvT+a9SnTjRln3YU/+bW/OXnDRD/YbS/+C0sMhK9jRhu+HjOy14FiUROYdNetwI6k
- q8t8GyzU6wi9pEAohN6XPQbW/BkeHjJfwoJ+v3c4tZxq3UtsxD/2OzKroJdUypqdkVShPEQ5
- 7EcjEcJfuPoDjGilvB33ll5Zo1Ef3CxF1QssEbVTFcC1U9PKaM7gUxefDalXhAA8EcI3JTO0
- lEIonQcWN3O7SIDVqiG49PeyLMjvi/olxX9EJnw7nkFcUM8wVVhL/s/JskK+gKItmf+QTCUi
- NcnZKr5f5wP0ikBSS+XudMnyR+5C55n1hdHNuf0EDZbZIDZOGPfn1A==
-X-Mailgun-Sending-Ip: 159.135.228.13
-X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
-Received: from AN5Bruno (186-250-90-1.mhnet.com.br [186.250.90.1]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6255265d77e17d301dacc649 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Tue, 12 Apr 2022 07:12:29 GMT
-Sender: codeagain@codeagain.dev
-Date:   Tue, 12 Apr 2022 04:12:19 -0300
-From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Cc:     Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: Re: [PATCH v2 0/3] staging: vme: Restructuring menuconfig and tree
-Message-ID: <20220412071219.rapvtaxvoz2yerr5@AN5Bruno>
-References: <cover.1649721450.git.codeagain@codeagain.dev>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DEBE0C9;
+        Tue, 12 Apr 2022 00:12:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 531AD61701;
+        Tue, 12 Apr 2022 07:12:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66537C385A5;
+        Tue, 12 Apr 2022 07:12:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747545;
+        bh=pVMto6fjjwueK9ViwPV90DDETbSPUIeOI1EqV4D79rk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yPFvxgi3efw8Fm2ugpkp+DTVO9y8kxWe03UqOREfVtFJlnBZZMPIxcPKFSBkiO/0z
+         PCgaQdKsZnKV6hp1/ebPcw9I9MDm5zuW7g2jAC0UHgcaDXKq4bPgsrIv5akH/u5Kh+
+         qCLTMxNrYxCPLXeMWy37DWa+vvf3g0FeaKqCz/vk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Sven Eckelmann <sven@narfation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 119/343] macvtap: advertise link netns via netlink
+Date:   Tue, 12 Apr 2022 08:28:57 +0200
+Message-Id: <20220412062954.823238910@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="a4cxoghgp7wwa5tg"
-Content-Disposition: inline
-In-Reply-To: <cover.1649721450.git.codeagain@codeagain.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Sven Eckelmann <sven@narfation.org>
 
---a4cxoghgp7wwa5tg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-Please, disconsider some small errors in the commit message. I have sent
-the patch files generated befor updating some information, so two of the
-patches will be updated
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-On Tue, Apr 12, 2022 at 03:53:46AM -0300, Bruno Moreira-Guedes wrote:
-> This patch series modify the vme_user driver's place in
-> menuconfig (1/3), fixes a missing `depends on` line in a Kconfig file
-> (2/3), and rearrages the directory tree for the driver allowing a more
-> straightforward comprehension of its contents (3/3).
->=20
-> Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
->=20
-> Bruno Moreira-Guedes (3):
->   staging: vme: Adjusted VME_USER in Kconfig
-This is fine as far as I noticed.
+Test commands:
 
->   staging: vme: Fix missing `depends on` at KConfig
-This one refers to VME_BRIDGE somewhere, when it's actually VME_BUS.
-I'll fix it.
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
 
->   staging: vme: "drivers/staging/vme" tree cleanup
-Some changes aren't properly mentioned in the commit message here.
+Before:
 
->=20
->  MAINTAINERS                                          | 2 +-
-I missed to mention this update on MAINTAINERS, due to changes in the
-directory structure.
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
 
->  drivers/staging/Kconfig                              | 2 ++
->  drivers/staging/Makefile                             | 2 +-
->  drivers/staging/vme/Makefile                         | 2 --
->  drivers/staging/{vme/devices =3D> vme_user}/Kconfig    | 2 +-
->  drivers/staging/{vme/devices =3D> vme_user}/Makefile   | 0
->  drivers/staging/{vme/devices =3D> vme_user}/vme_user.c | 0
->  drivers/staging/{vme/devices =3D> vme_user}/vme_user.h | 0
->  drivers/vme/Kconfig                                  | 2 --
->  9 files changed, 5 insertions(+), 7 deletions(-)
->  delete mode 100644 drivers/staging/vme/Makefile
->  rename drivers/staging/{vme/devices =3D> vme_user}/Kconfig (93%)
->  rename drivers/staging/{vme/devices =3D> vme_user}/Makefile (100%)
->  rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.c (100%)
->  rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.h (100%)
->=20
-> --=20
-> 2.35.1
->=20
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 6b12902a803f..cecf8c63096c 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
+ }
+ 
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
+ 
+-- 
+2.35.1
 
 
---a4cxoghgp7wwa5tg
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYlUmUwAKCRAZtd3tyEY2
-kpYTAP4veEOxVUWkbDbgVB46nEao+xSYla9M8a2WC697U2jzeAEAsCrz3rvRG13O
-Eg2WgitpLBPqjykBczHhrBWvpfEIVgo=
-=iBz5
------END PGP SIGNATURE-----
-
---a4cxoghgp7wwa5tg--
