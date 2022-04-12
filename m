@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2C1C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA38EC38A2E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352098AbiDLHXX (ORCPT
+        id S1352129AbiDLHX2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46882 "EHLO
+        Tue, 12 Apr 2022 03:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351637AbiDLHDm (ORCPT
+        with ESMTP id S1351678AbiDLHDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:03:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F94145046;
-        Mon, 11 Apr 2022 23:47:16 -0700 (PDT)
+        Tue, 12 Apr 2022 03:03:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB3944763;
+        Mon, 11 Apr 2022 23:47:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B742DCE1C02;
-        Tue, 12 Apr 2022 06:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE776C385A6;
-        Tue, 12 Apr 2022 06:47:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20F75B81B46;
+        Tue, 12 Apr 2022 06:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8627DC385A1;
+        Tue, 12 Apr 2022 06:47:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746033;
-        bh=dR1eDUy14Q8+3Bj84+YnRadS3mZCumZoB4jHrCCtm4c=;
+        s=korg; t=1649746035;
+        bh=c/FQuSp0WYgo83djFo9gf3z2mIfroc8NZWvLZypCStU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LI7PIt88JEKSadPx9nGlJ9l20G++Unc6+pqyRxY56zFt89hXEv/sNSnA9ih3N/S2W
-         lnwzvzqonwVdgDSVh1I+6oFgHfxC19y1X4aw7pbD9zQzqE6BDelYEViQnKuLvetHGA
-         wQxo6uScvJbjfUg5R8h0c5Bsq7YNax21zw02wJvM=
+        b=0+9c9xDExPyTjcpr4vKJ00DQGVtEKc5aqv1pGAHzIap6ixdUorkfCF5OoR88+OL/R
+         MXubqDApMZeLWspcSHq2sxPEcXr8b3IcDNejgAoYJY67VMNSb+2tWDqnEh2aOu2ejg
+         BB9kn5QrQd1Jt1+gIAg6vvmgWKmqDpDVRxNcZygg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Abraham <thomas.abraham@linaro.org>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Hyeonkook Kim <hk619.kim@samsung.com>,
-        Jiri Slaby <jslaby@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 134/277] serial: samsung_tty: do not unlock port->lock for uart_write_wakeup()
-Date:   Tue, 12 Apr 2022 08:28:57 +0200
-Message-Id: <20220412062945.914558379@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Amit Shah <amit@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 135/277] virtio_console: eliminate anonymous module_init & module_exit
+Date:   Tue, 12 Apr 2022 08:28:58 +0200
+Message-Id: <20220412062945.943513195@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,51 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 988c7c00691008ea1daaa1235680a0da49dab4e8 ]
+[ Upstream commit fefb8a2a941338d871e2d83fbd65fbfa068857bd ]
 
-The commit c15c3747ee32 (serial: samsung: fix potential soft lockup
-during uart write) added an unlock of port->lock before
-uart_write_wakeup() and a lock after it. It was always problematic to
-write data from tty_ldisc_ops::write_wakeup and it was even documented
-that way. We fixed the line disciplines to conform to this recently.
-So if there is still a missed one, we should fix them instead of this
-workaround.
+Eliminate anonymous module_init() and module_exit(), which can lead to
+confusion or ambiguity when reading System.map, crashes/oops/bugs,
+or an initcall_debug log.
 
-On the top of that, s3c24xx_serial_tx_dma_complete() in this driver
-still holds the port->lock while calling uart_write_wakeup().
+Give each of these init and exit functions unique driver-specific
+names to eliminate the anonymous names.
 
-So revert the wrap added by the commit above.
+Example 1: (System.map)
+ ffffffff832fc78c t init
+ ffffffff832fc79e t init
+ ffffffff832fc8f8 t init
 
-Cc: Thomas Abraham <thomas.abraham@linaro.org>
-Cc: Kyungmin Park <kyungmin.park@samsung.com>
-Cc: Hyeonkook Kim <hk619.kim@samsung.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220308115153.4225-1-jslaby@suse.cz
+Example 2: (initcall_debug log)
+ calling  init+0x0/0x12 @ 1
+ initcall init+0x0/0x12 returned 0 after 15 usecs
+ calling  init+0x0/0x60 @ 1
+ initcall init+0x0/0x60 returned 0 after 2 usecs
+ calling  init+0x0/0x9a @ 1
+ initcall init+0x0/0x9a returned 0 after 74 usecs
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Amit Shah <amit@kernel.org>
+Cc: virtualization@lists.linux-foundation.org
+Cc: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220316192010.19001-3-rdunlap@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung_tty.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/char/virtio_console.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index e2f49863e9c2..319533b3c32a 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -922,11 +922,8 @@ static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport)
- 		return;
- 	}
+diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
+index 3adf04766e98..77bc993d7513 100644
+--- a/drivers/char/virtio_console.c
++++ b/drivers/char/virtio_console.c
+@@ -2236,7 +2236,7 @@ static struct virtio_driver virtio_rproc_serial = {
+ 	.remove =	virtcons_remove,
+ };
  
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
--		spin_unlock(&port->lock);
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
--		spin_lock(&port->lock);
--	}
+-static int __init init(void)
++static int __init virtio_console_init(void)
+ {
+ 	int err;
  
- 	if (uart_circ_empty(xmit))
- 		s3c24xx_serial_stop_tx(port);
+@@ -2271,7 +2271,7 @@ static int __init init(void)
+ 	return err;
+ }
+ 
+-static void __exit fini(void)
++static void __exit virtio_console_fini(void)
+ {
+ 	reclaim_dma_bufs();
+ 
+@@ -2281,8 +2281,8 @@ static void __exit fini(void)
+ 	class_destroy(pdrvdata.class);
+ 	debugfs_remove_recursive(pdrvdata.debugfs_dir);
+ }
+-module_init(init);
+-module_exit(fini);
++module_init(virtio_console_init);
++module_exit(virtio_console_fini);
+ 
+ MODULE_DESCRIPTION("Virtio console driver");
+ MODULE_LICENSE("GPL");
 -- 
 2.35.1
 
