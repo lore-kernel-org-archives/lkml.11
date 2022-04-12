@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E56C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E8EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351213AbiDLHCo (ORCPT
+        id S1351476AbiDLHDa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48238 "EHLO
+        Tue, 12 Apr 2022 03:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351534AbiDLGx4 (ORCPT
+        with ESMTP id S1351537AbiDLGx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:53:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1709318395;
-        Mon, 11 Apr 2022 23:42:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5253837A8F;
+        Mon, 11 Apr 2022 23:42:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A69BE60A21;
-        Tue, 12 Apr 2022 06:42:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DD0BC385A1;
-        Tue, 12 Apr 2022 06:42:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4ACF60A21;
+        Tue, 12 Apr 2022 06:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03ECAC385A8;
+        Tue, 12 Apr 2022 06:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745728;
-        bh=HoyI4Ya5DVUcBm2pU0skYIopb/fMWdPie2KZ6FYM15Q=;
+        s=korg; t=1649745736;
+        bh=d8czgglyUrasRm//6UZrUC3YlUg2N418lotSj5pSSgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cuWwCVGyLuP2GSsB/ElsRKJ1aTo7Qbo6dktYsCX5Kh1i4qCji9NHY1H0XqHovQpi0
-         BG3vRpdc19KGjbGcJ6jNUqiqEipqRcObr67dJ5Utz4n16MdFFa4DnkxxkMgoclCWhM
-         moG8pEO/gUHpi867VMOTSiYDPZgxiuY5K2eSnPpw=
+        b=b7A5k2vZ24c/AM3eUJENapDCC4XjBSWnT2XFJLoXhhQG9cn+tHWqB/3atiQEmQe5n
+         yKJpreVwBCOiRALPZX1LWKZQna0sN//Y0llGxKI4eDysQsmGoV6Yu8jO54ct8Pdo+T
+         zGw7JMoKQRgt4AdKf0TzopvYIngpcswBy1+OnPcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jann Horn <jannh@google.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 009/277] kfence: move saving stack trace of allocations into __kfence_alloc()
-Date:   Tue, 12 Apr 2022 08:26:52 +0200
-Message-Id: <20220412062942.303801777@linuxfoundation.org>
+Subject: [PATCH 5.15 029/277] ath11k: pci: fix crash on suspend if board file is not found
+Date:   Tue, 12 Apr 2022 08:27:12 +0200
+Message-Id: <20220412062942.884846370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -56,116 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Elver <elver@google.com>
+From: Kalle Valo <quic_kvalo@quicinc.com>
 
-[ Upstream commit a9ab52bbcb52df49ec4b30e6741e120588989455 ]
+[ Upstream commit b4f4c56459a5c744f7f066b9fc2b54ea995030c5 ]
 
-Move the saving of the stack trace of allocations into __kfence_alloc(),
-so that the stack entries array can be used outside of
-kfence_guarded_alloc() and we avoid potentially unwinding the stack
-multiple times.
+Mario reported that the kernel was crashing on suspend if ath11k was not able
+to find a board file:
 
-Link: https://lkml.kernel.org/r/20210923104803.2620285-3-elver@google.com
-Signed-off-by: Marco Elver <elver@google.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Acked-by: Alexander Potapenko <glider@google.com>
-Cc: Aleksandr Nogikh <nogikh@google.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: Taras Madan <tarasmadan@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[  473.693286] PM: Suspending system (s2idle)
+[  473.693291] printk: Suspending console(s) (use no_console_suspend to debug)
+[  474.407787] BUG: unable to handle page fault for address: 0000000000002070
+[  474.407791] #PF: supervisor read access in kernel mode
+[  474.407794] #PF: error_code(0x0000) - not-present page
+[  474.407798] PGD 0 P4D 0
+[  474.407801] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[  474.407805] CPU: 2 PID: 2350 Comm: kworker/u32:14 Tainted: G        W         5.16.0 #248
+[...]
+[  474.407868] Call Trace:
+[  474.407870]  <TASK>
+[  474.407874]  ? _raw_spin_lock_irqsave+0x2a/0x60
+[  474.407882]  ? lock_timer_base+0x72/0xa0
+[  474.407889]  ? _raw_spin_unlock_irqrestore+0x29/0x3d
+[  474.407892]  ? try_to_del_timer_sync+0x54/0x80
+[  474.407896]  ath11k_dp_rx_pktlog_stop+0x49/0xc0 [ath11k]
+[  474.407912]  ath11k_core_suspend+0x34/0x130 [ath11k]
+[  474.407923]  ath11k_pci_pm_suspend+0x1b/0x50 [ath11k_pci]
+[  474.407928]  pci_pm_suspend+0x7e/0x170
+[  474.407935]  ? pci_pm_freeze+0xc0/0xc0
+[  474.407939]  dpm_run_callback+0x4e/0x150
+[  474.407947]  __device_suspend+0x148/0x4c0
+[  474.407951]  async_suspend+0x20/0x90
+dmesg-efi-164255130401001:
+Oops#1 Part1
+[  474.407955]  async_run_entry_fn+0x33/0x120
+[  474.407959]  process_one_work+0x220/0x3f0
+[  474.407966]  worker_thread+0x4a/0x3d0
+[  474.407971]  kthread+0x17a/0x1a0
+[  474.407975]  ? process_one_work+0x3f0/0x3f0
+[  474.407979]  ? set_kthread_struct+0x40/0x40
+[  474.407983]  ret_from_fork+0x22/0x30
+[  474.407991]  </TASK>
+
+The issue here is that board file loading happens after ath11k_pci_probe()
+succesfully returns (ath11k initialisation happends asynchronously) and the
+suspend handler is still enabled, of course failing as ath11k is not properly
+initialised. Fix this by checking ATH11K_FLAG_QMI_FAIL during both suspend and
+resume.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
+
+Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215504
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220127090117.2024-1-kvalo@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kfence/core.c | 35 ++++++++++++++++++++++++-----------
- 1 file changed, 24 insertions(+), 11 deletions(-)
+ drivers/net/wireless/ath/ath11k/pci.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-index f26f55850ad7..4eec0c5d32b5 100644
---- a/mm/kfence/core.c
-+++ b/mm/kfence/core.c
-@@ -188,19 +188,26 @@ static inline unsigned long metadata_to_pageaddr(const struct kfence_metadata *m
-  * Update the object's metadata state, including updating the alloc/free stacks
-  * depending on the state transition.
-  */
--static noinline void metadata_update_state(struct kfence_metadata *meta,
--					   enum kfence_object_state next)
-+static noinline void
-+metadata_update_state(struct kfence_metadata *meta, enum kfence_object_state next,
-+		      unsigned long *stack_entries, size_t num_stack_entries)
- {
- 	struct kfence_track *track =
- 		next == KFENCE_OBJECT_FREED ? &meta->free_track : &meta->alloc_track;
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 54ce08f1c6e0..353a2d669fcd 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -1382,6 +1382,11 @@ static __maybe_unused int ath11k_pci_pm_suspend(struct device *dev)
+ 	struct ath11k_base *ab = dev_get_drvdata(dev);
+ 	int ret;
  
- 	lockdep_assert_held(&meta->lock);
- 
--	/*
--	 * Skip over 1 (this) functions; noinline ensures we do not accidentally
--	 * skip over the caller by never inlining.
--	 */
--	track->num_stack_entries = stack_trace_save(track->stack_entries, KFENCE_STACK_DEPTH, 1);
-+	if (stack_entries) {
-+		memcpy(track->stack_entries, stack_entries,
-+		       num_stack_entries * sizeof(stack_entries[0]));
-+	} else {
-+		/*
-+		 * Skip over 1 (this) functions; noinline ensures we do not
-+		 * accidentally skip over the caller by never inlining.
-+		 */
-+		num_stack_entries = stack_trace_save(track->stack_entries, KFENCE_STACK_DEPTH, 1);
++	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
++		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci suspend as qmi is not initialised\n");
++		return 0;
 +	}
-+	track->num_stack_entries = num_stack_entries;
- 	track->pid = task_pid_nr(current);
- 	track->cpu = raw_smp_processor_id();
- 	track->ts_nsec = local_clock(); /* Same source as printk timestamps. */
-@@ -262,7 +269,8 @@ static __always_inline void for_each_canary(const struct kfence_metadata *meta,
- 	}
- }
- 
--static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t gfp)
-+static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t gfp,
-+				  unsigned long *stack_entries, size_t num_stack_entries)
- {
- 	struct kfence_metadata *meta = NULL;
- 	unsigned long flags;
-@@ -321,7 +329,7 @@ static void *kfence_guarded_alloc(struct kmem_cache *cache, size_t size, gfp_t g
- 	addr = (void *)meta->addr;
- 
- 	/* Update remaining metadata. */
--	metadata_update_state(meta, KFENCE_OBJECT_ALLOCATED);
-+	metadata_update_state(meta, KFENCE_OBJECT_ALLOCATED, stack_entries, num_stack_entries);
- 	/* Pairs with READ_ONCE() in kfence_shutdown_cache(). */
- 	WRITE_ONCE(meta->cache, cache);
- 	meta->size = size;
-@@ -401,7 +409,7 @@ static void kfence_guarded_free(void *addr, struct kfence_metadata *meta, bool z
- 		memzero_explicit(addr, meta->size);
- 
- 	/* Mark the object as freed. */
--	metadata_update_state(meta, KFENCE_OBJECT_FREED);
-+	metadata_update_state(meta, KFENCE_OBJECT_FREED, NULL, 0);
- 
- 	raw_spin_unlock_irqrestore(&meta->lock, flags);
- 
-@@ -746,6 +754,9 @@ void kfence_shutdown_cache(struct kmem_cache *s)
- 
- void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
- {
-+	unsigned long stack_entries[KFENCE_STACK_DEPTH];
-+	size_t num_stack_entries;
 +
- 	/*
- 	 * Perform size check before switching kfence_allocation_gate, so that
- 	 * we don't disable KFENCE without making an allocation.
-@@ -785,7 +796,9 @@ void *__kfence_alloc(struct kmem_cache *s, size_t size, gfp_t flags)
- 	if (!READ_ONCE(kfence_enabled))
- 		return NULL;
+ 	ret = ath11k_core_suspend(ab);
+ 	if (ret)
+ 		ath11k_warn(ab, "failed to suspend core: %d\n", ret);
+@@ -1394,6 +1399,11 @@ static __maybe_unused int ath11k_pci_pm_resume(struct device *dev)
+ 	struct ath11k_base *ab = dev_get_drvdata(dev);
+ 	int ret;
  
--	return kfence_guarded_alloc(s, size, flags);
-+	num_stack_entries = stack_trace_save(stack_entries, KFENCE_STACK_DEPTH, 0);
++	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
++		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci resume as qmi is not initialised\n");
++		return 0;
++	}
 +
-+	return kfence_guarded_alloc(s, size, flags, stack_entries, num_stack_entries);
- }
- 
- size_t kfence_ksize(const void *addr)
+ 	ret = ath11k_core_resume(ab);
+ 	if (ret)
+ 		ath11k_warn(ab, "failed to resume core: %d\n", ret);
 -- 
 2.35.1
 
