@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 522F0C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7D2C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383062AbiDLIfb (ORCPT
+        id S1383076AbiDLIff (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58528 "EHLO
+        Tue, 12 Apr 2022 04:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352385AbiDLHX5 (ORCPT
+        with ESMTP id S1356334AbiDLHfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:23:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD61749C94;
-        Mon, 11 Apr 2022 23:59:55 -0700 (PDT)
+        Tue, 12 Apr 2022 03:35:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FDD4DF45;
+        Tue, 12 Apr 2022 00:09:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BF0DB81B4F;
-        Tue, 12 Apr 2022 06:59:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C152C385A1;
-        Tue, 12 Apr 2022 06:59:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35118B81B4D;
+        Tue, 12 Apr 2022 07:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C36C385A6;
+        Tue, 12 Apr 2022 07:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746792;
-        bh=AbrsBm56ExWgKrY6ihV1qtgPDJhwjQAJjiPmD0okSmc=;
+        s=korg; t=1649747350;
+        bh=gRNOeKX3UpDJ2UTk1snAD3IFc3HXFcB2VDj/JDji+rc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yAH4BVsszc88HVE4raVApWaaZsZgQvW6ftqoYY+AdUt1vdHxnmRax6lkA45e84ggL
-         XlmUJ4yLI9x6RXzXlxP7i6gZpjrV6D8uDWQsrx9pFk1pP7uVS+hjeC/SvsNtOLlGmR
-         T4OKfNBUQy1KHlLIv5tOutxTicpdxs3sV8FXXPYY=
+        b=mbrg81fbksp2emUIROrhMOLhf9K+WdRPKnmIUbJ88jJ95lT0D9YdKT/3HAukUdZ3t
+         xo4mXbXZ69CM36Hsoe5hIGwi3NDycTT5u2tLsdvbHOr7TZtD8FzcNf39H2/be2tncK
+         QErjUlWFgFp9RlbzaJ1zQLKBNshKbF4MZJG4YJoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 133/285] SUNRPC/xprt: async tasks mustnt block waiting for memory
-Date:   Tue, 12 Apr 2022 08:29:50 +0200
-Message-Id: <20220412062947.504783605@linuxfoundation.org>
+Subject: [PATCH 5.17 047/343] power: supply: axp20x_battery: properly report current when discharging
+Date:   Tue, 12 Apr 2022 08:27:45 +0200
+Message-Id: <20220412062952.465740359@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,64 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Evgeny Boger <boger@wirenboard.com>
 
-[ Upstream commit a721035477fb5fb8abc738fbe410b07c12af3dc5 ]
+[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
 
-When memory is short, new worker threads cannot be created and we depend
-on the minimum one rpciod thread to be able to handle everything.  So it
-must not block waiting for memory.
+As stated in [1], negative current values are used for discharging
+batteries.
 
-xprt_dynamic_alloc_slot can block indefinitely.  This can tie up all
-workqueue threads and NFS can deadlock.  So when called from a
-workqueue, set __GFP_NORETRY.
+AXP PMICs internally have two different ADC channels for shunt current
+measurement: one used during charging and one during discharging.
+The values reported by these ADCs are unsigned.
+While the driver properly selects ADC channel to get the data from,
+it doesn't apply negative sign when reporting discharging current.
 
-The rdma alloc_slot already does not block.  However it sets the error
-to -EAGAIN suggesting this will trigger a sleep.  It does not.  As we
-can see in call_reserveresult(), only -ENOMEM causes a sleep.  -EAGAIN
-causes immediate retry.
+[1] Documentation/ABI/testing/sysfs-class-power
 
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprt.c               | 5 ++++-
- net/sunrpc/xprtrdma/transport.c | 2 +-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/power/supply/axp20x_battery.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index 396a74974f60..75acde97d748 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1690,12 +1690,15 @@ static bool xprt_throttle_congested(struct rpc_xprt *xprt, struct rpc_task *task
- static struct rpc_rqst *xprt_dynamic_alloc_slot(struct rpc_xprt *xprt)
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index 5d197141f476..9106077c0dbb 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -186,7 +186,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
  {
- 	struct rpc_rqst *req = ERR_PTR(-EAGAIN);
-+	gfp_t gfp_mask = GFP_KERNEL;
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	struct iio_channel *chan;
+ 	int ret = 0, reg, val1;
  
- 	if (xprt->num_reqs >= xprt->max_reqs)
- 		goto out;
- 	++xprt->num_reqs;
- 	spin_unlock(&xprt->reserve_lock);
--	req = kzalloc(sizeof(struct rpc_rqst), GFP_NOFS);
-+	if (current->flags & PF_WQ_WORKER)
-+		gfp_mask |= __GFP_NORETRY | __GFP_NOWARN;
-+	req = kzalloc(sizeof(*req), gfp_mask);
- 	spin_lock(&xprt->reserve_lock);
- 	if (req != NULL)
- 		goto out;
-diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
-index 6268af7e0310..256b06a92391 100644
---- a/net/sunrpc/xprtrdma/transport.c
-+++ b/net/sunrpc/xprtrdma/transport.c
-@@ -525,7 +525,7 @@ xprt_rdma_alloc_slot(struct rpc_xprt *xprt, struct rpc_task *task)
- 	return;
+ 	switch (psp) {
+@@ -266,12 +265,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 		if (ret)
+ 			return ret;
  
- out_sleep:
--	task->tk_status = -EAGAIN;
-+	task->tk_status = -ENOMEM;
- 	xprt_add_backlog(xprt, task);
- }
+-		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+-			chan = axp20x_batt->batt_chrg_i;
+-		else
+-			chan = axp20x_batt->batt_dischrg_i;
+-
+-		ret = iio_read_channel_processed(chan, &val->intval);
++		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
++			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
++		} else {
++			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
++			val->intval = -val1;
++		}
+ 		if (ret)
+ 			return ret;
  
 -- 
 2.35.1
