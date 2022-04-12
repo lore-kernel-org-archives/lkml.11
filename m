@@ -2,136 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 369B6C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758F6C3525B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351639AbiDLHDn (ORCPT
+        id S1351734AbiDLHEI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
+        Tue, 12 Apr 2022 03:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351558AbiDLGx6 (ORCPT
+        with ESMTP id S1351540AbiDLGx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA14186D5;
-        Mon, 11 Apr 2022 23:42:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEF8660B2F;
-        Tue, 12 Apr 2022 06:42:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC3C7C385A6;
-        Tue, 12 Apr 2022 06:42:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745766;
-        bh=XN5nP+pwjZA/zZODI707f+Y6zJ09Pse8iMDihjSUjRo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EmrnFklw/EojU7hxmPt5wRRN6jKLuss6NAJOmcjmkdznTLb6nXDgJ9oAH23o40H2b
-         sObrEmDVBArcOSoZQjiXQa3+3cKXaxJXrEMT4aB8dBoVQBkxRrz+KzBvk9TcKPl7eD
-         qrAJJTh4o9RC3TjeigK3Lna9toPCiVgI0lqRd438=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 039/277] mt76: dma: initialize skip_unmap in mt76_dma_rx_fill
-Date:   Tue, 12 Apr 2022 08:27:22 +0200
-Message-Id: <20220412062943.180457110@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 12 Apr 2022 02:53:57 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C854186E0;
+        Mon, 11 Apr 2022 23:42:22 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id j17so15193278pfi.9;
+        Mon, 11 Apr 2022 23:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=oIBDhcdWSaE7vQbKGazUcowf2lwLjEe8FI7+3jjOTMs=;
+        b=FYGUdST2//KLw3IMPTIMx0PfdT9wSS77bKBOMhv6Nxwnr5QxDAulcTw8z1kSzzx86/
+         DWF3bZT7bCoIU6/+RPkJxK/GrDSUJI5MPwr8q5Jvw2eZu+7sqw8TdpPLkkssTitPPARr
+         zxnvphd8O1XhS1NNmEnDY3XBY2QK24svSHcMx9JuIZfLl6M9YEMtJTEhiMQK80ljGF7a
+         ccVTF5cTDjwI2hhQlXgYDJzXn66V5GH0COb2Zgfy19Iwickp4YDfgmVWWFzgLem9Q5QQ
+         WDwe83SkXys0Ms8zceDEqVBRrsH8QdKnW/HkAvyfCz4iBUyVA9+eSM1cNUGK47ab8sm2
+         ypvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=oIBDhcdWSaE7vQbKGazUcowf2lwLjEe8FI7+3jjOTMs=;
+        b=yllyzhaOKPgy9N9N8UdHajaoawnUCHbjTief+HRF1zMB2NwIb4/EpTcNnj6upV0Tcf
+         vI7I6nMS8QitzrzCNFsPdb8yBcmHOL4dNwltGeSz9SfhNUq4Xm6hyr88MAJatM0T3oM5
+         gBJMty0J4VpVjwvS3+jqbjhWprIkE8JIHE+nG6gM/5yLG4PDR2zzIzggnj942cFjiFcf
+         C5avBBI1RWUEPtVFty9aJkJTlCA/kXXWcn0UekxOjkNaPVSCHN0COPId2ewipU7xzg8g
+         pjCi1d8Z4SO9PSmdhpebAIxT6nnH2GRXe/IgPpo/dZe4jjv5FLZYZ1DHLKww6ZxFoD5A
+         s0Xg==
+X-Gm-Message-State: AOAM531DqfiOVjcaVS5weCJe8uSsJkp1mw8zIEZ0anvt8bbiH8EX1ryB
+        H/w4TcAU9v8hfzsJms9vf+Y=
+X-Google-Smtp-Source: ABdhPJwkDNzf1gmAwCceiQIT3v9UrRANN9Vn1yUYO2C5fplpnnA2P1eiazgHb1CoPJAd0DSD6XQfBg==
+X-Received: by 2002:a63:495b:0:b0:399:8cd:81de with SMTP id y27-20020a63495b000000b0039908cd81demr28660222pgk.508.1649745741684;
+        Mon, 11 Apr 2022 23:42:21 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id j9-20020aa78009000000b004fde2dd78b0sm31712830pfi.109.2022.04.11.23.42.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 23:42:21 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Song Qiang <songqiang1304521@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Ivan Drobyshevskyi <drobyshevskyi@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH v2] iio: proximity: vl53l0x:  Fix return value check of wait_for_completion_timeout
+Date:   Tue, 12 Apr 2022 06:42:09 +0000
+Message-Id: <20220412064210.10734-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <PH0PR03MB6786F62DE142E3E2C66C937F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
+References: <PH0PR03MB6786F62DE142E3E2C66C937F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-[ Upstream commit 577298ec55dfc8b9aece54520f0258c3f93a6573 ]
-
-Even if it is only a false-positive since skip_buf0/skip_buf1 are only
-used in mt76_dma_tx_cleanup_idx routine, initialize skip_unmap in
-mt76_dma_rx_fill in order to fix the following UBSAN report:
-
-[   13.924906] UBSAN: invalid-load in linux-5.15.0/drivers/net/wireless/mediatek/mt76/dma.c:162:13
-[   13.924909] load of value 225 is not a valid value for type '_Bool'
-[   13.924912] CPU: 9 PID: 672 Comm: systemd-udevd Not tainted 5.15.0-18-generic #18-Ubuntu
-[   13.924914] Hardware name: LENOVO 21A0000CMX/21A0000CMX, BIOS R1MET43W (1.13 ) 11/05/2021
-[   13.924915] Call Trace:
-[   13.924917]  <TASK>
-[   13.924920]  show_stack+0x52/0x58
-[   13.924925]  dump_stack_lvl+0x4a/0x5f
-[   13.924931]  dump_stack+0x10/0x12
-[   13.924932]  ubsan_epilogue+0x9/0x45
-[   13.924934]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-[   13.924935]  ? __iommu_dma_map+0x84/0xf0
-[   13.924939]  mt76_dma_add_buf.constprop.0.cold+0x23/0x85 [mt76]
-[   13.924949]  mt76_dma_rx_fill.isra.0+0x102/0x1f0 [mt76]
-[   13.924954]  mt76_dma_init+0xc9/0x150 [mt76]
-[   13.924959]  ? mt7921_dma_enable+0x110/0x110 [mt7921e]
-[   13.924966]  mt7921_dma_init+0x1e3/0x260 [mt7921e]
-[   13.924970]  mt7921_register_device+0x29d/0x510 [mt7921e]
-[   13.924975]  mt7921_pci_probe.part.0+0x17f/0x1b0 [mt7921e]
-[   13.924980]  mt7921_pci_probe+0x43/0x60 [mt7921e]
-[   13.924984]  local_pci_probe+0x4b/0x90
-[   13.924987]  pci_device_probe+0x115/0x1f0
-[   13.924989]  really_probe+0x21e/0x420
-[   13.924992]  __driver_probe_device+0x115/0x190
-[   13.924994]  driver_probe_device+0x23/0xc0
-[   13.924996]  __driver_attach+0xbd/0x1d0
-[   13.924998]  ? __device_attach_driver+0x110/0x110
-[   13.924999]  bus_for_each_dev+0x7e/0xc0
-[   13.925001]  driver_attach+0x1e/0x20
-[   13.925003]  bus_add_driver+0x135/0x200
-[   13.925005]  driver_register+0x95/0xf0
-[   13.925008]  ? 0xffffffffc0766000
-[   13.925010]  __pci_register_driver+0x68/0x70
-[   13.925011]  mt7921_pci_driver_init+0x23/0x1000 [mt7921e]
-[   13.925015]  do_one_initcall+0x48/0x1d0
-[   13.925019]  ? kmem_cache_alloc_trace+0x19e/0x2e0
-[   13.925022]  do_init_module+0x62/0x280
-[   13.925025]  load_module+0xac9/0xbb0
-[   13.925027]  __do_sys_finit_module+0xbf/0x120
-[   13.925029]  __x64_sys_finit_module+0x18/0x20
-[   13.925030]  do_syscall_64+0x5c/0xc0
-[   13.925033]  ? do_syscall_64+0x69/0xc0
-[   13.925034]  ? sysvec_reschedule_ipi+0x78/0xe0
-[   13.925036]  ? asm_sysvec_reschedule_ipi+0xa/0x20
-[   13.925039]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   13.925040] RIP: 0033:0x7fbf2b90f94d
-[   13.925045] RSP: 002b:00007ffe2ec7e5d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   13.925047] RAX: ffffffffffffffda RBX: 000056106b0634e0 RCX: 00007fbf2b90f94d
-[   13.925048] RDX: 0000000000000000 RSI: 00007fbf2baa3441 RDI: 0000000000000013
-[   13.925049] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000000000000002
-[   13.925050] R10: 0000000000000013 R11: 0000000000000246 R12: 00007fbf2baa3441
-[   13.925051] R13: 000056106b062620 R14: 000056106b0610c0 R15: 000056106b0640d0
-[   13.925053]  </TASK>
-
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 3cef2e31b54b ("iio: proximity: vl53l0x: Add IRQ support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- drivers/net/wireless/mediatek/mt76/dma.c | 1 +
- 1 file changed, 1 insertion(+)
+Changes in v2:
+- add driver name in patch subject.
+---
+ drivers/iio/proximity/vl53l0x-i2c.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
-index 5e1c1506a4c6..7aecde35cb9a 100644
---- a/drivers/net/wireless/mediatek/mt76/dma.c
-+++ b/drivers/net/wireless/mediatek/mt76/dma.c
-@@ -465,6 +465,7 @@ mt76_dma_rx_fill(struct mt76_dev *dev, struct mt76_queue *q)
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+index 661a79ea200d..a284b20529fb 100644
+--- a/drivers/iio/proximity/vl53l0x-i2c.c
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -104,6 +104,7 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+ 	u16 tries = 20;
+ 	u8 buffer[12];
+ 	int ret;
++	unsigned long time_left;
  
- 		qbuf.addr = addr + offset;
- 		qbuf.len = len - offset;
-+		qbuf.skip_unmap = false;
- 		mt76_dma_add_buf(dev, q, &qbuf, 1, 0, buf, NULL);
- 		frames++;
- 	}
+ 	ret = i2c_smbus_write_byte_data(client, VL_REG_SYSRANGE_START, 1);
+ 	if (ret < 0)
+@@ -112,10 +113,8 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+ 	if (data->client->irq) {
+ 		reinit_completion(&data->completion);
+ 
+-		ret = wait_for_completion_timeout(&data->completion, HZ/10);
+-		if (ret < 0)
+-			return ret;
+-		else if (ret == 0)
++		time_left = wait_for_completion_timeout(&data->completion, HZ/10);
++		if (time_left == 0)
+ 			return -ETIMEDOUT;
+ 
+ 		vl53l0x_clear_irq(data);
 -- 
-2.35.1
-
-
+2.17.1
 
