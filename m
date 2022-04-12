@@ -2,103 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 682D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233008AbiDLBCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
+        id S245034AbiDLBCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242524AbiDLA4h (ORCPT
+        with ESMTP id S245667AbiDLA4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:56:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF9B22B0A;
-        Mon, 11 Apr 2022 17:49:30 -0700 (PDT)
+        Mon, 11 Apr 2022 20:56:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FF41FCC0;
+        Mon, 11 Apr 2022 17:49:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96B7C6182C;
-        Tue, 12 Apr 2022 00:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3B4EC385A3;
-        Tue, 12 Apr 2022 00:49:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0B09B8198C;
+        Tue, 12 Apr 2022 00:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DC5C385AB;
+        Tue, 12 Apr 2022 00:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649724569;
-        bh=jshQ9IUIL68LcKjRHPNrDeAoy3xDXn8H3rxW8TYGyuU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EBFT8WTaa2D52Cs2LgfKTNETwsqCRezPu9I11nCRyeP3gtDZUzzasavHB4MjKc5t6
-         Y2t6LYFgEP7l3N5EeAP2Sh1aIGmml7g6eUoVJ9G/BhjNQxws/YI9Iffh3IEsgyiMnj
-         iG4joJyicP7E0D5sAer92SM5zrdKzgJdVLoZ/4r2tCgUp9wSiSHSaGDYezB1KhEF9n
-         6075rwKwSaDAeXB34oUeDP8RfmaAwLrV1ygew/HnMfJcn+xway55rpBMJ8FfBi788s
-         u/mQrrvmOC0Y1SCgI5D9Gg1heKIqYItx+hoYpKH7qmiQhpm+gdQGCOPhAxB7Zs/PH0
-         PKVJIVftPncrg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Leo (Hanghong) Ma" <hanghong.ma@amd.com>,
-        Chris Park <Chris.Park@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Reza.Amini@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 06/30] drm/amd/display: Update VTEM Infopacket definition
-Date:   Mon, 11 Apr 2022 20:48:40 -0400
-Message-Id: <20220412004906.350678-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
-References: <20220412004906.350678-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        bh=bUn5MsT2K3tXiL4OUAHoHpu6WGSu0PQnC8Qt/TN43SE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ViCn0Y6LM+yv0btIMrHmlN+58EMx9MaXxxgCwKhNVwVOxuIGaKehJl/ZLscRhnQJ4
+         mJ7lLRBHAgazX8B77zxLgrABdwYaIefAtrLOI4/52lNZv6Zx7nVnc4Pj3Huyu3F35f
+         kHg7hiF5+AdmI3BRZTSyJWhLXYe6Jvk2Qw49+XyCjhOnI1yx1y2U4F/JrX9rH4s1as
+         JjqNeKBJRlY7dTDblK05yNU7Bp5KPimltOU5ziXBZKlFCnPwICA7lEag1Pl9TdGHbv
+         p6RKbqYj3pLBihxkZscNumNxW4BMAGw2c028jnQipUQUJjAibgIzUsKd1kzgSMe50o
+         dPSG4eTamKURw==
+Date:   Tue, 12 Apr 2022 09:49:23 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-Id: <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+In-Reply-To: <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+        <20220407125224.310255-5-jolsa@kernel.org>
+        <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Leo (Hanghong) Ma" <hanghong.ma@amd.com>
+On Mon, 11 Apr 2022 15:15:40 -0700
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-[ Upstream commit c9fbf6435162ed5fb7201d1d4adf6585c6a8c327 ]
+> > +#define DEBUGFS "/sys/kernel/debug/tracing/"
+> > +
+> > +static int get_syms(char ***symsp, size_t *cntp)
+> > +{
+> > +       size_t cap = 0, cnt = 0, i;
+> > +       char *name, **syms = NULL;
+> > +       struct hashmap *map;
+> > +       char buf[256];
+> > +       FILE *f;
+> > +       int err;
+> > +
+> > +       /*
+> > +        * The available_filter_functions contains many duplicates,
+> > +        * but other than that all symbols are usable in kprobe multi
+> > +        * interface.
+> > +        * Filtering out duplicates by using hashmap__add, which won't
+> > +        * add existing entry.
+> > +        */
+> > +       f = fopen(DEBUGFS "available_filter_functions", "r");
+> 
+> I'm really curious how did you manage to attach to everything in
+> available_filter_functions because when I'm trying to do that I fail.
+> available_filter_functions has a bunch of functions that should not be
+> attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
+> 
+>   void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
 
-[Why & How]
-The latest HDMI SPEC has updated the VTEM packet structure,
-so change the VTEM Infopacket defined in the driver side to align
-with the SPEC.
+Hmm, this sounds like a bug in ftrace side. IIUC, the
+"available_filter_functions" only shows the functions which is NOT
+instrumented by mcount, we should not see any notrace functions on it.
 
-Reviewed-by: Chris Park <Chris.Park@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Leo (Hanghong) Ma <hanghong.ma@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../gpu/drm/amd/display/modules/info_packet/info_packet.c    | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Technically, this is done by __no_instrument_function__ attribute.
 
-diff --git a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
-index 0fdf7a3e96de..96e18050a617 100644
---- a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
-+++ b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
-@@ -100,7 +100,8 @@ enum vsc_packet_revision {
- //PB7 = MD0
- #define MASK_VTEM_MD0__VRR_EN         0x01
- #define MASK_VTEM_MD0__M_CONST        0x02
--#define MASK_VTEM_MD0__RESERVED2      0x0C
-+#define MASK_VTEM_MD0__QMS_EN         0x04
-+#define MASK_VTEM_MD0__RESERVED2      0x08
- #define MASK_VTEM_MD0__FVA_FACTOR_M1  0xF0
- 
- //MD1
-@@ -109,7 +110,7 @@ enum vsc_packet_revision {
- //MD2
- #define MASK_VTEM_MD2__BASE_REFRESH_RATE_98  0x03
- #define MASK_VTEM_MD2__RB                    0x04
--#define MASK_VTEM_MD2__RESERVED3             0xF8
-+#define MASK_VTEM_MD2__NEXT_TFR              0xF8
- 
- //MD3
- #define MASK_VTEM_MD3__BASE_REFRESH_RATE_07  0xFF
+#if defined(CC_USING_HOTPATCH)
+#define notrace                 __attribute__((hotpatch(0, 0)))
+#elif defined(CC_USING_PATCHABLE_FUNCTION_ENTRY)
+#define notrace                 __attribute__((patchable_function_entry(0, 0)))
+#else
+#define notrace                 __attribute__((__no_instrument_function__))
+#endif
+
+> 
+> So first, curious what I am doing wrong or rather why it succeeds in
+> your case ;)
+> 
+> But second, just wanted to plea to "fix" available_filter_functions to
+> not list stuff that should not be attachable. Can you please take a
+> look and checks what's going on there and why do we have notrace
+> functions (and what else should *NOT* be there)?
+
+Can you share how did you reproduce the issue? I'll check it.
+
+Thank you,
+
+
 -- 
-2.35.1
-
+Masami Hiramatsu <mhiramat@kernel.org>
