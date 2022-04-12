@@ -2,87 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 867AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 22:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30DAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 22:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229476AbiDLWbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 18:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
+        id S229488AbiDLWca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 18:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiDLWb3 (ORCPT
+        with ESMTP id S229527AbiDLWcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 18:31:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6B935857
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 14:16:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80C6A61C58
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:59:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E136C385A5;
-        Tue, 12 Apr 2022 20:59:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1649797153;
-        bh=uOj1EWKfp5MbqFPddwn3qYnZPGLBfwLvKU5JMyCXO24=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=q+3BNwbhWqkqibwxCe3UjkkhP7AbmEqGgm29CifeVvXrVG7BAh9jboSLyIgroSuct
-         Tj3ohffGqKfpaPBXU44v99VxIDg2vogFB8CvqaFWbe4TNwaxUiiQzkIpr5t68Ie8fc
-         2P41Y2YwstHn2Gd+tHNJ8nbrnIidz2n7We0HT7FM=
-Date:   Tue, 12 Apr 2022 13:59:12 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Suren Baghdasaryan <surenb@google.com>
-Subject: Re: [PATCH] mm, page_alloc: check pfn is valid before moving to
- freelist
-Message-Id: <20220412135912.93175db2ab4e83f4bb060dbf@linux-foundation.org>
-In-Reply-To: <fb3c8c008994b2ed96f74b6b9698ff998b689bd2.1649794059.git.quic_sudaraja@quicinc.com>
-References: <cover.1649794059.git.quic_sudaraja@quicinc.com>
-        <fb3c8c008994b2ed96f74b6b9698ff998b689bd2.1649794059.git.quic_sudaraja@quicinc.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 12 Apr 2022 18:32:25 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8761D1A7733
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 14:17:44 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id t4so18395944pgc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 14:17:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=knG9M3UYQieXfNA2xBybpWoSnTduc8ITKXA/PJQTuvE=;
+        b=N4Pn9XBMGe+1OSsSvf0TKA+WHDQEDctYbjd2ywUDQay5xt4RobfdJqq/dQLSRXPXY9
+         OZWBNrtQ1rWdIFovQx8BwIg/4TArhupIVUGvLewL/soCnwuyuUIDs1EpK1DnwYBXJLBS
+         GnaMdOyf+EzFITDXdiP6K7eLcSo5DCCmuiMNZdcLy1FhXEQz9AtoBE5+yTmHsc9y4t9h
+         OfKHfLxDZ7SXbcuwCSEpeO/WTnbWEf1s5UepVvBYWpYZviFsywwjr36wXtK1edvX1X/+
+         WqQujedZWJoCgOsDOdSq5hzUBCvKGvsABheFwNk3wYcvQMB9tI+TRMJAFu4P26QFTq+D
+         FpDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=knG9M3UYQieXfNA2xBybpWoSnTduc8ITKXA/PJQTuvE=;
+        b=DdvRZmmLSG9Uc0pgndFuPUjVF0Q9JnxrYD00TLDHgIk/lbWPDntrjEOuo8ECwReXtx
+         GrGD2MBHb6HhA2yyPooRxI9fMAxRraQB049UU7AE5dcJE0Lkt90JNfrNubJteM2iBNwP
+         jdqg6oXOckRZ/wq58cOuygpbSrUSUycs2a+FXkTSjm4rkEs3HmxSC2jW7JEcZpeaUdwR
+         LcJLCTJb6xpwW9UdDeiTC1pJHSTTh5d5pIKCZ+KIhkcDqj6RJC7ULUfsnTRe2+1Px9wX
+         m4tgwJ9zHxwGumoywF5uN6wp2XR4JGgWkl4B+zOGlfmJ1UgdDxHQLn187kpHoJneqj0l
+         SUww==
+X-Gm-Message-State: AOAM5334OrCocGHfI5OgpT0JJhk9F42tUbb2N/PW0FdOn35+H00mhsZl
+        WEoKWPi6XI8E8yKMC2zUM/Dkag==
+X-Google-Smtp-Source: ABdhPJwIB/I0m6Z1vpJVIM1zCzFcYNBDyM0Q8/OVLOPqFiN3cPMCp15+J1ilmqJAp824tzokxXjO0g==
+X-Received: by 2002:a65:6a07:0:b0:39d:8c35:426b with SMTP id m7-20020a656a07000000b0039d8c35426bmr5198065pgu.171.1649798071171;
+        Tue, 12 Apr 2022 14:14:31 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id x6-20020a17090aa38600b001ca2f87d271sm432615pjp.15.2022.04.12.14.14.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 14:14:30 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 21:14:26 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org
+Subject: Re: [RFC PATCH V3 3/4] KVM: X86: Alloc role.pae_root shadow page
+Message-ID: <YlXrshJa2Sd1WQ0P@google.com>
+References: <20220330132152.4568-1-jiangshanlai@gmail.com>
+ <20220330132152.4568-4-jiangshanlai@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330132152.4568-4-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 13:16:23 -0700 Sudarshan Rajagopalan <quic_sudaraja@quicinc.com> wrote:
-
-> Check if pfn is valid before or not before moving it to freelist.
+On Wed, Mar 30, 2022, Lai Jiangshan wrote:
+> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 > 
-> There are possible scenario where a pageblock can have partial physical
-> hole and partial part of System RAM. This happens when base address in RAM
-> partition table is not aligned to pageblock size.
-> 
-> ...
->
-> 
-> Signed-off-by: Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>
-> Fixes: 4c7b9896621be ("mm: remove pfn_valid_within() and CONFIG_HOLES_IN_ZONE")
+> Currently pae_root is special root page, this patch adds facility to
+> allow using kvm_mmu_get_page() to allocate pae_root shadow page.
 
-I made that 859a85ddf90e714092dea71a0e54c7b9896621be and added
-cc:stable.  I'll await reviewer input before proceeding further.
+I don't think this will work for shadow paging.  CR3 only has to be 32-byte aligned
+for PAE paging.  Unless I'm missing something subtle in the code, KVM will incorrectly
+reuse a pae_root if the guest puts multiple PAE CR3s on a single page because KVM's
+gfn calculation will drop bits 11:5.
 
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -2521,6 +2521,11 @@ static int move_freepages(struct zone *zone,
->  	int pages_moved = 0;
+Handling this as a one-off is probably easier.  For TDP, only 32-bit KVM with NPT
+benefits from reusing roots, IMO and shaving a few pages in that case is not worth
+the complexity.
+
+> @@ -332,7 +337,8 @@ union kvm_mmu_page_role {
+>  		unsigned ad_disabled:1;
+>  		unsigned guest_mode:1;
+>  		unsigned glevel:4;
+> -		unsigned :2;
+> +		unsigned pae_root:1;
+
+If we do end up adding a role bit, it can simply be "root", which may or may not
+be useful for other things.  is_pae_root() is then a combo of root+level.  This
+will clean up the code a bit as role.root is (mostly?) hardcoded based on the
+function, e.g. root allocators set it, child allocators clear it.
+
+> +		unsigned :1;
 >  
->  	for (pfn = start_pfn; pfn <= end_pfn;) {
-> +		if (!pfn_valid(pfn)) {
-
-Readers will wonder how we can encounter an invalid pfn here.  A small
-comment might help clue them in.
-
-> +			pfn++;
-> +			continue;
-> +		}
+>  		/*
+>  		 * This is left at the top of the word so that
+> @@ -699,6 +705,7 @@ struct kvm_vcpu_arch {
+>  	struct kvm_mmu_memory_cache mmu_shadow_page_cache;
+>  	struct kvm_mmu_memory_cache mmu_gfn_array_cache;
+>  	struct kvm_mmu_memory_cache mmu_page_header_cache;
+> +	void *mmu_pae_root_cache;
+>  
+>  	/*
+>  	 * QEMU userspace and the guest each have their own FPU state.
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index d53037df8177..81ccaa7c1165 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -694,6 +694,35 @@ static void walk_shadow_page_lockless_end(struct kvm_vcpu *vcpu)
+>  	}
+>  }
+>  
+> +static int mmu_topup_pae_root_cache(struct kvm_vcpu *vcpu)
+> +{
+> +	struct page *page;
 > +
->  		page = pfn_to_page(pfn);
->  		if (!PageBuddy(page)) {
->  			/*
+> +	if (vcpu->arch.mmu->shadow_root_level != PT32E_ROOT_LEVEL)
+> +		return 0;
+> +	if (vcpu->arch.mmu_pae_root_cache)
+> +		return 0;
+> +
+> +	page = alloc_page(GFP_KERNEL_ACCOUNT | __GFP_ZERO | __GFP_DMA32);
+> +	if (!page)
+> +		return -ENOMEM;
+> +	vcpu->arch.mmu_pae_root_cache = page_address(page);
+> +
+> +	/*
+> +	 * CR3 is only 32 bits when PAE paging is used, thus it's impossible to
+> +	 * get the CPU to treat the PDPTEs as encrypted.  Decrypt the page so
+> +	 * that KVM's writes and the CPU's reads get along.  Note, this is
+> +	 * only necessary when using shadow paging, as 64-bit NPT can get at
+> +	 * the C-bit even when shadowing 32-bit NPT, and SME isn't supported
+> +	 * by 32-bit kernels (when KVM itself uses 32-bit NPT).
+> +	 */
+> +	if (!tdp_enabled)
+> +		set_memory_decrypted((unsigned long)vcpu->arch.mmu_pae_root_cache, 1);
+> +	else
+> +		WARN_ON_ONCE(shadow_me_mask);
+> +	return 0;
+> +}
+> +
+>  static int mmu_topup_memory_caches(struct kvm_vcpu *vcpu, bool maybe_indirect)
+>  {
+>  	int r;
+> @@ -705,6 +734,9 @@ static int mmu_topup_memory_caches(struct kvm_vcpu *vcpu, bool maybe_indirect)
+>  		return r;
+>  	r = kvm_mmu_topup_memory_cache(&vcpu->arch.mmu_shadow_page_cache,
+>  				       PT64_ROOT_MAX_LEVEL);
+> +	if (r)
+> +		return r;
+> +	r = mmu_topup_pae_root_cache(vcpu);
 
+This doesn't need to be called from the common mmu_topup_memory_caches(), e.g. it
+will unnecessarily require allocating another DMA32 page when handling a page fault.
+I'd rather call this directly kvm_mmu_load(), which also makes it more obvious
+that the cache really is only used for roots.
+
+>  	if (r)
+>  		return r;
+>  	if (maybe_indirect) {
+> @@ -717,12 +749,23 @@ static int mmu_topup_memory_caches(struct kvm_vcpu *vcpu, bool maybe_indirect)
+>  					  PT64_ROOT_MAX_LEVEL);
+>  }
+>  
+
+...
+
+>  static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
+>  			     struct kvm_mmu_page *sp)
+>  {
+> +	struct kvm_mmu_page *parent_sp = sptep_to_sp(sptep);
+>  	u64 spte;
+>  
+>  	BUILD_BUG_ON(VMX_EPT_WRITABLE_MASK != PT_WRITABLE_MASK);
+>  
+> -	spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+> +	if (!parent_sp->role.pae_root)
+
+Hmm, without role.root, this could be:
+
+	if (sp->role.level == (PT32E_ROOT_level - 1) &&
+	    ((__pa(sptep) & PT64_BASE_ADDR_MASK) == vcpu->arch.mmu->root.hpa))
+		spte = make_pae_pdpte(sp->spt);
+	else
+		spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+
+Which is gross, but it works.  We could also do FNAME(link_shadow_page) to send
+PAE roots down a dedicated path (also gross).  Point being, I don't think we
+strictly need a "root" flag unless the PAE roots are put in mmu_page_hash.
+
+> +		spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+> +	else
+> +		spte = make_pae_pdpte(sp->spt);
+>  
+>  	mmu_spte_set(sptep, spte);
+>  
+> @@ -4782,6 +4847,8 @@ kvm_calc_tdp_mmu_root_page_role(struct kvm_vcpu *vcpu,
+>  	role.base.level = kvm_mmu_get_tdp_level(vcpu);
+>  	role.base.direct = true;
+>  	role.base.has_4_byte_gpte = false;
+> +	if (role.base.level == PT32E_ROOT_LEVEL)
+> +		role.base.pae_root = 1;
+>  
+>  	return role;
+>  }
+> @@ -4848,6 +4915,9 @@ kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
+>  	else
+>  		role.base.level = PT64_ROOT_4LEVEL;
+>  
+> +	if (role.base.level == PT32E_ROOT_LEVEL)
+> +		role.base.pae_root = 1;
+> +
+>  	return role;
+>  }
+>  
+> @@ -4893,6 +4963,8 @@ kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
+>  
+>  	role.base.direct = false;
+>  	role.base.level = kvm_mmu_get_tdp_level(vcpu);
+> +	if (role.base.level == PT32E_ROOT_LEVEL)
+> +		role.base.pae_root = 1;
+>  
+>  	return role;
+>  }
+> diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+> index 67489a060eba..1015f33e0758 100644
+> --- a/arch/x86/kvm/mmu/paging_tmpl.h
+> +++ b/arch/x86/kvm/mmu/paging_tmpl.h
+> @@ -1043,6 +1043,7 @@ static int FNAME(sync_page)(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp)
+>  		.access = 0x7,
+>  		.quadrant = 0x3,
+>  		.glevel = 0xf,
+> +		.pae_root = 0x1,
+>  	};
+>  
+>  	/*
+> -- 
+> 2.19.1.6.gb485710b
+> 
