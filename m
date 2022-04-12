@@ -2,92 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB834C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 22:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C327FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229523AbiDLWtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 18:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
+        id S229538AbiDLXSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiDLWtG (ORCPT
+        with ESMTP id S229452AbiDLXSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 18:49:06 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF551BE12D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 14:30:34 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id w7so168433pfu.11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 14:30:34 -0700 (PDT)
+        Tue, 12 Apr 2022 19:18:18 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C79D160698
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:05:26 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id 12so142565oix.12
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:05:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs-iitr-ac-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bKc2RsG7u0Dt9SRYrdepMbEzWeuJkK4ThHyJlKzG4oQ=;
-        b=KvGviDahz+0YxI4Ikdgo2vKDTpdEKuUdKS0LYj1ul1SopRDHL2WTRg3B7lZb+G5BXQ
-         LLz2+aXrSvqvyscboBTUiCg7RIFAhidq6am/3nwGtpp5axMP3ebS5boDlxfZzXH+aRhx
-         qaLgBg9AvSkRfR1pX9sJbgmlEhK88ttwpgCX4dIrOdy3O5ZoIHCYxixh+IAfj1OucRJW
-         eCeb3DHLKPyIOayoBJcK1HZT7L09K3TYhIR1BtzUdbbCWTTAotB5hSHUcWyS4Mwq/Ezj
-         ebREbAEiDq+b/h1CDf8gxUMUHRiPQCbP9d0GYjxEqP3itNGatAptHDF87Wk/PS8suAVw
-         +clQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NowsSEuQJIZua7/716N+9P9bKTm9KkV6U8XDawgBVQE=;
+        b=UIYv/D4877vchmD36c250N280pyX9NJSXwVvBFW2zFw637UNsQr8rbk54nJVwgG4/p
+         gg74h6IyN74e+jRYpL84GkYVlNrDuk7ElKsUwYip7jQro1zQf5Zs+X+RHyLJrIIttoh2
+         zXL9EALXQF/E2WvOoV5UG8/+CmzSYinIVC5crACR/XwGjB3ktu8OXSzd/YUhIaKIrfAD
+         WQjFHFFWw3NP8zx7xIkWPmynyo/8esYZ31lr1NrVrEhpJ0vF2jGcrLi/9JVnjbShMHZH
+         Q/NV5VR/vXBg3ToJX5l33KOml4OkRQunpzZ5vUjuOSbW/qIwqhr/ZWtKzXPu05auPYxq
+         HAag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bKc2RsG7u0Dt9SRYrdepMbEzWeuJkK4ThHyJlKzG4oQ=;
-        b=3vRzmvBF+MXgOrl5HT/rjHQUwSaSitJnUcpSmd82IOMGfMwHg5e2Cm3V13AtFC+otZ
-         ip0/B7Xa3mXQdWR4R0PEs5SWWk47xwEKDKPdS9LzE6IShTJ57R/G6ohaTukMvVNeqQvH
-         umm/Ez6U4V27GQuStyL/OBi7gxmlyoJyq4xidsjmLUbphLWfe/bMZON5VMJHmvmpFe5O
-         3McNaRVNhcydJgkBTyuLI2dpKdLpTMouMHX6DLwNB1p7o6NsqF8R9A2yATc+sj10IaUg
-         MqRPZnSxxkBQOjQDu8C78KARiDaSM2d3cHuMHnjbMYoDpRWI5tRNues/o/4H74gMf2JW
-         xY8Q==
-X-Gm-Message-State: AOAM530daZdgvl8oniQFfryRMpEe0UPkgefhIxXzAE77XWOQ0m32eeel
-        vSK+EfNxzFp6YQcMlBIxers4Z5zAyC+5u/6ly/5+qA==
-X-Google-Smtp-Source: ABdhPJyyil8BZGNUAaxupefL2LwqP4c7rGgTZBi2Ndy2D3Tc3LXcIpd0IqCPcKte9vCXggWHFoPkUNDd64ZCAnDRD9E=
-X-Received: by 2002:a65:638d:0:b0:39d:74ad:ce0b with SMTP id
- h13-20020a65638d000000b0039d74adce0bmr7400676pgv.103.1649799016617; Tue, 12
- Apr 2022 14:30:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NowsSEuQJIZua7/716N+9P9bKTm9KkV6U8XDawgBVQE=;
+        b=t3qNkFa24lInC/L8zpV0wxTXcEun4EBrZHMq/nwnEPRe8GKp32NRJmrqyyXwkH3NYP
+         e9PiVF0wH/pEHa2I7Q95rq6tomV7EDSw3WzKKGrW8VgpzD4fcTmIMOUHZGJcapDYHYA6
+         TWhijTk0L2zIW7zfN6Z46fRikrXKXyfMOBzoyie92ZrrJZe2IZDHZ8P0/y90g+iVlCaC
+         l3czyVMHQR4hOLmuKukSPGo5mA5+eJMCKbVJHguttDzxBzQ//ETvvJiZbAWtNJGnFPvf
+         EkLiDztvjKeVe1+SXEURKgItpqMtmoeE+zhJ0XzXh4eBMwAIBvh3nO+Bgr8er/wE6Fyq
+         LEow==
+X-Gm-Message-State: AOAM531JnLvDKAUm8bzDmPXDO8kpUIjXEwCqS3B0QNstwPb/Kxg09zvo
+        gZ48zadrzlPTKhSWzWE5RQ+y5Pv1WIb7mw==
+X-Google-Smtp-Source: ABdhPJy3r+oVme8d4eH28hz36G3liW90OQkeDuh9SsuKbSxUpbmxkrB4M7+PMd1WrrNt1quENaPYxw==
+X-Received: by 2002:a17:90a:4d0d:b0:1cb:9dac:7ed0 with SMTP id c13-20020a17090a4d0d00b001cb9dac7ed0mr7228521pjg.198.1649799097115;
+        Tue, 12 Apr 2022 14:31:37 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id p3-20020a056a000b4300b004faee36ea56sm40502527pfo.155.2022.04.12.14.31.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 14:31:36 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 21:31:32 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org
+Subject: Re: [RFC PATCH V3 2/4] KVM: X86: Introduce role.glevel for level
+ expanded pagetable
+Message-ID: <YlXvtMqWpyM9Bjox@google.com>
+References: <20220330132152.4568-1-jiangshanlai@gmail.com>
+ <20220330132152.4568-3-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-References: <20220411205321.13109-1-mahak_g@cs.iitr.ac.in> <c5fc1685-b1cc-7cfa-1ddd-e2f93105c2a5@intel.com>
- <027acae3-29ee-ae35-4448-a56e66383849@lwfinger.net>
-In-Reply-To: <027acae3-29ee-ae35-4448-a56e66383849@lwfinger.net>
-From:   MAHAK GUPTA <mahak_g@cs.iitr.ac.in>
-Date:   Wed, 13 Apr 2022 02:59:39 +0530
-Message-ID: <CANnaPbBpWmp3PUgp=yRxhykzKjpP1HHh9Fk0aEBJ_+EGNUStvA@mail.gmail.com>
-Subject: Re: [PATCH] staging: r8188eu: correct multiple misspellings in driver r8188eu
-To:     Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     Dave Jiang <dave.jiang@intel.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330132152.4568-3-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:48 PM Larry Finger <Larry.Finger@lwfinger.net> wrote:
->
-> On 4/11/22 16:28, Dave Jiang wrote:
-> > Subject:
-> >
-> > staging: r8188eu: fix multiple spelling errors in driver source
-> >
-> > Given that it already annotated that it's the r8188eu driver, no need to add "in
-> > driver r8188eu".
-> >
-> > Maybe the log can be something less terse:
-> >
-> > Fix multiple spelling errors reported by checkpatch.
-> >
-> >
-> > Probably doesn't hurt to fix other issues on the same line while you are at it.
-> > See below...
->
-> Wrong on the first and last points. That subject is exactly what should be used
-> - it describes what is being modified.
->
-> A given patch should fix one, and only one, problem.
->
-> Yes, the commit message could be less terse, but that is not a problem.
-Ok so considering the last comment, I am sending version 2 of this
-patch with an appropriate commit message.
->
-> Larry
+On Wed, Mar 30, 2022, Lai Jiangshan wrote:
+> +  role.glevel:
+> +    The level in guest pagetable if the sp is indirect.  Is 0 if the sp
+> +    is direct without corresponding guest pagetable, like TDP or !CR0.PG.
+> +    When role.level > guest paging level, indirect sp is created on the
+> +    top with role.glevel = guest paging level and acks as passthrough sp
+
+s/acks/acts
+
+> +    and its contents are specially installed rather than the translations
+> +    of the corresponding guest pagetable.
+>    gfn:
+>      Either the guest page table containing the translations shadowed by this
+>      page, or the base page frame for linear translations.  See role.direct.
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 9694dd5e6ccc..67e1bccaf472 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -314,7 +314,7 @@ struct kvm_kernel_irq_routing_entry;
+>   *     cr0_wp=0, therefore these three bits only give rise to 5 possibilities.
+>   *
+>   * Therefore, the maximum number of possible upper-level shadow pages for a
+> - * single gfn is a bit less than 2^13.
+> + * single gfn is a bit less than 2^15.
+>   */
+>  union kvm_mmu_page_role {
+>  	u32 word;
+> @@ -331,7 +331,8 @@ union kvm_mmu_page_role {
+>  		unsigned smap_andnot_wp:1;
+>  		unsigned ad_disabled:1;
+>  		unsigned guest_mode:1;
+> -		unsigned :6;
+> +		unsigned glevel:4;
+
+We don't need 4 bits for this.  Crossing our fingers that we never had to shadow
+a 2-level guest with a 6-level host, we can do:
+
+		unsigned passthrough_delta:2;
+
+Where the field is ignored if direct=1, '0' for non-passthrough, and 1-3 to handle
+shadow_root_level - guest_root_level.  Basically the same idea as Paolo's smushing
+of direct+passthrough into mapping_level, just dressed up differently.
+
+Side topic, we should steal a bit back from "level", or at least document that we
+can steal a bit if necessary.
+
+> +		unsigned :2;
+>  
+>  		/*
+>  		 * This is left at the top of the word so that
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 02eae110cbe1..d53037df8177 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -737,8 +737,12 @@ static void mmu_free_pte_list_desc(struct pte_list_desc *pte_list_desc)
+>  
+>  static gfn_t kvm_mmu_page_get_gfn(struct kvm_mmu_page *sp, int index)
+>  {
+> -	if (!sp->role.direct)
+> +	if (!sp->role.direct) {
+> +		if (unlikely(sp->role.glevel < sp->role.level))
+
+Regardless of whatever magic we end up using, there should be an is_passthrough_sp()
+helper to wrap the magic.
+
+> +			return sp->gfn;
+> +
+>  		return sp->gfns[index];
+> +	}
+>  
+>  	return sp->gfn + (index << ((sp->role.level - 1) * PT64_LEVEL_BITS));
+>  }
