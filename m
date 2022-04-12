@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD29CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351077AbiDLGwj (ORCPT
+        id S1351051AbiDLGwg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
+        Tue, 12 Apr 2022 02:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350966AbiDLGsV (ORCPT
+        with ESMTP id S1350923AbiDLGsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:48:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DE126124;
-        Mon, 11 Apr 2022 23:39:37 -0700 (PDT)
+        Tue, 12 Apr 2022 02:48:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8936D255A2;
+        Mon, 11 Apr 2022 23:39:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C1DAB81B4A;
-        Tue, 12 Apr 2022 06:39:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DE4BC385A6;
-        Tue, 12 Apr 2022 06:39:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F106B81B4E;
+        Tue, 12 Apr 2022 06:39:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DBADC385B8;
+        Tue, 12 Apr 2022 06:39:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745575;
-        bh=fausJmKvDnrkqf0mQXYYUri+fHjDbig+Q6Z80FZUyNc=;
+        s=korg; t=1649745560;
+        bh=r7zwxBmSBYLoVuMUOCzhurkmYQox+oscdpkyavZfQGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZjtT33JNgY1YQLNuyJD8NRsXxhTEZYQhLvTHjMLZDwfrnR3p0lH4fHx+DKiK89/vP
-         iS5VIeOTLCLxCEkmJl7a/v0c/5Hu7vDC/8hiju8CHqEw0uYdXDkyGXFk/hqB9OSgtU
-         9gv4HOYLbffB7v9LIs2p/MQ0ST2jabnsfowMz/yU=
+        b=TqH6kctUNbU+StCq+MMlVTNb98yVSJbcLBVBKHRUFA33bkOMzwS7Z/Qt/cBelD3qw
+         WNkLykLsaq620wLjoylUCtXj0qqhvWVV7chtbgPycleTIrsdhmaw68OKuFEk3KqBWx
+         jmQFR6+uBQ/4ij6MNWhNJD+KCrgOzfa+mrvp/S8I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Pudak, Filip" <Filip.Pudak@windriver.com>,
-        "Xiao, Jiguang" <Jiguang.Xiao@windriver.com>,
-        David Ahern <dsahern@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, Pudak@vger.kernel.org,
-        Xiao@vger.kernel.org
-Subject: [PATCH 5.10 116/171] ipv6: Fix stats accounting in ip6_pkt_drop
-Date:   Tue, 12 Apr 2022 08:30:07 +0200
-Message-Id: <20220412062931.241886142@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com,
+        Guo Xuenan <guoxuenan@huawei.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Yann Collet <cyan@fb.com>, Chengyang Fan <cy.fan@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 138/171] lz4: fix LZ4_decompress_safe_partial read out of bound
+Date:   Tue, 12 Apr 2022 08:30:29 +0200
+Message-Id: <20220412062931.880396133@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -53,40 +55,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Guo Xuenan <guoxuenan@huawei.com>
 
-[ Upstream commit 1158f79f82d437093aeed87d57df0548bdd68146 ]
+commit eafc0a02391b7b36617b36c97c4b5d6832cf5e24 upstream.
 
-VRF devices are the loopbacks for VRFs, and a loopback can not be
-assigned to a VRF. Accordingly, the condition in ip6_pkt_drop should
-be '||' not '&&'.
+When partialDecoding, it is EOF if we've either filled the output buffer
+or can't proceed with reading an offset for following match.
 
-Fixes: 1d3fd8a10bed ("vrf: Use orig netdev to count Ip6InNoRoutes and a fresh route lookup when sending dest unreach")
-Reported-by: Pudak, Filip <Filip.Pudak@windriver.com>
-Reported-by: Xiao, Jiguang <Jiguang.Xiao@windriver.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220404150908.2937-1-dsahern@kernel.org
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In some extreme corner cases when compressed data is suitably corrupted,
+UAF will occur.  As reported by KASAN [1], LZ4_decompress_safe_partial
+may lead to read out of bound problem during decoding.  lz4 upstream has
+fixed it [2] and this issue has been disscussed here [3] before.
+
+current decompression routine was ported from lz4 v1.8.3, bumping
+lib/lz4 to v1.9.+ is certainly a huge work to be done later, so, we'd
+better fix it first.
+
+[1] https://lore.kernel.org/all/000000000000830d1205cf7f0477@google.com/
+[2] https://github.com/lz4/lz4/commit/c5d6f8a8be3927c0bec91bcc58667a6cfad244ad#
+[3] https://lore.kernel.org/all/CC666AE8-4CA4-4951-B6FB-A2EFDE3AC03B@fb.com/
+
+Link: https://lkml.kernel.org/r/20211111105048.2006070-1-guoxuenan@huawei.com
+Reported-by: syzbot+63d688f1d899c588fb71@syzkaller.appspotmail.com
+Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
+Reviewed-by: Nick Terrell <terrelln@fb.com>
+Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Cc: Yann Collet <cyan@fb.com>
+Cc: Chengyang Fan <cy.fan@huawei.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/lz4/lz4_decompress.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 352e645c546e..776b1b58c5dc 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -4398,7 +4398,7 @@ static int ip6_pkt_drop(struct sk_buff *skb, u8 code, int ipstats_mib_noroutes)
- 	struct inet6_dev *idev;
- 	int type;
+--- a/lib/lz4/lz4_decompress.c
++++ b/lib/lz4/lz4_decompress.c
+@@ -271,8 +271,12 @@ static FORCE_INLINE int LZ4_decompress_g
+ 			ip += length;
+ 			op += length;
  
--	if (netif_is_l3_master(skb->dev) &&
-+	if (netif_is_l3_master(skb->dev) ||
- 	    dst->dev == net->loopback_dev)
- 		idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
- 	else
--- 
-2.35.1
-
+-			/* Necessarily EOF, due to parsing restrictions */
+-			if (!partialDecoding || (cpy == oend))
++			/* Necessarily EOF when !partialDecoding.
++			 * When partialDecoding, it is EOF if we've either
++			 * filled the output buffer or
++			 * can't proceed with reading an offset for following match.
++			 */
++			if (!partialDecoding || (cpy == oend) || (ip >= (iend - 2)))
+ 				break;
+ 		} else {
+ 			/* may overwrite up to WILDCOPYLENGTH beyond cpy */
 
 
