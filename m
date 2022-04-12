@@ -2,100 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1EAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240228AbiDLMdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
+        id S1350779AbiDLMdn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352593AbiDLMdQ (ORCPT
+        with ESMTP id S242619AbiDLMdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:33:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FC5D77
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:50:41 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kd3tj1KKKzdZLZ;
-        Tue, 12 Apr 2022 19:50:05 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 19:50:39 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 19:50:39 +0800
-Message-ID: <b3b95c8a-26ea-c079-d0f1-ac0b8ff201d4@huawei.com>
-Date:   Tue, 12 Apr 2022 19:50:38 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [RFC PATCH -next V3 2/6] arm64: fix types in copy_highpage()
-Content-Language: en-US
-To:     Tong Tiangen <tongtiangen@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Alexander Viro" <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Xie XiuQi <xiexiuqi@huawei.com>
-References: <20220412072552.2526871-1-tongtiangen@huawei.com>
- <20220412072552.2526871-3-tongtiangen@huawei.com>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <20220412072552.2526871-3-tongtiangen@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggeme707-chm.china.huawei.com (10.1.199.103) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+        Tue, 12 Apr 2022 08:33:18 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3306E5A148;
+        Tue, 12 Apr 2022 04:51:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Subject:Cc:To:From:Date:Message-ID:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=QpiJQfWHbBnBAAsAw08p4CUh7MIO02xp7lOV7zzMMvs=; b=OiXNRx0CqOS6fYgnuGbrwnOtga
+        oTsOVpfVk14kqLP293KTqLwon1/RU1f0V62LbmzjmL7imP82ltol1wjoLfaK5t6/mY7Qs3HYWrjCh
+        Z5n+mPYMAE3achGsb0prut357sV8BXJQztUV/snpOSALGUfOOSuJhtjkf8m57kQJsKhHFVlbDpcQk
+        lGGfxabNbuS2WgwCRGEByKRCHhJZPawwuQVrl5wRqvyXnYTpdxrbeV45Csqkrv75mKq8zlPQZb0+T
+        t2NnmHCc7N3W2eNEryJ2vUHgiBcI/JOUHyTiMW7zMbqcjpb/zO/VtRMyQFBQBvjE8/ERk+9jG/ylS
+        VbeeYf+Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1neF2o-004JiZ-Iz; Tue, 12 Apr 2022 11:50:51 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6236F3001AE;
+        Tue, 12 Apr 2022 13:50:47 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 3BA8B3017997D; Tue, 12 Apr 2022 13:50:47 +0200 (CEST)
+Message-ID: <20220412114421.691372568@infradead.org>
+User-Agent: quilt/0.66
+Date:   Tue, 12 Apr 2022 13:44:21 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, ebiederm@xmission.com,
+        bigeasy@linutronix.de, Will Deacon <will@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org, tj@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH 0/5] ptrace-vs-PREEMPT_RT and freezer rewrite
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi all,
 
-On 2022/4/12 15:25, Tong Tiangen wrote:
-> In copy_highpage() the `kto` and `kfrom` local variables are pointers to
-> struct page, but these are used to hold arbitrary pointers to kernel memory
-> . Each call to page_address() returns a void pointer to memory associated
-> with the relevant page, and copy_page() expects void pointers to this
-> memory.
->
-> This inconsistency was introduced in commit 2563776b41c3 ("arm64: mte:
-> Tags-aware copy_{user_,}highpage() implementations") and while this
-> doesn't appear to be harmful in practice it is clearly wrong.
->
-> Correct this by making `kto` and `kfrom` void pointers.
-Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviving the freezer rewrite that was languishing, reinvigorated by the
+recent ptrace-vs-PREEMPT_RT trouble.
 
-> Fixes: 2563776b41c3 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> Acked-by: Mark Rutland <mark.rutland@arm.com>
-> ---
->   arch/arm64/mm/copypage.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
-> index b5447e53cd73..0dea80bf6de4 100644
-> --- a/arch/arm64/mm/copypage.c
-> +++ b/arch/arm64/mm/copypage.c
-> @@ -16,8 +16,8 @@
->   
->   void copy_highpage(struct page *to, struct page *from)
->   {
-> -	struct page *kto = page_address(to);
-> -	struct page *kfrom = page_address(from);
-> +	void *kto = page_address(to);
-> +	void *kfrom = page_address(from);
->   
->   	copy_page(kto, kfrom);
->   
+The first patch adds additional state to signal/ptrace stop states, this state
+is then used to fix the PREEMPT_RT issue (patch #2) and allow the new freezer
+to recover the special stop states (patch #5).
+
+I'm not completely happy with the ptrace solution, but I think it solves all
+the various issues I found. I still dislike wait_task_inactive() and now we
+have a second copy of that :/
+
+Please consider carefully..
+
+---
+ drivers/acpi/x86/s2idle.c         |  12 +-
+ drivers/android/binder.c          |   4 +-
+ drivers/media/pci/pt3/pt3.c       |   4 +-
+ drivers/scsi/scsi_transport_spi.c |   7 +-
+ fs/cifs/inode.c                   |   4 +-
+ fs/cifs/transport.c               |   5 +-
+ fs/coredump.c                     |   5 +-
+ fs/nfs/file.c                     |   3 +-
+ fs/nfs/inode.c                    |  12 +-
+ fs/nfs/nfs3proc.c                 |   3 +-
+ fs/nfs/nfs4proc.c                 |  14 +--
+ fs/nfs/nfs4state.c                |   3 +-
+ fs/nfs/pnfs.c                     |   4 +-
+ fs/xfs/xfs_trans_ail.c            |   8 +-
+ include/linux/completion.h        |   1 +
+ include/linux/freezer.h           | 244 ++------------------------------------
+ include/linux/sched.h             |  49 ++++----
+ include/linux/sched/jobctl.h      |   8 ++
+ include/linux/sched/signal.h      |  15 ++-
+ include/linux/sunrpc/sched.h      |   7 +-
+ include/linux/suspend.h           |   8 +-
+ include/linux/umh.h               |   9 +-
+ include/linux/wait.h              |  40 ++++++-
+ init/do_mounts_initrd.c           |  10 +-
+ kernel/cgroup/legacy_freezer.c    |  23 ++--
+ kernel/exit.c                     |   4 +-
+ kernel/fork.c                     |   5 +-
+ kernel/freezer.c                  | 139 ++++++++++++++++------
+ kernel/futex/waitwake.c           |   8 +-
+ kernel/hung_task.c                |   4 +-
+ kernel/power/hibernate.c          |  35 ++++--
+ kernel/power/main.c               |  18 +--
+ kernel/power/process.c            |  10 +-
+ kernel/power/suspend.c            |  12 +-
+ kernel/power/user.c               |  24 ++--
+ kernel/ptrace.c                   | 185 +++++++++++++++++++++++------
+ kernel/sched/completion.c         |   9 ++
+ kernel/sched/core.c               |  24 ++--
+ kernel/signal.c                   |  23 ++--
+ kernel/time/hrtimer.c             |   4 +-
+ kernel/umh.c                      |  18 ++-
+ mm/khugepaged.c                   |   4 +-
+ net/sunrpc/sched.c                |  12 +-
+ net/unix/af_unix.c                |   8 +-
+ 44 files changed, 541 insertions(+), 507 deletions(-)
+
