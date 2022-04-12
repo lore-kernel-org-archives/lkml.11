@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 997ADC3A5A1
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3899C47092
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390712AbiDLJZO (ORCPT
+        id S1391091AbiDLJZm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        Tue, 12 Apr 2022 05:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353786AbiDLIKE (ORCPT
+        with ESMTP id S1354361AbiDLIKQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:10:04 -0400
+        Tue, 12 Apr 2022 04:10:16 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D3F1004
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2039238A8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:19 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1neB8A-0007gP-Lp; Tue, 12 Apr 2022 09:40:06 +0200
+        id 1neB8A-0007gG-Lm; Tue, 12 Apr 2022 09:40:06 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1neB89-00AQaw-Rk; Tue, 12 Apr 2022 09:40:05 +0200
+        id 1neB89-00AQZc-Cj; Tue, 12 Apr 2022 09:40:05 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
 Cc:     David Jander <david@protonic.nl>,
@@ -33,9 +33,9 @@ Cc:     David Jander <david@protonic.nl>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v1 16/17] arm: dts: imx6qdl-vicut1.dtsi: Add missing ISB led node
-Date:   Tue, 12 Apr 2022 09:40:03 +0200
-Message-Id: <20220412074004.2485264-17-o.rempel@pengutronix.de>
+Subject: [PATCH v1 07/17] arm: dts: imx6qdl-vicut1.dtsi: Update GPIO line names
+Date:   Tue, 12 Apr 2022 09:39:54 +0200
+Message-Id: <20220412074004.2485264-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
 References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
@@ -51,41 +51,67 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Jander <david@protonic.nl>
 
-Add missing ISB led node.
+Add some missing names and remove names to pins that have never been used
+and/or are not present on any hardware.
 
 Signed-off-by: David Jander <david@protonic.nl>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
 diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-index 2a86136a04e8..c928bd854e92 100644
+index a5f962f1028b..a93e7f8302aa 100644
 --- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
 +++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-@@ -95,6 +95,13 @@ led-2 {
- 			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
- 			default-state = "on";
- 		};
-+
-+		led-3 {
-+			label = "isb_led";
-+			function = LED_FUNCTION_POWER;
-+			gpios = <&gpio4 31 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
-+		};
- 	};
+@@ -257,12 +257,10 @@ &gpio1 {
+ 	gpio-line-names =
+ 		"CAN1_TERM", "SD1_CD", "ITU656_RESET", "CAM1_MIRROR",
+ 			"CAM2_MIRROR", "", "", "SMBALERT",
+-		"DEBUG_0", "DEBUG_1", "SDIO_SCK", "SDIO_CMD", "SDIO_D3",
+-			"SDIO_D2", "SDIO_D1", "SDIO_D0",
++		"DEBUG_0", "DEBUG_1", "", "", "", "", "", "",
+ 		"SD1_DATA0", "SD1_DATA1", "SD1_CMD", "SD1_DATA2", "SD1_CLK",
+-			"SD1_DATA3", "", "",
+-		"", "ETH_RESET", "WIFI_PD", "WIFI_BT_RST", "ETH_INT", "",
+-			"WL_IRQ", "ETH_MDC";
++			"SD1_DATA3", "ETH_MDIO", "",
++		"", "ETH_RESET", "", "", "ETH_INT", "", "", "ETH_MDC";
+ };
  
- 	reg_1v8: regulator-1v8 {
-@@ -574,6 +581,8 @@ MX6QDL_PAD_DI0_DISP_CLK__GPIO4_IO16		0x1b0b0
- 			MX6QDL_PAD_DI0_PIN15__GPIO4_IO17		0x1b0b0
- 			/* POWER_LED */
- 			MX6QDL_PAD_EIM_CS1__GPIO2_IO24			0x1b0b0
-+			/* ISB_LED */
-+			MX6QDL_PAD_DISP0_DAT10__GPIO4_IO31		0x1b0b0
- 		>;
- 	};
+ &gpio2 {
+@@ -270,8 +268,8 @@ &gpio2 {
+ 		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
+ 		"", "LED_PWM", "", "", "",
+ 			"", "", "",
+-		"", "", "", "", "", "", "", "ON_SWITCH",
+-		"POWER_LED", "", "ECSPI2_SS0", "", "", "", "", "";
++		"", "", "", "", "", "ISB_IN2", "ISB_nIN1", "ON_SWITCH",
++		"POWER_LED", "", "", "", "", "", "", "";
+ };
  
+ &gpio3 {
+@@ -280,7 +278,8 @@ &gpio3 {
+ 		"", "", "", "", "", "", "", "",
+ 		"ECSPI1_SCLK", "ECSPI1_MISO", "ECSPI1_MOSI", "ECSPI1_SS1",
+ 			"CPU_ON1_FB", "USB_OTG_OC", "USB_OTG_PWR", "YACO_IRQ",
+-		"", "", "", "", "", "", "", "";
++		"TSS_TXD", "TSS_RXD", "", "", "", "", "YACO_BOOT0",
++			"YACO_RESET";
+ };
+ 
+ &gpio4 {
+@@ -288,8 +287,8 @@ &gpio4 {
+ 		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
+ 		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
+ 			"CAN2_SR", "CAN2_TX", "CAN2_RX",
+-		"LED_DI0_DEBUG_0", "LED_DI0_DEBUG_1", "", "", "", "ON1_CTRL",
+-			"ON2_CTRL", "HITCH_IN_OUT",
++		"", "", "DIP1_FB", "", "VCAM_EN", "ON1_CTRL", "ON2_CTRL",
++			"HITCH_IN_OUT",
+ 		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
+ 			"ISB_LED";
+ };
 -- 
 2.30.2
 
