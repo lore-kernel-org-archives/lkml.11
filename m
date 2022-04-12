@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB82C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A05C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380650AbiDLIWb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
+        id S237159AbiDLIZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353806AbiDLHZz (ORCPT
+        with ESMTP id S1352633AbiDLHd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:55 -0400
+        Tue, 12 Apr 2022 03:33:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C0F9FD8;
-        Tue, 12 Apr 2022 00:04:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CC5506E8;
+        Tue, 12 Apr 2022 00:08:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1766C60B65;
-        Tue, 12 Apr 2022 07:04:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 209CEC385A1;
-        Tue, 12 Apr 2022 07:04:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B01D6616A9;
+        Tue, 12 Apr 2022 07:08:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1583C385A8;
+        Tue, 12 Apr 2022 07:08:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747080;
-        bh=3URoS/TUJZ3MsAy6YxJ1sR6pRPkgsVOwX30cNz/8tWg=;
+        s=korg; t=1649747328;
+        bh=JgppqWRUyXdsicdWdBjhfW92wG3rlJRV4xebFgNWe6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xe8Z/L13oCYhAToa/YttnnlDsRG8ATbUnKdmgLv5Evrr92DZnbN2uXDwiN/3q3JAs
-         cNl6Wn0ybSYMLp1LhpId1WYn8OWyhZbBs2famfp4nHZQlgO/3c79WICUg5kgWsAKP5
-         6jvdGOVOzjYjqoiAWU38MwYYPh+njb0/sx78MBtc=
+        b=O0x7iKe6+m02OVgGSGA7gQiPeNiJj/f2KHteYCcDi5vBk1wf9jCZNsD4fj8RiS+tu
+         ACkZvzMryQDXyo/j5TjbE/+N+og47ak4oQ6JXPCpAHIPYoKMDsPiT0eFmSMNd/ByyG
+         iD7FMRfS7DL/+Q3KRrtVjvcJRLAl7vTCDbZOZ9GM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robbie Ko <robbieko@synology.com>,
-        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
-        Kaiwen Hu <kevinhu@synology.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 235/285] btrfs: prevent subvol with swapfile from being deleted
-Date:   Tue, 12 Apr 2022 08:31:32 +0200
-Message-Id: <20220412062950.444603043@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 039/343] ath11k: pci: fix crash on suspend if board file is not found
+Date:   Tue, 12 Apr 2022 08:27:37 +0200
+Message-Id: <20220412062952.235086999@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,91 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kaiwen Hu <kevinhu@synology.com>
+From: Kalle Valo <quic_kvalo@quicinc.com>
 
-commit 60021bd754c6ca0addc6817994f20290a321d8d6 upstream.
+[ Upstream commit b4f4c56459a5c744f7f066b9fc2b54ea995030c5 ]
 
-A subvolume with an active swapfile must not be deleted otherwise it
-would not be possible to deactivate it.
+Mario reported that the kernel was crashing on suspend if ath11k was not able
+to find a board file:
 
-After the subvolume is deleted, we cannot swapoff the swapfile in this
-deleted subvolume because the path is unreachable.  The swapfile is
-still active and holding references, the filesystem cannot be unmounted.
+[  473.693286] PM: Suspending system (s2idle)
+[  473.693291] printk: Suspending console(s) (use no_console_suspend to debug)
+[  474.407787] BUG: unable to handle page fault for address: 0000000000002070
+[  474.407791] #PF: supervisor read access in kernel mode
+[  474.407794] #PF: error_code(0x0000) - not-present page
+[  474.407798] PGD 0 P4D 0
+[  474.407801] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[  474.407805] CPU: 2 PID: 2350 Comm: kworker/u32:14 Tainted: G        W         5.16.0 #248
+[...]
+[  474.407868] Call Trace:
+[  474.407870]  <TASK>
+[  474.407874]  ? _raw_spin_lock_irqsave+0x2a/0x60
+[  474.407882]  ? lock_timer_base+0x72/0xa0
+[  474.407889]  ? _raw_spin_unlock_irqrestore+0x29/0x3d
+[  474.407892]  ? try_to_del_timer_sync+0x54/0x80
+[  474.407896]  ath11k_dp_rx_pktlog_stop+0x49/0xc0 [ath11k]
+[  474.407912]  ath11k_core_suspend+0x34/0x130 [ath11k]
+[  474.407923]  ath11k_pci_pm_suspend+0x1b/0x50 [ath11k_pci]
+[  474.407928]  pci_pm_suspend+0x7e/0x170
+[  474.407935]  ? pci_pm_freeze+0xc0/0xc0
+[  474.407939]  dpm_run_callback+0x4e/0x150
+[  474.407947]  __device_suspend+0x148/0x4c0
+[  474.407951]  async_suspend+0x20/0x90
+dmesg-efi-164255130401001:
+Oops#1 Part1
+[  474.407955]  async_run_entry_fn+0x33/0x120
+[  474.407959]  process_one_work+0x220/0x3f0
+[  474.407966]  worker_thread+0x4a/0x3d0
+[  474.407971]  kthread+0x17a/0x1a0
+[  474.407975]  ? process_one_work+0x3f0/0x3f0
+[  474.407979]  ? set_kthread_struct+0x40/0x40
+[  474.407983]  ret_from_fork+0x22/0x30
+[  474.407991]  </TASK>
 
-The test looks like this:
+The issue here is that board file loading happens after ath11k_pci_probe()
+succesfully returns (ath11k initialisation happends asynchronously) and the
+suspend handler is still enabled, of course failing as ath11k is not properly
+initialised. Fix this by checking ATH11K_FLAG_QMI_FAIL during both suspend and
+resume.
 
-  mkfs.btrfs -f $dev > /dev/null
-  mount $dev $mnt
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03003-QCAHSPSWPL_V1_V2_SILICONZ_LITE-2
 
-  btrfs sub create $mnt/subvol
-  touch $mnt/subvol/swapfile
-  chmod 600 $mnt/subvol/swapfile
-  chattr +C $mnt/subvol/swapfile
-  dd if=/dev/zero of=$mnt/subvol/swapfile bs=1K count=4096
-  mkswap $mnt/subvol/swapfile
-  swapon $mnt/subvol/swapfile
-
-  btrfs sub delete $mnt/subvol
-  swapoff $mnt/subvol/swapfile  # failed: No such file or directory
-  swapoff --all
-
-  unmount $mnt                  # target is busy.
-
-To prevent above issue, we simply check that whether the subvolume
-contains any active swapfile, and stop the deleting process.  This
-behavior is like snapshot ioctl dealing with a swapfile.
-
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-by: Robbie Ko <robbieko@synology.com>
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Kaiwen Hu <kevinhu@synology.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215504
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220127090117.2024-1-kvalo@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/inode.c |   24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/pci.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -4462,6 +4462,13 @@ int btrfs_delete_subvolume(struct inode
- 			   dest->root_key.objectid);
- 		return -EPERM;
- 	}
-+	if (atomic_read(&dest->nr_swapfiles)) {
-+		spin_unlock(&dest->root_item_lock);
-+		btrfs_warn(fs_info,
-+			   "attempt to delete subvolume %llu with active swapfile",
-+			   root->root_key.objectid);
-+		return -EPERM;
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index de71ad594f34..903758751c99 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -1571,6 +1571,11 @@ static __maybe_unused int ath11k_pci_pm_suspend(struct device *dev)
+ 	struct ath11k_base *ab = dev_get_drvdata(dev);
+ 	int ret;
+ 
++	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
++		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci suspend as qmi is not initialised\n");
++		return 0;
 +	}
- 	root_flags = btrfs_root_flags(&dest->root_item);
- 	btrfs_set_root_flags(&dest->root_item,
- 			     root_flags | BTRFS_ROOT_SUBVOL_DEAD);
-@@ -10764,8 +10771,23 @@ static int btrfs_swap_activate(struct sw
- 	 * set. We use this counter to prevent snapshots. We must increment it
- 	 * before walking the extents because we don't want a concurrent
- 	 * snapshot to run after we've already checked the extents.
--	 */
-+	 *
-+	 * It is possible that subvolume is marked for deletion but still not
-+	 * removed yet. To prevent this race, we check the root status before
-+	 * activating the swapfile.
-+	 */
-+	spin_lock(&root->root_item_lock);
-+	if (btrfs_root_dead(root)) {
-+		spin_unlock(&root->root_item_lock);
 +
-+		btrfs_exclop_finish(fs_info);
-+		btrfs_warn(fs_info,
-+		"cannot activate swapfile because subvolume %llu is being deleted",
-+			root->root_key.objectid);
-+		return -EPERM;
+ 	ret = ath11k_core_suspend(ab);
+ 	if (ret)
+ 		ath11k_warn(ab, "failed to suspend core: %d\n", ret);
+@@ -1583,6 +1588,11 @@ static __maybe_unused int ath11k_pci_pm_resume(struct device *dev)
+ 	struct ath11k_base *ab = dev_get_drvdata(dev);
+ 	int ret;
+ 
++	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
++		ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot skipping pci resume as qmi is not initialised\n");
++		return 0;
 +	}
- 	atomic_inc(&root->nr_swapfiles);
-+	spin_unlock(&root->root_item_lock);
- 
- 	isize = ALIGN_DOWN(inode->i_size, fs_info->sectorsize);
- 
++
+ 	ret = ath11k_core_resume(ab);
+ 	if (ret)
+ 		ath11k_warn(ab, "failed to resume core: %d\n", ret);
+-- 
+2.35.1
+
 
 
