@@ -2,165 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 225ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357297AbiDLPtV (ORCPT
+        id S1357302AbiDLPur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
+        Tue, 12 Apr 2022 11:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350957AbiDLPtM (ORCPT
+        with ESMTP id S232947AbiDLPul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:49:12 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE9D5FF29
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e8-20020a17090a118800b001cb13402ea2so3487104pja.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
+        Tue, 12 Apr 2022 11:50:41 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C225FF33
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:48:23 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id b65-20020a25e444000000b0063dd00480f8so15033782ybh.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:48:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=js3tHDr4eOmEThgm8BUw/oQwvmml9LueqFtgZ1mVLag=;
-        b=g7Tpd/SDnjWeFBxtNwLp0z0M9X5xMPs6WTBHb9BWKpfmauaI8enp2SS2e019oT1jiZ
-         Ct3/55zRMiwurWkKgnpI6VlRoVIrcb+k7aStwuAyg6C280VfkuzF7pq2IMjN3MUA+bzx
-         E8ucYdFUUYzI1KuyaBFDCAU0a4SkzvyI2GiJBCmpKMedqW1Rt40bD+B8O3YiqqV4PDrj
-         5wg9BexJ6eve+GtECxtukuW6aolxYDu3Q8X7BAUz2qbTVHdT4moZlD1458TPdBQB16B4
-         FAdjswkHtsyTHDPocXzTO83vDX53hmRfew0hZuLKimHimZ/SuYTL1IFu6p8s6AJ0Z0PJ
-         wLFQ==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=8IZz/gMylCpP1gVOy3Mzg8c3y39Rz/6oTdnON/BPbbo=;
+        b=nozrEXfagyw88Rss5WjQoaW+QrAP05xY/u0NdTER42+HrNPzXBnVSeJMVV1t4f1tuk
+         blSVnwX63Ntsee0BrggFx1BX7hqrWUE+/lheMmBq4lLmaGVbOnNzrH3RMNh/aYIYEC7m
+         gkyaLUH7heh/Bagv6Tc7TIuyIYrzP9V8RZn/U4DS5KheteWxYjSJ7u/6J0we0EIJ0NC9
+         AsCP7aaf3Kb42hs6Lw2WxNxA8rsk6dSAiF1hRAoqmSeTeb13PJFeWlHtOGKWUJ5C2+Ue
+         xLJls2OFlXo9elbttQXMs1LNWl87IVZaVxDY+tNaz/W/C6bgwKop6uSP1HPb7zpVPwZ0
+         gtWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=js3tHDr4eOmEThgm8BUw/oQwvmml9LueqFtgZ1mVLag=;
-        b=deY24itl2Gm6m8bCEkQtVVdfJUebW6toZqB/UyJ0ZsvsRJPdZt11CquBfy+9z8NVPJ
-         85M+tbSSM5z/7mh16MpMTD+atBOtImiXdq3RWK/xwxnnYlKl+jjS0GGCPn7uKIfY8R11
-         llUD/3NKtpXVs3f/gQ1J6eF0aFaCdd6+Hie+4z+FIAJwd0JSeNQSxdzhMkUR92rOanvu
-         a2EpfjMXBv3dqGKPWrMnYNm3084M6Hx+mP2SOrmbx4fF5i6mSMBIIYeso2XI8m765oNk
-         Ix5Muj+tAeHXihCUpQjsAWxfsXTrBRNpNkYoDN09ApLn6lRiMMZP2yvh47ryEjltXXo3
-         rjjw==
-X-Gm-Message-State: AOAM533sDBJ/A7R/t4gdkU9kMY5I+L4CP594VB6OxG98mC6u3eGD0c9h
-        OwxWPfziIfZRO2FcXSIELkUFkA==
-X-Google-Smtp-Source: ABdhPJzWh088TkrTlX2julOJDlWp7vqoK+Ge8A9SWU59r2SdzQzPnnZKLDM2tyUj29HwS007VXKOuA==
-X-Received: by 2002:a17:90b:380c:b0:1cb:a43d:4c29 with SMTP id mq12-20020a17090b380c00b001cba43d4c29mr5591787pjb.240.1649778413563;
-        Tue, 12 Apr 2022 08:46:53 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id bd11-20020a656e0b000000b0039da213aa72sm1645826pgb.5.2022.04.12.08.46.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 08:46:52 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 15:46:49 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
-Subject: Re: [PATCH v2 5/9] KVM: x86/mmu: Factor out the meat of
- reset_tdp_shadow_zero_bits_mask
-Message-ID: <YlWe6bwQX9V4Oc5S@google.com>
-References: <20220321224358.1305530-1-bgardon@google.com>
- <20220321224358.1305530-6-bgardon@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220321224358.1305530-6-bgardon@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=8IZz/gMylCpP1gVOy3Mzg8c3y39Rz/6oTdnON/BPbbo=;
+        b=DVJOK7YYIFwT16Pz7yderCYPZxbWrmxy+aJfIHOcMuqjdC/FercnyKsk1ONwFghatx
+         R/kEjFejYBfoLIsmVHzJmToPKK1yxiiqfb5hBzUf3a6V/npKir+gw6Yd6P4R0HZCMkVa
+         0MA6157xLPpXi34rVMF//FvJ6PyOCr57tPJnS78jMz1VHH98Ph9Dk4AwUvEv1Dypm4HE
+         /EAfl0r6BmUOwhJTdIPXzQbTL7jNhBjFj7t9GYakW7cghZzKE0Wf16ezTvF+lfhAkA1z
+         Fp7eZuiLseyM/KkbAmeqOQxzXMZcl7SJx4hDulz0FaRXsr5Jz8uCEurxiAkjqrRCs3ah
+         fMgQ==
+X-Gm-Message-State: AOAM532OtN+qMQlSDt2dL/4nNYqUQw4vUau9wlx7rXooE3422kZCys1x
+        icH8CQ7vsT8xSR6OaX1OJQK28RD1hPEX
+X-Google-Smtp-Source: ABdhPJy450ML0VeLyDFpbPqaekYj5Wh+ytMVAvRr1v5nwfqBAHYtbYtXW7oIiYzIflTqKubXTCVh9Baufz9i
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:5f6f:a698:92a:5d45])
+ (user=irogers job=sendgmr) by 2002:a5b:cc:0:b0:63d:897a:ddab with SMTP id
+ d12-20020a5b00cc000000b0063d897addabmr25252581ybp.110.1649778502201; Tue, 12
+ Apr 2022 08:48:22 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 08:48:13 -0700
+Message-Id: <20220412154817.2728324-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [PATCH v2 0/4] Tidy up symbol end fixup
+From:   Ian Rogers <irogers@google.com>
+To:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Ian Rogers <irogers@google.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Li Huafei <lihuafei1@huawei.com>,
+        "=?UTF-8?q?Martin=20Li=C5=A1ka?=" <mliska@suse.cz>,
+        William Cohen <wcohen@redhat.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Lexi Shao <shaolexi@huawei.com>,
+        Remi Bernon <rbernon@codeweavers.com>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Denis Nikitin <denik@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022, Ben Gardon wrote:
-> Factor out the implementation of reset_tdp_shadow_zero_bits_mask to a
-> helper function which does not require a vCPU pointer. The only element
-> of the struct kvm_mmu context used by the function is the shadow root
-> level, so pass that in too instead of the mmu context.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 3b8da8b0745e..6f98111f8f8b 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -4487,16 +4487,14 @@ static inline bool boot_cpu_is_amd(void)
->   * possible, however, kvm currently does not do execution-protection.
->   */
->  static void
+Fixing up more symbol ends as introduced in:
+https://lore.kernel.org/lkml/20220317135536.805-1-mpetlan@redhat.com/
+caused perf annotate to run into memory limits - every symbol holds
+all the disassembled code in the annotation, and so making symbols
+ends further away dramatically increased memory usage (40MB to
+ >1GB). Modify the symbol end logic so that special kernel cases aren't
+applied in the common case.
 
-Strongly prefer the newline here get dropped (see below).
+v2. Drops a merged patch. Fixes a build issue with libbfd enabled.
 
-> -reset_tdp_shadow_zero_bits_mask(struct kvm_mmu *context)
-> +build_tdp_shadow_zero_bits_mask(struct rsvd_bits_validate *shadow_zero_check,
+Ian Rogers (4):
+  perf symbols: Always do architecture specific fixups
+  perf symbols: Add is_kernel argument to fixup end
+  perf symbol: By default only fix zero length symbols
+  perf symbols: More specific architecture end fixing
 
-Kind of a nit, but KVM uses "calc" for this sort of thing.  There are no other
-instances of "build_" to describe this behavior.
+ tools/perf/arch/arm64/util/machine.c   | 14 +++++++++-----
+ tools/perf/arch/powerpc/util/machine.c | 10 +++++++---
+ tools/perf/arch/s390/util/machine.c    | 12 ++++++++----
+ tools/perf/util/symbol-elf.c           |  2 +-
+ tools/perf/util/symbol.c               | 16 +++++++++-------
+ tools/perf/util/symbol.h               |  4 ++--
+ 6 files changed, 36 insertions(+), 22 deletions(-)
 
-Am I alone in think that shadow_zero_check is an awful, awful name?  E.g. the EPT
-memtype case has legal non-zero values.  Anyone object to opportunistically
-renaming the function and the local shadow_zero_check to "rsvd_bits" to shorten
-line lengths and move KVM one step closer to consistent naming?
+-- 
+2.35.1.1178.g4f1659d476-goog
 
-> +				int shadow_root_level)
->  {
-> -	struct rsvd_bits_validate *shadow_zero_check;
->  	int i;
->  
-> -	shadow_zero_check = &context->shadow_zero_check;
-> -
->  	if (boot_cpu_is_amd())
->  		__reset_rsvds_bits_mask(shadow_zero_check, reserved_hpa_bits(),
-> -					context->shadow_root_level, false,
-> +					shadow_root_level, false,
->  					boot_cpu_has(X86_FEATURE_GBPAGES),
->  					false, true);
->  	else
-> @@ -4507,12 +4505,19 @@ reset_tdp_shadow_zero_bits_mask(struct kvm_mmu *context)
->  	if (!shadow_me_mask)
->  		return;
->  
-> -	for (i = context->shadow_root_level; --i >= 0;) {
-> +	for (i = shadow_root_level; --i >= 0;) {
->  		shadow_zero_check->rsvd_bits_mask[0][i] &= ~shadow_me_mask;
->  		shadow_zero_check->rsvd_bits_mask[1][i] &= ~shadow_me_mask;
->  	}
->  }
->  
-> +static void
-> +reset_tdp_shadow_zero_bits_mask(struct kvm_mmu *context)
-
-One line!  Aside from being against the One True Style[*], there is zero reason
-for a newline here.
-
-And I vote to drop the "mask", because (a) it's not a singular mask and (b) it's
-not even a mask in all cases.
-
-And while I'm on a naming consistency rant, s/context/mmu.
-
-I.e. end up with:
-
-static void calc_tdp_shadow_rsvd_bits(struct rsvd_bits_validate *rsvd_bits,
-				      int shadow_root_level)
-
-static void reset_tdp_shadow_rsvd_bits(struct kvm_mmu *mmu)
-
-[*] https://lore.kernel.org/mm-commits/CAHk-=wjS-Jg7sGMwUPpDsjv392nDOOs0CtUtVkp=S6Q7JzFJRw@mail.gmail.com
-
-> +{
-> +	build_tdp_shadow_zero_bits_mask(&context->shadow_zero_check,
-> +					context->shadow_root_level);
-> +}
-> +
->  /*
->   * as the comments in reset_shadow_zero_bits_mask() except it
->   * is the shadow page table for intel nested guest.
-> -- 
-> 2.35.1.894.gb6a874cedc-goog
-> 
