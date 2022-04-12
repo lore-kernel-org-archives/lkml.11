@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B58C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0AFC352A8
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355672AbiDLIIq (ORCPT
+        id S1356192AbiDLIJM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        Tue, 12 Apr 2022 04:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355521AbiDLH1k (ORCPT
+        with ESMTP id S1353558AbiDLHZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:40 -0400
+        Tue, 12 Apr 2022 03:25:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E88F4EA2E;
-        Tue, 12 Apr 2022 00:07:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFB425C78;
+        Tue, 12 Apr 2022 00:01:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADAFB616B3;
-        Tue, 12 Apr 2022 07:07:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC52FC385A1;
-        Tue, 12 Apr 2022 07:07:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF4F360B2E;
+        Tue, 12 Apr 2022 07:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F29AFC385A1;
+        Tue, 12 Apr 2022 07:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747264;
-        bh=Jc8pgUnbZ/NjC/Hkh90e39VVKCwDKbAPR4E0Lwf2MiE=;
+        s=korg; t=1649746871;
+        bh=+YTNds+8z0t2zHdYuIfAV4xXR8U6PjwOkzvV2rN7NGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QGDel+mcFdBDfdXD7/lMwjuQ0dGVzKub17cMKKzRxO4BZnci57tu/BdN7ri83yx0p
-         6asPeIEUgHxTrh+aoR2KA6GAw9LZbFqZi9X55OSafs2oYbjSSLVtiYn52EDMwQGI1E
-         V6iWcgmOhxIjPT9o2MmAHmVvHraA6VAyAAtGIMDU=
+        b=d11aYGUWXCaUdBts8vJwP8pcDOrDhX+xb8Pq3/xSTqK8z68xEWLc5kkhjcS8d6a0r
+         rHcpudVBgIveqxGQui+Yazzuw/hbeSPSd8/77nI+sQfnG0Wb2o/Z41/MynPY9IIKqo
+         oHMHf3RHLQA4t9mgg+Lv/6DldWgByI+aMycgyeiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <philipp.zabel@gmail.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 017/343] drm/edid: remove non_desktop quirk for HPN-3515 and LEN-B800.
-Date:   Tue, 12 Apr 2022 08:27:15 +0200
-Message-Id: <20220412062951.602588791@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 120/285] phy: amlogic: meson8b-usb2: fix shared reset control use
+Date:   Tue, 12 Apr 2022 08:29:37 +0200
+Message-Id: <20220412062947.130039106@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philipp Zabel <philipp.zabel@gmail.com>
+From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
 
-[ Upstream commit 50dc95d561a2552b0d76a9f91b38005195bf2974 ]
+[ Upstream commit 6f1dedf089ab1a4f03ea7aadc3c4a99885b4b4a0 ]
 
-Now that there is support for the Microsoft VSDB for HMDs, remove the
-non-desktop quirk for two devices that are verified to contain it in
-their EDID: HPN-3515 and LEN-B800.
-Presumably most of the other Windows Mixed Reality headsets contain it
-as well, but there are ACR-7FCE and SEC-5194 devices without it.
+Use reset_control_rearm() call if an error occurs in case
+phy_meson8b_usb2_power_on() fails after reset() has been called, or in
+case phy_meson8b_usb2_power_off() is called i.e the resource is no longer
+used and the reset line may be triggered again by other devices.
 
-Tested with LEN-B800.
+reset_control_rearm() keeps use of triggered_count sane in the reset
+framework, use of reset_control_reset() on shared reset line should
+be balanced with reset_control_rearm().
 
-Signed-off-by: Philipp Zabel <philipp.zabel@gmail.com>
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220123101653.147333-2-philipp.zabel@gmail.com
+Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Reported-by: Jerome Brunet <jbrunet@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220111095255.176141-4-aouledameur@baylibre.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_edid.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/phy/amlogic/phy-meson8b-usb2.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index b8f5419e514a..a71b82668a98 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -212,9 +212,7 @@ static const struct edid_quirk {
+diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
+index 77e7e9b1428c..dd96763911b8 100644
+--- a/drivers/phy/amlogic/phy-meson8b-usb2.c
++++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
+@@ -154,6 +154,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 	ret = clk_prepare_enable(priv->clk_usb_general);
+ 	if (ret) {
+ 		dev_err(&phy->dev, "Failed to enable USB general clock\n");
++		reset_control_rearm(priv->reset);
+ 		return ret;
+ 	}
  
- 	/* Windows Mixed Reality Headsets */
- 	EDID_QUIRK('A', 'C', 'R', 0x7fce, EDID_QUIRK_NON_DESKTOP),
--	EDID_QUIRK('H', 'P', 'N', 0x3515, EDID_QUIRK_NON_DESKTOP),
- 	EDID_QUIRK('L', 'E', 'N', 0x0408, EDID_QUIRK_NON_DESKTOP),
--	EDID_QUIRK('L', 'E', 'N', 0xb800, EDID_QUIRK_NON_DESKTOP),
- 	EDID_QUIRK('F', 'U', 'J', 0x1970, EDID_QUIRK_NON_DESKTOP),
- 	EDID_QUIRK('D', 'E', 'L', 0x7fce, EDID_QUIRK_NON_DESKTOP),
- 	EDID_QUIRK('S', 'E', 'C', 0x144a, EDID_QUIRK_NON_DESKTOP),
+@@ -161,6 +162,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 	if (ret) {
+ 		dev_err(&phy->dev, "Failed to enable USB DDR clock\n");
+ 		clk_disable_unprepare(priv->clk_usb_general);
++		reset_control_rearm(priv->reset);
+ 		return ret;
+ 	}
+ 
+@@ -199,6 +201,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 				dev_warn(&phy->dev, "USB ID detect failed!\n");
+ 				clk_disable_unprepare(priv->clk_usb);
+ 				clk_disable_unprepare(priv->clk_usb_general);
++				reset_control_rearm(priv->reset);
+ 				return -EINVAL;
+ 			}
+ 		}
+@@ -218,6 +221,7 @@ static int phy_meson8b_usb2_power_off(struct phy *phy)
+ 
+ 	clk_disable_unprepare(priv->clk_usb);
+ 	clk_disable_unprepare(priv->clk_usb_general);
++	reset_control_rearm(priv->reset);
+ 
+ 	/* power off the PHY by putting it into reset mode */
+ 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_POWER_ON_RESET,
 -- 
 2.35.1
 
