@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF42C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7EFC46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355187AbiDLIH2 (ORCPT
+        id S1355130AbiDLIHL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
+        Tue, 12 Apr 2022 04:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354706AbiDLH0i (ORCPT
+        with ESMTP id S1354379AbiDLH0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2674667D;
-        Tue, 12 Apr 2022 00:06:27 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911BC457A8;
+        Tue, 12 Apr 2022 00:06:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A5E3616D1;
-        Tue, 12 Apr 2022 07:06:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 062B3C385A1;
-        Tue, 12 Apr 2022 07:06:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17BC0616AB;
+        Tue, 12 Apr 2022 07:06:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC555C385A6;
+        Tue, 12 Apr 2022 07:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747186;
-        bh=Q3b0PMg5JLkodTK+XtPZfINqw+rpVNUCVbxglG8Bpqg=;
+        s=korg; t=1649747172;
+        bh=X/BtyyXbbqto7e/ymegP/7sT2/2Xne4gHenRZLCdUYk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x9I4iMaz9yd9KPTg+ZA4uDyLaKQ3hFkNuDoKmlMlDCd9DXVr+C+2c0HeiXXzq+/C2
-         XDzUEOyuYaDGsT0qmCdDp+3dHJZLn10luQIXa2CqQOh6wcqFIUCCFYrpJrSM5TCwfU
-         +ON2C5Ma2qzR8mTdv0Z0sIc3KrPiwB2wcHExhym4=
+        b=QmSor6S7XNisNtZBXta65b2Qm7VQZDwnbq1VUTd+Ot+RVeQ1ZeiPCgkndieXqa9xh
+         GZBKlfPTj0SlQ3qndTyR6sSkoJJiSglX9Doau+xmQi4SaEhAzGWH37pcTQPxVSjhe3
+         r0WUm0zIXC8Fii/GcNdScJtU2Br0bul6j2ZKVPFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
         Nathan Chancellor <nathan@kernel.org>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.16 273/285] ubsan: remove CONFIG_UBSAN_OBJECT_SIZE
-Date:   Tue, 12 Apr 2022 08:32:10 +0200
-Message-Id: <20220412062951.536113780@linuxfoundation.org>
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 5.16 269/285] tools build: Filter out options and warnings not supported by clang
+Date:   Tue, 12 Apr 2022 08:32:06 +0200
+Message-Id: <20220412062951.421335021@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -60,120 +58,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 69d0db01e210e07fe915e5da91b54a867cda040f upstream.
+commit 41caff459a5b956b3e23ba9ca759dd0629ad3dda upstream.
 
-The object-size sanitizer is redundant to -Warray-bounds, and
-inappropriately performs its checks at run-time when all information
-needed for the evaluation is available at compile-time, making it quite
-difficult to use:
+These make the feature check fail when using clang, so remove them just
+like is done in tools/perf/Makefile.config to build perf itself.
 
-  https://bugzilla.kernel.org/show_bug.cgi?id=214861
+Adding -Wno-compound-token-split-by-macro to tools/perf/Makefile.config
+when building with clang is also necessary to avoid these warnings
+turned into errors (-Werror):
 
-With -Warray-bounds almost enabled globally, it doesn't make sense to
-keep this around.
+    CC      /tmp/build/perf/util/scripting-engines/trace-event-perl.o
+  In file included from util/scripting-engines/trace-event-perl.c:35:
+  In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+  In file included from /usr/lib64/perl5/CORE/hv.h:659:
+  In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+  In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '(' and '{' tokens introducing statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+                                       ^~~~~~~~~~
+  /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_START'
+  #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+                                ^
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: '{' token is here
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+                                                  ^
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '}' and ')' tokens terminating statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+      v ^= (v>>23);                       \
+                                          ^
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: ')' token is here
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+  } STMT_END
+    ^~~~~~~~
+  /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_END'
+  #   define STMT_END     )
+                          ^
 
-Link: https://lkml.kernel.org/r/20211203235346.110809-1-keescook@chromium.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Marco Elver <elver@google.com>
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Cc: Michal Marek <michal.lkml@markovi.net>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
+Please refer to the discussion on the Link: tag below, where Nathan
+clarifies the situation:
+
+<quote>
+acme> And then get to the problems at the end of this message, which seem
+acme> similar to the problem described here:
+acme>
+acme> From  Nathan Chancellor <>
+acme> Subject	[PATCH] mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
+acme>
+acme> https://lkml.org/lkml/2020/9/1/135
+acme>
+acme> So perhaps in this case its better to disable that
+acme> -Werror,-Wcompound-token-split-by-macro when building with clang?
+
+Yes, I think that is probably the best solution. As far as I can tell,
+at least in this file and context, the warning appears harmless, as the
+"create a GNU C statement expression from two different macros" is very
+much intentional, based on the presence of PERL_USE_GCC_BRACE_GROUPS.
+The warning is fixed in upstream Perl by just avoiding creating GNU C
+statement expressions using STMT_START and STMT_END:
+
+  https://github.com/Perl/perl5/issues/18780
+  https://github.com/Perl/perl5/pull/18984
+
+If I am reading the source code correctly, an alternative to disabling
+the warning would be specifying -DPERL_GCC_BRACE_GROUPS_FORBIDDEN but it
+seems like that might end up impacting more than just this site,
+according to the issue discussion above.
+</quote>
+
+Based-on-a-patch-by: Sedat Dilek <sedat.dilek@gmail.com>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
 Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Link: http://lore.kernel.org/lkml/YkxWcYzph5pC1EK8@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/Kconfig.ubsan      |   13 -------------
- lib/test_ubsan.c       |   22 ----------------------
- scripts/Makefile.ubsan |    1 -
- 3 files changed, 36 deletions(-)
+ tools/build/feature/Makefile |    7 +++++++
+ tools/perf/Makefile.config   |    3 +++
+ 2 files changed, 10 insertions(+)
 
---- a/lib/Kconfig.ubsan
-+++ b/lib/Kconfig.ubsan
-@@ -112,19 +112,6 @@ config UBSAN_UNREACHABLE
- 	  This option enables -fsanitize=unreachable which checks for control
- 	  flow reaching an expected-to-be-unreachable position.
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -220,6 +220,13 @@ PERL_EMBED_LIBADD = $(call grep-libs,$(P
+ PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
+ FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
  
--config UBSAN_OBJECT_SIZE
--	bool "Perform checking for accesses beyond the end of objects"
--	default UBSAN
--	# gcc hugely expands stack usage with -fsanitize=object-size
--	# https://lore.kernel.org/lkml/CAHk-=wjPasyJrDuwDnpHJS2TuQfExwe=px-SzLeN8GFMAQJPmQ@mail.gmail.com/
--	depends on !CC_IS_GCC
--	depends on $(cc-option,-fsanitize=object-size)
--	help
--	  This option enables -fsanitize=object-size which checks for accesses
--	  beyond the end of objects where the optimizer can determine both the
--	  object being operated on and its size, usually seen with bad downcasts,
--	  or access to struct members from NULL pointers.
--
- config UBSAN_BOOL
- 	bool "Perform checking for non-boolean values used as boolean"
- 	default UBSAN
---- a/lib/test_ubsan.c
-+++ b/lib/test_ubsan.c
-@@ -79,15 +79,6 @@ static void test_ubsan_load_invalid_valu
- 	eval2 = eval;
- }
++ifeq ($(CC_NO_CLANG), 0)
++  PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
++  PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
++  PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
++  FLAGS_PERL_EMBED += -Wno-compound-token-split-by-macro
++endif
++
+ $(OUTPUT)test-libperl.bin:
+ 	$(BUILD) $(FLAGS_PERL_EMBED)
  
--static void test_ubsan_null_ptr_deref(void)
--{
--	volatile int *ptr = NULL;
--	int val;
--
--	UBSAN_TEST(CONFIG_UBSAN_OBJECT_SIZE);
--	val = *ptr;
--}
--
- static void test_ubsan_misaligned_access(void)
- {
- 	volatile char arr[5] __aligned(4) = {1, 2, 3, 4, 5};
-@@ -98,29 +89,16 @@ static void test_ubsan_misaligned_access
- 	*ptr = val;
- }
- 
--static void test_ubsan_object_size_mismatch(void)
--{
--	/* "((aligned(8)))" helps this not into be misaligned for ptr-access. */
--	volatile int val __aligned(8) = 4;
--	volatile long long *ptr, val2;
--
--	UBSAN_TEST(CONFIG_UBSAN_OBJECT_SIZE);
--	ptr = (long long *)&val;
--	val2 = *ptr;
--}
--
- static const test_ubsan_fp test_ubsan_array[] = {
- 	test_ubsan_shift_out_of_bounds,
- 	test_ubsan_out_of_bounds,
- 	test_ubsan_load_invalid_value,
- 	test_ubsan_misaligned_access,
--	test_ubsan_object_size_mismatch,
- };
- 
- /* Excluded because they Oops the module. */
- static const test_ubsan_fp skip_ubsan_array[] = {
- 	test_ubsan_divrem_overflow,
--	test_ubsan_null_ptr_deref,
- };
- 
- static int __init test_ubsan_init(void)
---- a/scripts/Makefile.ubsan
-+++ b/scripts/Makefile.ubsan
-@@ -8,7 +8,6 @@ ubsan-cflags-$(CONFIG_UBSAN_LOCAL_BOUNDS
- ubsan-cflags-$(CONFIG_UBSAN_SHIFT)		+= -fsanitize=shift
- ubsan-cflags-$(CONFIG_UBSAN_DIV_ZERO)		+= -fsanitize=integer-divide-by-zero
- ubsan-cflags-$(CONFIG_UBSAN_UNREACHABLE)	+= -fsanitize=unreachable
--ubsan-cflags-$(CONFIG_UBSAN_OBJECT_SIZE)	+= -fsanitize=object-size
- ubsan-cflags-$(CONFIG_UBSAN_BOOL)		+= -fsanitize=bool
- ubsan-cflags-$(CONFIG_UBSAN_ENUM)		+= -fsanitize=enum
- ubsan-cflags-$(CONFIG_UBSAN_TRAP)		+= -fsanitize-undefined-trap-on-error
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -788,6 +788,9 @@ else
+     LDFLAGS += $(PERL_EMBED_LDFLAGS)
+     EXTLIBS += $(PERL_EMBED_LIBADD)
+     CFLAGS += -DHAVE_LIBPERL_SUPPORT
++    ifeq ($(CC_NO_CLANG), 0)
++      CFLAGS += -Wno-compound-token-split-by-macro
++    endif
+     $(call detected,CONFIG_LIBPERL)
+   endif
+ endif
 
 
