@@ -2,87 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E55B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241802AbiDLL7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
+        id S1343603AbiDLL7d (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345829AbiDLL44 (ORCPT
+        with ESMTP id S238241AbiDLL5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:56:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F8260CCB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:41:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2E2EB81C9F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:41:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325EDC385A1;
-        Tue, 12 Apr 2022 10:41:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649760090;
-        bh=rzfnknouQo5spyE2oJ6VE8AOEpQ+Y5ZYUDR0kz+9OVc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UDZ0iKHFFnabFQIaa82O7sHgKBb5LcVgEyFz1DPLMR6R6VoM+kFf6WUVIhBDVd6ZP
-         taP+8yA7WeqdWfgNNBrdhugZbsktvG8WLiBlX1Cvaneqfg/XnV8HFmaBpXjLiEQZ2Y
-         pURIIQ81cvB2pAOD+jzCRUrvzE0w9BtfghCTQZEo=
-Date:   Tue, 12 Apr 2022 12:41:27 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Liu Junqi <liujunqi@pku.edu.cn>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@intel.com>,
-        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] MAINTAINERS: Remove D. Kershner from Unisys S-PAR
- maintainers
-Message-ID: <YlVXV4J41KBzKHtm@kroah.com>
-References: <20220412103629.8029-1-fmdefrancesco@gmail.com>
+        Tue, 12 Apr 2022 07:57:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D969CB59
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:43:47 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id lc2so15897000ejb.12
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:43:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=1/pvRvH0oNX+VMdJTF78jyz+TR/9ZtAyKlMuXkFoMFU=;
+        b=UUgTJI0HPAlVMcr8MnCFAbme93x3J7V1EX5P78EjdEu1m/N5iM2BAbBhB0EDiwadPF
+         nH7MYYHdxoqYvPe29GuiKcIC3v9vHeVxg5FfLU9F+NcsKJRCmVRzVrXEgkyDx1MIJ01e
+         XhRZr2uz2j4yqQil4JkEOaUH75/1sGGyy+MeIh+wdrmLO8+7BDEFTZazCEmIwCkK7eYl
+         Mm1tm7+uI8x9JpQnSVRo0NUt89h/xTngIIYj5xqHi6nusntYySqeTgvbXn/Qe+6DAH2w
+         fpHuhCypwAdMHq9JI0jgl+dqELweHsUiYImOXZIPLMyV2tbzhWaFqHC5tcl1rbP63+HE
+         nxhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1/pvRvH0oNX+VMdJTF78jyz+TR/9ZtAyKlMuXkFoMFU=;
+        b=IeKsXtB+CF5MctimPtGJykS2hqDhwfeYVWnhZPePS1diDy988l1p5Pm8IgTL7hF2xN
+         Ti4e0p69aHA0jcE3vT/F6AUumFHwbBEylJcCQwVelrVK6C+qstrcL7qXbx9U3Axzwu7H
+         6CtrxPUxysNvwxGVnvYL8dtlz/+G+PgHghN7FV8Gg/diRqURQSzE7+aaSCG6gAJjqxg6
+         nAmyP01LqXVKPkADcjrH4V3RHnf6DAnwfemV7KE4UxRIu8g4BOf+TIgNRYnjYL7gA62j
+         8dTurZ6WfvsWpRFXgKb5GmIAMuN7iGlR6ThxOKCJoqEbhJRnmt/gGYcQFB3yJqfyl3yV
+         r7yQ==
+X-Gm-Message-State: AOAM5324BT4v5kPtUNzoc/AU1VQwKjNwFOs5SDsGgjYwAJt/TguemFxR
+        pC5z3VLd9L4gikFhNwO8qM0WuQ==
+X-Google-Smtp-Source: ABdhPJx+pmlpdD4w/PiUggltHAdxlLW7rFnuX6rPDHwd9tRwZjjiyttwBB9QINBzifKEQ/qKLPICng==
+X-Received: by 2002:a17:907:3d87:b0:6e6:f1f3:ba7c with SMTP id he7-20020a1709073d8700b006e6f1f3ba7cmr34138300ejc.128.1649760226431;
+        Tue, 12 Apr 2022 03:43:46 -0700 (PDT)
+Received: from [192.168.0.194] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id s12-20020a1709062ecc00b006e8558c9a5csm4865447eji.94.2022.04.12.03.43.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 03:43:46 -0700 (PDT)
+Message-ID: <32b3f189-d284-274b-f238-0e09dc58f8e4@linaro.org>
+Date:   Tue, 12 Apr 2022 12:43:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412103629.8029-1-fmdefrancesco@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] ARM: dts: at91: align SPI NOR node name with dtschema
+Content-Language: en-US
+To:     Tudor.Ambarus@microchip.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, Nicolas.Ferre@microchip.com,
+        alexandre.belloni@bootlin.com, Claudiu.Beznea@microchip.com,
+        Lars.Povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220407143223.295344-1-krzysztof.kozlowski@linaro.org>
+ <8eb6621b-78ca-e5f9-def9-47809dab9bb4@microchip.com>
+ <0c0b19ac-9047-509b-1112-cb25fa00ae22@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <0c0b19ac-9047-509b-1112-cb25fa00ae22@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 12:36:29PM +0200, Fabio M. De Francesco wrote:
-> The email address of David Kershner is no more reachable. Remove his
-> entry from the MAINTAINERS file for UNISYS S-PAR DRIVERS and change
-> the status to "Orphan".
+On 12/04/2022 12:41, Tudor.Ambarus@microchip.com wrote:
+>>>
 > 
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
-> 
-> v1->v2: Change also the status of the entry to "Orphan" and rework the
-> commit message. (Thanks to Greg Kroah-Hartman).
-> 
->  MAINTAINERS | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 3ed62dcd144e..9283c63565b3 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -20184,9 +20184,8 @@ F:	include/linux/cdrom.h
->  F:	include/uapi/linux/cdrom.h
->  
->  UNISYS S-PAR DRIVERS
-> -M:	David Kershner <david.kershner@unisys.com>
->  L:	sparmaintainer@unisys.com (Unisys internal)
+> I've just noticed that there are other node names that can be fixed,
+> if you feel like resubmitting:
+> arch/arm/boot/dts/at91rm9200ek.dts:				mtd_dataflash@0 {
+> arch/arm/boot/dts/at91rm9200ek.dts:		nor_flash@10000000 {
+> arch/arm/boot/dts/at91sam9260ek.dts:				mtd_dataflash@1 {
+> arch/arm/boot/dts/at91sam9261ek.dts:				mtd_dataflash@0 {
+> arch/arm/boot/dts/at91sam9263ek.dts:				mtd_dataflash@0 {
+> arch/arm/boot/dts/at91sam9g20ek_common.dtsi:				mtd_dataflash@1 {
+> arch/arm/boot/dts/at91sam9m10g45ek.dts:				mtd_dataflash@0 {
+> arch/arm/boot/dts/at91sam9rlek.dts:				mtd_dataflash@0 {
 
-Again, please drop this "list" as it obviously is not going to anyone.
+These are not the same bindings, but I can fix them as well (separate
+patch I guess?).
 
-And really, this whole code should be removed, no one seems to be using
-it, and if they are, we can easily revert the removal and mark them as
-the maintainer.
 
-thanks,
-
-greg k-h
+Best regards,
+Krzysztof
