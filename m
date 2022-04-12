@@ -2,48 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E303C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343967AbiDLBGW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S242392AbiDLBG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345124AbiDLA62 (ORCPT
+        with ESMTP id S1345125AbiDLA62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Apr 2022 20:58:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1B731218;
-        Mon, 11 Apr 2022 17:50:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C086D31501;
+        Mon, 11 Apr 2022 17:51:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDF2D60A69;
-        Tue, 12 Apr 2022 00:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39CE2C385A4;
-        Tue, 12 Apr 2022 00:50:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E17B60B2B;
+        Tue, 12 Apr 2022 00:51:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED33EC385A3;
+        Tue, 12 Apr 2022 00:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724650;
-        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=u/pDjD0cGhirQNp4mXs+mE1nmO2YZ6ED2UXXBxoRy+R2vif61h6ZWFE/nZibJEjK8
-         4XCwtLdofLejw7MYCIhR1Cz0fSk1XOReXiu4HImxA4SohIcklxlPvFAM3mwLPuiVdU
-         dgdGoew2Gc2mXQW1uIVkXdnPfdFFrM9txj+MnuDnLXxLgLPasCF9SscLcIpkZaRBQB
-         FeePfOS5A/68IrObqdMHPwf0I3lJkKdA+kPNV9S8cNAAt8USBaYhMoo+dPDVWQLD43
-         oDIYEilE8gWWA/GOsXu3eXw7xYG6CZbTZF2NNoCCPuRZJKUWi7YUwX7TUWkjd1+ro3
-         wFphKHpdauI2Q==
+        s=k20201202; t=1649724659;
+        bh=nKmMu+KnxSgHmcBz+S9jEpKqr6ERgs4IgBTbiWUWDSE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IzFYhUUiIZ0+K9pBMrlzBPQlTv0YijQY+wXsenwFY30MR7uCX0NlMF6RCQIjkb/gq
+         qS8HI8BKLYbG2lFBj2HuYGnKwr6z97Zdf/q8L54mlqSqV5n9UfHYoYBL9FvOxrMUIs
+         i1+iMDehOUbiovWMk56nf8sGtSUpdn6FBNpqw82BSZcM15tWTwxS+vBLfWI3ncX8lU
+         jzdd9AeMFkTSZkhC88LceexHT9pa7wFK1I0G5yb9ITME+1dE740Qzoy/so/lD8xfna
+         26DGZcKs5k2RkAMCmAMeFcqvn1OnqPxAp0/BY2lJ+uWcUDdMcs4a5Bls0f7U0jY6R7
+         JgklxQhN7yQQw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Aurabindo Pillai <aurabindo.pillai@amd.com>,
+Cc:     "Leo (Hanghong) Ma" <hanghong.ma@amd.com>,
+        Chris Park <Chris.Park@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Krunoslav.Kovac@amd.com, Reza.Amini@amd.com,
         amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 01/21] drm/amd: Add USBC connector ID
-Date:   Mon, 11 Apr 2022 20:50:20 -0400
-Message-Id: <20220412005042.351105-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 03/21] drm/amd/display: Update VTEM Infopacket definition
+Date:   Mon, 11 Apr 2022 20:50:22 -0400
+Message-Id: <20220412005042.351105-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412005042.351105-1-sashal@kernel.org>
+References: <20220412005042.351105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,33 +57,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: "Leo (Hanghong) Ma" <hanghong.ma@amd.com>
 
-[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
+[ Upstream commit c9fbf6435162ed5fb7201d1d4adf6585c6a8c327 ]
 
-[Why&How] Add a dedicated AMDGPU specific ID for use with
-newer ASICs that support USB-C output
+[Why & How]
+The latest HDMI SPEC has updated the VTEM packet structure,
+so change the VTEM Infopacket defined in the driver side to align
+with the SPEC.
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Chris Park <Chris.Park@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Leo (Hanghong) Ma <hanghong.ma@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
- 1 file changed, 1 insertion(+)
+ .../gpu/drm/amd/display/modules/info_packet/info_packet.c    | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-index 5b393622f592..a0f0a17e224f 100644
---- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-+++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-@@ -119,6 +119,7 @@
- #define CONNECTOR_OBJECT_ID_eDP                   0x14
- #define CONNECTOR_OBJECT_ID_MXM                   0x15
- #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
-+#define CONNECTOR_OBJECT_ID_USBC                  0x17
+diff --git a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
+index d885d642ed7f..537736713598 100644
+--- a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
++++ b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
+@@ -85,7 +85,8 @@
+ //PB7 = MD0
+ #define MASK_VTEM_MD0__VRR_EN         0x01
+ #define MASK_VTEM_MD0__M_CONST        0x02
+-#define MASK_VTEM_MD0__RESERVED2      0x0C
++#define MASK_VTEM_MD0__QMS_EN         0x04
++#define MASK_VTEM_MD0__RESERVED2      0x08
+ #define MASK_VTEM_MD0__FVA_FACTOR_M1  0xF0
  
- /* deleted */
+ //MD1
+@@ -94,7 +95,7 @@
+ //MD2
+ #define MASK_VTEM_MD2__BASE_REFRESH_RATE_98  0x03
+ #define MASK_VTEM_MD2__RB                    0x04
+-#define MASK_VTEM_MD2__RESERVED3             0xF8
++#define MASK_VTEM_MD2__NEXT_TFR              0xF8
  
+ //MD3
+ #define MASK_VTEM_MD3__BASE_REFRESH_RATE_07  0xFF
 -- 
 2.35.1
 
