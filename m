@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A1EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADA7C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349633AbiDLGiu (ORCPT
+        id S1349753AbiDLGi5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
+        Tue, 12 Apr 2022 02:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349343AbiDLGg4 (ORCPT
+        with ESMTP id S1349777AbiDLGhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:36:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90ED135AA9;
-        Mon, 11 Apr 2022 23:33:59 -0700 (PDT)
+        Tue, 12 Apr 2022 02:37:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585511039;
+        Mon, 11 Apr 2022 23:34:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E0D02CE1C09;
-        Tue, 12 Apr 2022 06:33:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 016DBC385AE;
-        Tue, 12 Apr 2022 06:33:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC9C3618A8;
+        Tue, 12 Apr 2022 06:34:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBEE7C385A1;
+        Tue, 12 Apr 2022 06:34:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745236;
-        bh=Yb0wFWbJfHyzzPvhxswgwD9zV7GMn5fuGUIWKit1ZHQ=;
+        s=korg; t=1649745242;
+        bh=cCF3v0HKS+OhhTX9jSF/rd3/wwsIUZjFlVDapiyC07c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bV3WmzDGq7j3NeA6Qd/akga8a3qUpj2rF1Sc3mP9Uw3cdVYXbNvXzx1cJAlKHuv8i
-         AjkdBLQHgu7HLtvxvzUjTvjaEcNRlIPpnZgeX+PExXOcSSZYtBVv4hAOdLUFqmerBs
-         AHGGM6UjAmJa1OlcSOn0pq/A+XNzU8otEjE7AJsU=
+        b=tNg6BziBeQp6xT9aetL0pyvpJVR+D6iUKd1QKW+p0xpgW4+ASzfUefhUD+T6Mel56
+         CwvzQZORWoFGFW5sgqclln7yGkuhCfOoA8eHjpCGfwcr9jnzCyPlfPetb9/FW6KS6j
+         Vl/K3tde20hQBVkSxuQhyK1p6Rr5Kv+qo8x7X6TQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abdul haleem <abdhalee@linux.vnet.ibm.com>,
-        Sourabh Jain <sourabhjain@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 026/171] powerpc: Set crashkernel offset to mid of RMA region
-Date:   Tue, 12 Apr 2022 08:28:37 +0200
-Message-Id: <20220412062928.642250738@linuxfoundation.org>
+Subject: [PATCH 5.10 004/171] gfs2: gfs2_setattr_size error path fix
+Date:   Tue, 12 Apr 2022 08:28:15 +0200
+Message-Id: <20220412062928.004569672@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -51,88 +49,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sourabh Jain <sourabhjain@linux.ibm.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit 7c5ed82b800d8615cdda00729e7b62e5899f0b13 ]
+[ Upstream commit 7336905a89f19173bf9301cd50a24421162f417c ]
 
-On large config LPARs (having 192 and more cores), Linux fails to boot
-due to insufficient memory in the first memblock. It is due to the
-memory reservation for the crash kernel which starts at 128MB offset of
-the first memblock. This memory reservation for the crash kernel doesn't
-leave enough space in the first memblock to accommodate other essential
-system resources.
+When gfs2_setattr_size() fails, it calls gfs2_rs_delete(ip, NULL) to get
+rid of any reservations the inode may have.  Instead, it should pass in
+the inode's write count as the second parameter to allow
+gfs2_rs_delete() to figure out if the inode has any writers left.
 
-The crash kernel start address was set to 128MB offset by default to
-ensure that the crash kernel get some memory below the RMA region which
-is used to be of size 256MB. But given that the RMA region size can be
-512MB or more, setting the crash kernel offset to mid of RMA size will
-leave enough space for the kernel to allocate memory for other system
-resources.
+In a next step, there are two instances of gfs2_rs_delete(ip, NULL) left
+where we know that there can be no other users of the inode.  Replace
+those with gfs2_rs_deltree(&ip->i_res) to avoid the unnecessary write
+count check.
 
-Since the above crash kernel offset change is only applicable to the LPAR
-platform, the LPAR feature detection is pushed before the crash kernel
-reservation. The rest of LPAR specific initialization will still
-be done during pseries_probe_fw_features as usual.
+With that, gfs2_rs_delete() is only called with the inode's actual write
+count, so get rid of the second parameter.
 
-This patch is dependent on changes to paca allocation for boot CPU. It
-expect boot CPU to discover 1T segment support which is introduced by
-the patch posted here:
-https://lists.ozlabs.org/pipermail/linuxppc-dev/2022-January/239175.html
-
-Reported-by: Abdul haleem <abdhalee@linux.vnet.ibm.com>
-Signed-off-by: Sourabh Jain <sourabhjain@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220204085601.107257-1-sourabhjain@linux.ibm.com
+Fixes: a097dc7e24cb ("GFS2: Make rgrp reservations part of the gfs2_inode structure")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/rtas.c |  6 ++++++
- arch/powerpc/kexec/core.c  | 15 +++++++++++----
- 2 files changed, 17 insertions(+), 4 deletions(-)
+ fs/gfs2/bmap.c  | 2 +-
+ fs/gfs2/file.c  | 2 +-
+ fs/gfs2/inode.c | 2 +-
+ fs/gfs2/rgrp.c  | 7 ++++---
+ fs/gfs2/rgrp.h  | 2 +-
+ fs/gfs2/super.c | 2 +-
+ 6 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
-index cccb32cf0e08..cf421eb7f90d 100644
---- a/arch/powerpc/kernel/rtas.c
-+++ b/arch/powerpc/kernel/rtas.c
-@@ -1296,6 +1296,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
- 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
- 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
+diff --git a/fs/gfs2/bmap.c b/fs/gfs2/bmap.c
+index b34c02985d9d..6c047570d6a9 100644
+--- a/fs/gfs2/bmap.c
++++ b/fs/gfs2/bmap.c
+@@ -2200,7 +2200,7 @@ int gfs2_setattr_size(struct inode *inode, u64 newsize)
  
-+#ifdef CONFIG_PPC64
-+	/* need this feature to decide the crashkernel offset */
-+	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
-+		powerpc_firmware_features |= FW_FEATURE_LPAR;
-+#endif
+ 	ret = do_shrink(inode, newsize);
+ out:
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_delete(ip);
+ 	gfs2_qa_put(ip);
+ 	return ret;
+ }
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index 7bd7581aa682..2e6f622ed428 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -718,7 +718,7 @@ static int gfs2_release(struct inode *inode, struct file *file)
+ 
+ 	if (file->f_mode & FMODE_WRITE) {
+ 		if (gfs2_rs_active(&ip->i_res))
+-			gfs2_rs_delete(ip, &inode->i_writecount);
++			gfs2_rs_delete(ip);
+ 		gfs2_qa_put(ip);
+ 	}
+ 	return 0;
+diff --git a/fs/gfs2/inode.c b/fs/gfs2/inode.c
+index 65ae4fc28ede..74a6b0800e05 100644
+--- a/fs/gfs2/inode.c
++++ b/fs/gfs2/inode.c
+@@ -811,7 +811,7 @@ static int gfs2_create_inode(struct inode *dir, struct dentry *dentry,
+ 		if (free_vfs_inode) /* else evict will do the put for us */
+ 			gfs2_glock_put(ip->i_gl);
+ 	}
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_deltree(&ip->i_res);
+ 	gfs2_qa_put(ip);
+ fail_free_acls:
+ 	posix_acl_release(default_acl);
+diff --git a/fs/gfs2/rgrp.c b/fs/gfs2/rgrp.c
+index eb775e93de97..dc55b029afaa 100644
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -664,13 +664,14 @@ void gfs2_rs_deltree(struct gfs2_blkreserv *rs)
+ /**
+  * gfs2_rs_delete - delete a multi-block reservation
+  * @ip: The inode for this reservation
+- * @wcount: The inode's write count, or NULL
+  *
+  */
+-void gfs2_rs_delete(struct gfs2_inode *ip, atomic_t *wcount)
++void gfs2_rs_delete(struct gfs2_inode *ip)
+ {
++	struct inode *inode = &ip->i_inode;
 +
- 	if (basep && entryp && sizep) {
- 		rtas.base = *basep;
- 		rtas.entry = *entryp;
-diff --git a/arch/powerpc/kexec/core.c b/arch/powerpc/kexec/core.c
-index 56da5eb2b923..80c79cb5010c 100644
---- a/arch/powerpc/kexec/core.c
-+++ b/arch/powerpc/kexec/core.c
-@@ -147,11 +147,18 @@ void __init reserve_crashkernel(void)
- 	if (!crashk_res.start) {
- #ifdef CONFIG_PPC64
- 		/*
--		 * On 64bit we split the RMO in half but cap it at half of
--		 * a small SLB (128MB) since the crash kernel needs to place
--		 * itself and some stacks to be in the first segment.
-+		 * On the LPAR platform place the crash kernel to mid of
-+		 * RMA size (512MB or more) to ensure the crash kernel
-+		 * gets enough space to place itself and some stack to be
-+		 * in the first segment. At the same time normal kernel
-+		 * also get enough space to allocate memory for essential
-+		 * system resource in the first segment. Keep the crash
-+		 * kernel starts at 128MB offset on other platforms.
- 		 */
--		crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
-+		if (firmware_has_feature(FW_FEATURE_LPAR))
-+			crashk_res.start = ppc64_rma_size / 2;
-+		else
-+			crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
- #else
- 		crashk_res.start = KDUMP_KERNELBASE;
- #endif
+ 	down_write(&ip->i_rw_mutex);
+-	if ((wcount == NULL) || (atomic_read(wcount) <= 1))
++	if (atomic_read(&inode->i_writecount) <= 1)
+ 		gfs2_rs_deltree(&ip->i_res);
+ 	up_write(&ip->i_rw_mutex);
+ }
+diff --git a/fs/gfs2/rgrp.h b/fs/gfs2/rgrp.h
+index 9a587ada51ed..2d3c150c55bd 100644
+--- a/fs/gfs2/rgrp.h
++++ b/fs/gfs2/rgrp.h
+@@ -45,7 +45,7 @@ extern int gfs2_alloc_blocks(struct gfs2_inode *ip, u64 *bn, unsigned int *n,
+ 			     bool dinode, u64 *generation);
+ 
+ extern void gfs2_rs_deltree(struct gfs2_blkreserv *rs);
+-extern void gfs2_rs_delete(struct gfs2_inode *ip, atomic_t *wcount);
++extern void gfs2_rs_delete(struct gfs2_inode *ip);
+ extern void __gfs2_free_blocks(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
+ 			       u64 bstart, u32 blen, int meta);
+ extern void gfs2_free_meta(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
+diff --git a/fs/gfs2/super.c b/fs/gfs2/super.c
+index d2b7ecbd1b15..d14b98aa1c3e 100644
+--- a/fs/gfs2/super.c
++++ b/fs/gfs2/super.c
+@@ -1434,7 +1434,7 @@ static void gfs2_evict_inode(struct inode *inode)
+ 	truncate_inode_pages_final(&inode->i_data);
+ 	if (ip->i_qadata)
+ 		gfs2_assert_warn(sdp, ip->i_qadata->qa_ref == 0);
+-	gfs2_rs_delete(ip, NULL);
++	gfs2_rs_deltree(&ip->i_res);
+ 	gfs2_ordered_del_inode(ip);
+ 	clear_inode(inode);
+ 	gfs2_dir_hash_inval(ip);
 -- 
 2.35.1
 
