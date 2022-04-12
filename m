@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB0FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81422C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359283AbiDLIoI (ORCPT
+        id S1357126AbiDLIoR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
+        Tue, 12 Apr 2022 04:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357288AbiDLHj4 (ORCPT
+        with ESMTP id S1357293AbiDLHj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EB31EAC1;
-        Tue, 12 Apr 2022 00:14:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA9F1E3D4;
+        Tue, 12 Apr 2022 00:14:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6961561045;
-        Tue, 12 Apr 2022 07:14:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C678C385A5;
-        Tue, 12 Apr 2022 07:14:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EDB3B81B62;
+        Tue, 12 Apr 2022 07:14:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0577AC385A1;
+        Tue, 12 Apr 2022 07:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747685;
-        bh=uiMvXbgy27rdH5+i+irTs27zufcuSMZzqR9sGKp8NmY=;
+        s=korg; t=1649747680;
+        bh=ZqlXdUHFwKSPIS8dpBAWhiyXJFdqK6peU9QQ/0n3vBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hthquIilcHHmq+yE6ZIdACygfgfFbk83Pr3JFqYPuvSUn0GJLJII+58hvoNOYV5DA
-         1fk7Wi8VI1ftHKiO0PzGQ5bFpajwZzt0WOCLC7xFpHOOYX27FpKP4yxMbRfeDA617v
-         PJAIMTnUm0gh/jo5Ss4rh3EDOHtBuI42gxDIEajQ=
+        b=iweCU7X67mX5vijQ1xv3ga5c6XANO0ldz1B6DCsal14ipc3uOWzYPOGRZ4M7jThxA
+         d2xYV/zG6QPsLCzX2ytzM4IpHR4R6mwtlA83fiFskGeQdbV1IVLtpy4zafs22J8BzS
+         WK7gWysLD6K400BUQppZFQDEdFiw+1wrPUJWBqlk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Yufen <wangyufen@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 169/343] NFSv4.2: fix reference count leaks in _nfs42_proc_copy_notify()
-Date:   Tue, 12 Apr 2022 08:29:47 +0200
-Message-Id: <20220412062956.249038129@linuxfoundation.org>
+Subject: [PATCH 5.17 150/343] netlabel: fix out-of-bounds memory accesses
+Date:   Tue, 12 Apr 2022 08:29:28 +0200
+Message-Id: <20220412062955.708919528@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,64 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit b7f114edd54326f730a754547e7cfb197b5bc132 ]
+[ Upstream commit f22881de730ebd472e15bcc2c0d1d46e36a87b9c ]
 
-[You don't often get email from xiongx18@fudan.edu.cn. Learn why this is important at http://aka.ms/LearnAboutSenderIdentification.]
+In calipso_map_cat_ntoh(), in the for loop, if the return value of
+netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when
+netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
+of bitmap[byte_offset] occurs.
 
-The reference counting issue happens in two error paths in the
-function _nfs42_proc_copy_notify(). In both error paths, the function
-simply returns the error code and forgets to balance the refcount of
-object `ctx`, bumped by get_nfs_open_context() earlier, which may
-cause refcount leaks.
+The bug was found during fuzzing. The following is the fuzzing report
+ BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
+ Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
 
-Fix it by balancing refcount of the `ctx` object before the function
-returns in both error paths.
+ CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
+ Hardware name: linux,dummy-virt (DT)
+ Call trace:
+  dump_backtrace+0x21c/0x230
+  show_stack+0x1c/0x60
+  dump_stack_lvl+0x64/0x7c
+  print_address_description.constprop.0+0x70/0x2d0
+  __kasan_report+0x158/0x16c
+  kasan_report+0x74/0x120
+  __asan_load1+0x80/0xa0
+  netlbl_bitmap_walk+0x3c/0xd0
+  calipso_opt_getattr+0x1a8/0x230
+  calipso_sock_getattr+0x218/0x340
+  calipso_sock_getattr+0x44/0x60
+  netlbl_sock_getattr+0x44/0x80
+  selinux_netlbl_socket_setsockopt+0x138/0x170
+  selinux_socket_setsockopt+0x4c/0x60
+  security_socket_setsockopt+0x4c/0x90
+  __sys_setsockopt+0xbc/0x2b0
+  __arm64_sys_setsockopt+0x6c/0x84
+  invoke_syscall+0x64/0x190
+  el0_svc_common.constprop.0+0x88/0x200
+  do_el0_svc+0x88/0xa0
+  el0_svc+0x128/0x1b0
+  el0t_64_sync_handler+0x9c/0x120
+  el0t_64_sync+0x16c/0x170
 
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Acked-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs42proc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/netlabel/netlabel_kapi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/nfs/nfs42proc.c b/fs/nfs/nfs42proc.c
-index 32129446beca..ca878d021fab 100644
---- a/fs/nfs/nfs42proc.c
-+++ b/fs/nfs/nfs42proc.c
-@@ -591,8 +591,10 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
+diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
+index beb0e573266d..54c083003947 100644
+--- a/net/netlabel/netlabel_kapi.c
++++ b/net/netlabel/netlabel_kapi.c
+@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
+ 	unsigned char bitmask;
+ 	unsigned char byte;
  
- 	ctx = get_nfs_open_context(nfs_file_open_context(src));
- 	l_ctx = nfs_get_lock_context(ctx);
--	if (IS_ERR(l_ctx))
--		return PTR_ERR(l_ctx);
-+	if (IS_ERR(l_ctx)) {
-+		status = PTR_ERR(l_ctx);
-+		goto out;
-+	}
- 
- 	status = nfs4_set_rw_stateid(&args->cna_src_stateid, ctx, l_ctx,
- 				     FMODE_READ);
-@@ -600,7 +602,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
- 	if (status) {
- 		if (status == -EAGAIN)
- 			status = -NFS4ERR_BAD_STATEID;
--		return status;
-+		goto out;
- 	}
- 
- 	status = nfs4_call_sync(src_server->client, src_server, &msg,
-@@ -609,6 +611,7 @@ static int _nfs42_proc_copy_notify(struct file *src, struct file *dst,
- 	if (status == -ENOTSUPP)
- 		src_server->caps &= ~NFS_CAP_COPY_NOTIFY;
- 
-+out:
- 	put_nfs_open_context(nfs_file_open_context(src));
- 	return status;
- }
++	if (offset >= bitmap_len)
++		return -1;
+ 	byte_offset = offset / 8;
+ 	byte = bitmap[byte_offset];
+ 	bit_spot = offset;
 -- 
 2.35.1
 
