@@ -2,165 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCDAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD75C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242431AbiDLKh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
+        id S1347922AbiDLKhv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354197AbiDLKdh (ORCPT
+        with ESMTP id S1356408AbiDLKeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:33:37 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A038953A42;
-        Tue, 12 Apr 2022 02:33:25 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23C7gt62028744;
-        Tue, 12 Apr 2022 11:32:58 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=UICnyf3oPsQTzRC0I9H7zVlnLQiOcv6ykqLEagOPP+A=;
- b=IZiYzbQebMHtNJebYRpmBh7Lqy92kJ9sBKCGLq14bPG5DvZMzlvjveRPSsU/fG8nFkZc
- d7L+1c5QT0rmaKfaygh6U3kvSXCAm2v8IxvHHnXgIMxkt+03qgjPomdHlCyq9vhxHMUQ
- TYbBnYgDgnja+vR7iGrAVCMwaYCKnEC0b0/S2uP76yfzcYWdeNlsCkO7v7PhVPbQEVSP
- cnVRGjd3hOfOyY59a3X7inTOlAz/lsdR0LRsbEPxvnKKjmYZO0JCg8oVGdj0RIapw7Tx
- u8uJpNiaBIOLA8CMZzlU3E58cl+T1Yl98ZwOJgrGZK6M0b5KOj23WKUy8wUz2VU/XQ+J qw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fb74y6cgq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 11:32:58 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D4773100038;
-        Tue, 12 Apr 2022 11:32:55 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CC121216833;
-        Tue, 12 Apr 2022 11:32:55 +0200 (CEST)
-Received: from [10.201.21.201] (10.75.127.49) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 12 Apr
- 2022 11:32:54 +0200
-Message-ID: <8daae353-911c-3102-756f-1f0448704355@foss.st.com>
-Date:   Tue, 12 Apr 2022 11:32:53 +0200
+        Tue, 12 Apr 2022 06:34:03 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8320C5BD34;
+        Tue, 12 Apr 2022 02:35:43 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2ebf3746f87so99833127b3.6;
+        Tue, 12 Apr 2022 02:35:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DsYQ5fyB5xZrRk5QDbuXfzqJsxc8K8LLjkUhASiItKI=;
+        b=aUy/cjCNC2BdHzWFTK6IxJtc4SD1bEwFn4+qa7La119l8bgmSAZ1SJeX4t8d6OLOrm
+         5RIp4nawA1q2ARRbIkhWsZWQ5O4gQqSFDdnyIr62CEqQlOKIr/r2A+6UuLgRM/qx39qF
+         Ide1rCpW3keFEzrdSce7ju0lJF4sHoDYLC1ps8nk3P1PEYl/SCMi8paCyl0O/R/S69q9
+         kWACBlsxudFNspCyxx4HJNQmga9cAdCs8M3D3oDbH4onqw7ydz6iRH41Q7Jb/sSqRe2Z
+         GLvlCHAcPiA2b74EqZLFy42PHiz694sVcQiUe5WElKlg8WEO5Xolsr+g7j/2/p8l+hb3
+         d8xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DsYQ5fyB5xZrRk5QDbuXfzqJsxc8K8LLjkUhASiItKI=;
+        b=Q8BdAtH7ckLB/shu7BVhJBSdCqqf9nmS8vqsj2rzAQtL8KS/q/p7N6KXhNyoWuBN0i
+         eg73Z4u3/LCoGciBtFlVy1nfejA5VQ8medH8ii8cmNU3XxaY67nftoTGMibfuh29VqEb
+         6s0YHe0YNkPyWpJJXWHvy4T/BgqZdt1h+ov5khju+q4zEzBJN/3iaHX3qMLirU2dTgeL
+         8liBw0ujRAHnfwN/HkF0QqzTkbfhmwOmMnOTC8Y+p/7K8M0bTN68jtoKOpUINoL2FiNM
+         VyURlP6/aUJ+GS6rYWRlrcKk+YSKAnODZK1+akcOrOM50ZjKlsWYR3dyfu8O+fVgAByW
+         Xn3w==
+X-Gm-Message-State: AOAM532Q9AnuHSUYHp/3a+FIhnYAZAGbIxTQn+CHycZLZWuWQOBcKIAN
+        mN5NmGYNZH1iecewgllLzLuQeBEFfaHn4a91TjOUuLUg
+X-Google-Smtp-Source: ABdhPJzBaJOtS79qX2LNTnSbSqK9dWYtW3w3LojguBKE3CR/wCMxBClRORXRq4c1y8ATlaxmmyRNfTKaaluv1w/CZss=
+X-Received: by 2002:a81:1e86:0:b0:2eb:66b9:3a93 with SMTP id
+ e128-20020a811e86000000b002eb66b93a93mr28000522ywe.411.1649756142635; Tue, 12
+ Apr 2022 02:35:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [Linux-stm32] [PATCH] spi: spi-stm32-qspi: using
- pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Content-Language: en-US
-To:     <cgel.zte@gmail.com>, <broonie@kernel.org>
-CC:     Zeal Robot <zealci@zte.com.cn>, <linux-kernel@vger.kernel.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        <mcoquelin.stm32@gmail.com>, <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220412070906.2532091-1-chi.minghao@zte.com.cn>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20220412070906.2532091-1-chi.minghao@zte.com.cn>
+References: <20220330132152.4568-1-jiangshanlai@gmail.com>
+In-Reply-To: <20220330132152.4568-1-jiangshanlai@gmail.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Tue, 12 Apr 2022 17:35:31 +0800
+Message-ID: <CAJhGHyAAekjVGpvUNQ25gspDfif2DW=QdW3eFA1h9hOBtw4uzw@mail.gmail.com>
+Subject: Re: [RFC PATCH V3 0/4] KVM: X86: Add and use shadow page with level
+ expanded or acting as pae_root
+To:     LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-12_03,2022-04-11_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi 
+On Wed, Mar 30, 2022 at 9:21 PM Lai Jiangshan <jiangshanlai@gmail.com> wrote:
+>
+> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+>
 
-On 4/12/22 09:09, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->  drivers/spi/spi-stm32-qspi.c | 30 ++++++++++--------------------
->  1 file changed, 10 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-> index ffdc55f87e82..b3586521d08e 100644
-> --- a/drivers/spi/spi-stm32-qspi.c
-> +++ b/drivers/spi/spi-stm32-qspi.c
-> @@ -463,11 +463,9 @@ static int stm32_qspi_poll_status(struct spi_mem *mem, const struct spi_mem_op *
->  	if (!spi_mem_supports_op(mem, op))
->  		return -EOPNOTSUPP;
->  
-> -	ret = pm_runtime_get_sync(qspi->dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(qspi->dev);
-> +	ret = pm_runtime_resume_and_get(qspi->dev);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
->  	mutex_lock(&qspi->lock);
->  
-> @@ -490,11 +488,9 @@ static int stm32_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
->  	struct stm32_qspi *qspi = spi_controller_get_devdata(mem->spi->master);
->  	int ret;
->  
-> -	ret = pm_runtime_get_sync(qspi->dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(qspi->dev);
-> +	ret = pm_runtime_resume_and_get(qspi->dev);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
->  	mutex_lock(&qspi->lock);
->  	if (op->data.dir == SPI_MEM_DATA_IN && op->data.nbytes)
-> @@ -536,11 +532,9 @@ static ssize_t stm32_qspi_dirmap_read(struct spi_mem_dirmap_desc *desc,
->  	u32 addr_max;
->  	int ret;
->  
-> -	ret = pm_runtime_get_sync(qspi->dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(qspi->dev);
-> +	ret = pm_runtime_resume_and_get(qspi->dev);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
->  	mutex_lock(&qspi->lock);
->  	/* make a local copy of desc op_tmpl and complete dirmap rdesc
-> @@ -583,11 +577,9 @@ static int stm32_qspi_setup(struct spi_device *spi)
->  	if (!spi->max_speed_hz)
->  		return -EINVAL;
->  
-> -	ret = pm_runtime_get_sync(qspi->dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(qspi->dev);
-> +	ret = pm_runtime_resume_and_get(qspi->dev);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
->  	presc = DIV_ROUND_UP(qspi->clk_rate, spi->max_speed_hz) - 1;
->  
-> @@ -851,11 +843,9 @@ static int __maybe_unused stm32_qspi_resume(struct device *dev)
->  
->  	pinctrl_pm_select_default_state(dev);
->  
-> -	ret = pm_runtime_get_sync(dev);
-> -	if (ret < 0) {
-> -		pm_runtime_put_noidle(dev);
-> +	ret = pm_runtime_resume_and_get(dev);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
->  	writel_relaxed(qspi->cr_reg, qspi->io_base + QSPI_CR);
->  	writel_relaxed(qspi->dcr_reg, qspi->io_base + QSPI_DCR);
 
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
-
-Thanks
-Patrice
-
+Ping
