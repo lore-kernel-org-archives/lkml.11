@@ -2,174 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22219C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85ECBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357604AbiDLQab (ORCPT
+        id S1357611AbiDLQah (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57432 "EHLO
+        Tue, 12 Apr 2022 12:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351892AbiDLQaU (ORCPT
+        with ESMTP id S1357576AbiDLQaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:30:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D44EB5D5E9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649780872;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M///uq33RMEHTxjoVs129eG8XW6VZX+ANQltzYppS6w=;
-        b=PALWjQjIeP/7sRCh8zv3gyPfpAJbEBiYCNvRsjcnQytliO7rilfsEu/6pVoQHsB0kjnTkN
-        moggwOKNkpWP11ratsaLjUZYjs3R44sXLRfMp69Sgxj3UwmDWx3scQQSvarHoXn/tK2Jjq
-        xH0hiiK1DbNu73GbSEylCzPAtHTBi2A=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-1yxcwYl4Ojugmel_Mzj-eQ-1; Tue, 12 Apr 2022 12:27:51 -0400
-X-MC-Unique: 1yxcwYl4Ojugmel_Mzj-eQ-1
-Received: by mail-wr1-f71.google.com with SMTP id s8-20020adfc548000000b00207a28e0583so1636301wrf.23
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:51 -0700 (PDT)
+        Tue, 12 Apr 2022 12:30:21 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47675D5EA
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:57 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id k23so38369085ejd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:27:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NDMWPs4S7zilupRHZRh1G0PStgWMtqHNX86waZCmVE8=;
+        b=dLqmb6kJL5mNPwhuzfsZIOYf5d4DggnddiZ5T1YazUghckPybZmqFE+PE1EBKvLGoI
+         WJLC9SFdCWvTV3ielnSpXSBbtdLZxodidqSypOgcBqEQyxnzI8Y8N+t6+F8VJrV7mGLu
+         ufIm5LiSViEmjJR7el+bjssJ218/plCuY61Q8hsfp1C9xEZpJnx5Jengqphk/6btlNHx
+         nFAEYhMCaySp7kk/buf0tZYPTsPmitigjeJTNE6mNi9fjNezM7a4SYW+P41QzbpE9ZD6
+         yNI81MAGKHX7EmhPxVGLcyH5OyKtY0IiP7BQFQapa12TpyyXteQdmdOvhyGpHhA2Ls2o
+         VQqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=M///uq33RMEHTxjoVs129eG8XW6VZX+ANQltzYppS6w=;
-        b=p6m3LvWT/RYef5GbYQOKHlgV7pSiOYIp+AEVy2D1x1ZiE4nwlENK8y1HT2A6qvvSRp
-         Yc81RaW9vxhm8QDAlHDEFnekNoRwm7ij2mGZCPMpjZZVcK13dTAJxsHSjU3jOQVbjeLl
-         TZfvhrE2tS3tlsJG0m+GHOuqrNseSb5mmhYLq/XLk+DYecXiLEtaVIizeaYiHvfzWg5Q
-         +lQLgVlGmZ004cMR9xj5tXKSsqnAci8/8glOr8edE9IuJlqV5I3iviFAatut/H7/wxjc
-         CBHqa3Mgi+lf3pNelVgJ6p7EaZL4uUSiAAQOCW2OFpeaT5xAhO1bokF3kM38Vwa7afNY
-         7Ivg==
-X-Gm-Message-State: AOAM533iLL+efvs3NPmx8Z3QmjbWzMRHfWXhn4bz6p68DNVDUh2kTdGI
-        i95FfpWJqa36vgN5hzFnOE1ErP/1cj4djV2/bI1VaD14Azo02hpYt7RAOz59vHcHBaG7+RYD9wl
-        8A6H9RZZ7CEjwCXOnZuHEP0/sKAt+ylcgCCTt563IwkyPydSSgbGWM3pS0Eeh4gexXAikooa0s5
-        o=
-X-Received: by 2002:a05:600c:3588:b0:38c:6d7f:6fd8 with SMTP id p8-20020a05600c358800b0038c6d7f6fd8mr4795596wmq.25.1649780870474;
-        Tue, 12 Apr 2022 09:27:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzryxA9KF33Y/kGHkOm+XLc/HDsLdgWiUOLZYjTIDFY5X+9rR3gPvbvCQWHVPnx1wiijk1LQQ==
-X-Received: by 2002:a05:600c:3588:b0:38c:6d7f:6fd8 with SMTP id p8-20020a05600c358800b0038c6d7f6fd8mr4795565wmq.25.1649780870214;
-        Tue, 12 Apr 2022 09:27:50 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id g8-20020a5d4888000000b00207a49fa6a1sm7700358wrq.81.2022.04.12.09.27.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 09:27:49 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Rob Herring <robh@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH v3 2/5] dt-bindings: display: ssd1307fb: Extend schema for SPI controllers
-Date:   Tue, 12 Apr 2022 18:27:26 +0200
-Message-Id: <20220412162729.184783-3-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412162729.184783-1-javierm@redhat.com>
-References: <20220412162729.184783-1-javierm@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NDMWPs4S7zilupRHZRh1G0PStgWMtqHNX86waZCmVE8=;
+        b=uoai0AYe1gvJDH/4kYWCpGt0xtPX8e7qJbkvbEpCaybxH5xTwlYfTuSo61/UtNuLoN
+         Kqm6+9F4NLoU+5EQtBSgxZ8tP0exRpUm9NkCiYLRcL9lvcBYvF8l073QM5Res3fCRZyU
+         2wAJ0JAJOQhCUZI/jRAgCfe1dAOq+wVMo1TQRApHPLANAOSTbv+QJWAzJogAf/AHotsr
+         c+Qz10gDUmzpNEq2KJe2dEAj+pdgqYWdtIqbVUocSwEIpFPdWZjWRlg2SIHeeqgcsEh9
+         iSj+a8QRH3N7hGXpSMSVsC5uBgbFPjHgECPiPwSVdsk3WNFYnqRLQJ+uhMS/dtDC8ZaD
+         zBKQ==
+X-Gm-Message-State: AOAM5304hNYg1kQ2w5tcmiK865y4fR0IqXULZy4Engl+icIAbxGcrApG
+        zmzkDMPU/xT1PxxpKJm8giz+Mw==
+X-Google-Smtp-Source: ABdhPJxOgxov+X+zXtcd2ayLa52f1FP4vBidDROaYaMLhZJo1c4KNN1Dn13j9jc1Pkv6HT2SJxILKA==
+X-Received: by 2002:a17:907:e87:b0:6e8:42ef:86d9 with SMTP id ho7-20020a1709070e8700b006e842ef86d9mr22736713ejc.59.1649780876063;
+        Tue, 12 Apr 2022 09:27:56 -0700 (PDT)
+Received: from [192.168.0.197] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id r29-20020a50c01d000000b00415fb0dc793sm17267681edb.47.2022.04.12.09.27.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 09:27:55 -0700 (PDT)
+Message-ID: <60a9a401-7d1f-5100-7c3d-45452ebfa2ae@linaro.org>
+Date:   Tue, 12 Apr 2022 18:27:54 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/5] ARM: dts: add dts files for bcmbca soc 47622
+Content-Language: en-US
+To:     William Zhang <william.zhang@broadcom.com>,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>
+Cc:     Samyon Furman <samyon.furman@broadcom.com>,
+        Joel Peshkin <joel.peshkin@broadcom.com>,
+        Florian Fainelli <florian.fainelli@broadcom.com>,
+        Dan Beygelman <dan.beygelman@broadcom.com>,
+        Tomer Yacoby <tomer.yacoby@broadcom.com>,
+        Anand Gore <anand.gore@broadcom.com>,
+        Kursad Oney <kursad.oney@broadcom.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        soc@kernel.org
+References: <20220411172815.20916-1-william.zhang@broadcom.com>
+ <20220411172815.20916-4-william.zhang@broadcom.com>
+ <ed806d35-3613-4f9c-54ba-b31fc5ed91c8@linaro.org>
+ <147e23b6-c5a3-a9fa-c0e1-defe906e42a9@broadcom.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <147e23b6-c5a3-a9fa-c0e1-defe906e42a9@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Solomon SSD130x OLED displays can either have an I2C or SPI interface,
-add to the schema the properties and examples for OLED devices under SPI.
+On 12/04/2022 17:37, William Zhang wrote:
+>>> +/ {
+>>> +	compatible = "brcm,bcm47622";
+>>
+>> This does not match your bindings. Even if it is not used.
+> Did I miss anything? But it matches one of the compatible strings in 
+> brcm,bcmbca.yaml.
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
+Your bindings expect that this compatible is followed with "brcm,bcmbca".
 
-Changes in v3:
-- Add a comment to the properties required for SPI (Geert Uytterhoeven)
+(...)
 
-Changes in v2:
-- Don't add compatible strings with an "-spi" suffix (Geert Uytterhoeven)
+>>> +	periph-bus@ff800000 {
+>>
+>> just "bus" to be generic?
+> This node represents the peripheral bus in the soc. Would prefer to use 
+> the specific name unless it is not allowed by the linux dts.
 
- .../bindings/display/solomon,ssd1307fb.yaml   | 38 ++++++++++++++++++-
- 1 file changed, 36 insertions(+), 2 deletions(-)
+It is allowed but the Devicetree spec explicitly asks for generic names
+and gives example: bus ("2.2.2 Generic Names Recommendation"). Specific
+names are discouraged.
 
-diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-index 7653b6c3fcb6..7d7de92df86f 100644
---- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-+++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-@@ -38,9 +38,16 @@ properties:
-   reset-gpios:
-     maxItems: 1
- 
-+  # Only required for SPI
-+  dc-gpios:
-+    maxItems: 1
-+
-   vbat-supply:
-     description: The supply for VBAT
- 
-+  # Only required for SPI
-+  spi-max-frequency: true
-+
-   solomon,height:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     default: 16
-@@ -220,14 +227,14 @@ examples:
-             #address-cells = <1>;
-             #size-cells = <0>;
- 
--            ssd1307: oled@3c {
-+            ssd1307_i2c: oled@3c {
-                     compatible = "solomon,ssd1307";
-                     reg = <0x3c>;
-                     pwms = <&pwm 4 3000>;
-                     reset-gpios = <&gpio2 7>;
-             };
- 
--            ssd1306: oled@3d {
-+            ssd1306_i2c: oled@3d {
-                     compatible = "solomon,ssd1306";
-                     reg = <0x3c>;
-                     pwms = <&pwm 4 3000>;
-@@ -238,3 +245,30 @@ examples:
-                     solomon,lookup-table = /bits/ 8 <0x3f 0x3f 0x3f 0x3f>;
-             };
-     };
-+  - |
-+    spi {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            ssd1307_spi: oled@0 {
-+                    compatible = "solomon,ssd1307";
-+                    reg = <0x0>;
-+                    pwms = <&pwm 4 3000>;
-+                    reset-gpios = <&gpio2 7>;
-+                    dc-gpios = <&gpio2 8>;
-+                    spi-max-frequency = <10000000>;
-+            };
-+
-+            ssd1306_spi: oled@1 {
-+                    compatible = "solomon,ssd1306";
-+                    reg = <0x1>;
-+                    pwms = <&pwm 4 3000>;
-+                    reset-gpios = <&gpio2 7>;
-+                    dc-gpios = <&gpio2 8>;
-+                    spi-max-frequency = <10000000>;
-+                    solomon,com-lrremap;
-+                    solomon,com-invdir;
-+                    solomon,com-offset = <32>;
-+                    solomon,lookup-table = /bits/ 8 <0x3f 0x3f 0x3f 0x3f>;
-+            };
-+    };
--- 
-2.35.1
-
+Best regards,
+Krzysztof
