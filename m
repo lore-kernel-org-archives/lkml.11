@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08898C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E13C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235086AbiDLGrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
+        id S1345676AbiDLGrI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350869AbiDLGnb (ORCPT
+        with ESMTP id S1350954AbiDLGnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:43:31 -0400
+        Tue, 12 Apr 2022 02:43:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA25387AA;
-        Mon, 11 Apr 2022 23:36:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9008F381B5;
+        Mon, 11 Apr 2022 23:37:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F1FAB81B49;
-        Tue, 12 Apr 2022 06:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D87C385A6;
-        Tue, 12 Apr 2022 06:36:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D04FB81B40;
+        Tue, 12 Apr 2022 06:37:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA887C385A1;
+        Tue, 12 Apr 2022 06:36:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745412;
-        bh=KJYgUB31n0AxiL/a+VNKxdWLRk28DtXuefP3eJWsmmA=;
+        s=korg; t=1649745420;
+        bh=eBEZ/MRS1XAQwG0tvu1NEfKBmfHhGbsKGPc3YsxW0DM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mK9XEmR12ljxGTMJhIFEikExKLPz2TYsdMj4Y0I6JBrNv4C/kYWZRS7XLH6Pz2VRO
-         4kadTY+G4hUb1FSVUJr9ylWjU5wj7ZD20BTAEpWWls1btBZE6v+cQiD1cV+mZ1zpZD
-         sqwyP0QOvuSGhz5PwkFtz+zp6k9Iz4pD4FwnkY4M=
+        b=NtBJOPenFcAhT/ABp3vAl5obI5ugsR7ir9rqGiHtE4lsWdg/QVj4/jqpVwnUdUxR4
+         YJVLg7o2bPPnQWn1jtsCh2hjO7O1+BIYDq52EvRod4uIRX8aU9v4BY9XOZcWdkVysP
+         /Garel4OyHPggN8p0/bmcVYa+RrgD2hrcUvzXsik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Amit Shah <amit@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 089/171] virtio_console: eliminate anonymous module_init & module_exit
-Date:   Tue, 12 Apr 2022 08:29:40 +0200
-Message-Id: <20220412062930.461704101@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 072/171] clk: si5341: fix reported clk_rate when output divider is 2
+Date:   Tue, 12 Apr 2022 08:29:23 +0200
+Message-Id: <20220412062929.968140272@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -50,74 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Adam Wujek <dev_public@wujek.eu>
 
-[ Upstream commit fefb8a2a941338d871e2d83fbd65fbfa068857bd ]
+[ Upstream commit 2a8b539433e111c4de364237627ef219d2f6350a ]
 
-Eliminate anonymous module_init() and module_exit(), which can lead to
-confusion or ambiguity when reading System.map, crashes/oops/bugs,
-or an initcall_debug log.
+SI5341_OUT_CFG_RDIV_FORCE2 shall be checked first to distinguish whether
+a divider for a given output is set to 2 (SI5341_OUT_CFG_RDIV_FORCE2
+is set) or the output is disabled (SI5341_OUT_CFG_RDIV_FORCE2 not set,
+SI5341_OUT_R_REG is set 0).
+Before the change, divider set to 2 (SI5341_OUT_R_REG set to 0) was
+interpreted as output is disabled.
 
-Give each of these init and exit functions unique driver-specific
-names to eliminate the anonymous names.
-
-Example 1: (System.map)
- ffffffff832fc78c t init
- ffffffff832fc79e t init
- ffffffff832fc8f8 t init
-
-Example 2: (initcall_debug log)
- calling  init+0x0/0x12 @ 1
- initcall init+0x0/0x12 returned 0 after 15 usecs
- calling  init+0x0/0x60 @ 1
- initcall init+0x0/0x60 returned 0 after 2 usecs
- calling  init+0x0/0x9a @ 1
- initcall init+0x0/0x9a returned 0 after 74 usecs
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Amit Shah <amit@kernel.org>
-Cc: virtualization@lists.linux-foundation.org
-Cc: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220316192010.19001-3-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20211203141125.2447520-1-dev_public@wujek.eu
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/virtio_console.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/clk/clk-si5341.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index 3dd4deb60adb..6d361420ffe8 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -2239,7 +2239,7 @@ static struct virtio_driver virtio_rproc_serial = {
- 	.remove =	virtcons_remove,
- };
+diff --git a/drivers/clk/clk-si5341.c b/drivers/clk/clk-si5341.c
+index 772b48ad0cd7..382a0619a048 100644
+--- a/drivers/clk/clk-si5341.c
++++ b/drivers/clk/clk-si5341.c
+@@ -789,6 +789,15 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	u32 r_divider;
+ 	u8 r[3];
  
--static int __init init(void)
-+static int __init virtio_console_init(void)
- {
- 	int err;
++	err = regmap_read(output->data->regmap,
++			SI5341_OUT_CONFIG(output), &val);
++	if (err < 0)
++		return err;
++
++	/* If SI5341_OUT_CFG_RDIV_FORCE2 is set, r_divider is 2 */
++	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
++		return parent_rate / 2;
++
+ 	err = regmap_bulk_read(output->data->regmap,
+ 			SI5341_OUT_R_REG(output), r, 3);
+ 	if (err < 0)
+@@ -805,13 +814,6 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	r_divider += 1;
+ 	r_divider <<= 1;
  
-@@ -2276,7 +2276,7 @@ static int __init init(void)
- 	return err;
+-	err = regmap_read(output->data->regmap,
+-			SI5341_OUT_CONFIG(output), &val);
+-	if (err < 0)
+-		return err;
+-
+-	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
+-		r_divider = 2;
+ 
+ 	return parent_rate / r_divider;
  }
- 
--static void __exit fini(void)
-+static void __exit virtio_console_fini(void)
- {
- 	reclaim_dma_bufs();
- 
-@@ -2286,8 +2286,8 @@ static void __exit fini(void)
- 	class_destroy(pdrvdata.class);
- 	debugfs_remove_recursive(pdrvdata.debugfs_dir);
- }
--module_init(init);
--module_exit(fini);
-+module_init(virtio_console_init);
-+module_exit(virtio_console_fini);
- 
- MODULE_DESCRIPTION("Virtio console driver");
- MODULE_LICENSE("GPL");
 -- 
 2.35.1
 
