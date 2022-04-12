@@ -2,100 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D39C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE54C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245431AbiDLK0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
+        id S243288AbiDLK1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376791AbiDLKTa (ORCPT
+        with ESMTP id S1358236AbiDLKUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:19:30 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3CA7D02E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:17:08 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id ks6so11411693ejb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:17:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=GhRsvMkqvOOZJ6oaXqUbn0li7sCX29u9xzmiTytidkU=;
-        b=sqyfOTz7XJvOCL5M1maTVrFwiuyplXumGmdQcsG5q+E/kmxF+RY74KM3gGHaX+dXWQ
-         IgXgoAqq0nbUBzxBaYqJ67ua3WQHE78OOnsNkkCtlSNdr2ok9W9pGfd9kDc35HNM+3PL
-         ZofHRa+AVA+/tnD93nN7h0e/SWxCH7W7FSaTcqKY4G/thTKVIH6rz6mJ9gSjrWwN23Ll
-         /8eb8Pdf0eLYNq9Fhw3W/hTCzIBEcC2GS6CZAVtizlWq2uCZGh5dZNOBE3LWDFn5k+8h
-         ecMFhQ69Ri9j6CQ0dMcw8OVKH7KNjYhNqTY3Qma38vQytSAJ6ULJvn/K4ng8P7ZEm9DS
-         VauQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=GhRsvMkqvOOZJ6oaXqUbn0li7sCX29u9xzmiTytidkU=;
-        b=qg2fPlwre6fRhGQtxB08fSU7nposyaBYqTsjgSX8yGpdhXBOtZGGduBPzEmElLv7ML
-         Hi2rRUGJGQu1iphL5dvbSuEC5ECdyF9s6te1dW3zG/0GeGX991+sB4tALC8LaYL5I84d
-         QtlwPXbWSk/5g8iFCxHFYaWOl9GM59LVe20xoXpllMp6apCvbGD9Qldx87Xpgja5UK6L
-         HbeDuqbF6UR/7BYwoIyUYxjgraNV9VR+u2376ck5lU+1RA7n4D8LaV9Fdsz3QMmM+IJk
-         U7pYkFQli4JhJqHmhYmRRXL78sdmmFEaGegyCXofXJ/pilu/dH5VnVh9SKCxIiWqJPaf
-         +Wjg==
-X-Gm-Message-State: AOAM532mwSNlKyxKI9SFR5SBTiY6xhO+A6uMKUDPp7lAUh6z1/Y+IjbP
-        2nNbTxpOqCUd4+BQsgY/cwpyRg==
-X-Google-Smtp-Source: ABdhPJytgzbzMy/xrcB0VUNhJafmlE2cIehjiSoAP81ZGOZ6ie8XloS5sE9HdQwarBVxSude5T6RtQ==
-X-Received: by 2002:a17:906:3082:b0:6e0:111f:8986 with SMTP id 2-20020a170906308200b006e0111f8986mr32504576ejv.677.1649755027477;
-        Tue, 12 Apr 2022 02:17:07 -0700 (PDT)
-Received: from [192.168.0.194] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id g2-20020a50bf42000000b0041cc5233252sm13533827edk.57.2022.04.12.02.17.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 02:17:07 -0700 (PDT)
-Message-ID: <39152c86-ca11-2792-6b25-ae55ffb47b09@linaro.org>
-Date:   Tue, 12 Apr 2022 11:17:06 +0200
+        Tue, 12 Apr 2022 06:20:54 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B1E4FC79
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:28:20 -0700 (PDT)
+X-UUID: 1c074ba5c47e4697b18b2313055fe597-20220412
+X-UUID: 1c074ba5c47e4697b18b2313055fe597-20220412
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <kuyo.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 740492044; Tue, 12 Apr 2022 17:28:11 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 12 Apr 2022 17:28:10 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Apr 2022 17:28:10 +0800
+Message-ID: <354ea7554096b0745d4f947685add33c8c8d2d62.camel@mediatek.com>
+Subject: Re: [PATCH 1/1] sched/pelt: Refine the enqueue_load_avg calculate
+ method
+From:   Kuyo Chang <kuyo.chang@mediatek.com>
+To:     Vincent Guittot <vincent.guittot@linaro.org>
+CC:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Ben Segall" <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        "Daniel Bristot de Oliveira" <bristot@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <wsd_upstream@mediatek.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Date:   Tue, 12 Apr 2022 17:28:10 +0800
+In-Reply-To: <20220412085845.GA14088@vingu-book>
+References: <20220411061702.22978-1-kuyo.chang@mediatek.com>
+         <CAKfTPtAyhc-tAWXmXcHstmiBSMjj5GENizX__KRDab28NRum1A@mail.gmail.com>
+         <5a90b20570ecacf457f68da7a106d3b2f8c2269e.camel@mediatek.com>
+         <20220412085845.GA14088@vingu-book>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: devfreq: mediatek: Add mtk cci
- devfreq dt-bindings
-Content-Language: en-US
-To:     Johnson Wang <johnson.wang@mediatek.com>, cw00.choi@samsung.com,
-        krzk+dt@kernel.org, robh+dt@kernel.org, kyungmin.park@samsung.com
-Cc:     khilman@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220408052150.22536-1-johnson.wang@mediatek.com>
- <20220408052150.22536-2-johnson.wang@mediatek.com>
- <855d7daa-45d1-d6d8-32bd-51778cf58392@linaro.org>
- <fe7d2b878c18a42ff36ebd9911ecb562fe29c953.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <fe7d2b878c18a42ff36ebd9911ecb562fe29c953.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/04/2022 14:10, Johnson Wang wrote:
->> Also please put it in the "interconnect" directory.
->>
+On Tue, 2022-04-12 at 10:58 +0200, Vincent Guittot wrote:
+> Le mardi 12 avril 2022 à 10:51:23 (+0800), Kuyo Chang a écrit :
+> > On Mon, 2022-04-11 at 10:39 +0200, Vincent Guittot wrote:
+> > > On Mon, 11 Apr 2022 at 08:17, Kuyo Chang <kuyo.chang@mediatek.com
+> > > >
+> > > wrote:
+> > > > 
+> > > > From: kuyo chang <kuyo.chang@mediatek.com>
+> > > > 
+> > > > I meet the warning message at cfs_rq_is_decayed at below code.
+> > > > 
+> > > > SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+> > > >                     cfs_rq->avg.util_avg ||
+> > > >                     cfs_rq->avg.runnable_avg)
+> > > > 
+> > > > Following is the calltrace.
+> > > > 
+> > > > Call trace:
+> > > > __update_blocked_fair
+> > > > update_blocked_averages
+> > > > newidle_balance
+> > > > pick_next_task_fair
+> > > > __schedule
+> > > > schedule
+> > > > pipe_read
+> > > > vfs_read
+> > > > ksys_read
+> > > > 
+> > > > After code analyzing and some debug messages, I found it exits
+> > > > a
+> > > > corner
+> > > > case at attach_entity_load_avg which will cause load_sum is
+> > > > zero
+> > > > and
+> > > > load_avg is not.
+> > > > Consider se_weight is 88761 according by sched_prio_to_weight
+> > > > table.
+> > > > And assume the get_pelt_divider() is 47742, se->avg.load_avg is
+> > > > 1.
+> > > > By the calculating for se->avg.load_sum as following will
+> > > > become
+> > > > zero
+> > > > as following.
+> > > > se->avg.load_sum =
+> > > >         div_u64(se->avg.load_avg * se->avg.load_sum,
+> > > > se_weight(se));
+> > > > se->avg.load_sum = 1*47742/88761 = 0.
+> > > 
+> > > The root problem is there, se->avg.load_sum must not be null if
+> > > se->avg.load_avg is not null because the correct relation between
+> > > _avg
+> > > and _sum is:
+> > > 
+> > > load_avg = weight * load_sum / divider.
+> > > 
+> > > so the fix should be attach_entity_load_avg() and probably the
+> > > below
+> > > is enough
+> > > 
+> > > se->avg.load_sum = div_u64(se->avg.load_avg * se->avg.load_sum,
+> > > se_weight(se)) + 1;
+> > 
+> > Thanks for your kindly suggestion.
+> > +1 would make the calcuation for load_sum may be overestimate?
+> > How about the below code make sense for fix the corner case?
+> > 
+> > --- 
+> > --- a/kernel/sched/fair.c
+> > +++ b/kernel/sched/fair.c
+> > @@ -3832,7 +3832,8 @@ static void attach_entity_load_avg(struct
+> > cfs_rq
+> > *cfs_rq, struct sched_entity *s
+> >  	se->avg.load_sum = divider;
+> >  	if (se_weight(se)) {
+> >  		se->avg.load_sum =
+> > -			div_u64(se->avg.load_avg * se->avg.load_sum,
+> > se_weight(se));
+> > +			(se->avg.load_avg * se->avg.load_sum >
+> > se_weight(se)) ?
+> > +			div_u64(se->avg.load_avg * se->avg.load_sum,
+> > se_weight(se)) : 1;
+> >  	}
+> >  
+> >  	enqueue_load_avg(cfs_rq, se);
+> > -- 
+> > 2.18.0
 > 
-> I don't really know about "interconnect".
-> However, it looks like a Linux framework about data transfer and "NoC".
+> In this case, the below is easier to read
 > 
-> While this cci driver is more like a power managment which is
-> responsible for adjusting voltages and frequencies.
-> In my opinion, "devfreq" should be more suitable.
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 1658a9428d96..2c685474db23 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3836,10 +3836,12 @@ static void attach_entity_load_avg(struct
+> cfs_rq *cfs_rq, struct sched_entity *s
 > 
-> Please correct me if my understanding is wrong.
+>         se->avg.runnable_sum = se->avg.runnable_avg * divider;
+> 
+> -       se->avg.load_sum = divider;
+> -       if (se_weight(se)) {
+> +       se->avg.load_sum = se->avg.load_avg * divider;
+> +       if (se_weight(se) < se->avg.load_sum) {
+>                 se->avg.load_sum =
+> -                       div_u64(se->avg.load_avg * se->avg.load_sum,
+> se_weight(se));
+> +                       div_u64(se->avg.load_sum, se_weight(se));
+> +       } else {
+> +               se->avg.load_sum = 1;
+>         }
+> 
+>         enqueue_load_avg(cfs_rq, se);
 
-devfreq is a Linux mechanism, not a real device/hardware. We try to put
-the bindings in directories/subsystems matching the hardware, therefore
-devfreq is not appropriate.
+It really easier to read.
+Thanks for your kindly suggestion.
 
-Whether interconnect - or other subsystem - is appropriate, I am not
-sure. To me this looks exactly like bus bandwidth management and you
-even use "interconnect" in several places. So interconnect matches.
 
-Best regards,
-Krzysztof
+> 
+> 
+> > 
+> > 
+> > > > 
+> > > > After enqueue_load_avg code as below.
+> > > > cfs_rq->avg.load_avg += se->avg.load_avg;
+> > > > cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
+> > > > 
+> > > > Then the load_sum for cfs_rq will be 1 while the load_sum for
+> > > > cfs_rq is 0.
+> > > > So it will hit the warning message.
+> > > > 
+> > > > After all, I refer the following commit patch to do the similar
+> > > > thing at
+> > > > enqueue_load_avg.
+> > > > sched/pelt: Relax the sync of load_sum with load_avg
+> > > > 
+> > > > After long time testing, the kernel warning was gone and the
+> > > > system
+> > > > runs
+> > > > as well as before.
+> > > > 
+> > > > Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
+> > > > ---
+> > > >  kernel/sched/fair.c | 6 ++++--
+> > > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> > > > index d4bd299d67ab..30d8b6dba249 100644
+> > > > --- a/kernel/sched/fair.c
+> > > > +++ b/kernel/sched/fair.c
+> > > > @@ -3074,8 +3074,10 @@ account_entity_dequeue(struct cfs_rq
+> > > > *cfs_rq, struct sched_entity *se)
+> > > >  static inline void
+> > > >  enqueue_load_avg(struct cfs_rq *cfs_rq, struct sched_entity
+> > > > *se)
+> > > >  {
+> > > > -       cfs_rq->avg.load_avg += se->avg.load_avg;
+> > > > -       cfs_rq->avg.load_sum += se_weight(se) * se-
+> > > > >avg.load_sum;
+> > > > +       add_positive(&cfs_rq->avg.load_avg, se->avg.load_avg);
+> > > > +       add_positive(&cfs_rq->avg.load_sum, se_weight(se) * se-
+> > > > > avg.load_sum);
+> > > > 
+> > > > +       cfs_rq->avg.load_sum = max_t(u32, cfs_rq->avg.load_sum,
+> > > > +                                         cfs_rq->avg.load_avg
+> > > > *
+> > > > PELT_MIN_DIVIDER);
+> > > >  }
+> > > > 
+> > > >  static inline void
+> > > > --
+> > > > 2.18.0
+> > > > 
+
