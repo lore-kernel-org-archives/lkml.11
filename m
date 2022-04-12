@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1ACCC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234604AbiDLNLL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47772 "EHLO
+        id S1355063AbiDLNLO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 09:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358057AbiDLNFS (ORCPT
+        with ESMTP id S1358056AbiDLNFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 09:05:18 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A99416596;
-        Tue, 12 Apr 2022 05:51:35 -0700 (PDT)
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED8A6D3B1;
+        Tue, 12 Apr 2022 05:51:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649767895; x=1681303895;
+  t=1649767869; x=1681303869;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=vaze49NlQFVnq6WSQPfu59MJJlPPke3jEqk0/bvhPKU=;
-  b=McHVKZEo7Q5zyGdd2oiPoNXJSkvRklmEbRdJ7AwvduJUKAWL/qF6BZPr
-   mzfL3aLMj4a/1+Gfbe3yGO89org0xaLRP5K7uctg/scWj2AxLf1zU8C+1
-   qeQundwV912SlFmelUTckE4q73weozLNUjVIz56zEgw1xshulwqBUlpCW
-   E=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Apr 2022 05:51:35 -0700
+  bh=S3fioSwOFpxKRkm18j/pcrQRLSV4hTOldW6XEpMm09E=;
+  b=RCJGkmNQsCpv/o7zmBiAy+V7kvTFArYSp4Q2bW86KXCb9ZJMVKu6vgeW
+   1bEcjCiHRyAFg7Ff2AVvrLAPV6ZDbkl4J+CFmnINUoYdsoDrlzZRzQ7h9
+   5W1H7EkT48p6UtqLhiMs0sBN0jmno/GgBertl5vR/ShMsjeGcm5tzr11u
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 12 Apr 2022 05:51:09 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:51:34 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:51:09 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 05:51:34 -0700
+ 15.2.986.22; Tue, 12 Apr 2022 05:51:08 -0700
 Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 05:51:30 -0700
+ 15.2.986.22; Tue, 12 Apr 2022 05:51:04 -0700
 From:   Mao Jinlong <quic_jinlmao@quicinc.com>
 To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
@@ -55,9 +56,9 @@ CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
         Trilok Soni <quic_tsoni@quicinc.com>,
         Hao Zhang <quic_hazha@quicinc.com>,
         <linux-arm-msm@vger.kernel.org>
-Subject: [PATCH v5 10/10] ARM: dts: msm: Add tpdm mm/prng for sm8250
-Date:   Tue, 12 Apr 2022 20:50:35 +0800
-Message-ID: <20220412125035.40312-11-quic_jinlmao@quicinc.com>
+Subject: [PATCH v5 03/10] dt-bindings: arm: Adds CoreSight TPDM hardware definitions
+Date:   Tue, 12 Apr 2022 20:50:28 +0800
+Message-ID: <20220412125035.40312-4-quic_jinlmao@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220412125035.40312-1-quic_jinlmao@quicinc.com>
 References: <20220412125035.40312-1-quic_jinlmao@quicinc.com>
@@ -70,231 +71,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add tpdm mm and tpdm prng for sm8250.
+Adds new coresight-tpdm.yaml file describing the bindings required
+to define tpdm in the device trees.
 
-+---------------+                +-------------+
-|  tpdm@6c08000 |                |tpdm@684C000 |
-+-------|-------+                +------|------+
-        |                               |
-+-------|-------+                       |
-| funnel@6c0b000|                       |
-+-------|-------+                       |
-        |                               |
-+-------|-------+                       |
-|funnel@6c2d000 |                       |
-+-------|-------+                       |
-        |                               |
-        |    +---------------+          |
-        +----- tpda@6004000  -----------+
-             +-------|-------+
-                     |
-             +-------|-------+
-             |funnel@6005000 |
-             +---------------+
-
+Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
 Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
 ---
- .../arm64/boot/dts/qcom/sm8250-coresight.dtsi | 182 ++++++++++++++++++
- 1 file changed, 182 insertions(+)
+ .../bindings/arm/coresight-tpdm.yaml          | 99 +++++++++++++++++++
+ .../devicetree/bindings/arm/coresight.txt     |  7 ++
+ MAINTAINERS                                   |  1 +
+ 3 files changed, 107 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi b/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
-index 1de42fd39248..9c710b69a804 100644
---- a/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250-coresight.dtsi
-@@ -44,6 +44,14 @@
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+diff --git a/Documentation/devicetree/bindings/arm/coresight-tpdm.yaml b/Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
+new file mode 100644
+index 000000000000..05210e0fc262
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
+@@ -0,0 +1,99 @@
++# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
++# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/coresight-tpdm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Trace, Profiling and Diagnostics Monitor - TPDM
++
++description: |
++  The TPDM or Monitor serves as data collection component for various dataset
++  types specified in the QPMDA spec. It covers Implementation defined ((ImplDef),
++  Basic Counts (BC), Tenure Counts (TC), Continuous Multi-Bit (CMB), and Discrete
++  Single Bit (DSB). It performs data collection in the data producing clock
++  domain and transfers it to the data collection time domain, generally ATB
++  clock domain.
++
++  The primary use case of the TPDM is to collect data from different data
++  sources and send it to a TPDA for packetization, timestamping, and funneling.
++
++maintainers:
++  - Suzuki K Poulose <suzuki.poulose@arm.com>
++  - Mathieu Poirier <mathieu.poirier@linaro.org>
++
++properties:
++  $nodename:
++    pattern: "^tpdm(@[0-9a-f]+)$"
++  compatible:
++    items:
++      - const: qcom,coresight-tpdm
++      - const: arm,primecell
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++   items:
++     - const: apb_pclk
++
++  out-ports:
++    description: |
++      Output connections from the TPDM to coresight funnle/tpda.
++    $ref: /schemas/graph.yaml#/properties/ports
++    properties:
++      port:
++        description: Output connection from the TPDM to coresight
++            funnel/tpda.
++        $ref: /schemas/graph.yaml#/properties/port
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  # minimum TPDM definition. TPDM connect to coresight funnel.
++  - |
++    tpdm@6980000 {
++      compatible = "qcom,coresight-tpdm", "arm,primecell";
++      reg = <0x6980000 0x1000>;
++
++      clocks = <&aoss_qmp>;
++      clock-names = "apb_pclk";
++
++      out-ports {
++        port {
++          tpdm_turing_out_funnel_turing: endpoint {
++            remote-endpoint =
++              <&funnel_turing_in_tpdm_turing>;
++          };
++        };
++      };
++    };
++  # minimum TPDM definition. TPDM connect to coresight TPDA.
++  - |
++    tpdm@684c000 {
++      compatible = "qcom,coresight-tpdm", "arm,primecell";
++      reg = <0x684c000 0x1000>;
++
++      clocks = <&aoss_qmp>;
++      clock-names = "apb_pclk";
++
++      out-ports {
++        port {
++          tpdm_prng_out_tpda_qdss: endpoint {
++            remote-endpoint =
++              <&tpda_qdss_in_tpdm_prng>;
++          };
++        };
++      };
++    };
++
++...
+diff --git a/Documentation/devicetree/bindings/arm/coresight.txt b/Documentation/devicetree/bindings/arm/coresight.txt
+index c68d93a35b6c..f7ce8af48574 100644
+--- a/Documentation/devicetree/bindings/arm/coresight.txt
++++ b/Documentation/devicetree/bindings/arm/coresight.txt
+@@ -52,6 +52,10 @@ its hardware characteristcs.
+ 			"arm,coresight-cti", "arm,primecell";
+ 			See coresight-cti.yaml for full CTI definitions.
  
-+			port@6 {
-+				reg = <6>;
-+				funnel_in0_in_funnel_qatb: endpoint {
-+					remote-endpoint =
-+						<&funnel_qatb_out_funnel_in0>;
-+				};
-+			};
++		- Trace, Profiling and Diagnostics Monitor (TPDM):
++			"qcom,coresight-tpdm", "arm,primecell";
++			See coresight-tpdm.yaml for full TPDM definitions.
 +
- 			port@7 {
- 				reg = <7>;
- 				funnel0_in7: endpoint {
-@@ -523,4 +531,178 @@
- 			};
- 		};
- 	};
+ 	* reg: physical base address and length of the register
+ 	  set(s) of the component.
+ 
+@@ -82,6 +86,9 @@ its hardware characteristcs.
+ * Required properties for Coresight Cross Trigger Interface (CTI)
+ 	See coresight-cti.yaml for full CTI definitions.
+ 
++* Required properties for Trace, Profiling and Diagnostics Monitor (TPDM)
++	See coresight-tpdm.yaml for full TPDM definitions.
 +
-+	tpdm@6c08000 {
-+		compatible = "arm,primecell";
-+		reg = <0 0x6c08000 0 0x1000>;
-+		reg-names = "tpdm-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				tpdm_mm_out_funnel_dl_mm: endpoint {
-+					remote-endpoint =
-+						<&funnel_dl_mm_in_tpdm_mm>;
-+				};
-+			};
-+		};
-+	};
-+
-+	funnel@6c0b000 {
-+		compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
-+
-+		reg = <0 0x6c0b000 0 0x1000>;
-+		reg-names = "funnel-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				funnel_dl_mm_out_funnel_dl_center: endpoint {
-+					remote-endpoint =
-+					  <&funnel_dl_center_in_funnel_dl_mm>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@3 {
-+				reg = <3>;
-+				funnel_dl_mm_in_tpdm_mm: endpoint {
-+					remote-endpoint =
-+					    <&tpdm_mm_out_funnel_dl_mm>;
-+				};
-+			};
-+		};
-+	};
-+
-+	funnel@6c2d000 {
-+		compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
-+
-+		reg = <0 0x6c2d000 0 0x1000>;
-+		reg-names = "funnel-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			port {
-+				tpdm_mm_out_tpda9: endpoint {
-+					remote-endpoint =
-+					    <&tpda_9_in_tpdm_mm>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@2 {
-+				reg = <2>;
-+				funnel_dl_center_in_funnel_dl_mm: endpoint {
-+					remote-endpoint =
-+					<&funnel_dl_mm_out_funnel_dl_center>;
-+				};
-+			};
-+		};
-+	};
-+
-+	tpdm@684C000 {
-+		compatible = "arm,primecell";
-+		reg = <0 0x684C000 0 0x1000>;
-+		reg-names = "tpdm-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				tpdm_prng_out_tpda_23: endpoint {
-+					remote-endpoint =
-+						<&tpda_23_in_tpdm_prng>;
-+				};
-+			};
-+		};
-+	};
-+
-+	tpda@6004000 {
-+		compatible = "arm,primecell";
-+		reg = <0 0x6004000 0 0x1000>;
-+		reg-names = "tpda-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				reg = <0>;
-+				tpda_out_funnel_qatb: endpoint {
-+					remote-endpoint =
-+						<&funnel_qatb_in_tpda>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@9 {
-+				reg = <9>;
-+				tpda_9_in_tpdm_mm: endpoint {
-+					remote-endpoint =
-+						<&tpdm_mm_out_tpda9>;
-+				};
-+			};
-+
-+			port@23 {
-+				reg = <23>;
-+				tpda_23_in_tpdm_prng: endpoint {
-+					remote-endpoint =
-+						<&tpdm_prng_out_tpda_23>;
-+				};
-+			};
-+		};
-+	};
-+
-+	funnel@6005000 {
-+		compatible = "arm,primecell";
-+
-+		reg = <0 0x6005000 0 0x1000>;
-+		reg-names = "funnel-base";
-+
-+		clocks = <&aoss_qmp>;
-+		clock-names = "apb_pclk";
-+
-+		out-ports {
-+			port {
-+				funnel_qatb_out_funnel_in0: endpoint {
-+					remote-endpoint =
-+						<&funnel_in0_in_funnel_qatb>;
-+				};
-+			};
-+		};
-+
-+		in-ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+				funnel_qatb_in_tpda: endpoint {
-+					remote-endpoint =
-+						<&tpda_out_funnel_qatb>;
-+				};
-+			};
-+		};
-+	};
- };
+ * Required properties for devices that don't show up on the AMBA bus, such as
+   non-configurable replicators and non-configurable funnels:
+ 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 61d9f114c37f..0d39bb37935d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1977,6 +1977,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/coresight/linux.git
+ F:	Documentation/ABI/testing/sysfs-bus-coresight-devices-*
+ F:	Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
+ F:	Documentation/devicetree/bindings/arm/coresight-cti.yaml
++F:	Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
+ F:	Documentation/devicetree/bindings/arm/coresight.txt
+ F:	Documentation/devicetree/bindings/arm/ete.yaml
+ F:	Documentation/devicetree/bindings/arm/trbe.yaml
 -- 
 2.17.1
 
