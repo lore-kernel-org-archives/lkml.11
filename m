@@ -2,132 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E330C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD76C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349498AbiDLL0F (ORCPT
+        id S1350886AbiDLL0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
+        Tue, 12 Apr 2022 07:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351255AbiDLLZk (ORCPT
+        with ESMTP id S1352737AbiDLLZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:25:40 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6DA2B25A;
-        Tue, 12 Apr 2022 03:07:51 -0700 (PDT)
-Received: from zn.tnic (p200300ea97156149329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:6149:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9608C1EC04EC;
-        Tue, 12 Apr 2022 12:07:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649758065;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=o3lXO1BKF/S5AzldA58rjm6HBnn56CuwTB6uiL2Y1Ag=;
-        b=MnAIT7Er8JwAM4b0GD9rgLkDQyjcarmya9EyILrxMvNLKZ0HrhcSex/LUG4qj5DimKo4xp
-        FUSPF+Ow9Iqn/lR66hENQLYudzalsAfqsYDdVNCEP3UQRqaJ97IASCFGZJ0A5WCoQftN+r
-        A6Lci8BJ2YNNbYwSUe5vjOAJqh086DM=
-Date:   Tue, 12 Apr 2022 12:07:46 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     david@fromorbit.com, djwong@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, vishal.l.verma@intel.com, dave.jiang@intel.com,
-        agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
-        ira.weiny@intel.com, willy@infradead.org, vgoyal@redhat.com,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        x86@kernel.org
-Subject: Re: [PATCH v7 3/6] mce: fix set_mce_nospec to always unmap the whole
- page
-Message-ID: <YlVPcrK4SSXyPx+Y@zn.tnic>
-References: <20220405194747.2386619-1-jane.chu@oracle.com>
- <20220405194747.2386619-4-jane.chu@oracle.com>
+        Tue, 12 Apr 2022 07:25:41 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A6C237E5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:08:27 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id ll10so9580533pjb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:08:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y8/JYtLwGTr+r9WhKddIHXBLC5TCTeFp3FTZ8BAk6HA=;
+        b=BWQF6hyEhV41fw/Vfjf8js/WHVuO3KDWVkQ8iaSse8fQWRUMxww5Qo6CNykQ17EiqJ
+         R9plY4ivF9hhzBQTg1z4+y6mKIq64h787PG2tMSkM21BHRwuDGku3NMVlkP3l2pUgZOr
+         0uS52KvkqEcGka6JR8QD5Suprc65T9w/aFdLzxiyKHmZYNHvqkwYPzD3ZC1QXAMSuioi
+         oxCseOUn1dQARtF/OdcH0P1WWbsgSOSymXv1WylLOHKcVTOM1K+1+5zNFRKwXh3K8CHw
+         P2lU4Oksd7J26mj5hEnZmKUemEGP293GCRcM9Ix94AXPVy8w6j8ZGMy7mTjFDfuo4kOt
+         j01w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y8/JYtLwGTr+r9WhKddIHXBLC5TCTeFp3FTZ8BAk6HA=;
+        b=LD+Zke4kjgkWF+3XE5kCpPUQCsr83gFQnpQxCnKs85pLPfvVLCh72diY15l4LGssRf
+         N43jrNMTRMFKAjImHS1FYiY1kX+PL6x+aN1kN5cWnriDqGxBhYR0XoAraPXcAxgKE8C1
+         IQPYmdOVNH1LET3miwgRR+F4Egn564QbcusxjpicQCyCGUIcy7djv5E1BP6dSlMae4ol
+         BM3ihIQhgUYpvJDb6cscu4OlaJ+n3sU76Nh2WVeupQ9Xoc00b9W1JdxqnYbaRyuz+kWi
+         4mzxXR2rE1Syktc7h8ol/MlB8YMLUqs4XhnjHzuCOfGP6fauvlmb7PGuselp+ZJTFoQW
+         Rd8g==
+X-Gm-Message-State: AOAM530+z9af+Lg5wBuUz2OMgFWqCPEIxYv5aykcrLhFf4Lqk8UuMynC
+        lUHZHXIYjA3DxOE5vkgN1G5YzQ==
+X-Google-Smtp-Source: ABdhPJz9BsX5BLP589MLDfJnGsKt1qLr3mtq0HfL/T8EgEobf38Mq+9s+26t59TCgZOSJxq3Z6xS9g==
+X-Received: by 2002:a17:902:8684:b0:154:af35:82ce with SMTP id g4-20020a170902868400b00154af3582cemr37178055plo.137.1649758106758;
+        Tue, 12 Apr 2022 03:08:26 -0700 (PDT)
+Received: from localhost.localdomain ([122.182.197.47])
+        by smtp.gmail.com with ESMTPSA id j9-20020a056a00130900b004f73df40914sm37515088pfu.82.2022.04.12.03.08.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 03:08:25 -0700 (PDT)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH 0/6] KVM RISC-V Sv57x4 support and HFENCE improvements
+Date:   Tue, 12 Apr 2022 15:37:07 +0530
+Message-Id: <20220412100713.1415094-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220405194747.2386619-4-jane.chu@oracle.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:47:44PM -0600, Jane Chu wrote:
-> The set_memory_uc() approach doesn't work well in all cases.
-> For example, when "The VMM unmapped the bad page from guest
-> physical space and passed the machine check to the guest."
-> "The guest gets virtual #MC on an access to that page.
->  When the guest tries to do set_memory_uc() and instructs
->  cpa_flush() to do clean caches that results in taking another
->  fault / exception perhaps because the VMM unmapped the page
->  from the guest."
+This series adds Sv57x4 support for KVM RISC-V G-stage and various
+HFENCE related improvements.
 
-I presume this is quoting someone...
+These patches can also be found in riscv_kvm_sv57_plus_v1 branch at:
+https://github.com/avpatel/linux.git
 
-> Since the driver has special knowledge to handle NP or UC,
-> let's mark the poisoned page with NP and let driver handle it
+Anup Patel (6):
+  RISC-V: KVM: Use G-stage name for hypervisor page table
+  RISC-V: KVM: Add Sv57x4 mode support for G-stage
+  RISC-V: KVM: Treat SBI HFENCE calls as NOPs
+  RISC-V: KVM: Introduce range based local HFENCE functions
+  RISC-V: KVM: Reduce KVM_MAX_VCPUS value
+  RISC-V: KVM: Add remote HFENCE functions based on VCPU requests
 
-s/let's mark/mark/
-
-> when it comes down to repair.
-> 
-> Please refer to discussions here for more details.
-> https://lore.kernel.org/all/CAPcyv4hrXPb1tASBZUg-GgdVs0OOFKXMXLiHmktg_kFi7YBMyQ@mail.gmail.com/
-> 
-> Now since poisoned page is marked as not-present, in order to
-> avoid writing to a 'np' page and trigger kernel Oops, also fix
-
-You can write it out: "non-present page..."
-
-> pmem_do_write().
-> 
-> Fixes: 284ce4011ba6 ("x86/memory_failure: Introduce {set, clear}_mce_nospec()")
-> Signed-off-by: Jane Chu <jane.chu@oracle.com>
-> ---
->  arch/x86/kernel/cpu/mce/core.c |  6 +++---
->  arch/x86/mm/pat/set_memory.c   | 18 ++++++------------
->  drivers/nvdimm/pmem.c          | 31 +++++++------------------------
->  include/linux/set_memory.h     |  4 ++--
->  4 files changed, 18 insertions(+), 41 deletions(-)
-
-For such mixed subsystem patches we probably should talk about who picks
-them up, eventually...
-
-> diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-> index 981496e6bc0e..fa67bb9d1afe 100644
-> --- a/arch/x86/kernel/cpu/mce/core.c
-> +++ b/arch/x86/kernel/cpu/mce/core.c
-> @@ -579,7 +579,7 @@ static int uc_decode_notifier(struct notifier_block *nb, unsigned long val,
->  
->  	pfn = mce->addr >> PAGE_SHIFT;
->  	if (!memory_failure(pfn, 0)) {
-> -		set_mce_nospec(pfn, whole_page(mce));
-> +		set_mce_nospec(pfn);
->  		mce->kflags |= MCE_HANDLED_UC;
->  	}
->  
-> @@ -1316,7 +1316,7 @@ static void kill_me_maybe(struct callback_head *cb)
->  
->  	ret = memory_failure(p->mce_addr >> PAGE_SHIFT, flags);
->  	if (!ret) {
-> -		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
-> +		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
->  		sync_core();
->  		return;
->  	}
-> @@ -1342,7 +1342,7 @@ static void kill_me_never(struct callback_head *cb)
->  	p->mce_count = 0;
->  	pr_err("Kernel accessed poison in user space at %llx\n", p->mce_addr);
->  	if (!memory_failure(p->mce_addr >> PAGE_SHIFT, 0))
-> -		set_mce_nospec(p->mce_addr >> PAGE_SHIFT, p->mce_whole_page);
-> +		set_mce_nospec(p->mce_addr >> PAGE_SHIFT);
->  }
-
-Both that ->mce_whole_page and whole_page() look unused after this.
+ arch/riscv/include/asm/csr.h      |   1 +
+ arch/riscv/include/asm/kvm_host.h | 119 ++++++--
+ arch/riscv/kvm/main.c             |  11 +-
+ arch/riscv/kvm/mmu.c              | 264 ++++++++---------
+ arch/riscv/kvm/tlb.S              |  74 -----
+ arch/riscv/kvm/tlb.c              | 456 ++++++++++++++++++++++++++++++
+ arch/riscv/kvm/vcpu.c             |  34 ++-
+ arch/riscv/kvm/vcpu_exit.c        |   6 +-
+ arch/riscv/kvm/vcpu_sbi_replace.c |  40 ++-
+ arch/riscv/kvm/vcpu_sbi_v01.c     |  35 ++-
+ arch/riscv/kvm/vm.c               |   8 +-
+ arch/riscv/kvm/vmid.c             |  30 +-
+ 12 files changed, 791 insertions(+), 287 deletions(-)
+ delete mode 100644 arch/riscv/kvm/tlb.S
+ create mode 100644 arch/riscv/kvm/tlb.c
 
 -- 
-Regards/Gruss,
-    Boris.
+2.25.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
