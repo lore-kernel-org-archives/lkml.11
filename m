@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82830C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF3EC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353129AbiDLHOv (ORCPT
+        id S1353289AbiDLHPJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47908 "EHLO
+        Tue, 12 Apr 2022 03:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350833AbiDLG4s (ORCPT
+        with ESMTP id S1351419AbiDLG6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:56:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D1D255AD;
-        Mon, 11 Apr 2022 23:46:22 -0700 (PDT)
+        Tue, 12 Apr 2022 02:58:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B35427ED;
+        Mon, 11 Apr 2022 23:46:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92F07610A0;
-        Tue, 12 Apr 2022 06:46:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5715C385A1;
-        Tue, 12 Apr 2022 06:46:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B3B3B81B49;
+        Tue, 12 Apr 2022 06:46:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEC20C385A1;
+        Tue, 12 Apr 2022 06:46:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745981;
-        bh=7/3p41NIPgWI2dRSaH2L63dQXILYuedmfQCuTAQ4jo4=;
+        s=korg; t=1649745989;
+        bh=f5WP94l2ij7cAQc6yP2J2xfY3E3FBE12z8liPEMYcEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SsD0pU4Nrs1cZW5Fs4ZPVA4ZCrvsqHg220M4Bv39XXMzmzJwZAUckt6xgHzQgW8kI
-         fdrkVb4IhCS3qCrTDvdkVzN4dZViO1KiYkjZMmb1x/UfebvH9UOby5xjoh75T8a6GV
-         XxeB0ldnGpbz1hSN7oacpNM20Z2OFsoh4wbFv3mA=
+        b=EJf5Xw1zkd/tqEH+3cRzzmE4f6y8VFb9ok9pmWHvt5GoVzxs31F8nkbiGOruwwChe
+         QiCYQAMx89L4gptiuS12ElgDo3+WtA7gTRZ3RYHFEi4Hx4Qt7EFRwwTLyctxvfD3A2
+         S/2z7det8ofuCWd41lrIbH1kEyHiqlfSNieVap9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukasz Luba <lukasz.luba@arm.com>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Pierre Gondois <Pierre.Gondois@arm.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Lucas Denefle <lucas.denefle@converge.io>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 117/277] cpufreq: CPPC: Fix performance/frequency conversion
-Date:   Tue, 12 Apr 2022 08:28:40 +0200
-Message-Id: <20220412062945.426932346@linuxfoundation.org>
+Subject: [PATCH 5.15 120/277] w1: w1_therm: fixes w1_seq for ds28ea00 sensors
+Date:   Tue, 12 Apr 2022 08:28:43 +0200
+Message-Id: <20220412062945.514037140@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,133 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+From: Lucas Denefle <lucas.denefle@converge.io>
 
-[ Upstream commit ec1c7ad47664f964c1101fe555b6fde0cb124b38 ]
+[ Upstream commit 41a92a89eee819298f805c40187ad8b02bb53426 ]
 
-CPUfreq governors request CPU frequencies using information
-on current CPU usage. The CPPC driver converts them to
-performance requests. Frequency targets are computed as:
-	target_freq = (util / cpu_capacity) * max_freq
-target_freq is then clamped between [policy->min, policy->max].
+w1_seq was failing due to several devices responding to the
+CHAIN_DONE at the same time. Now properly selects the current
+device in the chain with MATCH_ROM. Also acknowledgment was
+read twice.
 
-The CPPC driver converts performance values to frequencies
-(and vice-versa) using cppc_cpufreq_perf_to_khz() and
-cppc_cpufreq_khz_to_perf(). These functions both use two different
-factors depending on the range of the input value. For
-cppc_cpufreq_khz_to_perf():
-- (NOMINAL_PERF / NOMINAL_FREQ) or
-- (LOWEST_PERF / LOWEST_FREQ)
-and for cppc_cpufreq_perf_to_khz():
-- (NOMINAL_FREQ / NOMINAL_PERF) or
-- ((NOMINAL_PERF - LOWEST_FREQ) / (NOMINAL_PERF - LOWEST_PERF))
-
-This means:
-1- the functions are not inverse for some values:
-   (perf_to_khz(khz_to_perf(x)) != x)
-2- cppc_cpufreq_perf_to_khz(LOWEST_PERF) can sometimes give
-   a different value from LOWEST_FREQ due to integer approximation
-3- it is implied that performance and frequency are proportional
-   (NOMINAL_FREQ / NOMINAL_PERF) == (LOWEST_PERF / LOWEST_FREQ)
-
-This patch changes the conversion functions to an affine function.
-This fixes the 3 points above.
-
-Suggested-by: Lukasz Luba <lukasz.luba@arm.com>
-Suggested-by: Morten Rasmussen <morten.rasmussen@arm.com>
-Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Lucas Denefle <lucas.denefle@converge.io>
+Link: https://lore.kernel.org/r/20220223113558.232750-1-lucas.denefle@converge.io
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cppc_cpufreq.c | 43 +++++++++++++++++-----------------
- 1 file changed, 21 insertions(+), 22 deletions(-)
+ drivers/w1/slaves/w1_therm.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
-index d4c27022b9c9..e0ff09d66c96 100644
---- a/drivers/cpufreq/cppc_cpufreq.c
-+++ b/drivers/cpufreq/cppc_cpufreq.c
-@@ -303,52 +303,48 @@ static u64 cppc_get_dmi_max_khz(void)
+diff --git a/drivers/w1/slaves/w1_therm.c b/drivers/w1/slaves/w1_therm.c
+index ca70c5f03206..9cbeeb4923ec 100644
+--- a/drivers/w1/slaves/w1_therm.c
++++ b/drivers/w1/slaves/w1_therm.c
+@@ -2090,16 +2090,20 @@ static ssize_t w1_seq_show(struct device *device,
+ 		if (sl->reg_num.id == reg_num->id)
+ 			seq = i;
  
- /*
-  * If CPPC lowest_freq and nominal_freq registers are exposed then we can
-- * use them to convert perf to freq and vice versa
-- *
-- * If the perf/freq point lies between Nominal and Lowest, we can treat
-- * (Low perf, Low freq) and (Nom Perf, Nom freq) as 2D co-ordinates of a line
-- * and extrapolate the rest
-- * For perf/freq > Nominal, we use the ratio perf:freq at Nominal for conversion
-+ * use them to convert perf to freq and vice versa. The conversion is
-+ * extrapolated as an affine function passing by the 2 points:
-+ *  - (Low perf, Low freq)
-+ *  - (Nominal perf, Nominal perf)
-  */
- static unsigned int cppc_cpufreq_perf_to_khz(struct cppc_cpudata *cpu_data,
- 					     unsigned int perf)
- {
- 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
-+	s64 retval, offset = 0;
- 	static u64 max_khz;
- 	u64 mul, div;
- 
- 	if (caps->lowest_freq && caps->nominal_freq) {
--		if (perf >= caps->nominal_perf) {
--			mul = caps->nominal_freq;
--			div = caps->nominal_perf;
--		} else {
--			mul = caps->nominal_freq - caps->lowest_freq;
--			div = caps->nominal_perf - caps->lowest_perf;
--		}
-+		mul = caps->nominal_freq - caps->lowest_freq;
-+		div = caps->nominal_perf - caps->lowest_perf;
-+		offset = caps->nominal_freq - div64_u64(caps->nominal_perf * mul, div);
- 	} else {
- 		if (!max_khz)
- 			max_khz = cppc_get_dmi_max_khz();
- 		mul = max_khz;
- 		div = caps->highest_perf;
- 	}
--	return (u64)perf * mul / div;
++		if (w1_reset_bus(sl->master))
++			goto error;
 +
-+	retval = offset + div64_u64(perf * mul, div);
-+	if (retval >= 0)
-+		return retval;
-+	return 0;
- }
++		/* Put the device into chain DONE state */
++		w1_write_8(sl->master, W1_MATCH_ROM);
++		w1_write_block(sl->master, (u8 *)&rn, 8);
+ 		w1_write_8(sl->master, W1_42_CHAIN);
+ 		w1_write_8(sl->master, W1_42_CHAIN_DONE);
+ 		w1_write_8(sl->master, W1_42_CHAIN_DONE_INV);
+-		w1_read_block(sl->master, &ack, sizeof(ack));
  
- static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
- 					     unsigned int freq)
- {
- 	struct cppc_perf_caps *caps = &cpu_data->perf_caps;
-+	s64 retval, offset = 0;
- 	static u64 max_khz;
- 	u64  mul, div;
- 
- 	if (caps->lowest_freq && caps->nominal_freq) {
--		if (freq >= caps->nominal_freq) {
--			mul = caps->nominal_perf;
--			div = caps->nominal_freq;
--		} else {
--			mul = caps->lowest_perf;
--			div = caps->lowest_freq;
--		}
-+		mul = caps->nominal_perf - caps->lowest_perf;
-+		div = caps->nominal_freq - caps->lowest_freq;
-+		offset = caps->nominal_perf - div64_u64(caps->nominal_freq * mul, div);
- 	} else {
- 		if (!max_khz)
- 			max_khz = cppc_get_dmi_max_khz();
-@@ -356,7 +352,10 @@ static unsigned int cppc_cpufreq_khz_to_perf(struct cppc_cpudata *cpu_data,
- 		div = max_khz;
+ 		/* check for acknowledgment */
+ 		ack = w1_read_8(sl->master);
+ 		if (ack != W1_42_SUCCESS_CONFIRM_BYTE)
+ 			goto error;
+-
  	}
  
--	return (u64)freq * mul / div;
-+	retval = offset + div64_u64(freq * mul, div);
-+	if (retval >= 0)
-+		return retval;
-+	return 0;
- }
- 
- static int cppc_cpufreq_set_target(struct cpufreq_policy *policy,
+ 	/* Exit from CHAIN state */
 -- 
 2.35.1
 
