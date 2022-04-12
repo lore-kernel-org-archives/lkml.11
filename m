@@ -2,236 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B63C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 384DCC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235867AbiDLNUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
+        id S1355507AbiDLNW0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 09:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357478AbiDLNTb (ORCPT
+        with ESMTP id S1355702AbiDLNWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:19:31 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF44B3C4A3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:08:38 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kd5Zz5f6mzgYTs;
-        Tue, 12 Apr 2022 21:06:35 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 21:08:24 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 21:08:24 +0800
-Message-ID: <af6bd17a-d2ec-3d1a-8360-b51fe38ecdd9@huawei.com>
-Date:   Tue, 12 Apr 2022 21:08:23 +0800
+        Tue, 12 Apr 2022 09:22:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A54AE52E66
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:10:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649769016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cxNi3KUC9hG5+dIEHXwk8T0pk8dlLB9WdrbtBDd6QQY=;
+        b=CkcnCcqJ+HVYx9BNiyo+unX+ms7tcvNC7RT4UMLP/XpOZuErh+Dl7fZ/ElOqMKLjRl0DiS
+        LPBlpF1lnvSP+xigarDyc6viLLMfPUJYM1d9IMU6srBP0gcMOlZ3PAiea+FW+WSwREzyBd
+        q30btojsGPirAOMfx2tOcI1WgdhJgmU=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-645-LIxJ1Q-yP7aAPH5d7HcrHA-1; Tue, 12 Apr 2022 09:10:15 -0400
+X-MC-Unique: LIxJ1Q-yP7aAPH5d7HcrHA-1
+Received: by mail-wr1-f72.google.com with SMTP id f2-20020a056000036200b00207a14a1f96so1518151wrf.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:10:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=cxNi3KUC9hG5+dIEHXwk8T0pk8dlLB9WdrbtBDd6QQY=;
+        b=Z1G9ThR+gFYkfOS7X09Jrt4qzgyklwd2XqYzYjNbxaTM9lrQV2P9Z+fgCmKdMXyGcD
+         qpaMAKh/dnFgjF2xLjkxQu0qbPMhPqIPVy0ALinrUYdAZPLgn1jsfwZwxlXwnqrBLG0F
+         lpME/OjMb8F1sCHnwKM882zs8JRbIO2gMrSrFTm/PSplcevsov/p5p1G/C8dMejJPQVO
+         lGpojT+a2I7U2UJQz3XdLunEOtS7CsV41vuutep9t9c9bmdZk9LWYPcjXcp9wEaWtlUt
+         DnMNjK4xxFsI/3/jM+/4pld3hYMSe3x+nZQNkjeSv7UynhBy/wS1WuVfR+cHyt2CeYfL
+         XOMw==
+X-Gm-Message-State: AOAM530D7OK7k+jrNP9cwRn0XFWUqPTn1tIE9VPRkbevYAo4jMpLE7sn
+        yPa8xb1n4JuXZh3gFsLHCJHxFA5FXH7ZylvOnAZUVe8Esyj9pRyO/0yudzAdA18IWGtpTmUFB/R
+        o7h+V45mENSe0G9li96TBPivh
+X-Received: by 2002:a1c:ed12:0:b0:38e:9e4e:2db2 with SMTP id l18-20020a1ced12000000b0038e9e4e2db2mr4092005wmh.96.1649769014224;
+        Tue, 12 Apr 2022 06:10:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzPO9VTOs/2MHLmQnUoLuhtZklz6TW1zHJj9EIuwagGg5Ey6vVOLVwIN01vt2AHQuMXqL4Efw==
+X-Received: by 2002:a1c:ed12:0:b0:38e:9e4e:2db2 with SMTP id l18-20020a1ced12000000b0038e9e4e2db2mr4091971wmh.96.1649769013882;
+        Tue, 12 Apr 2022 06:10:13 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:1800:7c14:16cc:5291:a9f3? (p200300cbc70718007c1416cc5291a9f3.dip0.t-ipconnect.de. [2003:cb:c707:1800:7c14:16cc:5291:a9f3])
+        by smtp.gmail.com with ESMTPSA id i7-20020a5d5587000000b00207a8cde900sm4506601wrv.19.2022.04.12.06.10.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 06:10:13 -0700 (PDT)
+Message-ID: <ccae12f9-a452-95a8-f404-3398dcdf5bdf@redhat.com>
+Date:   Tue, 12 Apr 2022 15:10:12 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [RFC PATCH -next V3 3/6] arm64: add support for machine check
- error safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
 Content-Language: en-US
-To:     Tong Tiangen <tongtiangen@huawei.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Alexander Viro" <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Xie XiuQi <xiexiuqi@huawei.com>
-References: <20220412072552.2526871-1-tongtiangen@huawei.com>
- <20220412072552.2526871-4-tongtiangen@huawei.com>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <20220412072552.2526871-4-tongtiangen@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggeme707-chm.china.huawei.com (10.1.199.103) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+To:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+References: <20220406151858.3149821-1-zi.yan@sent.com>
+ <20220406151858.3149821-3-zi.yan@sent.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v10 2/5] mm: page_isolation: check specified range for
+ unmovable pages
+In-Reply-To: <20220406151858.3149821-3-zi.yan@sent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 2022/4/12 15:25, Tong Tiangen wrote:
-> During the processing of arm64 kernel hardware memory errors(do_sea()), if
-> the errors is consumed in the kernel, the current processing is panic.
-> However, it is not optimal.
->
-> Take uaccess for example, if the uaccess operation fails due to memory
-> error, only the user process will be affected, kill the user process
-> and isolate the user page with hardware memory errors is a better choice.
->
-> This patch only enable machine error check framework, it add exception
-> fixup before kernel panic in do_sea() and only limit the consumption of
-> hardware memory errors in kernel mode triggered by user mode processes.
-> If fixup successful, panic can be avoided.
->
-> Consistent with PPC/x86, it is implemented by CONFIG_ARCH_HAS_COPY_MC.
->
-> Also add copy_mc_to_user() in include/linux/uaccess.h, this helper is
-> called when CONFIG_ARCH_HAS_COPOY_MC is open.
->
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+On 06.04.22 17:18, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
+> 
+> Enable set_migratetype_isolate() to check specified sub-range for
+> unmovable pages during isolation. Page isolation is done
+> at MAX_ORDER_NR_PAEGS granularity, but not all pages within that
+> granularity are intended to be isolated. For example,
+> alloc_contig_range(), which uses page isolation, allows ranges without
+> alignment. This commit makes unmovable page check only look for
+> interesting pages, so that page isolation can succeed for any
+> non-overlapping ranges.
+> 
+> Signed-off-by: Zi Yan <ziy@nvidia.com>
 > ---
->   arch/arm64/Kconfig               |  1 +
->   arch/arm64/include/asm/extable.h |  1 +
->   arch/arm64/mm/extable.c          | 18 ++++++++++++++++++
->   arch/arm64/mm/fault.c            | 28 ++++++++++++++++++++++++++++
->   include/linux/uaccess.h          |  8 ++++++++
->   5 files changed, 56 insertions(+)
->
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index d9325dd95eba..012e38309955 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -19,6 +19,7 @@ config ARM64
->   	select ARCH_ENABLE_SPLIT_PMD_PTLOCK if PGTABLE_LEVELS > 2
->   	select ARCH_ENABLE_THP_MIGRATION if TRANSPARENT_HUGEPAGE
->   	select ARCH_HAS_CACHE_LINE_SIZE
-> +	select ARCH_HAS_COPY_MC if ACPI_APEI_GHES
->   	select ARCH_HAS_CURRENT_STACK_POINTER
->   	select ARCH_HAS_DEBUG_VIRTUAL
->   	select ARCH_HAS_DEBUG_VM_PGTABLE
-> diff --git a/arch/arm64/include/asm/extable.h b/arch/arm64/include/asm/extable.h
-> index 72b0e71cc3de..f80ebd0addfd 100644
-> --- a/arch/arm64/include/asm/extable.h
-> +++ b/arch/arm64/include/asm/extable.h
-> @@ -46,4 +46,5 @@ bool ex_handler_bpf(const struct exception_table_entry *ex,
->   #endif /* !CONFIG_BPF_JIT */
->   
->   bool fixup_exception(struct pt_regs *regs);
-> +bool fixup_exception_mc(struct pt_regs *regs);
->   #endif
-> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-> index 489455309695..5de256a25464 100644
-> --- a/arch/arm64/mm/extable.c
-> +++ b/arch/arm64/mm/extable.c
-> @@ -9,6 +9,7 @@
->   
->   #include <asm/asm-extable.h>
->   #include <asm/ptrace.h>
-> +#include <asm/esr.h>
->   
->   static inline unsigned long
->   get_ex_fixup(const struct exception_table_entry *ex)
-> @@ -73,6 +74,7 @@ bool fixup_exception(struct pt_regs *regs)
->   
->   	switch (ex->type) {
->   	case EX_TYPE_FIXUP:
-> +	case EX_TYPE_UACCESS_MC:
->   		return ex_handler_fixup(ex, regs);
->   	case EX_TYPE_BPF:
->   		return ex_handler_bpf(ex, regs);
-> @@ -84,3 +86,19 @@ bool fixup_exception(struct pt_regs *regs)
->   
->   	BUG();
->   }
-> +
-> +bool fixup_exception_mc(struct pt_regs *regs)
-> +{
-> +	const struct exception_table_entry *ex;
-> +
-> +	ex = search_exception_tables(instruction_pointer(regs));
-> +	if (!ex)
-> +		return false;
-> +
-> +	switch (ex->type) {
-> +	case EX_TYPE_UACCESS_MC:
-> +		return ex_handler_fixup(ex, regs);
-> +	}
-> +
-> +	return false;
-> +}
 
-The definition of EX_TYPE_UACCESS_MC is in patch4, please fix it, and if 
-arm64 exception table
+[...]
 
-is sorted by exception type, we could drop fixup_exception_mc(), right?
+>  /*
+> - * This function checks whether pageblock includes unmovable pages or not.
+> + * This function checks whether the range [start_pfn, end_pfn) includes
+> + * unmovable pages or not. The range must fall into a single pageblock and
+> + * consequently belong to a single zone.
+>   *
+>   * PageLRU check without isolation or lru_lock could race so that
+>   * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
+> @@ -28,12 +30,14 @@
+>   * cannot get removed (e.g., via memory unplug) concurrently.
+>   *
+>   */
+> -static struct page *has_unmovable_pages(struct zone *zone, struct page *page,
+> -				 int migratetype, int flags)
+> +static struct page *has_unmovable_pages(unsigned long start_pfn, unsigned long end_pfn,
+> +				int migratetype, int flags)
+>  {
+> -	unsigned long iter = 0;
+> -	unsigned long pfn = page_to_pfn(page);
+> -	unsigned long offset = pfn % pageblock_nr_pages;
+> +	unsigned long pfn = start_pfn;
+> +	struct page *page = pfn_to_page(pfn);
 
-> diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
-> index 77341b160aca..56b13cf8bf1d 100644
-> --- a/arch/arm64/mm/fault.c
-> +++ b/arch/arm64/mm/fault.c
-> @@ -695,6 +695,30 @@ static int do_bad(unsigned long far, unsigned int esr, struct pt_regs *regs)
->   	return 1; /* "fault" */
->   }
->   
-> +static bool arm64_process_kernel_sea(unsigned long addr, unsigned int esr,
-> +				     struct pt_regs *regs, int sig, int code)
-> +{
-> +	if (!IS_ENABLED(CONFIG_ARCH_HAS_COPY_MC))
-> +		return false;
-> +
-> +	if (user_mode(regs) || !current->mm)
-> +		return false;
-> +
-> +	if (apei_claim_sea(regs) < 0)
-> +		return false;
-> +
-> +	current->thread.fault_address = 0;
-> +	current->thread.fault_code = esr;
-> +
-Use set_thread_esr(0, esr) and move it after fixup_exception_mc();
-> +	if (!fixup_exception_mc(regs))
-> +		return false;
-> +
-> +	arm64_force_sig_fault(sig, code, addr,
-> +		"Uncorrected hardware memory error in kernel-access\n");
-> +
-> +	return true;
-> +}
-> +
->   static int do_sea(unsigned long far, unsigned int esr, struct pt_regs *regs)
->   {
->   	const struct fault_info *inf;
-> @@ -720,6 +744,10 @@ static int do_sea(unsigned long far, unsigned int esr, struct pt_regs *regs)
->   		 */
->   		siaddr  = untagged_addr(far);
->   	}
-> +
-> +	if (arm64_process_kernel_sea(siaddr, esr, regs, inf->sig, inf->code))
-> +		return 0;
-> +
 
-Rename arm64_process_kernel_sea() to arm64_do_kernel_sea() ?
+Just do
 
-if (!arm64_do_kernel_sea())
+struct page *page = pfn_to_page(start_pfn);
+struct zone *zone = page_zone(page);
 
-     arm64_notify_die();
+here. No need to lookup the zone again in the loop because, as you
+document "must ... belong to a single zone.".
 
->   	arm64_notify_die(inf->name, regs, inf->sig, inf->code, siaddr, esr);
->   
->   	return 0;
-> diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
-> index 546179418ffa..dd952aeecdc1 100644
-> --- a/include/linux/uaccess.h
-> +++ b/include/linux/uaccess.h
-> @@ -174,6 +174,14 @@ copy_mc_to_kernel(void *dst, const void *src, size_t cnt)
->   }
->   #endif
->   
-> +#ifndef copy_mc_to_user
-> +static inline unsigned long __must_check
-> +copy_mc_to_user(void *dst, const void *src, size_t cnt)
-> +{
-Add check_object_size(cnt, src, true);  which could make 
-HARDENED_USERCOPY works.
-> +	return raw_copy_to_user(dst, src, cnt);
-> +}
-> +#endif
+Then, there is also no need to initialize "pfn" here. In the loop header
+is sufficient.
+
 > +
->   static __always_inline void pagefault_disabled_inc(void)
->   {
->   	current->pagefault_disabled++;
+> +	VM_BUG_ON(ALIGN_DOWN(start_pfn, pageblock_nr_pages) !=
+> +		  ALIGN_DOWN(end_pfn - 1, pageblock_nr_pages));
+>  
+>  	if (is_migrate_cma_page(page)) {
+>  		/*
+> @@ -47,8 +51,11 @@ static struct page *has_unmovable_pages(struct zone *zone, struct page *page,
+>  		return page;
+>  	}
+>  
+> -	for (; iter < pageblock_nr_pages - offset; iter++) {
+> -		page = pfn_to_page(pfn + iter);
+> +	for (pfn = start_pfn; pfn < end_pfn; pfn++) {
+> +		struct zone *zone;
+> +
+> +		page = pfn_to_page(pfn);
+> +		zone = page_zone(page);
+>  
+>  		/*
+>  		 * Both, bootmem allocations and memory holes are marked
+> @@ -85,7 +92,7 @@ static struct page *has_unmovable_pages(struct zone *zone, struct page *page,
+>  			}
+>  
+>  			skip_pages = compound_nr(head) - (page - head);
+> -			iter += skip_pages - 1;
+> +			pfn += skip_pages - 1;
+>  			continue;
+>  		}
+>  
+> @@ -97,7 +104,7 @@ static struct page *has_unmovable_pages(struct zone *zone, struct page *page,
+>  		 */
+>  		if (!page_ref_count(page)) {
+>  			if (PageBuddy(page))
+> -				iter += (1 << buddy_order(page)) - 1;
+> +				pfn += (1 << buddy_order(page)) - 1;
+>  			continue;
+>  		}
+>  
+> @@ -134,11 +141,18 @@ static struct page *has_unmovable_pages(struct zone *zone, struct page *page,
+>  	return NULL;
+>  }
+>  
+> -static int set_migratetype_isolate(struct page *page, int migratetype, int isol_flags)
+> +/*
+> + * This function set pageblock migratetype to isolate if no unmovable page is
+> + * present in [start_pfn, end_pfn). The pageblock must intersect with
+> + * [start_pfn, end_pfn).
+> + */
+> +static int set_migratetype_isolate(struct page *page, int migratetype, int isol_flags,
+> +			unsigned long start_pfn, unsigned long end_pfn)
+
+I think we might be able do better, eventually not passing start_pfn at
+all. Hmm.
+
+I think we want to pull out the
+start_isolate_page_range()/undo_isolate_page_range() interface change
+into a separate patch.
+
+Let me try to give it a shot, I'll try hacking something up real quick
+to see if we can do better.
+
+-- 
+Thanks,
+
+David / dhildenb
+
