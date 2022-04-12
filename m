@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A582C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36138C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351882AbiDLHND (ORCPT
+        id S1351965AbiDLHNN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        Tue, 12 Apr 2022 03:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351483AbiDLGxn (ORCPT
+        with ESMTP id S1351543AbiDLGx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:53:43 -0400
+        Tue, 12 Apr 2022 02:53:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CAF17E1D;
-        Mon, 11 Apr 2022 23:41:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0C1186E8;
+        Mon, 11 Apr 2022 23:42:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93BD460A21;
-        Tue, 12 Apr 2022 06:41:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B62EC385A6;
-        Tue, 12 Apr 2022 06:41:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A9C960A6A;
+        Tue, 12 Apr 2022 06:42:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C765C385A1;
+        Tue, 12 Apr 2022 06:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745681;
-        bh=LAxfqD32x6ZFr0TQ72MXLdGPukvlyZn5mmFfZ5YXYLc=;
+        s=korg; t=1649745741;
+        bh=YR3Gir45XpiYiVz4aFLYM2r7cvyoBw6h4c40ccJ9T5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xscn3q3/o/gz0bv/v1LKSo6tE4olzSXiM4Nz3FMxFMryCwaLHUpOF6ptVfPT0MTGS
-         +CGsGWREJA9ZEbkq4xCS2ScNGEl5BgtKqixRvOOraZVZpcU6nJBRv5b51VyR83K5yM
-         KI4OfegaZqvFznqr2O1WcQ2qMVeemSn7Gs2dub6Q=
+        b=RtvKMxNFhdbGhsVMoTBuaupHopX9amy7GZUfxB7vrrtgj3V+q9BeYDj5gsMUs1fzz
+         w6Ao7/9QS9BxGH56ISBnijgzAKoGOFtQN8DHLLizYxKhtpFfun3idRVmP1Nou1Q1/y
+         n/lNl5djXtDqlJqLHIgwe+0n1cFKAzXJmI8kc3j4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Tony Lu <tonylu@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 002/277] um: fix and optimize xor select template for CONFIG64 and timetravel mode
-Date:   Tue, 12 Apr 2022 08:26:45 +0200
-Message-Id: <20220412062942.098928539@linuxfoundation.org>
+Subject: [PATCH 5.15 031/277] net/smc: Send directly when TCP_CORK is cleared
+Date:   Tue, 12 Apr 2022 08:27:14 +0200
+Message-Id: <20220412062942.944407847@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,53 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+From: Tony Lu <tonylu@linux.alibaba.com>
 
-[ Upstream commit e3a33af812c611d99756e2ec61e9d7068d466bdf ]
+[ Upstream commit ea785a1a573b390a150010b3c5b81e1ccd8c98a8 ]
 
-Due to dropped inclusion of asm-generic/xor.h, xor_block_8regs symbol is
-missing with CONFIG64 and break compilation, as the asm/xor_64.h also did
-not include it. The patch recreate the logic from arch/x86, which check
-whether AVX is available and add fallbacks for 32bit and 64bit config of
-um.
+According to the man page of TCP_CORK [1], if set, don't send out
+partial frames. All queued partial frames are sent when option is
+cleared again.
 
-A very minor additional "fix" is, the return of the macro parameter
-instead of NULL, as this is the original intent of the macro, but
-this does not change the actual behavior.
+When applications call setsockopt to disable TCP_CORK, this call is
+protected by lock_sock(), and tries to mod_delayed_work() to 0, in order
+to send pending data right now. However, the delayed work smc_tx_work is
+also protected by lock_sock(). There introduces lock contention for
+sending data.
 
-Fixes: c0ecca6604b8 ("um: enable the use of optimized xor routines in UML")
-Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
-Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+To fix it, send pending data directly which acts like TCP, without
+lock_sock() protected in the context of setsockopt (already lock_sock()ed),
+and cancel unnecessary dealyed work, which is protected by lock.
+
+[1] https://linux.die.net/man/7/tcp
+
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/asm/xor.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/smc/af_smc.c |  4 ++--
+ net/smc/smc_tx.c | 25 +++++++++++++++----------
+ net/smc/smc_tx.h |  1 +
+ 3 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/arch/um/include/asm/xor.h b/arch/um/include/asm/xor.h
-index f512704a9ec7..22b39de73c24 100644
---- a/arch/um/include/asm/xor.h
-+++ b/arch/um/include/asm/xor.h
-@@ -4,8 +4,10 @@
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 5c4c0320e822..183b122807b6 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2430,8 +2430,8 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+ 		    sk->sk_state != SMC_CLOSED) {
+ 			if (!val) {
+ 				SMC_STAT_INC(smc, cork_cnt);
+-				mod_delayed_work(smc->conn.lgr->tx_wq,
+-						 &smc->conn.tx_work, 0);
++				smc_tx_pending(&smc->conn);
++				cancel_delayed_work(&smc->conn.tx_work);
+ 			}
+ 		}
+ 		break;
+diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+index 738a4a99c827..31ee76131a79 100644
+--- a/net/smc/smc_tx.c
++++ b/net/smc/smc_tx.c
+@@ -594,27 +594,32 @@ int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+ 	return rc;
+ }
  
- #ifdef CONFIG_64BIT
- #undef CONFIG_X86_32
-+#define TT_CPU_INF_XOR_DEFAULT (AVX_SELECT(&xor_block_sse_pf64))
- #else
- #define CONFIG_X86_32 1
-+#define TT_CPU_INF_XOR_DEFAULT (AVX_SELECT(&xor_block_8regs))
- #endif
+-/* Wakeup sndbuf consumers from process context
+- * since there is more data to transmit
+- */
+-void smc_tx_work(struct work_struct *work)
++void smc_tx_pending(struct smc_connection *conn)
+ {
+-	struct smc_connection *conn = container_of(to_delayed_work(work),
+-						   struct smc_connection,
+-						   tx_work);
+ 	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+ 	int rc;
  
- #include <asm/cpufeature.h>
-@@ -16,7 +18,7 @@
- #undef XOR_SELECT_TEMPLATE
- /* pick an arbitrary one - measuring isn't possible with inf-cpu */
- #define XOR_SELECT_TEMPLATE(x)	\
--	(time_travel_mode == TT_MODE_INFCPU ? &xor_block_8regs : NULL)
-+	(time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
- #endif
+-	lock_sock(&smc->sk);
+ 	if (smc->sk.sk_err)
+-		goto out;
++		return;
  
- #endif
+ 	rc = smc_tx_sndbuf_nonempty(conn);
+ 	if (!rc && conn->local_rx_ctrl.prod_flags.write_blocked &&
+ 	    !atomic_read(&conn->bytes_to_rcv))
+ 		conn->local_rx_ctrl.prod_flags.write_blocked = 0;
++}
++
++/* Wakeup sndbuf consumers from process context
++ * since there is more data to transmit
++ */
++void smc_tx_work(struct work_struct *work)
++{
++	struct smc_connection *conn = container_of(to_delayed_work(work),
++						   struct smc_connection,
++						   tx_work);
++	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+ 
+-out:
++	lock_sock(&smc->sk);
++	smc_tx_pending(conn);
+ 	release_sock(&smc->sk);
+ }
+ 
+diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
+index 07e6ad76224a..a59f370b8b43 100644
+--- a/net/smc/smc_tx.h
++++ b/net/smc/smc_tx.h
+@@ -27,6 +27,7 @@ static inline int smc_tx_prepared_sends(struct smc_connection *conn)
+ 	return smc_curs_diff(conn->sndbuf_desc->len, &sent, &prep);
+ }
+ 
++void smc_tx_pending(struct smc_connection *conn);
+ void smc_tx_work(struct work_struct *work);
+ void smc_tx_init(struct smc_sock *smc);
+ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
 -- 
 2.35.1
 
