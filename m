@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B8AC352B6
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37623C47084
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355806AbiDLH3W (ORCPT
+        id S1355855AbiDLH3b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
+        Tue, 12 Apr 2022 03:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351777AbiDLHM4 (ORCPT
+        with ESMTP id S1351781AbiDLHM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EB7E55;
-        Mon, 11 Apr 2022 23:52:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E972FE9F;
+        Mon, 11 Apr 2022 23:52:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FF0D6149D;
-        Tue, 12 Apr 2022 06:52:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2004DC385A6;
-        Tue, 12 Apr 2022 06:52:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84E8E61472;
+        Tue, 12 Apr 2022 06:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9845BC385A1;
+        Tue, 12 Apr 2022 06:52:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746350;
-        bh=FCi1zb4GbbR20Yat8e/QaOYMtXuyUyOOWTtWNybjKNE=;
+        s=korg; t=1649746356;
+        bh=3zwlakTVIipcz1ydV+u+L1C8sR5wbpROIWfDBj7mPGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xdiPfj9+JfMjOutM6L8E+cJwvRqdkSZVixdBes+lycCx/E7spR3fTemcto6arxBV3
-         c0lOzTHmS3LPYn90p0lP5DBwpnELiYCjGSRoP7MJpgo3pnZvco9mAWDwZxcUDOUUuj
-         ZUNGL/cGmELXcRG/b+tyQn4dQ+511QnC7irKE+us=
+        b=DIkHzsmUpDVgVdHi1mKCdRYMOo0p8B77qonaxkgbHrCpQkz1z40xnL8U4Hm4MsVcf
+         5G1tAs+mTu1WGru3iN2tU73gDqRZKkZFR61iReV290WSU8x1EE+V69DAGtN2u+/2J/
+         Tc9ASCyBhU577GmWlI2Kv2heXR9ONvWlJY9u8/hY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [PATCH 5.15 251/277] bpf: Make remote_port field in struct bpf_sk_lookup 16-bit wide
-Date:   Tue, 12 Apr 2022 08:30:54 +0200
-Message-Id: <20220412062949.306806264@linuxfoundation.org>
+        stable@vger.kernel.org, Robbie Ko <robbieko@synology.com>,
+        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
+        Kaiwen Hu <kevinhu@synology.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 226/277] btrfs: prevent subvol with swapfile from being deleted
+Date:   Tue, 12 Apr 2022 08:30:29 +0200
+Message-Id: <20220412062948.584408185@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,79 +51,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Kaiwen Hu <kevinhu@synology.com>
 
-commit 9a69e2b385f443f244a7e8b8bcafe5ccfb0866b4 upstream.
+commit 60021bd754c6ca0addc6817994f20290a321d8d6 upstream.
 
-remote_port is another case of a BPF context field documented as a 32-bit
-value in network byte order for which the BPF context access converter
-generates a load of a zero-padded 16-bit integer in network byte order.
+A subvolume with an active swapfile must not be deleted otherwise it
+would not be possible to deactivate it.
 
-First such case was dst_port in bpf_sock which got addressed in commit
-4421a582718a ("bpf: Make dst_port field in struct bpf_sock 16-bit wide").
+After the subvolume is deleted, we cannot swapoff the swapfile in this
+deleted subvolume because the path is unreachable.  The swapfile is
+still active and holding references, the filesystem cannot be unmounted.
 
-Loading 4-bytes from the remote_port offset and converting the value with
-bpf_ntohl() leads to surprising results, as the expected value is shifted
-by 16 bits.
+The test looks like this:
 
-Reduce the confusion by splitting the field in two - a 16-bit field holding
-a big-endian integer, and a 16-bit zero-padding anonymous field that
-follows it.
+  mkfs.btrfs -f $dev > /dev/null
+  mount $dev $mnt
 
-Suggested-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220209184333.654927-2-jakub@cloudflare.com
+  btrfs sub create $mnt/subvol
+  touch $mnt/subvol/swapfile
+  chmod 600 $mnt/subvol/swapfile
+  chattr +C $mnt/subvol/swapfile
+  dd if=/dev/zero of=$mnt/subvol/swapfile bs=1K count=4096
+  mkswap $mnt/subvol/swapfile
+  swapon $mnt/subvol/swapfile
+
+  btrfs sub delete $mnt/subvol
+  swapoff $mnt/subvol/swapfile  # failed: No such file or directory
+  swapoff --all
+
+  unmount $mnt                  # target is busy.
+
+To prevent above issue, we simply check that whether the subvolume
+contains any active swapfile, and stop the deleting process.  This
+behavior is like snapshot ioctl dealing with a swapfile.
+
+CC: stable@vger.kernel.org # 5.4+
+Reviewed-by: Robbie Ko <robbieko@synology.com>
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Kaiwen Hu <kevinhu@synology.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/bpf.h |    3 ++-
- net/bpf/test_run.c       |    4 ++--
- net/core/filter.c        |    3 ++-
- 3 files changed, 6 insertions(+), 4 deletions(-)
+ fs/btrfs/inode.c |   24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -6223,7 +6223,8 @@ struct bpf_sk_lookup {
- 	__u32 protocol;		/* IP protocol (IPPROTO_TCP, IPPROTO_UDP) */
- 	__u32 remote_ip4;	/* Network byte order */
- 	__u32 remote_ip6[4];	/* Network byte order */
--	__u32 remote_port;	/* Network byte order */
-+	__be16 remote_port;	/* Network byte order */
-+	__u16 :16;		/* Zero padding */
- 	__u32 local_ip4;	/* Network byte order */
- 	__u32 local_ip6[4];	/* Network byte order */
- 	__u32 local_port;	/* Host byte order */
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -954,7 +954,7 @@ int bpf_prog_test_run_sk_lookup(struct b
- 	if (!range_is_zero(user_ctx, offsetofend(typeof(*user_ctx), local_port), sizeof(*user_ctx)))
- 		goto out;
- 
--	if (user_ctx->local_port > U16_MAX || user_ctx->remote_port > U16_MAX) {
-+	if (user_ctx->local_port > U16_MAX) {
- 		ret = -ERANGE;
- 		goto out;
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -4450,6 +4450,13 @@ int btrfs_delete_subvolume(struct inode
+ 			   dest->root_key.objectid);
+ 		return -EPERM;
  	}
-@@ -962,7 +962,7 @@ int bpf_prog_test_run_sk_lookup(struct b
- 	ctx.family = (u16)user_ctx->family;
- 	ctx.protocol = (u16)user_ctx->protocol;
- 	ctx.dport = (u16)user_ctx->local_port;
--	ctx.sport = (__force __be16)user_ctx->remote_port;
-+	ctx.sport = user_ctx->remote_port;
++	if (atomic_read(&dest->nr_swapfiles)) {
++		spin_unlock(&dest->root_item_lock);
++		btrfs_warn(fs_info,
++			   "attempt to delete subvolume %llu with active swapfile",
++			   root->root_key.objectid);
++		return -EPERM;
++	}
+ 	root_flags = btrfs_root_flags(&dest->root_item);
+ 	btrfs_set_root_flags(&dest->root_item,
+ 			     root_flags | BTRFS_ROOT_SUBVOL_DEAD);
+@@ -10721,8 +10728,23 @@ static int btrfs_swap_activate(struct sw
+ 	 * set. We use this counter to prevent snapshots. We must increment it
+ 	 * before walking the extents because we don't want a concurrent
+ 	 * snapshot to run after we've already checked the extents.
+-	 */
++	 *
++	 * It is possible that subvolume is marked for deletion but still not
++	 * removed yet. To prevent this race, we check the root status before
++	 * activating the swapfile.
++	 */
++	spin_lock(&root->root_item_lock);
++	if (btrfs_root_dead(root)) {
++		spin_unlock(&root->root_item_lock);
++
++		btrfs_exclop_finish(fs_info);
++		btrfs_warn(fs_info,
++		"cannot activate swapfile because subvolume %llu is being deleted",
++			root->root_key.objectid);
++		return -EPERM;
++	}
+ 	atomic_inc(&root->nr_swapfiles);
++	spin_unlock(&root->root_item_lock);
  
- 	switch (ctx.family) {
- 	case AF_INET:
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -10540,7 +10540,8 @@ static bool sk_lookup_is_valid_access(in
- 	case bpf_ctx_range(struct bpf_sk_lookup, local_ip4):
- 	case bpf_ctx_range_till(struct bpf_sk_lookup, remote_ip6[0], remote_ip6[3]):
- 	case bpf_ctx_range_till(struct bpf_sk_lookup, local_ip6[0], local_ip6[3]):
--	case bpf_ctx_range(struct bpf_sk_lookup, remote_port):
-+	case offsetof(struct bpf_sk_lookup, remote_port) ...
-+	     offsetof(struct bpf_sk_lookup, local_ip4) - 1:
- 	case bpf_ctx_range(struct bpf_sk_lookup, local_port):
- 		bpf_ctx_record_field_size(info, sizeof(__u32));
- 		return bpf_ctx_narrow_access_ok(off, size, sizeof(__u32));
+ 	isize = ALIGN_DOWN(inode->i_size, fs_info->sectorsize);
+ 
 
 
