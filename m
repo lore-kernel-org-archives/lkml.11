@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C55FC41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B35C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346787AbiDLBIN (ORCPT
+        id S1347343AbiDLBI0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
+        Mon, 11 Apr 2022 21:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348558AbiDLA7W (ORCPT
+        with ESMTP id S1349197AbiDLA7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:59:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A4B37A00;
-        Mon, 11 Apr 2022 17:52:39 -0700 (PDT)
+        Mon, 11 Apr 2022 20:59:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A5937A21;
+        Mon, 11 Apr 2022 17:52:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C6D3B819C5;
-        Tue, 12 Apr 2022 00:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17F15C385AA;
-        Tue, 12 Apr 2022 00:52:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E419E60A66;
+        Tue, 12 Apr 2022 00:52:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25C00C385A3;
+        Tue, 12 Apr 2022 00:52:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724757;
-        bh=rHmNXuzeV8iJKUzH6+x3ln2ySZEFmVKkG1uO2fuHIks=;
+        s=k20201202; t=1649724773;
+        bh=igqZQIT4dt6yyEHS1xHvpSxQkICWs0nH6DyFCSsxjAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rg9BwiECKv40znIioakWvAI06T91HqJEnu4QM9E/kwlgT5F7MAQYAVSABXwmEnWSF
-         zlnACVf+3eNKBo6ZNBVsZjpAIi8phvhjp7Cazw7XpsKORgqshC6Dq8Khgz+TEReiZF
-         7wZKUJwzk+m1saSghJu94nYSw7LJe00Q3yL/CnyE50jfTO8+wtDYJWwgghRO18hy/+
-         +lNf7+dZAHB84tT3mSiRk7f7OFrcomeGc/erHkU6ArYcREpneA5T7iPDj/3nmd/6uH
-         KT6B2hXsTiYh4fZE96nPNt7N9SqF9hgCiNtZJGsvnt+8SDjbax8f2i1tkgtCLdGdI7
-         rsQOYLGgoAANw==
+        b=OdtDNRXGkKfAvSpKuUV0kmtsf3zcMzFumayY2nx/WCjJbnlzrkKpSC1NISnoU13y1
+         HhT5PleIJzePl3jtR3zq6HlGq9bfTe6MlfQmfd6jinujZ0A87MNlwH+kA5n9yL8IMF
+         v7ib42K+FfDO/H8iLynLpdSITGlHPo3XVbGDY4GZM1Dry+AZmrCQrwBBTycA8uYrYI
+         5oF95tAvR11G6Z/xbHuWlmESg0ajBxBUchS41yKcvnj1OdVWJO8DjVpbmBuXE6FB+C
+         LKae1HoygsfVLA8kDkv4Jby+jkfQNnhSYj4jLcYufBdS2znjIt/ZB7O9wfN3QlJpec
+         rIljsBXtRtOSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Leo Ruan <tingquan.ruan@cn.bosch.com>,
-        Mark Jonas <mark.jonas@de.bosch.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 08/11] gpu: ipu-v3: Fix dev_dbg frequency output
-Date:   Mon, 11 Apr 2022 20:52:17 -0400
-Message-Id: <20220412005222.351554-8-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 2/7] scsi: lpfc: Fix queue failures when recovering from PCI parity error
+Date:   Mon, 11 Apr 2022 20:52:43 -0400
+Message-Id: <20220412005248.351701-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412005222.351554-1-sashal@kernel.org>
-References: <20220412005222.351554-1-sashal@kernel.org>
+In-Reply-To: <20220412005248.351701-1-sashal@kernel.org>
+References: <20220412005248.351701-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,51 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Ruan <tingquan.ruan@cn.bosch.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 070a88fd4a03f921b73a2059e97d55faaa447dab ]
+[ Upstream commit df0101197c4d9596682901631f3ee193ed354873 ]
 
-This commit corrects the printing of the IPU clock error percentage if
-it is between -0.1% to -0.9%. For example, if the pixel clock requested
-is 27.2 MHz but only 27.0 MHz can be achieved the deviation is -0.8%.
-But the fixed point math had a flaw and calculated error of 0.2%.
+When recovering from a pci-parity error the driver is failing to re-create
+queues, causing recovery to fail. Looking deeper, it was found that the
+interrupt vector count allocated on the recovery was fewer than the vectors
+originally allocated. This disparity resulted in CPU map entries with stale
+information. When the driver tries to re-create the queues, it attempts to
+use the stale information which indicates an eq/interrupt vector that was
+no longer created.
 
-Before:
-  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
-  IPU clock can give 27000000 with divider 10, error 0.2%
-  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
+Fix by clearng the cpup map array before enabling and requesting the IRQs
+in the lpfc_sli_reset_slot_s4 routine().
 
-After:
-  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
-  IPU clock can give 27000000 with divider 10, error -0.8%
-  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
-
-Signed-off-by: Leo Ruan <tingquan.ruan@cn.bosch.com>
-Signed-off-by: Mark Jonas <mark.jonas@de.bosch.com>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220207151411.5009-1-mark.jonas@de.bosch.com
+Link: https://lore.kernel.org/r/20220317032737.45308-4-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/ipu-v3/ipu-di.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/lpfc/lpfc_init.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/ipu-v3/ipu-di.c b/drivers/gpu/ipu-v3/ipu-di.c
-index d2f1bd9d3deb..c498dc7d8838 100644
---- a/drivers/gpu/ipu-v3/ipu-di.c
-+++ b/drivers/gpu/ipu-v3/ipu-di.c
-@@ -460,8 +460,9 @@ static void ipu_di_config_clock(struct ipu_di *di,
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 8c640bcf107b..985f733719d7 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -10921,6 +10921,8 @@ lpfc_io_slot_reset_s4(struct pci_dev *pdev)
+ 	psli->sli_flag &= ~LPFC_SLI_ACTIVE;
+ 	spin_unlock_irq(&phba->hbalock);
  
- 		error = rate / (sig->mode.pixelclock / 1000);
- 
--		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %d.%u%%\n",
--			rate, div, (signed)(error - 1000) / 10, error % 10);
-+		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %c%d.%d%%\n",
-+			rate, div, error < 1000 ? '-' : '+',
-+			abs(error - 1000) / 10, abs(error - 1000) % 10);
- 
- 		/* Allow a 1% error */
- 		if (error < 1010 && error >= 990) {
++	/* Init cpu_map array */
++	lpfc_cpu_map_array_init(phba);
+ 	/* Configure and enable interrupt */
+ 	intr_mode = lpfc_sli4_enable_intr(phba, phba->intr_mode);
+ 	if (intr_mode == LPFC_INTR_ERROR) {
 -- 
 2.35.1
 
