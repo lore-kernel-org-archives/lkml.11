@@ -2,171 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B13C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:09:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51030C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238315AbiDLBL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
+        id S243735AbiDLBME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351036AbiDLBAo (ORCPT
+        with ESMTP id S1348404AbiDLA7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 21:00:44 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B647A2E9D9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:55:00 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id r66so15692664pgr.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:55:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZnYjR11gbYLeKCBoJXE7n0dD6k1+ZaVWjqJC494l/qo=;
-        b=OxtnOilsm55GHwDHO1IO1CmDR6liEyJYEsYxqSRci+INpvWA+EBrPe+DTaMSBC2m1z
-         nn770volbCNOSZAupt9b9igPVtXZXO58XljAHzuwRg3JCQ2fxQO2gDB87nGD4Si14mOA
-         5hT5g8RhTy8LneiuVYgZPdOEDP4hR+qh9HB47Bx54pNQqrgC2hQOtI1C7WudE7yOpHU/
-         KUX/G9Oo+OVYJJI//ScdHObW0sLduecpgNocjvMbPkcRe8omnuGeo0sAmQWENEWA+8Iu
-         YCMMnnO7QM5J7mQ2FgOitQlrxGmNxwZI2y1Hmf+bYh/3aLzvSe/Kr0wK3JOIi02rpCcv
-         CHrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZnYjR11gbYLeKCBoJXE7n0dD6k1+ZaVWjqJC494l/qo=;
-        b=jnXTjXOG5KaDtJP7EEdMUncf/tH/N9JDW6p8k/BRSmK1041L3J/YhJAfCrUarPBfB+
-         LiR/Bny/RwOA9pHckfhqQI1O93GoGp7VxB+j2LflqtVik3BEk7J73FvAd0DqZGN3S4qx
-         KfKkfw5AYiQS70W8Q9fLR3L3MkEIO34R+4qVaLEd7cfOc3ZR2YaewoTxptMW2szMslEI
-         6dvliuqVpj1tTOFeZK5ukhtJZ0fFQNj0Byon18cQIY2mBXcjs/ReC/hTd9Y4Ugv6s9k1
-         4AL77XnldqB30jNCZ5cmWdP1OYouQvaynGzA+oCAOmKCJMpzQVxLkZKpdtY9jHW8p6tg
-         UHgQ==
-X-Gm-Message-State: AOAM532T8N0GBLQa2n6l6EbOx0b6Yh08C2X0L2r1BW4fnOdCsx916sp7
-        EUc37vBVVnod9vprcY7jHZKZJBMjNTSMK4EB
-X-Google-Smtp-Source: ABdhPJzkUmD+KWnftYfsZyMv1CBfjNATM4YuEjzljSDhhekkc45DTU+jONr/2LieWgImFbtSd4VvFw==
-X-Received: by 2002:a05:6a00:f92:b0:505:c53b:2668 with SMTP id ct18-20020a056a000f9200b00505c53b2668mr7314066pfb.64.1649724899437;
-        Mon, 11 Apr 2022 17:54:59 -0700 (PDT)
-Received: from google.com (226.75.127.34.bc.googleusercontent.com. [34.127.75.226])
-        by smtp.gmail.com with ESMTPSA id n2-20020aa79042000000b005057336554bsm5863557pfo.128.2022.04.11.17.54.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 17:54:58 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 00:54:55 +0000
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Peter Shier <pshier@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>
-Subject: Re: [PATCH v4 03/10] KVM: selftests: Read binary stats desc in lib
-Message-ID: <YlTN3yq1iBPkw6Aa@google.com>
-References: <20220411211015.3091615-1-bgardon@google.com>
- <20220411211015.3091615-4-bgardon@google.com>
+        Mon, 11 Apr 2022 20:59:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD99D34BAD;
+        Mon, 11 Apr 2022 17:52:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F90A6066C;
+        Tue, 12 Apr 2022 00:52:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E2EC385AC;
+        Tue, 12 Apr 2022 00:52:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649724749;
+        bh=x0vO82PgmsO84hJdKK64ihCc5vTDwaWia8Yej7d8jas=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=W6cMSEYfp59/9eP9oQd2YVYrXIguEUx9xXPfA9AFc1OtDQSfE5f2A9ojii0eV7YcE
+         D0518MLj9G8Lfpcb0/fnTEvs0+y/kHLfIQM8pUflfGVsfbbk3dUUBXnIPSnP2h97JM
+         LhNk/khpgTp9JevR3Dci2w73ecAWVcZsWqYUppFIjGnDcS5fICoybNUyyAYKD9Hmqc
+         UZkvqjS9gTAp+OZUJaqUY6/dZcFGgcF2WKrC/yPRKXerhVA8eoV3Nwhvfd0hmXX9e/
+         NCwjxm2mD4tAT+dTm4Ye88wHja3QTt49FMiHh5+FjwHS/F1J5ogylXhJQxjAanlhBX
+         MgOWwiX2NAPMw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 04/11] scsi: target: tcmu: Fix possible page UAF
+Date:   Mon, 11 Apr 2022 20:52:13 -0400
+Message-Id: <20220412005222.351554-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412005222.351554-1-sashal@kernel.org>
+References: <20220412005222.351554-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411211015.3091615-4-bgardon@google.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022, Ben Gardon wrote:
-> Move the code to read the binary stats descriptors to the KVM selftests
-> library. It will be re-used by other tests to check KVM behavior.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  .../selftests/kvm/include/kvm_util_base.h     |  4 +++
->  .../selftests/kvm/kvm_binary_stats_test.c     |  9 ++----
->  tools/testing/selftests/kvm/lib/kvm_util.c    | 29 +++++++++++++++++++
->  3 files changed, 35 insertions(+), 7 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 5ba3132f3110..c5f34551ff76 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -401,6 +401,10 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
->  int vm_get_stats_fd(struct kvm_vm *vm);
->  int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
->  void read_vm_stats_header(int stats_fd, struct kvm_stats_header *header);
-> +struct kvm_stats_desc *alloc_vm_stats_desc(int stats_fd,
-> +					  struct kvm_stats_header *header);
-> +void read_vm_stats_desc(int stats_fd, struct kvm_stats_header *header,
-> +			struct kvm_stats_desc *stats_desc);
->  
->  uint32_t guest_get_vcpuid(void);
->  
-> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> index 22c22a90f15a..e4795bad7db6 100644
-> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> @@ -62,14 +62,9 @@ static void stats_test(int stats_fd)
->  							header.data_offset),
->  			"Descriptor block is overlapped with data block");
->  
-> -	/* Allocate memory for stats descriptors */
-> -	stats_desc = calloc(header.num_desc, size_desc);
-> -	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
->  	/* Read kvm stats descriptors */
-> -	ret = pread(stats_fd, stats_desc,
-> -			size_desc * header.num_desc, header.desc_offset);
-> -	TEST_ASSERT(ret == size_desc * header.num_desc,
-> -			"Read KVM stats descriptors");
-> +	stats_desc = alloc_vm_stats_desc(stats_fd, &header);
-> +	read_vm_stats_desc(stats_fd, &header, stats_desc);
->  
->  	/* Sanity check for fields in descriptors */
->  	for (i = 0; i < header.num_desc; ++i) {
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index 0caf28e324ed..e3ae26fbef03 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -2564,3 +2564,32 @@ void read_vm_stats_header(int stats_fd, struct kvm_stats_header *header)
->  	ret = read(stats_fd, header, sizeof(*header));
->  	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
->  }
-> +
-> +static ssize_t stats_descs_size(struct kvm_stats_header *header)
-> +{
-> +	return header->num_desc *
-> +	       (sizeof(struct kvm_stats_desc) + header->name_size);
-> +}
-I was very confused on header->name_size. So this field means the
-maximum string size of a stats name, right? Can we update the comments
-in the kvm.h to specify that? By reading the comments, I don't really
-feel this is how we should use this field.
+From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
 
-hmm, if that is true, isn't this field a compile time value? Why do we
-have to get it at runtime?
+[ Upstream commit a6968f7a367f128d120447360734344d5a3d5336 ]
 
-> +
-> +/* Caller is responsible for freeing the returned kvm_stats_desc. */
-> +struct kvm_stats_desc *alloc_vm_stats_desc(int stats_fd,
-> +					  struct kvm_stats_header *header)
-> +{
-> +	struct kvm_stats_desc *stats_desc;
-> +
-> +	stats_desc = malloc(stats_descs_size(header));
-> +	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-> +
-> +	return stats_desc;
-> +}
-> +
-> +void read_vm_stats_desc(int stats_fd, struct kvm_stats_header *header,
-> +			struct kvm_stats_desc *stats_desc)
-> +{
-> +	ssize_t ret;
-> +
-> +	ret = pread(stats_fd, stats_desc, stats_descs_size(header),
-> +		    header->desc_offset);
-> +	TEST_ASSERT(ret == stats_descs_size(header),
-> +		    "Read KVM stats descriptors");
-> +}
-> -- 
-> 2.35.1.1178.g4f1659d476-goog
-> 
+tcmu_try_get_data_page() looks up pages under cmdr_lock, but it does not
+take refcount properly and just returns page pointer. When
+tcmu_try_get_data_page() returns, the returned page may have been freed by
+tcmu_blocks_release().
+
+We need to get_page() under cmdr_lock to avoid concurrent
+tcmu_blocks_release().
+
+Link: https://lore.kernel.org/r/20220311132206.24515-1-xiaoguang.wang@linux.alibaba.com
+Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
+Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/target/target_core_user.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index 96601fda47b1..f687481ccfdc 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -1165,6 +1165,7 @@ static struct page *tcmu_try_get_block_page(struct tcmu_dev *udev, uint32_t dbi)
+ 	mutex_lock(&udev->cmdr_lock);
+ 	page = tcmu_get_block_page(udev, dbi);
+ 	if (likely(page)) {
++		get_page(page);
+ 		mutex_unlock(&udev->cmdr_lock);
+ 		return page;
+ 	}
+@@ -1233,6 +1234,7 @@ static int tcmu_vma_fault(struct vm_fault *vmf)
+ 		/* For the vmalloc()ed cmd area pages */
+ 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
+ 		page = vmalloc_to_page(addr);
++		get_page(page);
+ 	} else {
+ 		uint32_t dbi;
+ 
+@@ -1243,7 +1245,6 @@ static int tcmu_vma_fault(struct vm_fault *vmf)
+ 			return VM_FAULT_NOPAGE;
+ 	}
+ 
+-	get_page(page);
+ 	vmf->page = page;
+ 	return 0;
+ }
+-- 
+2.35.1
+
