@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF995C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8754C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357956AbiDLJBO (ORCPT
+        id S1357573AbiDLJBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        Tue, 12 Apr 2022 05:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357127AbiDLHjs (ORCPT
+        with ESMTP id S1357132AbiDLHjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB31E096;
-        Tue, 12 Apr 2022 00:12:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F12FD31;
+        Tue, 12 Apr 2022 00:12:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA84CB81B55;
-        Tue, 12 Apr 2022 07:12:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A25C385A5;
-        Tue, 12 Apr 2022 07:12:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A147B81B55;
+        Tue, 12 Apr 2022 07:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 869B0C385A1;
+        Tue, 12 Apr 2022 07:12:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747540;
-        bh=f4cy6lBY19D7k4IFU8QzAsLt3NLEQwMDsH8Qum2ngQc=;
+        s=korg; t=1649747556;
+        bh=5NTmI6cF9YlOd3EfQBumtiJWmNT4gp1nOCiCo3LgUOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OYoqn68ottBs/BoTQTkk3BPKV+CUNFyxRFxQqkM1ie9q+uziqDDqlcC06N1GZOGyA
-         MDdz2vXO+8p3x31gT4KsYLJX6YzJmehRT8K2B+faZk+vAguctUBpMcesrMyzvVSNKs
-         4TWh7UXqXqMfnRjkTSyfOyxqful6HNZKrtR5VmJU=
+        b=2qK2JZk0NufA0hFxJ5KW+mkcBCFlYqedLfIN30xSEbewJiqvVoYrsOB0yD2zACrB4
+         1IFU2rogHRkqpO0MyAQNCfmIc3ThxsF7cERGMEgIy4hnj8ZEAsvVUwJeRVjYsJasu2
+         rKdybTYx6XY2Hn3+gYfiWX/TwzptEMnz8zN1nxd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 117/343] mips: ralink: fix a refcount leak in ill_acc_of_setup()
-Date:   Tue, 12 Apr 2022 08:28:55 +0200
-Message-Id: <20220412062954.767196595@linuxfoundation.org>
+Subject: [PATCH 5.17 123/343] Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
+Date:   Tue, 12 Apr 2022 08:29:01 +0200
+Message-Id: <20220412062954.935795098@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,31 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 4a0a1436053b17e50b7c88858fb0824326641793 ]
+[ Upstream commit 9b392e0e0b6d026da5a62bb79a08f32e27af858e ]
 
-of_node_put(np) needs to be called when pdev == NULL.
+This fixes attemting to print hdev->name directly which causes them to
+print an error:
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+kernel: read_version:367: (efault): sock 000000006a3008f2
+
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/ralink/ill_acc.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/bluetooth/bluetooth.h | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/arch/mips/ralink/ill_acc.c b/arch/mips/ralink/ill_acc.c
-index 115a69fc20ca..f395ae218470 100644
---- a/arch/mips/ralink/ill_acc.c
-+++ b/arch/mips/ralink/ill_acc.c
-@@ -61,6 +61,7 @@ static int __init ill_acc_of_setup(void)
- 	pdev = of_find_device_by_node(np);
- 	if (!pdev) {
- 		pr_err("%pOFn: failed to lookup pdev\n", np);
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
+diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
+index a647e5fabdbd..2aa5e95808a5 100644
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -204,19 +204,21 @@ void bt_err_ratelimited(const char *fmt, ...);
+ #define BT_DBG(fmt, ...)	pr_debug(fmt "\n", ##__VA_ARGS__)
+ #endif
  
++#define bt_dev_name(hdev) ((hdev) ? (hdev)->name : "null")
++
+ #define bt_dev_info(hdev, fmt, ...)				\
+-	BT_INFO("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_INFO("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_warn(hdev, fmt, ...)				\
+-	BT_WARN("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_WARN("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err(hdev, fmt, ...)				\
+-	BT_ERR("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_ERR("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_dbg(hdev, fmt, ...)				\
+-	BT_DBG("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	BT_DBG("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ 
+ #define bt_dev_warn_ratelimited(hdev, fmt, ...)			\
+-	bt_warn_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_warn_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ #define bt_dev_err_ratelimited(hdev, fmt, ...)			\
+-	bt_err_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
++	bt_err_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ 
+ /* Connection and socket states */
+ enum {
 -- 
 2.35.1
 
