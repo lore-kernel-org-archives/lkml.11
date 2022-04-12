@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57EDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCABFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357073AbiDLPax (ORCPT
+        id S1357086AbiDLPbJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
+        Tue, 12 Apr 2022 11:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357011AbiDLPal (ORCPT
+        with ESMTP id S1357076AbiDLPbA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:30:41 -0400
+        Tue, 12 Apr 2022 11:31:00 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D6E42ED7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:28:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF625C369
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:28:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649777304; x=1681313304;
+  t=1649777316; x=1681313316;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rd9ILy3F+kY0VTtPVuICodHaMg/lo8gQumFUm2poWyg=;
-  b=de4Anf8hCaHt4qWciyMk/K6J5QNot2HUFJukXmjl5TodM2CCyBku22B1
-   6Gi9Q7y4Z15ZKWLbwJZimy+KTohbHk+s9yx/zN4/65C6tJpTtIM+/c59j
-   VWl27sw3OH0T+WA9M3Z34Y7iOXPnX4p6UlSs3xv9whJSRAoACLZSP8aoE
-   Kaei2Vcp0UHAPqxJRQLXZHQ68NT0tzkyHqDf+t1/l9zxQPMOP559ISC5Y
-   KdeLZ38oIrNsSjReFSGtjffGN4p0GElhfzYiYns/lao/D52n0P5LDYb0b
-   ZuONCPG5v0eIAA0B7xyX5iM+BohSTxj17VnauSPQVrKgcF8k9nGarb30/
-   w==;
+  bh=/f3HFnQlFD4IpOdJmljw6mNj9T0rlSpe8YQVJAXamr0=;
+  b=jkJjShNUPmQSLekPwkeP7nOoRnFxiJ4AkjKbuZoS2hlf1MhONw1RNDWP
+   5Mpg3/CCAdMnP1UcO27XroaLQl63Juw4ezj7VJ19UK1sOVu13EHkXKQLI
+   s3kiWALhizapJ1ZFqUn0ctaIAj0f4OAIw8sv/Xan0I/+vwAxaNbL1/LYO
+   5wQ52UCJs/Zha7CT4nfqREtPvQ4lQleNBriiJG/mtLfULPVR3Mhnwm1XU
+   A9RGlcY0/UIw8U3FbW6TQNvlSvWtuk13TqcW6XbuEQEmHUn0Jn2sxh0fT
+   HmBqCk8Nnnm5m8yqyjGwZautG6wmrkgAQOMtXPHK8pp6v6seGzzaxGGZq
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.90,254,1643698800"; 
-   d="scan'208";a="169367318"
+   d="scan'208";a="159838696"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Apr 2022 08:28:23 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Apr 2022 08:28:21 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 12 Apr 2022 08:28:23 -0700
+ 15.1.2375.17; Tue, 12 Apr 2022 08:28:19 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 12 Apr 2022 08:28:21 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 12 Apr 2022 08:28:18 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <linux@armlinux.org.uk>
 CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 4/4] ARM: at91: pm: use kernel documentation style
-Date:   Tue, 12 Apr 2022 18:30:46 +0300
-Message-ID: <20220412153046.50014-5-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 2/4] ARM: at91: pm: introduce macros for pm mode replacement
+Date:   Tue, 12 Apr 2022 18:30:44 +0300
+Message-ID: <20220412153046.50014-3-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220412153046.50014-1-claudiu.beznea@microchip.com>
 References: <20220412153046.50014-1-claudiu.beznea@microchip.com>
@@ -59,38 +59,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kernel documentation style. Along with it fix the naming of
-struct at91_pm_sfrbu_regs in documentation.
+Introduce macros to replace standby/suspend mode if they depends on
+controllers that failed to map (or other errors). Macros keep track
+of the complementary mode to avoid having set the same AT91 PM mode
+for both suspend and standby.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- arch/arm/mach-at91/pm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/mach-at91/pm.c | 83 +++++++++++++++++++++++++++--------------
+ 1 file changed, 56 insertions(+), 27 deletions(-)
 
 diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
-index 239339bf6f79..3ae0dca5135b 100644
+index 7ea4c7f13d28..2a52ddac7692 100644
 --- a/arch/arm/mach-at91/pm.c
 +++ b/arch/arm/mach-at91/pm.c
-@@ -48,8 +48,8 @@ struct at91_pm_bu {
- 	unsigned long ddr_phy_calibration[BACKUP_DDR_PHY_CALIBRATION];
+@@ -888,10 +888,63 @@ static const struct of_device_id atmel_shdwc_ids[] = {
+ 	{ /* sentinel. */ }
  };
  
--/*
-- * struct at91_pm_sfrbu_offsets: registers mapping for SFRBU
-+/**
-+ * struct at91_pm_sfrbu_regs - registers mapping for SFRBU
-  * @pswbu: power switch BU control registers
-  */
- struct at91_pm_sfrbu_regs {
-@@ -132,7 +132,7 @@ struct at91_soc_pm {
- };
++/*
++ * Replaces _mode_to_replace with a supported mode that doesn't depend
++ * on controller pointed by _map_bitmask
++ * @_maps: u32 array containing AT91_PM_IOMAP() flags and indexed by AT91
++ * PM mode
++ * @_map_bitmask: AT91_PM_IOMAP() bitmask; if _mode_to_replace depends on
++ * controller represented by _map_bitmask, _mode_to_replace needs to be
++ * updated
++ * @_mode_to_replace: standby_mode or suspend_mode that need to be
++ * updated
++ * @_mode_to_check: standby_mode or suspend_mode; this is needed here
++ * to avoid having standby_mode and suspend_mode set with the same AT91
++ * PM mode
++ */
++#define AT91_PM_REPLACE_MODE(_maps, _map_bitmask, _mode_to_replace,	\
++			     _mode_to_check)				\
++	do {								\
++		if (((_maps)[(_mode_to_replace)]) & (_map_bitmask)) {	\
++			int _mode_to_use, _mode_complementary;		\
++			/* Use ULP0 if it doesn't need _map_bitmask. */	\
++			if (!((_maps)[AT91_PM_ULP0] & (_map_bitmask))) {\
++				_mode_to_use = AT91_PM_ULP0;		\
++				_mode_complementary = AT91_PM_STANDBY;	\
++			} else {					\
++				_mode_to_use = AT91_PM_STANDBY;		\
++				_mode_complementary = AT91_PM_STANDBY;	\
++			}						\
++									\
++			if ((_mode_to_check) != _mode_to_use)		\
++				(_mode_to_replace) = _mode_to_use;	\
++			else						\
++				(_mode_to_replace) = _mode_complementary;\
++		}							\
++	} while (0)
++
++/*
++ * Replaces standby and suspend modes with default supported modes:
++ * ULP0 and STANDBY.
++ * @_maps: u32 array indexed by AT91 PM mode containing AT91_PM_IOMAP()
++ * flags
++ * @_map: controller specific name; standby and suspend mode need to be
++ * replaced in order to not depend on this controller
++ */
++#define AT91_PM_REPLACE_MODES(_maps, _map)				\
++	do {								\
++		AT91_PM_REPLACE_MODE((_maps), BIT(AT91_PM_IOMAP_##_map),\
++				     (soc_pm.data.standby_mode),	\
++				     (soc_pm.data.suspend_mode));	\
++		AT91_PM_REPLACE_MODE((_maps), BIT(AT91_PM_IOMAP_##_map),\
++				     (soc_pm.data.suspend_mode),	\
++				     (soc_pm.data.standby_mode));	\
++	} while (0)
++
+ static void __init at91_pm_modes_init(const u32 *maps, int len)
+ {
+ 	struct device_node *np;
+-	int ret, mode;
++	int ret;
  
- /**
-- * enum at91_pm_iomaps:	IOs that needs to be mapped for different PM modes
-+ * enum at91_pm_iomaps - IOs that needs to be mapped for different PM modes
-  * @AT91_PM_IOMAP_SHDWC:	SHDWC controller
-  * @AT91_PM_IOMAP_SFRBU:	SFRBU controller
-  * @AT91_PM_IOMAP_ETHC:		Ethernet controller
+ 	ret = at91_pm_backup_init();
+ 	if (ret) {
+@@ -906,17 +959,7 @@ static void __init at91_pm_modes_init(const u32 *maps, int len)
+ 		np = of_find_matching_node(NULL, atmel_shdwc_ids);
+ 		if (!np) {
+ 			pr_warn("%s: failed to find shdwc!\n", __func__);
+-
+-			/* Use ULP0 if it doesn't needs SHDWC.*/
+-			if (!(maps[AT91_PM_ULP0] & AT91_PM_IOMAP(SHDWC)))
+-				mode = AT91_PM_ULP0;
+-			else
+-				mode = AT91_PM_STANDBY;
+-
+-			if (maps[soc_pm.data.standby_mode] & AT91_PM_IOMAP(SHDWC))
+-				soc_pm.data.standby_mode = mode;
+-			if (maps[soc_pm.data.suspend_mode] & AT91_PM_IOMAP(SHDWC))
+-				soc_pm.data.suspend_mode = mode;
++			AT91_PM_REPLACE_MODES(maps, SHDWC);
+ 		} else {
+ 			soc_pm.data.shdwc = of_iomap(np, 0);
+ 			of_node_put(np);
+@@ -928,21 +971,7 @@ static void __init at91_pm_modes_init(const u32 *maps, int len)
+ 		np = of_find_compatible_node(NULL, NULL, "atmel,sama5d2-sfrbu");
+ 		if (!np) {
+ 			pr_warn("%s: failed to find sfrbu!\n", __func__);
+-
+-			/*
+-			 * Use ULP0 if it doesn't need SHDWC or if SHDWC
+-			 * was already located.
+-			 */
+-			if (!(maps[AT91_PM_ULP0] & AT91_PM_IOMAP(SHDWC)) ||
+-			    soc_pm.data.shdwc)
+-				mode = AT91_PM_ULP0;
+-			else
+-				mode = AT91_PM_STANDBY;
+-
+-			if (maps[soc_pm.data.standby_mode] & AT91_PM_IOMAP(SFRBU))
+-				soc_pm.data.standby_mode = mode;
+-			if (maps[soc_pm.data.suspend_mode] & AT91_PM_IOMAP(SFRBU))
+-				soc_pm.data.suspend_mode = mode;
++			AT91_PM_REPLACE_MODES(maps, SFRBU);
+ 		} else {
+ 			soc_pm.data.sfrbu = of_iomap(np, 0);
+ 			of_node_put(np);
 -- 
 2.32.0
 
