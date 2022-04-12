@@ -2,80 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C65EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BC7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391240AbiDLJ2y (ORCPT
+        id S1391325AbiDLJ3H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
+        Tue, 12 Apr 2022 05:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiDLI3Y (ORCPT
+        with ESMTP id S1383021AbiDLIfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:29:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E7A57B25;
-        Tue, 12 Apr 2022 01:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 12 Apr 2022 04:35:18 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2445D1A1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:01:26 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aef95.dynamic.kabel-deutschland.de [95.90.239.149])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB2060B2A;
-        Tue, 12 Apr 2022 08:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B6BB9C385A6;
-        Tue, 12 Apr 2022 08:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649750412;
-        bh=rI1k/sfa+9a5NwVgtPTT47Bk8FOYvyqs6IMCVK25154=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CRLmDwD/+RKwsG+kXWpR2PNf3tTZRVxQKFEKsjrmK2eNW5i9jj62BhCHRY9gznJ/q
-         lrThWvCZK2U3r+8xTyJg7JGtxB/9dzNpimv5DPSaCP5LrOVMgBnKSdK+Hmh+aYAET5
-         GE11dOB/qqaauCFK4bCmjo8fsyMNdpJg0HCj1PbSQZYkeXEZ6oi9VnRKYyYYf0fPLu
-         uq8qFJcT/a7fZc8dyiLpxr+hWjWwlLezHKlD9Spnl2r0mgfelQOhIPjb9eXG2TUeML
-         vrSh3lHJoisz6Qf0PVI6jF4F1CCD54sjxNrlvMR0yDvNuELjKFU/CiTzyl506jWqC3
-         AolrbIUA+aO5g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 96375E8DBD1;
-        Tue, 12 Apr 2022 08:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 30DB661EA1923;
+        Tue, 12 Apr 2022 10:01:22 +0200 (CEST)
+Message-ID: <88760cd1-d1ed-8952-d061-15e238b2ec57@molgen.mpg.de>
+Date:   Tue, 12 Apr 2022 10:01:21 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] drm/amd/amdgpu: Not request init data for MS_HYPERV with
+ vega10
+Content-Language: en-US
+To:     Alex Deucher <alexdeucher@gmail.com>,
+        Yongqiang Sun <yongqiang.sun@amd.com>
+Cc:     Jingwen Chen <jingwen.chen2@amd.com>,
+        "Luo, Zhigang" <zhigang.luo@amd.com>,
+        amd-gfx@lists.freedesktop.org, monk.liu@amd.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220411135939.906700-1-yongqiang.sun@amd.com>
+ <f06ce5e3-158b-88a8-06f0-53b88c4fad45@molgen.mpg.de>
+ <CADnq5_PSZX+11meHYn9CR3A4LiseGo30TwbkOuPgTQsfbYxmCg@mail.gmail.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <CADnq5_PSZX+11meHYn9CR3A4LiseGo30TwbkOuPgTQsfbYxmCg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] sfc: Fix spelling mistake "writting" -> "writing"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164975041261.9548.15429144260111534049.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Apr 2022 08:00:12 +0000
-References: <20220411032546.2517628-1-lv.ruyi@zte.com.cn>
-In-Reply-To: <20220411032546.2517628-1-lv.ruyi@zte.com.cn>
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lv.ruyi@zte.com.cn, zealci@zte.com.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+[Cc: +x86 folks]
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Dear Alex, dear x86 folks,
 
-On Mon, 11 Apr 2022 03:25:46 +0000 you wrote:
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+
+x86 folks, can you think of alternatives to access `X86_HYPER_MS_HYPERV` 
+from `arch/x86/include/asm/hypervisor.h` without any preprocessor ifdef-ery?
+
+
+Am 11.04.22 um 18:28 schrieb Alex Deucher:
+> On Mon, Apr 11, 2022 at 11:28 AM Paul Menzel wrote:
+
+[…]
+
+>> Am 11.04.22 um 15:59 schrieb Yongqiang Sun:
+>>> MS_HYPERV with vega10 doesn't have the interface to process
+>>> request init data msg.
+>>
+>> Should some Hyper-V folks be added to the reviewers list too?
+>>
+>>> Check hypervisor type to not send the request for MS_HYPERV.
+>>
+>> Please add a blank line between paragraphs.
+>>
+>>> Signed-off-by: Yongqiang Sun <yongqiang.sun@amd.com>
+>>> ---
+>>>    drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c | 12 ++++++++++--
+>>>    1 file changed, 10 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c
+>>> index 933c41f77c92..56b130ec44a9 100644
+>>> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c
+>>> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c
+>>> @@ -23,6 +23,10 @@
+>>>
+>>>    #include <linux/module.h>
+>>>
+>>> +#ifdef CONFIG_X86
+>>> +#include <asm/hypervisor.h>
+>>> +#endif
+>>> +
+>>>    #include <drm/drm_drv.h>
+>>>
+>>>    #include "amdgpu.h"
+>>> @@ -721,8 +725,12 @@ void amdgpu_detect_virtualization(struct amdgpu_device *adev)
+>>>                        break;
+>>>                case CHIP_VEGA10:
+>>>                        soc15_set_virt_ops(adev);
+>>> -                     /* send a dummy GPU_INIT_DATA request to host on vega10 */
+>>> -                     amdgpu_virt_request_init_data(adev);
+>>> +#ifdef CONFIG_X86
+>>> +                     /* not send GPU_INIT_DATA with MS_HYPERV*/
+>>> +                     if (hypervisor_is_type(X86_HYPER_MS_HYPERV) == false)
+>>> +#endif
+>>
+>> Why guard everything with CONFIG_X86? (If it’s needed, it should be done
+>> in C code.)
 > 
-> There are some spelling mistakes in the comment. Fix it.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-> 
-> [...]
+> X86_HYPER_MS_HYPERV only available on x86.
 
-Here is the summary with links:
-  - sfc: Fix spelling mistake "writting" -> "writing"
-    https://git.kernel.org/netdev/net-next/c/ac6bef064f71
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Sorry, I missed the X86 dependency when quickly looking at the Hyper-V 
+stub IOMMU driver `drivers/iommu/hyperv-iommu.c`, but missed that 
+`HYPERV_IOMMU` has `depends on HYPERV && X86`.
 
 
+Kind regards,
+
+Paul
+
+
+>>> +                             /* send a dummy GPU_INIT_DATA request to host on vega10 */
+>>> +                             amdgpu_virt_request_init_data(adev);
+>>>                        break;
+>>>                case CHIP_VEGA20:
+>>>                case CHIP_ARCTURUS:
+>>
+>>
+>> Kind regards,
+>>
+>> Paul
