@@ -2,203 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC180C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E82C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354662AbiDLM4u (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
+        id S233073AbiDLM44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355250AbiDLMxz (ORCPT
+        with ESMTP id S1355257AbiDLMxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 08:53:55 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF47EF7;
-        Tue, 12 Apr 2022 05:26:15 -0700 (PDT)
-X-UUID: 1169b8e3297a45ce80bbb58ed31e58a4-20220412
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:965c7447-afd0-4661-ae77-ff0adbeb80eb,OB:0,LO
-        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:25
-X-CID-META: VersionHash:faefae9,CLOUDID:cccee7a8-d103-4e36-82b9-b0e86991b3df,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 1169b8e3297a45ce80bbb58ed31e58a4-20220412
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 909156321; Tue, 12 Apr 2022 20:26:08 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 12 Apr 2022 20:26:06 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 20:26:06 +0800
-Message-ID: <f00e3df2e270e5edc160f8ff1bd8c52a49bf71d5.camel@mediatek.com>
-Subject: Re: [PATCH V2 13/15] cpufreq: mediatek: Link CCI device to CPU
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Kevin Hilman <khilman@baylibre.com>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 12 Apr 2022 20:26:06 +0800
-In-Reply-To: <7hwnfv4hfr.fsf@baylibre.com>
-References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
-         <20220408045908.21671-14-rex-bc.chen@mediatek.com>
-         <7hfsmn5m9f.fsf@baylibre.com>
-         <bc6dd020a1cc3f00f5be2bf2929046b9116bbeef.camel@mediatek.com>
-         <7hwnfv4hfr.fsf@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE8419B;
+        Tue, 12 Apr 2022 05:27:21 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id m14so3086846wrb.6;
+        Tue, 12 Apr 2022 05:27:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2qRlr8ZfTQ3raGd+E44T5DsXd8r35uC0pnPSIlIhBAM=;
+        b=EN/LEY3ulBnf+PHMFdD98Rpb6d4Ng3RGFht/2ksnjxcf45HDGl2Us7uVW5mwIunbol
+         BjU3fWy9y64h030HvJYdfMtbhpxo8voIkrirbxh7IWkoa5G5IdoLp0piKCoCanlbaJpM
+         PeIujo/ahlHkIZC/VNqWiuYJK3fEcb8DX4tmds3RvDe71SzR0MfzJepVF9LrztaDfQSK
+         youJkZ4/6rx2JZfMkq5T3Nmc2KqBYWyp/PE4F7+qX0te4TyFgAvtkCxcmMwwCailzpe7
+         XnwBue2uPr/RG95mUE8goezxT9eXN7OX/kPg9w6MlClQc/3VLwYvoEWCJ7TbDt9DiNT/
+         9uiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2qRlr8ZfTQ3raGd+E44T5DsXd8r35uC0pnPSIlIhBAM=;
+        b=S862U+xJ79OHRqIekyJsly8V3rSZI7C0NvxorCRqZbjBlmVppupR1aBUZv10e6BB36
+         VX9IcPSQe5ecWlvzFVYzvIWdkfMTo8c4tQh/tuyfHgke4KCMuqJq/EC3QS8O2+Kpqyqa
+         +1LpBZXtBtfnSnFEsBR2dbXLFo0rWHHnyrCfJyFCC2EqBtsJFc+UOCCLfi8bsDu/DpQ+
+         zBHdXwLeguzBH8O/ueghiM3Lc1oi6x3SXivgSf1LOENOiyv4xtm+KOSkRzVSpiTah3t7
+         gcR/BWz+yrjlZvgY6Q5d2yFXVw9UCkyYvFcpeFy4tt5fGCQ/Qa1aG/G0XpD3Nu4AwXQH
+         yzPQ==
+X-Gm-Message-State: AOAM533ja/hLDh1m5j95rvw1k8UrHgSl9PVpHjJjrfofDIbgy3vyTMqU
+        giLQZoYb8sVZnmh+EU3pKpE=
+X-Google-Smtp-Source: ABdhPJxw0wxEUimfooH4UNCLaWh+5ilUFFKFnVX8NNBhhnaso2YvVnJNDywodS+Qryt1hqmTJNPUeQ==
+X-Received: by 2002:a5d:6910:0:b0:206:a03:35c with SMTP id t16-20020a5d6910000000b002060a03035cmr28034156wru.174.1649766440296;
+        Tue, 12 Apr 2022 05:27:20 -0700 (PDT)
+Received: from localhost (92.40.203.131.threembb.co.uk. [92.40.203.131])
+        by smtp.gmail.com with ESMTPSA id n8-20020a05600c4f8800b0038eb596ab10sm2296064wmq.2.2022.04.12.05.27.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 05:27:19 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     paul@crapouillou.net, robh+dt@kernel.org, krzk+dt@kernel.org,
+        tsbogend@alpha.franken.de, mturquette@baylibre.com,
+        sboyd@kernel.org
+Cc:     linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        dan.carpenter@oracle.com
+Subject: [PATCH v5 1/2] mips: dts: ingenic: Add TCU clock to x1000/x1830 tcu device node
+Date:   Tue, 12 Apr 2022 13:27:49 +0100
+Message-Id: <20220412122750.279058-2-aidanmacdonald.0x0@gmail.com>
+In-Reply-To: <20220412122750.279058-1-aidanmacdonald.0x0@gmail.com>
+References: <20220412122750.279058-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-11 at 11:13 -0700, Kevin Hilman wrote:
-> Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
-> 
-> > On Fri, 2022-04-08 at 13:54 -0700, Kevin Hilman wrote:
-> > > Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
-> > > 
-> > > > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > > > 
-> > > > In some MediaTek SoCs, like MT8183, CPU and CCI share the same
-> > > > power
-> > > > supplies. Cpufreq needs to check if CCI devfreq exists and wait
-> > > > until
-> > > > CCI devfreq ready before scaling frequency.
-> > > > 
-> > > > - Add is_ccifreq_ready() to link CCI device to CPI, and CPU
-> > > > will
-> > > > start
-> > > >   DVFS when CCI is ready.
-> > > > - Add platform data for MT8183.
-> > > > 
-> > > > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > > 
-> > > The checks here are not enough, and will lead to unexpected
-> > > behavior.
-> > > IIUC, before doing DVFS, you're checking:
-> > > 
-> > > 1) if the "cci" DT node is present and
-> > > 2) if the driver for that device is bound
-> > > 
-> > > If both those conditions are not met, you don't actually fail,
-> > > you
-> > > just
-> > > silently do nothing in ->set_target().  As Angelo pointed out
-> > > also,
-> > > this
-> > > is not a good idea, and will be rather confusing to users.
-> > > 
-> > > The same thing would happen if the cci DT node was present, but
-> > > the
-> > > CCI
-> > > devfreq driver was disabled.  Silent failure would also be quite
-> > > unexpected behavior.  Similarily, if the cci DT node is not
-> > > present
-> > > at
-> > > all (like it is in current upstream DT), this CPUfreq driver will
-> > > silently do nothing.  Not good.
-> > > 
-> > > So, this patch needs to handle several scenarios:
-> > > 
-> > > 1) CCI DT node not present
-> > > 
-> > > In this case, the driver should still operate normally.  With no
-> > > CCI
-> > > node, or driver there's no conflict.
-> > > 
-> > > 2) CCI DT present/enabled but not yet bound
-> > > 
-> > > In this case, you could return -EAGAIN as suggested by Angelo, or
-> > > maybe
-> > > better, it should do a deferred probe.
-> > > 
-> > > 3) CCI DT present, but driver disabled
-> > > 
-> > > This case is similar to (1), this driver should continue to work.
-> > > 
-> > > Kevin
-> > 
-> > Hello Kevin and Angelo,
-> > 
-> > In my review, if we do not get the link or the link status is not
-> > correct between cci and cpufreq in target_index, I think it will
-> > never
-> > established again for this link.
-> > Because it's not checked in probe stage.
-> > 
-> > So I think we just need to deal with the issue without cci device,
-> > and
-> > don't expect the link between cci and cpufreq will be connected
-> > again.
-> > 
-> > If I am wrong, please correct me.
-> 
-> I don't fully understand your questions, but I think what your
-> getting
-> at suggest that you might need to use deferred probe to handle the
-> case
-> where the ordering of CCI and cpufreq probing is not predictable.
-> 
-> Kevin
+This clock is a gate for the TCU hardware block on these SoCs, but
+it wasn't included in the device tree since the ingenic-tcu driver
+erroneously did not request it.
 
-Hello Kevin and Angelo,
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+---
+ arch/mips/boot/dts/ingenic/x1000.dtsi | 5 +++--
+ arch/mips/boot/dts/ingenic/x1830.dtsi | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-I can summary what I got now:
-
-1. Why we need cci for cpufreq in MT8183 and MT8186:
-   a. CCI is a mediatek hw module.
-   b. For mediatek SoCs before MT8183, like MT8173, the CCI hw
-      is not introduced.
-   c. The frequency for cci and cpufreq are determined could
-      be configed at bootloader stage, so the frequency when
-      entering kernel is unknown.
-   d. Cpu little core and cci are using the same regulator.
-   e. If we do not control CCI and just adjust the voltage in
-      cpufreq driver.
-      When we adjust the voltage smaller because we need to reduce
-      the frequency, the CCI could run in high frequency which is
-      set in bootloader.
-      This will cause some problem, the cci could crash.
-
-      Use MT8186 for a example, the bootloader set cci freq as
-      1.385GHz and cpufreq as 2GHz.
-      If entering kernel and we only adjust the cpufreq voltage, if
-      the cpufreq is under 1.618GHz, the cci will be out of spec.
-      You can refer to the chrome project bootloader "Coreboot" patch:
-      
-https://review.coreboot.org/c/coreboot/+/59569/2/src/mainboard/google/corsola/romstage.c
-
-   f. If cpufreq driver wait cci ready, regulator framework will take
-      the highest voltage requests from cci and cpufreq as output
-      so that it prevents from high freqeuncy low voltage crash.
-   d. Therefore, I think it's not a good idea to bypass cci device if
-      the ccifreq_supported is true in MT8183 and MT8186.
-
-2. Check the device link status is DL_DEV_DRIVER_BOUND is used for
-   promising the cci is probed done.
-
-3. About the cpufreq_driver->target_index
-   a. When I trace the common drivers, I found if the return value is
-      not zero, it will be BUG_ON.
-      ref:
-https://elixir.bootlin.com/linux/latest/source/drivers/cpufreq/cpufreq.c#L1471
-   b. I also try to move is_ccifreq_ready() to other place, like
-      cpufreq_driver->init and cpufreq probe function.
-      There will be new issue. Do you have any suggetion that we can
-      retern value of DEFER_PROBE?
-
-BRs,
-Rex
+diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi b/arch/mips/boot/dts/ingenic/x1000.dtsi
+index 8bd27edef216..c69df8eb158e 100644
+--- a/arch/mips/boot/dts/ingenic/x1000.dtsi
++++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
+@@ -111,8 +111,9 @@ tcu: timer@10002000 {
+ 
+ 		clocks = <&cgu X1000_CLK_RTCLK>,
+ 			 <&cgu X1000_CLK_EXCLK>,
+-			 <&cgu X1000_CLK_PCLK>;
+-		clock-names = "rtc", "ext", "pclk";
++			 <&cgu X1000_CLK_PCLK>,
++			 <&cgu X1000_CLK_TCU>;
++		clock-names = "rtc", "ext", "pclk", "tcu";
+ 
+ 		interrupt-controller;
+ 		#interrupt-cells = <1>;
+diff --git a/arch/mips/boot/dts/ingenic/x1830.dtsi b/arch/mips/boot/dts/ingenic/x1830.dtsi
+index 2595df8671c7..4408df24ca98 100644
+--- a/arch/mips/boot/dts/ingenic/x1830.dtsi
++++ b/arch/mips/boot/dts/ingenic/x1830.dtsi
+@@ -104,8 +104,9 @@ tcu: timer@10002000 {
+ 
+ 		clocks = <&cgu X1830_CLK_RTCLK>,
+ 			 <&cgu X1830_CLK_EXCLK>,
+-			 <&cgu X1830_CLK_PCLK>;
+-		clock-names = "rtc", "ext", "pclk";
++			 <&cgu X1830_CLK_PCLK>,
++			 <&cgu X1830_CLK_TCU>;
++		clock-names = "rtc", "ext", "pclk", "tcu";
+ 
+ 		interrupt-controller;
+ 		#interrupt-cells = <1>;
+-- 
+2.35.1
 
