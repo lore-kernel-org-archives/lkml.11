@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D50B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 074B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353234AbiDLHIG (ORCPT
+        id S1353246AbiDLHIK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
+        Tue, 12 Apr 2022 03:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351780AbiDLGyX (ORCPT
+        with ESMTP id S1351807AbiDLGya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA2FEAF;
-        Mon, 11 Apr 2022 23:44:03 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7EA60D2;
+        Mon, 11 Apr 2022 23:44:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30305B818C8;
-        Tue, 12 Apr 2022 06:44:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89F54C385A1;
-        Tue, 12 Apr 2022 06:44:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF7C36066C;
+        Tue, 12 Apr 2022 06:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0256AC385A6;
+        Tue, 12 Apr 2022 06:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745841;
-        bh=Zdv/L8K2OOydJE2hNcA/6WyJeTBfJdrW1fgiDYXN9po=;
+        s=korg; t=1649745846;
+        bh=mYBPXfiKoBBdA1WyZbbXFvDEziCMpkccyQLo+01yjO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oUrTDHLlKkuz42oeobr8TBBM8mETcaI5ZYbQiYBEU8lXTvQpv6FRwsYVnYnpEecN0
-         5nBjlj7jYref4RFwFuud2MH5q6oDhXVueALiUriMAejPStRkZqGZlXYU8MX6Rb02yo
-         nmdxkgdQ8b013j0dbFnqYsTI8EXiy/5f2ICDtsOs=
+        b=ZjTU8PeLJk4Ta6yzcEqDLk1sfkUTfPbkV1xWQUlqlCob9oB2ekGDzFccxkxYH72Yc
+         n5YaSMmSRhBNwCuXYhUI6lSwcUvMArTX0+eBK7MG0Igm8oIhzUyKodvFnQjilY403f
+         We0J85gfQkh6dYnHz/6Ah8mBMZXene4hVmHzUK30=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 068/277] scsi: pm8001: Fix pm8001_mpi_task_abort_resp()
-Date:   Tue, 12 Apr 2022 08:27:51 +0200
-Message-Id: <20220412062944.016438044@linuxfoundation.org>
+Subject: [PATCH 5.15 052/277] PCI: pciehp: Add Qualcomm quirk for Command Completed erratum
+Date:   Tue, 12 Apr 2022 08:27:35 +0200
+Message-Id: <20220412062943.557659988@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,44 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-[ Upstream commit 7e6b7e740addcea450041b5be8e42f0a4ceece0f ]
+[ Upstream commit 9f72d4757cbe4d1ed669192f6d23817c9e437c4b ]
 
-The call to pm8001_ccb_task_free() at the end of
-pm8001_mpi_task_abort_resp() already frees the ccb tag. So when the device
-NCQ_ABORT_ALL_FLAG is set, the tag should not be freed again.  Also change
-the hardcoded 0xBFFFFFFF value to ~NCQ_ABORT_ALL_FLAG as it ought to be.
+The Qualcomm PCI bridge device (Device ID 0x0110) found in chipsets such as
+SM8450 does not set the Command Completed bit unless writes to the Slot
+Command register change "Control" bits.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-19-damien.lemoal@opensource.wdc.com
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This results in timeouts like below:
+
+  pcieport 0001:00:00.0: pciehp: Timeout on hotplug command 0x03c0 (issued 2020 msec ago)
+
+Add the device to the Command Completed quirk to mark commands "completed"
+immediately unless they change the "Control" bits.
+
+Link: https://lore.kernel.org/r/20220210145003.135907-1-manivannan.sadhasivam@linaro.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/pci/hotplug/pciehp_hpc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index bed06ed0f1cb..9e6ffc37d6b0 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -3713,12 +3713,11 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	mb();
- 
- 	if (pm8001_dev->id & NCQ_ABORT_ALL_FLAG) {
--		pm8001_tag_free(pm8001_ha, tag);
- 		sas_free_task(t);
--		/* clear the flag */
--		pm8001_dev->id &= 0xBFFFFFFF;
--	} else
-+		pm8001_dev->id &= ~NCQ_ABORT_ALL_FLAG;
-+	} else {
- 		t->task_done(t);
-+	}
- 
- 	return 0;
+diff --git a/drivers/pci/hotplug/pciehp_hpc.c b/drivers/pci/hotplug/pciehp_hpc.c
+index c0985316649d..8bedbc77fe95 100644
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -1060,6 +1060,8 @@ static void quirk_cmd_compl(struct pci_dev *pdev)
  }
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_INTEL, PCI_ANY_ID,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
++DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0110,
++			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0400,
+ 			      PCI_CLASS_BRIDGE_PCI, 8, quirk_cmd_compl);
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_QCOM, 0x0401,
 -- 
 2.35.1
 
