@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC72C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A821C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350063AbiDLGj5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S239119AbiDLGkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350277AbiDLGhw (ORCPT
+        with ESMTP id S1350274AbiDLGhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 02:37:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46EA15721;
-        Mon, 11 Apr 2022 23:34:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9CD13F9B;
+        Mon, 11 Apr 2022 23:34:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ABEE618D8;
-        Tue, 12 Apr 2022 06:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F575C385A6;
-        Tue, 12 Apr 2022 06:34:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97D6AB81B43;
+        Tue, 12 Apr 2022 06:34:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8299C385A1;
+        Tue, 12 Apr 2022 06:34:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745270;
-        bh=0l+amLxzSau1PGSEKccIi2vJU/eUeCG3dGGtp1SbA5o=;
+        s=korg; t=1649745265;
+        bh=0Xvo/FYcifaVUfTs3/xwXHOJ7VYRQ1FCx50940HjPqc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sYMHXp2e8Ti+si5hF2ODDTAD+rjaBIplJRU7Jf/Q9HHfBvyZAk/uDLHULUPCD+qls
-         Au9exYgry9J90DZKG8O95YcDJCdlnevzVRaLCV7Rrf7s9Z3Kb3DQjf2aXll0MN4cuE
-         d9xAVF+G6PT65EeDBF4UvXyANO6sRDYDI9wLrd9g=
+        b=Sst5qVTl7aw/ph+DlTd3GG3IfrRUhX0ahBqRbZ1O3RokDFqZPxMlRCgzIL5oIC4rj
+         OFCgQLzkaKKBtlYHLbI5monpAaAjdpQyOjJpxQAjfSSH6rE7hDI9cj1a7qVXcrRqBi
+         J4pX7CfpWQKq43CLxn+Npe11xXA2jcy2BFhtwrdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
+        Mike Snitzer <snitzer@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 039/171] drm/amdkfd: make CRAT table missing message informational only
-Date:   Tue, 12 Apr 2022 08:28:50 +0200
-Message-Id: <20220412062929.018257333@linuxfoundation.org>
+Subject: [PATCH 5.10 037/171] dm ioctl: prevent potential spectre v1 gadget
+Date:   Tue, 12 Apr 2022 08:28:48 +0200
+Message-Id: <20220412062928.961467864@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -50,36 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Jordy Zomer <jordy@jordyzomer.github.io>
 
-[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
+[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
 
-The driver has a fallback so make the message informational
-rather than a warning. The driver has a fallback if the
-Component Resource Association Table (CRAT) is missing, so
-make this informational now.
+It appears like cmd could be a Spectre v1 gadget as it's supplied by a
+user and used as an array index. Prevent the contents of kernel memory
+from being leaked to userspace via speculative execution by using
+array_index_nospec.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-ioctl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-index 31d793ee0836..86b4dadf772e 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-@@ -784,7 +784,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
- 	/* Fetch the CRAT table from ACPI */
- 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
- 	if (status == AE_NOT_FOUND) {
--		pr_warn("CRAT table not found\n");
-+		pr_info("CRAT table not found\n");
- 		return -ENODATA;
- 	} else if (ACPI_FAILURE(status)) {
- 		const char *err = acpi_format_exception(status);
+diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
+index 1ca65b434f1f..b839705654d4 100644
+--- a/drivers/md/dm-ioctl.c
++++ b/drivers/md/dm-ioctl.c
+@@ -17,6 +17,7 @@
+ #include <linux/dm-ioctl.h>
+ #include <linux/hdreg.h>
+ #include <linux/compat.h>
++#include <linux/nospec.h>
+ 
+ #include <linux/uaccess.h>
+ 
+@@ -1696,6 +1697,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
+ 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
+ 		return NULL;
+ 
++	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
+ 	*ioctl_flags = _ioctls[cmd].flags;
+ 	return _ioctls[cmd].fn;
+ }
 -- 
 2.35.1
 
