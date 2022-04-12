@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB1FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1551C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386537AbiDLI61 (ORCPT
+        id S1386552AbiDLI6d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
+        Tue, 12 Apr 2022 04:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359262AbiDLHmw (ORCPT
+        with ESMTP id S1359257AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:42:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FEA2C115;
-        Tue, 12 Apr 2022 00:21:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9072AC66;
+        Tue, 12 Apr 2022 00:21:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AD5DB81B60;
-        Tue, 12 Apr 2022 07:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A099FC385A1;
-        Tue, 12 Apr 2022 07:21:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA8B861045;
+        Tue, 12 Apr 2022 07:21:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1FDCC385A5;
+        Tue, 12 Apr 2022 07:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748083;
-        bh=IHC89Aams0XWjbco/J0P17dgBmvKn2Cdsf7vbUdm+nw=;
+        s=korg; t=1649748069;
+        bh=KXy/IacbeYaGiCa4DIP5MYCW5TZXiRuOhqsi9RysQGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Upo/voo4D7JP2da8o/xaIcduYnTTiYNEshlijUPL8gRD0/owMF+9bp4MOSyl/Twt3
-         EhOtVsyFrB34IZ/+8gdkiei9x6i+eyzrJtN6sY2WKsFhMAsJVDM957lHGF4oeCCWVu
-         +Yiq7i8Qy6rrPKHXXRYNttiLXesmQe1M8f5d9gWk=
+        b=e0TifdPgZ8AHsS6hhxzj+yGVVTtcX5IeFWWNnLebvXjDViZmcWeAhw8rX7+kjkUHm
+         mV7Xi9G4Utcj5im3gxsquNKz48Dj7csrjKCmsK/AvMhB7DkroL3vW19UIBYGp8n8sg
+         GOiZg9RrrtTMawZGrcX1hVC2RdgPXlB4Lwuz2MXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fu <foyjog@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.17 312/343] SUNRPC: Ensure we flush any closed sockets before xs_xprt_free()
-Date:   Tue, 12 Apr 2022 08:32:10 +0200
-Message-Id: <20220412063000.327988062@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Neelima Krishnan <neelima.krishnan@intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 281/343] x86/speculation: Restore speculation related MSRs during S3 resume
+Date:   Tue, 12 Apr 2022 08:31:39 +0200
+Message-Id: <20220412062959.433777240@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,114 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit f00432063db1a0db484e85193eccc6845435b80e upstream.
+commit e2a1256b17b16f9b9adf1b6fea56819e7b68e463 upstream.
 
-We must ensure that all sockets are closed before we call xprt_free()
-and release the reference to the net namespace. The problem is that
-calling fput() will defer closing the socket until delayed_fput() gets
-called.
-Let's fix the situation by allowing rpciod and the transport teardown
-code (which runs on the system wq) to call __fput_sync(), and directly
-close the socket.
+After resuming from suspend-to-RAM, the MSRs that control CPU's
+speculative execution behavior are not being restored on the boot CPU.
 
-Reported-by: Felix Fu <foyjog@gmail.com>
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: a73881c96d73 ("SUNRPC: Fix an Oops in udp_poll()")
-Cc: stable@vger.kernel.org # 5.1.x: 3be232f11a3c: SUNRPC: Prevent immediate close+reconnect
-Cc: stable@vger.kernel.org # 5.1.x: 89f42494f92f: SUNRPC: Don't call connect() more than once on a TCP socket
-Cc: stable@vger.kernel.org # 5.1.x
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+These MSRs are used to mitigate speculative execution vulnerabilities.
+Not restoring them correctly may leave the CPU vulnerable.  Secondary
+CPU's MSRs are correctly being restored at S3 resume by
+identify_secondary_cpu().
+
+During S3 resume, restore these MSRs for boot CPU when restoring its
+processor state.
+
+Fixes: 772439717dbf ("x86/bugs/intel: Set proper CPU features and setup RDS")
+Reported-by: Neelima Krishnan <neelima.krishnan@intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/file_table.c               |    1 +
- include/trace/events/sunrpc.h |    1 -
- net/sunrpc/xprt.c             |    7 +------
- net/sunrpc/xprtsock.c         |   16 +++++++++++++---
- 4 files changed, 15 insertions(+), 10 deletions(-)
+ arch/x86/power/cpu.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/fs/file_table.c
-+++ b/fs/file_table.c
-@@ -412,6 +412,7 @@ void __fput_sync(struct file *file)
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -503,10 +503,24 @@ static int pm_cpu_check(const struct x86
+ 	return ret;
  }
  
- EXPORT_SYMBOL(fput);
-+EXPORT_SYMBOL(__fput_sync);
- 
- void __init files_init(void)
++static void pm_save_spec_msr(void)
++{
++	u32 spec_msr_id[] = {
++		MSR_IA32_SPEC_CTRL,
++		MSR_IA32_TSX_CTRL,
++		MSR_TSX_FORCE_ABORT,
++		MSR_IA32_MCU_OPT_CTRL,
++		MSR_AMD64_LS_CFG,
++	};
++
++	msr_build_context(spec_msr_id, ARRAY_SIZE(spec_msr_id));
++}
++
+ static int pm_check_save_msr(void)
  {
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -1005,7 +1005,6 @@ DEFINE_RPC_XPRT_LIFETIME_EVENT(connect);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_auto);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_done);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_force);
--DEFINE_RPC_XPRT_LIFETIME_EVENT(disconnect_cleanup);
- DEFINE_RPC_XPRT_LIFETIME_EVENT(destroy);
+ 	dmi_check_system(msr_save_dmi_table);
+ 	pm_cpu_check(msr_save_cpu_table);
++	pm_save_spec_msr();
  
- DECLARE_EVENT_CLASS(rpc_xprt_event,
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -929,12 +929,7 @@ void xprt_connect(struct rpc_task *task)
- 	if (!xprt_lock_write(xprt, task))
- 		return;
- 
--	if (test_and_clear_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
--		trace_xprt_disconnect_cleanup(xprt);
--		xprt->ops->close(xprt);
--	}
--
--	if (!xprt_connected(xprt)) {
-+	if (!xprt_connected(xprt) && !test_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
- 		task->tk_rqstp->rq_connect_cookie = xprt->connect_cookie;
- 		rpc_sleep_on_timeout(&xprt->pending, task, NULL,
- 				xprt_request_timeout(task->tk_rqstp));
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -880,7 +880,7 @@ static int xs_local_send_request(struct
- 
- 	/* Close the stream if the previous transmission was incomplete */
- 	if (xs_send_request_was_aborted(transport, req)) {
--		xs_close(xprt);
-+		xprt_force_disconnect(xprt);
- 		return -ENOTCONN;
- 	}
- 
-@@ -918,7 +918,7 @@ static int xs_local_send_request(struct
- 			-status);
- 		fallthrough;
- 	case -EPIPE:
--		xs_close(xprt);
-+		xprt_force_disconnect(xprt);
- 		status = -ENOTCONN;
- 	}
- 
-@@ -1203,6 +1203,16 @@ static void xs_reset_transport(struct so
- 
- 	if (sk == NULL)
- 		return;
-+	/*
-+	 * Make sure we're calling this in a context from which it is safe
-+	 * to call __fput_sync(). In practice that means rpciod and the
-+	 * system workqueue.
-+	 */
-+	if (!(current->flags & PF_WQ_WORKER)) {
-+		WARN_ON_ONCE(1);
-+		set_bit(XPRT_CLOSE_WAIT, &xprt->state);
-+		return;
-+	}
- 
- 	if (atomic_read(&transport->xprt.swapper))
- 		sk_clear_memalloc(sk);
-@@ -1226,7 +1236,7 @@ static void xs_reset_transport(struct so
- 	mutex_unlock(&transport->recv_mutex);
- 
- 	trace_rpc_socket_close(xprt, sock);
--	fput(filp);
-+	__fput_sync(filp);
- 
- 	xprt_disconnect_done(xprt);
+ 	return 0;
  }
 
 
