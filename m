@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 550A4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 755FAC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356229AbiDLI4E (ORCPT
+        id S1358022AbiDLI4e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
+        Tue, 12 Apr 2022 04:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359410AbiDLHnB (ORCPT
+        with ESMTP id S1359391AbiDLHnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:43:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E232C11F;
-        Tue, 12 Apr 2022 00:22:52 -0700 (PDT)
+        Tue, 12 Apr 2022 03:43:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFF92B271;
+        Tue, 12 Apr 2022 00:22:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C4376153F;
-        Tue, 12 Apr 2022 07:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FD39C385A1;
-        Tue, 12 Apr 2022 07:22:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD8EA6171C;
+        Tue, 12 Apr 2022 07:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E97C385A5;
+        Tue, 12 Apr 2022 07:22:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748171;
-        bh=2R3Jg6wuXoD3K4IfpFwi6Rua3esT/XHSYiQeLfWGfd4=;
+        s=korg; t=1649748130;
+        bh=FQfC2Om4wIcb1HIRf/yVr+QDGuzzRTC58mtKVCt3alY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I+LzTD1xcfleitD28IwW1X+U+9QMweDkDl2BkmHJCTTDLLbfgGba6wwuIJ6AogXqW
-         lWqNNTPYMzR416syDqGfIFMOOvn7l66s1UPFLiDOaXqLe+48eDQDwE/Li48ARzVJgL
-         iu2g4IaQDn0wSUO5Fi5da9Tny+X/iK9YSDYUsNZg=
+        b=li28B2RER282A8uLPRhqldziNBu1ivqnOdfc2X+iKYCScGJtERpAQSvnGqTYUjPY1
+         VAUri0759QCa7CF1lYYyJHmd6Y8tX4lqb8tmS0HABaHCWBA24Ja6iFx+RqASkDqFJo
+         BeKbJS7QqeVmOkDPxdKZSOCXYDaqfkINfey8FD5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
-        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 325/343] KVM: avoid NULL pointer dereference in kvm_dirty_ring_push
-Date:   Tue, 12 Apr 2022 08:32:23 +0200
-Message-Id: <20220412063000.702105259@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "T.J. Alumbaugh" <talumbau@chromium.org>
+Subject: [PATCH 5.17 331/343] sched/core: Fix forceidle balancing
+Date:   Tue, 12 Apr 2022 08:32:29 +0200
+Message-Id: <20220412063000.871956573@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,50 +50,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 5593473a1e6c743764b08e3b6071cb43b5cfa6c4 upstream.
+commit 5b6547ed97f4f5dfc23f8e3970af6d11d7b7ed7e upstream.
 
-kvm_vcpu_release() will call kvm_dirty_ring_free(), freeing
-ring->dirty_gfns and setting it to NULL.  Afterwards, it calls
-kvm_arch_vcpu_destroy().
+Steve reported that ChromeOS encounters the forceidle balancer being
+ran from rt_mutex_setprio()'s balance_callback() invocation and
+explodes.
 
-However, if closing the file descriptor races with KVM_RUN in such away
-that vcpu->arch.st.preempted == 0, the following call stack leads to a
-NULL pointer dereference in kvm_dirty_run_push():
+Now, the forceidle balancer gets queued every time the idle task gets
+selected, set_next_task(), which is strictly too often.
+rt_mutex_setprio() also uses set_next_task() in the 'change' pattern:
 
- mark_page_dirty_in_slot+0x192/0x270 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3171
- kvm_steal_time_set_preempted arch/x86/kvm/x86.c:4600 [inline]
- kvm_arch_vcpu_put+0x34e/0x5b0 arch/x86/kvm/x86.c:4618
- vcpu_put+0x1b/0x70 arch/x86/kvm/../../../virt/kvm/kvm_main.c:211
- vmx_free_vcpu+0xcb/0x130 arch/x86/kvm/vmx/vmx.c:6985
- kvm_arch_vcpu_destroy+0x76/0x290 arch/x86/kvm/x86.c:11219
- kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
+	queued = task_on_rq_queued(p); /* p->on_rq == TASK_ON_RQ_QUEUED */
+	running = task_current(rq, p); /* rq->curr == p */
 
-The fix is to release the dirty page ring after kvm_arch_vcpu_destroy
-has run.
+	if (queued)
+		dequeue_task(...);
+	if (running)
+		put_prev_task(...);
 
-Reported-by: Qiuhao Li <qiuhao@sysec.org>
-Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+	/* change task properties */
+
+	if (queued)
+		enqueue_task(...);
+	if (running)
+		set_next_task(...);
+
+However, rt_mutex_setprio() will explicitly not run this pattern on
+the idle task (since priority boosting the idle task is quite insane).
+Most other 'change' pattern users are pidhash based and would also not
+apply to idle.
+
+Also, the change pattern doesn't contain a __balance_callback()
+invocation and hence we could have an out-of-band balance-callback,
+which *should* trigger the WARN in rq_pin_lock() (which guards against
+this exact anti-pattern).
+
+So while none of that explains how this happens, it does indicate that
+having it in set_next_task() might not be the most robust option.
+
+Instead, explicitly queue the forceidle balancer from pick_next_task()
+when it does indeed result in forceidle selection. Having it here,
+ensures it can only be triggered under the __schedule() rq->lock
+instance, and hence must be ran from that context.
+
+This also happens to clean up the code a little, so win-win.
+
+Fixes: d2dfa17bc7de ("sched: Trivial forced-newidle balancer")
+Reported-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: T.J. Alumbaugh <talumbau@chromium.org>
+Link: https://lkml.kernel.org/r/20220330160535.GN8939@worktop.programming.kicks-ass.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/core.c  |   14 ++++++++++----
+ kernel/sched/idle.c  |    1 -
+ kernel/sched/sched.h |    6 ------
+ 3 files changed, 10 insertions(+), 11 deletions(-)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -439,8 +439,8 @@ static void kvm_vcpu_init(struct kvm_vcp
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -5675,6 +5675,8 @@ static inline struct task_struct *pick_t
  
- static void kvm_vcpu_destroy(struct kvm_vcpu *vcpu)
+ extern void task_vruntime_update(struct rq *rq, struct task_struct *p, bool in_fi);
+ 
++static void queue_core_balance(struct rq *rq);
++
+ static struct task_struct *
+ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
  {
--	kvm_dirty_ring_free(&vcpu->dirty_ring);
- 	kvm_arch_vcpu_destroy(vcpu);
-+	kvm_dirty_ring_free(&vcpu->dirty_ring);
+@@ -5724,7 +5726,7 @@ pick_next_task(struct rq *rq, struct tas
+ 		}
  
- 	/*
- 	 * No need for rcu_read_lock as VCPU_RUN is the only place that changes
+ 		rq->core_pick = NULL;
+-		return next;
++		goto out;
+ 	}
+ 
+ 	put_prev_task_balance(rq, prev, rf);
+@@ -5774,7 +5776,7 @@ pick_next_task(struct rq *rq, struct tas
+ 			 */
+ 			WARN_ON_ONCE(fi_before);
+ 			task_vruntime_update(rq, next, false);
+-			goto done;
++			goto out_set_next;
+ 		}
+ 	}
+ 
+@@ -5893,8 +5895,12 @@ pick_next_task(struct rq *rq, struct tas
+ 		resched_curr(rq_i);
+ 	}
+ 
+-done:
++out_set_next:
+ 	set_next_task(rq, next);
++out:
++	if (rq->core->core_forceidle_count && next == rq->idle)
++		queue_core_balance(rq);
++
+ 	return next;
+ }
+ 
+@@ -5989,7 +5995,7 @@ static void sched_core_balance(struct rq
+ 
+ static DEFINE_PER_CPU(struct callback_head, core_balance_head);
+ 
+-void queue_core_balance(struct rq *rq)
++static void queue_core_balance(struct rq *rq)
+ {
+ 	if (!sched_core_enabled(rq))
+ 		return;
+--- a/kernel/sched/idle.c
++++ b/kernel/sched/idle.c
+@@ -437,7 +437,6 @@ static void set_next_task_idle(struct rq
+ {
+ 	update_idle_core(rq);
+ 	schedstat_inc(rq->sched_goidle);
+-	queue_core_balance(rq);
+ }
+ 
+ #ifdef CONFIG_SMP
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1247,8 +1247,6 @@ static inline bool sched_group_cookie_ma
+ 	return false;
+ }
+ 
+-extern void queue_core_balance(struct rq *rq);
+-
+ static inline bool sched_core_enqueued(struct task_struct *p)
+ {
+ 	return !RB_EMPTY_NODE(&p->core_node);
+@@ -1282,10 +1280,6 @@ static inline raw_spinlock_t *__rq_lockp
+ 	return &rq->__lock;
+ }
+ 
+-static inline void queue_core_balance(struct rq *rq)
+-{
+-}
+-
+ static inline bool sched_cpu_cookie_match(struct rq *rq, struct task_struct *p)
+ {
+ 	return true;
 
 
