@@ -2,70 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85EFEC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B95E3C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391374AbiDLJ3X (ORCPT
+        id S1391419AbiDLJ3c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        Tue, 12 Apr 2022 05:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241804AbiDLIkP (ORCPT
+        with ESMTP id S1385079AbiDLImt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:40:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0ECC2496D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649750768;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Tue, 12 Apr 2022 04:42:49 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9547CDFF4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:11:05 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 29A1B1F858;
+        Tue, 12 Apr 2022 08:11:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649751064; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kVXYFS3onY7D3CiQ2s6YTYii2qpFys84Xut+HVHR5k8=;
-        b=Yd4OmFAHUn70PA0P0HPbs5jDanmUPwdEbCgwXY781vyxExkIo4CJQrY00UF6T+vj4Amr2b
-        HpkXBUHoop3ua/DhbqS6nlp6YaaCY+QJHDTFp3h+88tMQxAS7viHVf7rBuarSCe/IL5KrP
-        8+SkEPRPR+974VgjRwlRa7GcOnmoB6Q=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-2mUDefbYNVuNf32Uc168vw-1; Tue, 12 Apr 2022 04:06:07 -0400
-X-MC-Unique: 2mUDefbYNVuNf32Uc168vw-1
-Received: by mail-ed1-f70.google.com with SMTP id l24-20020a056402231800b00410f19a3103so10459938eda.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:06:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=kVXYFS3onY7D3CiQ2s6YTYii2qpFys84Xut+HVHR5k8=;
-        b=sQUxZ6CDlp5LO6Oy9sZcOwWXoX/Y1BD09LAAe4LehcpbJ89rw3IkRAv2x3pGtDKckP
-         6bxSzQSXoulm1BSey648ggvYbjJkHQ3AhkRtjoY6MCyCo5tI/FOeEwXwtMrJ+/kT1sKO
-         +pA2LqPDznIkv5YtZiDUsXGGclFzwTCU2+uWrLpyQjtMNuNCmMl3jOVLpbnYfm5/HeNE
-         a/dCvN1xM8uqhISc7qm/Ko5IZLdwwc9yL0ZrwTg2cd5acH9JUTC7kVNYsUq60ZCvYKWE
-         7g8a8ttnVp9aif6d5MVsMU9dJsjMVND13ENYtRn1WWf+Y6cdbWTXvK4/9tH6Rj4NVbgo
-         bueA==
-X-Gm-Message-State: AOAM531HLWC2ozI3AiCrbzmg2VHu4STPUt5i8FkmOrtNXv3KV+d08Y9Q
-        7Q2fxStgBqBap9ut3HT4W+UmdbVczn1Wg7Fsa1x5Mn9dQJY83Ebhbeo/MYSV7kDzfOXjD1TTYif
-        jTfOPTRjcY215C7lOdcbQ9eux
-X-Received: by 2002:a17:906:730c:b0:6e6:c512:49c8 with SMTP id di12-20020a170906730c00b006e6c51249c8mr33701477ejc.405.1649750766459;
-        Tue, 12 Apr 2022 01:06:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxo4u4ew37f1UDJH2s9fF8MD/mnigSDDhKICnyE8nZmBItPQ2UIjbR6/EP8inuN+owHYdapXw==
-X-Received: by 2002:a17:906:730c:b0:6e6:c512:49c8 with SMTP id di12-20020a170906730c00b006e6c51249c8mr33701441ejc.405.1649750766226;
-        Tue, 12 Apr 2022 01:06:06 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:1800:7c14:16cc:5291:a9f3? (p200300cbc70718007c1416cc5291a9f3.dip0.t-ipconnect.de. [2003:cb:c707:1800:7c14:16cc:5291:a9f3])
-        by smtp.gmail.com with ESMTPSA id bj13-20020a170906b04d00b006e742719b9fsm10946061ejb.7.2022.04.12.01.06.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 01:06:05 -0700 (PDT)
-Message-ID: <7d9353f5-2aa4-1e70-deb2-2ff3d2afb396@redhat.com>
-Date:   Tue, 12 Apr 2022 10:06:03 +0200
+        bh=u5TSVe5fo2KyE0q0UPG1XaNNuBM0ty79T1z9XJe9mPI=;
+        b=V8PLSIE6sjW3VuE333624Ivhoj5zSU2DaUHQZ6+N/wgV6XA0U+L0ICiCUJLYsn6wEGn7f1
+        eAK7Q8nunsKhh2nUEiVXXmH7AprMgMi+NPf4QN61vXUrK3yDEHHNKboHWrPmNBm0TJPyWA
+        4pZ7HUOlMz3tSKQqjfzQqXJzQjyvlzc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649751064;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u5TSVe5fo2KyE0q0UPG1XaNNuBM0ty79T1z9XJe9mPI=;
+        b=hhvsjsFUwG/Nv2DqtfWJoTwADXfEBkpjIcKhriB/7HI0iub80oU0smYDIjsjd0GkSQeytD
+        b1vTwnzd8G+DWMCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 83BB313780;
+        Tue, 12 Apr 2022 08:11:03 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id skEfHxc0VWIHDQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 12 Apr 2022 08:11:03 +0000
+Message-ID: <c8c71692-2cf4-b220-0bba-951f1b880843@suse.cz>
+Date:   Tue, 12 Apr 2022 10:11:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v3 04/16] mm/rmap: split page_dup_rmap() into
- page_dup_file_rmap() and page_try_dup_anon_rmap()
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 05/16] mm/rmap: convert RMAP flags to a proper distinct
+ rmap_t type
 Content-Language: en-US
-To:     Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org
+To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Hugh Dickins <hughd@google.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
@@ -90,70 +83,20 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Pedro Gomes <pedrodemargomes@gmail.com>,
         Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
 References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-5-david@redhat.com>
- <bec1b401-fb2e-6672-d904-396402434890@suse.cz>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <bec1b401-fb2e-6672-d904-396402434890@suse.cz>
+ <20220329160440.193848-6-david@redhat.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220329160440.193848-6-david@redhat.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11.04.22 20:18, Vlastimil Babka wrote:
-> On 3/29/22 18:04, David Hildenbrand wrote:
->> ... and move the special check for pinned pages into
->> page_try_dup_anon_rmap() to prepare for tracking exclusive anonymous
->> pages via a new pageflag, clearing it only after making sure that there
->> are no GUP pins on the anonymous page.
->>
->> We really only care about pins on anonymous pages, because they are
->> prone to getting replaced in the COW handler once mapped R/O. For !anon
->> pages in cow-mappings (!VM_SHARED && VM_MAYWRITE) we shouldn't really
->> care about that, at least not that I could come up with an example.
->>
->> Let's drop the is_cow_mapping() check from page_needs_cow_for_dma(), as we
->> know we're dealing with anonymous pages. Also, drop the handling of
->> pinned pages from copy_huge_pud() and add a comment if ever supporting
->> anonymous pages on the PUD level.
->>
->> This is a preparation for tracking exclusivity of anonymous pages in
->> the rmap code, and disallowing marking a page shared (-> failing to
->> duplicate) if there are GUP pins on a page.
->>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
+On 3/29/22 18:04, David Hildenbrand wrote:
+> We want to pass the flags to more than one anon rmap function, getting
+> rid of special "do_page_add_anon_rmap()". So let's pass around a distinct
+> __bitwise type and refine documentation.
 > 
-> Acked-by: Vlastimil Babka <vbabka@suse.cz>
-> 
-> Nit:
-> 
->> --- a/mm/memory.c
->> +++ b/mm/memory.c
->> @@ -825,7 +825,8 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
->>  		 */
->>  		get_page(page);
->>  		rss[mm_counter(page)]++;
->> -		page_dup_rmap(page, false);
->> +		/* Cannot fail as these pages cannot get pinned. */
->> +		BUG_ON(page_try_dup_anon_rmap(page, false, src_vma));
-> 
-> Should we just call __page_dup_rmap() here? This is block for the condition
-> is_device_private_entry(), and page_try_dup_anon_rmap() can't return -EBUSY
-> for is_device_private_page().
+> Signed-off-by: David Hildenbrand <david@redhat.com>
 
-
-Hi Vlastimil,
-
-thanks for your review!
-
-We want to keep page_try_dup_anon_rmap() here, because we extend
-page_try_dup_anon_rmap() in patch #12 to properly clear
-PageAnonExclusive() of there are no GUP pins. Just like with current
-page_try_dup_anon_rmap(), that can't fail for device private pages.
-
--- 
-Thanks,
-
-David / dhildenb
-
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
