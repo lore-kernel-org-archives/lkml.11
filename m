@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628A4C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80EB3C47096
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378729AbiDLIMr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
+        id S233872AbiDLIN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355654AbiDLH1w (ORCPT
+        with ESMTP id S1355398AbiDLH1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A970E4EDE0;
-        Tue, 12 Apr 2022 00:07:59 -0700 (PDT)
+        Tue, 12 Apr 2022 03:27:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BEA4993E;
+        Tue, 12 Apr 2022 00:07:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAA70B81B54;
-        Tue, 12 Apr 2022 07:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B69EC385A8;
-        Tue, 12 Apr 2022 07:07:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 465BB616AB;
+        Tue, 12 Apr 2022 07:07:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58A4FC385AB;
+        Tue, 12 Apr 2022 07:07:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747272;
-        bh=GKounZqJS96t0E4wQdvhNBG6ZpQrjW2xlU2vl6Bc/jc=;
+        s=korg; t=1649747255;
+        bh=ZuW3LbMRkPBggKInlOR/HRj2jRcbYPd7tb9NvbuI2Fg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XG+ZwYWlmP+1S2M1aw2PYOvLDhl6NZuFYLDj+VXMGQsx1knlXo3/8LaUHjnG8VRJ+
-         50Wxg+lhdHSrkNKmHzkOgP8U1Qk318ZRCNJ1wOFMS0hofzzFRe0GqvFexiXBzs0JHy
-         mG8p0Q0Bgg2pGYAEazUYsPsrJ9EPjKxiMBWd3gOk=
+        b=CDzW+jcCguy0DGeeJZNxCThE9rwWYQZ+P6SPm8bjPopNUj/iJ1Nykime7hwU4O+wi
+         u9fkIEqIA/7XeB8CCPWS6q6OUchQgbiIJhcWk8PiilYDLA1Cr+DJGQW8xYjjKBBKnv
+         XDzunFVL4XPmAJ0ko0p/906jZwp+S4cIv+JmLD9E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Soenke Huster <soenke.huster@eknoes.de>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 004/343] net: dsa: felix: fix possible NULL pointer dereference
-Date:   Tue, 12 Apr 2022 08:27:02 +0200
-Message-Id: <20220412062951.228586224@linuxfoundation.org>
+Subject: [PATCH 5.17 014/343] Bluetooth: fix null ptr deref on hci_sync_conn_complete_evt
+Date:   Tue, 12 Apr 2022 08:27:12 +0200
+Message-Id: <20220412062951.516538389@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,40 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Soenke Huster <soenke.huster@eknoes.de>
 
-[ Upstream commit 866b7a278cdb51eb158cd8513bc7438fc857804a ]
+[ Upstream commit 3afee2118132e93e5f6fa636dfde86201a860ab3 ]
 
-As the possible failure of the allocation, kzalloc() may return NULL
-pointer.
-Therefore, it should be better to check the 'sgi' in order to prevent
-the dereference of NULL pointer.
+This event is just specified for SCO and eSCO link types.
+On the reception of a HCI_Synchronous_Connection_Complete for a BDADDR
+of an existing LE connection, LE link type and a status that triggers the
+second case of the packet processing a NULL pointer dereference happens,
+as conn->link is NULL.
 
-Fixes: 23ae3a7877718 ("net: dsa: felix: add stream gate settings for psfp").
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220329090800.130106-1-zhengyongjun3@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/bluetooth/hci_event.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 33f0ceae381d..2875b5250856 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1940,6 +1940,10 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
- 		case FLOW_ACTION_GATE:
- 			size = struct_size(sgi, entries, a->gate.num_entries);
- 			sgi = kzalloc(size, GFP_KERNEL);
-+			if (!sgi) {
-+				ret = -ENOMEM;
-+				goto err;
-+			}
- 			vsc9959_psfp_parse_gate(a, sgi);
- 			ret = vsc9959_psfp_sgi_table_add(ocelot, sgi);
- 			if (ret) {
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index a105b7317560..519f5906ee98 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4661,6 +4661,19 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev, void *data,
+ 	struct hci_ev_sync_conn_complete *ev = data;
+ 	struct hci_conn *conn;
+ 
++	switch (ev->link_type) {
++	case SCO_LINK:
++	case ESCO_LINK:
++		break;
++	default:
++		/* As per Core 5.3 Vol 4 Part E 7.7.35 (p.2219), Link_Type
++		 * for HCI_Synchronous_Connection_Complete is limited to
++		 * either SCO or eSCO
++		 */
++		bt_dev_err(hdev, "Ignoring connect complete event for invalid link type");
++		return;
++	}
++
+ 	bt_dev_dbg(hdev, "status 0x%2.2x", ev->status);
+ 
+ 	hci_dev_lock(hdev);
 -- 
 2.35.1
 
