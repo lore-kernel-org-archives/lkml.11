@@ -2,88 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 355DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbiDLVYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 17:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57826 "EHLO
+        id S229680AbiDLV0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 17:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiDLVYf (ORCPT
+        with ESMTP id S229455AbiDLV02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 17:24:35 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D0218114F;
-        Tue, 12 Apr 2022 14:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649797537; x=1681333537;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BHLbe/RoUopliJXw7PZpTsR/hL9ogzQTYddN+kx+atU=;
-  b=KSDBD8iYzCqN0x5BreM7rl7BmaJucB/khEuSIT0O2+sKfLIOtNURroMp
-   bQHgDtDdXl42OAMFtkpdMGbpEbl03hzlKod9hWZ8ltuPBRgaVkjtVrzd3
-   morhyAleYJ+A3lNyxYaY7ia0rHEgrK0aRxQClhLaW2LUQY4TQUOtCOZ3/
-   XldR5ldXOKdBMiE6AJWBsJ8gEY+tjt0wyZurIRCD3/fZ6mGF72zT3euSz
-   T+KozsHjkg1i9y5uDnqLcFQobc7xog19ZtoWSK/cR4yRZD7/2PzaLixPH
-   9ZhzaSV6JLrRRW52HQwhdJCUp5e9hnS9fjiRtZ/J1kqZePT/5UURnFAoP
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="260098619"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="260098619"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 13:54:14 -0700
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="644899572"
-Received: from lpfafma-mobl.amr.corp.intel.com (HELO guptapa-desk) ([10.209.17.36])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 13:54:13 -0700
-Date:   Tue, 12 Apr 2022 13:54:11 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
-        dave.hansen@intel.com, Borislav Petkov <bp@suse.de>,
-        Neelima Krishnan <neelima.krishnan@intel.com>,
-        "kvm @ vger . kernel . org" <kvm@vger.kernel.org>
-Subject: Re: [PATCH v2] x86/tsx: fix KVM guest live migration for tsx=on
-Message-ID: <20220412205411.m7n2gnon3ai7wobm@guptapa-desk>
-References: <20220411180131.5054-1-jon@nutanix.com>
- <20220411200703.48654-1-jon@nutanix.com>
+        Tue, 12 Apr 2022 17:26:28 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64D61890CB
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 14:07:08 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id c12-20020a17090a020c00b001cba1ebb20cso2899411pjc.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 14:07:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=e4KXnzriWpYspaOZ09MkDyywUqOfHTHfFcJ2WOtKnA8=;
+        b=nxJGtS/S9cqrCOMKi/RD3qjJjmjzcw8ZFvUyNF8GU2WB8TzCwce3iq1mtQhJQkVcuY
+         cU4sC7lxci95hoxbboWTTyiACoLTl4ZlmAgK7YlJO9JPdnYTT/4W2Sy8RKqHEpfLLPpv
+         il0rBqUN0gZgMnDgXdu2ucs7pzx0nBo7a/jNXjFTwK3JE7TLQnhmg/tt9/iOf2vuPXw/
+         m1amfCdPx8eVZum4G3go9oQW90em8vHbDOcxJChfV6E23zKGFZdqd//s6E93NI8WBx9K
+         Ku+r6y0dLsVyH8KgOiDCos2yrQZ4swIUxbXUiDKAmZZDvOlVb0IGg9J+idxxw5fm9Egl
+         GxCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=e4KXnzriWpYspaOZ09MkDyywUqOfHTHfFcJ2WOtKnA8=;
+        b=emC+V04uTpUJTDlfe2NioXIZ6gE1O2rdLvOu/g5fX2wb+ow+0xiysEUbfPQ/fj2Jv8
+         IuLV1Vd6dBTK+gu5MPRSQY295w/8PYeokEDH4Um7H/nEvNwPWlqGpja1Rc5Ym9WLOGvk
+         HQMMuB01ytBuRqf4GH7OsYNDO0o5inJokJ1gAzaIQL4P4/PAWVcdW1xBEdKf0BUTVZHa
+         7pj0/ZKZYBBt0hPJqOa7rgBkADMifx7Vrsp+79webZylvhJ2nQcrlDQdptqWwnuIeuns
+         IDLrX0AOlD4+utzvf9b1tNJhn4wYByVlSH1AJq/dM/LVi7BVD4AISqI7x6d2zNGzCLsw
+         J9ww==
+X-Gm-Message-State: AOAM531PvVAM7rpfwLrmIRTI4axSnp3i43799+LKrk0GiAd0fFnUB44C
+        IprHWx6WK4wBA+H1ZHKEwI74Dw==
+X-Google-Smtp-Source: ABdhPJzdG9DcZCs8IcExT1sgDRqLnciztc+HE5MrYSFm2YOZlpWBB11ghXDUZQS2IsPsSzTV3fP5gQ==
+X-Received: by 2002:a17:90a:bb0d:b0:1bd:3baf:c8b4 with SMTP id u13-20020a17090abb0d00b001bd3bafc8b4mr7106917pjr.15.1649797552072;
+        Tue, 12 Apr 2022 14:05:52 -0700 (PDT)
+Received: from [2620:15c:29:204:a975:d8d:75b4:4882] ([2620:15c:29:204:a975:d8d:75b4:4882])
+        by smtp.gmail.com with ESMTPSA id x17-20020aa79a51000000b00505fe866b3fsm3375631pfj.162.2022.04.12.14.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 14:05:51 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 14:05:51 -0700 (PDT)
+From:   David Rientjes <rientjes@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+cc:     Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Suren Baghdasaryan <surenb@google.com>
+Subject: Re: [PATCH] mm, page_alloc: check pfn is valid before moving to
+ freelist
+In-Reply-To: <20220412135912.93175db2ab4e83f4bb060dbf@linux-foundation.org>
+Message-ID: <6daaaf5c-529d-f3eb-7486-a72cabb6e396@google.com>
+References: <cover.1649794059.git.quic_sudaraja@quicinc.com> <fb3c8c008994b2ed96f74b6b9698ff998b689bd2.1649794059.git.quic_sudaraja@quicinc.com> <20220412135912.93175db2ab4e83f4bb060dbf@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220411200703.48654-1-jon@nutanix.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 04:07:01PM -0400, Jon Kohler wrote:
->Move automatic disablement for TSX microcode deprecation from tsx_init() to
->x86_get_tsx_auto_mode(), such that systems with tsx=on will continue to
->see the TSX CPU features (HLE, RTM) even on updated microcode.
->
->KVM live migration could be possibly be broken in 5.14+ commit 293649307ef9
->("x86/tsx: Clear CPUID bits when TSX always force aborts"). Consider the
->following scenario:
->
->1. KVM hosts clustered in a live migration capable setup.
->2. KVM guests have TSX CPU features HLE and/or RTM presented.
->3. One of the three maintenance events occur:
->3a. An existing host running kernel >= 5.14 in the pool updated with the
->    new microcode.
->3b. A new host running kernel >= 5.14 is commissioned that already has the
->    microcode update preloaded.
->3c. All hosts are running kernel < 5.14 with microcode update already
->    loaded and one existing host gets updated to kernel >= 5.14.
->4. After maintenance event, the impacted host will not have HLE and RTM
->   exposed, and live migrations with guests with TSX features might not
->   migrate.
+On Tue, 12 Apr 2022, Andrew Morton wrote:
 
-Which part was this reproduced on? AFAIK server parts(except for some
-Intel Xeon E3s) did not get such microcode update.
+> On Tue, 12 Apr 2022 13:16:23 -0700 Sudarshan Rajagopalan <quic_sudaraja@quicinc.com> wrote:
+> 
+> > Check if pfn is valid before or not before moving it to freelist.
+> > 
+> > There are possible scenario where a pageblock can have partial physical
+> > hole and partial part of System RAM. This happens when base address in RAM
+> > partition table is not aligned to pageblock size.
+> > 
+> > ...
+> >
+> > 
+> > Signed-off-by: Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>
+> > Fixes: 4c7b9896621be ("mm: remove pfn_valid_within() and CONFIG_HOLES_IN_ZONE")
+> 
+> I made that 859a85ddf90e714092dea71a0e54c7b9896621be and added
+> cc:stable.  I'll await reviewer input before proceeding further.
+> 
 
-Thanks,
-Pawan
+Acked-by: David Rientjes <rientjes@google.com>
+
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -2521,6 +2521,11 @@ static int move_freepages(struct zone *zone,
+> >  	int pages_moved = 0;
+> >  
+> >  	for (pfn = start_pfn; pfn <= end_pfn;) {
+> > +		if (!pfn_valid(pfn)) {
+> 
+> Readers will wonder how we can encounter an invalid pfn here.  A small
+> comment might help clue them in.
+> 
+
+Sudarshan can correct me if I'm wrong, but this has to do with the 
+pageblock alignment of the caller that assumes all pages in the range has 
+an underlying struct page that we can access but that fails to hold true 
+when we have a memory hole.  A comment would definitely help:
+
+	/* Pageblock alignment may cause us to try to access into a hole */
+
+> > +			pfn++;
+> > +			continue;
+> > +		}
+> > +
+> >  		page = pfn_to_page(pfn);
+> >  		if (!PageBuddy(page)) {
+> >  			/*
+> 
+> 
+> 
