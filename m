@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FEB5C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04DC3C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357904AbiDLHkx (ORCPT
+        id S1357836AbiDLHkr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
+        Tue, 12 Apr 2022 03:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353079AbiDLHOt (ORCPT
+        with ESMTP id S1353061AbiDLHOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFEF33E26;
-        Mon, 11 Apr 2022 23:56:23 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9E93298C;
+        Mon, 11 Apr 2022 23:56:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFA3E60B2B;
-        Tue, 12 Apr 2022 06:56:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB187C385A6;
-        Tue, 12 Apr 2022 06:56:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 572A560EEB;
+        Tue, 12 Apr 2022 06:56:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69ECBC385A6;
+        Tue, 12 Apr 2022 06:56:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746582;
-        bh=nFWpWCPbOaoMAwUpLix+4mXkQpbORA6GkI7rlenqrL8=;
+        s=korg; t=1649746565;
+        bh=0YayfnkUy2I+QrBB3bErIM2mPZVoH6kOYYyCfUvQNM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P8wJLUjT8S9gi9DTjUDQRO8AiWV5GcnsL3yzbCJ0vAH2CCllS3dOV5tfRBrtVyz+X
-         hK4LJYNARdOljRt0nDzTBiuJjuwJYe1iAjCIaOSjeOc0003dXJw8sxHEwu7RSjzYl4
-         dkEWCngxZDT+owQ6uaTxa+ObuqEHL2fCgAyn5l9c=
+        b=GCh0MGBbjPQSmZk91OkOT3GisCQEBvxZIyviQvQqmrgKBm6IqnbCtXqtZITGTuRl6
+         YDfooaicsd0TMpQ3UEN2LqRZN2jQErujY8hlIV9QKW8YnNF8KSTt5EeU6k8vXZJkaj
+         zl2QnXj0H8jLjCTGGyNetkZlZDK0oqiMvWtEyoUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Mike Galbraith <efault@gmx.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 030/285] drm/bridge: Add missing pm_runtime_put_sync
-Date:   Tue, 12 Apr 2022 08:28:07 +0200
-Message-Id: <20220412062944.547481374@linuxfoundation.org>
+Subject: [PATCH 5.16 051/285] tcp: Dont acquire inet_listen_hashbucket::lock with disabled BH.
+Date:   Tue, 12 Apr 2022 08:28:28 +0200
+Message-Id: <20220412062945.146046006@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,75 +51,171 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-[ Upstream commit 46f47807738441e354873546dde0b000106c068a ]
+[ Upstream commit 4f9bf2a2f5aacf988e6d5e56b961ba45c5a25248 ]
 
-pm_runtime_get_sync() will increase the rumtime PM counter
-even when it returns an error. Thus a pairing decrement is needed
-to prevent refcount leak. Fix this by replacing this API with
-pm_runtime_resume_and_get(), which will not change the runtime
-PM counter on error. Besides, a matching decrement is needed
-on the error handling path to keep the counter balanced.
+Commit
+   9652dc2eb9e40 ("tcp: relax listening_hash operations")
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/1643008835-73961-1-git-send-email-lyz_cs@pku.edu.cn
+removed the need to disable bottom half while acquiring
+listening_hash.lock. There are still two callers left which disable
+bottom half before the lock is acquired.
+
+On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
+as a lock to ensure that resources, that are protected by disabling
+bottom halves, remain protected.
+This leads to a circular locking dependency if the lock acquired with
+disabled bottom halves is also acquired with enabled bottom halves
+followed by disabling bottom halves. This is the reverse locking order.
+It has been observed with inet_listen_hashbucket::lock:
+
+local_bh_disable() + spin_lock(&ilb->lock):
+  inet_listen()
+    inet_csk_listen_start()
+      sk->sk_prot->hash() := inet_hash()
+	local_bh_disable()
+	__inet_hash()
+	  spin_lock(&ilb->lock);
+	    acquire(&ilb->lock);
+
+Reverse order: spin_lock(&ilb2->lock) + local_bh_disable():
+  tcp_seq_next()
+    listening_get_next()
+      spin_lock(&ilb2->lock);
+	acquire(&ilb2->lock);
+
+  tcp4_seq_show()
+    get_tcp4_sock()
+      sock_i_ino()
+	read_lock_bh(&sk->sk_callback_lock);
+	  acquire(softirq_ctrl)	// <---- whoops
+	  acquire(&sk->sk_callback_lock)
+
+Drop local_bh_disable() around __inet_hash() which acquires
+listening_hash->lock. Split inet_unhash() and acquire the
+listen_hashbucket lock without disabling bottom halves; the inet_ehash
+lock with disabled bottom halves.
+
+Reported-by: Mike Galbraith <efault@gmx.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lkml.kernel.org/r/12d6f9879a97cd56c09fb53dee343cbb14f7f1f7.camel@gmx.de
+Link: https://lkml.kernel.org/r/X9CheYjuXWc75Spa@hirez.programming.kicks-ass.net
+Link: https://lore.kernel.org/r/YgQOebeZ10eNx1W6@linutronix.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/nwl-dsi.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ net/ipv4/inet_hashtables.c  | 53 ++++++++++++++++++++++---------------
+ net/ipv6/inet6_hashtables.c |  5 +---
+ 2 files changed, 33 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
-index 6e484d836cfe..691039aba87f 100644
---- a/drivers/gpu/drm/bridge/nwl-dsi.c
-+++ b/drivers/gpu/drm/bridge/nwl-dsi.c
-@@ -861,18 +861,19 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	memcpy(&dsi->mode, adjusted_mode, sizeof(dsi->mode));
- 	drm_mode_debug_printmodeline(adjusted_mode);
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 75737267746f..7bd1e10086f0 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -637,7 +637,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
+ 	int err = 0;
  
--	pm_runtime_get_sync(dev);
-+	if (pm_runtime_resume_and_get(dev) < 0)
-+		return;
- 
- 	if (clk_prepare_enable(dsi->lcdif_clk) < 0)
--		return;
-+		goto runtime_put;
- 	if (clk_prepare_enable(dsi->core_clk) < 0)
--		return;
-+		goto runtime_put;
- 
- 	/* Step 1 from DSI reset-out instructions */
- 	ret = reset_control_deassert(dsi->rst_pclk);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert PCLK: %d\n", ret);
--		return;
-+		goto runtime_put;
+ 	if (sk->sk_state != TCP_LISTEN) {
++		local_bh_disable();
+ 		inet_ehash_nolisten(sk, osk, NULL);
++		local_bh_enable();
+ 		return 0;
  	}
+ 	WARN_ON(!sk_unhashed(sk));
+@@ -669,45 +671,54 @@ int inet_hash(struct sock *sk)
+ {
+ 	int err = 0;
  
- 	/* Step 2 from DSI reset-out instructions */
-@@ -882,13 +883,18 @@ nwl_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	ret = reset_control_deassert(dsi->rst_esc);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert ESC: %d\n", ret);
--		return;
-+		goto runtime_put;
- 	}
- 	ret = reset_control_deassert(dsi->rst_byte);
- 	if (ret < 0) {
- 		DRM_DEV_ERROR(dev, "Failed to deassert BYTE: %d\n", ret);
--		return;
-+		goto runtime_put;
- 	}
-+
-+	return;
-+
-+runtime_put:
-+	pm_runtime_put_sync(dev);
+-	if (sk->sk_state != TCP_CLOSE) {
+-		local_bh_disable();
++	if (sk->sk_state != TCP_CLOSE)
+ 		err = __inet_hash(sk, NULL);
+-		local_bh_enable();
+-	}
+ 
+ 	return err;
  }
+ EXPORT_SYMBOL_GPL(inet_hash);
  
- static void
+-void inet_unhash(struct sock *sk)
++static void __inet_unhash(struct sock *sk, struct inet_listen_hashbucket *ilb)
+ {
+-	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+-	struct inet_listen_hashbucket *ilb = NULL;
+-	spinlock_t *lock;
+-
+ 	if (sk_unhashed(sk))
+ 		return;
+ 
+-	if (sk->sk_state == TCP_LISTEN) {
+-		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
+-		lock = &ilb->lock;
+-	} else {
+-		lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
+-	}
+-	spin_lock_bh(lock);
+-	if (sk_unhashed(sk))
+-		goto unlock;
+-
+ 	if (rcu_access_pointer(sk->sk_reuseport_cb))
+ 		reuseport_stop_listen_sock(sk);
+ 	if (ilb) {
++		struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++
+ 		inet_unhash2(hashinfo, sk);
+ 		ilb->count--;
+ 	}
+ 	__sk_nulls_del_node_init_rcu(sk);
+ 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+-unlock:
+-	spin_unlock_bh(lock);
++}
++
++void inet_unhash(struct sock *sk)
++{
++	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++
++	if (sk_unhashed(sk))
++		return;
++
++	if (sk->sk_state == TCP_LISTEN) {
++		struct inet_listen_hashbucket *ilb;
++
++		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
++		/* Don't disable bottom halves while acquiring the lock to
++		 * avoid circular locking dependency on PREEMPT_RT.
++		 */
++		spin_lock(&ilb->lock);
++		__inet_unhash(sk, ilb);
++		spin_unlock(&ilb->lock);
++	} else {
++		spinlock_t *lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
++
++		spin_lock_bh(lock);
++		__inet_unhash(sk, NULL);
++		spin_unlock_bh(lock);
++	}
+ }
+ EXPORT_SYMBOL_GPL(inet_unhash);
+ 
+diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+index 67c9114835c8..0a2e7f228391 100644
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -333,11 +333,8 @@ int inet6_hash(struct sock *sk)
+ {
+ 	int err = 0;
+ 
+-	if (sk->sk_state != TCP_CLOSE) {
+-		local_bh_disable();
++	if (sk->sk_state != TCP_CLOSE)
+ 		err = __inet_hash(sk, NULL);
+-		local_bh_enable();
+-	}
+ 
+ 	return err;
+ }
 -- 
 2.35.1
 
