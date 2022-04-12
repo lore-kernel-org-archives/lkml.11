@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B87DEC35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F62C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352526AbiDLHOH (ORCPT
+        id S1346831AbiDLHTH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
+        Tue, 12 Apr 2022 03:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352421AbiDLGzp (ORCPT
+        with ESMTP id S1352071AbiDLHEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:55:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139803A5E8;
-        Mon, 11 Apr 2022 23:45:31 -0700 (PDT)
+        Tue, 12 Apr 2022 03:04:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537CE457B2;
+        Mon, 11 Apr 2022 23:47:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99330B81B35;
-        Tue, 12 Apr 2022 06:45:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F46C385A8;
-        Tue, 12 Apr 2022 06:45:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D7A260A21;
+        Tue, 12 Apr 2022 06:47:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969ABC385A1;
+        Tue, 12 Apr 2022 06:47:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745928;
-        bh=1eZQ2mG1B5Ze4BFKltM7j3jjf6Smhu+NEKul0MLnFVQ=;
+        s=korg; t=1649746058;
+        bh=WDud53N3J5fauLU1Y/1OS8o+0T5+mV0aB97fdLwlVME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bdgqRBUM/6wdIqDB7dRrIDVu0RwVwfgyj8sDoabgHjxBJe9BS0UoK+eFmSzJTiPkw
-         UP9VJEx7I+Z8uoUI75UPJepfeubCtVEM0LW+md/kNKqsFBJNePwWGoQNw4K0aKUj6Y
-         OD9nHnV21Obt+DtpN7I3KGxQPv7Nd3lMYgT3354M=
+        b=O/pEazK1hj9dPxy78Fsng7o08+K31tv62V5lVswyVaruNbyjbazjQhn3ojxdvIP9L
+         sDJaJfM0r1PtD8l6z7C4g/Ff7cG9t3UqWzZm02C8zSwCQsFYRLjTKCodxJYWCIaFAP
+         k2adpSRwAt95cnXBYmXCJdDZmkrXrmpqFz+v3zUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 058/277] usb: dwc3: pci: Set the swnode from inside dwc3_pci_quirks()
-Date:   Tue, 12 Apr 2022 08:27:41 +0200
-Message-Id: <20220412062943.729241476@linuxfoundation.org>
+Subject: [PATCH 5.15 138/277] NFS: nfsiod should not block forever in mempool_alloc()
+Date:   Tue, 12 Apr 2022 08:29:01 +0200
+Message-Id: <20220412062946.028817523@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,58 +50,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit e285cb403994419e997749c9a52b9370884ae0c8 ]
+[ Upstream commit 515dcdcd48736576c6f5c197814da6f81c60a21e ]
 
-The quirk handling may need to set some different properties
-which means using a different swnode, move the setting of the swnode
-to inside dwc3_pci_quirks() so that the quirk handling can choose
-a different swnode.
+The concern is that since nfsiod is sometimes required to kick off a
+commit, it can get locked up waiting forever in mempool_alloc() instead
+of failing gracefully and leaving the commit until later.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220213130524.18748-4-hdegoede@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Try to allocate from the slab first, with GFP_KERNEL | __GFP_NORETRY,
+then fall back to a non-blocking attempt to allocate from the memory
+pool.
+
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ fs/nfs/internal.h      |  7 +++++++
+ fs/nfs/pnfs_nfs.c      |  8 ++++++--
+ fs/nfs/write.c         | 24 +++++++++---------------
+ include/linux/nfs_fs.h |  2 +-
+ 4 files changed, 23 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index 06d0e88ec8af..4d9608cc55f7 100644
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -185,7 +185,8 @@ static const struct software_node dwc3_pci_amd_mr_swnode = {
- 	.properties = dwc3_pci_mr_properties,
- };
- 
--static int dwc3_pci_quirks(struct dwc3_pci *dwc)
-+static int dwc3_pci_quirks(struct dwc3_pci *dwc,
-+			   const struct software_node *swnode)
- {
- 	struct pci_dev			*pdev = dwc->pci;
- 
-@@ -242,7 +243,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
- 		}
- 	}
- 
--	return 0;
-+	return device_add_software_node(&dwc->dwc3->dev, swnode);
+diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+index 66fc936834f2..7239118d98a3 100644
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -580,6 +580,13 @@ nfs_write_match_verf(const struct nfs_writeverf *verf,
+ 		!nfs_write_verifier_cmp(&req->wb_verf, &verf->verifier);
  }
  
- #ifdef CONFIG_PM
-@@ -307,11 +308,7 @@ static int dwc3_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	dwc->dwc3->dev.parent = dev;
- 	ACPI_COMPANION_SET(&dwc->dwc3->dev, ACPI_COMPANION(dev));
++static inline gfp_t nfs_io_gfp_mask(void)
++{
++	if (current->flags & PF_WQ_WORKER)
++		return GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN;
++	return GFP_KERNEL;
++}
++
+ /* unlink.c */
+ extern struct rpc_task *
+ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
+diff --git a/fs/nfs/pnfs_nfs.c b/fs/nfs/pnfs_nfs.c
+index 316f68f96e57..657c242a18ff 100644
+--- a/fs/nfs/pnfs_nfs.c
++++ b/fs/nfs/pnfs_nfs.c
+@@ -419,7 +419,7 @@ static struct nfs_commit_data *
+ pnfs_bucket_fetch_commitdata(struct pnfs_commit_bucket *bucket,
+ 			     struct nfs_commit_info *cinfo)
+ {
+-	struct nfs_commit_data *data = nfs_commitdata_alloc(false);
++	struct nfs_commit_data *data = nfs_commitdata_alloc();
  
--	ret = device_add_software_node(&dwc->dwc3->dev, (void *)id->driver_data);
--	if (ret < 0)
--		goto err;
+ 	if (!data)
+ 		return NULL;
+@@ -515,7 +515,11 @@ pnfs_generic_commit_pagelist(struct inode *inode, struct list_head *mds_pages,
+ 	unsigned int nreq = 0;
+ 
+ 	if (!list_empty(mds_pages)) {
+-		data = nfs_commitdata_alloc(true);
++		data = nfs_commitdata_alloc();
++		if (!data) {
++			nfs_retry_commit(mds_pages, NULL, cinfo, -1);
++			return -ENOMEM;
++		}
+ 		data->ds_commit_index = -1;
+ 		list_splice_init(mds_pages, &data->pages);
+ 		list_add_tail(&data->list, &list);
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index 0691b0b02147..a296e504e4aa 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -70,27 +70,17 @@ static mempool_t *nfs_wdata_mempool;
+ static struct kmem_cache *nfs_cdata_cachep;
+ static mempool_t *nfs_commit_mempool;
+ 
+-struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail)
++struct nfs_commit_data *nfs_commitdata_alloc(void)
+ {
+ 	struct nfs_commit_data *p;
+ 
+-	if (never_fail)
+-		p = mempool_alloc(nfs_commit_mempool, GFP_NOIO);
+-	else {
+-		/* It is OK to do some reclaim, not no safe to wait
+-		 * for anything to be returned to the pool.
+-		 * mempool_alloc() cannot handle that particular combination,
+-		 * so we need two separate attempts.
+-		 */
++	p = kmem_cache_zalloc(nfs_cdata_cachep, nfs_io_gfp_mask());
++	if (!p) {
+ 		p = mempool_alloc(nfs_commit_mempool, GFP_NOWAIT);
+-		if (!p)
+-			p = kmem_cache_alloc(nfs_cdata_cachep, GFP_NOIO |
+-					     __GFP_NOWARN | __GFP_NORETRY);
+ 		if (!p)
+ 			return NULL;
++		memset(p, 0, sizeof(*p));
+ 	}
 -
--	ret = dwc3_pci_quirks(dwc);
-+	ret = dwc3_pci_quirks(dwc, (void *)id->driver_data);
- 	if (ret)
- 		goto err;
+-	memset(p, 0, sizeof(*p));
+ 	INIT_LIST_HEAD(&p->pages);
+ 	return p;
+ }
+@@ -1809,7 +1799,11 @@ nfs_commit_list(struct inode *inode, struct list_head *head, int how,
+ 	if (list_empty(head))
+ 		return 0;
+ 
+-	data = nfs_commitdata_alloc(true);
++	data = nfs_commitdata_alloc();
++	if (!data) {
++		nfs_retry_commit(head, NULL, cinfo, -1);
++		return -ENOMEM;
++	}
+ 
+ 	/* Set up the argument struct */
+ 	nfs_init_commit(data, head, NULL, cinfo);
+diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
+index 41102e03512f..5ffcde9ac413 100644
+--- a/include/linux/nfs_fs.h
++++ b/include/linux/nfs_fs.h
+@@ -567,7 +567,7 @@ extern int nfs_wb_all(struct inode *inode);
+ extern int nfs_wb_page(struct inode *inode, struct page *page);
+ extern int nfs_wb_page_cancel(struct inode *inode, struct page* page);
+ extern int  nfs_commit_inode(struct inode *, int);
+-extern struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail);
++extern struct nfs_commit_data *nfs_commitdata_alloc(void);
+ extern void nfs_commit_free(struct nfs_commit_data *data);
+ bool nfs_commit_end(struct nfs_mds_commit_info *cinfo);
  
 -- 
 2.35.1
