@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B39B1C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DDC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384778AbiDLImU (ORCPT
+        id S1385029AbiDLImw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46344 "EHLO
+        Tue, 12 Apr 2022 04:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357257AbiDLHjy (ORCPT
+        with ESMTP id S1357140AbiDLHjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC2D657C;
-        Tue, 12 Apr 2022 00:14:25 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4658F12745;
+        Tue, 12 Apr 2022 00:12:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFDE96171D;
-        Tue, 12 Apr 2022 07:14:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E28C385A1;
-        Tue, 12 Apr 2022 07:14:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFC16B81B40;
+        Tue, 12 Apr 2022 07:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CEAC385A5;
+        Tue, 12 Apr 2022 07:12:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747664;
-        bh=+YTNds+8z0t2zHdYuIfAV4xXR8U6PjwOkzvV2rN7NGI=;
+        s=korg; t=1649747570;
+        bh=3mqLrVOoC/oN+O05pbj3f0xUloAMzNFYHVq/bqvXAmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2EOy1y7cIxiAeJnyBUU9ztV/jD5Dowz/7Ll5N6uS6DBKuv1IJ1pQmL1xMc/1gQ7c8
-         sK8v7YZ1BX8v7KlCV4HtyvQEMU2zw0kY3BwMSWOstcwyjmpjm35q/weq3YN7fBHbCX
-         NXgS/Aen1Qs6925oGkFPVNhznld0eRKFfKhkq5Cg=
+        b=lao3SB9MGl2DBw1Pa7tfhnIGxeWrZK4t9FGE53+mV1p9KDX8W2c2sk5m0FB1mwQYv
+         EIyjsqBKfQpEiAJsDVFi4n5bjW/cF09WIvDZex0Ko8hMD0ZJLU2EP0tjemzFRzo/ao
+         2YUSSazjeayY9Lcdab1t4Lh6icSP/MDYvHdwCDQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 162/343] phy: amlogic: meson8b-usb2: fix shared reset control use
-Date:   Tue, 12 Apr 2022 08:29:40 +0200
-Message-Id: <20220412062956.050167011@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Lobakin <alobakin@pm.me>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 127/343] MIPS: fix fortify panic when copying asm exception handlers
+Date:   Tue, 12 Apr 2022 08:29:05 +0200
+Message-Id: <20220412062955.050353309@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,66 +50,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+From: Alexander Lobakin <alobakin@pm.me>
 
-[ Upstream commit 6f1dedf089ab1a4f03ea7aadc3c4a99885b4b4a0 ]
+[ Upstream commit d17b66417308996e7e64b270a3c7f3c1fbd4cfc8 ]
 
-Use reset_control_rearm() call if an error occurs in case
-phy_meson8b_usb2_power_on() fails after reset() has been called, or in
-case phy_meson8b_usb2_power_off() is called i.e the resource is no longer
-used and the reset line may be triggered again by other devices.
+With KCFLAGS="-O3", I was able to trigger a fortify-source
+memcpy() overflow panic on set_vi_srs_handler().
+Although O3 level is not supported in the mainline, under some
+conditions that may've happened with any optimization settings,
+it's just a matter of inlining luck. The panic itself is correct,
+more precisely, 50/50 false-positive and not at the same time.
+>From the one side, no real overflow happens. Exception handler
+defined in asm just gets copied to some reserved places in the
+memory.
+But the reason behind is that C code refers to that exception
+handler declares it as `char`, i.e. something of 1 byte length.
+It's obvious that the asm function itself is way more than 1 byte,
+so fortify logics thought we are going to past the symbol declared.
+The standard way to refer to asm symbols from C code which is not
+supposed to be called from C is to declare them as
+`extern const u8[]`. This is fully correct from any point of view,
+as any code itself is just a bunch of bytes (including 0 as it is
+for syms like _stext/_etext/etc.), and the exact size is not known
+at the moment of compilation.
+Adjust the type of the except_vec_vi_*() and related variables.
+Make set_handler() take `const` as a second argument to avoid
+cast-away warnings and give a little more room for optimization.
 
-reset_control_rearm() keeps use of triggered_count sane in the reset
-framework, use of reset_control_reset() on shared reset line should
-be balanced with reset_control_rearm().
-
-Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Reported-by: Jerome Brunet <jbrunet@baylibre.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220111095255.176141-4-aouledameur@baylibre.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/amlogic/phy-meson8b-usb2.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/mips/include/asm/setup.h |  2 +-
+ arch/mips/kernel/traps.c      | 22 +++++++++++-----------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
-index 77e7e9b1428c..dd96763911b8 100644
---- a/drivers/phy/amlogic/phy-meson8b-usb2.c
-+++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
-@@ -154,6 +154,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
- 	ret = clk_prepare_enable(priv->clk_usb_general);
- 	if (ret) {
- 		dev_err(&phy->dev, "Failed to enable USB general clock\n");
-+		reset_control_rearm(priv->reset);
- 		return ret;
- 	}
+diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
+index bb36a400203d..8c56b862fd9c 100644
+--- a/arch/mips/include/asm/setup.h
++++ b/arch/mips/include/asm/setup.h
+@@ -16,7 +16,7 @@ static inline void setup_8250_early_printk_port(unsigned long base,
+ 	unsigned int reg_shift, unsigned int timeout) {}
+ #endif
  
-@@ -161,6 +162,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
- 	if (ret) {
- 		dev_err(&phy->dev, "Failed to enable USB DDR clock\n");
- 		clk_disable_unprepare(priv->clk_usb_general);
-+		reset_control_rearm(priv->reset);
- 		return ret;
- 	}
+-extern void set_handler(unsigned long offset, void *addr, unsigned long len);
++void set_handler(unsigned long offset, const void *addr, unsigned long len);
+ extern void set_uncached_handler(unsigned long offset, void *addr, unsigned long len);
  
-@@ -199,6 +201,7 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
- 				dev_warn(&phy->dev, "USB ID detect failed!\n");
- 				clk_disable_unprepare(priv->clk_usb);
- 				clk_disable_unprepare(priv->clk_usb_general);
-+				reset_control_rearm(priv->reset);
- 				return -EINVAL;
- 			}
- 		}
-@@ -218,6 +221,7 @@ static int phy_meson8b_usb2_power_off(struct phy *phy)
+ typedef void (*vi_handler_t)(void);
+diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
+index a486486b2355..246c6a6b0261 100644
+--- a/arch/mips/kernel/traps.c
++++ b/arch/mips/kernel/traps.c
+@@ -2091,19 +2091,19 @@ static void *set_vi_srs_handler(int n, vi_handler_t addr, int srs)
+ 		 * If no shadow set is selected then use the default handler
+ 		 * that does normal register saving and standard interrupt exit
+ 		 */
+-		extern char except_vec_vi, except_vec_vi_lui;
+-		extern char except_vec_vi_ori, except_vec_vi_end;
+-		extern char rollback_except_vec_vi;
+-		char *vec_start = using_rollback_handler() ?
+-			&rollback_except_vec_vi : &except_vec_vi;
++		extern const u8 except_vec_vi[], except_vec_vi_lui[];
++		extern const u8 except_vec_vi_ori[], except_vec_vi_end[];
++		extern const u8 rollback_except_vec_vi[];
++		const u8 *vec_start = using_rollback_handler() ?
++				      rollback_except_vec_vi : except_vec_vi;
+ #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_BIG_ENDIAN)
+-		const int lui_offset = &except_vec_vi_lui - vec_start + 2;
+-		const int ori_offset = &except_vec_vi_ori - vec_start + 2;
++		const int lui_offset = except_vec_vi_lui - vec_start + 2;
++		const int ori_offset = except_vec_vi_ori - vec_start + 2;
+ #else
+-		const int lui_offset = &except_vec_vi_lui - vec_start;
+-		const int ori_offset = &except_vec_vi_ori - vec_start;
++		const int lui_offset = except_vec_vi_lui - vec_start;
++		const int ori_offset = except_vec_vi_ori - vec_start;
+ #endif
+-		const int handler_len = &except_vec_vi_end - vec_start;
++		const int handler_len = except_vec_vi_end - vec_start;
  
- 	clk_disable_unprepare(priv->clk_usb);
- 	clk_disable_unprepare(priv->clk_usb_general);
-+	reset_control_rearm(priv->reset);
+ 		if (handler_len > VECTORSPACING) {
+ 			/*
+@@ -2311,7 +2311,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
+ }
  
- 	/* power off the PHY by putting it into reset mode */
- 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_POWER_ON_RESET,
+ /* Install CPU exception handler */
+-void set_handler(unsigned long offset, void *addr, unsigned long size)
++void set_handler(unsigned long offset, const void *addr, unsigned long size)
+ {
+ #ifdef CONFIG_CPU_MICROMIPS
+ 	memcpy((void *)(ebase + offset), ((unsigned char *)addr - 1), size);
 -- 
 2.35.1
 
