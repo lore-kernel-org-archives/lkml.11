@@ -2,340 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244333AbiDLBYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
+        id S244811AbiDLBZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232748AbiDLBYJ (ORCPT
+        with ESMTP id S232253AbiDLBZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 21:24:09 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2089.outbound.protection.outlook.com [40.107.236.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C4D19C26
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 18:21:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xz5uCqgOMiG1ZspAUP2x545FyYalUsfuXPuft/HIyQv27mUZPZOSzhIM/7OgKr6DGMKbdnmg0lG6N29C6/XoCQCHUAd8G+3FMVk65dtL8zB2ODhi7UERu40jpakihxlMhxmNU9bMbUT5WwxGU/0NRiF62+3b3Tk/LZthiao0YKWCYYzSyjktUT/+qgTZ5HNwwp/+tyt9dR7Beqo8VZxC5bkhTUFUqOWEmAlt8UO9lGM0cxmTfNDbL3AkcO5YA9CZF2snhCfaMoveFuHVy1D5XXhpc2M6ko2xya0dfAPIW7Egq7uEHWAT1mFJpbkogEDYMGvmN943vXTSUoErMgeFag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BruyzIvEInL/1/D9FKwmp7t7sv6ekkPrfCebeqibZXc=;
- b=E0X2fkFTm+0wEjjIc6QoldzYoGtAUUuiFSfMPcAK5Edse70XyFGv3pYPXAAuMwUEEPwYkpkJkXHTUGOBJ1i3Sq+SVbvfuhndHg956em0BSkYMA1BB3kQHx6hL5fmLsKBPB9meT3EGDuYOg5hdIkHbw74cTbHF7bQEEwdc55kS7zfbWXuaKB1TnMJKfi6j1rCl+So/bOzfBENf3Ge6TNcmkvDllQBDHMahqM1oc3dvFkJRcjwG09izpUeut1tSOKFBjJV9/xZAcNg+067K0oDHfcRAJO4x8A0EJbfB8uD1d9Hh4MSZlsbhK/AI+nj/ZTLuOjzq/ljG4xE1duOGSShSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BruyzIvEInL/1/D9FKwmp7t7sv6ekkPrfCebeqibZXc=;
- b=D5UE5w0yGFf9efnG6+wD2T3BHMj6snKdPeOKzNNZHDbwGEsDn1YXhJ2bYwqJsphO5rhspc0icRJo6iVZewJQZUNVyDxzjD4xvM/Dta2VGHIIzlOZYie80JaZwngRURAejFvEKu6kvJxFwr45JZUhZsQExifesgsoCs+ehRhGmxyo9KrbXRPNS/+ExLuOI6aZlXwk53rhD3ag6KaycIRmpdRTJOlEnPn70HIZgUV5D+5MU8j4TU53tXJW/KyE2pQvWzsAedJd3xBoF7NuSr6jhjGUSh6GnEB4/DcXO2V0ebGC221xPPmvsMMdKI7uV98ImGgnxC09f3eqgU9Bj5OZaQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by MN0PR12MB5931.namprd12.prod.outlook.com (2603:10b6:208:37e::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 01:21:51 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::2d17:b68a:e101:4c18]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::2d17:b68a:e101:4c18%6]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
- 01:21:50 +0000
-From:   Alistair Popple <apopple@nvidia.com>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Hugh Dickins <hughd@google.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: Re: [PATCH v8 01/23] mm: Introduce PTE_MARKER swap entry
-Date:   Tue, 12 Apr 2022 11:07:56 +1000
-References: <20220405014646.13522-1-peterx@redhat.com>
- <20220405014646.13522-2-peterx@redhat.com>
-User-agent: mu4e 1.6.9; emacs 27.1
-In-reply-to: <20220405014646.13522-2-peterx@redhat.com>
-Message-ID: <87bkx7ayfs.fsf@nvdebian.thelocal>
-Content-Type: multipart/mixed; boundary="=-=-="
-X-ClientProxiedBy: SY3PR01CA0094.ausprd01.prod.outlook.com
- (2603:10c6:0:19::27) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+        Mon, 11 Apr 2022 21:25:49 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0897319C31
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 18:23:32 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id f38so30577183ybi.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 18:23:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JMm7jrb08dwa4TNW9El0B969rP5rs/JZ0el348oYQhg=;
+        b=hqpTdL0QATE2nRBZcg9/sARzvk++crfDpAB0EJ8/t3kvFMRc3oOYdwDiaMQclM51yq
+         dzbn/LyreN2tZmKHjMv444GCF9WOcrieYOATDxHNqefI7RT29WEgN+rEhl6MENEbGKQx
+         aMlWfUypfPV1zRZtWmrvvbEsAq2B3dkKWWdNCHiOm1TToXulgzLplLkIFVr9QSiZ5Pgh
+         KBzIf/EjkbuUd37WBrSVsJj9g5uUe2YEu7c3dkFSqdO2H6NpCw6HnIm0TrbDp42Ty2DA
+         CRT0rr69UcO5H4E3HKJMs0thlWixD26F/vmyyApHfhJzRbLdjkviycao4CsfAiMgEDLA
+         0P/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JMm7jrb08dwa4TNW9El0B969rP5rs/JZ0el348oYQhg=;
+        b=RTOBHBCJK6iBkCL6CpjVsItlLK9tTyX09j7+ecJyj7UsI+ZrMm+84RODQ7BAxPcgIe
+         x0Tp3Z2n0PAXxU2hmwZpsCi6djvUyYaRjgW51vvhPeHuwavk6zQOLSOshj1bWTgfF9iI
+         VTQ9DnVC+KpR5DR4oZVlHEujxgGFjr+yr+yf5z0t43gKxoz1wlmBNmws9jKpmJDJS/V+
+         Su3jT4vwQdXmS6T9dX23aV57o86/MgHMqgXg9MMBdwbDpfvqiqO/ZZKx430nGTZzF5EC
+         WuYUmSck64Qc8nj9Hb/U85iAiXq2Nii2BYImiwPWtYIW8dry5rMK0xxAa+rJRFTvzO3I
+         aEqA==
+X-Gm-Message-State: AOAM532URJgF/MSP3I6NTLIL64/ZeyN3zQ+tKbOBE5BwUOlM3RfZekAF
+        z6DazY4gdh3HYdoIZoQ7vF6JmU9xu/PqrD4Gyi5jpQ==
+X-Google-Smtp-Source: ABdhPJzhyGVLD2eepDvh6uu3m30+OPZpilHLd2y8VLOCgnkpfz9DZ2joQY+Mpf2bKwX0YZbTioWQ8AmeZ5BkhBp3NSI=
+X-Received: by 2002:a25:41cf:0:b0:641:1857:ac7c with SMTP id
+ o198-20020a2541cf000000b006411857ac7cmr11832405yba.281.1649726610934; Mon, 11
+ Apr 2022 18:23:30 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e1f4ec14-75e2-4208-90e7-08da1c22d216
-X-MS-TrafficTypeDiagnostic: MN0PR12MB5931:EE_
-X-Microsoft-Antispam-PRVS: <MN0PR12MB5931893502F00C0E76305FA0DFED9@MN0PR12MB5931.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NMLY4bJRZMd1/lTDJ8ztSl5C4Y9muIFahLBIhpXv5C+z2k1ehVwea8v8Ek0YmwdytyBW5KkbvnXCRi9q0HFUQZ1CnQAqnggojIvkssCstCphirney+7P0MtO38BA4Tm+FPQKg8SxKnYy2V40VRFm12pGDuAw/+YuTjdwh///Z8CkuzixEO+WbHjk3GgYzaef612FGOnzFU+3IOXKAAe1XHDs6zQsF21Yn7wEZL3DngFMJvreww7BhB7+HubByXeAaTtH1fCAgbYqCtLrmXHG3IAr13jezkMkrqyaSAwjfQlLSkqChP4f+82NAdsg4f+XhFqIJ3XF2uDl4401jrg0tecWChd/2qbzavdTfb3yxW1wupcqyiKU6j12wWIJW6Yr+61QIjmbenSRvlYwcYO58C5i3dHb5OYNNyCwagnNYpwWOAQK2Vov734AvVvoyaABxuxpH4qtsEZOTm81cqXS7Ccw5DnGv48KHsq/366QTr4PO3tq/KVxVwTBoeDT+vqyXm0xdFNso1/XWZUq8+wZkT3d7KpS0OEChuo9PCu8IWHIz97XehBUU3MGWPRG88WsZwW7hk68Ut7ae4FvrxWzROh/YX4JMMRnuTuASnA/hfQf9c+fzzUS0p09dt157BWywWGpziC+2qY3OH4QL+sHtg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(6512007)(6486002)(6506007)(316002)(26005)(186003)(7416002)(38100700002)(6916009)(54906003)(44144004)(83380400001)(4326008)(9686003)(8676002)(66946007)(66556008)(66476007)(2906002)(8936002)(508600001)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IMqOwo/mnHqeLRlLG9F2qnVqL9TDES0wcRxUByliZx+g/aiN2fFT8w9MbhGP?=
- =?us-ascii?Q?KMn/VXzxDZuvWI5DyMHrvifjMePDfO/6gU9zLUu2vswzSL9g1oMk9f+s7aDh?=
- =?us-ascii?Q?uCn6QVlHRvga0SiWZ3q0OoUBJfVw7/UwVg0QIOLhm7lAs2fP/9eseJE69LUW?=
- =?us-ascii?Q?8qHV4wStJN7YfqlKCRDn5iVDwmarqQEhL8dNMRVG+SBTFTOP7+o/b4iPELG4?=
- =?us-ascii?Q?274esD0ILUp/d8+wT8FUjccPSyJt8tjmODY0XM9A8Tbj5TGYPRNmP01ZoJ3h?=
- =?us-ascii?Q?I+F2nXQGwWyy5GjX2Wm91L3okRnKheBoIuFT+vfRNV4Go58orKXmM4XZKIYb?=
- =?us-ascii?Q?3yo59F0dd1yB49hEvqW5MS2d/0A0xfEFEVYjokCTFrp8qjRmoXrcTbvSF6HA?=
- =?us-ascii?Q?F05OUhVPDqegCxGyIYz/KCFt2+NEt6JWOKVS9ZEHJz7ADLcN3iEouZqtxYXl?=
- =?us-ascii?Q?JIhgyAM1GjRu8EFdPraIZgTHuzRqhYHJwkU/qEA27gQat1DW2l6FNZSRNTj2?=
- =?us-ascii?Q?w94upLUbzuIZtx/jVUoozmMU5igkpi11M7WIcxbIOW4wt1yAivPcjaIsK6la?=
- =?us-ascii?Q?r3Cg9i5fnD7KeUap0rfGD54368iJ8g/V9eBwzfjmy0Z2Lw9BFnsZSUKMJagO?=
- =?us-ascii?Q?T4Zi+XzwY1mlysZTQJGBK8fkQ9bqr3LCgghhkk1/MN64mVRipox28yTt/aX7?=
- =?us-ascii?Q?tDlR/7Ct2OqpVyO/rPswdXSb4iAGGSVkceQtlPH+fqwO0se38lzXI7/7LZin?=
- =?us-ascii?Q?rxNV8FRn84UgIZMV9ATW0Vgl6hsGc59S6fFtP0uWKZM0gn6QdmqS3g9QK/CW?=
- =?us-ascii?Q?Ofp22ugGm56kwllCe0K6og1eIqEpd4Go5gTvs7UJQ290ZuTh1GVpR9FqnD19?=
- =?us-ascii?Q?uJloQQMy7FLEvl415/rZv7rC5MM+gq0/qFvj/asV3wZF57KGXZMryFMBLoG6?=
- =?us-ascii?Q?Gz8QMctZHHSMSm5Fq8DAgnD3VT+Q83lUocg/JympELlFyEYLeL2Bx52LswmJ?=
- =?us-ascii?Q?m8MrclGmg8oyNdu2W0PSV39wSJuIQFISDvoXxHeoN9I6ko8NiPZDAyYpXFEi?=
- =?us-ascii?Q?U0ATGe2bc9qbZFz8wszAW/Q5C2TGrF8619i+AWht7zUkcbPGmUZv8vhSzl7x?=
- =?us-ascii?Q?V/KFYieF2F6XC/eV6DtGmh2oeZ4WJZcxCw3zh9Au8+tnJT1DM+9Qz6RrNlLp?=
- =?us-ascii?Q?J+ftCntc+wHyPU8JmBhw240/NrcAvMrSwibTFCLqm3MpvzvnQM9HyaMD1BT7?=
- =?us-ascii?Q?RFLj8EPeOMyHeb3xbqqNtYru2+1ZFv/e8N+SCidzVuS9DtR4Bw2LNSlKeGHA?=
- =?us-ascii?Q?jDutBGvO/tw2FDDUcjRsuw3WvPOLrGkwLIQB4UFKoOdcGCT3yd/krKgT50DO?=
- =?us-ascii?Q?4HK09v4jgqdb5eWFujdwQei+7au5YLJHpIDbY1k9RYAJI0XcrHjSt2dO2ih1?=
- =?us-ascii?Q?1F3Sm8XLPuKylhVElGf1yEesr5JF13NKXU1UDOtGC2wmC4pVIowgW4SdjEVb?=
- =?us-ascii?Q?qcxokppxZ8XpRpZ63uauRzsaJ5egkohVqeaPVcxGcQQe2gI/cxhwiwgBv6we?=
- =?us-ascii?Q?kw6DodqmjmYWzvd/kPF5jEnGPeRxXe6Har/JoARY/SUiTOaX2oExk0iPcoh4?=
- =?us-ascii?Q?CFskk5wQEFFVPgAxG7DnsiwjOBa7RnCgz1/h2g5935XtgDaEX19WyBAPJlPS?=
- =?us-ascii?Q?Y4pbjXi1wn8Ngqni/q1IuaFe8s0TyxY0WT2qKSi2ZlBVngmHamq3DyaksjRZ?=
- =?us-ascii?Q?DwYFAlPE1Q=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1f4ec14-75e2-4208-90e7-08da1c22d216
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 01:21:50.6756
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: je84pWh8iDiFQAbt3AiYNwtslL3raMuuePZYwd8eICbpoOUfxUzIsncGlaDg5YEbTsEg6boO8S87BVZ1VUxzvA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5931
+References: <20220409135104.3733193-1-wuyun.abel@bytedance.com> <20220409135104.3733193-2-wuyun.abel@bytedance.com>
+In-Reply-To: <20220409135104.3733193-2-wuyun.abel@bytedance.com>
+From:   Josh Don <joshdon@google.com>
+Date:   Mon, 11 Apr 2022 18:23:20 -0700
+Message-ID: <CABk29NtBL2WovUVcxXW8cF7Nk+UM_AeEJaX_JbQ4Wue-qMvz_w@mail.gmail.com>
+Subject: Re: [RFC v2 1/2] sched/fair: filter out overloaded cpus in SIS
+To:     Abel Wu <wuyun.abel@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Disposition: inline
+Hi Abel,
 
-Hi Peter,
+Thanks for the patch, a few comments:
 
-I noticed this while reviewing the next patch in the series. I think you need to
-add CONFIG_PTE_MARKER to the below as well:
-
-#if defined(CONFIG_MEMORY_FAILURE) || defined(CONFIG_MIGRATION) || \
-    defined(CONFIG_DEVICE_PRIVATE)
-static inline int non_swap_entry(swp_entry_t entry)
-{
-	return swp_type(entry) >= MAX_SWAPFILES;
-}
-#else
-static inline int non_swap_entry(swp_entry_t entry)
-{
-	return 0;
-}
-#endif
-
-Otherwise marker entries will be treated as swap entries, which is wrong for
-example in swapin_walk_pmd_entry() as marker entries are no longer considered
-pte_none().
-
-- Alistair
-
-Peter Xu <peterx@redhat.com> writes:
-
-> This patch introduces a new swap entry type called PTE_MARKER.  It can be
-> installed for any pte that maps a file-backed memory when the pte is
-> temporarily zapped, so as to maintain per-pte information.
->
-> The information that kept in the pte is called a "marker".  Here we define the
-> marker as "unsigned long" just to match pgoff_t, however it will only work if
-> it still fits in swp_offset(), which is e.g. currently 58 bits on x86_64.
->
-> A new config CONFIG_PTE_MARKER is introduced too; it's by default off.  A bunch
-> of helpers are defined altogether to service the rest of the pte marker code.
->
-> Signed-off-by: Peter Xu <peterx@redhat.com>
-> ---
->  include/asm-generic/hugetlb.h |  9 ++++
->  include/linux/swap.h          | 15 ++++++-
->  include/linux/swapops.h       | 78 +++++++++++++++++++++++++++++++++++
->  mm/Kconfig                    |  6 +++
->  4 files changed, 107 insertions(+), 1 deletion(-)
->
-> diff --git a/include/asm-generic/hugetlb.h b/include/asm-generic/hugetlb.h
-> index 8e1e6244a89d..f39cad20ffc6 100644
-> --- a/include/asm-generic/hugetlb.h
-> +++ b/include/asm-generic/hugetlb.h
-> @@ -2,6 +2,9 @@
->  #ifndef _ASM_GENERIC_HUGETLB_H
->  #define _ASM_GENERIC_HUGETLB_H
->
-> +#include <linux/swap.h>
-> +#include <linux/swapops.h>
+>  /*
+> + * It would be very unlikely to find an unoccupied cpu when system is heavily
+> + * overloaded. Even if we could, the cost might bury the benefit.
+> + */
+> +static inline bool sched_domain_overloaded(struct sched_domain *sd, int nr_overloaded)
+> +{
+> +       return nr_overloaded > sd->span_weight - (sd->span_weight >> 4);
+> +}
 > +
->  static inline pte_t mk_huge_pte(struct page *page, pgprot_t pgprot)
+> +/*
+>   * Scan the LLC domain for idle CPUs; this is dynamically regulated by
+>   * comparing the average scan cost (tracked in sd->avg_scan_cost) against the
+>   * average idle time for this rq (as found in rq->avg_idle).
+> @@ -6291,7 +6300,7 @@ static inline int select_idle_smt(struct task_struct *p, struct sched_domain *sd
+>  static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool has_idle_core, int target)
 >  {
->  	return mk_pte(page, pgprot);
-> @@ -80,6 +83,12 @@ static inline int huge_pte_none(pte_t pte)
+>         struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_idle_mask);
+> -       int i, cpu, idle_cpu = -1, nr = INT_MAX;
+> +       int i, cpu, idle_cpu = -1, nr = INT_MAX, nro;
+>         struct rq *this_rq = this_rq();
+>         int this = smp_processor_id();
+>         struct sched_domain *this_sd;
+> @@ -6301,7 +6310,13 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+>         if (!this_sd)
+>                 return -1;
+>
+> +       nro = atomic_read(&sd->shared->nr_overloaded);
+> +       if (sched_domain_overloaded(sd, nro))
+> +               return -1;
+
+This early bail out doesn't seem to be related to the main idea of
+your patch. Apart from deciding the exact heuristic value for what is
+considered too unlikely to find an idle cpu, this doesn't work well
+with tasks constrained by affinity; a task may have a small affinity
+mask containing idle cpus it may wake onto, even if most of the node
+is overloaded.
+
+>         cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
+> +       if (nro)
+> +               cpumask_andnot(cpus, cpus, sdo_mask(sd->shared));
+
+To prevent us from exhausting our search attempts too quickly, this
+only needs to go under the sched_feat(SIS_PROP) && !has_idle_core case
+below. But by doing this unconditionally here, I guess your secondary
+goal is to reduce total search cost in both cases. Just wondering, did
+you observe significant time spent here that you are trying to
+optimize? By reducing our search space by the overload mask, it is
+important that the mask is relatively up to date, or else we could
+miss an opportunity to find an idle cpu.
+
+>         if (sched_feat(SIS_PROP) && !has_idle_core) {
+>                 u64 avg_cost, avg_idle, span_avg;
+> @@ -7018,6 +7033,51 @@ balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+>
+>         return newidle_balance(rq, rf) != 0;
 >  }
->  #endif
->
-> +/* Please refer to comments above pte_none_mostly() for the usage */
-> +static inline int huge_pte_none_mostly(pte_t pte)
+> +
+> +static inline bool cfs_rq_overloaded(struct rq *rq)
 > +{
-> +	return huge_pte_none(pte) || is_pte_marker(pte);
+> +       return rq->cfs.h_nr_running - rq->cfs.idle_h_nr_running > 1;
 > +}
-> +
->  #ifndef __HAVE_ARCH_HUGE_PTE_WRPROTECT
->  static inline pte_t huge_pte_wrprotect(pte_t pte)
->  {
-> diff --git a/include/linux/swap.h b/include/linux/swap.h
-> index 7daae5a4b3e1..5553189d0215 100644
-> --- a/include/linux/swap.h
-> +++ b/include/linux/swap.h
-> @@ -55,6 +55,19 @@ static inline int current_is_kswapd(void)
->   * actions on faults.
->   */
->
-> +/*
-> + * PTE markers are used to persist information onto PTEs that are mapped with
-> + * file-backed memories.  As its name "PTE" hints, it should only be applied to
-> + * the leaves of pgtables.
-> + */
-> +#ifdef CONFIG_PTE_MARKER
-> +#define SWP_PTE_MARKER_NUM 1
-> +#define SWP_PTE_MARKER     (MAX_SWAPFILES + SWP_HWPOISON_NUM + \
-> +			    SWP_MIGRATION_NUM + SWP_DEVICE_NUM)
-> +#else
-> +#define SWP_PTE_MARKER_NUM 0
-> +#endif
-> +
->  /*
->   * Unaddressable device memory support. See include/linux/hmm.h and
->   * Documentation/vm/hmm.rst. Short description is we need struct pages for
-> @@ -107,7 +120,7 @@ static inline int current_is_kswapd(void)
->
->  #define MAX_SWAPFILES \
->  	((1 << MAX_SWAPFILES_SHIFT) - SWP_DEVICE_NUM - \
-> -	SWP_MIGRATION_NUM - SWP_HWPOISON_NUM)
-> +	SWP_MIGRATION_NUM - SWP_HWPOISON_NUM - SWP_PTE_MARKER_NUM)
->
->  /*
->   * Magic header for a swap area. The first part of the union is
-> diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-> index 32d517a28969..7a00627845f0 100644
-> --- a/include/linux/swapops.h
-> +++ b/include/linux/swapops.h
-> @@ -274,6 +274,84 @@ static inline int is_readable_migration_entry(swp_entry_t entry)
->
->  #endif
->
-> +typedef unsigned long pte_marker;
-> +
-> +#define  PTE_MARKER_MASK     (0)
-> +
-> +#ifdef CONFIG_PTE_MARKER
-> +
-> +static inline swp_entry_t make_pte_marker_entry(pte_marker marker)
-> +{
-> +	return swp_entry(SWP_PTE_MARKER, marker);
-> +}
-> +
-> +static inline bool is_pte_marker_entry(swp_entry_t entry)
-> +{
-> +	return swp_type(entry) == SWP_PTE_MARKER;
-> +}
-> +
-> +static inline pte_marker pte_marker_get(swp_entry_t entry)
-> +{
-> +	return swp_offset(entry) & PTE_MARKER_MASK;
-> +}
-> +
-> +static inline bool is_pte_marker(pte_t pte)
-> +{
-> +	return is_swap_pte(pte) && is_pte_marker_entry(pte_to_swp_entry(pte));
-> +}
-> +
-> +#else /* CONFIG_PTE_MARKER */
-> +
-> +static inline swp_entry_t make_pte_marker_entry(pte_marker marker)
-> +{
-> +	/* This should never be called if !CONFIG_PTE_MARKER */
-> +	WARN_ON_ONCE(1);
-> +	return swp_entry(0, 0);
-> +}
-> +
-> +static inline bool is_pte_marker_entry(swp_entry_t entry)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline pte_marker pte_marker_get(swp_entry_t entry)
-> +{
-> +	return 0;
-> +}
-> +
-> +static inline bool is_pte_marker(pte_t pte)
-> +{
-> +	return false;
-> +}
-> +
-> +#endif /* CONFIG_PTE_MARKER */
-> +
-> +static inline pte_t make_pte_marker(pte_marker marker)
-> +{
-> +	return swp_entry_to_pte(make_pte_marker_entry(marker));
-> +}
-> +
-> +/*
-> + * This is a special version to check pte_none() just to cover the case when
-> + * the pte is a pte marker.  It existed because in many cases the pte marker
-> + * should be seen as a none pte; it's just that we have stored some information
-> + * onto the none pte so it becomes not-none any more.
-> + *
-> + * It should be used when the pte is file-backed, ram-based and backing
-> + * userspace pages, like shmem.  It is not needed upon pgtables that do not
-> + * support pte markers at all.  For example, it's not needed on anonymous
-> + * memory, kernel-only memory (including when the system is during-boot),
-> + * non-ram based generic file-system.  It's fine to be used even there, but the
-> + * extra pte marker check will be pure overhead.
-> + *
-> + * For systems configured with !CONFIG_PTE_MARKER this will be automatically
-> + * optimized to pte_none().
-> + */
-> +static inline int pte_none_mostly(pte_t pte)
-> +{
-> +	return pte_none(pte) || is_pte_marker(pte);
-> +}
-> +
->  static inline struct page *pfn_swap_entry_to_page(swp_entry_t entry)
->  {
->  	struct page *p = pfn_to_page(swp_offset(entry));
-> diff --git a/mm/Kconfig b/mm/Kconfig
-> index 034d87953600..a1688b9314b2 100644
-> --- a/mm/Kconfig
-> +++ b/mm/Kconfig
-> @@ -909,6 +909,12 @@ config ANON_VMA_NAME
->  	  area from being merged with adjacent virtual memory areas due to the
->  	  difference in their name.
->
-> +config PTE_MARKER
-> +	bool "Marker PTEs support"
-> +
-> +	help
-> +	  Allows to create marker PTEs for file-backed memory.
-> +
->  source "mm/damon/Kconfig"
->
->  endmenu
 
---=-=-=--
+Why > 1 instead of > 0? If a cpu is running 1 non-idle task and any
+number of idle tasks, I'd think it is still "occupied" in the way
+you've defined. We'd want to steer wakeups to cpus running 0 non-idle
+tasks.
+
+> +static void update_overload_status(struct rq *rq)
+> +{
+> +       struct sched_domain_shared *sds;
+> +       bool overloaded = cfs_rq_overloaded(rq);
+> +       int cpu = cpu_of(rq);
+> +
+> +       lockdep_assert_rq_held(rq);
+> +
+> +       if (rq->overloaded == overloaded)
+> +               return;
+> +
+> +       rcu_read_lock();
+> +       sds = rcu_dereference(per_cpu(sd_llc_shared, cpu));
+> +       if (unlikely(!sds))
+> +               goto unlock;
+> +
+> +       if (overloaded) {
+> +               cpumask_set_cpu(cpu, sdo_mask(sds));
+> +               atomic_inc(&sds->nr_overloaded);
+> +       } else {
+> +               cpumask_clear_cpu(cpu, sdo_mask(sds));
+> +               atomic_dec(&sds->nr_overloaded);
+> +       }
+
+Why are these cpu mask writes not atomic?
+
+> +
+> +       rq->overloaded = overloaded;
+> +unlock:
+> +       rcu_read_unlock();
+> +}
+> +
+> +#else
+> +
+> +static inline void update_overload_status(struct rq *rq) { }
+> +
+>  #endif /* CONFIG_SMP */
+>
+>  static unsigned long wakeup_gran(struct sched_entity *se)
+> @@ -7365,6 +7425,8 @@ done: __maybe_unused;
+>         if (new_tasks > 0)
+>                 goto again;
+>
+> +       update_overload_status(rq);
+> +
+>         /*
+>          * rq is about to be idle, check if we need to update the
+>          * lost_idle_time of clock_pelt
+> @@ -11183,6 +11245,7 @@ static void task_tick_fair(struct rq *rq, struct task_struct *curr, int queued)
+>         if (static_branch_unlikely(&sched_numa_balancing))
+>                 task_tick_numa(rq, curr);
+>
+> +       update_overload_status(rq);
+>         update_misfit_status(curr, rq);
+>         update_overutilized_status(task_rq(curr));
+
+I'd caution about using task_tick and pick_next_task_fair as the
+places we set and clear overload.
+
+Some issues with task_tick:
+- ticks may be disabled in NO_HZ_FULL (an issue if we define overload
+as > 0 non-idle tasks)
+- most ticks will have the same state, so somewhat redundant checking.
+Could use an edge based trigger instead, such as enqueue/dequeue
+(somewhat similar to rq->rd->overload).
+
+With pick_next_task_fair():
+- there's a window between a thread dequeuing, and then scheduler
+running through to the end of pick_next_task_fair(), during which we
+falsely observe the cpu as overloaded
+- this breaks with core scheduling, since we may use pick_task_fair
+rather than pick_next_task_fair
+
+Thanks,
+Josh
