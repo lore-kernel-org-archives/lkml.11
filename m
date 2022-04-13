@@ -2,227 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F526C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6345AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238341AbiDMTag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
+        id S238353AbiDMTao (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235254AbiDMTae (ORCPT
+        with ESMTP id S238349AbiDMTal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:30:34 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CB972E24
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:12 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id r2so3032846iod.9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hGxcoipwWUtIXq1n/IgG8Z+lNTNMbXErzkobqsYlE2I=;
-        b=ZL69/ZorDhoyGCgh2Jl2LpYu9wdzJZuKqXtq1AduuuzTrWaviPzsVClwbPvrv7uCTd
-         Wy5ca+NuwOlsqg+aYU1IESzQE3G37dKVWlkYY9Ly6sDjrly4XzFrSiyORmXjNmjQ4mI1
-         RcSmvLdaR/zIMaP0QB8/RK6BZO1/spPT8pjuIXy6Hbsxim0tIpI11wzgX4bE9Xwa0LXE
-         dGo46fLmaWgUM1asirSzWUse+H+7wDLnZUlc47SzwRHakMzOg/CEpIBjjdRdTKsKFNyh
-         HWwjeVsqd6UISleKatfeF1L5GL3JbMixLX8TYefO5mUvfOT+ryc9Fzkb+FBjn1UI+4cj
-         WEGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hGxcoipwWUtIXq1n/IgG8Z+lNTNMbXErzkobqsYlE2I=;
-        b=4Yf7KtL/3kpDGT/JNoe3ly68cbsv3y1vrvU02ui9cxVo4Ds2/mq44VS+0QFFW+5O9e
-         1bCO71JZj3pOxfWeb402qHv+6iY97eyETCvZ467vjw2ZAuHG2/LEkq03Hd7WPndCRXKi
-         bAkqxk6NM1s7Ow/TnDneSWyOaAczMq4ZvLdPvtspzoDV/OKr0Ai2VKj7yqG/fC6UJYET
-         ApBST1GXURmJgKx7LDt9BUOPUsxKvYy9SeWSKfCC+QeUGQcbrmqCkNmReDrArQ15uL64
-         3TAIZ3j1LxSrb+MS0bKjyHHxyznnl2JF6kXVNlkAyqxwQHDqQ4EF8DbIIWS/DBBUq6Ft
-         8KzQ==
-X-Gm-Message-State: AOAM530lz3G44g/C6amgrHBMkl/Xobpmy6tjAso8KU1e0YXFPslQWVnl
-        OFIXyd6GdLlWFV7A+cX04Y8NzpyqDs+f4nBLxbw=
-X-Google-Smtp-Source: ABdhPJxDLmrDgN9dtgESqgY2iKUAgV+F+PFUJT9r2kvBTNB7UCTm3ZWMqb2uVl7rs9oHR5y83T6q39jD8xIUTXxNtkk=
-X-Received: by 2002:a05:6602:2b8e:b0:5e9:74e7:6b01 with SMTP id
- r14-20020a0566022b8e00b005e974e76b01mr19051650iov.127.1649878091766; Wed, 13
- Apr 2022 12:28:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1648049113.git.andreyknvl@google.com> <YkV6QG+VtO7b0H7g@FVFF77S0Q05N>
- <YkWg5dCulxknhyZn@FVFF77S0Q05N> <CA+fCnZeQ6UnpM9qEQ4q5Y95U3XVwrsD-g7OX=Qxr1U1OR_KCsQ@mail.gmail.com>
- <Yk8wbx7/4+9pMLGE@FVFF77S0Q05N>
-In-Reply-To: <Yk8wbx7/4+9pMLGE@FVFF77S0Q05N>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Wed, 13 Apr 2022 21:28:00 +0200
-Message-ID: <CA+fCnZcv6PtR5eT-hbJ54hkH7Kr+CUM4DU2S5nbU4Lp2OnG8dQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] kasan, arm64, scs, stacktrace: collect stack
- traces from Shadow Call Stack
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Wed, 13 Apr 2022 15:30:41 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B5F73071
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:19 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1649878096;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1W/iPGxZZe0dTxtRIT/L4inWkaCNOxDFyHeQ0vhNfa0=;
+        b=gnwkJMKPPygIVkZ/9Wh1mh3OT1cMRRjuS5qS8IK6a6j48F8Mu3vVEr6wfetKEVn+G0kwVH
+        VpnSFOGe6lHZ16nJIfVYj83+P9+IFGSaJ9oP5g4LZ79gI0ZQ4hAcFfPGXw47pP2GkGazjs
+        X7uQvydkAJIrVzsEfjwJGtTH9md0qaI=
+From:   andrey.konovalov@linux.dev
+To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Dmitry Vyukov <dvyukov@google.com>,
         Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
+        kasan-dev@googlegroups.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
         Vincenzo Frascino <vincenzo.frascino@arm.com>,
         Sami Tolvanen <samitolvanen@google.com>,
+        linux-arm-kernel@lists.infradead.org,
         Peter Collingbourne <pcc@google.com>,
         Evgenii Stepanov <eugenis@google.com>,
         Florian Mayer <fmayer@google.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v3 2/3] kasan, arm64: implement stack_trace_save_shadow
+Date:   Wed, 13 Apr 2022 21:26:45 +0200
+Message-Id: <78cd352296ceb14da1d0136ff7d0a6818e594ab7.1649877511.git.andreyknvl@google.com>
+In-Reply-To: <cover.1649877511.git.andreyknvl@google.com>
+References: <cover.1649877511.git.andreyknvl@google.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 8:42 PM Mark Rutland <mark.rutland@arm.com> wrote:
->
-> I'm afraid from local testing (atop v5.18-rc1), with your config, I still can't
-> get anywhere near your figures. I've tried to match toolchain versions with
-> what was in your .config file, so I'm using clang 12.0.0 from the llvm.org
-> binary releases, and binutils from the kernel.org crosstool 11.1.0 release.
->
-> I took baselines with defconfig and defconfig + SHADOW_CALL_STACK, with console
-> output completely suppressed with 'quiet loglevel=0':
->
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-defconfig/Image
-> |
-> |  Performance counter stats for
-> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-defconfig/Image -append
-> |  loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
-> |
-> |        0.512626031 seconds time elapsed                                          ( +-  0.26% )
-> |
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-defconfig+scs/Image
-> |
-> |  Performance counter stats for
-> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-defconfig+scs/Image -append
-> |  loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
-> |
-> |        0.523245952 seconds time elapsed                                          ( +-  0.18% )
->
-> Then I tried the same with your config, without your patches:
->
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image
-> |
-> |  Performance counter stats for
-> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image -append
-> |  loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
-> |
-> |        1.994692366 seconds time elapsed                                          ( +-  0.05% )
->
-> Then with your config, without your patches, with the stacktrace hacked out:
->
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image
-> |
-> |  Performance counter stats for
-> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image
-> | -append loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
-> |
-> |        1.861823869 seconds time elapsed                                          ( +-  0.05% )
->
-> If I use those number to estimate the proportion of time spent stacktracing,
-> with the baseline SCS number discounted to remove the hypervisor+VMM overheads,
-> I get:
->
->         (1.994692366 - 0.523245952) - (1.861823869 - 0.523245952)
->         ---------------------------------------------------------  = 0.09029788358
->         (1.994692366 - 0.523245952)
->
-> So roughly 9% when I try to maximize that figure. When actually poking hardware
-> and doing real work, that figure goes down. For example, if just using "quiet":
->
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -q -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image > /dev/null
-> |
-> |  Performance counter stats for
-> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image -append
-> | loglevel=9 earlycon panic=-1 quiet' (50 runs):
-> |
-> |        4.653286475 seconds time elapsed                                          ( +-  0.06% )
->
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -q -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image > /dev/null
-> |
-> |  Performance counter stats for
-> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image
-> |  -append loglevel=9 earlycon panic=-1 quiet' (50 runs):
-> |
-> |        4.585750154 seconds time elapsed                                          ( +-  0.05% )
->
-> Which gives an estimate of:
->
->         (4.653286475 - 0.523245952) - (4.585750154 - 0.523245952)
->         ---------------------------------------------------------  = 0.01635245964
->         (4.653286475 - 0.523245952)
->
-> ... or ~1.6% time spent backtracing:
->
-> FWIW, applying your patches do show some benefit, but not as drastic as I was
-> expecting:
->
-> With console output suprressed:
->
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image
-> |
-> |  Performance counter stats for
-> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image
-> | -append loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
-> |
-> |        1.920300410 seconds time elapsed                                          ( +-  0.05% )
->
-> ... down from ~9% to ~4%
->
-> With console output merely reduced:
->
-> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -q -k ~/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image > /dev/null
-> |
-> |  Performance counter stats for
-> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
-> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
-> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image
-> | -append loglevel=9 earlycon panic=-1 quiet' (50 runs):
-> |
-> |        4.611277833 seconds time elapsed                                          ( +-  0.04% )
->
-> ... down from 1.6% to 0.6%
->
-> Given the above I still think we need to understand this a bit better before we
-> consider pursuing the SCS unwinder, given the issues I laid out in my prior mails.
->
-> My hope is that we can improve the regular unwinder or other code such that
-> this becomes moot. I'm aware of a few things we could try, but given it's very
-> easy to sink a lot of time and effort into this, I'd like to first get some
-> more details, as above.
+From: Andrey Konovalov <andreyknvl@google.com>
 
-Hi Mark,
+Implement stack_trace_save_shadow() that collects stack traces based on
+the Shadow Call Stack (SCS) for arm64 by copiing the frames from SCS.
 
-I'm about to publish v3, where I'll include a detailed description of
-how I measured the performance.
+The implementation is best-effort and thus has limitations.
 
-Perhaps we see different performance numbers because you're using
-KVM-enabled VM on an Arm host and I'm using QEMU on x86-64 host.
-Although, it's suspicious that the difference is so drastic. I'll try
-to get my hands on some Arm hardware in the next few days and do the
-measurements there.
+stack_trace_save_shadow() fully handles task and softirq contexts, which
+are both processed on the per-task SCS.
 
-This new version also will not be making any changes to the entry
-code, as these changes add unwanted additional slowdown. That would be
-great, if you could check the performance impact of v3 with your
-setup.
+For hardirqs, the support is limited: stack_trace_save_shadow() does not
+collect the task part of the stack trace. For KASAN, this is not a problem,
+as stack depot only saves the interrupt part of the stack anyway.
 
-Thanks!
+Otherwise, stack_trace_save_shadow() also takes a best-effort approach
+with a focus on performance. Thus, it:
+
+- Does not try to collect stack traces from other exceptions like SDEI.
+- Does not try to recover frames modified by KRETPROBES or by FTRACE.
+
+However, stack_trace_save_shadow() does strip PTR_AUTH tags to avoid
+leaking them in stack traces.
+
+The -ENOSYS return value is deliberatly used to match
+stack_trace_save_tsk_reliable().
+
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ mm/kasan/common.c | 62 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+
+diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+index d9079ec11f31..23b30fa6e270 100644
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -30,6 +30,68 @@
+ #include "kasan.h"
+ #include "../slab.h"
+ 
++#ifdef CONFIG_SHADOW_CALL_STACK
++#include <linux/scs.h>
++#include <asm/scs.h>
++
++/*
++ * Collect the stack trace from the Shadow Call Stack in a best-effort manner:
++ *
++ * - Do not collect the task part of the stack trace when in a hardirq.
++ * - Do not collect stack traces from other exception levels like SDEI.
++ * - Do not recover frames modified by KRETPROBES or by FTRACE.
++ *
++ * Note that marking the function with __noscs leads to unnacceptable
++ * performance impact, as helper functions stop being inlined.
++ */
++static inline int stack_trace_save_shadow(unsigned long *store,
++					  unsigned int size)
++{
++	unsigned long *scs_top, *scs_base, *frame;
++	unsigned int len = 0;
++
++	/* Get the SCS base. */
++	if (in_task() || in_serving_softirq()) {
++		/* Softirqs reuse the task SCS area. */
++		scs_base = task_scs(current);
++	} else if (in_hardirq()) {
++		/* Hardirqs use a per-CPU SCS area. */
++		scs_base = *this_cpu_ptr(&irq_shadow_call_stack_ptr);
++	} else {
++		/* Ignore other exception levels. */
++		return 0;
++	}
++
++	/*
++	 * Get the SCS pointer.
++	 *
++	 * Note that this assembly might be placed before the function's
++	 * prologue. In this case, the last stack frame will be lost. This is
++	 * acceptable: the lost frame will correspond to an internal KASAN
++	 * function, which is not relevant to identify the external call site.
++	 */
++	asm volatile("mov %0, x18" : "=&r" (scs_top));
++
++	/* The top SCS slot is empty. */
++	scs_top -= 1;
++
++	for (frame = scs_top; frame >= scs_base; frame--) {
++		if (len >= size)
++			break;
++		/* Do not leak PTR_AUTH tags in stack traces. */
++		store[len++] = ptrauth_strip_insn_pac(*frame);
++	}
++
++	return len;
++}
++#else /* CONFIG_SHADOW_CALL_STACK */
++static inline int stack_trace_save_shadow(unsigned long *store,
++					  unsigned int size)
++{
++	return -ENOSYS;
++}
++#endif /* CONFIG_SHADOW_CALL_STACK */
++
+ depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
+ {
+ 	unsigned long entries[KASAN_STACK_DEPTH];
+-- 
+2.25.1
+
