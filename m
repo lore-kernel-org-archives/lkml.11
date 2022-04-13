@@ -2,87 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C4AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237603AbiDMSOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35698 "EHLO
+        id S237612AbiDMSP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbiDMSOG (ORCPT
+        with ESMTP id S233601AbiDMSPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 14:14:06 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C69136E0C;
-        Wed, 13 Apr 2022 11:11:43 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23DIBaIs042051;
-        Wed, 13 Apr 2022 13:11:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649873496;
-        bh=YqQ5rhFaUeIpx8tuzzpS1g5Fp/H5CjLBRHeqIyn+Wi0=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=jiB1kSKVqqdFwHaPL0yEw+MBlOXKriOi6k0T/pibExHaE9uWWJBIPoQVIUkDnn3Nb
-         BHCDucxff1xtEEpcssM21NG2fn5novsjea/qEIXPucM7AnUVmBj2ji1ErVb4kdwoHn
-         WXQDV377Zm/tFrnNvz3siZE4QX1b2HAmjrJ+YUCE=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23DIBaPt009306
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 13 Apr 2022 13:11:36 -0500
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 13
- Apr 2022 13:11:36 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 13 Apr 2022 13:11:36 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23DIBZTt058236;
-        Wed, 13 Apr 2022 13:11:35 -0500
-Date:   Wed, 13 Apr 2022 23:41:34 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-CC:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ramuthevar Vadivel Murugan 
-        <vadivel.muruganx.ramuthevar@linux.intel.com>,
-        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] spi: cadence-quadspi: fix incorrect supports_op()
- return value
-Message-ID: <20220413181134.izsam4fuogl6inbj@ti.com>
-References: <20220406132832.199777-1-matthias.schiffer@ew.tq-group.com>
+        Wed, 13 Apr 2022 14:15:24 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059DA36E0C;
+        Wed, 13 Apr 2022 11:13:03 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-d6ca46da48so2806677fac.12;
+        Wed, 13 Apr 2022 11:13:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EaNvx9WI08WE4w/5fhJh/+LgqxdrGCkOVNyF+cCJYJY=;
+        b=wMpzL6c2MoUmxONcvmcM8ifvFlRLjquqQjMmZ53IS/23zPYM0g+4fJAqUaBgDH2e9F
+         hDkGYiSIGPrDYgozCZXNVr8XEeegr0bA0eDMzrHMSbNNQa4D1hZUdzpP162gIUW8i2vd
+         +K3zmtiAwdrNtCmabGj+h7+70B1t2EKHX4zOQFFm5bJpKKv0nr9VDoF+ZOef5TecljSa
+         hPpu1XBsZPeq1VQcN3tbWmp7ISHAGO6q4JZoWHuT7KFjfHgu5EqczFBuEJlCiiuqlJWd
+         6ffo0y86a53Wm+wjbflJv0pFz5ji2671lNPUL0hYJdqcGrhENxiG/l7FiArK6GwAVlgK
+         w1vA==
+X-Gm-Message-State: AOAM532yeT9M1P4dTJvy0wTCVdOF8zsFZhcqvDL/2AlfpFK3vH7Qzqhn
+        Sm5qk7eS1941S3Lsjvd0XQKsApgklg==
+X-Google-Smtp-Source: ABdhPJzYPoKmHHmKrndbzmIMKA5MgGd/hjXVyPdpD0ukSYO7eqETW/4pUX012z3LusznCxAKWW08jQ==
+X-Received: by 2002:a05:6870:5b97:b0:e2:5d6:8bbb with SMTP id em23-20020a0568705b9700b000e205d68bbbmr2877oab.82.1649873582226;
+        Wed, 13 Apr 2022 11:13:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j16-20020a544810000000b002fa6ba4317esm1077992oij.44.2022.04.13.11.13.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 11:13:01 -0700 (PDT)
+Received: (nullmailer pid 3578070 invoked by uid 1000);
+        Wed, 13 Apr 2022 18:13:00 -0000
+Date:   Wed, 13 Apr 2022 13:13:00 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Camel Guo <camel.guo@axis.com>
+Cc:     linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, kernel@axis.com,
+        Jean Delvare <jdelvare@suse.com>, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
+Message-ID: <YlcSrOPf45ht1njU@robh.at.kernel.org>
+References: <20220413114014.2204623-1-camel.guo@axis.com>
+ <20220413114014.2204623-2-camel.guo@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220406132832.199777-1-matthias.schiffer@ew.tq-group.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220413114014.2204623-2-camel.guo@axis.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/22 03:28PM, Matthias Schiffer wrote:
-> Since the conversion to spi-mem, the driver advertised support for
-> various operations that cqspi_set_protocol() was never expected to handle
-> correctly - in particuar all non-DTR operations with command or address
-> buswidth > 1. For DTR, all operations except for 8-8-8 would fail, as
-> cqspi_set_protocol() returns -EINVAL.
+On Wed, 13 Apr 2022 13:40:12 +0200, Camel Guo wrote:
+> Document the TMP401, TMP411 and TMP43x device devicetree bindings
 > 
-> In non-DTR mode, this resulted in data corruption for SPI-NOR flashes that
-> support such operations. As a minimal fix that can be backported to stable
-> kernels, simply disallow the unsupported operations again to avoid this
-> issue.
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Signed-off-by: Camel Guo <camel.guo@axis.com>
+> ---
 > 
-> Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to use spi-mem framework")
-> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Notes:
+>     v3:
+>     - Remove unneeded address-cells and size-cells;
+>     - Change range of ti,n-factor to [-128, 127];
+>     - Remove unneeded 'items' of ti,beta-compensation;
+>     - Got Reviewed-by from Krzysztof.
+> 
+>     v2:
+>     - Fix format and describe hardware properties instead of programming
+>       models
+> 
+>  .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 105 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 106 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+> 
 
-I suppose it is too late now since the patch is already applied. But 
-FWIW,
-
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
-
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Reviewed-by: Rob Herring <robh@kernel.org>
