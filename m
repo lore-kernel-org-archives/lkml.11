@@ -2,29 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 646C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B807C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238364AbiDMTar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
+        id S233818AbiDMTaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238348AbiDMTal (ORCPT
+        with ESMTP id S238342AbiDMTal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 15:30:41 -0400
 Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508F672E24
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AEF73070
         for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:19 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649878094;
+        t=1649878095;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=L2z4Q/1rfqvzlgKK/+Q8dR7Hr7nD3d/L3KDR+0LUxPU=;
-        b=ZvRioLZbeDyL4poeadGgM2c8Po2yBKxCKpGbpWnDtBTp34qUgzhusba/LG+/a/YwJellq0
-        Z892c6X/MEaC7LAR5WuUDf/FvNuwCTgizZXrHwgPxfm7DJWldynpomv9Etgx46bEu/yTO4
-        TCy+al8B7eu/+lHMiLrkDnNJNV2av8o=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k1Ti9WI7kQjXH/LtbtJpqTp8bomGV2aI21uzEA+/hgk=;
+        b=nykjmmr0sgX45Kb38uAO4roxOKHuFvGqKVhaS7htTLEqnKboJlyPfvkJ7xqMlLAFN7fzbn
+        3YYgvkl0RZ4Ec+gP9PtkVsgLLXTl5jPx7gAw4RlzgAdUTBNII6VaYVnmBXQoYKlKY9XQnv
+        1JRuxhqmlIdwpkIELUxCGbVISHZ0MR8=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>,
@@ -44,9 +45,11 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v3 0/3] kasan, arm64, scs: collect stack traces from Shadow Call Stack
-Date:   Wed, 13 Apr 2022 21:26:43 +0200
-Message-Id: <cover.1649877511.git.andreyknvl@google.com>
+Subject: [PATCH v3 1/3] arm64, scs: expose irq_shadow_call_stack_ptr
+Date:   Wed, 13 Apr 2022 21:26:44 +0200
+Message-Id: <cef39a8fe1d7783d1b6dfce5eff83c08e75577eb.1649877511.git.andreyknvl@google.com>
+In-Reply-To: <cover.1649877511.git.andreyknvl@google.com>
+References: <cover.1649877511.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -57,125 +60,80 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Currently, when saving alloc and free stack traces, KASAN uses the normal
-stack trace collection routines, which rely on the unwinder.
+When a hardirq happens, the Shadow Call Stack (SCS) pointer is switched
+to a per-hardirq one, which is stored in irq_shadow_call_stack_ptr per-CPU.
 
-Instead of invoking the unwinder, collect the stack trace by copying
-frames from the Shadow Call Stack. This reduces boot time by ~30% for
-all KASAN modes when Shadow Call Stack is enabled. See below for the
-details of how the measurements were performed.
+Collecting stack traces based on SCS in hardirqs requires access to
+irq_shadow_call_stack_ptr.
 
-Stack staces are collected from the Shadow Call Stack via a new
-stack_trace_save_shadow() interface.
+Expose irq_shadow_call_stack_ptr in arch/arm64/include/asm/scs.h.
 
-Note that the implementation is best-effort and only works in certain
-contexts. See patch #3 for details.
+For symmetry, move sdei_shadow_call_stack_normal_ptr and
+sdei_shadow_call_stack_critical_ptr declarations there too.
 
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
+ arch/arm64/include/asm/scs.h | 10 +++++++++-
+ arch/arm64/kernel/irq.c      |  4 +---
+ arch/arm64/kernel/sdei.c     |  3 ---
+ 3 files changed, 10 insertions(+), 7 deletions(-)
 
-Changes
-=======
-
-v2->v3:
-- Limit hardirq and drop SDEI support for performance and simplicity.
-- Move stack_trace_save_shadow() implementation back to mm/kasan:
-  it's not mature enough to be used as a system-wide stack trace
-  collection replacement.
-- Clarify -ENOSYS return value from stack_trace_save_shadow().
-- Don't rename nr_entries to size in kasan_save_stack().
-- Check return value of stack_trace_save_shadow() instead of checking
-  CONFIG_HAVE_SHADOW_STACKTRACE in kasan_save_stack().
-
-v1->v2:
-- Provide a kernel-wide stack_trace_save_shadow() interface for collecting
-  stack traces from shadow stack.
-- Use ptrauth_strip_insn_pac() and READ_ONCE_NOCHECK, see the comments.
-- Get SCS pointer from x18, as per-task value is meant to save the SCS
-  value on CPU switches.
-- Collect stack frames from SDEI and IRQ contexts.
-
-Perf
-====
-
-To measure performance impact, I used QEMU in full system emulation mode
-on an x86-64 host.
-
-As proposed by Mark, I passed no filesystem to QEMU and booted with panic=-1:
-
-qemu-system-aarch64 \
-	-machine virt,mte=on -cpu max \
-	-m 2G -smp 1 -nographic \
-	-kernel ./xbins/Image \
-	-append "console=ttyAMA0 earlyprintk=serial panic=-1" \
-	-no-shutdown -no-reboot
-
-Just in case, the QEMU version is:
-
-$ qemu-system-aarch64 --version
-QEMU emulator version 6.2.94 (v5.2.0-rc3-12124-g81c7ed41a1)
-Copyright (c) 2003-2022 Fabrice Bellard and the QEMU Project developers
-
-Then, I recorded the timestamp of when the "Kernel panic" line was printed
-to the kernel log.
-
-The measurements were done on 5 kernel flavors:
-
-master                 (mainline commit a19944809fe99):
-master-no-stack-traces (stack trace collection commented out)
-master-no-stack-depot  (saving to stack depot commented out)
-up-scs-stacks-v3       (collecting stack traces from SCS)
-up-scs-stacks-v3-noscs (up-scs-stacks-v3 with __noscs marking)
-
-(The last flavor is included just for the record: it produces an unexpected
- slowdown. The likely reason is that helper functions stop getting inlined.)
-
-All the branches can be found here:
-
-https://github.com/xairy/linux/branches/all
-
-The measurements were performed for Generic and HW_TAGS KASAN modes.
-
-The .configs are here (essentially, defconfig + SCS + KASAN):
-
-Generic KASAN: https://gist.github.com/xairy/d527ad31c0b54898512c92898d62beed
-HW_TAGS KASAN: https://gist.github.com/xairy/390e4ef0140de3f4f9a49efe20708d21
-
-The results:
-
-Generic KASAN
--------------
-
-master-no-stack-traces: 8.03
-master:                 11.55 (+43.8%)
-master-no-stack-depot:  11.53 (+43.5%)
-up-scs-stacks-v3:       8.31  (+3.4%)
-up-scs-stacks-v3-noscs: 9.11  (+13.4%)
-
-HW_TAGS KASAN
--------------
-
-master-no-stack-traces: 3.31
-master:                 5.01 (+51%)
-master-no-stack-depot:  4.85 (+47%)
-up-scs-stacks-v3:       3.49 (+5.4%)
-up-scs-stacks-v3-noscs: 4.27 (+29%)
-
-The deviation for all numbers above is ~0.05.
-
-As can be seen, the up-scs-stacks-v3 flavor results in a significantly
-faster boot compared to master.
-
-Andrey Konovalov (3):
-  arm64, scs: expose irq_shadow_call_stack_ptr
-  kasan, arm64: implement stack_trace_save_shadow
-  kasan: use stack_trace_save_shadow
-
- arch/arm64/include/asm/scs.h | 10 +++++-
- arch/arm64/kernel/irq.c      |  4 +--
- arch/arm64/kernel/sdei.c     |  3 --
- mm/kasan/common.c            | 66 +++++++++++++++++++++++++++++++++++-
- 4 files changed, 75 insertions(+), 8 deletions(-)
-
+diff --git a/arch/arm64/include/asm/scs.h b/arch/arm64/include/asm/scs.h
+index 8297bccf0784..9d9ac04014f1 100644
+--- a/arch/arm64/include/asm/scs.h
++++ b/arch/arm64/include/asm/scs.h
+@@ -24,6 +24,14 @@
+ 	.endm
+ #endif /* CONFIG_SHADOW_CALL_STACK */
+ 
+-#endif /* __ASSEMBLY __ */
++#else /* __ASSEMBLY__ */
++
++#include <linux/percpu.h>
++
++DECLARE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
++DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
++DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
++
++#endif /* __ASSEMBLY__ */
+ 
+ #endif /* _ASM_SCS_H */
+diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
+index bda49430c9ea..9d85c82f0b1c 100644
+--- a/arch/arm64/kernel/irq.c
++++ b/arch/arm64/kernel/irq.c
+@@ -21,6 +21,7 @@
+ #include <linux/seq_file.h>
+ #include <linux/vmalloc.h>
+ #include <asm/daifflags.h>
++#include <asm/scs.h>
+ #include <asm/vmap_stack.h>
+ 
+ /* Only access this in an NMI enter/exit */
+@@ -28,9 +29,6 @@ DEFINE_PER_CPU(struct nmi_ctx, nmi_contexts);
+ 
+ DEFINE_PER_CPU(unsigned long *, irq_stack_ptr);
+ 
+-
+-DECLARE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
+-
+ #ifdef CONFIG_SHADOW_CALL_STACK
+ DEFINE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
+ #endif
+diff --git a/arch/arm64/kernel/sdei.c b/arch/arm64/kernel/sdei.c
+index d20620a1c51a..882f88ce8d4d 100644
+--- a/arch/arm64/kernel/sdei.c
++++ b/arch/arm64/kernel/sdei.c
+@@ -39,9 +39,6 @@ DEFINE_PER_CPU(unsigned long *, sdei_stack_normal_ptr);
+ DEFINE_PER_CPU(unsigned long *, sdei_stack_critical_ptr);
+ #endif
+ 
+-DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
+-DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
+-
+ #ifdef CONFIG_SHADOW_CALL_STACK
+ DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
+ DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
 -- 
 2.25.1
 
