@@ -2,270 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0229EC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234529AbiDMO0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        id S234597AbiDMOb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233908AbiDMO0O (ORCPT
+        with ESMTP id S234323AbiDMOb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:26:14 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8145EBF7;
-        Wed, 13 Apr 2022 07:23:51 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id a21so2125616pfv.10;
-        Wed, 13 Apr 2022 07:23:51 -0700 (PDT)
+        Wed, 13 Apr 2022 10:31:27 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9A456407
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:29:02 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id p10so2108694plf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:29:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=qGn5f7k2yKCgkj76DQyVMzIi7+OrsbeUPXvf0P2SY2M=;
-        b=CnLieJzQV++9j5D60413ZX/83NOL/QRBxR+aLxN1M4jx1vHBCwvxb9tlb0hjhhsPS1
-         cwEoI2Yw1LeUbogR94teFmwe25lVCOX0IOlryzntsqhU+Qk4hLyhQXvhTbp7tNly/QAk
-         8eTcm9zkE0nZ227frEcOwiKj+C/xFPNRFXxh2BXxMYsRy94zU7YdlPmhk/Gj9bj0kaAu
-         mYXboxjMrYl+6asLx64mnXnx287AGoXBkJDcW1QFqLym6E9IqY4/n0GW+OvkIUua9JoJ
-         3ctTef1GWjfb1FxPOoDPe7tHrWNPNzSlqWSw8NNBjDhww3ZJveGlpOdC1XQOL23Jffq6
-         lgQQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W3hJGrmaAvxQ1Iq6K+QFDHPYd+AnBBrGQGYmAYimyFM=;
+        b=Jws5h8+7lkW5dWJUO628L+BorIWyk9T5tBc726AJSWzLf5pJBLWUVKbwW6UOJukFGr
+         waJ+8M/0jtPvdqefqOlUwzauP1OG5BnrNsmDCbbSlwK4hF/t16sPmj8ofalRaLbs+Zdw
+         HlNmGZeBEtRx/Z18Lb5crO21/nhVD91XmaOpeYtJwKYVKsTGb8SBP4BdARSE1+TmbA45
+         hwN1XewpTS2vSKhjD6MFZSWFShNGPmoS+bOZ/Kok9IOeqAHXJSpTKWx4L3TLcT05oTkF
+         Y2kJxSTAJfQ1T1NnpOKijzutYmUy03NGxJNA3pPK/eSMUCrfe/Fbx1cZLfPl608iIEaN
+         cMfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qGn5f7k2yKCgkj76DQyVMzIi7+OrsbeUPXvf0P2SY2M=;
-        b=JMsGHraVKgwal7I4rInNStsa7AiIjDOIKz0uCUtzsSM0jaDraVAiqC/IHe2AJ7TfJr
-         ywmnrilR9e/JUg2j/D21y5fm5FPU7IrySUBkalFVK9oheTTD93vxwL+UskjRLm8qs8uR
-         O8+cTVIwopzf+twtMTdZCwbHUHlnhf+ENVogEmHPAVFWNfSv0b7eEHhSeHA/FrT/xtYh
-         DaC1Ln7LHXTpSF16DhTzV6/Y/FJJs7nc7+Qec1pC2Mo+4n8+kUEv38MN2OvAp3rJWFgR
-         Wn7IJwi2I4BwdApNqNmX0e+KvXPYyP77Y+ZXtfkUdtX3cnJdgnHa+87BJuaIFQZl18Mj
-         Kn4Q==
-X-Gm-Message-State: AOAM5322nfXyyETk7kF7+1FY0ayQidvCfm3ImLdgdNqZkq7fBwPrCt2D
-        3AxUAPCteAJ8wKFcXJ/kzi4=
-X-Google-Smtp-Source: ABdhPJzdTxqKmn32bzrzu2vfAdtQLbkM7pjzkYz7VLLkmWVupFe/a6VCGJmYQ9xX2omgC3FJcCTyfQ==
-X-Received: by 2002:a05:6a00:b44:b0:505:a8f3:6958 with SMTP id p4-20020a056a000b4400b00505a8f36958mr10069350pfo.22.1649859831286;
-        Wed, 13 Apr 2022 07:23:51 -0700 (PDT)
-Received: from jagath-PC ([27.4.62.241])
-        by smtp.gmail.com with ESMTPSA id 137-20020a63078f000000b0039d9c13cd39sm5461569pgh.67.2022.04.13.07.23.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 13 Apr 2022 07:23:50 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 19:53:46 +0530
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/9] iio: accel: bma400: Add triggered buffer support
-Message-ID: <20220413142345.GA3283@jagath-PC>
-References: <20220411203133.19929-1-jagathjog1996@gmail.com>
- <20220411203133.19929-5-jagathjog1996@gmail.com>
- <CAHp75VfHa9afhSdyi8dj5GpzrYE=hLacayu58+PHjXhMxTo9eg@mail.gmail.com>
- <20220412193013.GA25279@jagath-PC>
- <CAHp75Vc9MO2GxX81JQfzGRjM=nWLaQ-Uy9bV-dR1GMj1oQwjSQ@mail.gmail.com>
- <CAHp75Vef21YmiKAvz-Kt-C=jb+mMCJeV_fwPAza9UwCuKy6omQ@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W3hJGrmaAvxQ1Iq6K+QFDHPYd+AnBBrGQGYmAYimyFM=;
+        b=hJVWE4H12kiwEWzjjrlmc7GihHi8QUGzm6xCIfZGRR7cKdrQ1RClyePZqvPkR5kCHU
+         qlZEfkq4V1/s5wy5oNf8YpO61a/D2W9oLwDMdfG+ptw6qmfHayKENaLCNyd0kd+wUYjf
+         IJVC4IHvjRWcd61oiaK93Qt0VlcYwYiBZEIC7Tf7B2NTkyULk4EMPU7j5HxB0pPC7ma7
+         IEpFW99Lp67AJBNXqOeBPllUt7PDWZjuypOrv+o1w6xmtEZ+e5FmdkHtwJLBTkn614qn
+         hyK9A36d2uUJKu0Mc3xAYDsnXduwr1rd9CoUH6glsaB8563y1e4qLusFRIG6e9ffN0Rd
+         y0bg==
+X-Gm-Message-State: AOAM532HzUBRX2EChjLg14XszhFK2oxdwFAT4XcUgndhk4b1GLiAcKjm
+        SRzouC/h4Lr4ia3zRu5X7E2DSq0XzFg4MgIjR+h+MA==
+X-Google-Smtp-Source: ABdhPJz3n3+dk2Krw4doJzCu1wCrOBh4/t9lU1aVQm4BPNjr3lisjMW5XOOnjfCrRT56oMgfkVfEXl3aKlZ/ZAOIbR4=
+X-Received: by 2002:a17:902:c94c:b0:154:45c6:fbea with SMTP id
+ i12-20020a170902c94c00b0015445c6fbeamr43212960pla.117.1649860142164; Wed, 13
+ Apr 2022 07:29:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vef21YmiKAvz-Kt-C=jb+mMCJeV_fwPAza9UwCuKy6omQ@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20220328120956.1848795-1-xji@analogixsemi.com>
+ <20220328120956.1848795-3-xji@analogixsemi.com> <YkswTpDiPYfdIFtE@robh.at.kernel.org>
+ <20220409044740.GA595530@anxtwsw-Precision-3640-Tower>
+In-Reply-To: <20220409044740.GA595530@anxtwsw-Precision-3640-Tower>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Wed, 13 Apr 2022 16:28:51 +0200
+Message-ID: <CAG3jFyt1Srtn2aTFQ6b8Rxc6F_GCzU2mKxiEiWwgskMwHHjj5Q@mail.gmail.com>
+Subject: Re: [PATCH 3/4] dt-bindings: drm/bridge: anx7625: Change bus-type to
+ 7 (DPI)
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, bliang@analogixsemi.com,
+        qwen@analogixsemi.com, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 12:24:54AM +0300, Andy Shevchenko wrote:
-> On Wednesday, April 13, 2022, Andy Shevchenko <andy.shevchenko@gmail.com>
-> wrote:
-> 
+On Sat, 9 Apr 2022 at 06:47, Xin Ji <xji@analogixsemi.com> wrote:
+>
+> On Mon, Apr 04, 2022 at 12:52:14PM -0500, Rob Herring wrote:
+> > On Mon, Mar 28, 2022 at 08:09:54PM +0800, Xin Ji wrote:
+> > > Change bus-type define for DPI.
+> > >
+> > > Fixes: a43661e7e819 ("dt-bindings:drm/bridge:anx7625:add vendor define")
+> > >
+> > > Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> > > ---
+> > >  .../devicetree/bindings/display/bridge/analogix,anx7625.yaml  | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> > > index 0d38d6fe3983..4590186c4a0b 100644
+> > > --- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> > > +++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> > > @@ -106,7 +106,7 @@ properties:
+> > >                remote-endpoint: true
+> > >
+> > >                bus-type:
+> > > -                enum: [1, 5]
+> > > +                enum: [7]
 > >
-> >
-> > On Tuesday, April 12, 2022, Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >
-> >> Hello Andy,
-> >>
-> >> On Tue, Apr 12, 2022 at 12:12:21PM +0300, Andy Shevchenko wrote:
-> >> > On Mon, Apr 11, 2022 at 11:31 PM Jagath Jog J <jagathjog1996@gmail.com>
-> >> wrote:
-> >> > >
-> >> > > Added trigger buffer support to read continuous acceleration
-> >> > > data from device with data ready interrupt which is mapped
-> >> > > to INT1 pin.
-> >> >
-> >> > Can you explain the locking schema in this driver?
-> >> >
-> >> > > +       /* Configure INT1 pin to open drain */
-> >> > > +       ret = regmap_write(data->regmap, BMA400_INT_IO_CTRL_REG,
-> >> 0x06);
-> >> > > +       if (ret)
-> >> > > +               return ret;
-> >> >
-> >> > No locking (or regmap only locking).
-> >>
-> >> This is bma400_init() function which will run when probe runs so there is
-> >> no
-> >> locking in this bma400_init().
-> >>
-> >> >
-> >> > ...
-> >> >
-> >> > > +static int bma400_data_rdy_trigger_set_state(struct iio_trigger
-> >> *trig,
-> >> > > +                                            bool state)
-> >> > > +{
-> >> > > +       struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> >> > > +       struct bma400_data *data = iio_priv(indio_dev);
-> >> > > +       int ret;
-> >> > > +
-> >> > > +       ret = regmap_update_bits(data->regmap,
-> >> BMA400_INT_CONFIG0_REG,
-> >> > > +                                BMA400_INT_DRDY_MSK,
-> >> > > +                                FIELD_PREP(BMA400_INT_DRDY_MSK,
-> >> state));
-> >> > > +       if (ret)
-> >> > > +               return ret;
-> >> > > +
-> >> > > +       return regmap_update_bits(data->regmap, BMA400_INT1_MAP_REG,
-> >> > > +                                 BMA400_INT_DRDY_MSK,
-> >> > > +                                 FIELD_PREP(BMA400_INT_DRDY_MSK,
-> >> state));
-> >> > > +}
-> >> >
-> >> > Ditto.
-> >>
-> >> Sorry, I missed this.
-> >> I will add lock and unlocking in the next patch.
-> >>
-> >> >
-> >> > ...
-> >> >
-> >> > > +       mutex_lock(&data->mutex);
-> >> > > +
-> >> > > +       /* bulk read six registers, with the base being the LSB
-> >> register */
-> >> > > +       ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
-> >> > > +                              &data->buffer.buff,
-> >> sizeof(data->buffer.buff));
-> >> > > +       mutex_unlock(&data->mutex);
-> >> > > +       if (ret)
-> >> > > +               return IRQ_NONE;
-> >> >
-> >> > But here only above with locking...
-> >> >
-> >> > > +       ret = regmap_read(data->regmap, BMA400_TEMP_DATA_REG, &temp);
-> >> > > +       if (ret)
-> >> > > +               return IRQ_NONE;
-> >> >
-> >> > ...followed by no locking.
-> >>
-> >> Okay I will add lock in the next patch.
-> >>
-> >> >
-> >> > ...
-> >> >
-> >> > > +       mutex_lock(&data->mutex);
-> >> > > +       ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG,
-> >> &status,
-> >> > > +                              sizeof(status));
-> >> > > +       mutex_unlock(&data->mutex);
-> >> > > +       if (ret)
-> >> > > +               return IRQ_NONE;
-> >> >
-> >> > And again with locking.
-> >> >
-> >> > ...
-> >> >
-> >> > So,
-> >> > 1) Does regmap is configured with locking? What for?
-> >> > 2) What's the role of data->mutex?
-> >>
-> >> 1.
-> >> NO,
-> >
-> >
-> > Are you sure?
-> >
-> >
-> >>  regmap is not configured with locking.
-> >> In the remap_config structure variable below these members are not defined
-> >> in the driver.
-> >>
-> >> struct regmap_config {
-> >>         regmap_lock lock;
-> >>         regmap_unlock unlock;
-> >>         void *lock_arg;
-> >>
-> >>
-> > It means that default may be used.
-> >
-> >
-> >> 2.
-> >> data->mutex is used to protect the register read, write access from the
-> >> device.
-> >>
-> >> Is the regmap functions handle locking and unlocking internally if these
-> >> below
-> >> struct members are not defined?
-> >
-> >
-> > Yes. Look at this: https://elixir.bootlin.com/linux/latest/C/ident/
-> > disable_locking
+> > Changing is an ABI break, but didn't we revert adding this?
+> Hi Rob, sorry, what do you mean about ABI break? Do I need remove this
+> patch in this serial? Or do I need revert patch
+> https://patchwork.freedesktop.org/patch/462331/, I don't know how to do
+> it.
+>
 
-Please your advise will be very helpful for this.
+I contributed to the confusion about this, let's see if we can clear it up.
 
-I'm going through the same documentation. In this driver, disable_locking is
-not initialized.
+An issue was found related to which enum values were used to represent
+what late in the last release cycle. As a result a revert[1] patch for
+everything touching bus-type in anx7625 was merged.
 
-The functions which are called in the bma400_init() are not protected by mutex
-for regmap since bma400_init() will run when the probe runs.
+This patch, does not apply to drm-misc-next due to the revert, and if
+Xin Ji rebases his work on the drm-misc-next there should be no
+ABI-change as this patch when fixed up will introduce bus-type to the
+nax7625 ABI.
 
-The functions which are called by read_raw() and write_raw() are protected by
-mutex for regmap access.
+Xin: Does this make sense to you?
 
-There are some members in the device's private data structure and they are being
-accessed in multiple places in the driver.
-
-struct bma400_data {
-enum bma400_power_mode power_mode;                                      
-struct bma400_sample_freq sample_freq;                                  
-int oversampling_ratio;
-int scale;
-.....
-
-I think mutex is used to protect these above struct members since they are
-critical resource, but in the struct bma400_data comment for mutex 
-is "data register lock".
-
-
-> >
-> >
-> >>
-> >> regmap_lock lock;
-> >> regmap_unlock unlock;
-> >> void *lock_arg;
-> >>
-> >>
-> >> >
-> >> > --
-> >> > With Best Regards,
-> >> > Andy Shevchenko
-> >>
-> >
-> >>
-> 
-> You may read the kernel documentation what those fields mean:
->  https://elixir.bootlin.com/linux/latest/source/include/linux/regmap.h#L278
-> 
-> 
-> 
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> >
-> >
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-
-Thank you,
-Jagath
+[1] https://cgit.freedesktop.org/drm/drm-misc/commit/?id=979452fbc43028675b5a5da156f91928b739dea8
