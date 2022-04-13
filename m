@@ -2,109 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4956DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEF8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236757AbiDMQHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
+        id S236778AbiDMQIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235154AbiDMQHT (ORCPT
+        with ESMTP id S236825AbiDMQHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:07:19 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316F74F446;
-        Wed, 13 Apr 2022 09:04:56 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id CEEF52160E;
-        Wed, 13 Apr 2022 16:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649865894;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4XLAbSyVXPKjSGZzX2V8mPUgpCPzkvji4+ZrbQVbWJU=;
-        b=F/WT8vAqEWEcZeODhRqAMAWopyLiVbiuSVwKrvlT6VgfTD5SGW7u3tOusWJmsmQ3ddjgZM
-        /IpxNFBn7pDOiwkC0Lppwnoj1ljxUw/pQhodDFmvEWBlXrYVVY0jybzuPCZ1GsFSDe6Apy
-        lnXfjOI5Eb4DEwOZJ4FMAY/k7DvwZPw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649865894;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4XLAbSyVXPKjSGZzX2V8mPUgpCPzkvji4+ZrbQVbWJU=;
-        b=QM6xjLy0S7b49acN22RVsLVqYO+9S8On+wHsiYmO1TMGWRsLtpDNC889tTU+8xektbqnWl
-        k7a7351XVpycikDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 97D0F13AB8;
-        Wed, 13 Apr 2022 16:04:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id VTQqJKb0VmKQQAAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Wed, 13 Apr 2022 16:04:54 +0000
-Date:   Wed, 13 Apr 2022 18:00:47 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Nikolay Borisov <nborisov@suse.com>
-Cc:     Schspa Shi <schspa@gmail.com>, clm@fb.com, dsterba@suse.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, terrelln@fb.com
-Subject: Re: [PATCH v2] btrfs: zstd: use spin_lock in timer callback
-Message-ID: <20220413160047.GL15609@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Nikolay Borisov <nborisov@suse.com>,
-        Schspa Shi <schspa@gmail.com>, clm@fb.com, dsterba@suse.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, terrelln@fb.com
-References: <20220411135136.GG15609@suse.cz>
- <20220411155540.36853-1-schspa@gmail.com>
- <09c2a9ce-3b04-ed94-1d62-0e5a072b9dac@suse.com>
+        Wed, 13 Apr 2022 12:07:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D01D644C6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:05:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649865928; x=1681401928;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=l4DbhfHxywn/EQ+sYTtpNBRF4EsncCGGgPFv8MfLgLs=;
+  b=hrEeTzBi3vwKfVOQEkTm9CWwcTvi4tdKJWhBUcD7R6AaF3igxfTIwQpQ
+   MCpWna3mQhc364j98iif+h3Drqp42zDokV70Rj/uD5YOYnHbNNnYRVXzz
+   j/fJAAVrkH+LqhWVORP+PtkEM7gbz7LOzsIEiBNrPME+gqwuKShM+Cgye
+   7DOPnSUkPM6kp8vSCerDucHc+arUUoEy/2NOn3+9SDkgGvWVvffFv0nHi
+   21DOq9rdlmB/tOTNgtqSQbNtvh9aBKl9HJXtuQvY31J1cz7uh+Z8vfhxU
+   fhtTh8pyVAPCBip5v9o6Q69ouYGntZYNM/rHtCqw60IuY3R6tcgYZaxi7
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="260302906"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="260302906"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:05:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="526528859"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 13 Apr 2022 09:05:26 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nefUj-0000R2-O1;
+        Wed, 13 Apr 2022 16:05:25 +0000
+Date:   Thu, 14 Apr 2022 00:04:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Xu <peterx@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: [linux-next:master 3834/3955] mm/memory.c:1238:1: sparse: sparse:
+ symbol 'vma_needs_copy' was not declared. Should it be static?
+Message-ID: <202204140043.Tx7BIBvI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <09c2a9ce-3b04-ed94-1d62-0e5a072b9dac@suse.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 05:58:41PM +0300, Nikolay Borisov wrote:
-> 
-> 
-> On 11.04.22 г. 18:55 ч., Schspa Shi wrote:
-> > This is an optimization for fix fee13fe96529 ("btrfs:
-> > correct zstd workspace manager lock to use spin_lock_bh()")
-> > 
-> > The critical region for wsm.lock is only accessed by the process context and
-> > the softirq context.
-> > 
-> > Because in the soft interrupt, the critical section will not be preempted by the
-> > soft interrupt again, there is no need to call spin_lock_bh(&wsm.lock) to turn
-> > off the soft interrupt, spin_lock(&wsm.lock) is enough for this situation.
-> > 
-> > Changelog:
-> > v1 -> v2:
-> > 	- Change the commit message to make it more readable.
-> > 
-> > [1] https://lore.kernel.org/all/20220408181523.92322-1-schspa@gmail.com/
-> > 
-> > Signed-off-by: Schspa Shi <schspa@gmail.com>
-> 
-> Has there been any measurable impact by this change? While it's correct it does mean that
->   someone looking at the code would see that in one call site we use plain spinlock and in
-> another a _bh version and this is somewhat inconsistent.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   c97e430ab5539993ab2afc6e80deea80aef9d799
+commit: 729c63ce2bbd5813b8061e50cc38187aed05114c [3834/3955] mm/shmem: handle uffd-wp during fork()
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220414/202204140043.Tx7BIBvI-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=729c63ce2bbd5813b8061e50cc38187aed05114c
+        git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+        git fetch --no-tags linux-next master
+        git checkout 729c63ce2bbd5813b8061e50cc38187aed05114c
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
 
-I think it would be hard to measure the impact, maybe in some kind of
-load the _bh version would be unnecessarily blocking some other threads.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Regarding the used locking primitives, I'll add a comment about that to
-the function, it is indeed inconsistent and not obvious from the
-context.
+
+sparse warnings: (new ones prefixed by >>)
+>> mm/memory.c:1238:1: sparse: sparse: symbol 'vma_needs_copy' was not declared. Should it be static?
+   mm/memory.c:1031:17: sparse: sparse: context imbalance in 'copy_pte_range' - different lock contexts for basic block
+   mm/memory.c:1827:16: sparse: sparse: context imbalance in '__get_locked_pte' - different lock contexts for basic block
+   mm/memory.c:1875:9: sparse: sparse: context imbalance in 'insert_page' - different lock contexts for basic block
+   mm/memory.c:2377:17: sparse: sparse: context imbalance in 'remap_pte_range' - different lock contexts for basic block
+   mm/memory.c:2633:17: sparse: sparse: context imbalance in 'apply_to_pte_range' - unexpected unlock
+   mm/memory.c:2922:9: sparse: sparse: context imbalance in 'wp_page_copy' - different lock contexts for basic block
+   mm/memory.c:3274:17: sparse: sparse: context imbalance in 'wp_pfn_shared' - unexpected unlock
+   mm/memory.c:3341:19: sparse: sparse: context imbalance in 'do_wp_page' - different lock contexts for basic block
+   mm/memory.c:5211:5: sparse: sparse: context imbalance in 'follow_invalidate_pte' - wrong count at exit
+   mm/memory.c:5332:23: sparse: sparse: context imbalance in 'follow_pfn' - unexpected unlock
+   mm/memory.c:5362:9: sparse: sparse: context imbalance in 'follow_phys' - unexpected unlock
+   mm/memory.c:5396:9: sparse: sparse: context imbalance in 'generic_access_phys' - unexpected unlock
+
+Please review and possibly fold the followup patch.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
