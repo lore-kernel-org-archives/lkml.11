@@ -2,93 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D41AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE89C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235233AbiDMLkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
+        id S235229AbiDMLlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235136AbiDMLkg (ORCPT
+        with ESMTP id S235246AbiDMLk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:40:36 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60515B3E6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:15 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id bv19so3343999ejb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:15 -0700 (PDT)
+        Wed, 13 Apr 2022 07:40:57 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9605C352
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:30 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id b21so2984609lfb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/zaNNAJ+480JiKojnpkVOuaK1VF8i4bh+T0L8gYvyZQ=;
-        b=THmxtERv0MjO9uAtwMhvtpGizFEXaf9gcgsPDWCM7Ag0p+vOjaOtFG2bOmwnmaEFlu
-         lIIHnAtggdLgYL0RMZSL8FOkE8mFFw3+UgGRFzdlItlN6h+MwYIZlANfVfzFjZSwBbxE
-         Z/0iVZHL2qS/yWX4w+0sgkMi4TPXatSZAW7Co+zwi7i6AzrGsjdJf+qStdcKDbCI3i6D
-         8oTo+2Px66l7WfuSo5kJDqgUwvoQUFdahnboVxlRKPsWMJRGXqB57Zr57TfkKs2YR4Vl
-         iqYV0twBxEz6TiFs42Sdzt2jyGQ4I/WFeTLSEwnmPYKPP/mknjib420naNglppW72ATp
-         /eWA==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZsUJ2NINlf/YGW3oKuUtDCOd4WHYH6lv9r94E8nLe7k=;
+        b=uxdU90BlQLxm0jDBpwT7ZMBvjlYIIiuIeQRT3hGbatcT1HUweuug/AHiWZ/ufhqwGo
+         mVAjin2rGuacjH0++numKLzwazoDwfSff0NMvZVnuAPgoMJbqvDy1edfuAy40M8BFC/x
+         a3laDOVAcLJR3IqFtnn+Amrp1MEceVLZ4500Kf78sVczEg4lQrTkzpiTM7sGu7TF/IL1
+         MrG+dTFhVE/Z0ag7oNkra0VOAz8vP+9DIsrR7yV5mXS7nXj3rXbXcUt96Tg/WxcJ5oe7
+         D66RiJa98VTqhO3o+k7IwlPhz5/uW8Mzr89bUA/hjNBYKp6JqGfad4ttcKn8J102HYgP
+         mZKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/zaNNAJ+480JiKojnpkVOuaK1VF8i4bh+T0L8gYvyZQ=;
-        b=QuFS8Hm5Ucx7yYnmHP77J6G6/2RoRXJYFlNhiK/iINk8kShM7nqUh1KwNdSF03NM6M
-         eHuouc2uUJU4uEnlvnmGgzP9IVfUcvsxYd6Dtkik8qigtmkyEbG+TSysHaIO15QdL4Be
-         caeBkWEVnMTj/tEcK0Hn5hPKZmVsLOxKvohVZLxXugjMyRN4c0uGQMr37WHEIoJ2ZTh+
-         F5YeNkHUlhb72zUDZYjxQSlSV8hgfWuxevuZuRjklXkZQ+7/a1ne5/hBig6nisncMZ7m
-         EZtauIGkwCHoisQkIdtMXSZaR1U87hXJG3DgO/uCS675nGF4upGVUDfkJ6MVxTANHRt/
-         pyow==
-X-Gm-Message-State: AOAM531iW2Z9YEGRnJtwlZJyOjxGKBEP2B/8Bmfn+smSnTYP129SGAai
-        uPOr72JhDh79Q/ytP2gcYhzhofXLiJz1uGyd
-X-Google-Smtp-Source: ABdhPJxqMsV6/694dW65704kt79sdj3/9QW8CBjvpEwzSXnyFBBq4y0sPehPl8Xcsi/iDPU9tYOyAg==
-X-Received: by 2002:a17:906:d54b:b0:6e7:f185:18d5 with SMTP id cr11-20020a170906d54b00b006e7f18518d5mr40984484ejc.155.1649849894489;
-        Wed, 13 Apr 2022 04:38:14 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id cb25-20020a170906a45900b006e87e5f9c4asm4452783ejb.140.2022.04.13.04.38.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZsUJ2NINlf/YGW3oKuUtDCOd4WHYH6lv9r94E8nLe7k=;
+        b=4MVo2Yik/FzkYAh1Wrl+3YGljoLJI3BfU9Ws/CyzMiTWzIkMva9siWEgq+vB1+Lxb9
+         iwb2BLt47Whn4y2wbd+SmYrkYteeiQIXLB8hzsnBIDPhTwzK5td0IGm+nx0R/OdeAJzN
+         qa3EDMt64itXOipSkpiiF8gZU2auqf7KQ5Xe7zjdmC7ft3uxfco0XS9GApMu5+XNobDS
+         1lckQSx+JlsyoqSIk88J4WDNGs8D8DDE3nQ0/2UPsXlf7HBRAj5oTU2+5kLVdZg1DWe1
+         Bc0hslCvihE2anXDNo4bTaf45R8uORN20BYLbcrBmKAVxvxWSCboEVWOLm6NdE5WR3xM
+         BGRA==
+X-Gm-Message-State: AOAM530ug5naF6YIAOaFchvSimWgqdH1MKiGOJvcAme4BdgXjM+A1buH
+        jWsA6gJubBHP4m1N2hk68XlWZg==
+X-Google-Smtp-Source: ABdhPJyqOiwPXY3JcLiTivxhds7PtI4vfS0IEt8zlViK9HOGTpUtfBt/VR8j//JV+OX1VzpzOxSuGQ==
+X-Received: by 2002:a19:4953:0:b0:46b:bdc2:860a with SMTP id l19-20020a194953000000b0046bbdc2860amr4567387lfj.6.1649849908414;
+        Wed, 13 Apr 2022 04:38:28 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id k5-20020a196f05000000b0046b94269595sm1503056lfc.169.2022.04.13.04.38.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 04:38:13 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vincent Shih <vincent.sunplus@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [RESEND PATCH 3/3] nvmem: sunplus-ocotp: drop useless probe confirmation
-Date:   Wed, 13 Apr 2022 13:38:09 +0200
-Message-Id: <20220413113809.243288-3-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220413113809.243288-1-krzysztof.kozlowski@linaro.org>
-References: <20220413113809.243288-1-krzysztof.kozlowski@linaro.org>
+        Wed, 13 Apr 2022 04:38:28 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id DF1E510369B; Wed, 13 Apr 2022 14:40:01 +0300 (+03)
+Date:   Wed, 13 Apr 2022 14:40:01 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
+Message-ID: <20220413114001.wdsi2xrm4btrghms@box.shutemov.name>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
+ <767c2100-c171-1fd3-6a92-0af2e4bf3067@intel.com>
+ <20220409155423.iv2arckmvavvpegt@box.shutemov.name>
+ <6c976344-fdd6-95cd-2cb0-b0e817bf0392@intel.com>
+ <YlP94T1ACwxKTgep@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlP94T1ACwxKTgep@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzk@kernel.org>
+On Mon, Apr 11, 2022 at 01:07:29PM +0300, Mike Rapoport wrote:
+> On Sun, Apr 10, 2022 at 11:38:08PM -0700, Dave Hansen wrote:
+> > On 4/9/22 08:54, Kirill A. Shutemov wrote:
+> > > On Fri, Apr 08, 2022 at 11:55:43AM -0700, Dave Hansen wrote:
+> > 
+> > >>>  	if (fpi_flags & FPI_TO_TAIL)
+> > >>>  		to_tail = true;
+> > >>>  	else if (is_shuffle_order(order))
+> > >>> @@ -1149,7 +1192,8 @@ static inline void __free_one_page(struct page *page,
+> > >>>  static inline bool page_expected_state(struct page *page,
+> > >>>  					unsigned long check_flags)
+> > >>>  {
+> > >>> -	if (unlikely(atomic_read(&page->_mapcount) != -1))
+> > >>> +	if (unlikely(atomic_read(&page->_mapcount) != -1) &&
+> > >>> +	    !PageUnaccepted(page))
+> > >>>  		return false;
+> > >>
+> > >> That probably deserves a comment, and maybe its own if() statement.
+> > > 
+> > > Own if does not work. PageUnaccepted() is encoded in _mapcount.
+> > > 
+> > > What about this:
+> > > 
+> > > 	/*
+> > > 	 * page->_mapcount is expected to be -1.
+> > > 	 *
+> > > 	 * There is an exception for PageUnaccepted(). The page type can be set
+> > > 	 * for pages on free list. Page types are encoded in _mapcount.
+> > > 	 *
+> > > 	 * PageUnaccepted() will get cleared in post_alloc_hook().
+> > > 	 */
+> > > 	if (unlikely((atomic_read(&page->_mapcount) | PG_unaccepted) != -1))
+> 
+> Maybe I'm missing something, but isn't this true for any PageType?
+> 
+> > > 		return false;
+> > > 
+> > > ?
+> > 
+> > That's better.  But, aren't the PG_* names usually reserved for real
+> > page->flags bits?  That naming might be part of my confusion.
+> 
+> We use them for PageType as well like PG_buddy, PG_offline, PG_Table.
 
-Printing probe success is discouraged, because we can use tracing for
-this purpose.  Remove useless print message after Sunplus OCOTP driver
-probe.
+PG_buddy gets clear on remove from the free list, before the chec.
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- drivers/nvmem/sunplus-ocotp.c | 2 --
- 1 file changed, 2 deletions(-)
+PG_offline and PG_table pages are never on free lists.
 
-diff --git a/drivers/nvmem/sunplus-ocotp.c b/drivers/nvmem/sunplus-ocotp.c
-index c94134649714..52b928a7a6d5 100644
---- a/drivers/nvmem/sunplus-ocotp.c
-+++ b/drivers/nvmem/sunplus-ocotp.c
-@@ -202,8 +202,6 @@ static int sp_ocotp_probe(struct platform_device *pdev)
- 		(int)QAC628_OTP_NUM_BANKS, (int)OTP_WORDS_PER_BANK,
- 		(int)OTP_WORD_SIZE, (int)QAC628_OTP_SIZE);
- 
--	dev_info(dev, "by Sunplus (C) 2020");
--
- 	return 0;
- }
- 
 -- 
-2.32.0
-
+ Kirill A. Shutemov
