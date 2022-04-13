@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 492A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C944BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230400AbiDMSDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
+        id S237659AbiDMSEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237600AbiDMSC2 (ORCPT
+        with ESMTP id S237606AbiDMSC2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 14:02:28 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A7840E7B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:03 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id n5-20020a1709026a8500b00158a0312fe9so1554572plk.2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:03 -0700 (PDT)
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E939241611
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:04 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id m11-20020a170902f64b00b0015820f8038fso1519346plg.23
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=LID3cRTY2ArhbHgRrWrGB0hR8ooJJqddVWRsh1uyvfY=;
-        b=Vsq8aDzKSI7Ijbv4BOenD46C1cvo38NZrSaRPHBdHVKdS8JscFvlFxTcg8+0TJ9Koa
-         HvJKtZtq6lOjrI35RVfttdhmvUt23cUpe2QE9WKbmARZHHsuDhKis5opyRJKqgzPQmnG
-         btgqiY8AQDwfsg3W8WKmz+pOnMAO+XlNo5rdqU7aCE/o0z+bm2w5PGDqTrWtbpzKdowB
-         UWycdBXsxFBL1hELUsWx0DGIIe3WkRF+4L1BfOOiwWNCMBrI2nsqf+x1feEaN7Qzb+tI
-         1NJwTAGGfBCgoQ4u7tlup6DfUk47fc4jqBxrfgas9cGK0SpKnWQwUZVq/52tr9S1JjVj
-         A6sw==
+        bh=3UKcgaouWDljoBhDJNavl7iHJ9K4UWQ5k+7D01IUkUU=;
+        b=i1LjNyj0MfWmClJT9PfmfWxlCGWG1mhzWBvkSRz4Hwmt2mE12WeqUlJ2ktSPAWym7p
+         2lceXs2Ff5HmbmubdwUFXPqbvPDNnD26dUUz3C7nKYW7Ol8ZGz+TbasHddOngbsv7M22
+         Rm/Y0C4ulAOrpjWMCxARkkPhjEhweZ4zzLmh8WlRzPD1u3nnikEzmmsLLOjl55/0cX7q
+         iHd2HBP9IcAQB5JXMMA0yM38wgkXg5F5vQEyZB/0/z5egSRt9khEg/oS6WW8O7J+ofNb
+         Lrg9o+7uJpBVNv+QEYewY6Okig2iZRfkaYE+KIPpM+aWuc5zOYfbj7Hy6R0awrlbI1tW
+         B4JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=LID3cRTY2ArhbHgRrWrGB0hR8ooJJqddVWRsh1uyvfY=;
-        b=4uTq+CzoRX4X9DcifUXylv38EwcZ3XqyXiQ3w50QivKc4sG1kJ4v6wq3JRXb7olH3t
-         fr92XdsZFwrqMEtro7QHAIaWmPp3gR5L7HTpJ/N3sgmXSXcDuhzth6fxTLr4PbjTchw0
-         7jqSLOD1xZpCof+Ky25PNno3usPRXyleNHK4izn8Li3Xpk+kSfF6jCXHPK0r1ilT/baP
-         cZdh0aw3+d7wlNmFYgq0HvGbxTo5Vh2/jkK2g7XV/UHTF90jPeFioLy8qXS/7MI0GG8u
-         IDRkwcGvwt/4GbBJ0wv0oTcV4A9HbnaTvA2SJ1q8gemdzK66fji9p1EKK78oh61vDZgr
-         YgOA==
-X-Gm-Message-State: AOAM530mLvCanR5ETNYukw1P8fPdzvZZcp9Xi7Zg0vh1+lDg/gcPDYxv
-        xShEfQrFj2Pa2o/jmY7fy9+403LEXnCkp0Z9pliFgzz/d351gFJbiQdT0F9LVdn1HbQVCkJYmiI
-        +qqDJTbj2XyO2Bmy+yMJZuGwEJi6HlzgxZWaiZSzFaO+5DidVPE/qLCP4U3GUTiJeptnuvsZK
-X-Google-Smtp-Source: ABdhPJxLG/CRYgnCQcwMFMmg+KPQ8RP4j8UzyPwwqr3SsMN0pYZaOvxOFED/VCjyHutG8DlmxcaJ6i1Fg95w
+        bh=3UKcgaouWDljoBhDJNavl7iHJ9K4UWQ5k+7D01IUkUU=;
+        b=53XOC/3hJvcH1+aoJlfnctkmxcmlH7odjEwBH1P5CR7251MHuqdib7RcmA7LLKv7rk
+         oMs+wxAdDMhi8hlM4R7+iQqOoHDUQl/RNjBntbvOxcbJpKXnFKm3Wp9+ucdXzobIA5C6
+         lvGT81lM2xi73nChkwRzIb7aVdB/I2mc9CukhQ5c7xUrwNQ95QUmlKlZnQYZJqFHwkET
+         jUPfhaJT30af/8qBFov54g9wLdnWejiBk6jA3UVW8+cMC09clQldlQFgrhBRpXGpCbJ6
+         MzU4w6r/2fidvBhd8CRRTIj460kMO04Mf6A2KXY6GzvhtYRom7R1qllaDnmcy37RlYgO
+         Kh3w==
+X-Gm-Message-State: AOAM533+M3ZdJfQ1Tsxe9BriPh8cW7HM5Jpl0dh5XPfp9zbF5Pvl0VoW
+        75s71BWrhFfotYJWL0xrru+znJogqy4VY2vjUPssypP6yUO6DdPQG8dhIRgschNQ2jLWwdzPdD/
+        m9Cu5f9Lyr1Wima0CB+pKIO/emwwHhp3auqHol4KvxUM2fkkb3EWlnFplcx7KyK6xJm0/h526
+X-Google-Smtp-Source: ABdhPJxEgv3bZO/MXBspajYZ97mvWEzxbBffsN8qoEnCjAE++uaayaerZdHkHynBoa07zL4ad89k0EzRJ/Ns
 X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:c087:f2f2:f5f0:f73])
- (user=bgardon job=sendgmr) by 2002:a17:90a:c70f:b0:1bf:3e2d:6cfa with SMTP id
- o15-20020a17090ac70f00b001bf3e2d6cfamr47514pjt.70.1649872802308; Wed, 13 Apr
- 2022 11:00:02 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 10:59:42 -0700
+ (user=bgardon job=sendgmr) by 2002:a05:6a00:22c7:b0:505:9c6e:de39 with SMTP
+ id f7-20020a056a0022c700b005059c6ede39mr23398922pfj.79.1649872804260; Wed, 13
+ Apr 2022 11:00:04 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 10:59:43 -0700
 In-Reply-To: <20220413175944.71705-1-bgardon@google.com>
-Message-Id: <20220413175944.71705-9-bgardon@google.com>
+Message-Id: <20220413175944.71705-10-bgardon@google.com>
 Mime-Version: 1.0
 References: <20220413175944.71705-1-bgardon@google.com>
 X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH v5 08/10] KVM: x86/MMU: Allow NX huge pages to be disabled on
- a per-vm basis
+Subject: [PATCH v5 09/10] KVM: selftests: Factor out calculation of pages
+ needed for a VM
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -70,212 +70,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some cases, the NX hugepage mitigation for iTLB multihit is not
-needed for all guests on a host. Allow disabling the mitigation on a
-per-VM basis to avoid the performance hit of NX hugepages on trusted
-workloads.
+Factor out the calculation of the number of pages needed for a VM to
+make it easier to separate creating the VM and adding vCPUs.
 
-In order to disable NX hugepages on a VM, ensure that the userspace
-actor has permission to reboot the system. Since disabling NX hugepages
-would allow a guest to crash the system, it is similar to reboot
-permissions.
-
-Ideally, KVM would require userspace to prove it has access to KVM's
-nx_huge_pages module param, e.g. so that userspace can opt out without
-needing full reboot permissions.  But getting access to the module param
-file info is difficult because it is buried in layers of sysfs and module
-glue. Requiring CAP_SYS_BOOT is sufficient for all known use cases.
-
-Suggested-by: Jim Mattson <jmattson@google.com>
 Signed-off-by: Ben Gardon <bgardon@google.com>
 ---
- Documentation/virt/kvm/api.rst  | 13 +++++++++++++
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/mmu.h              |  9 +++++----
- arch/x86/kvm/mmu/spte.c         |  7 ++++---
- arch/x86/kvm/mmu/spte.h         |  3 ++-
- arch/x86/kvm/mmu/tdp_mmu.c      |  3 ++-
- arch/x86/kvm/x86.c              | 23 +++++++++++++++++++++++
- include/uapi/linux/kvm.h        |  1 +
- 8 files changed, 52 insertions(+), 9 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     |  4 ++
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 59 ++++++++++++++-----
+ 2 files changed, 47 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 72183ae628f7..021452a9fa91 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -7855,6 +7855,19 @@ At this time, KVM_PMU_CAP_DISABLE is the only capability.  Setting
- this capability will disable PMU virtualization for that VM.  Usermode
- should adjust CPUID leaf 0xA to reflect that the PMU is disabled.
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 001b55ae25f8..1dac3c6607f1 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -312,6 +312,10 @@ vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
+ 			      vm_paddr_t paddr_min, uint32_t memslot);
+ vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm);
  
-+8.36 KVM_CAP_VM_DISABLE_NX_HUGE_PAGES
-+---------------------------
++uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
++			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++			 uint32_t num_percpu_pages);
 +
-+:Capability KVM_CAP_PMU_CAPABILITY
-+:Architectures: x86
-+:Type: vm
-+:Returns 0 on success, -EPERM if the userspace process does not
-+	 have CAP_SYS_BOOT
-+
-+This capability disables the NX huge pages mitigation for iTLB MULTIHIT.
-+
-+The capability has no effect if the nx_huge_pages module parameter is not set.
-+
- 9. Known KVM API problems
- =========================
- 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 2c20f715f009..b8ab4fa7d4b2 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1240,6 +1240,8 @@ struct kvm_arch {
- 	hpa_t	hv_root_tdp;
- 	spinlock_t hv_root_tdp_lock;
- #endif
-+
-+	bool disable_nx_huge_pages;
- };
- 
- struct kvm_vm_stat {
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 671cfeccf04e..148f630af78a 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -173,9 +173,10 @@ struct kvm_page_fault {
- int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault);
- 
- extern int nx_huge_pages;
--static inline bool is_nx_huge_page_enabled(void)
-+static inline bool is_nx_huge_page_enabled(struct kvm *kvm)
- {
--	return READ_ONCE(nx_huge_pages);
-+	return READ_ONCE(nx_huge_pages) &&
-+	       !kvm->arch.disable_nx_huge_pages;
+ /*
+  * Create a VM with reasonable defaults
+  *
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index d332f02370d1..5ffed44ab328 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -377,7 +377,7 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
  }
  
- static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
-@@ -191,8 +192,8 @@ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 		.user = err & PFERR_USER_MASK,
- 		.prefetch = prefetch,
- 		.is_tdp = likely(vcpu->arch.mmu->page_fault == kvm_tdp_page_fault),
--		.nx_huge_page_workaround_enabled = is_nx_huge_page_enabled(),
--
-+		.nx_huge_page_workaround_enabled =
-+			is_nx_huge_page_enabled(vcpu->kvm),
- 		.max_level = KVM_MAX_HUGEPAGE_LEVEL,
- 		.req_level = PG_LEVEL_4K,
- 		.goal_level = PG_LEVEL_4K,
-diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
-index 4739b53c9734..877ad30bc7ad 100644
---- a/arch/x86/kvm/mmu/spte.c
-+++ b/arch/x86/kvm/mmu/spte.c
-@@ -116,7 +116,7 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 		spte |= spte_shadow_accessed_mask(spte);
- 
- 	if (level > PG_LEVEL_4K && (pte_access & ACC_EXEC_MASK) &&
--	    is_nx_huge_page_enabled()) {
-+	    is_nx_huge_page_enabled(vcpu->kvm)) {
- 		pte_access &= ~ACC_EXEC_MASK;
- 	}
- 
-@@ -215,7 +215,8 @@ static u64 make_spte_executable(u64 spte)
-  * This is used during huge page splitting to build the SPTEs that make up the
-  * new page table.
+ /*
+- * VM Create with customized parameters
++ * Get the number of pages needed for a VM
+  *
+  * Input Args:
+  *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
+@@ -385,27 +385,17 @@ struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
+  *   slot0_mem_pages - Slot0 physical memory size
+  *   extra_mem_pages - Non-slot0 physical memory total size
+  *   num_percpu_pages - Per-cpu physical memory pages
+- *   guest_code - Guest entry point
+- *   vcpuids - VCPU IDs
+  *
+  * Output Args: None
+  *
+  * Return:
+- *   Pointer to opaque structure that describes the created VM.
+- *
+- * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
+- * with customized slot0 memory size, at least 512 pages currently.
+- * extra_mem_pages is only used to calculate the maximum page table size,
+- * no real memory allocation for non-slot0 memory in this function.
++ *   The number of pages needed for the VM.
   */
--u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index)
-+u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, int huge_level,
-+			      int index)
+-struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+-				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
+-				    uint32_t num_percpu_pages, void *guest_code,
+-				    uint32_t vcpuids[])
++uint64_t vm_pages_needed(enum vm_guest_mode mode, uint32_t nr_vcpus,
++			 uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++			 uint32_t num_percpu_pages)
  {
- 	u64 child_spte;
- 	int child_level;
-@@ -243,7 +244,7 @@ u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index)
- 		 * When splitting to a 4K page, mark the page executable as the
- 		 * NX hugepage mitigation no longer applies.
- 		 */
--		if (is_nx_huge_page_enabled())
-+		if (is_nx_huge_page_enabled(kvm))
- 			child_spte = make_spte_executable(child_spte);
- 	}
+ 	uint64_t vcpu_pages, extra_pg_pages, pages;
+-	struct kvm_vm *vm;
+-	int i;
  
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index 73f12615416f..e4142caff4b1 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -415,7 +415,8 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 	       unsigned int pte_access, gfn_t gfn, kvm_pfn_t pfn,
- 	       u64 old_spte, bool prefetch, bool can_unsync,
- 	       bool host_writable, u64 *new_spte);
--u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index);
-+u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, int huge_level,
-+			      int index);
- u64 make_nonleaf_spte(u64 *child_pt, bool ad_disabled);
- u64 make_mmio_spte(struct kvm_vcpu *vcpu, u64 gfn, unsigned int access);
- u64 mark_spte_for_access_track(u64 spte);
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 566548a3efa7..03aa1e0f60e2 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1469,7 +1469,8 @@ static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
- 	 * not been linked in yet and thus is not reachable from any other CPU.
- 	 */
- 	for (i = 0; i < PT64_ENT_PER_PAGE; i++)
--		sp->spt[i] = make_huge_page_split_spte(huge_spte, level, i);
-+		sp->spt[i] = make_huge_page_split_spte(kvm, huge_spte,
-+						       level, i);
+ 	/* Force slot0 memory size not small than DEFAULT_GUEST_PHY_PAGES */
+ 	if (slot0_mem_pages < DEFAULT_GUEST_PHY_PAGES)
+@@ -421,11 +411,48 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 	extra_pg_pages = (slot0_mem_pages + extra_mem_pages + vcpu_pages) / PTES_PER_MIN_PAGE * 2;
+ 	pages = slot0_mem_pages + vcpu_pages + extra_pg_pages;
  
- 	/*
- 	 * Replace the huge spte with a pointer to the populated lower level
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 665c1fa8bb57..27631c3b53c2 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4286,6 +4286,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_SYS_ATTRIBUTES:
- 	case KVM_CAP_VAPIC:
- 	case KVM_CAP_ENABLE_CAP:
-+	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
- 		r = 1;
- 		break;
- 	case KVM_CAP_EXIT_HYPERCALL:
-@@ -6079,6 +6080,28 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 		}
- 		mutex_unlock(&kvm->lock);
- 		break;
-+	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
-+		r = -EINVAL;
-+		if (cap->args[0])
-+			break;
++	pages = vm_adjust_num_guest_pages(mode, pages);
 +
-+		/*
-+		 * Since the risk of disabling NX hugepages is a guest crashing
-+		 * the system, ensure the userspace process has permission to
-+		 * reboot the system.
-+		 */
-+		if (!capable(CAP_SYS_BOOT)) {
-+			r = -EPERM;
-+			break;
-+		}
++	return pages;
++}
 +
-+		mutex_lock(&kvm->lock);
-+		if (!kvm->created_vcpus) {
-+			kvm->arch.disable_nx_huge_pages = true;
-+			r = 0;
-+		}
-+		mutex_unlock(&kvm->lock);
-+		break;
- 	default:
- 		r = -EINVAL;
- 		break;
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index dd1d8167e71f..7155488164bd 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1148,6 +1148,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_PMU_CAPABILITY 212
- #define KVM_CAP_DISABLE_QUIRKS2 213
- #define KVM_CAP_VM_TSC_CONTROL 214
-+#define KVM_CAP_VM_DISABLE_NX_HUGE_PAGES 215
++/*
++ * VM Create with customized parameters
++ *
++ * Input Args:
++ *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
++ *   nr_vcpus - VCPU count
++ *   slot0_mem_pages - Slot0 physical memory size
++ *   extra_mem_pages - Non-slot0 physical memory total size
++ *   num_percpu_pages - Per-cpu physical memory pages
++ *   guest_code - Guest entry point
++ *   vcpuids - VCPU IDs
++ *
++ * Output Args: None
++ *
++ * Return:
++ *   Pointer to opaque structure that describes the created VM.
++ *
++ * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K),
++ * with customized slot0 memory size, at least 512 pages currently.
++ * extra_mem_pages is only used to calculate the maximum page table size,
++ * no real memory allocation for non-slot0 memory in this function.
++ */
++struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
++				    uint64_t slot0_mem_pages, uint64_t extra_mem_pages,
++				    uint32_t num_percpu_pages, void *guest_code,
++				    uint32_t vcpuids[])
++{
++	uint64_t pages;
++	struct kvm_vm *vm;
++	int i;
++
+ 	TEST_ASSERT(nr_vcpus <= kvm_check_cap(KVM_CAP_MAX_VCPUS),
+ 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
+ 		    nr_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
  
- #ifdef KVM_CAP_IRQ_ROUTING
+-	pages = vm_adjust_num_guest_pages(mode, pages);
++	pages = vm_pages_needed(mode, nr_vcpus, slot0_mem_pages,
++				extra_mem_pages, num_percpu_pages);
+ 
+ 	vm = vm_create_without_vcpus(mode, pages);
  
 -- 
 2.35.1.1178.g4f1659d476-goog
