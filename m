@@ -2,135 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D608CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E86CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233140AbiDMJZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
+        id S234431AbiDMJ0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234423AbiDMJZv (ORCPT
+        with ESMTP id S230229AbiDMJ0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:25:51 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153AA532F5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:23:30 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so5700637pjb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:23:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wRXirUEKSPI6ru648JuWYPXw/sXNZVfeivfow6gXxCU=;
-        b=NSQWSk7KTjgR1R43JsBYQ1pozNWfaSSFh31fwZQJRY/JP0eqmDA4oV+tGsAdykD2UZ
-         uOhRQMH6sGK7PYixM4yd9JfnUZlo/Fvhe4Kc40ApShO3t4147mY0e28258Jvb1QRyrkf
-         XRWBeAQfIitmvcJGeRhFHMfaJQbQy5QvBslX0upT5e/VM2JcnHtDMCipGIG7g4PBxd1k
-         aM95mmBKUp+K6Y1ygBJTrdluHuatVEtlYJB7WNHlrv80hht0ytKkjUoXfbRcFL19/zu6
-         d//4NBZ+dPv7IBQrIRDAIKpmdAN+UY3N5N52oejxrZ4V7nShq6noho/95AFQtyDKYiUw
-         WqRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wRXirUEKSPI6ru648JuWYPXw/sXNZVfeivfow6gXxCU=;
-        b=CXLNEBkGe1U3RN0A+mi3B53Y/LzjwKOoQbXWwd59eUWIjTP4yv8C30th1fl0ye1G1A
-         S5ndkdb6yeBz/qa3HxAUWjy7e9Vijd3OWhpsLiWbvH3i7/zEjmJHtFXYIsok1HjNX6Mc
-         2UfTPLkPltWw+A7DFWk8LY2A46sLQEZJWGkJG9H/ZRpVBw69yFWm1llcvLKZJB8QSI/1
-         rYv0BzM1r5hXDvZUklZ5h4+jLaVL1bsVcjH73Xi7YKBw8GWL80WgL+wk5/GhQovH8W7A
-         Vw4+w1Xwpg1kGgzsLer1ijh/rnnkMbd6AYM01eWkwU4uHP6gnY6uEc+rLTfEZDIFJ6Wh
-         ycew==
-X-Gm-Message-State: AOAM530Cl73sOXDBt3nkdm3ouMFSld/lAxh51KtC/NL6uVb+TPieUVMb
-        R2juG3k6rT9OVik5QW1VslUYDg==
-X-Google-Smtp-Source: ABdhPJyZnbZbZZKVFPTF/SFu5yucL9hFbgSI04LlY+Sq49nPD/NAIJHwFuLlpA9dtv6xAvAk52XDFQ==
-X-Received: by 2002:a17:90b:1c88:b0:1b8:a77e:c9cb with SMTP id oo8-20020a17090b1c8800b001b8a77ec9cbmr9622873pjb.205.1649841809256;
-        Wed, 13 Apr 2022 02:23:29 -0700 (PDT)
-Received: from localhost.localdomain (111-250-44-108.dynamic-ip.hinet.net. [111.250.44.108])
-        by smtp.gmail.com with ESMTPSA id k62-20020a17090a4cc400b001c7ea7f487asm2363144pjh.39.2022.04.13.02.23.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 02:23:28 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v2] perf report: Set PERF_SAMPLE_DATA_SRC bit for Arm SPE event
-Date:   Wed, 13 Apr 2022 17:23:17 +0800
-Message-Id: <20220413092317.756022-1-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Wed, 13 Apr 2022 05:26:46 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F6FE0B
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:24:24 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 84F8821123;
+        Wed, 13 Apr 2022 09:24:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649841863; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3VKXcEZA2sPwRKLo+G3WMiWaz661bPFmNmayKU+UMes=;
+        b=rC59aO5NueCC6JmGiFK1vm4DHgLshCzW/+ZHHc+7Bjx/cV5zVvCmn/CaIAC3DfTj00/nN+
+        FuitJcHU1LKkSSVgDGQSX1VzPKTyYyUXziSFz3KeL7RemqX4Xhl3kr9qFJSCsEvXDfFDnp
+        oGbTR5vicacv0zVOb6U7uSmw8W6SghM=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 07B55A3B82;
+        Wed, 13 Apr 2022 09:24:22 +0000 (UTC)
+Date:   Wed, 13 Apr 2022 11:24:22 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Maninder Singh <maninder1.s@samsung.com>
+Cc:     mcgrof@kernel.org, rostedt@goodmis.org, senozhatsky@chromium.org,
+        andriy.shevchenko@linux.intel.com, akpm@linux-foundation.org,
+        wangkefeng.wang@huawei.com, wedsonaf@google.com,
+        boqun.feng@gmail.com, christophe.leroy@csgroup.eu,
+        swboyd@chromium.org, ojeda@kernel.org, ast@kernel.org,
+        gary@garyguo.net, mbenes@suse.cz, ndesaulniers@google.com,
+        void@manifault.com, jolsa@kernel.org, linux-kernel@vger.kernel.org,
+        v.narang@samsung.com, Onkarnath <onkarnath.1@samsung.com>
+Subject: Re: [PATCH 1/1] kallsyms: add kallsyms_show_value definition in all
+ cases
+Message-ID: <YlaWxh5qYCe40US7@alley>
+References: <CGME20220413055318epcas5p3df3cdde54a559d4002a74de9f23289f2@epcas5p3.samsung.com>
+ <20220413055305.1768223-1-maninder1.s@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413055305.1768223-1-maninder1.s@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit bb30acae4c4d ("perf report: Bail out --mem-mode if mem info
-is not available") "perf mem report" and "perf report --mem-mode"
-don't report result if the PERF_SAMPLE_DATA_SRC bit is missed in sample
-type.
+On Wed 2022-04-13 11:23:05, Maninder Singh wrote:
+> kallsyms_show_value return false if KALLSYMS is disabled,
+> but it's used in module.c also.
+> Thus when KALLSYMS is disabled, system will not print module
+> load address:
+> 
+> / # insmod crash.ko
+> / # lsmod
+> crash 12288 0 - Live 0x0000000000000000 (O)
+> 
+> After change (making definition generic)
+> ============
+> / # lsmod
+> crash 12288 0 - Live 0xffff800000ec0000 (O)
+> / # cat /proc/modules
+> crash 12288 0 - Live 0xffff800000ec0000 (O)
+> / #
+> 
+> Co-developed-by: Onkarnath <onkarnath.1@samsung.com>
+> Signed-off-by: Onkarnath <onkarnath.1@samsung.com>
+> Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
+> ---
+>  include/linux/kallsyms.h | 11 +++--------
+>  kernel/kallsyms.c        | 35 -----------------------------------
+>  lib/vsprintf.c           | 36 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 39 insertions(+), 43 deletions(-)
+> 
+> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
+> index e5ad6e31697d..efabb8c18492 100644
+> --- a/include/linux/kallsyms.h
+> +++ b/include/linux/kallsyms.h
+> @@ -24,6 +24,9 @@
+>  struct cred;
+>  struct module;
+>  
+> +/* How and when do we show kallsyms values? */
+> +extern bool kallsyms_show_value(const struct cred *cred);
+>
+>  static inline int is_kernel_text(unsigned long addr)
+>  {
+>  	if (__is_kernel_text(addr))
+> @@ -93,9 +96,6 @@ extern int sprint_backtrace_build_id(char *buffer, unsigned long address);
+>  int lookup_symbol_name(unsigned long addr, char *symname);
+>  int lookup_symbol_attrs(unsigned long addr, unsigned long *size, unsigned long *offset, char *modname, char *name);
+>  
+> -/* How and when do we show kallsyms values? */
+> -extern bool kallsyms_show_value(const struct cred *cred);
+> -
+>  #else /* !CONFIG_KALLSYMS */
+>  
+>  static inline unsigned long kallsyms_lookup_name(const char *name)
+> @@ -158,11 +158,6 @@ static inline int lookup_symbol_attrs(unsigned long addr, unsigned long *size, u
+>  	return -ERANGE;
+>  }
+>  
+> -static inline bool kallsyms_show_value(const struct cred *cred)
+> -{
+> -	return false;
+> -}
 
-The commit ffab48705205 ("perf: arm-spe: Fix perf report --mem-mode")
-partially fixes the issue.  It adds PERF_SAMPLE_DATA_SRC bit for Arm SPE
-event, this allows the perf data file generated by kernel v5.18-rc1 or
-later version can be reported properly.
+With the patch, kallsyms_show_value() might return true even when
+CONFIG_KALLYSMS are disabled. Did you check all users of this API
+that they could handle this?
 
-On the other hand, perf tool still fails to be backward compatibility
-for a data file recorded by an older version's perf which contains Arm
-SPE trace data.  This patch is a workaround in reporting phase, when
-detects ARM SPE PMU event and without PERF_SAMPLE_DATA_SRC bit, it will
-force to set the bit in the sample type and give a warning info.
+For example, the comment in bpf_dump_raw_ok() suggests that
+it might require more kallsyms functionality.
 
-Fixes: bb30acae4c4d ("perf report: Bail out --mem-mode if mem info is not available")
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: German Gomez <german.gomez@arm.com>
----
-v2: Change event name from "arm_spe_" to "arm_spe";
-    Add German's test tag.
+static inline bool bpf_dump_raw_ok(const struct cred *cred)
+{
+	/* Reconstruction of call-sites is dependent on kallsyms,
+	 * thus make dump the same restriction.
+	 */
+	return kallsyms_show_value(cred);
+}
 
- tools/perf/builtin-report.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+You should definitely add into CC people from affected subsystems.
+I do not see:
 
-diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
-index 1ad75c7ba074..acb07a4a9b67 100644
---- a/tools/perf/builtin-report.c
-+++ b/tools/perf/builtin-report.c
-@@ -353,6 +353,7 @@ static int report__setup_sample_type(struct report *rep)
- 	struct perf_session *session = rep->session;
- 	u64 sample_type = evlist__combined_sample_type(session->evlist);
- 	bool is_pipe = perf_data__is_pipe(session->data);
-+	struct evsel *evsel;
- 
- 	if (session->itrace_synth_opts->callchain ||
- 	    session->itrace_synth_opts->add_callchain ||
-@@ -407,6 +408,21 @@ static int report__setup_sample_type(struct report *rep)
- 	}
- 
- 	if (sort__mode == SORT_MODE__MEMORY) {
-+		/*
-+		 * FIXUP: prior to kernel 5.18, Arm SPE missed to set
-+		 * PERF_SAMPLE_DATA_SRC bit in sample type.  For backward
-+		 * compatibility, set the bit if it's an old perf data file.
-+		 */
-+		evlist__for_each_entry(session->evlist, evsel) {
-+			if (strstr(evsel->name, "arm_spe") &&
-+				!(sample_type & PERF_SAMPLE_DATA_SRC)) {
-+				ui__warning("PERF_SAMPLE_DATA_SRC bit is not set "
-+					    "for Arm SPE event.\n");
-+				evsel->core.attr.sample_type |= PERF_SAMPLE_DATA_SRC;
-+				sample_type |= PERF_SAMPLE_DATA_SRC;
-+			}
-+		}
-+
- 		if (!is_pipe && !(sample_type & PERF_SAMPLE_DATA_SRC)) {
- 			ui__error("Selected --mem-mode but no mem data. "
- 				  "Did you call perf record without -d?\n");
--- 
-2.25.1
+    + Kees Cook who added/updated most of the callers
+    + BPF people that might require even more kallsyms functionality
+    + kprobe people that using it as well
 
+
+> -
+>  #endif /*CONFIG_KALLSYMS*/
+>  
+>  static inline void print_ip_sym(const char *loglvl, unsigned long ip)
+> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+> index e8d2262ef2d2..71ef15ba20c7 100644
+> --- a/kernel/kallsyms.c
+> +++ b/kernel/kallsyms.c
+> @@ -818,41 +818,6 @@ static const struct seq_operations kallsyms_op = {
+>  	.show = s_show
+>  };
+>  
+> -static inline int kallsyms_for_perf(void)
+> -{
+> -#ifdef CONFIG_PERF_EVENTS
+> -	extern int sysctl_perf_event_paranoid;
+> -	if (sysctl_perf_event_paranoid <= 1)
+> -		return 1;
+> -#endif
+> -	return 0;
+> -}
+> -
+> -/*
+> - * We show kallsyms information even to normal users if we've enabled
+> - * kernel profiling and are explicitly not paranoid (so kptr_restrict
+> - * is clear, and sysctl_perf_event_paranoid isn't set).
+> - *
+> - * Otherwise, require CAP_SYSLOG (assuming kptr_restrict isn't set to
+> - * block even that).
+> - */
+> -bool kallsyms_show_value(const struct cred *cred)
+> -{
+> -	switch (kptr_restrict) {
+> -	case 0:
+> -		if (kallsyms_for_perf())
+> -			return true;
+> -		fallthrough;
+> -	case 1:
+> -		if (security_capable(cred, &init_user_ns, CAP_SYSLOG,
+> -				     CAP_OPT_NOAUDIT) == 0)
+> -			return true;
+> -		fallthrough;
+> -	default:
+> -		return false;
+> -	}
+> -}
+> -
+>  static int kallsyms_open(struct inode *inode, struct file *file)
+>  {
+>  	/*
+> diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+> index 49ef55ffabd7..4bc96a4f3a00 100644
+> --- a/lib/vsprintf.c
+> +++ b/lib/vsprintf.c
+> @@ -870,6 +870,42 @@ static char *default_pointer(char *buf, char *end, const void *ptr,
+>  
+>  int kptr_restrict __read_mostly;
+>  
+> +static inline int kallsyms_for_perf(void)
+> +{
+> +#ifdef CONFIG_PERF_EVENTS
+> +	extern int sysctl_perf_event_paranoid;
+> +
+> +	if (sysctl_perf_event_paranoid <= 1)
+> +		return 1;
+> +#endif
+> +	return 0;
+> +}
+> +
+> +/*
+> + * We show kallsyms information even to normal users if we've enabled
+> + * kernel profiling and are explicitly not paranoid (so kptr_restrict
+> + * is clear, and sysctl_perf_event_paranoid isn't set).
+> + *
+> + * Otherwise, require CAP_SYSLOG (assuming kptr_restrict isn't set to
+> + * block even that).
+> + */
+> +bool kallsyms_show_value(const struct cred *cred)
+> +{
+> +	switch (kptr_restrict) {
+> +	case 0:
+> +		if (kallsyms_for_perf())
+> +			return true;
+> +		fallthrough;
+> +	case 1:
+> +		if (security_capable(cred, &init_user_ns, CAP_SYSLOG,
+> +				     CAP_OPT_NOAUDIT) == 0)
+> +			return true;
+> +		fallthrough;
+> +	default:
+> +		return false;
+> +	}
+> +}
+
+It is really weird that the function is declared in kallsyms.h
+and implemented in vsprintf.c.
+
+What about splitting kallsyms.c into two source files where one
+would be always compiled? It would be usable also for the
+spring function introduced by
+https://lore.kernel.org/r/20220323164742.2984281-1-maninder1.s@samsung.com
+
+It might be something like kallsyms_full.c and/or kallsyms_tiny.c.
+
+Best Regards,
+Petr
+
+>  static noinline_for_stack
+>  char *restricted_pointer(char *buf, char *end, const void *ptr,
+>  			 struct printf_spec spec)
+> -- 
+> 2.17.1
