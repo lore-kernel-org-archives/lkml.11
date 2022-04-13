@@ -2,175 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3777C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF370C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234205AbiDMIr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 04:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        id S233523AbiDMIsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 04:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234103AbiDMIq4 (ORCPT
+        with ESMTP id S234075AbiDMIrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 04:46:56 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE0F340D9;
-        Wed, 13 Apr 2022 01:44:24 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id q19so1180413pgm.6;
-        Wed, 13 Apr 2022 01:44:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=C1EWK9eoSuI/9QQ/ZExq3hXbMv6fm1L8pBD1vk2oFeY=;
-        b=A3ObKFOxl+0/AdK6Yu014z7zSB1v0SxjLRHcyy9i9VFwliZvTtzPwVlwD/rozFZ7ru
-         HGR/Nv2GU3Uru0f9FdjJZfhEV/BvO74JLc3oe7usbkHyQLdxGsM4In++pCessoUJZ5YY
-         NyS58xtquQCon4krYZLbr0xvf2w3eer1U7eidcYVMxH2P5s5niwNm8E1iLUYN9ctJDxr
-         olpM2UX0sLWcrwuFgMnUkuhBBit6mY1SYqyLbk5y3O9Y+f+D6WogUKQnDPYSgDJ/ZvTt
-         ZKNI0HWYDEA7UjGO2wTD1L3RF+d4otUicX93ZBEakZrkea41BBtNOyC+nP/GO1EC5xam
-         T/6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=C1EWK9eoSuI/9QQ/ZExq3hXbMv6fm1L8pBD1vk2oFeY=;
-        b=R8Or/QAopY5FjFcxtrSgAsAm2pu5TxTBzQ4vFPTiUkZWqTt6/A065IWnctdR++nNDl
-         E/iy3h6YegFmGkbAE7qnrZT4119fAXwCvirx/zuMsB/yQVcSzxYRrTheC1BKUU/gTdJv
-         nAzamf/Q9fBFgG3hrJYm0DC5aQD6mMiTF4/7AI+cmcPaV3aI38mNztfx3Bzmks4wXwtB
-         +/Dng7qW8vHaXKMuQ7uQUtdlheThLNIu/v5S6XpHOtcdI5beP1BrRjrCUpmqTB7BlHvr
-         VE6EuuIPGDVps0wk6Y4J5d/yUFFy6pb493wnsnjgNnEWO2LK2LT1lQyv64WN7Y3DWdBY
-         Az/A==
-X-Gm-Message-State: AOAM530nxIs/VO7+zv1vfkm2PGJn++VYp0ceU69z6kJKNKKtWnXFNjHL
-        paws4RPyWYUSOmucn43woWg=
-X-Google-Smtp-Source: ABdhPJwNrvCsBiuZrgYEZtLt4IyLJj7imWGi1XpO3h/5S1QQqlHK8fnSKx/djmMh/1rhPopkcATzNw==
-X-Received: by 2002:a63:5061:0:b0:39c:d0da:677b with SMTP id q33-20020a635061000000b0039cd0da677bmr24063625pgl.599.1649839463724;
-        Wed, 13 Apr 2022 01:44:23 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.119])
-        by smtp.gmail.com with ESMTPSA id l5-20020a63f305000000b0039daaa10a1fsm2410335pgh.65.2022.04.13.01.44.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 01:44:23 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        benbjiang@tencent.com, flyingpeng@tencent.com,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        mengensun@tencent.com, dongli.zhang@oracle.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 8/9] net: ipv6: add skb drop reasons to ip6_rcv_core()
-Date:   Wed, 13 Apr 2022 16:15:59 +0800
-Message-Id: <20220413081600.187339-9-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220413081600.187339-1-imagedong@tencent.com>
-References: <20220413081600.187339-1-imagedong@tencent.com>
+        Wed, 13 Apr 2022 04:47:07 -0400
+Received: from support.corp-email.com (support.corp-email.com [222.73.234.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793584D616
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 01:44:46 -0700 (PDT)
+Received: from ([114.119.32.142])
+        by support.corp-email.com ((D)) with ASMTP (SSL) id IEG00038;
+        Wed, 13 Apr 2022 16:44:38 +0800
+Received: from localhost.localdomain (172.16.35.4) by GCY-MBS-28.TCL.com
+ (10.136.3.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 13 Apr
+ 2022 16:44:38 +0800
+From:   Rokudo Yan <wu-yan@tcl.com>
+To:     <jaegeuk@kernel.org>
+CC:     <linux-f2fs-devel@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <tang.ding@tcl.com>,
+        <wu-yan@tcl.com>
+Subject: [PATCH] f2fs: avoid deadlock in gc thread under low memory
+Date:   Wed, 13 Apr 2022 16:44:32 +0800
+Message-ID: <20220413084432.1312900-1-wu-yan@tcl.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.16.35.4]
+X-ClientProxiedBy: GCY-EXS-27.TCL.com (10.74.128.67) To GCY-MBS-28.TCL.com
+ (10.136.3.28)
+tUid:   2022413164438f383f1451cf81c4bc895e3d2271acda2
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+There is a potential deadlock in gc thread may happen
+under low memory as below:
 
-Replace kfree_skb() used in ip6_rcv_core() with kfree_skb_reason().
-No new drop reasons are added.
+gc_thread_func
+ -f2fs_gc
+  -do_garbage_collect
+   -gc_data_segment
+    -move_data_block
+     -set_page_writeback(fio.encrypted_page);
+     -f2fs_submit_page_write
+as f2fs_submit_page_write try to do io merge when possible, so the
+encrypted_page is marked PG_writeback but may not submit to block
+layer immediately, if system enter low memory when gc thread try
+to move next data block, it may do direct reclaim and enter fs layer
+as below:
+   -move_data_block
+    -f2fs_grab_cache_page(index=?, for_write=false)
+     -grab_cache_page
+      -find_or_create_page
+       -pagecache_get_page
+        -__page_cache_alloc --  __GFP_FS is set
+         -alloc_pages_node
+          -__alloc_pages
+           -__alloc_pages_slowpath
+            -__alloc_pages_direct_reclaim
+             -__perform_reclaim
+              -try_to_free_pages
+               -do_try_to_free_pages
+                -shrink_zones
+                 -mem_cgroup_soft_limit_reclaim
+                  -mem_cgroup_soft_reclaim
+                   -mem_cgroup_shrink_node
+                    -shrink_node_memcg
+                     -shrink_list
+                      -shrink_inactive_list
+                       -shrink_page_list
+                        -wait_on_page_writeback -- the page is marked
+                       writeback during previous move_data_block call
 
-Seems now we use 'SKB_DROP_REASON_IP_INHDR' for too many case during
-ipv6 header parse or check, just like what 'IPSTATS_MIB_INHDRERRORS'
-do. Will it be too general and hard to know what happened?
+the gc thread wait for the encrypted_page writeback complete,
+but as gc thread held sbi->gc_lock, the writeback & sync thread
+may blocked waiting for sbi->gc_lock, so the bio contain the
+encrypted_page may nerver submit to block layer and complete the
+writeback, which cause deadlock. To avoid this deadlock condition,
+we mark the gc thread with PF_MEMALLOC_NOFS flag, then it will nerver
+enter fs layer when try to alloc cache page during move_data_block.
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Signed-off-by: Rokudo Yan <wu-yan@tcl.com>
 ---
- net/ipv6/ip6_input.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ fs/f2fs/gc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index b4880c7c84eb..1b925ecb26e9 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -145,13 +145,14 @@ static void ip6_list_rcv_finish(struct net *net, struct sock *sk,
- static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 				    struct net *net)
- {
-+	enum skb_drop_reason reason;
- 	const struct ipv6hdr *hdr;
- 	u32 pkt_len;
- 	struct inet6_dev *idev;
+diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+index e020804f7b07..cc71f77b98c8 100644
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -38,6 +38,12 @@ static int gc_thread_func(void *data)
  
- 	if (skb->pkt_type == PACKET_OTHERHOST) {
- 		dev_core_stats_rx_otherhost_dropped_inc(skb->dev);
--		kfree_skb(skb);
-+		kfree_skb_reason(skb, SKB_DROP_REASON_OTHERHOST);
- 		return NULL;
- 	}
+ 	wait_ms = gc_th->min_sleep_time;
  
-@@ -161,9 +162,12 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 
- 	__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
- 
-+	SKB_DR_SET(reason, NOT_SPECIFIED);
- 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
- 	    !idev || unlikely(idev->cnf.disable_ipv6)) {
- 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
-+		if (unlikely(idev->cnf.disable_ipv6))
-+			SKB_DR_SET(reason, IPV6DISABLED);
- 		goto drop;
- 	}
- 
-@@ -187,8 +191,10 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 
- 	hdr = ipv6_hdr(skb);
- 
--	if (hdr->version != 6)
-+	if (hdr->version != 6) {
-+		SKB_DR_SET(reason, UNHANDLED_PROTO);
- 		goto err;
-+	}
- 
- 	__IP6_ADD_STATS(net, idev,
- 			IPSTATS_MIB_NOECTPKTS +
-@@ -226,8 +232,10 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 	if (!ipv6_addr_is_multicast(&hdr->daddr) &&
- 	    (skb->pkt_type == PACKET_BROADCAST ||
- 	     skb->pkt_type == PACKET_MULTICAST) &&
--	    idev->cnf.drop_unicast_in_l2_multicast)
-+	    idev->cnf.drop_unicast_in_l2_multicast) {
-+		SKB_DR_SET(reason, UNICAST_IN_L2_MULTICAST);
- 		goto err;
-+	}
- 
- 	/* RFC4291 2.7
- 	 * Nodes must not originate a packet to a multicast address whose scope
-@@ -256,12 +264,11 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 		if (pkt_len + sizeof(struct ipv6hdr) > skb->len) {
- 			__IP6_INC_STATS(net,
- 					idev, IPSTATS_MIB_INTRUNCATEDPKTS);
-+			SKB_DR_SET(reason, PKT_TOO_SMALL);
- 			goto drop;
- 		}
--		if (pskb_trim_rcsum(skb, pkt_len + sizeof(struct ipv6hdr))) {
--			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
--			goto drop;
--		}
-+		if (pskb_trim_rcsum(skb, pkt_len + sizeof(struct ipv6hdr)))
-+			goto err;
- 		hdr = ipv6_hdr(skb);
- 	}
- 
-@@ -282,9 +289,10 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 	return skb;
- err:
- 	__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
-+	SKB_DR_OR(reason, IP_INHDR);
- drop:
- 	rcu_read_unlock();
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, reason);
- 	return NULL;
- }
- 
++	/*
++	 * Make sure that no allocations from gc thread will ever
++	 * recurse to the fs layer to avoid deadlock as it will
++	 * hold sbi->gc_lock during garbage collection
++	 */
++	memalloc_nofs_save();
+ 	set_freezable();
+ 	do {
+ 		bool sync_mode, foreground = false;
 -- 
-2.35.1
+2.25.1
 
