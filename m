@@ -2,226 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D670FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BAEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238827AbiDMVIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
+        id S238903AbiDMVIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238858AbiDMVIS (ORCPT
+        with ESMTP id S238880AbiDMVIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:08:18 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B20384EC5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:37 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 128-20020a250286000000b00641d48351fbso2193190ybc.23
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=LyKxohxYFWz+xkAFcBS7lS5LRzEYPlTQWXTfn7sqhYQ=;
-        b=Nx7watmXyUrR4GYJ3PPJgGjbxfpPFfxk4xRwtM1yJbXh7/4nevOyjoEREH5PMLV3TC
-         Gjyn9uLVONZnYTCGvoGwCoDZxZ2J4nWgjwgLa2BVmgYCXxR55TcMraYg7W3OSsyF6e5y
-         pGDBEoZvqxSKFXW4XDREPeEqwKv3HKAQw1JQ1IiBqMwxzCn2B9VAYC4imNDRnr995EnD
-         DyQe2XsqSkFTjGb1boEzNKTEUX5mLAXOoGHgV9lr14kk3Tfe4y6Xwkz7xELOO7tLqA2v
-         1wU0P2Pzgs4u6pVPzM/HsSMNgAN5xVdSleuRIL7Inua9AzHGjlvGVuVyLRE8k5TOorJv
-         0cDQ==
+        Wed, 13 Apr 2022 17:08:19 -0400
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57CA8567F;
+        Wed, 13 Apr 2022 14:05:45 -0700 (PDT)
+Received: by mail-oi1-f175.google.com with SMTP id e4so3408707oif.2;
+        Wed, 13 Apr 2022 14:05:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=LyKxohxYFWz+xkAFcBS7lS5LRzEYPlTQWXTfn7sqhYQ=;
-        b=d6a3yQMR9Exhg/dsax5qME7lcouC+UOnepo9XLd3f0ANSgtyU1jLnSLrBId2eBw6H/
-         vhlStirvclyiWWiuEbJDrg3MZViAndYyewPYXRJCulRwurC44yWMa8zOSYQqt/4zhZy7
-         Gwy9voQ3088czD1gujaP2Atmh3gv52y9+NjmPiXGeULmZWFFR0BWPr3ipRUJLfFNqz3c
-         nuJ9nUWs9Rdb96nrYtnP1OBYG0uPKq1dAQjfq6oUUdltRKNVnLz6WKlWbnyWsK4+RDZ1
-         z4ueKfpPx6R6lnT1GElZwY8XzHJk59wYd28lyB5hlHWpraI8z52Cyb2j2NVzDXAUbTpm
-         +6ag==
-X-Gm-Message-State: AOAM531pVBfApv+oGaCCKSGwjzXounb67xvF4D9OaebDeeBDLtyPUzwf
-        +HCwy5cMBtH9HbbFdNpW811CxLZ8JiER
-X-Google-Smtp-Source: ABdhPJyK6Nh2wX2uXt+tJg5ODBuAK9xGSuEdTA8pwtmv0AaWfOjqxjeN6A9lEvHI77IsSxwKp7b69nVXgUWp
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9135:da53:a8a2:bf11])
- (user=irogers job=sendgmr) by 2002:a0d:c903:0:b0:2ef:5484:2224 with SMTP id
- l3-20020a0dc903000000b002ef54842224mr728981ywd.365.1649883936638; Wed, 13 Apr
- 2022 14:05:36 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 14:05:02 -0700
-In-Reply-To: <20220413210503.3256922-1-irogers@google.com>
-Message-Id: <20220413210503.3256922-13-irogers@google.com>
-Mime-Version: 1.0
-References: <20220413210503.3256922-1-irogers@google.com>
-X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH 13/14] perf vendor events intel: Update goldmontplus event topics
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        James Clark <james.clark@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc:     Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gFOeEZI4pNvyN/LTAgs9rmC19q7UkYUYT1AJpJxfpdI=;
+        b=CLMygoQkFZgsg9JIYleQ/To94LdtInmzdM0RwpZCpzVvzNCyqjeHcuZwVNW2eqGrgo
+         h6XsG/emJnvdlU1e+R4GyW1vj0HUgrEJlzXoFJGiOtD+ug7MPOL1MdRV3o7O6nVEWvbH
+         92Ka1+EXAp1BofddkFnvJidBQ7A/pnqUFojJtJ7Ix2j+3tME1dE5xtYvlrGECdoKivpW
+         chHUfy5HIe4layMfrRk122/b45OvX8l6LBmQ4bEqUqKzsYf+0PeGw8b4QcaBcBT5ysCr
+         zO9nPeDYSarqdUyr+yKsUvqrXsYWdXP46aiaNElAT4CRBfV7Wl1O0AH0JRfEquSlaRRt
+         38qw==
+X-Gm-Message-State: AOAM532qyjP+jGApTg6EWXS6jw174s5pWl/ZUBp91oAnNQB7L4IFzq/r
+        aeGMLegu6sZkVQHzNpQZCA==
+X-Google-Smtp-Source: ABdhPJx5RFeYJLnhl//6T0M97AfdmhJRF0naPw/lnbT5EgrjjTgh8f2EadEd00qJESa3eceTDi9c0w==
+X-Received: by 2002:a05:6808:1a26:b0:2da:1bae:5186 with SMTP id bk38-20020a0568081a2600b002da1bae5186mr22287oib.144.1649883945133;
+        Wed, 13 Apr 2022 14:05:45 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id o7-20020a056871078700b000e29ff467dcsm44358oap.50.2022.04.13.14.05.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 14:05:44 -0700 (PDT)
+Received: (nullmailer pid 3917373 invoked by uid 1000);
+        Wed, 13 Apr 2022 21:05:44 -0000
+Date:   Wed, 13 Apr 2022 16:05:44 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: clock: Add Qualcomm SC8280XP GCC
+ bindings
+Message-ID: <Ylc7KJBXPXNML7UM@robh.at.kernel.org>
+References: <20220408224321.627126-1-bjorn.andersson@linaro.org>
+ <0eb126b3-b323-9614-361a-22c2762b590a@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0eb126b3-b323-9614-361a-22c2762b590a@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Apply topic updates from:
-https://github.com/intel/event-converter-for-linux-perf/
+On Sat, Apr 09, 2022 at 06:41:25PM +0200, Krzysztof Kozlowski wrote:
+> On 09/04/2022 00:43, Bjorn Andersson wrote:
+> > Add binding for the Qualcomm SC8280XP Global Clock controller.
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  .../bindings/clock/qcom,gcc-sc8280xp.yaml     | 199 +++++++
+> >  include/dt-bindings/clock/qcom,gcc-sc8280xp.h | 496 ++++++++++++++++++
+> >  2 files changed, 695 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-sc8280xp.yaml
+> >  create mode 100644 include/dt-bindings/clock/qcom,gcc-sc8280xp.h
+> > 
+> > diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-sc8280xp.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-sc8280xp.yaml
+> > new file mode 100644
+> > index 000000000000..44e5f0d0a795
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/clock/qcom,gcc-sc8280xp.yaml
+> > @@ -0,0 +1,199 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/clock/qcom,gcc-sc8280xp.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Qualcomm Global Clock & Reset Controller Binding for SC8280xp
+> > +
+> > +maintainers:
+> > +  - Bjorn Andersson <bjorn.andersson@linaro.org>
+> > +
+> > +description: |
+> > +  Qualcomm global clock control module which supports the clocks, resets and
+> > +  power domains on SC8280xp.
+> > +
+> > +  See also:
+> > +  - dt-bindings/clock/qcom,gcc-sc8280xp.h
+> 
+> include/dt-bindings/...
+> 
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: qcom,gcc-sc8280xp
+> > +
+> 
+> (...)
+> 
+> > +
+> > +  '#power-domain-cells':
+> > +    const: 1
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  protected-clocks:
+> > +    description:
+> > +      Protected clock specifier list as per common clock binding.
+> 
+> There is still no schema with protected-clocks, so you need a type,
+> unless someoone is working on adding this to schema?
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- .../arch/x86/goldmontplus/other.json          | 37 +------------------
- .../arch/x86/goldmontplus/pipeline.json       | 37 ++++++++++++++++++-
- 2 files changed, 37 insertions(+), 37 deletions(-)
+The 16th addition always gets caught...
 
-diff --git a/tools/perf/pmu-events/arch/x86/goldmontplus/other.json b/tools=
-/perf/pmu-events/arch/x86/goldmontplus/other.json
-index 3378f48cb818..92586fe4538a 100644
---- a/tools/perf/pmu-events/arch/x86/goldmontplus/other.json
-+++ b/tools/perf/pmu-events/arch/x86/goldmontplus/other.json
-@@ -57,40 +57,5 @@
-         "PublicDescription": "Counts hardware interrupts received by the p=
-rocessor.",
-         "SampleAfterValue": "203",
-         "UMask": "0x1"
--    },
--    {
--        "BriefDescription": "Unfilled issue slots per cycle",
--        "CollectPEBSRecord": "1",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xCA",
--        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.ANY",
--        "PDIR_COUNTER": "na",
--        "PEBScounters": "0,1,2,3",
--        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend due to either a full resource  in=
- the backend (RESOURCE_FULL) or due to the processor recovering from some e=
-vent (RECOVERY).",
--        "SampleAfterValue": "200003"
--    },
--    {
--        "BriefDescription": "Unfilled issue slots per cycle to recover",
--        "CollectPEBSRecord": "1",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xCA",
--        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RECOVERY",
--        "PDIR_COUNTER": "na",
--        "PEBScounters": "0,1,2,3",
--        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend because allocation is stalled wai=
-ting for a mispredicted jump to retire or other branch-like conditions (e.g=
-. the event is relevant during certain microcode flows).   Counts all issue=
- slots blocked while within this window including slots where uops were not=
- available in the Instruction Queue.",
--        "SampleAfterValue": "200003",
--        "UMask": "0x2"
--    },
--    {
--        "BriefDescription": "Unfilled issue slots per cycle because of a f=
-ull resource in the backend",
--        "CollectPEBSRecord": "1",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xCA",
--        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RESOURCE_FULL",
--        "PDIR_COUNTER": "na",
--        "PEBScounters": "0,1,2,3",
--        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed because of a full resource in the backend.  Incl=
-uding but not limited to resources such as the Re-order Buffer (ROB), reser=
-vation stations (RS), load/store buffers, physical registers, or any other =
-needed machine resource that is currently unavailable.   Note that uops mus=
-t be available for consumption in order for this event to fire.  If a uop i=
-s not available (Instruction Queue is empty), this event will not count.",
--        "SampleAfterValue": "200003",
--        "UMask": "0x1"
-     }
--]
-\ No newline at end of file
-+]
-diff --git a/tools/perf/pmu-events/arch/x86/goldmontplus/pipeline.json b/to=
-ols/perf/pmu-events/arch/x86/goldmontplus/pipeline.json
-index 8305e2ecf617..4d7e3129e5ac 100644
---- a/tools/perf/pmu-events/arch/x86/goldmontplus/pipeline.json
-+++ b/tools/perf/pmu-events/arch/x86/goldmontplus/pipeline.json
-@@ -290,6 +290,41 @@
-         "PublicDescription": "Counts INST_RETIRED.ANY using the Reduced Sk=
-id PEBS feature that reduces the shadow in which events aren't counted allo=
-wing for a more unbiased distribution of samples across instructions retire=
-d.",
-         "SampleAfterValue": "2000003"
-     },
-+    {
-+        "BriefDescription": "Unfilled issue slots per cycle",
-+        "CollectPEBSRecord": "1",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xCA",
-+        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.ANY",
-+        "PDIR_COUNTER": "na",
-+        "PEBScounters": "0,1,2,3",
-+        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend due to either a full resource  in=
- the backend (RESOURCE_FULL) or due to the processor recovering from some e=
-vent (RECOVERY).",
-+        "SampleAfterValue": "200003"
-+    },
-+    {
-+        "BriefDescription": "Unfilled issue slots per cycle to recover",
-+        "CollectPEBSRecord": "1",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xCA",
-+        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RECOVERY",
-+        "PDIR_COUNTER": "na",
-+        "PEBScounters": "0,1,2,3",
-+        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend because allocation is stalled wai=
-ting for a mispredicted jump to retire or other branch-like conditions (e.g=
-. the event is relevant during certain microcode flows).   Counts all issue=
- slots blocked while within this window including slots where uops were not=
- available in the Instruction Queue.",
-+        "SampleAfterValue": "200003",
-+        "UMask": "0x2"
-+    },
-+    {
-+        "BriefDescription": "Unfilled issue slots per cycle because of a f=
-ull resource in the backend",
-+        "CollectPEBSRecord": "1",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xCA",
-+        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RESOURCE_FULL",
-+        "PDIR_COUNTER": "na",
-+        "PEBScounters": "0,1,2,3",
-+        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed because of a full resource in the backend.  Incl=
-uding but not limited to resources such as the Re-order Buffer (ROB), reser=
-vation stations (RS), load/store buffers, physical registers, or any other =
-needed machine resource that is currently unavailable.   Note that uops mus=
-t be available for consumption in order for this event to fire.  If a uop i=
-s not available (Instruction Queue is empty), this event will not count.",
-+        "SampleAfterValue": "200003",
-+        "UMask": "0x1"
-+    },
-     {
-         "BriefDescription": "Loads blocked because address has 4k partial =
-address false dependence (Precise event capable)",
-         "CollectPEBSRecord": "2",
-@@ -456,4 +491,4 @@
-         "SampleAfterValue": "2000003",
-         "UMask": "0x1"
-     }
--]
-\ No newline at end of file
-+]
---=20
-2.36.0.rc0.470.gd361397f0d-goog
+I've just added one to dtschema.
 
+Rob
