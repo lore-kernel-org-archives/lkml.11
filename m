@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5631FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F27C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237503AbiDMWWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S237671AbiDMWWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236884AbiDMWWE (ORCPT
+        with ESMTP id S238074AbiDMWW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 18:22:04 -0400
+        Wed, 13 Apr 2022 18:22:29 -0400
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202DC220F1;
-        Wed, 13 Apr 2022 15:19:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7119D24BE9;
+        Wed, 13 Apr 2022 15:19:48 -0700 (PDT)
 Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 017155C0337;
-        Wed, 13 Apr 2022 18:19:38 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id CB4D95C02B7;
+        Wed, 13 Apr 2022 18:19:47 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 13 Apr 2022 18:19:38 -0400
+  by compute5.internal (MEProxy); Wed, 13 Apr 2022 18:19:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649888377; x=1649974777; bh=tY
-        YXooyzfoVASIVFw46sk2jtQuSFQj7O0CjADjvQKS4=; b=fnbQiRCWZKoa6P2AFl
-        UCN2cUs8hriQsg+DTZJBhg6fKGCwumuG62IEDgTeIiEx9yd5Y1F2hMRzmAcFysU5
-        cS5hbbwRvTDrqSiI42YGA1xc24+rimiICmi7tDg7maQ+IZmLT79JX6fRm2/kIlnX
-        AdnUOwD50xQ/TZGy5Gk/gMqwVhyiKLYduZRYZ36jurBvH52iY4pT3Nl2aod3hUc5
-        6iGJqiTgMBuhEAHhi1wcQ/oUMksynJiu0PMEoflM0ten8rn0ZVXh2BO+hHQiVrIB
-        +4BmFZAJ1a7YP5ChIryCqaxBdjOabDNj1b7qNr4rtu3rdHfBlbYicnlssHQHBNvl
-        0AXQ==
+        :subject:subject:to:to; s=fm2; t=1649888387; x=1649974787; bh=fM
+        itBsbOl69eJtZqeNqN7y5Gep0bncSngDUeMZp8zB4=; b=qJkffVFYB9u7OIdDzI
+        T+1qUMCsmcnyDpSK9V3nkFZ5QOoQsHC/fGuXl63TdKyWdr72KmxelbV6YPH7WaQ7
+        Baf3DTKZeommUEDIxwu+J+/OwRmkTX+phQZWLXNE4EyZ/80yATPkevMKvx6PQQku
+        DvbyMupWMAu9HlWSjjud30mpLgrW1oaWCLhiDEuirEqfEAgEbRvOd2i1IWyhqqmo
+        flEf8CWNhsligN4vGyse639Z6hV+Avv09HlueYb/KVCsbk7jLUeIaQ/MRmy+AFqH
+        Q2lNi5ZeQNi5RgdxbYaaq+YAowpHa5WnFT3Ek6/aP2swQ7dSpi0Myn0Ctc3uTi6i
+        TQNw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1649888377; x=1649974777; bh=tYYXooyzfoVASIVFw46sk2jtQuSFQj7O0Cj
-        ADjvQKS4=; b=JN/u/DVSKTUMgkOEo/iiZMZiOEglinf5P/JGht+fnQMEX2vTL6r
-        O8uAgoyL3b3P8vqeTD6RQk37E9K/+khwTK14Lb31637ClNaOGPkF+em+6t7aBayA
-        eJ/b0tyMz8afdMlBiDmDzZLzCIoHbYvyrFE3iy7fAqjgzemvzHdEPcIhlEwhDlez
-        VKMjbIU8z3XpSxUByu4aKmIosWw+sncCKB2cxPzO32OYF1vrtoEOFEmeU6yHDszL
-        BoNSU8UuuTaEEqA8kMhNz815ly6AKTi5c1Ep8EoYIDNrc1/Ecr2OZ6GBMpO0Z7BJ
-        2B0/IA6LoAqWwKojy5gqAufaOx4Q9tQ/8MA==
-X-ME-Sender: <xms:eUxXYu9OYNvQGclWWjORrBXpPd1NN9mLBU6k3xxUcdQRC5vt3nrzOg>
-    <xme:eUxXYutxNj3VchCYStPIfUzD0la9ta1Nqu9QG_EN1Cp9t6YrU4WrabBh0LDMMF9iu
-    KySpTIqK2w109KxAg>
-X-ME-Received: <xmr:eUxXYkD7i8AQxF957Z6G6t3AEWuJdi4W-VArYJk9Tye1Qi9yHpMjfJDtpi2fgm7P3YOAhSsWKHShCz-5yt822dxnadZKNpsch_AGBVWTRhfAcKMA_U_iVZiKYgjREnKdKUt_3w>
+        1649888387; x=1649974787; bh=fMitBsbOl69eJtZqeNqN7y5Gep0bncSngDU
+        eMZp8zB4=; b=iFab+bH6MXUBpnDsciPRLYKcTitrp1MRRAMJsBccGx0Yj72+C54
+        qt0C6cHdYHQgI536AX+ZfWtAyYD1261wPAL10dugJO1L+R9kDXDwJVRzYgYhS3Wg
+        igMT9SrlenjEXrpj5bTVasZpwFp+wTYHSKMLPgcjAoorkJILWjszYaFWU3DQZQ39
+        kzqHcMf2F16lcAa/dIedVMMsg16vJ4kPkYy96vHFp+Wl3hOZO5/cA1pXmsNA5mBv
+        zsHy4zQi4qGoDlhvchcnQ36PgsEErts66IqUmxTVpmtRw77/GCSsf9TTdbO3aOhm
+        zWRxjedZPyxwL68m8khLTjbcXEqqG0X0ezA==
+X-ME-Sender: <xms:g0xXYtq0gLXvboy0GsxiZEeC8KTPOSWdgxykZ1PovVlJ4GwE-fuRyQ>
+    <xme:g0xXYvr4NvcVt8DFEIPal1TSYh8yQP0ibPrNXLjBWowNxIACW_-TP4vZEOP9ZuRuh
+    jmiAInFIKbEKxjCzA>
+X-ME-Received: <xmr:g0xXYqP28O_1v3d2s8ihZrOXJHO087D3eoZp-zESf8_e14M2VIr4Fr-CI38FgW4fW2UkcT1T6nqOAPJ6xgz7Dbstc3ddompA2lT8003K7gRMMdxShzkl4TjgGHbyO_TGYHrOKA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddgtdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
     lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
     frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
-    gfejheeuieenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhroh
+    gfejheeuieenucevlhhushhtvghrufhiiigvpeejnecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:eUxXYmfmOCMWEQpfK6gw9Kzh2-7QIzj9Fm8E1dPD-UiFMaKiEBX8lA>
-    <xmx:eUxXYjNochNR33-cJMl04LvxOoB5KaHysOJ8mksnVYnf0LD_bqpl_A>
-    <xmx:eUxXYgnMPtv_MKMf5wXzICajXp3n4gAbS8bHm2MryfU-AsxEOgeFzA>
-    <xmx:eUxXYmOzqQIxC8JW6qNOB_kQY9bBDLJVVGOtaiXnAa6zXBQNG7jf6Q>
+X-ME-Proxy: <xmx:g0xXYo7hVqSxK_v7zzGMhpv6w6KepFsAHvIN3-z_fYIXJzfSddXmdg>
+    <xmx:g0xXYs5hz1byBMezdfKKKFLPTyxIYqtTlpEW7lWtZLMNI6MdUBqs3w>
+    <xmx:g0xXYghV-pY2RFYK-Fql4TxS4Wg9NTzzw67H8D0vf2TYdIIPKy9WuQ>
+    <xmx:g0xXYvLtXab7fJiPDP0JtGnNjmKr3qpGhkjX6aYWjlmCpp-DDddHhw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 18:19:37 -0400 (EDT)
+ 13 Apr 2022 18:19:46 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
         Sandy Huang <hjc@rock-chips.com>,
@@ -86,9 +86,9 @@ Cc:     linux-rockchip@lists.infradead.org,
         Thomas Zimmermann <tzimmermann@suse.de>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 08/16] drm/rockchip: ebc: Add LUT loading
-Date:   Wed, 13 Apr 2022 17:19:08 -0500
-Message-Id: <20220413221916.50995-9-samuel@sholland.org>
+Subject: [RFC PATCH 13/16] drm/rockchip: ebc: Add a panel reflection option
+Date:   Wed, 13 Apr 2022 17:19:13 -0500
+Message-Id: <20220413221916.50995-14-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413221916.50995-1-samuel@sholland.org>
 References: <20220413221916.50995-1-samuel@sholland.org>
@@ -98,170 +98,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The EBC contains a 16 KiB SRAM which stores the current LUT. It needs to
-be programmed any time the LUT changes or the hardware block is enabled.
-Since both of these triggers can happen at the same time, use a flag to
-avoid writing the LUT twice.
+Some panels, like the one in the PineNote, are reflected. Since the
+driver already has to copy pixels, the driver can handle this with
+little additional overhead.
+
+Currently, there is no devicetree binding for this situation, so control
+the behavior via a module parameter.
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- drivers/gpu/drm/rockchip/Kconfig        |  3 +-
- drivers/gpu/drm/rockchip/rockchip_ebc.c | 76 +++++++++++++++++++++++++
- 2 files changed, 78 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/rockchip/rockchip_ebc.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/rockchip/Kconfig b/drivers/gpu/drm/rockchip/Kconfig
-index 9d3273a5fd97..efe4476e336d 100644
---- a/drivers/gpu/drm/rockchip/Kconfig
-+++ b/drivers/gpu/drm/rockchip/Kconfig
-@@ -94,7 +94,8 @@ endif
- 
- config DRM_ROCKCHIP_EBC
- 	tristate "DRM Support for Rockchip EBC"
--	depends on DRM
-+	depends on DRM && IIO
-+	select DRM_EPD_HELPER
- 	select DRM_GEM_SHMEM_HELPER
- 	select DRM_KMS_HELPER
- 	help
 diff --git a/drivers/gpu/drm/rockchip/rockchip_ebc.c b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-index 095d66e67c2f..ca3173b28d1c 100644
+index 93d689ff0933..9d0b2cdc5fdc 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_ebc.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-@@ -5,6 +5,7 @@
+@@ -166,6 +166,10 @@ static bool direct_mode = true;
+ module_param(direct_mode, bool, 0444);
+ MODULE_PARM_DESC(direct_mode, "compute waveforms in software (software LUT)");
  
- #include <linux/clk.h>
- #include <linux/completion.h>
-+#include <linux/iio/consumer.h>
- #include <linux/irq.h>
- #include <linux/kthread.h>
- #include <linux/module.h>
-@@ -122,6 +123,7 @@
- #define EBC_WIN_MST2			0x0058
- #define EBC_LUT_DATA			0x1000
- 
-+#define EBC_MAX_PHASES			256
- #define EBC_NUM_LUT_REGS		0x1000
- #define EBC_NUM_SUPPLIES		3
- 
-@@ -134,11 +136,15 @@ struct rockchip_ebc {
- 	struct drm_crtc			crtc;
- 	struct drm_device		drm;
- 	struct drm_encoder		encoder;
-+	struct drm_epd_lut		lut;
-+	struct drm_epd_lut_file		lut_file;
- 	struct drm_plane		plane;
-+	struct iio_channel		*temperature_channel;
- 	struct regmap			*regmap;
- 	struct regulator_bulk_data	supplies[EBC_NUM_SUPPLIES];
- 	struct task_struct		*refresh_thread;
- 	u32				dsp_start;
-+	bool				lut_changed;
- 	bool				reset_complete;
- };
- 
-@@ -282,10 +288,59 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
- 				 bool global_refresh,
- 				 enum drm_epd_waveform waveform)
++static bool panel_reflection = true;
++module_param(panel_reflection, bool, 0644);
++MODULE_PARM_DESC(panel_reflection, "reflect the image horizontally");
++
+ static bool skip_reset;
+ module_param(skip_reset, bool, 0444);
+ MODULE_PARM_DESC(skip_reset, "skip the initial display reset");
+@@ -1046,23 +1050,29 @@ static bool rockchip_ebc_blit_fb(const struct rockchip_ebc_ctx *ctx,
  {
-+	struct drm_device *drm = &ebc->drm;
-+	struct device *dev = drm->dev;
-+	int ret, temperature;
-+
-+	/* Resume asynchronously while preparing to refresh. */
-+	ret = pm_runtime_get(dev);
-+	if (ret < 0) {
-+		drm_err(drm, "Failed to request resume: %d\n", ret);
-+		return;
-+	}
-+
-+	ret = iio_read_channel_processed(ebc->temperature_channel, &temperature);
-+	if (ret < 0) {
-+		drm_err(drm, "Failed to get temperature: %d\n", ret);
-+	} else {
-+		/* Convert from millicelsius to celsius. */
-+		temperature /= 1000;
-+
-+		ret = drm_epd_lut_set_temperature(&ebc->lut, temperature);
-+		if (ret < 0)
-+			drm_err(drm, "Failed to set LUT temperature: %d\n", ret);
-+		else if (ret)
-+			ebc->lut_changed = true;
-+	}
-+
-+	ret = drm_epd_lut_set_waveform(&ebc->lut, waveform);
-+	if (ret < 0)
-+		drm_err(drm, "Failed to set LUT waveform: %d\n", ret);
-+	else if (ret)
-+		ebc->lut_changed = true;
-+
-+	/* Wait for the resume to complete before writing any registers. */
-+	ret = pm_runtime_resume(dev);
-+	if (ret < 0) {
-+		drm_err(drm, "Failed to resume: %d\n", ret);
-+		pm_runtime_put(dev);
-+		return;
-+	}
-+
-+	/* This flag may have been set above, or by the runtime PM callback. */
-+	if (ebc->lut_changed) {
-+		ebc->lut_changed = false;
-+		regmap_bulk_write(ebc->regmap, EBC_LUT_DATA,
-+				  ebc->lut.buf, EBC_NUM_LUT_REGS);
-+	}
-+
- 	if (global_refresh)
- 		rockchip_ebc_global_refresh(ebc, ctx);
- 	else
- 		rockchip_ebc_partial_refresh(ebc, ctx);
-+
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
- }
+ 	unsigned int dst_pitch = ctx->gray4_pitch;
+ 	unsigned int src_pitch = fb->pitches[0];
+-	unsigned int x, y;
++	unsigned int start_x, x, y;
+ 	const void *src;
+ 	u8 changed = 0;
++	int delta_x;
+ 	void *dst;
  
- static int rockchip_ebc_refresh_thread(void *data)
-@@ -708,6 +763,15 @@ static int rockchip_ebc_drm_init(struct rockchip_ebc *ebc)
- 	struct drm_bridge *bridge;
- 	int ret;
- 
-+	ret = drmm_epd_lut_file_init(drm, &ebc->lut_file, "rockchip/ebc.wbf");
-+	if (ret)
-+		return ret;
++	delta_x = panel_reflection ? -1 : 1;
++	start_x = panel_reflection ? src_clip->x2 - 1 : src_clip->x1;
 +
-+	ret = drmm_epd_lut_init(&ebc->lut_file, &ebc->lut,
-+				DRM_EPD_LUT_4BIT_PACKED, EBC_MAX_PHASES);
-+	if (ret)
-+		return ret;
-+
- 	ret = drmm_mode_config_init(drm);
- 	if (ret)
- 		return ret;
-@@ -810,6 +874,13 @@ static int rockchip_ebc_runtime_resume(struct device *dev)
- 	if (ret)
- 		goto err_disable_hclk;
+ 	dst = ctx->final + dst_clip->y1 * dst_pitch + dst_clip->x1 / 2;
+-	src = vaddr + src_clip->y1 * src_pitch + src_clip->x1 * fb->format->cpp[0];
++	src = vaddr + src_clip->y1 * src_pitch + start_x * fb->format->cpp[0];
  
-+	/*
-+	 * Do not restore the LUT registers here, because the temperature or
-+	 * waveform may have changed since the last refresh. Instead, have the
-+	 * refresh thread program the LUT during the next refresh.
-+	 */
-+	ebc->lut_changed = true;
-+
- 	regcache_cache_only(ebc->regmap, false);
- 	regcache_mark_dirty(ebc->regmap);
- 	regcache_sync(ebc->regmap);
-@@ -919,6 +990,11 @@ static int rockchip_ebc_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, PTR_ERR(ebc->hclk),
- 				     "Failed to get hclk\n");
+ 	for (y = src_clip->y1; y < src_clip->y2; y++) {
+ 		const u32 *sbuf = src;
+ 		u8 *dbuf = dst;
  
-+	ebc->temperature_channel = devm_iio_channel_get(dev, NULL);
-+	if (IS_ERR(ebc->temperature_channel))
-+		return dev_err_probe(dev, PTR_ERR(ebc->temperature_channel),
-+				     "Failed to get temperature I/O channel\n");
-+
- 	for (i = 0; i < EBC_NUM_SUPPLIES; i++)
- 		ebc->supplies[i].supply = rockchip_ebc_supplies[i];
+ 		for (x = src_clip->x1; x < src_clip->x2; x += 2) {
+-			u32 rgb0 = *sbuf++;
+-			u32 rgb1 = *sbuf++;
++			u32 rgb0, rgb1;
+ 			u8 gray;
  
++			rgb0 = *sbuf; sbuf += delta_x;
++			rgb1 = *sbuf; sbuf += delta_x;
++
+ 			/* Truncate the RGB values to 5 bits each. */
+ 			rgb0 &= 0x00f8f8f8U; rgb1 &= 0x00f8f8f8U;
+ 			/* Put the sum 2R+5G+B in bits 24-31. */
+@@ -1136,6 +1146,13 @@ static void rockchip_ebc_plane_atomic_update(struct drm_plane *plane,
+ 		dst_clip->x2 += adjust;
+ 		src_clip.x2  += adjust;
+ 
++		if (panel_reflection) {
++			int x1 = dst_clip->x1, x2 = dst_clip->x2;
++
++			dst_clip->x1 = plane_state->dst.x2 - x2;
++			dst_clip->x2 = plane_state->dst.x2 - x1;
++		}
++
+ 		if (!rockchip_ebc_blit_fb(ctx, dst_clip, vaddr,
+ 					  plane_state->fb, &src_clip)) {
+ 			/* Drop the area if the FB didn't actually change. */
 -- 
 2.35.1
 
