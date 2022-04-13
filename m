@@ -2,100 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B6B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235640AbiDMOEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40532 "EHLO
+        id S235427AbiDMOFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235427AbiDMOEH (ORCPT
+        with ESMTP id S231764AbiDMOFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:04:07 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A75D488BD
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:01:45 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id u17-20020a05600c211100b0038eaf4cdaaeso4043820wml.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:01:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DTI5aKv+Llz9a6eH5cPOwZke9qYbkp9XtBDCcwx/bdw=;
-        b=oS95j73fR3+vosP7yR0hB/NfaUUiMsI9CRzXH79noDkneJGFCGDr7U501avBE0sDkD
-         w5vXv+3LHyeZpWp5UpIvj325ThHw25LCeWJZncZti/wuUKpWPVsD1YzrdH4WFQi1T+6q
-         IBwN77JR7evl8svl0PemG7rOF6eNwAHU5QJHqhKBu3rK9GGHngA7ljOTvPAxidIC5EpL
-         wA/BpDkA1RopEXQyPfUPg0QMjSk3Cxo8B2PC6+0Ao1rLTdI6nLA7+qOwR2SBhN4qzrrv
-         zhSrASTig7N0m+mUeCV7s+cWYF+GcGW8iwi3wx4LTfPDjDO+zhE+u3o2SsAKMh74E2TJ
-         uRDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DTI5aKv+Llz9a6eH5cPOwZke9qYbkp9XtBDCcwx/bdw=;
-        b=Gfle4T8H+EZxe3N4A7J/eBMjJgIercepfnNLEGK8vIzrcdlwPTO7ue0+xG8cMD+yX8
-         RtI1b9DP5km2KBIyzAKJJLk2scaHMjgGJSu5WW1F0uuOcqQpXB2exlUnNOZy3epjwdNF
-         FLTOLx8YcE6kbdQf3vTq08rE5swwCN2mffWU02gyOSO0Q4Rf48fllfY5/0bEp28eXnqp
-         I27PQN7BiSJjyqFMmm3GEf4CiPPqT33YbG5RMOUe6CQIQG39XyY/Op8LejC0Mh6czAR/
-         rnWssdn+lcICC7ciS1DLdofQAIR3lEwmjnxP804gYpUL3N7kYY7unqrcpspkQ1xQVcr6
-         4Lmg==
-X-Gm-Message-State: AOAM533tAMUZ98XosnfDiqrbGBR3iME4PDPc+ooM65mNJciWAq2rfCQP
-        9HoiRR9/QXwcit2SJTbiMppYzQ==
-X-Google-Smtp-Source: ABdhPJzgc2lgi92TiqfkjIvUbTtRFT8RLl3JsThFjpis+TU/Z+jZb74O4DrydZ+C81HbiU8wLdQ69w==
-X-Received: by 2002:a05:600c:1d18:b0:38f:f19c:37ee with SMTP id l24-20020a05600c1d1800b0038ff19c37eemr60529wms.88.1649858503913;
-        Wed, 13 Apr 2022 07:01:43 -0700 (PDT)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:756e:dffc:3f22:6bcd])
-        by smtp.gmail.com with ESMTPSA id v1-20020adf9e41000000b00205c3d212easm32745997wre.51.2022.04.13.07.01.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 07:01:43 -0700 (PDT)
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-To:     Kent Gibson <warthog618@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <brgl@bgdev.pl>, stable@vger.kernel.org
-Subject: [PATCH] gpio: sim: fix setting and getting multiple lines
-Date:   Wed, 13 Apr 2022 16:01:32 +0200
-Message-Id: <20220413140132.286848-1-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.32.0
+        Wed, 13 Apr 2022 10:05:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97D4D58813
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:02:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649858566;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tAfD3NhN7fayTDj+zqA64IJMnx8ZxzqbVRBoMThFMGA=;
+        b=DpXmLyETWnY+UTtNVFfLoDQsbCtlVDvmXpz7H/kcYaiRwRjJ9Ea3VLmbhfnHp/Y8VS13W6
+        IndVnyRCksUN7h7EQIMG3T+xDD4Jb6do5FXlxu1Z1nJ6LAVjNgwun5xpjY+KvgWbBbWvnv
+        qcDScLvmEAZouIRU85eox+y9+OaHULI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-636-xzrjdR4XMWORsqlOI_ibHw-1; Wed, 13 Apr 2022 10:02:44 -0400
+X-MC-Unique: xzrjdR4XMWORsqlOI_ibHw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D49A129DD987;
+        Wed, 13 Apr 2022 14:02:35 +0000 (UTC)
+Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 569B4C28109;
+        Wed, 13 Apr 2022 14:02:35 +0000 (UTC)
+Message-ID: <06ed6ba2-00c4-ab38-4fcf-611133865615@redhat.com>
+Date:   Wed, 13 Apr 2022 10:02:35 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 00/12] device-core: Enable device_lock() lockdep
+ validation
+Content-Language: en-US
+To:     Dan Williams <dan.j.williams@intel.com>, linux-cxl@vger.kernel.org
+Cc:     Ira Weiny <ira.weiny@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Will Deacon <will@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev
+References: <164982968798.684294.15817853329823976469.stgit@dwillia2-desk3.amr.corp.intel.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <164982968798.684294.15817853329823976469.stgit@dwillia2-desk3.amr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We need to take mask into account in the set/get_multiple() callbacks.
-Use bitmap_replace() instead of bitmap_copy().
+On 4/13/22 02:01, Dan Williams wrote:
+> Changes since v1 [1]:
+> - Improve the clarity of the cover letter and changelogs of the
+>    major patches (Patch2 and Patch12) (Pierre, Kevin, and Dave)
+> - Fix device_lock_interruptible() false negative deadlock detection
+>    (Kevin)
+> - Fix off-by-one error in the device_set_lock_class() enable case (Kevin)
+> - Spelling fixes in Patch2 changelog (Pierre)
+> - Compilation fixes when both CONFIG_CXL_BUS=n and
+>    CONFIG_LIBNVDIMM=n. (0day robot)
+>
+> [1]: https://lore.kernel.org/all/164610292916.2682974.12924748003366352335.stgit@dwillia2-desk3.amr.corp.intel.com/
+>
+> ---
+>
+> The device_lock() is why the lockdep_set_novalidate_class() API exists.
+> The lock is taken in too many disparate contexts, and lockdep by design
+> assumes that all device_lock() acquisitions are identical. The lack of
+> lockdep coverage leads to deadlock scenarios landing upstream. To
+> mitigate that problem the lockdep_mutex was added [2].
+>
+> The lockdep_mutex lets a subsystem mirror device_lock() acquisitions
+> without lockdep_set_novalidate_class() to gain some limited lockdep
+> coverage. The mirroring approach is limited to taking the device_lock()
+> after-the-fact in a subsystem's 'struct bus_type' operations and fails
+> to cover device_lock() acquisition in the driver-core. It also can only
+> track the needs of one subsystem at a time so, for example the kernel
+> needs to be recompiled between CONFIG_PROVE_NVDIMM_LOCKING and
+> CONFIG_PROVE_CXL_LOCKING depending on which subsystem is being
+> regression tested. Obviously that also means that intra-subsystem
+> locking dependencies can not be validated.
 
-Fixes: cb8c474e79be ("gpio: sim: new testing module")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
----
- drivers/gpio/gpio-sim.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Instead of using a fake lockdep_mutex, maybe you can just use a unique 
+lockdep key for each subsystem and call lockdep_set_class() in the 
+device_initialize() if such key is present or 
+lockdep_set_novalidate_class() otherwise. The unique key can be passed 
+either as a parameter to device_initialize() or as part of the device 
+structure. It is certainly less cumbersome that having a fake 
+lockdep_mutex array in the device structure.
 
-diff --git a/drivers/gpio/gpio-sim.c b/drivers/gpio/gpio-sim.c
-index 8e5d87984a48..41c31b10ae84 100644
---- a/drivers/gpio/gpio-sim.c
-+++ b/drivers/gpio/gpio-sim.c
-@@ -134,7 +134,7 @@ static int gpio_sim_get_multiple(struct gpio_chip *gc,
- 	struct gpio_sim_chip *chip = gpiochip_get_data(gc);
- 
- 	mutex_lock(&chip->lock);
--	bitmap_copy(bits, chip->value_map, gc->ngpio);
-+	bitmap_replace(bits, bits, chip->value_map, mask, gc->ngpio);
- 	mutex_unlock(&chip->lock);
- 
- 	return 0;
-@@ -146,7 +146,7 @@ static void gpio_sim_set_multiple(struct gpio_chip *gc,
- 	struct gpio_sim_chip *chip = gpiochip_get_data(gc);
- 
- 	mutex_lock(&chip->lock);
--	bitmap_copy(chip->value_map, bits, gc->ngpio);
-+	bitmap_replace(chip->value_map, chip->value_map, bits, mask, gc->ngpio);
- 	mutex_unlock(&chip->lock);
- }
- 
--- 
-2.32.0
+Cheers,
+Longman
 
