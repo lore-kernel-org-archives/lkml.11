@@ -2,88 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD45C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238381AbiDMTaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
+        id S238385AbiDMTbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235254AbiDMTam (ORCPT
+        with ESMTP id S238367AbiDMTbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:30:42 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C013273041
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:20 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649878097;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JDSn48VO/uynw53/sb4SAMVT5nBlYcr9rW/XWz8GxpM=;
-        b=sgF7TidZ/P5xqTORl4THKhdzQ00G5F6Fn39wehah+VVZmo+WJOxBeHdzsNbNNIShn9WE6w
-        Qt9Bazc4jEh/KaM/hD9VnKJ780fSIt7YjOm05xnrVlhblVT2a3/vrvFbj/2vEF002aW9G4
-        2nQnx8WcHwg902UfuFYSedzVMroR/2M=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v3 3/3] kasan: use stack_trace_save_shadow
-Date:   Wed, 13 Apr 2022 21:26:46 +0200
-Message-Id: <05fb7a41510f471f82aa1f3930ed3aac8abe2410.1649877511.git.andreyknvl@google.com>
-In-Reply-To: <cover.1649877511.git.andreyknvl@google.com>
-References: <cover.1649877511.git.andreyknvl@google.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+        Wed, 13 Apr 2022 15:31:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181E775608
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9BA2B8276E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 19:28:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B0C1C385A4;
+        Wed, 13 Apr 2022 19:28:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649878107;
+        bh=KfuSlyE1Z5VblHuvIYYUHgpgwRqcjLvXRY0q5P7T52Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UhglDxe97PIX9nMF7wv1SmFiymZ/cqXvd0dgEdMWBnLtRRNwPv7tPttnZl+u4Y9Uo
+         0b1oGxWzdp6pH1h7fgLbLcpYlfzj1UHoYB2wfJVhfsYBXn41Kdqr0+vbC+XzIzkcJD
+         KKeIyUjY148rBOoOzwakAm5zzAPbSWKVgcY/VhZg=
+Date:   Wed, 13 Apr 2022 12:28:26 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Patrick Wang <patrick.wang.shcn@gmail.com>
+Cc:     catalin.marinas@arm.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm: kmemleak: take a full lowmem check in
+ kmemleak_*_phys()
+Message-Id: <20220413122826.792a859d90b6c2822b1c796a@linux-foundation.org>
+In-Reply-To: <20220413122925.33856-1-patrick.wang.shcn@gmail.com>
+References: <20220413122925.33856-1-patrick.wang.shcn@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+On Wed, 13 Apr 2022 20:29:25 +0800 Patrick Wang <patrick.wang.shcn@gmail.com> wrote:
 
-Use stack_trace_save_shadow() to collect stack traces whenever
-CONFIG_HAVE_SHADOW_STACKTRACE is enabled. This improves the
-boot time of a defconfig build by ~30% for all KASAN modes.
+> The kmemleak_*_phys() apis do not check the address for lowmem's min
+> boundary, while the caller may pass an address below lowmem, which
+> will trigger an oops:
 
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- mm/kasan/common.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-index 23b30fa6e270..00fef2e5fe90 100644
---- a/mm/kasan/common.c
-+++ b/mm/kasan/common.c
-@@ -97,7 +97,9 @@ depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
- 	unsigned long entries[KASAN_STACK_DEPTH];
- 	unsigned int nr_entries;
- 
--	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
-+	nr_entries = stack_trace_save_shadow(entries, ARRAY_SIZE(entries));
-+	if (nr_entries < 0)
-+		nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
- 	return __stack_depot_save(entries, nr_entries, flags, can_alloc);
- }
- 
--- 
-2.25.1
-
+Do you believe this fix should be backported into -stable kernels?   
