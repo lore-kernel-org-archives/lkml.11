@@ -2,108 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB47C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A823C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237649AbiDMU5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 16:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
+        id S238745AbiDMU6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 16:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236230AbiDMU5B (ORCPT
+        with ESMTP id S232043AbiDMU6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 16:57:01 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800F4220E0;
-        Wed, 13 Apr 2022 13:54:38 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id s14-20020a17090a880e00b001caaf6d3dd1so7363978pjn.3;
-        Wed, 13 Apr 2022 13:54:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Z8n2FKlH4PPLZudd5wmQXBKFzCBNjhBZWi9v/kIPikk=;
-        b=SapZ8FRGWZ38OHiXjH2V0nZ1xZ+fof7DG0rpw+atdv7R6rTyBDgBymXUCrK00dZoqS
-         UHt7b3BsHtsPUvAV6WzBP18RF7n2S8Yd5L85WtoATnLc9tk4XuBC9GNzARrQdgxLzTYQ
-         5br+Ik1swXuR2oVyTa8oXHNgHpjlQCBsC5N5KRMMLLTQ/3tBpI+SK6+UtoaPE/2BmC1z
-         JwLOIjv6BWN9FzDqcV6QJuA1NpPyKuwKlEuDNH1eq3IKKGR0e1gHPKSt3mVQk5NGOdsQ
-         AqvIETui/UCK2K5epA8zLO20vOQbAmyctvQYlxv4Vbl9/iqS1cB8U9kNHRwQ4ocfr05v
-         1GOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Z8n2FKlH4PPLZudd5wmQXBKFzCBNjhBZWi9v/kIPikk=;
-        b=5XhGibGud4At2iW/M7HR7vziRTatsVDPiaeXpxYIFJ+CMG4PdhOJzJOeAXKLj5CQ/7
-         +g6xtrRxpzrQkbN44AoQi4gS4dvypO4wB2cRiBcnu5R0Nf786EmQewnxV5f0mjkxmPhx
-         JtQrsmG4IrCu9o3jEYQtJOPLgXIvjrF+Nrf+ZKc1Qp+fr72Kq7xMsNFcb1qZNnjKzspR
-         hdCK1YDy3S/Cg7icL6kXV4Sw831e0ulpkjbM7MWQz4fDYOW3g4qM4t31rnT1R1ANkSx+
-         S5w4EanAARCHxEBUvbyRwwGOnL2e35CU9yoU5nkQzaJm6+3BXTMc4k23R6JqYJSTqap3
-         yX4A==
-X-Gm-Message-State: AOAM530iJv4kuEBKAsEtZkS/od7QqxoCQjaZ2+KPugdsqP51AJORleQe
-        DEv3S7sK/q6Ae1nsewVnqWM=
-X-Google-Smtp-Source: ABdhPJz9zFqadNRA+ndtin3mKhcwMF1jk+93aKdbtcYAcws109E/nP5a7ElcKU6Bf/j8DS2xCdRhlw==
-X-Received: by 2002:a17:902:8644:b0:153:9f01:2090 with SMTP id y4-20020a170902864400b001539f012090mr43303158plt.101.1649883277874;
-        Wed, 13 Apr 2022 13:54:37 -0700 (PDT)
-Received: from [172.30.1.44] ([14.32.163.5])
-        by smtp.gmail.com with ESMTPSA id l4-20020a056a0016c400b004f79504ef9csm43549529pfc.3.2022.04.13.13.54.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 13:54:37 -0700 (PDT)
-Message-ID: <924e2208-d939-0243-9780-ae1b8cbd2c49@gmail.com>
-Date:   Thu, 14 Apr 2022 05:54:31 +0900
+        Wed, 13 Apr 2022 16:58:33 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E7D71EEB
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:56:11 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23DJOsP6032104;
+        Wed, 13 Apr 2022 20:56:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=zFdCpTXXgWrFWcy3H0SWpawLipk2KMmMnlwjdvx1Pes=;
+ b=kmRlyV3ABI/BNExSjxztJY0YUKr5ucnFVOgR3vfOJFDnuF6YqyZ9ZpBkA7mSiGqe766a
+ YvpS50BeljQM5G03BTHFWCiH58wUsBkEfNdJZ4RAIavuiiG1k1j8L+RtySkegHebMdId
+ D4Q+r/qEB0jCWDKkEkZ5k7BfEcZV0keCNAXGB1Jl/GX7py+6kuw3rYUIovcPwPX13LfP
+ Q1Flk7w5Affby6UfKL+7ovld8EKx1qkhl+gVvY+K6s99D667ClwxlU/xsOAVsTvSJpy5
+ 3K1Rrx3bTbgWlXz1M0R1U7YMrpPSxGYIn48GD8ywhm0EwJZDmJR4+IvfQ3EWox95wrjT Xw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fe4ng1mn2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Apr 2022 20:56:06 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23DKjf5x009064;
+        Wed, 13 Apr 2022 20:56:05 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fe4ng1mmr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Apr 2022 20:56:05 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23DKrqc0021123;
+        Wed, 13 Apr 2022 20:56:04 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03fra.de.ibm.com with ESMTP id 3fb1s8nxuh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Apr 2022 20:56:03 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23DKu1TF45285876
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 13 Apr 2022 20:56:01 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A4A9D4C040;
+        Wed, 13 Apr 2022 20:56:01 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 02CE34C044;
+        Wed, 13 Apr 2022 20:56:01 +0000 (GMT)
+Received: from linux.ibm.com (unknown [9.145.63.101])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 13 Apr 2022 20:56:00 +0000 (GMT)
+Date:   Wed, 13 Apr 2022 23:55:59 +0300
+From:   Mike Rapoport <rppt@linux.ibm.com>
+To:     David Rientjes <rientjes@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Suren Baghdasaryan <surenb@google.com>
+Subject: Re: [PATCH] mm, page_alloc: check pfn is valid before moving to
+ freelist
+Message-ID: <Ylc437iBoQ4AU6zT@linux.ibm.com>
+References: <cover.1649794059.git.quic_sudaraja@quicinc.com>
+ <fb3c8c008994b2ed96f74b6b9698ff998b689bd2.1649794059.git.quic_sudaraja@quicinc.com>
+ <20220412135912.93175db2ab4e83f4bb060dbf@linux-foundation.org>
+ <6daaaf5c-529d-f3eb-7486-a72cabb6e396@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: devfreq: mediatek: Add mtk cci
- devfreq dt-bindings
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Johnson Wang <johnson.wang@mediatek.com>,
-        cw00.choi@samsung.com, krzk+dt@kernel.org, robh+dt@kernel.org,
-        kyungmin.park@samsung.com
-Cc:     khilman@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220408052150.22536-1-johnson.wang@mediatek.com>
- <20220408052150.22536-2-johnson.wang@mediatek.com>
- <855d7daa-45d1-d6d8-32bd-51778cf58392@linaro.org>
- <fe7d2b878c18a42ff36ebd9911ecb562fe29c953.camel@mediatek.com>
- <39152c86-ca11-2792-6b25-ae55ffb47b09@linaro.org>
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-In-Reply-To: <39152c86-ca11-2792-6b25-ae55ffb47b09@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6daaaf5c-529d-f3eb-7486-a72cabb6e396@google.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: SW9633Sh-JymDy_xVNz4-8CEsiVRHlvt
+X-Proofpoint-GUID: 3xffx9zLA32th8JUbQMcVsgGaBbYNBDY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-13_04,2022-04-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ impostorscore=0 priorityscore=1501 adultscore=0 clxscore=1015
+ malwarescore=0 mlxlogscore=658 spamscore=0 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204130100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22. 4. 12. 18:17, Krzysztof Kozlowski wrote:
-> On 11/04/2022 14:10, Johnson Wang wrote:
->>> Also please put it in the "interconnect" directory.
->>>
->>
->> I don't really know about "interconnect".
->> However, it looks like a Linux framework about data transfer and "NoC".
->>
->> While this cci driver is more like a power managment which is
->> responsible for adjusting voltages and frequencies.
->> In my opinion, "devfreq" should be more suitable.
->>
->> Please correct me if my understanding is wrong.
+On Tue, Apr 12, 2022 at 02:05:51PM -0700, David Rientjes wrote:
+> On Tue, 12 Apr 2022, Andrew Morton wrote:
 > 
-> devfreq is a Linux mechanism, not a real device/hardware. We try to put
-> the bindings in directories/subsystems matching the hardware, therefore
-> devfreq is not appropriate.
+> > On Tue, 12 Apr 2022 13:16:23 -0700 Sudarshan Rajagopalan <quic_sudaraja@quicinc.com> wrote:
+> > 
+> > > Check if pfn is valid before or not before moving it to freelist.
+> > > 
+> > > There are possible scenario where a pageblock can have partial physical
+> > > hole and partial part of System RAM. This happens when base address in RAM
+> > > partition table is not aligned to pageblock size.
+> > > 
+> > > ...
+> > >
+> > > 
+> > > Signed-off-by: Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>
+> > > Fixes: 4c7b9896621be ("mm: remove pfn_valid_within() and CONFIG_HOLES_IN_ZONE")
+> > 
+> > I made that 859a85ddf90e714092dea71a0e54c7b9896621be and added
+> > cc:stable.  I'll await reviewer input before proceeding further.
+> > 
 > 
-> Whether interconnect - or other subsystem - is appropriate, I am not
-> sure. To me this looks exactly like bus bandwidth management and you
-> even use "interconnect" in several places. So interconnect matches.
+> Acked-by: David Rientjes <rientjes@google.com>
+> 
+> > > --- a/mm/page_alloc.c
+> > > +++ b/mm/page_alloc.c
+> > > @@ -2521,6 +2521,11 @@ static int move_freepages(struct zone *zone,
+> > >  	int pages_moved = 0;
+> > >  
+> > >  	for (pfn = start_pfn; pfn <= end_pfn;) {
+> > > +		if (!pfn_valid(pfn)) {
+> > 
+> > Readers will wonder how we can encounter an invalid pfn here.  A small
+> > comment might help clue them in.
+> > 
+> 
+> Sudarshan can correct me if I'm wrong, but this has to do with the 
+> pageblock alignment of the caller that assumes all pages in the range has 
+> an underlying struct page that we can access but that fails to hold true 
+> when we have a memory hole.  A comment would definitely help:
 
-I think that 'Documentation/devicetree/bindings/arm/mediatek' is proper.
+We do have a struct page for every page in a pageblock even if there is a
+hole in the physical memory. If this is not the case, there is more
+fundamental bug that should be fixed.
+ 
+> 	/* Pageblock alignment may cause us to try to access into a hole */
+> 
+> > > +			pfn++;
+> > > +			continue;
+> > > +		}
+> > > +
+> > >  		page = pfn_to_page(pfn);
+> > >  		if (!PageBuddy(page)) {
+> > >  			/*
+> > 
+> > 
+> > 
 
 -- 
-Best Regards,
-Samsung Electronics
-Chanwoo Choi
+Sincerely yours,
+Mike.
