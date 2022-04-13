@@ -2,85 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20774C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A390AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237184AbiDMRFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
+        id S230496AbiDMRGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbiDMRF1 (ORCPT
+        with ESMTP id S229538AbiDMRGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:05:27 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC117674FA;
-        Wed, 13 Apr 2022 10:03:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649869386; x=1681405386;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=3sLJ+uyAKa3UrdllPSpp3zBHMlm7dcdDzaDGCF4r4Ts=;
-  b=CL+t1ik9fqBLjojWU3b96wU0539otnM2E3WxHAWlZS+WBy1yokPmz6TI
-   K95NaTcpMe7/lk/13jqr+p1Lo1xzyR1iGboCarYKC0enW9tBk5/y3l+L9
-   GmqfztucJA3nSltRLnVfDFEh4RgfTyZv5pLo0hf4rRAuVKhxDuTR6oI7H
-   QL6KrzED1O4FcDrWk/0ZcHJyTo2jb0IbbND2hvRo2U7Mdtrd+pkLVf9xu
-   vv+8FbbZQumdA1FAm+T2fDrbZ7rq3bhj7KegoZY9g7bTCVdYqLRSxzA8P
-   x8QQGtP4NAeQkjEH4/WrAaSrYl1UOUWiMx7piJpfNz4AJHG+u0zOMoJsE
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244606126"
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="244606126"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 10:02:34 -0700
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="527018619"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 10:02:32 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1negKT-001w6X-Qi;
-        Wed, 13 Apr 2022 19:58:53 +0300
-Date:   Wed, 13 Apr 2022 19:58:53 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v1 1/3] iio: imu: adis16480: Make use of device properties
-Message-ID: <YlcBTfVdtp7nUhjR@smile.fi.intel.com>
-References: <20220413144124.72537-1-andriy.shevchenko@linux.intel.com>
- <PH0PR03MB67867FD2A0043F5331D1C5E399EC9@PH0PR03MB6786.namprd03.prod.outlook.com>
+        Wed, 13 Apr 2022 13:06:50 -0400
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4377D2E9E2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:04:28 -0700 (PDT)
+Received: by mail-qt1-f182.google.com with SMTP id z15so1790315qtj.13
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:04:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1gkKYNxAVgG9gQQX5FWE9T2WbQK+aJhhHh5HXzZzRl0=;
+        b=eD46y7DSuAwpZt2kCawtVnAJ5hjr8uaJ3IOzsJ58DMvgBTOiqOB8Sonf6uUc/0Q57C
+         /uHfZKftQHmoCHB0Md9ZQcbFo+Ndoio7UGECJozuvg+Rhu+dY3VBjQPvYnWsMY1FFrDf
+         xaCdU9vMQTRVa6q05dHvyhOZipFjnqilCTMeaPjwZOdYt3BZ0rbRxCY8au/KR9bIvb5s
+         RZMtS4uGz6BSndUBvPyqbRIUpkBoMAFrYqvuzrdf+NC3Ommxv/XKExEDYMhSVb0vq+fM
+         djrOe6Q12ToLJDqZOmfQFACEVYBk1yesVNARFOvDZ0Vvk7roQHbm8Tyb/JUCqLtbI/16
+         GxpQ==
+X-Gm-Message-State: AOAM531Oq1XaDt/kSNWCvtNXfGjyLDsl/EUj8/K4o9NAteJjHfeS1Fu8
+        piQpMY0fhiYeCdWj0qgvOMTC
+X-Google-Smtp-Source: ABdhPJzk8Hsy6b4fFdojSz0Z/fwMjicI2vghSEfVW7+AE/QcDDdQw502GSidyJJNTGoVWuUmwvp37w==
+X-Received: by 2002:ac8:5e4e:0:b0:2e2:2bad:47b1 with SMTP id i14-20020ac85e4e000000b002e22bad47b1mr7781053qtx.493.1649869467355;
+        Wed, 13 Apr 2022 10:04:27 -0700 (PDT)
+Received: from localhost (pool-68-160-176-52.bstnma.fios.verizon.net. [68.160.176.52])
+        by smtp.gmail.com with ESMTPSA id a23-20020a05620a103700b00699d49c511dsm16089900qkk.104.2022.04.13.10.04.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 10:04:26 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 13:04:25 -0400
+From:   Mike Snitzer <snitzer@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Jens Axboe <axboe@kernel.dk>, Coly Li <colyli@suse.de>,
+        Song Liu <song@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Phillip Lougher <phillip@squashfs.org.uk>,
+        linux-block@vger.kernel.org, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
+        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org
+Subject: Re: [PATCH 4/5] block: turn bio_kmalloc into a simple kmalloc wrapper
+Message-ID: <YlcCmW0CLAFXB8UQ@redhat.com>
+References: <20220406061228.410163-1-hch@lst.de>
+ <20220406061228.410163-5-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <PH0PR03MB67867FD2A0043F5331D1C5E399EC9@PH0PR03MB6786.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220406061228.410163-5-hch@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 03:25:49PM +0000, Sa, Nuno wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Sent: Wednesday, April 13, 2022 4:41 PM
+On Wed, Apr 06 2022 at  2:12P -0400,
+Christoph Hellwig <hch@lst.de> wrote:
 
-...
-
-> You beat me to do this. I actually had planned to do this next week
-> once I saw we already have fwnode_irq_get_byname(). Anyways...
+> Remove the magic autofree semantics and require the callers to explicitly
+> call bio_init to initialize the bio.
 > 
-> Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+> This allows bio_free to catch accidental bio_put calls on bio_init()ed
+> bios as well.
 > 
-> (I will still give this a test next week)
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Acked-by: Mike Snitzer <snitzer@kernel.org>
