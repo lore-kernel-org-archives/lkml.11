@@ -2,231 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B692C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiDMIl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 04:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
+        id S232566AbiDMImC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 04:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233975AbiDMIlC (ORCPT
+        with ESMTP id S233972AbiDMIlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 04:41:02 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FD34F9F2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 01:38:35 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id be5so1332045plb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 01:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bva40hCaLIr1ELmfegrLbKYUXjrya+QMIfJXoLptDZI=;
-        b=jn1H2G9sQRsFHuUbkWKDzp3rUKyRZFL8LjPfrbX7OybYyveACo8Xvz4oLMOAwfeR7x
-         79RVwbzhxpXAaXfuiN45aswMQWM1WNheQOZlXYoVDuBvo9ge/hsoH1ekLaxy8ym2Hge6
-         wGinY+Nw6s83uNwl+WQxEtpS5Wmn1RdO5fyahxh7SQ4+RdiRtGqTV6EMqVF0Ww/03Msk
-         sPrS4gz8lNs8d0ko3lCRlHoaz8yPr6aSJ9dWX+zHuCt3U80BD9gBmycXJl01PMksY1go
-         jdp7hDpfU9cyIWWaVtyTBbMOWhMdBd1Bhg8PlD46xEbcjs/O8usO+tQ6LU8kpYef5REN
-         fUlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bva40hCaLIr1ELmfegrLbKYUXjrya+QMIfJXoLptDZI=;
-        b=pIrLNOPUSo1DypfV4xOCKV7CYJCPvNGn13a+qxPwnsXdlBBdPh/UtyTRRT9PxNdEhf
-         sYkxMxaE4fv/evIARnd1n2EkUDvnYtzN5q8pz8GZ9dXjBSvwzZ4BmKu+rsI8jhuI+QAe
-         Ni2O1Cp2Uo+wK5w/C6MTG4YoITRBWBHX5Dle3MAAo5ExALfNQkkrfkU9xF9SdhTTed3T
-         zt+GHLgGcLLiOhYYeaGVJIB3PulTcGXJAWqPc6/C6SfAKLSQng1AVj4iX/ujK1FT4/5W
-         hEdkQgfI1bmpOldbS85PiXWMNpNfmLyOipZlEKpGloQBfhVtiRT7vgtJj3NR6Gp8ZC48
-         TBTQ==
-X-Gm-Message-State: AOAM532yytqax/3NiSMlcqyVQSKuwXB2Ho2z8+Q/lUIrYUv33vqoz8DD
-        gsiaD6SWMFi3r2btE7gvEX8=
-X-Google-Smtp-Source: ABdhPJygofRLBPQWqf/xEplmXkc3AZ+4Noe2MlSvLi9WIlCn0DN5W6rn2iR1hT4EygX5R1aiMPR4VQ==
-X-Received: by 2002:a17:902:e9d3:b0:158:8521:1e8f with SMTP id 19-20020a170902e9d300b0015885211e8fmr8071136plk.82.1649839114331;
-        Wed, 13 Apr 2022 01:38:34 -0700 (PDT)
-Received: from guoguo-omen.lan ([2401:c080:1400:4da2:b701:47d5:9291:4cf9])
-        by smtp.gmail.com with ESMTPSA id j6-20020aa79286000000b004fdf02851eesm33776264pfa.4.2022.04.13.01.38.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 04:41:01 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C874EA27;
         Wed, 13 Apr 2022 01:38:33 -0700 (PDT)
-From:   Chuanhong Guo <gch981213@gmail.com>
-To:     linux-mtd@lists.infradead.org
-Cc:     Chuanhong Guo <gch981213@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Boris Brezillon <boris.brezillon@collabora.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Palmer <daniel@0x0f.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] mtd: spinand: add support for ESMT F50x1G41LB
-Date:   Wed, 13 Apr 2022 16:38:19 +0800
-Message-Id: <20220413083824.247136-1-gch981213@gmail.com>
-X-Mailer: git-send-email 2.35.1
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 23D8cIC5004168;
+        Wed, 13 Apr 2022 17:38:18 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 23D8cIC5004168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649839098;
+        bh=tD5ScFHal8it/8NYvNokdNwdBCS6nYo2z9fLwt69gtM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=V0cAa14iNtjtI2uwJtCAI3bNp0AhpEn0j8odLrA3XDqiGNjNRKBp/AOVncco+AT7A
+         TwsALgATn3x786OXaDeqUvwb3By7zT20lVr70Kd+msoaqA0hkU4jLD4mm3rSpgZY2f
+         HkzUkhldPJTudEUMvYxhsNwXSvyro4yEnYO7n9IXrV41m42rPgyK9I7ABuzY4XMCUZ
+         JaxOHu9c98LYFPeLQ1CVg+iANFiddSpAouJoCqKMwiNnMiA47gbpd3kwOkeFJe5z0C
+         rQlrTaplxNzISRbwgF/gUFCQNtQ3/TE2mD8bB+36O7eYCIOy+H685FVvmumGBI8pwO
+         n3/rgaAg6inZw==
+X-Nifty-SrcIP: [209.85.216.52]
+Received: by mail-pj1-f52.google.com with SMTP id bg24so1306431pjb.1;
+        Wed, 13 Apr 2022 01:38:18 -0700 (PDT)
+X-Gm-Message-State: AOAM532Xpd2DVumc0r/WA5T+924fwG7/7gQJeLQ6n9GvFvPZVq6dnIBo
+        +fBClcVFAvZAB9aYDfk9o9sA0sZqQWGhgLkjo3I=
+X-Google-Smtp-Source: ABdhPJxHW6zTiVnXDm+dMerKl21YroSREGhl4mFnymHGRgnvYYSox/WDDG+/CKbn23ZwzvdMYvCb75NxDuCvPzB2pqE=
+X-Received: by 2002:a17:902:7083:b0:158:41f2:3a83 with SMTP id
+ z3-20020a170902708300b0015841f23a83mr19095045plk.99.1649839097492; Wed, 13
+ Apr 2022 01:38:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220412231508.32629-1-libo.chen@oracle.com> <20220412231508.32629-2-libo.chen@oracle.com>
+ <c7d26e9d-8c70-86a6-cdab-b180a365804f@infradead.org> <157cb46a-d134-2e72-4a65-14e378dd2b8e@oracle.com>
+ <26855467-107d-4ba1-4f32-2afd5918d5b7@infradead.org> <cbb6b94e-3b9d-c7b6-a10e-6203a3a8b3f3@oracle.com>
+ <4c6b3445-78b2-090f-c7c9-291d49c45019@infradead.org> <506db9a9-47ff-658a-a821-27315949e8c3@oracle.com>
+In-Reply-To: <506db9a9-47ff-658a-a821-27315949e8c3@oracle.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 13 Apr 2022 17:37:22 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATxMjMV2m+ycs6rVwEgHzL_7zUP+H4W_xr2xEZ1e3cFVg@mail.gmail.com>
+Message-ID: <CAK7LNATxMjMV2m+ycs6rVwEgHzL_7zUP+H4W_xr2xEZ1e3cFVg@mail.gmail.com>
+Subject: Re: [PATCH RESEND 1/1] lib/Kconfig: remove DEBUG_PER_CPU_MAPS
+ dependency for CPUMASK_OFFSTACK
+To:     Libo Chen <libo.chen@oracle.com>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds support for ESMT F50L1G41LB and F50D1G41LB.
-It seems that ESMT likes to use random JEDEC ID from other vendors.
-Their 1G chips uses 0xc8 from GigaDevice and 2G/4G chips uses 0x2c from
-Micron. For this reason, the ESMT entry is named esmt_c8 with explicit
-JEDEC ID in variable name.
+On Wed, Apr 13, 2022 at 3:56 PM Libo Chen <libo.chen@oracle.com> wrote:
+>
+> Hi Randy
+>
+> On 4/12/22 22:54, Randy Dunlap wrote:
+> > Hi Libo,
+> >
+> > On 4/12/22 19:34, Libo Chen wrote:
+> >>
+> >> On 4/12/22 19:13, Randy Dunlap wrote:
+> >>> Hi,
+> >>>
+> >>> On 4/12/22 18:35, Libo Chen wrote:
+> >>>> Hi Randy,
+> >>>>
+> >>>> On 4/12/22 17:18, Randy Dunlap wrote:
+> >>>>> Hi--
+> >>>>>
+> >>>>> On 4/12/22 16:15, Libo Chen wrote:
+> >>>>>> Forcing CPUMASK_OFFSTACK to be conditoned on DEBUG_PER_CPU_MAPS doesn't
+> >>>>>> make a lot of sense nowaday. Even the original patch dating back to 2008,
+> >>>>>> aab46da0520a ("cpumask: Add CONFIG_CPUMASK_OFFSTACK") didn't give any
+> >>>>>> rationale for such dependency.
+> >>>>>>
+> >>>>>> Nowhere in the code supports the presumption that DEBUG_PER_CPU_MAPS is
+> >>>>>> necessary for CONFIG_CPUMASK_OFFSTACK. Make no mistake, it's good to
+> >>>>>> have DEBUG_PER_CPU_MAPS for debugging purpose or precaution, but it's
+> >>>>>> simply not a hard requirement for CPUMASK_OFFSTACK. Moreover, x86 Kconfig
+> >>>>>> already can set CPUMASK_OFFSTACK=y without DEBUG_PER_CPU_MAPS=y.
+> >>>>>> There is no reason other architectures cannot given the fact that they
+> >>>>>> have even fewer, if any, arch-specific CONFIG_DEBUG_PER_CPU_MAPS code than
+> >>>>>> x86.
+> >>>>>>
+> >>>>>> Signed-off-by: Libo Chen <libo.chen@oracle.com>
+> >>>>>> ---
+> >>>>>>     lib/Kconfig | 2 +-
+> >>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>>>>
+> >>>>>> diff --git a/lib/Kconfig b/lib/Kconfig
+> >>>>>> index 087e06b4cdfd..7209039dfb59 100644
+> >>>>>> --- a/lib/Kconfig
+> >>>>>> +++ b/lib/Kconfig
+> >>>>>> @@ -511,7 +511,7 @@ config CHECK_SIGNATURE
+> >>>>>>         bool
+> >>>>>>       config CPUMASK_OFFSTACK
+> >>>>>> -    bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
+> >>>>> This "if" dependency only controls whether the Kconfig symbol's prompt is
+> >>>>> displayed (presented) in kconfig tools. Removing it makes the prompt always
+> >>>>> be displayed.
+> >>>>>
+> >>>>> Any architecture could select (should be able to) CPUMASK_OFFSTACK independently
+> >>>>> of DEBUG_PER_CPU_MAPS.
+> >>>> Do you mean changing arch/xxxx/Kconfig to select CPUMASK_OFFSTACK under some config xxx? That will work but it requires code changes for each architecture.
+> >>>> But if you are talking about setting CONFIG_CPUMASK_OFFSTACK=y without CONFIG_DEBUG_PER_CPU_MAPS directly in config file, I have tried, it doesn't work.
+> >>> I'm just talking about the Kconfig change below.  Not talking about whatever else
+> >>> it might require per architecture.
+> >>>
+> >>> But you say you have tried that and it doesn't work. What part of it doesn't work?
+> >>> The Kconfig part or some code execution?
+> >> oh the Kconfig part. For example, make olddefconfig on a config file with CPUMASK_OFFSTACK=y only turns off CPUMASK_OFFSTACK unless I explicitly set DEBUG_PER_CPU_MAPS=y
+> > I can enable CPUMASK_OFFSTACK for arm64 without having DEBUG_PER_CPU_MAPS enabled.
+> > (with a patch, of course.)
+> > It builds OK. I don't know if it will run OK.
+>
+> I am a little confused, did you succeed with your patch (replacing "if"
+> with "depends on") or my patch (removing "if")? Because I definitely
+> cannot enable CPUMASK_OFFSTACK for arm64 without DEBUG_PER_CPUMAPS
+> enabled using your change.
+> > I think that you are arguing for a patch like this:
+>
+> I am actually arguing for the opposite, I don't think CPUMASK_OFFSTACK
+> should require DEBUG_PER_CPU_MAPS. They should be separate and
+> independent to each other. So removing "if ..." should be enough in my
+> opinion.
+> > --- a/lib/Kconfig
+> > +++ b/lib/Kconfig
+> > @@ -511,7 +511,8 @@ config CHECK_SIGNATURE
+> >       bool
+> >
+> >   config CPUMASK_OFFSTACK
+> > -     bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
+> > +     bool "Force CPU masks off stack"
+> > +     depends on DEBUG_PER_CPU_MAPS
+>
+> This forces every arch to enable DEBUG_PER_CPU_MAPS if they want to
+> enable CPUMASK_OFFSTACK, it's even stronger than "if". My whole argument
+> is CPUMASK_OFFSTACK should be enable/disabled independent of
+> DEBUG_PER_CPU_MASK
+> >       help
+> >         Use dynamic allocation for cpumask_var_t, instead of putting
+> >         them on the stack.  This is a bit more expensive, but avoids
+> >
+> >
+> > As I said earlier, the "if" on the "bool" line just controls the prompt message.
+> > This patch make CPUMASK_OFFSTACK require DEBUG_PER_CPU_MAPS -- which might be overkill.
+> >
+>
+> Okay I understand now "if" on the "boot" is not a dependency and it only
+> controls the prompt message, then the question is why we cannot enable
+> CPUMASK_OFFSTACK without DEBUG_PER_CPU_MAPS if it only controls prompt
+> message? Is it not the behavior we expect?
+>
 
-Datasheets:
-https://www.esmt.com.tw/upload/pdf/ESMT/datasheets/F50L1G41LB(2M).pdf
-https://www.esmt.com.tw/upload/pdf/ESMT/datasheets/F50D1G41LB(2M).pdf
 
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
----
-This patch is made purely based on datasheet info without testing
-on any actual chips.
+    config CPUMASK_OFFSTACK
+            bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
 
-Change since v1: drop 0x7f padding from SPINAND_ID.
+... is equivalent to this:
 
- drivers/mtd/nand/spi/Makefile |  2 +-
- drivers/mtd/nand/spi/core.c   |  1 +
- drivers/mtd/nand/spi/esmt.c   | 94 +++++++++++++++++++++++++++++++++++
- include/linux/mtd/spinand.h   |  1 +
- 4 files changed, 97 insertions(+), 1 deletion(-)
- create mode 100644 drivers/mtd/nand/spi/esmt.c
+    config CPUMASK_OFFSTACK
+            bool
+            prompt "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
 
-diff --git a/drivers/mtd/nand/spi/Makefile b/drivers/mtd/nand/spi/Makefile
-index 9662b9c1d5a9..7e3ab8a9aec7 100644
---- a/drivers/mtd/nand/spi/Makefile
-+++ b/drivers/mtd/nand/spi/Makefile
-@@ -1,3 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0
--spinand-objs := core.o gigadevice.o macronix.o micron.o paragon.o toshiba.o winbond.o
-+spinand-objs := core.o esmt.o gigadevice.o macronix.o micron.o paragon.o toshiba.o winbond.o
- obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
-diff --git a/drivers/mtd/nand/spi/core.c b/drivers/mtd/nand/spi/core.c
-index ff8336870bc0..6c5d79ec3501 100644
---- a/drivers/mtd/nand/spi/core.c
-+++ b/drivers/mtd/nand/spi/core.c
-@@ -927,6 +927,7 @@ static const struct nand_ops spinand_ops = {
- };
- 
- static const struct spinand_manufacturer *spinand_manufacturers[] = {
-+	&esmt_c8_spinand_manufacturer,
- 	&gigadevice_spinand_manufacturer,
- 	&macronix_spinand_manufacturer,
- 	&micron_spinand_manufacturer,
-diff --git a/drivers/mtd/nand/spi/esmt.c b/drivers/mtd/nand/spi/esmt.c
-new file mode 100644
-index 000000000000..f86716332893
---- /dev/null
-+++ b/drivers/mtd/nand/spi/esmt.c
-@@ -0,0 +1,94 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Author:
-+ *	Chuanhong Guo <gch981213@gmail.com>
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/mtd/spinand.h>
-+
-+/* ESMT uses GigaDevice 0xc8 JECDEC ID on some SPI NANDs */
-+#define SPINAND_MFR_ESMT_C8			0xc8
-+
-+#define F50L2G41XA_ECC_STATUS_MASK		GENMASK(6, 4)
-+#define F50L2G41XA_STATUS_ECC_1_3_BITFLIPS	(1 << 4)
-+#define F50L2G41XA_STATUS_ECC_4_6_BITFLIPS	(3 << 4)
-+#define F50L2G41XA_STATUS_ECC_7_8_BITFLIPS	(5 << 4)
-+
-+static SPINAND_OP_VARIANTS(read_cache_variants,
-+			   SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(0, 2, NULL, 0),
-+			   SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
-+			   SPINAND_PAGE_READ_FROM_CACHE_DUALIO_OP(0, 1, NULL, 0),
-+			   SPINAND_PAGE_READ_FROM_CACHE_X2_OP(0, 1, NULL, 0),
-+			   SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
-+			   SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
-+
-+static SPINAND_OP_VARIANTS(write_cache_variants,
-+			   SPINAND_PROG_LOAD_X4(true, 0, NULL, 0),
-+			   SPINAND_PROG_LOAD(true, 0, NULL, 0));
-+
-+static SPINAND_OP_VARIANTS(update_cache_variants,
-+			   SPINAND_PROG_LOAD_X4(false, 0, NULL, 0),
-+			   SPINAND_PROG_LOAD(false, 0, NULL, 0));
-+
-+static int f50l1g41lb_ooblayout_ecc(struct mtd_info *mtd, int section,
-+				    struct mtd_oob_region *region)
-+{
-+	if (section > 3)
-+		return -ERANGE;
-+
-+	region->offset = 16 * section + 8;
-+	region->length = 8;
-+
-+	return 0;
-+}
-+
-+static int f50l1g41lb_ooblayout_free(struct mtd_info *mtd, int section,
-+				     struct mtd_oob_region *region)
-+{
-+	if (section > 3)
-+		return -ERANGE;
-+
-+	region->offset = 16 * section + 2;
-+	region->length = 6;
-+
-+	return 0;
-+}
-+
-+static const struct mtd_ooblayout_ops f50l1g41lb_ooblayout = {
-+	.ecc = f50l1g41lb_ooblayout_ecc,
-+	.free = f50l1g41lb_ooblayout_free,
-+};
-+
-+static const struct spinand_info esmt_c8_spinand_table[] = {
-+	SPINAND_INFO("F50L1G41LB",
-+		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_ADDR, 0x01),
-+		     NAND_MEMORG(1, 2048, 64, 64, 1024, 20, 1, 1, 1),
-+		     NAND_ECCREQ(1, 512),
-+		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
-+					      &write_cache_variants,
-+					      &update_cache_variants),
-+		     0,
-+		     SPINAND_ECCINFO(&f50l1g41lb_ooblayout, NULL)),
-+	SPINAND_INFO("F50D1G41LB",
-+		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_ADDR, 0x11),
-+		     NAND_MEMORG(1, 2048, 64, 64, 1024, 20, 1, 1, 1),
-+		     NAND_ECCREQ(1, 512),
-+		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
-+					      &write_cache_variants,
-+					      &update_cache_variants),
-+		     0,
-+		     SPINAND_ECCINFO(&f50l1g41lb_ooblayout, NULL)),
-+};
-+
-+static const struct spinand_manufacturer_ops esmt_spinand_manuf_ops = {
-+};
-+
-+const struct spinand_manufacturer esmt_c8_spinand_manufacturer = {
-+	.id = SPINAND_MFR_ESMT_C8,
-+	.name = "ESMT",
-+	.chips = esmt_c8_spinand_table,
-+	.nchips = ARRAY_SIZE(esmt_c8_spinand_table),
-+	.ops = &esmt_spinand_manuf_ops,
-+};
-diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
-index 3aa28240a77f..e19a1554a1e9 100644
---- a/include/linux/mtd/spinand.h
-+++ b/include/linux/mtd/spinand.h
-@@ -260,6 +260,7 @@ struct spinand_manufacturer {
- };
- 
- /* SPI NAND manufacturers */
-+extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;
- extern const struct spinand_manufacturer gigadevice_spinand_manufacturer;
- extern const struct spinand_manufacturer macronix_spinand_manufacturer;
- extern const struct spinand_manufacturer micron_spinand_manufacturer;
+
+
+When DEBUG_PER_CPU_MAPS is disabled, the prompt line is ignored,
+and CPUMASK_OFFSTACK becomes a user-unconfigurable option.
+
+
+Other options still can select it,
+but users cannot enable it directly from the prompt.
+
+I see x86 and powerpc do this.
+
+$ kgrep 'select CPUMASK_OFFSTACK'
+./arch/x86/Kconfig:946: select CPUMASK_OFFSTACK
+./arch/powerpc/Kconfig:164: select CPUMASK_OFFSTACK if NR_CPUS >= 8192
+
+
+
+
+
+
+
+> Libo
+>
+> >> Libo
+> >>> I'll test the Kconfig part of it later (in a few hours).
+> >>>
+> >>>> Libo
+> >>>>> Is there another problem here?
+> >>>>>
+> >>>>>> +    bool "Force CPU masks off stack"
+> >>>>>>         help
+> >>>>>>           Use dynamic allocation for cpumask_var_t, instead of putting
+> >>>>>>           them on the stack.  This is a bit more expensive, but avoids
+>
+
+
 -- 
-2.35.1
-
+Best Regards
+Masahiro Yamada
