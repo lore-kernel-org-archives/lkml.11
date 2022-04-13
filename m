@@ -2,90 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237161AbiDMRDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
+        id S237163AbiDMRE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237151AbiDMRDS (ORCPT
+        with ESMTP id S229441AbiDMRE1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:03:18 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B0A396AB;
-        Wed, 13 Apr 2022 10:00:57 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id u2so2333927pgq.10;
-        Wed, 13 Apr 2022 10:00:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LVT/IqTiL4DPI+1/TfUzzSpihSGgSvz9M/lMHXDrAk0=;
-        b=DMFFp8zBk20loRKK6VrzU3XOnHeYdVsxMY/Y319ns+YlT17GGcq4mGYA+f8ybz3sS/
-         VEeYxQK0QMzvDBdW4D8G1poSmSR7K6VrcL4TtFy5lcjz3lIPgzRLDqc00umBrohTbKCA
-         Dua+AQoMzdM7cWdLEk0EBOYhX2nrc6uFPu96j+PtGo+gSSKKz8Kq5MQBDIoQ4yOCsZTw
-         o0jr7uOJj4EuO3kb1nObIOc+W/oSkc89eqT+KBf6pz6O+og4eGA4tRR39DOOJOiDlUIx
-         mX/3314tshocD1S3vQfviwIIfrY+ElFx62ogEMLNR8UvqlUKQnlRqxpQPKvJYETCGwRj
-         zoIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LVT/IqTiL4DPI+1/TfUzzSpihSGgSvz9M/lMHXDrAk0=;
-        b=J0mCGAiG1FKpwE4TwY8ouAr+730CEf7WWKBQ/H7zgfw6VNToi23S4eowEaoMtnqcTF
-         xgxVn2A3q6PJcsik5wyg+3SQEAWt/9DfnsXn9SzeYNquaNnDj4hhACeaywWp9+pIEZhY
-         rTsvNHRQkdRnmfiSNQ0p3PTonHDcBg0gpz2Ji8SNDrucHZBACDQsqUzcILArp9trCbQ1
-         Hs6VjUJWb+5JwxmquDF4chdCbam3R+s3O0YvybEg25lkedOimJKeARN1HvbaKoJHF6RN
-         yeS0g2qaTM9UDrYWi4QZb7EHCBcbFew8bR3WgbsfpDBUAUfmv4U/1iNSly09A8x/Aqqq
-         OwJQ==
-X-Gm-Message-State: AOAM531+qzBPvZiTFSE4yKy4vtNI0lswVXLqLYc7qRZ187cCYXa6QkuL
-        gYGr0nBrUEkRgy0bZpTMn9M=
-X-Google-Smtp-Source: ABdhPJxpsoiZu+y6nvhELKT78t1SuXGumeIs6lb3xq1rl+65Q5Odsu2ZORqFbqrxczmauyzRPAfYxQ==
-X-Received: by 2002:a65:4081:0:b0:381:6ff8:f4ba with SMTP id t1-20020a654081000000b003816ff8f4bamr35186933pgp.457.1649869256819;
-        Wed, 13 Apr 2022 10:00:56 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id c74-20020a621c4d000000b00505be1ae39bsm11591013pfc.9.2022.04.13.10.00.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 10:00:56 -0700 (PDT)
-Message-ID: <3f4972d1-ace1-0260-16e6-84fd0f475273@gmail.com>
-Date:   Wed, 13 Apr 2022 10:00:54 -0700
+        Wed, 13 Apr 2022 13:04:27 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443C7396AB;
+        Wed, 13 Apr 2022 10:02:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649869326; x=1681405326;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Il36FEwbXetKsbGfnwONK2IyZ0R2zJKhtZ0T5GseMSU=;
+  b=AC/6fRsTrbM2tSxhG8QDvApWYskNPsk23M6BY3Vc2J9R07rs5H/K4Eti
+   V7/yC6O50rShTJvSjJmD+MH9saCgVkgWriYT03OigernDh0J1thxsYesu
+   2tr6ep8PA+qTOcX2wX3Gcn+4dS/iUC+/7hnbzUxwzC2sn77UJeXl4vneb
+   D4J5xhksMIL7pUoG85GcVjw2cRY7FeHlhyRlX/vGFTRHKKqwknESzJz28
+   RIxlu3b9erfHi5BvJyeaTS4R+GBrjxagoVCx3sYQ3OSoMorzzZIgu35JS
+   kBRDa9elrg/HqOIh+3Via+IYN/ezbaxDafgbP7QwP4vmC6KtD5ge1aNpG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="242655962"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="242655962"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 10:02:05 -0700
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="552284265"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 10:02:03 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1negK0-001w5g-Rk;
+        Wed, 13 Apr 2022 19:58:24 +0300
+Date:   Wed, 13 Apr 2022 19:58:24 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v1 3/3] iio: imu: adis16480: Fix getting the optional
+ clocks
+Message-ID: <YlcBMGkdmGTq/mnr@smile.fi.intel.com>
+References: <20220413144124.72537-1-andriy.shevchenko@linux.intel.com>
+ <20220413144124.72537-3-andriy.shevchenko@linux.intel.com>
+ <PH0PR03MB67865D24BB7546CAF805D7BE99EC9@PH0PR03MB6786.namprd03.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] net: bcmgenet: Revert "Use stronger register read/writes
- to assure ordering"
-Content-Language: en-US
-To:     Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org
-Cc:     opendmb@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, pbrobinson@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
-References: <20220412210420.1129430-1-jeremy.linton@arm.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220412210420.1129430-1-jeremy.linton@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <PH0PR03MB67865D24BB7546CAF805D7BE99EC9@PH0PR03MB6786.namprd03.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Apr 13, 2022 at 03:38:47PM +0000, Sa, Nuno wrote:
+> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Sent: Wednesday, April 13, 2022 4:41 PM
 
+> > The extended clocks are optional and may not be present for some
+> > SoCs
+> > supported by this driver. Nevertheless, in case the clock is provided
+> > but some error happens during its getting, that error should be
+> > handled
+> > properly. Use devm_clk_get_optional() API for that. Also report
+> > possible
+> > errors using dev_err_probe() to handle properly -EPROBE_DEFER
+> > error.
 
-On 4/12/2022 2:04 PM, Jeremy Linton wrote:
-> It turns out after digging deeper into this bug, that it was being
-> triggered by GCC12 failing to call the bcmgenet_enable_dma()
-> routine. Given that a gcc12 fix has been merged [1] and the genet
-> driver now works properly when built with gcc12, this commit should
-> be reverted.
+> This is a nice cleanup patch... But the subject might be a bit
+> misleading as it says "Fix". So I would expect a Fixes tag which
+> I'm not sure it's really worth it here. Yes, the code was pretty much
+> doing clk_get_optional() "by hand" but I think it was still functional.
+> So to me, this is more an improvement rather than a fix...
+
+Actually it is a fix, but not critical since no-one complains aloud so far.
+The problematic part is logs exhausting if repetitive deferred probe happens.
+
+> Anyways,
 > 
-> [1]
-> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
-> https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=aabb9a261ef060cf24fd626713f1d7d9df81aa57
-> 
-> Fixes: 8d3ea3d402db ("net: bcmgenet: "Use stronger register read/writes to assure ordering")
-> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+> Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Thanks!
+
 -- 
-Florian
+With Best Regards,
+Andy Shevchenko
+
+
