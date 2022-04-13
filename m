@@ -2,99 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238752AbiDMU6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 16:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        id S237661AbiDMU7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 16:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231984AbiDMU6d (ORCPT
+        with ESMTP id S231377AbiDMU7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 16:58:33 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A8B674F7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:56:11 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bv19so6390219ejb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:56:11 -0700 (PDT)
+        Wed, 13 Apr 2022 16:59:40 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1025E7304E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:57:18 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id b17so2532051qvf.12
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:57:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GGJeViK+7nvO370X+XWsM6u8Nu1Bs+YHak1Y1XG2ND4=;
-        b=Nmnntj/LVIwy3oeOLpeN9QoktVn4Gy5cYRHXFCyvkB7XueSKlPJszbhcdG9U78y2ad
-         u8YKGSNTvuIK1Qs6RbcqVntnhyfwD1HecmNzit4QEsVJrFYQOt1JO7DP2DBYKh7p/2KM
-         tIkfENteINhIIpwXj6yI7S3FGN7rNsZJLO5rI=
+        d=linuxfoundation.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZGg9v7EK00Y3HMnG9AhwKOPJdSP7gnweZeMiLC7mrHg=;
+        b=IBaaTg2KPKEOD7CKJwlh1c0WzJu8QtsBh183IfTV2l+Xv5VUr/9xtOIO1xO4zagFi2
+         qrjEYMFPqftityRly+DtTTJAFgjRKzijjglE+Q2YTiY3xg5B21Wdo2zL4BcOFD7jf/fQ
+         CGJ+6RE4FYkndwrHuujQfzsZh6brAN7Iq7VP4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GGJeViK+7nvO370X+XWsM6u8Nu1Bs+YHak1Y1XG2ND4=;
-        b=2sui5tgvsqHL3mXQ7E8QHLf0WeACxX4OovJ9xZaHhc0zAgOLAxKmvEiVBkripAPaFp
-         /Gunx245OF5ygjEqxk6QkGd7erPhtirV6uMqn/ixe0qmv4IhhHkRvJT2t4AK/4TcY63r
-         CgSzgJ8Giaa9oC39KiihXcleeO/gBIliSzpA1mi9ygcnUM+woIBJYcja86pdGndCRu7S
-         oxqI0MVMH96qbAl0UUhkJbWllnQzvTPluiA5eXLFZu//RNXcP6k6x6TmAuoADQ9BJmYf
-         VjEfmHaSV8JV4cKji7Lv0M1PlmPDjwn7HQ9P9HIBzhtQExMAUKqUR4KssB8dMXaIAFlk
-         K2Kw==
-X-Gm-Message-State: AOAM530FgRXkbj56VtS6yjlKJ6jY0RGhu05WB9692JG72/aGZxlOEjDX
-        zeK1ykkNAr6rgNCXwd4dM3yEBcmD+FmE2U7i
-X-Google-Smtp-Source: ABdhPJy58C6rww833KTZHY7Mu7dYOGSl3jMoYsqX42hh/5EeaUf02s8n8/4DW9NiTK1IaxXWPozs7A==
-X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id hd14-20020a170907968e00b006dbaed543c8mr40785833ejc.636.1649883369915;
-        Wed, 13 Apr 2022 13:56:09 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id d4-20020a056402000400b00412d60fee38sm15002edu.11.2022.04.13.13.56.08
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 13:56:09 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id b19so4303281wrh.11
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:56:08 -0700 (PDT)
-X-Received: by 2002:a5d:64ce:0:b0:208:fff6:22cb with SMTP id
- f14-20020a5d64ce000000b00208fff622cbmr89950wri.301.1649883368489; Wed, 13 Apr
- 2022 13:56:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZGg9v7EK00Y3HMnG9AhwKOPJdSP7gnweZeMiLC7mrHg=;
+        b=zwzcx/+E5uTZUE21jymy+/tabAcEH6GfNpIzNQ1vieXWwQaHWREQAOc81gmQEItCKv
+         sRB9ZSTOT6De3A2X/il7N/iGaUBUdlG9T235vqNDO1Ekh+2PZ7NDecqoL7whidi2sFby
+         stagKO5G3ZkBzT5LxQu/UF9VBPwHO74zY7Kr80367LiIuMpnrllVGoT2mlRrHI4/L6nX
+         /mhHqWtlNB6HyQHO01V8OXQfzp6iahKdCLr2GLkmdZVT5kH5k1O9Ae1dkd9/tJCMKZ8m
+         yXJ5qlToaubjJLMVL38dYTBA2dL5JVmJpDfwCQsAVkB6o6K9RCj4gdWPbgr0n6ooG7iE
+         fvUw==
+X-Gm-Message-State: AOAM530xuiHSn5jWd/BXlmOT+IIKftamvvXXjRxluaAJOqWFX7TnvEL4
+        7BI7OVtz88XOw8wN3vtxGWE8IRdzY1GFUw==
+X-Google-Smtp-Source: ABdhPJxqB+3XkCUJcHQJd7LqO+J8n8XJYpP873Fm+iKuxdmJZO1KNPnr2OgeVuAWU2LKIWlCpcwkBg==
+X-Received: by 2002:ad4:5ba3:0:b0:441:32c:767b with SMTP id 3-20020ad45ba3000000b00441032c767bmr9761573qvq.9.1649883437183;
+        Wed, 13 Apr 2022 13:57:17 -0700 (PDT)
+Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-127.dsl.bell.ca. [216.209.220.127])
+        by smtp.gmail.com with ESMTPSA id p16-20020a05622a13d000b002e227782e9asm23424qtk.14.2022.04.13.13.57.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 13:57:16 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 16:57:14 -0400
+From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v2] lkdtm/bugs: Don't expect thread termination without
+ CONFIG_UBSAN_TRAP
+Message-ID: <20220413205714.scrrktpq43kzryim@meerkat.local>
+References: <363b58690e907c677252467a94fe49444c80ea76.1649704381.git.christophe.leroy@csgroup.eu>
+ <202204121440.FEE123D7@keescook>
 MIME-Version: 1.0
-References: <20220412220033.1273607-1-swboyd@chromium.org> <20220412220033.1273607-2-swboyd@chromium.org>
-In-Reply-To: <20220412220033.1273607-2-swboyd@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 13 Apr 2022 13:55:56 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UFbOhs0ggxDbVwKM_8x=ELT85zFd-Wk6dJ_M+Awz+Pxw@mail.gmail.com>
-Message-ID: <CAD=FV=UFbOhs0ggxDbVwKM_8x=ELT85zFd-Wk6dJ_M+Awz+Pxw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] interconnect: qcom: sc7180: Drop IP0 interconnects
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Georgi Djakov <djakov@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Alex Elder <elder@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Taniya Das <quic_tdas@quicinc.com>,
-        Mike Tipton <quic_mdtipton@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202204121440.FEE123D7@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Apr 12, 2022 at 04:06:20PM -0700, Kees Cook wrote:
+> Also, Konstantin, I note that
+> https://git.kernel.org/pub/scm/docs/kernel/pgpkeys.git/
+> does not have a .keyring/ed25519 directory. Should it? 
 
-On Tue, Apr 12, 2022 at 4:20 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> @@ -519,8 +500,6 @@ static const struct of_device_id qnoc_of_match[] = {
->           .data = &sc7180_dc_noc},
->         { .compatible = "qcom,sc7180-gem-noc",
->           .data = &sc7180_gem_noc},
-> -       { .compatible = "qcom,sc7180-ipa-virt",
-> -         .data = &sc7180_ipa_virt},
->         { .compatible = "qcom,sc7180-mc-virt",
->           .data = &sc7180_mc_virt},
->         { .compatible = "qcom,sc7180-mmss-noc",
+No, because it's not a "pgpkey". :)
 
-I have no objection to ${SUBJECT} change landing and based on all your
-research and Alex's review/testing I think it's good to go.
+> I added one
+> locally for at least one other developer, as I use this setting:
+> 
+> [patatt]
+>         keyringsrc = ~/korg/pgpkeys/.keyring
+> 
+> Am I holding this thing wrong? :)
 
-However, now that you're removed the driver that cared about
-"qcom,sc7180-ipa-virt", should we also be removing it from the
-`bindings/interconnect/qcom,rpmh.yaml` file and the `sc7180.dtsi`
-file? I think that removing it from _either_ the driver (like your
-patch here does) _or_ the sc7180.dtsi file would fix the bug, right?
-...and then removing it from the yaml would just be cleanup...
+Nope, but you can also list multiple locations where patatt can look, for
+example:
 
--Doug
+[patatt]
+       keyringsrc = ~/korg/pgpkeys/.keyring
+       keyringsrc = ~/.local/share/patatt/public
+
+In fact, if you take Christophe's patches all the time, you can add a keyring
+ref to your tree. The process is documented here:
+https://github.com/mricon/patatt#managing-the-keyring-large-teams
+
+This way I'm not managing the keys of your trusted contributors.
+
+I'll be happy to explain further -- in fact, I'm happy anyone uses it at all!
+:)
+
+-K
