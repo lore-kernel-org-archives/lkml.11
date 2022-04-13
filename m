@@ -2,104 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45962C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238658AbiDMUKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 16:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        id S237083AbiDMUOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 16:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238305AbiDMUKQ (ORCPT
+        with ESMTP id S230086AbiDMUOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 16:10:16 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5A27D015
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:07:54 -0700 (PDT)
-Received: from dslb-178-004-174-121.178.004.pools.vodafone-ip.de ([178.4.174.121] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nejHL-0005wN-BK; Wed, 13 Apr 2022 22:07:51 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
+        Wed, 13 Apr 2022 16:14:05 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD546B532
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:11:43 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id z19so2212792qtw.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:11:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FLu5+mnBdkV5bNcuBYn/9StkIMnThnOJRjEm3/I6LL8=;
+        b=JQbNGODPh/X7mDysGHKbjM3WkcSoi89SOSZVLGbV/UPdE8SMyTqBI+Ww/JkrZsN/jl
+         eGfxZ4SsA01wvrXmEAuZ8RpUR/NP/ZBD0sWfs/LDAi0du18C0koHi2PRBwqzYIHPjHae
+         JIutwzN0GAlHwYC36bFqzraSYhZveSn3t2rpdz+kGkk8P82MjbwFebgp5RWp4Rq+/7Ey
+         raJ+EaY2p4fVoP3nmnF/lcQutv6QzTq42bHAzMJntNc28ktHwOz3lh0cGJ5K4gpxwp++
+         UEzu/ewT08eqVX4BGP01B6HkRNRGLrD5nAVsW1CMM2cdEKApnqkm+AzjJx08VAwa6XWf
+         y0LQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FLu5+mnBdkV5bNcuBYn/9StkIMnThnOJRjEm3/I6LL8=;
+        b=c6khRWQiMl58HO2N34j1yENVc/V31FRKXVTutLiyMUyUE/30lt1fIM2JwBNtWdLvwC
+         VuRQqDUF6eFTFaku3l2GKARmBDRXsnrFH/Tc2Sxfq8b47xh6DD87UIRBFANhgCp2oMnB
+         ngRtDg94/AkgLpbYZHWyqPwrbRUaUaaHnbCaIgUIsFCEAaQ600NdsLSC8oA10dNj6sdy
+         AvD0R39x7i+mK2F6v7tZPa/6woimTSinI0D+Org7/yn2QJmNbixEndL2pFl3ZiJy5NoB
+         TIACfQXh/8xfrFxlq6pEp09pZc4nvsxmB5WMThD7Q/3Qq+432gkjRtkrbFT0z65PWktk
+         9aKw==
+X-Gm-Message-State: AOAM530LYkfOfHsFVnpU/tpVL5ICGBjzTZ4+R645ZTprjTPO+jfBq7cD
+        refX5jU1XBuDgo5AApuKnQI=
+X-Google-Smtp-Source: ABdhPJyiBkXmOz1EjxJX3Vdcd/isDYM9UtENeLlEXyamjBzbo2SNLPdgpC3jKZ/KiHIc7WtxB7LlrA==
+X-Received: by 2002:a05:622a:1cc5:b0:2ed:cba0:3f0e with SMTP id bc5-20020a05622a1cc500b002edcba03f0emr8505261qtb.365.1649880702197;
+        Wed, 13 Apr 2022 13:11:42 -0700 (PDT)
+Received: from jaehee-ThinkPad-X1-Extreme.wework.com ([4.34.18.218])
+        by smtp.gmail.com with ESMTPSA id 7-20020a370907000000b0069c5598584esm1469827qkj.105.2022.04.13.13.11.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 13:11:41 -0700 (PDT)
+From:   Jaehee Park <jhpark1013@gmail.com>
+To:     Larry.Finger@lwfinger.net
+Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 3/4] staging: r8188eu: use ieee80211 helpers in mgt_dispatcher
-Date:   Wed, 13 Apr 2022 22:07:41 +0200
-Message-Id: <20220413200742.276806-4-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220413200742.276806-1-martin@kaiser.cx>
-References: <20220413200742.276806-1-martin@kaiser.cx>
+        outreachy@lists.linux.dev, jhpark1013@gmail.com
+Subject: [PATCH 0/6] staging: r8188eu: fix warnings reported by checkpatch
+Date:   Wed, 13 Apr 2022 16:11:28 -0400
+Message-Id: <cover.1649880454.git.jhpark1013@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use structs and functions from ieee80211.h in mgt_dispatcher to parse
-the incoming frame.
+These patches address style issues found by checkpatch in the
+core/rtw_mlme.c file. 
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+Jaehee Park (6):
+  staging: r8188eu: remove unnecessary braces in single statement block
+  staging: r8188eu: remove spaces before tabs
+  staging: r8188eu: remove 'added by' author comments
+  staging: r8188eu: place constants on the right side of tests
+  staging: r8188eu: replace spaces with tabs
+  staging: r8188eu: correct typo in comments
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index ba071de4c05c..b6ee6a24930a 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -396,14 +396,15 @@ void mgt_dispatcher(struct adapter *padapter, struct recv_frame *precv_frame)
- 	struct mlme_handler *ptable;
- 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
- 	u8 *pframe = precv_frame->rx_data;
--	struct sta_info *psta = rtw_get_stainfo(&padapter->stapriv, GetAddr2Ptr(pframe));
-+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)precv_frame->rx_data;
-+	struct sta_info *psta = rtw_get_stainfo(&padapter->stapriv, hdr->addr2);
- 
--	if (GetFrameType(pframe) != IEEE80211_FTYPE_MGMT)
-+	if (!ieee80211_is_mgmt(hdr->frame_control))
- 		return;
- 
- 	/* receive the frames that ra(a1) is my address or ra(a1) is bc address. */
--	if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN) &&
--	    !is_broadcast_ether_addr(GetAddr1Ptr(pframe)))
-+	if (memcmp(hdr->addr1, myid(&padapter->eeprompriv), ETH_ALEN) &&
-+	    !is_broadcast_ether_addr(hdr->addr1))
- 		return;
- 
- 	ptable = mlme_sta_tbl;
-@@ -415,7 +416,7 @@ void mgt_dispatcher(struct adapter *padapter, struct recv_frame *precv_frame)
- 	ptable += index;
- 
- 	if (psta) {
--		if (GetRetry(pframe)) {
-+		if (ieee80211_has_retry(hdr->frame_control)) {
- 			if (precv_frame->attrib.seq_num == psta->RxMgmtFrameSeqNum)
- 				/* drop the duplicate management frame */
- 				return;
-@@ -423,7 +424,7 @@ void mgt_dispatcher(struct adapter *padapter, struct recv_frame *precv_frame)
- 		psta->RxMgmtFrameSeqNum = precv_frame->attrib.seq_num;
- 	}
- 
--	if (GetFrameSubType(pframe) == WIFI_AUTH) {
-+	if (ieee80211_is_auth(hdr->frame_control)) {
- 		if (check_fwstate(pmlmepriv, WIFI_AP_STATE))
- 			ptable->func = &OnAuth;
- 		else
-@@ -432,8 +433,8 @@ void mgt_dispatcher(struct adapter *padapter, struct recv_frame *precv_frame)
- 
- 	if (ptable->func) {
- 	/* receive the frames that ra(a1) is my address or ra(a1) is bc address. */
--		if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN) &&
--		    !is_broadcast_ether_addr(GetAddr1Ptr(pframe)))
-+		if (memcmp(hdr->addr1, myid(&padapter->eeprompriv), ETH_ALEN) &&
-+		    !is_broadcast_ether_addr(hdr->addr1))
- 			return;
- 		ptable->func(padapter, precv_frame);
- 	}
+ drivers/staging/r8188eu/core/rtw_mlme.c | 42 +++++++++++--------------
+ 1 file changed, 19 insertions(+), 23 deletions(-)
+
 -- 
-2.30.2
+2.25.1
 
