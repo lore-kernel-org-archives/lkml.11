@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7078FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD5CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238849AbiDMVO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55220 "EHLO
+        id S238914AbiDMVOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239001AbiDMVNF (ORCPT
+        with ESMTP id S239048AbiDMVNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:13:05 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D9D3BBD4;
-        Wed, 13 Apr 2022 14:10:43 -0700 (PDT)
+        Wed, 13 Apr 2022 17:13:12 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B213A5C1;
+        Wed, 13 Apr 2022 14:10:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649884243; x=1681420243;
+  t=1649884250; x=1681420250;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SIjeYNQYehkFATZl0iOzYFq+nO0jvY7dqq8z3tcfXBA=;
-  b=ENjpTPRFGZ5429HTVW+UDY6KwL6XtulC2Z67Q5jBIIgJcjkgABCDY/Lf
-   CnOI7YoUssJNpDxo7Z77N9+Oar9OWH1Td9S7aGQAgl/e4hT+OZaYazM53
-   +GLpf1bSe2BiFv46+d1z7w8qXy5bVwbVTUYWjcCNXOdcDNwxJe7XD9B5H
-   l6sJRrBxfCaGdjRjVNN7hxl+WcQ5vQ4l3zDhVmNmWRawJjP4M2/uJzgVf
-   p6LGfyqWiK92QSDmtjaRXwb2qaDUd6NCDEmSij5wJdmNlI+/V9AOXI8N/
-   VNswEBZpRk6TnTHTpcv2MIABbIlFGSoJ+MgK0tDlJ+2bka6crI9zagYIw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="323219007"
+  bh=9T2ihn0LMBJKrJXn0LFSLOwtWvN2vfg/tBsS0Rgq/6U=;
+  b=el0nJr5oMVqA2ndrxZ9Hv0wwje74mlHALldMLLToG3kUn7Ul/vcv3v2l
+   dpmXnHdILy6qm2dlCZjJOjp9P6uNRRUkUf6DCSYRirrg4AGxByf68NWbJ
+   4AL4HP8ZFawsXw3J7wkchOtAInIMfcubwkyIPs+8ZxJsD7+VlYqelZmpa
+   2uAkqnWX8CkzHBygGJA6jIDaAEA6irMp9KkH+KJiuLKbmsrqNbttMgHXv
+   RSTRLc0e+RzzSqX5Jq5/hJoM64ku7VN+dWCgFswwSJZ1ngg+zSPsx0eea
+   1d25HNRNN6r0Gj+QL6DSJkX5P6+cYRIb8Y+peuMCM+fCQf9RTKlP+p3+X
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262526970"
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="323219007"
+   d="scan'208";a="262526970"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:41 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:47 -0700
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="725054250"
+   d="scan'208";a="725054346"
 Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:41 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:47 -0700
 From:   Reinette Chatre <reinette.chatre@intel.com>
 To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
         bp@alien8.de, luto@kernel.org, mingo@redhat.com,
@@ -46,9 +46,9 @@ Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
         cedric.xing@intel.com, haitao.huang@intel.com,
         mark.shanahan@intel.com, vijay.dhanraj@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V4 05/31] x86/sgx: Support loading enclave page without VMA permissions check
-Date:   Wed, 13 Apr 2022 14:10:05 -0700
-Message-Id: <db3a14f2d2df7678dec23375d48c96b603f8cfb5.1649878359.git.reinette.chatre@intel.com>
+Subject: [PATCH V4 31/31] selftests/sgx: Page removal stress test
+Date:   Wed, 13 Apr 2022 14:10:31 -0700
+Message-Id: <51e5952805fb5faadcdcd6fa69d3a2b492ba4750.1649878359.git.reinette.chatre@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1649878359.git.reinette.chatre@intel.com>
 References: <cover.1649878359.git.reinette.chatre@intel.com>
@@ -58,140 +58,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sgx_encl_load_page() is used to find and load an enclave page into
-enclave (EPC) memory, potentially loading it from the backing storage.
-Both usages of sgx_encl_load_page() are during an access to the
-enclave page from a VMA and thus the permissions of the VMA are
-considered before the enclave page is loaded.
+Create enclave with additional heap that consumes all physical SGX
+memory and then remove it.
 
-SGX2 functions operating on enclave pages belonging to an initialized
-enclave requiring the page to be in EPC. It is thus required to
-support loading enclave pages into the EPC independent from a VMA.
+Depending on the available SGX memory this test could take a
+significant time to run (several minutes) as it (1) creates the
+enclave, (2) changes the type of every page to be trimmed,
+(3) enters the enclave once per page to run EACCEPT, before
+(4) the pages are finally removed.
 
-Split the current sgx_encl_load_page() to support the two usages:
-A new call, sgx_encl_load_page_in_vma(), behaves exactly like the
-current sgx_encl_load_page() that takes VMA permissions into account,
-while sgx_encl_load_page() just loads an enclave page into EPC.
-
-VMA, PTE, and EPCM permissions continue to dictate whether
-the pages can be accessed from within an enclave.
-
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
 Changes since V3:
-- Add Jarkko's Reviewed-by tag.
+- Add Jarkko's Acked-by tag.
+- Rename SGX_IOC_ENCLAVE_MODIFY_TYPE to
+  SGX_IOC_ENCLAVE_MODIFY_TYPES. (Jarkko)
+- User provides just page type to SGX_IOC_ENCLAVE_MODIFY_TYPES ioctl(),
+  replacing secinfo. (Jarkko)
+- Let the SKIP() call involving SGX_IOC_ENCLAVE_MODIFY_TYPES span
+  two lines to address checkpatch.pl warning triggered by new longer
+  name.
 
 Changes since V2:
-- New patch
+- Rename struct sgx_enclave_modt -> struct sgx_enclave_modify_type
 
- arch/x86/kernel/cpu/sgx/encl.c | 57 ++++++++++++++++++++++------------
- arch/x86/kernel/cpu/sgx/encl.h |  2 ++
- 2 files changed, 40 insertions(+), 19 deletions(-)
+Changes since V1:
+- Exit test completely on first failure of EACCEPT of a removed page. Since
+  this is an oversubscribed test the number of pages on which this is
+  attempted can be significant and in case of failure the per-page
+  error logging would overwhelm the system.
+- Update test to call renamed ioctl() (SGX_IOC_PAGE_MODT ->
+  SGX_IOC_ENCLAVE_MODIFY_TYPE) and provide secinfo as parameter (Jarkko).
+- Fixup definitions to be reverse xmas tree.
+- Update test to reflect page removal ioctl() and struct name change:
+  SGX_IOC_PAGE_REMOVE->SGX_IOC_ENCLAVE_REMOVE_PAGES,
+  struct sgx_page_remove -> struct sgx_enclave_remove_pages (Jarkko).
+- Ensure test is skipped when SGX2 not supported by kernel.
+- Cleanup comments.
 
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 7c63a1911fae..05ae1168391c 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -131,25 +131,10 @@ static struct sgx_epc_page *sgx_encl_eldu(struct sgx_encl_page *encl_page,
- 	return epc_page;
- }
- 
--static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
--						unsigned long addr,
--						unsigned long vm_flags)
-+static struct sgx_encl_page *__sgx_encl_load_page(struct sgx_encl *encl,
-+						  struct sgx_encl_page *entry)
- {
--	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
- 	struct sgx_epc_page *epc_page;
--	struct sgx_encl_page *entry;
--
--	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
--	if (!entry)
--		return ERR_PTR(-EFAULT);
--
--	/*
--	 * Verify that the faulted page has equal or higher build time
--	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
--	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
--	 */
--	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
--		return ERR_PTR(-EFAULT);
- 
- 	/* Entry successfully located. */
- 	if (entry->epc_page) {
-@@ -175,6 +160,40 @@ static struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
- 	return entry;
- }
- 
-+static struct sgx_encl_page *sgx_encl_load_page_in_vma(struct sgx_encl *encl,
-+						       unsigned long addr,
-+						       unsigned long vm_flags)
-+{
-+	unsigned long vm_prot_bits = vm_flags & (VM_READ | VM_WRITE | VM_EXEC);
-+	struct sgx_encl_page *entry;
+ tools/testing/selftests/sgx/main.c | 120 +++++++++++++++++++++++++++++
+ 1 file changed, 120 insertions(+)
+
+diff --git a/tools/testing/selftests/sgx/main.c b/tools/testing/selftests/sgx/main.c
+index d49fce1a8df9..7ad88117f3f7 100644
+--- a/tools/testing/selftests/sgx/main.c
++++ b/tools/testing/selftests/sgx/main.c
+@@ -378,7 +378,127 @@ TEST_F(enclave, unclobbered_vdso_oversubscribed)
+ 	EXPECT_EQ(get_op.value, MAGIC);
+ 	EXPECT_EEXIT(&self->run);
+ 	EXPECT_EQ(self->run.user_data, 0);
++}
 +
-+	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
-+	if (!entry)
-+		return ERR_PTR(-EFAULT);
++TEST_F_TIMEOUT(enclave, unclobbered_vdso_oversubscribed_remove, 900)
++{
++	struct sgx_enclave_remove_pages remove_ioc;
++	struct sgx_enclave_modify_type modt_ioc;
++	struct encl_op_get_from_buf get_op;
++	struct encl_op_eaccept eaccept_op;
++	struct encl_op_put_to_buf put_op;
++	struct encl_segment *heap;
++	unsigned long total_mem;
++	int ret, errno_save;
++	unsigned long addr;
++	unsigned long i;
 +
 +	/*
-+	 * Verify that the page has equal or higher build time
-+	 * permissions than the VMA permissions (i.e. the subset of {VM_READ,
-+	 * VM_WRITE, VM_EXECUTE} in vma->vm_flags).
++	 * Create enclave with additional heap that is as big as all
++	 * available physical SGX memory.
 +	 */
-+	if ((entry->vm_max_prot_bits & vm_prot_bits) != vm_prot_bits)
-+		return ERR_PTR(-EFAULT);
++	total_mem = get_total_epc_mem();
++	ASSERT_NE(total_mem, 0);
++	TH_LOG("Creating an enclave with %lu bytes heap may take a while ...",
++	       total_mem);
++	ASSERT_TRUE(setup_test_encl(total_mem, &self->encl, _metadata));
 +
-+	return __sgx_encl_load_page(encl, entry);
-+}
++	/*
++	 * Hardware (SGX2) and kernel support is needed for this test. Start
++	 * with check that test has a chance of succeeding.
++	 */
++	memset(&modt_ioc, 0, sizeof(modt_ioc));
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPES, &modt_ioc);
 +
-+struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
-+					 unsigned long addr)
-+{
-+	struct sgx_encl_page *entry;
++	if (ret == -1) {
++		if (errno == ENOTTY)
++			SKIP(return,
++			     "Kernel does not support SGX_IOC_ENCLAVE_MODIFY_TYPES ioctl()");
++		else if (errno == ENODEV)
++			SKIP(return, "System does not support SGX2");
++	}
 +
-+	entry = xa_load(&encl->page_array, PFN_DOWN(addr));
-+	if (!entry)
-+		return ERR_PTR(-EFAULT);
++	/*
++	 * Invalid parameters were provided during sanity check,
++	 * expect command to fail.
++	 */
++	EXPECT_EQ(ret, -1);
 +
-+	return __sgx_encl_load_page(encl, entry);
-+}
++	/* SGX2 is supported by kernel and hardware, test can proceed. */
++	memset(&self->run, 0, sizeof(self->run));
++	self->run.tcs = self->encl.encl_base;
 +
- static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
- {
- 	unsigned long addr = (unsigned long)vmf->address;
-@@ -196,7 +215,7 @@ static vm_fault_t sgx_vma_fault(struct vm_fault *vmf)
++	heap = &self->encl.segment_tbl[self->encl.nr_segments - 1];
++
++	put_op.header.type = ENCL_OP_PUT_TO_BUFFER;
++	put_op.value = MAGIC;
++
++	EXPECT_EQ(ENCL_CALL(&put_op, &self->run, false), 0);
++
++	EXPECT_EEXIT(&self->run);
++	EXPECT_EQ(self->run.user_data, 0);
++
++	get_op.header.type = ENCL_OP_GET_FROM_BUFFER;
++	get_op.value = 0;
++
++	EXPECT_EQ(ENCL_CALL(&get_op, &self->run, false), 0);
++
++	EXPECT_EQ(get_op.value, MAGIC);
++	EXPECT_EEXIT(&self->run);
++	EXPECT_EQ(self->run.user_data, 0);
  
- 	mutex_lock(&encl->lock);
++	/* Trim entire heap. */
++	memset(&modt_ioc, 0, sizeof(modt_ioc));
++
++	modt_ioc.offset = heap->offset;
++	modt_ioc.length = heap->size;
++	modt_ioc.page_type = SGX_PAGE_TYPE_TRIM;
++
++	TH_LOG("Changing type of %zd bytes to trimmed may take a while ...",
++	       heap->size);
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_MODIFY_TYPES, &modt_ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	EXPECT_EQ(ret, 0);
++	EXPECT_EQ(errno_save, 0);
++	EXPECT_EQ(modt_ioc.result, 0);
++	EXPECT_EQ(modt_ioc.count, heap->size);
++
++	/* EACCEPT all removed pages. */
++	addr = self->encl.encl_base + heap->offset;
++
++	eaccept_op.flags = SGX_SECINFO_TRIM | SGX_SECINFO_MODIFIED;
++	eaccept_op.header.type = ENCL_OP_EACCEPT;
++
++	TH_LOG("Entering enclave to run EACCEPT for each page of %zd bytes may take a while ...",
++	       heap->size);
++	for (i = 0; i < heap->size; i += 4096) {
++		eaccept_op.epc_addr = addr + i;
++		eaccept_op.ret = 0;
++
++		EXPECT_EQ(ENCL_CALL(&eaccept_op, &self->run, true), 0);
++
++		EXPECT_EQ(self->run.exception_vector, 0);
++		EXPECT_EQ(self->run.exception_error_code, 0);
++		EXPECT_EQ(self->run.exception_addr, 0);
++		ASSERT_EQ(eaccept_op.ret, 0);
++		ASSERT_EQ(self->run.function, EEXIT);
++	}
++
++	/* Complete page removal. */
++	memset(&remove_ioc, 0, sizeof(remove_ioc));
++
++	remove_ioc.offset = heap->offset;
++	remove_ioc.length = heap->size;
++
++	TH_LOG("Removing %zd bytes from enclave may take a while ...",
++	       heap->size);
++	ret = ioctl(self->encl.fd, SGX_IOC_ENCLAVE_REMOVE_PAGES, &remove_ioc);
++	errno_save = ret == -1 ? errno : 0;
++
++	EXPECT_EQ(ret, 0);
++	EXPECT_EQ(errno_save, 0);
++	EXPECT_EQ(remove_ioc.count, heap->size);
+ }
  
--	entry = sgx_encl_load_page(encl, addr, vma->vm_flags);
-+	entry = sgx_encl_load_page_in_vma(encl, addr, vma->vm_flags);
- 	if (IS_ERR(entry)) {
- 		mutex_unlock(&encl->lock);
- 
-@@ -344,7 +363,7 @@ static struct sgx_encl_page *sgx_encl_reserve_page(struct sgx_encl *encl,
- 	for ( ; ; ) {
- 		mutex_lock(&encl->lock);
- 
--		entry = sgx_encl_load_page(encl, addr, vm_flags);
-+		entry = sgx_encl_load_page_in_vma(encl, addr, vm_flags);
- 		if (PTR_ERR(entry) != -EBUSY)
- 			break;
- 
-diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
-index fec43ca65065..6b34efba1602 100644
---- a/arch/x86/kernel/cpu/sgx/encl.h
-+++ b/arch/x86/kernel/cpu/sgx/encl.h
-@@ -116,5 +116,7 @@ unsigned int sgx_alloc_va_slot(struct sgx_va_page *va_page);
- void sgx_free_va_slot(struct sgx_va_page *va_page, unsigned int offset);
- bool sgx_va_page_full(struct sgx_va_page *va_page);
- void sgx_encl_free_epc_page(struct sgx_epc_page *page);
-+struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
-+					 unsigned long addr);
- 
- #endif /* _X86_ENCL_H */
+ TEST_F(enclave, clobbered_vdso)
 -- 
 2.25.1
 
