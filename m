@@ -2,220 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 02:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F48C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 02:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiDMCJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 22:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
+        id S230015AbiDMCOu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 22:14:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230436AbiDMCJN (ORCPT
+        with ESMTP id S229473AbiDMCOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 22:09:13 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E014F44C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 19:06:51 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id y6so708958plg.2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 19:06:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0MNiYyg47Q/lgq+p2TnJidv+4v97sJVTq+BwgFSq+VQ=;
-        b=Lpgu/kIIY6OTgkq6DK8AGceWu1W0JSwkDntRla5RelvUGWpCef4ixTRLk0CeQg8uh+
-         FOdDJCUfB9Gum6HLdD0Qv54dDadV8PRLhEpwklqG9/ZxLMK2ggaz8YeybLNI2CmXSQaB
-         CIzPn8mr7GfABn6kfFCNd0FvU1OjjKt+1d1ZWBZNl6HXGN0xetQzhaTyw1kRDVF3a1VT
-         U7mV2jnhRXrgYDedNMRbb0cBKmZb0sx8bXXilHxQQHeS3ikfhZESBiLkrjEasqxrSKKm
-         z94G3RWuGw9aL9Za7IFByAm9JWMkqZauiXIex4BhIZ933SiUEodMsIXWevWOXUYXfT7s
-         OcOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0MNiYyg47Q/lgq+p2TnJidv+4v97sJVTq+BwgFSq+VQ=;
-        b=gSEONA8wpeA9vVucmwTaZZl80gfuQwM0Y3Xb2zFJTFLneqS/DIqY/JzAXcmfVRQ/+U
-         u3Hcu9d5rnYRSL932NhjaBn5ZWIr+ZVZu5lzDIa386n+RX4ufxm5ln2pztSfHBQpiUrG
-         BE+oR3EU5DM91ejZgQZ17twIJMbCJoANcPV9H4E54eeK39KAF00v5OgIUf0e9tpg20Ht
-         mgvf3ODn15/9BO01ND2GqPbtR/lmZQJiB4TlPy03A4X0S8GsHDmdbrOqfytKtFSzZubX
-         QOUOM0wacPi9K41yJwUwGZ9zbwTYNA0PFBhA1GBtRCKOxIj9LzSWqj2FdtFpFuK8eDfK
-         V+dQ==
-X-Gm-Message-State: AOAM530pZpmZgiYO8YSntDX4quB1aI+2qGoVJX3oJ7X1F2b7P3BaIK9M
-        ja1S3ebgrlGOgQcPPFJ45TcKSbtWg31PU/swlB8AXQ==
-X-Google-Smtp-Source: ABdhPJxWw5xA7X5gjbLtdUOG67b6VL4topnpS9iw/C6hutLuDw/UuVcok1a0F93UlSgXX0Iq41Uluo4OCw+GE3qP/QE=
-X-Received: by 2002:a17:902:eb92:b0:158:4cc9:698e with SMTP id
- q18-20020a170902eb9200b001584cc9698emr17120666plg.147.1649815611069; Tue, 12
- Apr 2022 19:06:51 -0700 (PDT)
+        Tue, 12 Apr 2022 22:14:48 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998E52180C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 19:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649815948; x=1681351948;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=pe87ft1aKaeKaE+04iJ1gZNdhhDhquRrnt/SIy8fEts=;
+  b=Av0fk3m47GMHJ50kAg6ZSXBmuhHwNKNrpM3qWb/7YPYZJOZiKY2I/Xqe
+   9uJd2aNZolmV0prCHHHGxWUGnlbpcyQ4FRS4Lq7JdqsZj7Fr5drzJjs2V
+   vofdtYDuGsR+wY0U+/45eejk5cA+gaTutXEQrgH+uRfPOAy3WaxUX/GPd
+   CpWCBoT7Sl+34rydAeb6CapzvpAWXEeT9CrQ45trTvr00ZCvH+maXmRC5
+   1nvvlHVYmTsgGz6AUB/5PEzDSZAxJLIkbyne/r4o2y2XvYEImWpGxCEF/
+   IEQFnwZmnNaII6y6K4I5JHceNOWmIu9y9K2zTTu/Gdfz9SAYFQcr/gvwV
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="243136079"
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="243136079"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 19:12:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="644983140"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Apr 2022 19:12:26 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neSUb-0003Mc-Se;
+        Wed, 13 Apr 2022 02:12:25 +0000
+Date:   Wed, 13 Apr 2022 10:12:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        linux-kernel@vger.kernel.org
+Subject: [djwong-xfs:vectorized-scrub 99/396] fs/xfs/scrub/repair.c:181:1:
+ warning: no previous prototype for function 'xrep_defer_finish'
+Message-ID: <202204131051.6jCh5cCf-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220410160904.3758789-1-ruansy.fnst@fujitsu.com>
- <20220410160904.3758789-7-ruansy.fnst@fujitsu.com> <20220413000423.GK1544202@dread.disaster.area>
-In-Reply-To: <20220413000423.GK1544202@dread.disaster.area>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 12 Apr 2022 19:06:40 -0700
-Message-ID: <CAPcyv4jKLZhcCiSEU+O+OJ2e+y9_B2CvaEfAKyBnhhSd+da=Zg@mail.gmail.com>
-Subject: Re: [PATCH v12 6/7] xfs: Implement ->notify_failure() for XFS
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux MM <linux-mm@kvack.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jane Chu <jane.chu@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 5:04 PM Dave Chinner <david@fromorbit.com> wrote:
->
-> On Mon, Apr 11, 2022 at 12:09:03AM +0800, Shiyang Ruan wrote:
-> > Introduce xfs_notify_failure.c to handle failure related works, such as
-> > implement ->notify_failure(), register/unregister dax holder in xfs, and
-> > so on.
-> >
-> > If the rmap feature of XFS enabled, we can query it to find files and
-> > metadata which are associated with the corrupt data.  For now all we do
-> > is kill processes with that file mapped into their address spaces, but
-> > future patches could actually do something about corrupt metadata.
-> >
-> > After that, the memory failure needs to notify the processes who are
-> > using those files.
-> >
-> > Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
-> > ---
-> >  fs/xfs/Makefile             |   5 +
-> >  fs/xfs/xfs_buf.c            |   7 +-
-> >  fs/xfs/xfs_fsops.c          |   3 +
-> >  fs/xfs/xfs_mount.h          |   1 +
-> >  fs/xfs/xfs_notify_failure.c | 219 ++++++++++++++++++++++++++++++++++++
-> >  fs/xfs/xfs_super.h          |   1 +
-> >  6 files changed, 233 insertions(+), 3 deletions(-)
-> >  create mode 100644 fs/xfs/xfs_notify_failure.c
-> >
-> > diff --git a/fs/xfs/Makefile b/fs/xfs/Makefile
-> > index 04611a1068b4..09f5560e29f2 100644
-> > --- a/fs/xfs/Makefile
-> > +++ b/fs/xfs/Makefile
-> > @@ -128,6 +128,11 @@ xfs-$(CONFIG_SYSCTL)             += xfs_sysctl.o
-> >  xfs-$(CONFIG_COMPAT)         += xfs_ioctl32.o
-> >  xfs-$(CONFIG_EXPORTFS_BLOCK_OPS)     += xfs_pnfs.o
-> >
-> > +# notify failure
-> > +ifeq ($(CONFIG_MEMORY_FAILURE),y)
-> > +xfs-$(CONFIG_FS_DAX)         += xfs_notify_failure.o
-> > +endif
-> > +
-> >  # online scrub/repair
-> >  ifeq ($(CONFIG_XFS_ONLINE_SCRUB),y)
-> >
-> > diff --git a/fs/xfs/xfs_buf.c b/fs/xfs/xfs_buf.c
-> > index f9ca08398d32..9064b8dfbc66 100644
-> > --- a/fs/xfs/xfs_buf.c
-> > +++ b/fs/xfs/xfs_buf.c
-> > @@ -5,6 +5,7 @@
-> >   */
-> >  #include "xfs.h"
-> >  #include <linux/backing-dev.h>
-> > +#include <linux/dax.h>
-> >
-> >  #include "xfs_shared.h"
-> >  #include "xfs_format.h"
-> > @@ -1911,7 +1912,7 @@ xfs_free_buftarg(
-> >       list_lru_destroy(&btp->bt_lru);
-> >
-> >       blkdev_issue_flush(btp->bt_bdev);
-> > -     fs_put_dax(btp->bt_daxdev, NULL);
-> > +     fs_put_dax(btp->bt_daxdev, btp->bt_mount);
-> >
-> >       kmem_free(btp);
-> >  }
-> > @@ -1964,8 +1965,8 @@ xfs_alloc_buftarg(
-> >       btp->bt_mount = mp;
-> >       btp->bt_dev =  bdev->bd_dev;
-> >       btp->bt_bdev = bdev;
-> > -     btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off, NULL,
-> > -                                         NULL);
-> > +     btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off, mp,
-> > +                                         &xfs_dax_holder_operations);
->
-> I see a problem with this: we are setting up notify callbacks before
-> we've even read in the superblock during mount. i.e. we don't even
-> kow yet if we've got an XFS filesystem on this block device.
->
-> Hence if we get a notification immediately after registering this
-> notification callback....
->
-> [...]
->
-> > +
-> > +static int
-> > +xfs_dax_notify_ddev_failure(
-> > +     struct xfs_mount        *mp,
-> > +     xfs_daddr_t             daddr,
-> > +     xfs_daddr_t             bblen,
-> > +     int                     mf_flags)
-> > +{
-> > +     struct xfs_trans        *tp = NULL;
-> > +     struct xfs_btree_cur    *cur = NULL;
-> > +     struct xfs_buf          *agf_bp = NULL;
-> > +     int                     error = 0;
-> > +     xfs_fsblock_t           fsbno = XFS_DADDR_TO_FSB(mp, daddr);
-> > +     xfs_agnumber_t          agno = XFS_FSB_TO_AGNO(mp, fsbno);
-> > +     xfs_fsblock_t           end_fsbno = XFS_DADDR_TO_FSB(mp, daddr + bblen);
-> > +     xfs_agnumber_t          end_agno = XFS_FSB_TO_AGNO(mp, end_fsbno);
->
-> .... none of this code is going to function correctly because it
-> is dependent on the superblock having been read, validated and
-> copied to the in-memory superblock.
->
-> > +     error = xfs_trans_alloc_empty(mp, &tp);
-> > +     if (error)
-> > +             return error;
->
-> ... and it's not valid to use transactions (even empty ones) before
-> log recovery has completed and set the log up correctly.
->
-> > +
-> > +     for (; agno <= end_agno; agno++) {
-> > +             struct xfs_rmap_irec    ri_low = { };
-> > +             struct xfs_rmap_irec    ri_high;
-> > +             struct failure_info     notify;
-> > +             struct xfs_agf          *agf;
-> > +             xfs_agblock_t           agend;
-> > +
-> > +             error = xfs_alloc_read_agf(mp, tp, agno, 0, &agf_bp);
-> > +             if (error)
-> > +                     break;
-> > +
-> > +             cur = xfs_rmapbt_init_cursor(mp, tp, agf_bp, agf_bp->b_pag);
->
-> ... and none of the structures this rmapbt walk is dependent on
-> (e.g. perag structures) have been initialised yet so there's null
-> pointer dereferences going to happen here.
->
-> Perhaps even worse is that the rmapbt is not guaranteed to be in
-> consistent state until after log recovery has completed, so this
-> walk could get stuck forever in a stale on-disk cycle that
-> recovery would have corrected....
->
-> Hence these notifications need to be delayed until after the
-> filesystem is mounted, all the internal structures have been set up
-> and log recovery has completed.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
+head:   bd756ef7af68274b79308166ee64949d288be861
+commit: 80bc1e058e807de278cc530a53694879e4f70cb3 [99/396] xfs: implement block reservation accounting for btrees we're staging
+config: hexagon-buildonly-randconfig-r001-20220412 (https://download.01.org/0day-ci/archive/20220413/202204131051.6jCh5cCf-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=80bc1e058e807de278cc530a53694879e4f70cb3
+        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
+        git fetch --no-tags djwong-xfs vectorized-scrub
+        git checkout 80bc1e058e807de278cc530a53694879e4f70cb3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/xfs/
 
-So I think this gets back to the fact that there will eventually be 2
-paths into this notifier. One will be the currently proposed
-synchronous / CPU-consumes-poison while accessing the filesystem
-(potentially even while recovery is running), and another will be in
-response to some asynchronous background scanning. I am thinking that
-the latter would be driven from a userspace daemon reconciling
-background scan events and notifying the filesystem and any other
-interested party.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-All that to say, I think it is ok / expected for the filesystem to
-drop notifications on the floor when it is not ready to handle them.
-For example there are no processes to send SIGBUS to if the filesystem
-has not even finished mount. It is then up to userspace to replay any
-relevant error notifications that may be pending after mount completes
-to sync the filesystem with the current state of the hardware.
+All warnings (new ones prefixed by >>):
+
+>> fs/xfs/scrub/repair.c:181:1: warning: no previous prototype for function 'xrep_defer_finish' [-Wmissing-prototypes]
+   xrep_defer_finish(
+   ^
+   fs/xfs/scrub/repair.c:180:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/xrep_defer_finish +181 fs/xfs/scrub/repair.c
+
+   178	
+   179	/* Finish all deferred work attached to the repair transaction. */
+   180	int
+ > 181	xrep_defer_finish(
+   182		struct xfs_scrub	*sc)
+   183	{
+   184		int			error;
+   185	
+   186		/* Keep the AG header buffers locked so we can keep going. */
+   187		if (sc->sa.agi_bp) {
+   188			xfs_ialloc_log_agi(sc->tp, sc->sa.agi_bp, XFS_AGI_MAGICNUM);
+   189			xfs_trans_bhold(sc->tp, sc->sa.agi_bp);
+   190		}
+   191	
+   192		if (sc->sa.agf_bp) {
+   193			xfs_alloc_log_agf(sc->tp, sc->sa.agf_bp, XFS_AGF_MAGICNUM);
+   194			xfs_trans_bhold(sc->tp, sc->sa.agf_bp);
+   195		}
+   196	
+   197		error = xfs_defer_finish(&sc->tp);
+   198		if (error)
+   199			return error;
+   200	
+   201		/*
+   202		 * The buffer log item (and hence the blf type) can detach from
+   203		 * the buffer across the transaction rolls, so ensure that the
+   204		 * types are still set on the AG header buffers.  Release the hold
+   205		 * that we set above because defer_finish won't do that for us.
+   206		 */
+   207		if (sc->sa.agi_bp) {
+   208			xfs_trans_bhold_release(sc->tp, sc->sa.agi_bp);
+   209			xfs_trans_buf_set_type(sc->tp, sc->sa.agi_bp, XFS_BLFT_AGI_BUF);
+   210		}
+   211		if (sc->sa.agf_bp) {
+   212			xfs_trans_bhold_release(sc->tp, sc->sa.agf_bp);
+   213			xfs_trans_buf_set_type(sc->tp, sc->sa.agf_bp, XFS_BLFT_AGF_BUF);
+   214		}
+   215		return 0;
+   216	}
+   217	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
