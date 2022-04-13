@@ -2,72 +2,459 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 681A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 872E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiDMB12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 21:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39674 "EHLO
+        id S229792AbiDMB2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 21:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbiDMB1N (ORCPT
+        with ESMTP id S229522AbiDMB2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 21:27:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983002E6A0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 18:24:54 -0700 (PDT)
+        Tue, 12 Apr 2022 21:28:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BE9377DE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 18:26:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09CA2B820DB
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 01:24:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C3383C385AB;
-        Wed, 13 Apr 2022 01:24:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1FEB618F6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 01:26:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25586C385A1;
+        Wed, 13 Apr 2022 01:26:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649813091;
-        bh=WVv8xP8EsTazDXX9+yZEe387stFtqf5XJqQincwmJQs=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=HQvHKfw2H4tYjfofMDIrBZsGRm8v9wdQeSSOsuVXRoZdp5qYA1PBySUNyd7pGR9lN
-         mSF1kBWGk8pwmKprsgTDAFPMDqUn9rGT/4sahZ7YXnYvCe5zn1xQ0qZ6UfF3OaYVIh
-         JLJbUkbKBrTpxcJh1/4SRJgVvoEJ+MyndrCPau3caoJwWhA9M0KyfPDYXbfV3vkKQz
-         UuRCIfdrPEHliPzhJH4j174PZVnuqLPKXi2WreQKvyrv216wKeLrK503vcqV7+/D7Q
-         VJo5Qv9KmUuwzlB3xatGwcenzYL+g+O9UzmEFtapkYfSiJrVF1+pHWK/hLuV4mcYNA
-         rFCJssLxXiOwg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B0084E85D15;
-        Wed, 13 Apr 2022 01:24:51 +0000 (UTC)
-Subject: Re: [GIT PULL] kernel hardening fixes for v5.18-rc3
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <202204121635.BCF6C9C4D3@keescook>
-References: <202204121635.BCF6C9C4D3@keescook>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <202204121635.BCF6C9C4D3@keescook>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v5.18-rc3
-X-PR-Tracked-Commit-Id: c40160f2998c897231f8454bf797558d30a20375
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a19944809fe9942e6a96292490717904d0690c21
-Message-Id: <164981309171.9925.772594053652812407.pr-tracker-bot@kernel.org>
-Date:   Wed, 13 Apr 2022 01:24:51 +0000
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kees Cook <keescook@chromium.org>,
-        PaX Team <pageexec@freemail.hu>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
+        s=k20201202; t=1649813179;
+        bh=K/6FWbMzAcuGO4JVBgyhM+eY72etwU8K3Ish3/dDSw4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=uA2wcTDtwy9I2/T2l50iLlV/osO3WccoJjVBjKKEBckBCVyS87eRmxGGhuo3X/yKr
+         RPPdRCN6xbgLxbWcdo9bPTtaj40bCNZKaAthNLUeWd6nl3vQ2q0Ccq0pHj2zYKIrYF
+         7ryeU7B3bRPYgLIGmW5eAHO9MeNy4LYxo2n2dtKkMNcpJo9VfMsUCFhzIRQ35ky2tp
+         AtxictKm2qyeAUvVGppDT/0CG53O6DfXGHIka8wgqV9yzpuB1JGHinHl5Dxy293PD+
+         b6s9NMNrd4CH9gHACxVODq0c16MsfQbfdlmS5VTeq5ucRluvT56s9Y1b9NEIYBCduS
+         RokYke61AGiuQ==
+Message-ID: <e9865a0c-d14d-e689-330f-f8339bb33fec@kernel.org>
+Date:   Wed, 13 Apr 2022 09:26:15 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3] f2fs: give priority to select unpinned section for
+ foreground GC
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
+References: <20220406152651.5142-1-chao@kernel.org>
+ <YlSNjgQwoiENx5EK@google.com>
+ <1eee9abe-f468-ce32-cdb9-3a706404de2f@kernel.org>
+ <YlWnDD2H+AueUYcK@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YlWnDD2H+AueUYcK@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 12 Apr 2022 16:36:10 -0700:
+On 2022/4/13 0:21, Jaegeuk Kim wrote:
+> On 04/12, Chao Yu wrote:
+>> On 2022/4/12 4:20, Jaegeuk Kim wrote:
+>>> On 04/06, Chao Yu wrote:
+>>>> Previously, during foreground GC, if victims contain data of pinned file,
+>>>> it will fail migration of the data, and meanwhile i_gc_failures of that
+>>>> pinned file may increase, and when it exceeds threshold, GC will unpin
+>>>> the file, result in breaking pinfile's semantics.
+>>>>
+>>>> In order to mitigate such condition, let's record and skip section which
+>>>> has pinned file's data and give priority to select unpinned one.
+>>>>
+>>>> Signed-off-by: Chao Yu <chao.yu@oppo.com>
+>>>> ---
+>>>> v3:
+>>>> - check pin status before pinning section in pin_section().
+>>>>    fs/f2fs/gc.c      | 56 ++++++++++++++++++++++++++++++++++++++++++++---
+>>>>    fs/f2fs/segment.c |  7 ++++++
+>>>>    fs/f2fs/segment.h |  2 ++
+>>>>    3 files changed, 62 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+>>>> index 6a7e4148ff9d..df23824ae3c2 100644
+>>>> --- a/fs/f2fs/gc.c
+>>>> +++ b/fs/f2fs/gc.c
+>>>> @@ -646,6 +646,37 @@ static void release_victim_entry(struct f2fs_sb_info *sbi)
+>>>>    	f2fs_bug_on(sbi, !list_empty(&am->victim_list));
+>>>>    }
+>>>> +static void pin_section(struct f2fs_sb_info *sbi, unsigned int segno)
+>>>
+>>> Need f2fs_...?
+>>
+>> Sure, I can add prefix...
+>>
+>> It's a local function, it won't pollute global namespace w/o f2fs_ prefix
+>> though.
+>>
+>>>
+>>>> +{
+>>>> +	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
+>>>> +	unsigned int secno = GET_SEC_FROM_SEG(sbi, segno);
+>>>> +
+>>>> +	if (test_bit(secno, dirty_i->pinned_secmap))
+>>>> +		return;
+>>>> +	set_bit(secno, dirty_i->pinned_secmap);
+>>>> +	dirty_i->pinned_secmap_cnt++;
+>>>> +}
+>>>> +
+>>>> +static bool pinned_section_exists(struct dirty_seglist_info *dirty_i)
+>>>> +{
+>>>> +	return dirty_i->pinned_secmap_cnt;
+>>>> +}
+>>>> +
+>>>> +static bool section_is_pinned(struct dirty_seglist_info *dirty_i,
+>>>> +						unsigned int secno)
+>>>> +{
+>>>> +	return pinned_section_exists(dirty_i) &&
+>>>> +			test_bit(secno, dirty_i->pinned_secmap);
+>>>> +}
+>>>> +
+>>>> +static void unpin_all_sections(struct f2fs_sb_info *sbi)
+>>>> +{
+>>>> +	unsigned int bitmap_size = f2fs_bitmap_size(MAIN_SECS(sbi));
+>>>> +
+>>>> +	memset(DIRTY_I(sbi)->pinned_secmap, 0, bitmap_size);
+>>>> +	DIRTY_I(sbi)->pinned_secmap_cnt = 0;
+>>>> +}
+>>>> +
+>>>>    /*
+>>>>     * This function is called from two paths.
+>>>>     * One is garbage collection and the other is SSR segment selection.
+>>>> @@ -787,6 +818,9 @@ static int get_victim_by_default(struct f2fs_sb_info *sbi,
+>>>>    		if (gc_type == BG_GC && test_bit(secno, dirty_i->victim_secmap))
+>>>>    			goto next;
+>>>> +		if (gc_type == FG_GC && section_is_pinned(dirty_i, secno))
+>>>> +			goto next;
+>>>> +
+>>>>    		if (is_atgc) {
+>>>>    			add_victim_entry(sbi, &p, segno);
+>>>>    			goto next;
+>>>> @@ -1202,8 +1236,10 @@ static int move_data_block(struct inode *inode, block_t bidx,
+>>>>    	}
+>>>>    	if (f2fs_is_pinned_file(inode)) {
+>>>> -		if (gc_type == FG_GC)
+>>>> +		if (gc_type == FG_GC) {
+>>>>    			f2fs_pin_file_control(inode, true);
+>>>> +			pin_section(F2FS_I_SB(inode), segno);
+>>>
+>>> Do we need to check unpinning the inode?
+>>> 			if (!f2fs_pin_file_control())
+>>> 				f2fs_set_pin_section();
+>>
+>> I'm thinking that it needs to avoid increasing GC_FAILURE_PIN AMAP,
+>> so could you please check below logic:
+>>
+>>  From 7cb1ee0df32ede44b17c503b81930dae25d287eb Mon Sep 17 00:00:00 2001
+>> From: Chao Yu <chao@kernel.org>
+>> Date: Wed, 6 Apr 2022 23:26:51 +0800
+>> Subject: [PATCH v4] f2fs: give priority to select unpinned section for
+>>   foreground GC
+>>
+>> Previously, during foreground GC, if victims contain data of pinned file,
+>> it will fail migration of the data, and meanwhile i_gc_failures of that
+>> pinned file may increase, and when it exceeds threshold, GC will unpin
+>> the file, result in breaking pinfile's semantics.
+>>
+>> In order to mitigate such condition, let's record and skip section which
+>> has pinned file's data and give priority to select unpinned one.
+>>
+>> Signed-off-by: Chao Yu <chao.yu@oppo.com>
+>> ---
+>> v4:
+>> - add f2fs_ prefix for newly introduced functions
+>> - add bool type variable for functionality switch
+>> - increase GC_FAILURE_PIN only if it disable pinning section
+>>   fs/f2fs/gc.c      | 66 ++++++++++++++++++++++++++++++++++++++++++-----
+>>   fs/f2fs/segment.c |  8 ++++++
+>>   fs/f2fs/segment.h |  3 +++
+>>   3 files changed, 71 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
+>> index 6a7e4148ff9d..296b31e28d3d 100644
+>> --- a/fs/f2fs/gc.c
+>> +++ b/fs/f2fs/gc.c
+>> @@ -646,6 +646,41 @@ static void release_victim_entry(struct f2fs_sb_info *sbi)
+>>   	f2fs_bug_on(sbi, !list_empty(&am->victim_list));
+>>   }
+>>
+>> +static bool f2fs_pin_section(struct f2fs_sb_info *sbi, unsigned int segno)
+>> +{
+>> +	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
+>> +	unsigned int secno = GET_SEC_FROM_SEG(sbi, segno);
+>> +
+>> +	if (!dirty_i->enable_pin_section)
+>> +		return false;
+>> +	if (test_bit(secno, dirty_i->pinned_secmap))
+>> +		return true;
+>> +	set_bit(secno, dirty_i->pinned_secmap);
+>> +	dirty_i->pinned_secmap_cnt++;
+> 
+> 	if (!test_and_set_bit())
+> 		dirty_i->pinned_secmap_cnt++;
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v5.18-rc3
+More clean.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a19944809fe9942e6a96292490717904d0690c21
+> 
+>> +	return true;
+>> +}
+>> +
+>> +static bool f2fs_pinned_section_exists(struct dirty_seglist_info *dirty_i)
+>> +{
+>> +	return dirty_i->enable_pin_section && dirty_i->pinned_secmap_cnt;
+>> +}
+>> +
+>> +static bool f2fs_section_is_pinned(struct dirty_seglist_info *dirty_i,
+>> +						unsigned int secno)
+>> +{
+>> +	return f2fs_pinned_section_exists(dirty_i) &&
+>> +			test_bit(secno, dirty_i->pinned_secmap);
+>> +}
+>> +
+>> +static void f2fs_unpin_all_sections(struct f2fs_sb_info *sbi, bool enable)
+>> +{
+>> +	unsigned int bitmap_size = f2fs_bitmap_size(MAIN_SECS(sbi));
+>> +
+>> +	memset(DIRTY_I(sbi)->pinned_secmap, 0, bitmap_size);
+>> +	DIRTY_I(sbi)->pinned_secmap_cnt = 0;
+>> +	DIRTY_I(sbi)->enable_pin_section = enable;
+>> +}
+>> +
+>>   /*
+>>    * This function is called from two paths.
+>>    * One is garbage collection and the other is SSR segment selection.
+>> @@ -787,6 +822,9 @@ static int get_victim_by_default(struct f2fs_sb_info *sbi,
+>>   		if (gc_type == BG_GC && test_bit(secno, dirty_i->victim_secmap))
+>>   			goto next;
+>>
+>> +		if (gc_type == FG_GC && f2fs_section_is_pinned(dirty_i, secno))
+>> +			goto next;
+>> +
+>>   		if (is_atgc) {
+>>   			add_victim_entry(sbi, &p, segno);
+>>   			goto next;
+>> @@ -1202,8 +1240,10 @@ static int move_data_block(struct inode *inode, block_t bidx,
+>>   	}
+>>
+> 
+> Can we make a generic function?
+> 
+> f2fs_gc_pinned_control()
+> {
+> 	if (!f2fs_is_pinned_file(inode))
+> 		return 0;
+> 	if (gc_type != FG_GC)
+> 		return 0;
+> 	if (!f2fs_pin_section())
+> 		f2fs_pin_file_control();
+> 	return -EAGAIN;
+> }
 
-Thank you!
+Better. :)
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Thanks,
+
+> 
+>>   	if (f2fs_is_pinned_file(inode)) {
+>> -		if (gc_type == FG_GC)
+>> -			f2fs_pin_file_control(inode, true);
+>> +		if (gc_type == FG_GC) {
+>> +			if (!f2fs_pin_section(F2FS_I_SB(inode), segno))
+> 
+>> +				f2fs_pin_file_control(inode, true);
+>> +		}
+>>   		err = -EAGAIN;
+>>   		goto out;
+>>   	}
+>> @@ -1352,8 +1392,10 @@ static int move_data_page(struct inode *inode, block_t bidx, int gc_type,
+>>   		goto out;
+>>   	}
+>>   	if (f2fs_is_pinned_file(inode)) {
+>> -		if (gc_type == FG_GC)
+>> -			f2fs_pin_file_control(inode, true);
+>> +		if (gc_type == FG_GC) {
+>> +			if (!f2fs_pin_section(F2FS_I_SB(inode), segno))
+>> +				f2fs_pin_file_control(inode, true);
+>> +		}
+>>   		err = -EAGAIN;
+>>   		goto out;
+>>   	}
+>> @@ -1483,7 +1525,8 @@ static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
+>>
+>>   			if (is_inode_flag_set(inode, FI_PIN_FILE) &&
+>>   							gc_type == FG_GC) {
+>> -				f2fs_pin_file_control(inode, true);
+>> +				if (!f2fs_pin_section(sbi, segno))
+>> +					f2fs_pin_file_control(inode, true);
+>>   				iput(inode);
+>>   				return submitted;
+>>   			}
+>> @@ -1766,9 +1809,17 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+>>   		ret = -EINVAL;
+>>   		goto stop;
+>>   	}
+>> +retry:
+>>   	ret = __get_victim(sbi, &segno, gc_type);
+>> -	if (ret)
+>> +	if (ret) {
+>> +		/* allow to search victim from sections has pinned data */
+>> +		if (ret == -ENODATA && gc_type == FG_GC &&
+>> +				f2fs_pinned_section_exists(DIRTY_I(sbi))) {
+>> +			f2fs_unpin_all_sections(sbi, false);
+>> +			goto retry;
+>> +		}
+>>   		goto stop;
+>> +	}
+>>
+>>   	seg_freed = do_garbage_collect(sbi, segno, &gc_list, gc_type, force);
+>>   	if (gc_type == FG_GC &&
+>> @@ -1811,6 +1862,9 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+>>   	SIT_I(sbi)->last_victim[ALLOC_NEXT] = 0;
+>>   	SIT_I(sbi)->last_victim[FLUSH_DEVICE] = init_segno;
+>>
+>> +	if (gc_type == FG_GC && f2fs_pinned_section_exists(DIRTY_I(sbi)))
+>> +		f2fs_unpin_all_sections(sbi, true);
+>> +
+>>   	trace_f2fs_gc_end(sbi->sb, ret, total_freed, sec_freed,
+>>   				get_pages(sbi, F2FS_DIRTY_NODES),
+>>   				get_pages(sbi, F2FS_DIRTY_DENTS),
+>> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+>> index 22dfeb991529..93c7bae57a25 100644
+>> --- a/fs/f2fs/segment.c
+>> +++ b/fs/f2fs/segment.c
+>> @@ -4734,6 +4734,13 @@ static int init_victim_secmap(struct f2fs_sb_info *sbi)
+>>   	dirty_i->victim_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
+>>   	if (!dirty_i->victim_secmap)
+>>   		return -ENOMEM;
+>> +
+>> +	dirty_i->pinned_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
+>> +	if (!dirty_i->pinned_secmap)
+>> +		return -ENOMEM;
+>> +
+>> +	dirty_i->pinned_secmap_cnt = 0;
+>> +	dirty_i->enable_pin_section = true;
+>>   	return 0;
+>>   }
+>>
+>> @@ -5322,6 +5329,7 @@ static void destroy_victim_secmap(struct f2fs_sb_info *sbi)
+>>   {
+>>   	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
+>>
+>> +	kvfree(dirty_i->pinned_secmap);
+>>   	kvfree(dirty_i->victim_secmap);
+>>   }
+>>
+>> diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
+>> index 5c94caf0c0a1..8a591455d796 100644
+>> --- a/fs/f2fs/segment.h
+>> +++ b/fs/f2fs/segment.h
+>> @@ -294,6 +294,9 @@ struct dirty_seglist_info {
+>>   	struct mutex seglist_lock;		/* lock for segment bitmaps */
+>>   	int nr_dirty[NR_DIRTY_TYPE];		/* # of dirty segments */
+>>   	unsigned long *victim_secmap;		/* background GC victims */
+>> +	unsigned long *pinned_secmap;		/* pinned victims from foreground GC */
+>> +	unsigned int pinned_secmap_cnt;		/* count of victims which has pinned data */
+>> +	bool enable_pin_section;		/* enable pinning section */
+>>   };
+>>
+>>   /* victim selection function for cleaning and SSR */
+>> -- 
+>> 2.25.1
+>>
+>> Thanks,
+>>
+>>>
+>>>> +		}
+>>>>    		err = -EAGAIN;
+>>>>    		goto out;
+>>>>    	}
+>>>> @@ -1352,8 +1388,10 @@ static int move_data_page(struct inode *inode, block_t bidx, int gc_type,
+>>>>    		goto out;
+>>>>    	}
+>>>>    	if (f2fs_is_pinned_file(inode)) {
+>>>> -		if (gc_type == FG_GC)
+>>>> +		if (gc_type == FG_GC) {
+>>>>    			f2fs_pin_file_control(inode, true);
+>>>> +			pin_section(F2FS_I_SB(inode), segno);
+>>>> +		}
+>>>>    		err = -EAGAIN;
+>>>>    		goto out;
+>>>>    	}
+>>>> @@ -1485,6 +1523,7 @@ static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
+>>>>    							gc_type == FG_GC) {
+>>>>    				f2fs_pin_file_control(inode, true);
+>>>>    				iput(inode);
+>>>> +				pin_section(sbi, segno);
+>>>
+>>> We don't have this code.
+>>>
+>>>>    				return submitted;
+>>>>    			}
+>>>> @@ -1766,9 +1805,17 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+>>>>    		ret = -EINVAL;
+>>>>    		goto stop;
+>>>>    	}
+>>>> +retry:
+>>>>    	ret = __get_victim(sbi, &segno, gc_type);
+>>>> -	if (ret)
+>>>> +	if (ret) {
+>>>> +		/* allow to search victim from sections has pinned data */
+>>>> +		if (ret == -ENODATA && gc_type == FG_GC &&
+>>>> +				pinned_section_exists(DIRTY_I(sbi))) {
+>>>> +			unpin_all_sections(sbi);
+>>>> +			goto retry;
+>>>> +		}
+>>>>    		goto stop;
+>>>> +	}
+>>>>    	seg_freed = do_garbage_collect(sbi, segno, &gc_list, gc_type, force);
+>>>>    	if (gc_type == FG_GC &&
+>>>> @@ -1811,6 +1858,9 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
+>>>>    	SIT_I(sbi)->last_victim[ALLOC_NEXT] = 0;
+>>>>    	SIT_I(sbi)->last_victim[FLUSH_DEVICE] = init_segno;
+>>>> +	if (gc_type == FG_GC && pinned_section_exists(DIRTY_I(sbi)))
+>>>> +		unpin_all_sections(sbi);
+>>>> +
+>>>>    	trace_f2fs_gc_end(sbi->sb, ret, total_freed, sec_freed,
+>>>>    				get_pages(sbi, F2FS_DIRTY_NODES),
+>>>>    				get_pages(sbi, F2FS_DIRTY_DENTS),
+>>>> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+>>>> index 012524db7437..1c20d7c9eca3 100644
+>>>> --- a/fs/f2fs/segment.c
+>>>> +++ b/fs/f2fs/segment.c
+>>>> @@ -4736,6 +4736,12 @@ static int init_victim_secmap(struct f2fs_sb_info *sbi)
+>>>>    	dirty_i->victim_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
+>>>>    	if (!dirty_i->victim_secmap)
+>>>>    		return -ENOMEM;
+>>>> +
+>>>> +	dirty_i->pinned_secmap = f2fs_kvzalloc(sbi, bitmap_size, GFP_KERNEL);
+>>>> +	if (!dirty_i->pinned_secmap)
+>>>> +		return -ENOMEM;
+>>>> +
+>>>> +	dirty_i->pinned_secmap_cnt = 0;
+>>>>    	return 0;
+>>>>    }
+>>>> @@ -5324,6 +5330,7 @@ static void destroy_victim_secmap(struct f2fs_sb_info *sbi)
+>>>>    {
+>>>>    	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
+>>>> +	kvfree(dirty_i->pinned_secmap);
+>>>>    	kvfree(dirty_i->victim_secmap);
+>>>>    }
+>>>> diff --git a/fs/f2fs/segment.h b/fs/f2fs/segment.h
+>>>> index 5c94caf0c0a1..fd6f246e649c 100644
+>>>> --- a/fs/f2fs/segment.h
+>>>> +++ b/fs/f2fs/segment.h
+>>>> @@ -294,6 +294,8 @@ struct dirty_seglist_info {
+>>>>    	struct mutex seglist_lock;		/* lock for segment bitmaps */
+>>>>    	int nr_dirty[NR_DIRTY_TYPE];		/* # of dirty segments */
+>>>>    	unsigned long *victim_secmap;		/* background GC victims */
+>>>> +	unsigned long *pinned_secmap;		/* pinned victims from foreground GC */
+>>>> +	unsigned int pinned_secmap_cnt;		/* count of victims which has pinned data */
+>>>>    };
+>>>>    /* victim selection function for cleaning and SSR */
+>>>> -- 
+>>>> 2.32.0
