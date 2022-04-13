@@ -2,140 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24BD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D608CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234419AbiDMJZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35260 "EHLO
+        id S233140AbiDMJZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232530AbiDMJZp (ORCPT
+        with ESMTP id S234423AbiDMJZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:25:45 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274BB532F5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:23:23 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23D8pcOH019860;
-        Wed, 13 Apr 2022 09:22:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=U2cjrNuEcn2sQ89XEkzD3fEZ1fdJ85MFrRiqEkOU6i8=;
- b=dc+ULpzUa915obWL7+MMSH0pAVjVlATboUURzP/tqbYd/5aV83JZrjRCWjFDqrh/azEV
- RxIXbtVagr9LPAqUtAJVbwybzB0hMXe0QuT7YT4Jkxf4XosOYQJJzaqMGGJpYNgann4B
- LeLyJHFylNW1gArcU+bXEPdxnlHiCXB6X1/fl3HdT1gjg/CX+AEq993QzrsE/Zcv9g88
- lOSKkwJgtmN343vGo/dP1/ROwJrM27eW7plYGHCVreWCrN8N48XiP30HJr61SLCEbPNW
- /t9szx+GsnZAD/1IYgdJfICrBSUS9iISI+PEWMHhPN4sjJ9H4VoxeSR7D7SYNX9c1KwN Yg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fduck0pf1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Apr 2022 09:22:19 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23D9BMSs025437;
-        Wed, 13 Apr 2022 09:22:18 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fduck0pem-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Apr 2022 09:22:18 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23D9M6aL007614;
-        Wed, 13 Apr 2022 09:22:16 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3fb1s8xf98-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Apr 2022 09:22:16 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23D9MM1f34275822
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Apr 2022 09:22:22 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0928C4C058;
-        Wed, 13 Apr 2022 09:22:13 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CBF6E4C046;
-        Wed, 13 Apr 2022 09:22:10 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com.com (unknown [9.43.51.146])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 13 Apr 2022 09:22:10 +0000 (GMT)
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
-        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com,
-        ying.huang@intel.com, Jagdish Gediya <jvgediya@linux.ibm.com>
-Subject: [PATCH v2 0/5] mm: demotion: Introduce new node state N_DEMOTION_TARGETS
-Date:   Wed, 13 Apr 2022 14:52:01 +0530
-Message-Id: <20220413092206.73974-1-jvgediya@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 13 Apr 2022 05:25:51 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153AA532F5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:23:30 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so5700637pjb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:23:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wRXirUEKSPI6ru648JuWYPXw/sXNZVfeivfow6gXxCU=;
+        b=NSQWSk7KTjgR1R43JsBYQ1pozNWfaSSFh31fwZQJRY/JP0eqmDA4oV+tGsAdykD2UZ
+         uOhRQMH6sGK7PYixM4yd9JfnUZlo/Fvhe4Kc40ApShO3t4147mY0e28258Jvb1QRyrkf
+         XRWBeAQfIitmvcJGeRhFHMfaJQbQy5QvBslX0upT5e/VM2JcnHtDMCipGIG7g4PBxd1k
+         aM95mmBKUp+K6Y1ygBJTrdluHuatVEtlYJB7WNHlrv80hht0ytKkjUoXfbRcFL19/zu6
+         d//4NBZ+dPv7IBQrIRDAIKpmdAN+UY3N5N52oejxrZ4V7nShq6noho/95AFQtyDKYiUw
+         WqRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wRXirUEKSPI6ru648JuWYPXw/sXNZVfeivfow6gXxCU=;
+        b=CXLNEBkGe1U3RN0A+mi3B53Y/LzjwKOoQbXWwd59eUWIjTP4yv8C30th1fl0ye1G1A
+         S5ndkdb6yeBz/qa3HxAUWjy7e9Vijd3OWhpsLiWbvH3i7/zEjmJHtFXYIsok1HjNX6Mc
+         2UfTPLkPltWw+A7DFWk8LY2A46sLQEZJWGkJG9H/ZRpVBw69yFWm1llcvLKZJB8QSI/1
+         rYv0BzM1r5hXDvZUklZ5h4+jLaVL1bsVcjH73Xi7YKBw8GWL80WgL+wk5/GhQovH8W7A
+         Vw4+w1Xwpg1kGgzsLer1ijh/rnnkMbd6AYM01eWkwU4uHP6gnY6uEc+rLTfEZDIFJ6Wh
+         ycew==
+X-Gm-Message-State: AOAM530Cl73sOXDBt3nkdm3ouMFSld/lAxh51KtC/NL6uVb+TPieUVMb
+        R2juG3k6rT9OVik5QW1VslUYDg==
+X-Google-Smtp-Source: ABdhPJyZnbZbZZKVFPTF/SFu5yucL9hFbgSI04LlY+Sq49nPD/NAIJHwFuLlpA9dtv6xAvAk52XDFQ==
+X-Received: by 2002:a17:90b:1c88:b0:1b8:a77e:c9cb with SMTP id oo8-20020a17090b1c8800b001b8a77ec9cbmr9622873pjb.205.1649841809256;
+        Wed, 13 Apr 2022 02:23:29 -0700 (PDT)
+Received: from localhost.localdomain (111-250-44-108.dynamic-ip.hinet.net. [111.250.44.108])
+        by smtp.gmail.com with ESMTPSA id k62-20020a17090a4cc400b001c7ea7f487asm2363144pjh.39.2022.04.13.02.23.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 02:23:28 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH v2] perf report: Set PERF_SAMPLE_DATA_SRC bit for Arm SPE event
+Date:   Wed, 13 Apr 2022 17:23:17 +0800
+Message-Id: <20220413092317.756022-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: NQnp9Eledtwufypjbo5oPKvlY-ioKyb0
-X-Proofpoint-ORIG-GUID: 3Hgn8aM6zXUnUs3PEbVJ-UXd9JWt3qyq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-12_08,2022-04-12_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- lowpriorityscore=0 spamscore=0 adultscore=0 phishscore=0 mlxscore=0
- clxscore=1015 mlxlogscore=816 suspectscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204130051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current implementation to find the demotion targets works
-based on node state N_MEMORY, however some systems may have
-dram only memory numa node which are N_MEMORY but not the
-right choices as demotion targets.
+Since commit bb30acae4c4d ("perf report: Bail out --mem-mode if mem info
+is not available") "perf mem report" and "perf report --mem-mode"
+don't report result if the PERF_SAMPLE_DATA_SRC bit is missed in sample
+type.
 
-This patch series introduces the new node state
-N_DEMOTION_TARGETS, which is used to distinguish the nodes which
-can be used as demotion targets, node_states[N_DEMOTION_TARGETS]
-is used to hold the list of nodes which can be used as demotion
-targets, support is also added to set the demotion target
-list from user space so that default behavior can be overridden.
+The commit ffab48705205 ("perf: arm-spe: Fix perf report --mem-mode")
+partially fixes the issue.  It adds PERF_SAMPLE_DATA_SRC bit for Arm SPE
+event, this allows the perf data file generated by kernel v5.18-rc1 or
+later version can be reported properly.
 
-node state N_DEMOTION_TARGETS is also set from the dax kmem
-driver, certain type of memory which registers through dax kmem
-(e.g. HBM) may not be the right choices for demotion so in future
-they should be distinguished based on certain attributes and dax
-kmem driver should avoid setting them as N_DEMOTION_TARGETS,
-however current implementation also doesn't distinguish any 
-such memory and it considers all N_MEMORY as demotion targets
-so this patch series doesn't modify the current behavior.
+On the other hand, perf tool still fails to be backward compatibility
+for a data file recorded by an older version's perf which contains Arm
+SPE trace data.  This patch is a workaround in reporting phase, when
+detects ARM SPE PMU event and without PERF_SAMPLE_DATA_SRC bit, it will
+force to set the bit in the sample type and give a warning info.
 
-Current code which sets migration targets is modified in
-this patch series to avoid some of the limitations on the demotion
-target sharing and to use N_DEMOTION_TARGETS only nodes while
-finding demotion targets.
+Fixes: bb30acae4c4d ("perf report: Bail out --mem-mode if mem info is not available")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: German Gomez <german.gomez@arm.com>
+---
+v2: Change event name from "arm_spe_" to "arm_spe";
+    Add German's test tag.
 
-Changelog
-----------
+ tools/perf/builtin-report.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-v2:
-In v1, only 1st patch of this patch series was sent, which was
-implemented to avoid some of the limitations on the demotion
-target sharing, however for certain numa topology, the demotion
-targets found by that patch was not most optimal, so 1st patch
-in this series is modified according to suggestions from Huang
-and Baolin. Different examples of demotion list comparasion
-between existing implementation and changed implementation can
-be found in the commit message of 1st patch.
-
-Jagdish Gediya (5):
-  mm: demotion: Set demotion list differently
-  mm: demotion: Add new node state N_DEMOTION_TARGETS
-  mm: demotion: Add support to set targets from userspace
-  device-dax/kmem: Set node state as N_DEMOTION_TARGETS
-  mm: demotion: Build demotion list based on N_DEMOTION_TARGETS
-
- .../ABI/testing/sysfs-kernel-mm-numa          | 12 ++++
- drivers/base/node.c                           |  4 ++
- drivers/dax/kmem.c                            |  2 +
- include/linux/nodemask.h                      |  1 +
- mm/migrate.c                                  | 67 +++++++++++++++----
- 5 files changed, 72 insertions(+), 14 deletions(-)
-
+diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
+index 1ad75c7ba074..acb07a4a9b67 100644
+--- a/tools/perf/builtin-report.c
++++ b/tools/perf/builtin-report.c
+@@ -353,6 +353,7 @@ static int report__setup_sample_type(struct report *rep)
+ 	struct perf_session *session = rep->session;
+ 	u64 sample_type = evlist__combined_sample_type(session->evlist);
+ 	bool is_pipe = perf_data__is_pipe(session->data);
++	struct evsel *evsel;
+ 
+ 	if (session->itrace_synth_opts->callchain ||
+ 	    session->itrace_synth_opts->add_callchain ||
+@@ -407,6 +408,21 @@ static int report__setup_sample_type(struct report *rep)
+ 	}
+ 
+ 	if (sort__mode == SORT_MODE__MEMORY) {
++		/*
++		 * FIXUP: prior to kernel 5.18, Arm SPE missed to set
++		 * PERF_SAMPLE_DATA_SRC bit in sample type.  For backward
++		 * compatibility, set the bit if it's an old perf data file.
++		 */
++		evlist__for_each_entry(session->evlist, evsel) {
++			if (strstr(evsel->name, "arm_spe") &&
++				!(sample_type & PERF_SAMPLE_DATA_SRC)) {
++				ui__warning("PERF_SAMPLE_DATA_SRC bit is not set "
++					    "for Arm SPE event.\n");
++				evsel->core.attr.sample_type |= PERF_SAMPLE_DATA_SRC;
++				sample_type |= PERF_SAMPLE_DATA_SRC;
++			}
++		}
++
+ 		if (!is_pipe && !(sample_type & PERF_SAMPLE_DATA_SRC)) {
+ 			ui__error("Selected --mem-mode but no mem data. "
+ 				  "Did you call perf record without -d?\n");
 -- 
-2.35.1
+2.25.1
 
