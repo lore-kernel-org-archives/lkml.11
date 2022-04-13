@@ -2,189 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A35DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236667AbiDMPo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 11:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
+        id S234564AbiDMPr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 11:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236644AbiDMPoS (ORCPT
+        with ESMTP id S236739AbiDMPru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 11:44:18 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CCA4A3D0;
-        Wed, 13 Apr 2022 08:41:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=0yWcD2SXEiL1FSCIHyph+R1LsmAft7nq95dBjryG2Sc=; b=bKst/k9HeRVIhWFbd9lRaPJoyq
-        66vq7lbhnKOP9sAn6HtGswUaaHR7KXplyM/d0UPR0zGU4HBiwFNstDyArZyGwq7l1zV9A891StTCA
-        duFW0qJpTvwesBNKozLQ+y2USTpDy/poe3lxcWehcroBLrTg4REC/mbp9H2Pf3po3jqU0SIDbG++o
-        Hl0Sbgj356r3uxLqNNpFk31gL0mIDN/T6wUEAqG6E+bo3f9P1YusNUmxDpMVLNFppO44m3TJkD+F0
-        DjXY2GtlfLs6O/xGSSTATovhc8JnYvkjVJuiTkuSB5TSbeQWmFU+240khvW9NR2cdwsvb9+/hRSpI
-        zi2C/DQw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nef7n-00EMtk-Qt; Wed, 13 Apr 2022 15:41:44 +0000
-Message-ID: <8eb6f58a-2621-0977-1b67-b2c58e4d5fba@infradead.org>
-Date:   Wed, 13 Apr 2022 08:41:39 -0700
+        Wed, 13 Apr 2022 11:47:50 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5FD5EBF7;
+        Wed, 13 Apr 2022 08:45:28 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23DFjArV099164;
+        Wed, 13 Apr 2022 10:45:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649864710;
+        bh=LKiOhQpH11PRHnUk7E83nty6XMEWWedQyINcMzjxJ8k=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=SVEb3BmVQOgTig6W3fudXL+ubrtWwy2pakyL8YTIVC5bPMqE85CXrPIEtfwcPAxlw
+         zo/X/4lE0+yAM9MoHbDCDkcuWQIRm12LbF8quvim9Q+WxywWZ+zgb0JDd2UfbyTfvk
+         inJtvkeAV8u8eeK6tXf3T56YpKAs7bkmm7bmK1XQ=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23DFjACd014238
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 13 Apr 2022 10:45:10 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 13
+ Apr 2022 10:45:09 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 13 Apr 2022 10:45:09 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23DFj9VX015581;
+        Wed, 13 Apr 2022 10:45:09 -0500
+Date:   Wed, 13 Apr 2022 10:45:09 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH 1/2] dt-bindings: rtc: Add TI K3 RTC devicetree bindings
+ documentation
+Message-ID: <20220413154509.2bllkjdnp7r2f7fd@remindful>
+References: <20220412073138.25027-1-nm@ti.com>
+ <20220412073138.25027-2-nm@ti.com>
+ <dee496ce-5e74-4a53-c783-6420b2391387@linaro.org>
+ <20220412221743.vbectb4bcghau2b7@confider>
+ <2609cb4e-df0e-f4b5-b89f-37287bbc569d@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH RESEND 1/1] lib/Kconfig: remove DEBUG_PER_CPU_MAPS
- dependency for CPUMASK_OFFSTACK
-Content-Language: en-US
-To:     Libo Chen <libo.chen@oracle.com>, gregkh@linuxfoundation.org,
-        masahiroy@kernel.org, tglx@linutronix.de, peterz@infradead.org,
-        mingo@kernel.org, vbabka@suse.cz, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org
-References: <20220412231508.32629-1-libo.chen@oracle.com>
- <20220412231508.32629-2-libo.chen@oracle.com>
- <c7d26e9d-8c70-86a6-cdab-b180a365804f@infradead.org>
- <157cb46a-d134-2e72-4a65-14e378dd2b8e@oracle.com>
- <26855467-107d-4ba1-4f32-2afd5918d5b7@infradead.org>
- <cbb6b94e-3b9d-c7b6-a10e-6203a3a8b3f3@oracle.com>
- <4c6b3445-78b2-090f-c7c9-291d49c45019@infradead.org>
- <506db9a9-47ff-658a-a821-27315949e8c3@oracle.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <506db9a9-47ff-658a-a821-27315949e8c3@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <2609cb4e-df0e-f4b5-b89f-37287bbc569d@linaro.org>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 4/12/22 23:56, Libo Chen wrote:
-> Hi Randy
+On 08:42-20220413, Krzysztof Kozlowski wrote:
+> On 13/04/2022 00:17, Nishanth Menon wrote:
+> >>> +  assigned-clocks:
+> >>> +    description: |
+> >>> +      override default osc32k parent clock reference to the osc32k clock entry
+> >>> +    maxItems: 1
+> >>> +
+> >>> +  assigned-clock-parents:
+> >>> +    description: |
+> >>> +      override default osc32k parent clock phandle of the new parent clock of osc32k
+> >>> +    maxItems: 1
+> >>
+> >> Usually assigned-clockXXX are not needed in the bindings. Is here
+> >> something different? They are put only to indicate something special.
+> > 
+> > I wonder if I should rather use unevaluatedproperties instead? If I use
+> > additionalProperties: False, then the second example below fails.
+> > 
 > 
-> On 4/12/22 22:54, Randy Dunlap wrote:
->> Hi Libo,
->>
->> On 4/12/22 19:34, Libo Chen wrote:
->>>
->>> On 4/12/22 19:13, Randy Dunlap wrote:
->>>> Hi,
->>>>
->>>> On 4/12/22 18:35, Libo Chen wrote:
->>>>> Hi Randy,
->>>>>
->>>>> On 4/12/22 17:18, Randy Dunlap wrote:
->>>>>> Hi--
->>>>>>
->>>>>> On 4/12/22 16:15, Libo Chen wrote:
->>>>>>> Forcing CPUMASK_OFFSTACK to be conditoned on DEBUG_PER_CPU_MAPS doesn't
->>>>>>> make a lot of sense nowaday. Even the original patch dating back to 2008,
->>>>>>> aab46da0520a ("cpumask: Add CONFIG_CPUMASK_OFFSTACK") didn't give any
->>>>>>> rationale for such dependency.
->>>>>>>
->>>>>>> Nowhere in the code supports the presumption that DEBUG_PER_CPU_MAPS is
->>>>>>> necessary for CONFIG_CPUMASK_OFFSTACK. Make no mistake, it's good to
->>>>>>> have DEBUG_PER_CPU_MAPS for debugging purpose or precaution, but it's
->>>>>>> simply not a hard requirement for CPUMASK_OFFSTACK. Moreover, x86 Kconfig
->>>>>>> already can set CPUMASK_OFFSTACK=y without DEBUG_PER_CPU_MAPS=y.
->>>>>>> There is no reason other architectures cannot given the fact that they
->>>>>>> have even fewer, if any, arch-specific CONFIG_DEBUG_PER_CPU_MAPS code than
->>>>>>> x86.
->>>>>>>
->>>>>>> Signed-off-by: Libo Chen <libo.chen@oracle.com>
->>>>>>> ---
->>>>>>>     lib/Kconfig | 2 +-
->>>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>>>
->>>>>>> diff --git a/lib/Kconfig b/lib/Kconfig
->>>>>>> index 087e06b4cdfd..7209039dfb59 100644
->>>>>>> --- a/lib/Kconfig
->>>>>>> +++ b/lib/Kconfig
->>>>>>> @@ -511,7 +511,7 @@ config CHECK_SIGNATURE
->>>>>>>         bool
->>>>>>>       config CPUMASK_OFFSTACK
->>>>>>> -    bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
->>>>>> This "if" dependency only controls whether the Kconfig symbol's prompt is
->>>>>> displayed (presented) in kconfig tools. Removing it makes the prompt always
->>>>>> be displayed.
->>>>>>
->>>>>> Any architecture could select (should be able to) CPUMASK_OFFSTACK independently
->>>>>> of DEBUG_PER_CPU_MAPS.
->>>>> Do you mean changing arch/xxxx/Kconfig to select CPUMASK_OFFSTACK under some config xxx? That will work but it requires code changes for each architecture.
->>>>> But if you are talking about setting CONFIG_CPUMASK_OFFSTACK=y without CONFIG_DEBUG_PER_CPU_MAPS directly in config file, I have tried, it doesn't work.
->>>> I'm just talking about the Kconfig change below.  Not talking about whatever else
->>>> it might require per architecture.
->>>>
->>>> But you say you have tried that and it doesn't work. What part of it doesn't work?
->>>> The Kconfig part or some code execution?
->>> oh the Kconfig part. For example, make olddefconfig on a config file with CPUMASK_OFFSTACK=y only turns off CPUMASK_OFFSTACK unless I explicitly set DEBUG_PER_CPU_MAPS=y
->> I can enable CPUMASK_OFFSTACK for arm64 without having DEBUG_PER_CPU_MAPS enabled.
->> (with a patch, of course.)
->> It builds OK. I don't know if it will run OK.
-> 
-> I am a little confused, did you succeed with your patch (replacing "if" with "depends on") or my patch (removing "if")? Because I definitely cannot enable CPUMASK_OFFSTACK for arm64 without DEBUG_PER_CPUMAPS enabled using your change.
+> Are you sure it fails? I just checked and it worked in my case. This
+> AFAIR was working since some time (or fixed some time ago), so maybe
+> update your dtschema?
 
-This patch builds cleanly for me:
+Arrgh, Thanks and you are right.
+Apologies, I should have cross checked again since developing late
+last year (understood the min schema currently is 2022.3).
 
----
- arch/arm64/Kconfig |    1 +
- lib/Kconfig        |    2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
-
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -511,7 +511,7 @@ config CHECK_SIGNATURE
- 	bool
- 
- config CPUMASK_OFFSTACK
--	bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
-+	bool "Force CPU masks off stack"
- 	help
- 	  Use dynamic allocation for cpumask_var_t, instead of putting
- 	  them on the stack.  This is a bit more expensive, but avoids
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -316,6 +316,7 @@ config ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE
- 
- config SMP
- 	def_bool y
-+	select CPUMASK_OFFSTACK
- 
- config KERNEL_MODE_NEON
- 	def_bool y
-
-along with:
-# CONFIG_DEBUG_PER_CPU_MAPS is not set
-
-
->> I think that you are arguing for a patch like this:
-> 
-> I am actually arguing for the opposite, I don't think CPUMASK_OFFSTACK should require DEBUG_PER_CPU_MAPS. They should be separate and independent to each other. So removing "if ..." should be enough in my opinion.
-
-I agree.
-
->> --- a/lib/Kconfig
->> +++ b/lib/Kconfig
->> @@ -511,7 +511,8 @@ config CHECK_SIGNATURE
->>       bool
->>     config CPUMASK_OFFSTACK
->> -    bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
->> +    bool "Force CPU masks off stack"
->> +    depends on DEBUG_PER_CPU_MAPS
-> 
-> This forces every arch to enable DEBUG_PER_CPU_MAPS if they want to enable CPUMASK_OFFSTACK, it's even stronger than "if". My whole argument is CPUMASK_OFFSTACK should be enable/disabled independent of DEBUG_PER_CPU_MASK
->>       help
->>         Use dynamic allocation for cpumask_var_t, instead of putting
->>         them on the stack.  This is a bit more expensive, but avoids
->>
->>
->> As I said earlier, the "if" on the "bool" line just controls the prompt message.
->> This patch make CPUMASK_OFFSTACK require DEBUG_PER_CPU_MAPS -- which might be overkill.
->>
-> 
-> Okay I understand now "if" on the "boot" is not a dependency and it only controls the prompt message, then the question is why we cannot enable CPUMASK_OFFSTACK without DEBUG_PER_CPU_MAPS if it only controls prompt message? Is it not the behavior we expect?
-
-Yes, it is. I don't know that the problem is...
+Will fix this up in the repost v2 in a short while.
 
 -- 
-~Randy
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
