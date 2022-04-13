@@ -2,169 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF09C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52483C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236782AbiDMQKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        id S236785AbiDMQL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235063AbiDMQKN (ORCPT
+        with ESMTP id S230442AbiDMQL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:10:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE2EB66611
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:07:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649866070;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QOkajocQ8odh3i+hVeTJ63TIENzeAVOjDB6rWovHQzA=;
-        b=UHIRHKdaNGk4SBrBx7HwHJXCuwjgGgSa/Vw0YYtzSnCRFsNgcqSfOw2rYwtmfv/COUkxKr
-        d+eBqd23BIB+AcbGQwIHN7FwHpXQcDDYiBRKYhCIi66AvbmgYXebfIZ03gMI5BegmHRUpG
-        OnY+xppIf9JF5ZUlBtbSwDOGZwXfKXI=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-629-C_txJ6NDNtaGFnmpNjTvKg-1; Wed, 13 Apr 2022 12:07:49 -0400
-X-MC-Unique: C_txJ6NDNtaGFnmpNjTvKg-1
-Received: by mail-wr1-f72.google.com with SMTP id t15-20020adfdc0f000000b001ef93643476so501809wri.2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:07:49 -0700 (PDT)
+        Wed, 13 Apr 2022 12:11:27 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5059E66CA9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:09:05 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id v15so2955143edb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:09:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UHgRvgx7SYkj5pmKsaI78m5hk2m1gV/Mhyu2PiUCr4E=;
+        b=lBWu77Y5D2mXiuJjDT0MwNKo4A9phca9/l3ON7aH+9P/8o1crWjKtyOgzTb9xU22b9
+         7aVTH9ZGs6JjySr9UuH8nGq/ISCdGFOLsZ4UR+IKEGEWHTPoPfamJO4M13rX2YBRB2JR
+         VwpNLfXuj30Zt7vEd7WXD6Z25w3WffY1aQ5Og=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=QOkajocQ8odh3i+hVeTJ63TIENzeAVOjDB6rWovHQzA=;
-        b=4dvtCI6YcNc83CgmpaYhqRiZNLqbIB16tN0HKKHn61JtMwYqgDRq0jO7vR6TQHn6kC
-         h5jMeSosuJCS2uJhXFb9M63F8D1G3qJw8IQUIqvS9/mn3jQfwcEajp/q2ovcsI3Ao2i4
-         Z1l5A4xSI4+rrkQmXNUFv7r93Yw2RIsOyVjwdwLJkEp0McSuuRZ0oe+cOLHzacAJGtV8
-         4nX4PkmtD6jJHC8Qe38xmwE3PeN0frAFRP0kaFvs+gw9WNZ45wJM0LmS4HtIgvVJLTz2
-         qMwQ4KsMZHeg9njvi2zT6jkLBt+sMc3+8dnLSgkFwwdZIOvoWNa4nyv+kFSqiibxXLZf
-         6Rkg==
-X-Gm-Message-State: AOAM5305BHzpxJYA4xBiXbARuXlCFOkhBtv5q/qgc+c7gdgBNDcS7VPx
-        pv79Xybej1TNC5msiEqgSOZNCYMN1KKedmCo+eGaMTTR/R3n5Mo4VGWKgW0Z2lBs/2BHn0fH6KL
-        dhQbpGNh3EkbVVqh10G4DhdPv
-X-Received: by 2002:adf:eb86:0:b0:1e6:8c92:af6b with SMTP id t6-20020adfeb86000000b001e68c92af6bmr33002780wrn.116.1649866068383;
-        Wed, 13 Apr 2022 09:07:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJymHGhx5mZYHX4qc0LA34JUWjZS8Rn5QEmfvMvUVt0DpiviRON0T5cX/n3xjfGY/yDNO9s2GQ==
-X-Received: by 2002:adf:eb86:0:b0:1e6:8c92:af6b with SMTP id t6-20020adfeb86000000b001e68c92af6bmr33002738wrn.116.1649866068071;
-        Wed, 13 Apr 2022 09:07:48 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:5800:1078:ebb9:e2c3:ea8c? (p200300cbc70458001078ebb9e2c3ea8c.dip0.t-ipconnect.de. [2003:cb:c704:5800:1078:ebb9:e2c3:ea8c])
-        by smtp.gmail.com with ESMTPSA id l126-20020a1c2584000000b00387d4f35651sm2895911wml.10.2022.04.13.09.07.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 09:07:47 -0700 (PDT)
-Message-ID: <dd197d57-ce40-82f6-fa5f-c0450b39e23f@redhat.com>
-Date:   Wed, 13 Apr 2022 18:07:46 +0200
+        bh=UHgRvgx7SYkj5pmKsaI78m5hk2m1gV/Mhyu2PiUCr4E=;
+        b=6UeuKMhQwDTVPfBDe9S6xWdNto8mMCgfOku8kUhib21pz5FzejxvPrMWpxG3nZNSic
+         IhMSLR8MXJCrGAcsmw70H/VDV1t8rJ4dHWp0aPWzrzh8Bm8Bes7q75SD1yCF1GyY3wEh
+         EPyS+e1fgs+x5zDe/YFqAwmNuZKu/ikOlWtGtHV1oUK3YP+U/wwQ7xKxPBm43xaTiuHS
+         HIwZtLU/mCX/nVvTGldtEzyL71eFD7HWRMa6s4FObiFhzmeqXchM0r0BV3FInGyKiW3f
+         7uCaROug3m+acXsDo4XsBY4/y2en6Y4DAIHkUQrBp9ndSmrOtDg2IdfdUIBjUgeJ90kx
+         mtLA==
+X-Gm-Message-State: AOAM532mx6d7CcVSm+PBrAnXoQxgpYFR40jm4IP2c16aTUqCq8E2q63L
+        0KC2BCWS+dByJ27+axBckW9/dw==
+X-Google-Smtp-Source: ABdhPJzL+8K6wO1ADFpY262+dLQBXel1bmtF0/jCpFTKg6WqCNHpdMZbwaMQfOhRyXlG2ARv/+PYBw==
+X-Received: by 2002:a05:6402:1c1e:b0:416:5b93:eacf with SMTP id ck30-20020a0564021c1e00b004165b93eacfmr44827620edb.302.1649866143905;
+        Wed, 13 Apr 2022 09:09:03 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-95-245-147-71.retail.telecomitalia.it. [95.245.147.71])
+        by smtp.gmail.com with ESMTPSA id kk23-20020a170907767700b006e8a6e53a7bsm125399ejc.139.2022.04.13.09.09.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 09:09:03 -0700 (PDT)
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     tommaso.merciai@amarulasolutions.com,
+        linux-amarula@amarulasolutions.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Richard Zhu <hongxing.zhu@nxp.com>,
+        Tim Harvey <tharvey@gateworks.com>, Li Jun <jun.li@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] arm64: dts: imx8mm-evk: add pwm1/backlight support
+Date:   Wed, 13 Apr 2022 18:08:59 +0200
+Message-Id: <20220413160900.36271-1-tommaso.merciai@amarulasolutions.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
-Content-Language: en-US
-To:     Dave Hansen <dave.hansen@intel.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
- <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
- <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
- <ff9e0bad-be9a-97ac-ae88-d22bcfbe80d4@redhat.com>
- <ebf3ccef-e6fe-62d5-74e8-91e30e7c2642@intel.com>
- <a458c13f-9994-b227-ff61-bfdfec10bc27@redhat.com>
- <20220413113024.ycvocn6ynerl3b7m@box.shutemov.name>
- <cfcf9f82-7e5f-58b6-7b47-9ac552832596@intel.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <cfcf9f82-7e5f-58b6-7b47-9ac552832596@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.04.22 17:36, Dave Hansen wrote:
-> On 4/13/22 04:30, Kirill A. Shutemov wrote:
->>> 2) Fast boot; after boot, all memory will slowly but steadily get
->>>    accepted in the background. After a while, all memory is accepted and
->>>    can be signaled to user space.
-> ...
->> Frankly, I think option 2 is the worst one. You still CPU cycles from the
->> workload after boot to do the job that may or may not be needed. It is an
->> half-measure that helps nobody.
-> 
-> Let's not be too hyperbolic here.  "Worst" is entirely subjective and it
-> totally depends on your perspective and what you care about.
+Add pwm1/backlight support nodes for imx8mm_evk board.
+Align with u-boot dts
 
-Right. Some people might want to start their workload as soon as the
-pain is really over. Some might want to have a functional system before
-that, others might not care.
+References:
+ - https://patchwork.ozlabs.org/project/uboot/patch/20220326111911.13720-9-tommaso.merciai@amarulasolutions.com/
 
-> 
-> There are basically four options:
-> 
->  * Accept everything in early boot
->  * Accept with deferred page free
->  * Accept with kthread after boot
->  * Accept on demand
-> 
-> and four things that matter:
-> 
->  * Code complexity
->  * Time to a shell prompt
->  * CPU/Memory waste
->  * Deterministic overhead
-> 
-> Did I miss any?
+Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+---
+Changes since v1:
+ - Fix commit body
+ - Enable pwm, backlight
 
-Nothing that comes to mind.
+Changes since v2:
+ - Remove status okay from pwm1,backlight (enable as default)
 
-> 
-> News flash: none of the options wins on all the things that matter.
-> We're going to have to pick one (or maybe two).  I'm also not horribly
-> convinced that there's a problem here worth solving, especially one that
-> requires surgery in the core of the buddy allocator.
-> 
-> This is essentially making a performance argument: it takes too long to
-> boot if we go with a simpler solution.  Yet, I haven't seen any data.  I
-> think we need to go with the simplest approach(es) until there's some
-> actual data to guide us here.
+ arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-Simplest meaning: accept everything during early boot and don't touch
-core-mm/buddy code, correct?
-
-> 
-> Here's another way to look at it:
-> 
->> https://docs.google.com/spreadsheets/d/1Fpv0Yp0CTF5_JXHR2pywvNtImTwUVGTxDMlJ5t8qiis/edit?usp=sharing
-> 
-
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi
+index 6d67df7692f1..c50d2cc3ca71 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi
+@@ -59,6 +59,14 @@ reg_usdhc2_vmmc: regulator-usdhc2 {
+ 		enable-active-high;
+ 	};
+ 
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm1 0 5000000>;
++		brightness-levels = <0 255>;
++		num-interpolated-steps = <255>;
++		default-brightness-level = <250>;
++	};
++
+ 	ir-receiver {
+ 		compatible = "gpio-ir-receiver";
+ 		gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
+@@ -395,6 +403,11 @@ &wdog1 {
+ 	status = "okay";
+ };
+ 
++&pwm1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_backlight>;
++};
++
+ &iomuxc {
+ 	pinctrl_fec1: fec1grp {
+ 		fsl,pins = <
+@@ -549,4 +562,10 @@ pinctrl_wdog: wdoggrp {
+ 			MX8MM_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B	0x166
+ 		>;
+ 	};
++
++	pinctrl_backlight: backlightgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_GPIO1_IO01_PWM1_OUT	0x06
++		>;
++	};
+ };
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
