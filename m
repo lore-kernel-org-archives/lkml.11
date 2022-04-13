@@ -2,92 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11767C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF13C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233306AbiDMHYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 03:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        id S233315AbiDMHZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 03:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233301AbiDMHYn (ORCPT
+        with ESMTP id S232452AbiDMHZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 03:24:43 -0400
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21614BFC4;
-        Wed, 13 Apr 2022 00:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
-         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=5u/yJFbxRgW2t+B3rx9C6wEYQQxVaCgfZ+ICC6Wpw7E=; b=F1JGwIlAUcDS//hyyFKjW7a6oE
-        ARlYyQI3b9lAthrqyVgcEO/nk/zZNj+f/qgifQHe6Q7DfOdBI0NFygwfHo2jByyqYIfXn6KRSy5Vr
-        b6uV8Rhf3MEtq8D7FpDJ5ZW8EVgizdUCTp7vM8TCjnyrDNJcoYbVJYo6VepK6oBrrVCGfokQahrkT
-        1CAfQVQcO7h3r8IOiVm8lf37UsxZTpnqjDZSlAUh4zI57klIahz0ucgu8+eJ6hamXnuv+90JmWFgZ
-        hl1oNcv/KJyHp5Ix9Yfu4JwoghGpVmO42PWiRfloNFGfef2zTB2cFV67uwD32wAt46C0VYhMhHkXj
-        eXpE95YA==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
-        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <cyndis@kapsi.fi>)
-        id 1neXKL-00083b-5h; Wed, 13 Apr 2022 10:22:09 +0300
-Message-ID: <f403d196-352f-ee04-8568-d6600924af0f@kapsi.fi>
-Date:   Wed, 13 Apr 2022 10:22:08 +0300
+        Wed, 13 Apr 2022 03:25:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8717C44A2F
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 00:23:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649834588;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nkb2ciMsQESRphf5aIFi+X8zwqcBYIMXDJ6/hK2Ilpc=;
+        b=TxXdHNNJ6Th6ZgwwqELZU8CSj+fPRV7LzBOuMLmLLWJmwoXRYdZoP6DHRuPSixWM8AmSOO
+        F8H/rnMDPCG0zhoykO04YP9eju5tATxP9fCtg5vC+XtHqlVP7WjDi2VPN3BWYJ9oTsddUb
+        rZxDnE3scIpLHoQ3JjpIeTMBiE3/hgQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-646-nX072MOGNf-pHAaISsLJnQ-1; Wed, 13 Apr 2022 03:23:04 -0400
+X-MC-Unique: nX072MOGNf-pHAaISsLJnQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 32A1B101AA44;
+        Wed, 13 Apr 2022 07:23:04 +0000 (UTC)
+Received: from ceranb.redhat.com (unknown [10.40.194.169])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4854A111D3C8;
+        Wed, 13 Apr 2022 07:23:00 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     poros@redhat.com, mschmidt@redhat.com, Fei Liu <feliu@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Brett Creeley <brett.creeley@intel.com>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] ice: Protect vf_state check by cfg_lock in ice_vc_process_vf_msg()
+Date:   Wed, 13 Apr 2022 09:22:59 +0200
+Message-Id: <20220413072259.3189386-1-ivecera@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] drm/tegra: remove useless if check before kfree
-Content-Language: en-US
-To:     Bernard Zhao <zhaojunkui2008@126.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     bernard@vivo.com
-References: <20220413064618.23974-1-zhaojunkui2008@126.com>
-From:   Mikko Perttunen <cyndis@kapsi.fi>
-In-Reply-To: <20220413064618.23974-1-zhaojunkui2008@126.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/13/22 09:46, Bernard Zhao wrote:
-> This patch remove useless if check before kfree.
-> 
-> Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
-> ---
->   drivers/gpu/drm/tegra/submit.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/tegra/submit.c b/drivers/gpu/drm/tegra/submit.c
-> index 6d6dd8c35475..54ac31bc80f6 100644
-> --- a/drivers/gpu/drm/tegra/submit.c
-> +++ b/drivers/gpu/drm/tegra/submit.c
-> @@ -639,8 +639,7 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
->   		kfree(job_data->used_mappings);
->   	}
->   
-> -	if (job_data)
-> -		kfree(job_data);
-> +	kfree(job_data);
->   put_bo:
->   	gather_bo_put(&bo->base);
->   unlock:
+Previous patch labelled "ice: Fix incorrect locking in
+ice_vc_process_vf_msg()"  fixed an issue with ignored messages
+sent by VF driver but a small race window still left.
 
-(Same comment as for other patch.)
+Recently caught trace during 'ip link set ... vf 0 vlan ...' operation:
 
-I personally dislike leaving the NULL checks off with calls to kfree. 
-With the NULL check there, while reading the code it is obvious that the 
-intention is that the value can be either a valid pointer or NULL. IMHO 
-with C's type system/conventions we need this kind of contextual 
-information to understand the code easily and avoid bugs.
+[ 7332.995625] ice 0000:3b:00.0: Clearing port VLAN on VF 0
+[ 7333.001023] iavf 0000:3b:01.0: Reset indication received from the PF
+[ 7333.007391] iavf 0000:3b:01.0: Scheduling reset task
+[ 7333.059575] iavf 0000:3b:01.0: PF returned error -5 (IAVF_ERR_PARAM) to our request 3
+[ 7333.059626] ice 0000:3b:00.0: Invalid message from VF 0, opcode 3, len 4, error -1
 
-Mikko
+Setting of VLAN for VF causes a reset of the affected VF using
+ice_reset_vf() function that runs with cfg_lock taken:
+
+1. ice_notify_vf_reset() informs IAVF driver that reset is needed and
+   IAVF schedules its own reset procedure
+2. Bit ICE_VF_STATE_DIS is set in vf->vf_state
+3. Misc initialization steps
+4. ice_sriov_post_vsi_rebuild() -> ice_vf_set_initialized() and that
+   clears ICE_VF_STATE_DIS in vf->vf_state
+
+Step 3 is mentioned race window because IAVF reset procedure runs in
+parallel and one of its step is sending of VIRTCHNL_OP_GET_VF_RESOURCES
+message (opcode==3). This message is handled in ice_vc_process_vf_msg()
+and if it is received during the mentioned race window then it's
+marked as invalid and error is returned to VF driver.
+
+Protect vf_state check in ice_vc_process_vf_msg() by cfg_lock to avoid
+this race condition.
+
+Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl handling and VF ndo ops")
+Tested-by: Fei Liu <feliu@redhat.com>
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c | 38 +++++++++----------
+ 1 file changed, 17 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+index 5612c032f15a..553287a75b50 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+@@ -3625,44 +3625,39 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 		return;
+ 	}
+ 
++	mutex_lock(&vf->cfg_lock);
++
+ 	/* Check if VF is disabled. */
+ 	if (test_bit(ICE_VF_STATE_DIS, vf->vf_states)) {
+ 		err = -EPERM;
+-		goto error_handler;
+-	}
+-
+-	ops = vf->virtchnl_ops;
+-
+-	/* Perform basic checks on the msg */
+-	err = virtchnl_vc_validate_vf_msg(&vf->vf_ver, v_opcode, msg, msglen);
+-	if (err) {
+-		if (err == VIRTCHNL_STATUS_ERR_PARAM)
+-			err = -EPERM;
+-		else
+-			err = -EINVAL;
++	} else {
++		/* Perform basic checks on the msg */
++		err = virtchnl_vc_validate_vf_msg(&vf->vf_ver, v_opcode, msg,
++						  msglen);
++		if (err) {
++			if (err == VIRTCHNL_STATUS_ERR_PARAM)
++				err = -EPERM;
++			else
++				err = -EINVAL;
++		}
+ 	}
+-
+-error_handler:
+ 	if (err) {
+ 		ice_vc_send_msg_to_vf(vf, v_opcode, VIRTCHNL_STATUS_ERR_PARAM,
+ 				      NULL, 0);
+ 		dev_err(dev, "Invalid message from VF %d, opcode %d, len %d, error %d\n",
+ 			vf_id, v_opcode, msglen, err);
+-		ice_put_vf(vf);
+-		return;
++		goto finish;
+ 	}
+ 
+-	mutex_lock(&vf->cfg_lock);
+-
+ 	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
+ 		ice_vc_send_msg_to_vf(vf, v_opcode,
+ 				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
+ 				      0);
+-		mutex_unlock(&vf->cfg_lock);
+-		ice_put_vf(vf);
+-		return;
++		goto finish;
+ 	}
+ 
++	ops = vf->virtchnl_ops;
++
+ 	switch (v_opcode) {
+ 	case VIRTCHNL_OP_VERSION:
+ 		err = ops->get_ver_msg(vf, msg);
+@@ -3773,6 +3768,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 			 vf_id, v_opcode, err);
+ 	}
+ 
++finish:
+ 	mutex_unlock(&vf->cfg_lock);
+ 	ice_put_vf(vf);
+ }
+-- 
+2.35.1
+
