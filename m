@@ -2,94 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B370C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2004C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237045AbiDMSYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
+        id S237560AbiDMSZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236232AbiDMSYd (ORCPT
+        with ESMTP id S232456AbiDMSZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 14:24:33 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52B8396B5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:22:10 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id ks6so5705532ejb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:22:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=M8MM9hNtlsb/0mGDP5Eh6d8xwozIxiEbRd1Lk53Q2x8=;
-        b=AfZ4ojV7fGDgQo6baXqWP9xdlkYefBtN6ONQTTRuj8YW5P2oU0QyTcPPmn+Qxq0ZaR
-         TeTnw1PMzTpBgAImuYmnFPpMiKL27rUSGi4C1ILlwrq1DJDDhrhwTB8XUkvAPNIV/4rr
-         3NBCZpZ0baJ4dl5uLGHLzbuEVqwo6i07CLCYI0KDsrJNbTdBTB2DOpbJZ2aaLAF4Jcul
-         mHKHI/wwctHmTYeN7OB0gqAFtNik2gp7zxAHtdodVor1kh1t8Je3eTVwBL+w1DYL5Eii
-         xdb5BObNy4KVYMXF+HCCjEBgLiDEkuUxazh0123t0A+Uf1tTJHP2Ya2HzwhGZJ8ddjEV
-         llcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M8MM9hNtlsb/0mGDP5Eh6d8xwozIxiEbRd1Lk53Q2x8=;
-        b=YkTiDcZMwjhIo+4FoPjjEmxKlLo1VqKIsRwzl1YBJ/fCnlF5uThyca90erjGFoMgcj
-         YOHNoPtty7ZA8mjp6hy5dspNvcwWt4Tji6xbuRMV7geSUXCtxlgAoOWnpS0uec1FyDHs
-         Pwc7D2JUnmo4EYtNo9UhaafNOHS6kIqzMmFxapUr9Rf8n/c9m8a27GuadspG5MyCTeBI
-         84XLY9xxahT1QByMpYLsyqbcl/OirXb4rL70crYqwrADkZ2KBsp+YaGZgjmVPmwbGzjB
-         XFEEQy89vwuzvCmYcwspyAM3Q74AWeNRQvUGLKu0NkCtaViA4jk18grODsQlQFFKXz/m
-         8low==
-X-Gm-Message-State: AOAM530YdaUgbAULOqI/h0mWFRQvWnMeYUVF5+gRDJaN+/Nv89yR2bsb
-        z0VU8Hp3sZfoh38wLMIzgrLMKmVSz5c=
-X-Google-Smtp-Source: ABdhPJwcJwJXD3ZxALW/ZXITseVCZhS4IB+VdRINSiXel6dSLaZhXSnfpbAaUOm0d7snfmaUQfhUQg==
-X-Received: by 2002:a17:907:7ea1:b0:6e8:9325:c9ce with SMTP id qb33-20020a1709077ea100b006e89325c9cemr14756806ejc.368.1649874129175;
-        Wed, 13 Apr 2022 11:22:09 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id k14-20020a170906128e00b006e4b67514a1sm222798ejb.179.2022.04.13.11.22.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 11:22:08 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 21:22:07 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Leo Li <leoyang.li@nxp.com>
-Cc:     "Z.Q. Hou" <zhiqiang.hou@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Xiaowei Bao <xiaowei.bao@nxp.com>
-Subject: Re: [PATCH v3 1/8] arm64: dts: ls1028a: Add PCIe EP nodes
-Message-ID: <20220413182207.chvdbqnmmm5vbz2b@skbuf>
-References: <20211214093240.23320-1-leoyang.li@nxp.com>
- <20211214093240.23320-2-leoyang.li@nxp.com>
- <20220413163209.4pqqpyqdklhlzp5p@skbuf>
- <DU2PR04MB894975813DAC1043AAA23C5B8FEC9@DU2PR04MB8949.eurprd04.prod.outlook.com>
+        Wed, 13 Apr 2022 14:25:33 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E86339B93;
+        Wed, 13 Apr 2022 11:23:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649874191; x=1681410191;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/+xMj+IKFmTxJpJGVNQWc4V5J5OA4f1IEmIa7d8H4Mk=;
+  b=Qim5kBZ+UE2k4hXTa7QQQvpMULUMqdIYQS7JSDAtZILlJZXSPM+Rm0b4
+   Wno8wbx7SgU/W+8ZDqbByzByZLWM0XhCsoq587dLXOaZrPpGEGQceyK8u
+   zDrXHid8FbAde+yh05iIdQZzuMV4KuWhn8apSAzchTBn6c1LV34w/H5TH
+   jQWpj5HPGWErzv7mPIkjv3Iat5RklaaqpBd/rEPiuYc9PVk6/6WPPc1gG
+   AAcRr0E/H6Z0b20Z4xTdKp6dcrDybOYhMGLI3MOMYP3fJF1WFeiVfUxNt
+   c1f5pj5Eg8ebStgl0cEFjfY8cPxefAKUKCSXScL3e6KYkGNU71I7t7smb
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="261588079"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="261588079"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:23:10 -0700
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="661034729"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:23:07 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nehaS-001xbd-Qr;
+        Wed, 13 Apr 2022 21:19:28 +0300
+Date:   Wed, 13 Apr 2022 21:19:28 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH v6 4/5] device property: Constify fwnode_handle_get()
+Message-ID: <YlcUMNe5gDsEca4f@smile.fi.intel.com>
+References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
+ <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
+ <CAJZ5v0jnyg6n-1QRmVg1tjzu3szsG3DYqYTXAbobbKwkFhTreg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DU2PR04MB894975813DAC1043AAA23C5B8FEC9@DU2PR04MB8949.eurprd04.prod.outlook.com>
+In-Reply-To: <CAJZ5v0jnyg6n-1QRmVg1tjzu3szsG3DYqYTXAbobbKwkFhTreg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 06:03:37PM +0000, Leo Li wrote:
-> > arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi:631.23-656.5: Warning
-> > (unique_unit_address): /soc/pcie@3400000: duplicate unit-address (also
-> > used in node /soc/pcie-ep@3400000)
-> > arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi:670.23-695.5: Warning
-> > (unique_unit_address): /soc/pcie@3500000: duplicate unit-address (also
-> > used in node /soc/pcie-ep@3500000)
-> 
-> This would be a common problem for all the layerscape PCIe controller.
-> The controller can either work in RC mode or EP mode.  The current
-> binding of the controller defined two compatibles, one for RC and one
-> for EP.  Therefore the SoC dtsi will have two nodes with the same unit
-> address one for EP one for RC.  Fixing this probably requires
-> comprehensive updates to the binding which breaks backward
-> compatibility.
+On Wed, Apr 13, 2022 at 08:10:22PM +0200, Rafael J. Wysocki wrote:
+> On Fri, Apr 8, 2022 at 8:49 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
 
-So we have to live with these warnings forever now?
+...
 
-How are the PCIe controllers configured for RC or EP mode? Via RCW?
-Is dynamic configuration possible?
+> > -struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode)
+> > +struct fwnode_handle *fwnode_handle_get(const struct fwnode_handle *fwnode)
+> >  {
 
-Can't U-Boot detect the operating mode from the RCW and fix up the
-compatible string in case the controller is in endpoint mode?
+> >         if (!fwnode_has_op(fwnode, get))
+> >                 return fwnode;
+
+^^^^, so it needs a casting, but then we have to comment why is so.
+
+> Why is 0-day complaining about this one?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
