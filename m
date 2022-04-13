@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46019C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59079C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiDMVIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
+        id S238947AbiDMVI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238868AbiDMVIT (ORCPT
+        with ESMTP id S238826AbiDMVIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:08:19 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1D585676
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:40 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2eb2bc9018aso26561997b3.18
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:40 -0700 (PDT)
+        Wed, 13 Apr 2022 17:08:17 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D552984EDA
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:34 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id i5-20020a258b05000000b006347131d40bso2666623ybl.17
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=iCtYxWeRiXkRVvzMmnG/1dORtlkX4NiDuoUQ7y+x6Yw=;
-        b=sTqWDCnhDg1kvusCERg3S1p+UotXTb6G5qc8QCoqJU35GgUvt7PmFqXUYii4KKsgGP
-         txixbiqbIcFr7zOAzkaba9dTMQnBkAy0B9Hm7gR+sjZDqDe91q/tlecvGJgyj2FTumNY
-         DrVjDxbDxxVjUI7OUK9i+GFGmvVevsDxJp7pjfGDEeD/PjguGWgReYxGmbynqB+/wHQU
-         /LwmMvtGBocoMl8Qt11erRwoOt6wuJyA6eZrmCmgcwiP6jXr6sCocQBtCc7WfZIS4jPR
-         ebymgjbejD+ZFWQmc/3+SCb5HVgjgp0Ea2RfDkdV70DJToHoes311isCVkF/q4jo3Cak
-         nB+w==
+         :cc;
+        bh=MKyIlb14kjoDwiTLRJoibK3zmQSI+f9RAOGtdQkGAb0=;
+        b=iWk8MWfFdHQTF1RiR2YiO0cAhgu+ekxQ/RJcrsUoAJ8Ehnuf78lwlXuLPJH1cl79Wr
+         71ibilE8ygIOj5S/4sjzDalWyaGjSQ9fCDItNRJUH46RpNBeQXikHuNUSEWJw64lqIGv
+         7C68DUU4diBt6nyVAEvRtqEz+VqebyNRfZakHJyrEVlhs3p81miawyCF6ULOs82LGV9N
+         YOxSMjMFUe+bvfpdnCywUx0qQbY8rByXJYvYgK7EkvIY2uPAPvtqPk4a/mDJwJnBA8vw
+         f02oEeIrXYs/+IX9wXr/2hc74Fu1vgJgZzO9VlQmQN+C3BT5SJnWbIw0ThgHn6e2FRl9
+         FWFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=iCtYxWeRiXkRVvzMmnG/1dORtlkX4NiDuoUQ7y+x6Yw=;
-        b=yB2W9LBKSu7tRKyFsuZnoKRJ+UOECGAknvzHE1ObcTDnNAOBAK2K7v7CAFPABIKR+V
-         Bj9J9xqr2mEw09aE08tgyJnwIuZu849yb3tj6fYME5Cst87/bfzCsjPh705OT07hVChw
-         dUhkOJMxrJmDtHcZV6iif6B3//lNEsC9mf5AfX0Xqtc0RlSoxkTc2nkq0HO1arpvLbIF
-         7ektJy4FLkXt0aRLBYA/3wV28mtqNnf+jhBMuljJm0gkDt6luUenZWA3f92/TfQyGDk8
-         6x4/mvw+LGgpVZeYUZ915W+h5Ll2O8Ej64HagfJKORzQyZT0P0PHBsbIXhSkznU5lVi9
-         3C/g==
-X-Gm-Message-State: AOAM5316r6Ayx0D2s47GJikYA6ZyWGXiA3JiQBfc0yIfrAaPx5NIc+U9
-        SnUI1yB/KR7BXSHZwAK0eQdnWQjVgACp
-X-Google-Smtp-Source: ABdhPJyMCnkObVJCsABGzTvEJ9jw1AYzRcbOT55/NGtFWlysIfK58pJXa4XpTcBrsvY3wnEZtUJ6+czut0a+
+         :references:subject:from:to:cc;
+        bh=MKyIlb14kjoDwiTLRJoibK3zmQSI+f9RAOGtdQkGAb0=;
+        b=ZWkxGiRsCqp4eIPSswencDawtYZFBpvtouCEb0FEJNfgQcxn3Ei6qh2rKt7SSEga5v
+         OV+X8lsfxhKKEqBz8DxETIWHtYz8JU0vfQCyKKUcC0E6fpqnYMCCQ96+mBtSNyP5mhRz
+         y0NO+Mhm3BlVYAJY9uRTDkH79htuD5KdCs+SafzyLnlaMThLiVGwV3iyKw6v/lXh66HJ
+         CKUAk8HDJ0WUbLQFykFmIg7/M503zENcEQLaV0RA0S77NyoR5pLwK4vrJDwtXgdAHYuK
+         YFbWo/B8fdSnZtp8b+e59EgwYYvVYnCn7c8nXGsJ2G49VrSLZQSXBgIBV/bJ8FlsAqy5
+         OYSw==
+X-Gm-Message-State: AOAM530Y8TCQvlELT7oSuCI9u5YDrnTsK61WHqYxPrQIeVatXSpIk2Dt
+        NPTK8x8zBxuOqcS7vfe5rdJnns+DjMHu
+X-Google-Smtp-Source: ABdhPJxFqsuZ6qMuWLSeRtUQRg/LfuGdgV/QufIDf5GSiSd5CLkIj5yGvBrbm/lcWvEEsHtncDU2IpYzlR7h
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9135:da53:a8a2:bf11])
- (user=irogers job=sendgmr) by 2002:a05:690c:87:b0:2ea:20a7:a2c with SMTP id
- be7-20020a05690c008700b002ea20a70a2cmr784557ywb.500.1649883939332; Wed, 13
- Apr 2022 14:05:39 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 14:05:03 -0700
+ (user=irogers job=sendgmr) by 2002:a05:6902:13c1:b0:61d:969c:109c with SMTP
+ id y1-20020a05690213c100b0061d969c109cmr675962ybu.133.1649883934046; Wed, 13
+ Apr 2022 14:05:34 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 14:05:01 -0700
 In-Reply-To: <20220413210503.3256922-1-irogers@google.com>
-Message-Id: <20220413210503.3256922-14-irogers@google.com>
+Message-Id: <20220413210503.3256922-12-irogers@google.com>
 Mime-Version: 1.0
 References: <20220413210503.3256922-1-irogers@google.com>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH 14/14] perf vendor events intel: Update goldmont event topics
+Subject: [PATCH 12/14] perf vendor events intel: Update elkhartlake event topics
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -71,7 +71,6 @@ To:     Peter Zijlstra <peterz@infradead.org>,
         linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
 Cc:     Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -81,141 +80,66 @@ https://github.com/intel/event-converter-for-linux-perf/
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- .../pmu-events/arch/x86/goldmont/other.json   | 31 +------------------
- .../arch/x86/goldmont/pipeline.json           | 31 ++++++++++++++++++-
- 2 files changed, 31 insertions(+), 31 deletions(-)
+ .../perf/pmu-events/arch/x86/elkhartlake/other.json | 13 +------------
+ .../pmu-events/arch/x86/elkhartlake/pipeline.json   | 13 ++++++++++++-
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/tools/perf/pmu-events/arch/x86/goldmont/other.json b/tools/per=
-f/pmu-events/arch/x86/goldmont/other.json
-index e4605e636447..d888f67aa2ea 100644
---- a/tools/perf/pmu-events/arch/x86/goldmont/other.json
-+++ b/tools/perf/pmu-events/arch/x86/goldmont/other.json
-@@ -47,34 +47,5 @@
-         "PublicDescription": "Counts hardware interrupts received by the p=
-rocessor.",
-         "SampleAfterValue": "203",
-         "UMask": "0x1"
--    },
+diff --git a/tools/perf/pmu-events/arch/x86/elkhartlake/other.json b/tools/perf/pmu-events/arch/x86/elkhartlake/other.json
+index de55b199ba79..8692d4847476 100644
+--- a/tools/perf/pmu-events/arch/x86/elkhartlake/other.json
++++ b/tools/perf/pmu-events/arch/x86/elkhartlake/other.json
+@@ -1,15 +1,4 @@
+ [
 -    {
--        "BriefDescription": "Unfilled issue slots per cycle",
--        "CollectPEBSRecord": "1",
+-        "BriefDescription": "Counts the total number of BTCLEARS.",
+-        "CollectPEBSRecord": "2",
 -        "Counter": "0,1,2,3",
--        "EventCode": "0xCA",
--        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.ANY",
--        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend due to either a full resource  in=
- the backend (RESOURCE_FULL) or due to the processor recovering from some e=
-vent (RECOVERY).",
+-        "EventCode": "0xe8",
+-        "EventName": "BTCLEAR.ANY",
+-        "PDIR_COUNTER": "na",
+-        "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Counts the total number of BTCLEARS which occurs when the Branch Target Buffer (BTB) predicts a taken branch.",
 -        "SampleAfterValue": "200003"
 -    },
--    {
--        "BriefDescription": "Unfilled issue slots per cycle to recover",
--        "CollectPEBSRecord": "1",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xCA",
--        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RECOVERY",
--        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend because allocation is stalled wai=
-ting for a mispredicted jump to retire or other branch-like conditions (e.g=
-. the event is relevant during certain microcode flows).   Counts all issue=
- slots blocked while within this window including slots where uops were not=
- available in the Instruction Queue.",
--        "SampleAfterValue": "200003",
--        "UMask": "0x2"
--    },
--    {
--        "BriefDescription": "Unfilled issue slots per cycle because of a f=
-ull resource in the backend",
--        "CollectPEBSRecord": "1",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xCA",
--        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RESOURCE_FULL",
--        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed because of a full resource in the backend.  Incl=
-uding but not limited to resources such as the Re-order Buffer (ROB), reser=
-vation stations (RS), load/store buffers, physical registers, or any other =
-needed machine resource that is currently unavailable.   Note that uops mus=
-t be available for consumption in order for this event to fire.  If a uop i=
-s not available (Instruction Queue is empty), this event will not count.",
--        "SampleAfterValue": "200003",
--        "UMask": "0x1"
+     {
+         "BriefDescription": "This event is deprecated. Refer to new event BUS_LOCK.SELF_LOCKS",
+         "CollectPEBSRecord": "2",
+@@ -180,4 +169,4 @@
+         "SampleAfterValue": "100003",
+         "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/goldmont/pipeline.json b/tools/=
-perf/pmu-events/arch/x86/goldmont/pipeline.json
-index cb9155c3836d..5dba4313013f 100644
---- a/tools/perf/pmu-events/arch/x86/goldmont/pipeline.json
-+++ b/tools/perf/pmu-events/arch/x86/goldmont/pipeline.json
-@@ -245,6 +245,35 @@
-         "PublicDescription": "Counts the number of instructions that retir=
-e execution. For instructions that consist of multiple uops, this event cou=
-nts the retirement of the last uop of the instruction. The event continues =
-counting during hardware interrupts, traps, and inside interrupt handlers. =
- This is an architectural performance event.  This event uses a (_P)rogramm=
-able general purpose performance counter. *This event is Precise Event capa=
-ble:  The EventingRIP field in the PEBS record is precise to the address of=
- the instruction which caused the event.  Note: Because PEBS records can be=
- collected only on IA32_PMC0, only one event can use the PEBS facility at a=
- time.",
-         "SampleAfterValue": "2000003"
+diff --git a/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json b/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json
+index 31816c6543a8..c18acb422145 100644
+--- a/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json
+@@ -153,6 +153,17 @@
+         "SampleAfterValue": "200003",
+         "UMask": "0xfe"
      },
 +    {
-+        "BriefDescription": "Unfilled issue slots per cycle",
-+        "CollectPEBSRecord": "1",
++        "BriefDescription": "Counts the total number of BTCLEARS.",
++        "CollectPEBSRecord": "2",
 +        "Counter": "0,1,2,3",
-+        "EventCode": "0xCA",
-+        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.ANY",
-+        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend due to either a full resource  in=
- the backend (RESOURCE_FULL) or due to the processor recovering from some e=
-vent (RECOVERY).",
++        "EventCode": "0xe8",
++        "EventName": "BTCLEAR.ANY",
++        "PDIR_COUNTER": "na",
++        "PEBScounters": "0,1,2,3",
++        "PublicDescription": "Counts the total number of BTCLEARS which occurs when the Branch Target Buffer (BTB) predicts a taken branch.",
 +        "SampleAfterValue": "200003"
 +    },
-+    {
-+        "BriefDescription": "Unfilled issue slots per cycle to recover",
-+        "CollectPEBSRecord": "1",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xCA",
-+        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RECOVERY",
-+        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed by the backend because allocation is stalled wai=
-ting for a mispredicted jump to retire or other branch-like conditions (e.g=
-. the event is relevant during certain microcode flows).   Counts all issue=
- slots blocked while within this window including slots where uops were not=
- available in the Instruction Queue.",
-+        "SampleAfterValue": "200003",
-+        "UMask": "0x2"
-+    },
-+    {
-+        "BriefDescription": "Unfilled issue slots per cycle because of a f=
-ull resource in the backend",
-+        "CollectPEBSRecord": "1",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xCA",
-+        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RESOURCE_FULL",
-+        "PublicDescription": "Counts the number of issue slots per core cy=
-cle that were not consumed because of a full resource in the backend.  Incl=
-uding but not limited to resources such as the Re-order Buffer (ROB), reser=
-vation stations (RS), load/store buffers, physical registers, or any other =
-needed machine resource that is currently unavailable.   Note that uops mus=
-t be available for consumption in order for this event to fire.  If a uop i=
-s not available (Instruction Queue is empty), this event will not count.",
-+        "SampleAfterValue": "200003",
-+        "UMask": "0x1"
-+    },
      {
-         "BriefDescription": "Loads blocked because address has 4k partial =
-address false dependence (Precise event capable)",
+         "BriefDescription": "Counts the number of unhalted core clock cycles. (Fixed event)",
          "CollectPEBSRecord": "2",
-@@ -379,4 +408,4 @@
+@@ -516,4 +527,4 @@
          "SampleAfterValue": "2000003",
          "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
---=20
+-- 
 2.36.0.rc0.470.gd361397f0d-goog
 
