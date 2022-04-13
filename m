@@ -2,171 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C77C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38959C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:05:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbiDMGIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 02:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
+        id S232896AbiDMGIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 02:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232973AbiDMGHv (ORCPT
+        with ESMTP id S232834AbiDMGIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 02:07:51 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EE335879
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:05:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649829931; x=1681365931;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7J159Gh9HkMijLSs1cF0rPxuBSczFLJZo1h/cJRFq6E=;
-  b=fIgryeKWt5UlXbW2k2blBNARX8ZToe9LoRKBnoWnc8X7j5+ORLUf6Oak
-   i55MtmmM3nMdvh75AKvWnOcXZFhCApplonJ89a7SNoe4PUe84pCYkRo+K
-   ZIJ6oQWn9F6s/3AgnJ2q9k1GcUEhy3PwxXY5l9B4LIJHhy2/GJ4iylEvB
-   M9RkZjJZeGlfSH8KywMuhp7SnyWT87YJuiNY9niUb4AL07uctH1TnnOWZ
-   aSnBLO7m67nhJPa+R5iH+XN/YedvLQoy6Apv718p+Y3JiYsS4C7AV6Glh
-   TsslDVm8VSVhRkhK3q94FYzl2udM6B2p+VmzWqXEQUsNEV+Q1wWl8b8si
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="262026484"
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="262026484"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 23:05:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="724769585"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 23:05:30 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neW89-00005k-G5;
-        Wed, 13 Apr 2022 06:05:29 +0000
-Date:   Wed, 13 Apr 2022 14:02:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_linecards 92/94]
- drivers/net/netdevsim/dev.c:119:25: error: too few arguments to function
- call, expected 5, have 4
-Message-ID: <202204131305.23NkbTFh-lkp@intel.com>
+        Wed, 13 Apr 2022 02:08:12 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A379E35A80
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:05:51 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 3EE3C1F44C9C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649829950;
+        bh=h6yCUcAcN6iaR3DQkh+xpCyBQk8JfcLMxbGWf++mfDM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jMVQuRfWn5ob7ywAWnQ4xvadET+t9PxuKd4Yumb2zwEGZwGkefQlF4p+oKw8vT8gt
+         AbQ0XoyYyRYvYxIUKG86ENbVE3riGczfeVt617sOMoKKc7uLvEaD1omvHHkkmCl1ra
+         6vDBajXKYLJdG2wl0n08JIB4LohicDYP4LNMgYnvUhVAOZjIvWwhz+GbQ4N2AEizv5
+         CdP3hDzqnBHbm1Yjg7WYACdDDSWcyp056qAACKATm+T2Hrsn6kjetJt2Np3/bRrxu9
+         QCtJEuW1lz4wA0HV44Bw3KCC4gn3U85I1OqPaifplAgo3iZMFRVie0zpS7P6nCb9+p
+         QRFaxCjhyxBIg==
+Message-ID: <7f0d7ade-1d59-2c43-c1b2-1fa847eb741a@collabora.com>
+Date:   Wed, 13 Apr 2022 09:05:46 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v1] drm/scheduler: Don't kill jobs in interrupt context
+Content-Language: en-US
+To:     Erico Nunes <nunes.erico@gmail.com>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Steven Price <steven.price@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Qiang Yu <yuq825@gmail.com>
+References: <20220411221536.283312-1-dmitry.osipenko@collabora.com>
+ <064d8958-a288-64e1-b2a4-c2302a456d5b@amd.com>
+ <a04733af-5ff1-a1b4-527d-68b28a037231@collabora.com>
+ <f6de2b9a-005f-d1f5-9818-cfbee2bdddc5@amd.com>
+ <CAK4VdL3VOtVGi36SY0TEL4P2jW33dM4TOmFXYmewE7cGNhY4Zw@mail.gmail.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <CAK4VdL3VOtVGi36SY0TEL4P2jW33dM4TOmFXYmewE7cGNhY4Zw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
-head:   ca9bd759ed5f4422d41446de7c31c6a189ac87df
-commit: f39238e4c9d54b5f8d9ebe9c333b83509a644803 [92/94] TMP: devlink device type
-config: x86_64-randconfig-a001-20220411 (https://download.01.org/0day-ci/archive/20220413/202204131305.23NkbTFh-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/f39238e4c9d54b5f8d9ebe9c333b83509a644803
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
-        git checkout f39238e4c9d54b5f8d9ebe9c333b83509a644803
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/netdevsim/
+On 4/13/22 01:59, Erico Nunes wrote:
+> On Tue, Apr 12, 2022 at 9:41 PM Andrey Grodzovsky
+> <andrey.grodzovsky@amd.com> wrote:
+>>
+>>
+>> On 2022-04-12 14:20, Dmitry Osipenko wrote:
+>>> On 4/12/22 19:51, Andrey Grodzovsky wrote:
+>>>> On 2022-04-11 18:15, Dmitry Osipenko wrote:
+>>>>> Interrupt context can't sleep. Drivers like Panfrost and MSM are taking
+>>>>> mutex when job is released, and thus, that code can sleep. This results
+>>>>> into "BUG: scheduling while atomic" if locks are contented while job is
+>>>>> freed. There is no good reason for releasing scheduler's jobs in IRQ
+>>>>> context, hence use normal context to fix the trouble.
+>>>>
+>>>> I am not sure this is the beast Idea to leave job's sw fence signalling
+>>>> to be
+>>>> executed in system_wq context which is prone to delays of executing
+>>>> various work items from around the system. Seems better to me to leave the
+>>>> fence signaling within the IRQ context and offload only the job freeing or,
+>>>> maybe handle rescheduling to thread context within drivers implemention
+>>>> of .free_job cb. Not really sure which is the better.
+>>> We're talking here about killing jobs when driver destroys context,
+>>> which doesn't feel like it needs to be a fast path. I could move the
+>>> signalling into drm_sched_entity_kill_jobs_cb() and use unbound wq, but
+>>> do we really need this for a slow path?
+>>
+>>
+>> You can't move the signaling back to drm_sched_entity_kill_jobs_cb
+>> since this will bring back the lockdep splat that 'drm/sched: Avoid
+>> lockdep spalt on killing a processes'
+>> was fixing.
+>>
+>> I see your point and i guess we can go this way too. Another way would
+>> be to add to
+>> panfrost and msm job a  work_item and reschedule to thread context from
+>> within their
+>> .free_job callbacks but that probably to cumbersome to be justified here.
+> 
+> FWIW since this mentioned individual drivers, commit 'drm/sched: Avoid
+> lockdep spalt on killing a processes' also introduced problems for
+> lima.
+> There were some occurrences in our CI
+> https://gitlab.freedesktop.org/mesa/mesa/-/jobs/20980982/raw .
+> Later I found it also reproducible on normal usage when just closing
+> applications, so it may be affecting users too.
+> 
+> I tested this patch and looks like it fixes things for lima.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/netdevsim/dev.c:119:25: error: too few arguments to function call, expected 5, have 4
-                                                           nsim_dev_linecard);
-                                                                            ^
-   include/net/devlink.h:1607:1: note: 'devlink_linecard_device_create' declared here
-   devlink_linecard_device_create(struct devlink_linecard *linecard,
-   ^
-   drivers/net/netdevsim/dev.c:870:14: error: too many arguments to function call, expected 3, have 4
-                                             NULL, i);
-                                                   ^
-   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
-   drivers/net/netdevsim/dev.c:883:39: error: too many arguments to function call, expected single argument 'nsim_dev_port', have 3 arguments
-                           __nsim_dev_port_del(nsim_dev_port, NULL, i);
-                           ~~~~~~~~~~~~~~~~~~~                ^~~~~~~
-   include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
-   #define NULL ((void *)0)
-                ^
-   drivers/net/netdevsim/dev.c:846:13: note: '__nsim_dev_port_del' declared here
-   static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port);
-               ^
-   drivers/net/netdevsim/dev.c:1625:12: error: conflicting types for '__nsim_dev_port_add'
-   static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-              ^
-   drivers/net/netdevsim/dev.c:844:1: note: previous declaration is here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
-   drivers/net/netdevsim/dev.c:1738:14: error: too many arguments to function call, expected 3, have 4
-                                             NULL, i);
-                                                   ^
-   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
-   drivers/net/netdevsim/dev.c:2213:27: error: too many arguments to function call, expected 3, have 4
-                                             nsim_dev_linecard, port_index);
-                                                                ^~~~~~~~~~
-   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
-   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
-   ^
-   6 errors generated.
-
-
-vim +119 drivers/net/netdevsim/dev.c
-
-f516d881f25d5ec Jiri Pirko 2021-05-05  100  
-f516d881f25d5ec Jiri Pirko 2021-05-05  101  static int
-f516d881f25d5ec Jiri Pirko 2021-05-05  102  nsim_dev_linecard_devices_create(struct nsim_dev_linecard *nsim_dev_linecard)
-f516d881f25d5ec Jiri Pirko 2021-05-05  103  {
-f516d881f25d5ec Jiri Pirko 2021-05-05  104  	struct devlink_linecard_device *device;
-f516d881f25d5ec Jiri Pirko 2021-05-05  105  	char *component_name;
-f516d881f25d5ec Jiri Pirko 2021-05-05  106  	int err;
-f516d881f25d5ec Jiri Pirko 2021-05-05  107  	int i;
-f516d881f25d5ec Jiri Pirko 2021-05-05  108  
-f516d881f25d5ec Jiri Pirko 2021-05-05  109  	snprintf(nsim_dev_linecard->device_component_name,
-f516d881f25d5ec Jiri Pirko 2021-05-05  110  		 sizeof(nsim_dev_linecard->device_component_name), "lc%u_dev0",
-f516d881f25d5ec Jiri Pirko 2021-05-05  111  		 nsim_dev_linecard->linecard_index);
-f516d881f25d5ec Jiri Pirko 2021-05-05  112  	component_name = nsim_dev_linecard->device_component_name;
-f516d881f25d5ec Jiri Pirko 2021-05-05  113  
-f516d881f25d5ec Jiri Pirko 2021-05-05  114  	for (i = 0; i < NSIM_DEV_LINECARD_DEVICE_COUNT; i++) {
-f516d881f25d5ec Jiri Pirko 2021-05-05  115  		if (i > 0)
-f516d881f25d5ec Jiri Pirko 2021-05-05  116  			component_name = NULL;
-f516d881f25d5ec Jiri Pirko 2021-05-05  117  		device = devlink_linecard_device_create(nsim_dev_linecard->devlink_linecard,
-f516d881f25d5ec Jiri Pirko 2021-05-05  118  							i, component_name,
-f516d881f25d5ec Jiri Pirko 2021-05-05 @119  							nsim_dev_linecard);
-f516d881f25d5ec Jiri Pirko 2021-05-05  120  		if (IS_ERR(device)) {
-f516d881f25d5ec Jiri Pirko 2021-05-05  121  			err = PTR_ERR(device);
-f516d881f25d5ec Jiri Pirko 2021-05-05  122  			goto rollback;
-f516d881f25d5ec Jiri Pirko 2021-05-05  123  		}
-f516d881f25d5ec Jiri Pirko 2021-05-05  124  		nsim_dev_linecard->devlink_device[i] = device;
-f516d881f25d5ec Jiri Pirko 2021-05-05  125  	}
-f516d881f25d5ec Jiri Pirko 2021-05-05  126  	return 0;
-f516d881f25d5ec Jiri Pirko 2021-05-05  127  
-f516d881f25d5ec Jiri Pirko 2021-05-05  128  rollback:
-f516d881f25d5ec Jiri Pirko 2021-05-05  129  	for (i--; i >= 0; i--) {
-f516d881f25d5ec Jiri Pirko 2021-05-05  130  		device = nsim_dev_linecard->devlink_device[i];
-f516d881f25d5ec Jiri Pirko 2021-05-05  131  		devlink_linecard_device_destroy(nsim_dev_linecard->devlink_linecard,
-f516d881f25d5ec Jiri Pirko 2021-05-05  132  						device);
-f516d881f25d5ec Jiri Pirko 2021-05-05  133  	}
-f516d881f25d5ec Jiri Pirko 2021-05-05  134  	return err;
-f516d881f25d5ec Jiri Pirko 2021-05-05  135  }
-f516d881f25d5ec Jiri Pirko 2021-05-05  136  
-
-:::::: The code at line 119 was first introduced by commit
-:::::: f516d881f25d5ec76a01608f6b13e88d91687f6c netdevsim: create couple of devices on each linecard
-
-:::::: TO: Jiri Pirko <jiri@nvidia.com>
-:::::: CC: Jiri Pirko <jiri@nvidia.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+This patch indeed should fix that lima bug. Feel free to give yours
+tested-by :)
