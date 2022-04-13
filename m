@@ -2,269 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC901C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:46:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232617AbiDMFsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 01:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50736 "EHLO
+        id S231683AbiDMFt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 01:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232588AbiDMFsh (ORCPT
+        with ESMTP id S231324AbiDMFtX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 01:48:37 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C699547040
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:46:11 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id t12so1048749pll.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:46:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs-iitr-ac-in.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=xNLSOEaEw7kf6bfeQjVyXkvE7jCgutmejEXvvU8XWSo=;
-        b=OtDlIGYH3h0B9BRwbrV57CbPXN/vz7g6l0ySDeRFpUDbL5cQgEdhgymu21e5aKKHhj
-         fVjTUTVQCknhXOCnxmPn2+aId7q2nddEa4Z7h1GpwU3RXzvPD4YuBE1SH6o1CY7xyNM7
-         dO27XZzDcTsjwbZLZrs7GJAWANR/oSFLSAl15GsSIIxDrthvvBCu8gOWHIk7zJPPqeCN
-         xgQPh2pQbJi6d3HkQcuS1ace8umFGT4IH5R4VNLo3XcqYlsJgwOvSwdztWToA9K/h5Hw
-         2f4Db6tZwj1ErdKtIgjY8PbHY45Fdf3FDURF+uuXI89MFsRm83xrVmu7O29DRM6MQUOJ
-         Ko9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xNLSOEaEw7kf6bfeQjVyXkvE7jCgutmejEXvvU8XWSo=;
-        b=5tHqmLn55zZGfITu6XlOomnTXMh6Dmi1LbckjwDT3Niri4WiWyP+LBD06rcW9NYLoV
-         NLLJLKuZ3o4T5COZKavzke1Go3Cxy+KmwIF46DZzib5pVSKRxQezB6BCE6kZbt4aswwv
-         XScWcWL5dHrhsTcn0wS4OIswzX1hRuk2/nepO7+jpJbU3ChB+J59Umk6DblMFlO+3Qdz
-         7HHmIq6WZergyxDxaNmyT5qQeErAgqI8ZkOpG7WtDXyiQv0/srUi4770ED0dG+dGziC0
-         952Ro08NJ5z3svUTrJEp/xdO8ljciiqwU86NdYzkyJAgPfwuZQn0jCBTvTBQQMsP3XEw
-         hIBg==
-X-Gm-Message-State: AOAM532/eWmFvEVKDgFTK+Qv3Yd2gbI88ZmGlnZn6DZvoS0FhxY8Ywxn
-        MSKBabHmwKdL7jE+BFC3Dos+iw8ekrbs3DxF6h8=
-X-Google-Smtp-Source: ABdhPJygW9JmRlMvLKBvGYQM+2FqU8G7dLTa/jwfWebLyGBNQGa8Xir5KRKYS3gHJrn/NhZtPkF/Lw==
-X-Received: by 2002:a17:90b:4f82:b0:1cd:328f:9cd with SMTP id qe2-20020a17090b4f8200b001cd328f09cdmr6152887pjb.38.1649828771166;
-        Tue, 12 Apr 2022 22:46:11 -0700 (PDT)
-Received: from mahak-Inspiron-7570.iitr.ac.in ([103.37.201.168])
-        by smtp.googlemail.com with ESMTPSA id g15-20020a056a000b8f00b004fa9dbf27desm41365867pfj.55.2022.04.12.22.46.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 22:46:10 -0700 (PDT)
-From:   Mahak Gupta <mahak_g@cs.iitr.ac.in>
-To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-Cc:     Mahak Gupta <mahak_g@cs.iitr.ac.in>
-Subject: [PATCH] staging: r8188eu: add space around operators
-Date:   Wed, 13 Apr 2022 11:15:17 +0530
-Message-Id: <20220413054517.6343-1-mahak_g@cs.iitr.ac.in>
-X-Mailer: git-send-email 2.17.1
+        Wed, 13 Apr 2022 01:49:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF7950051
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:47:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9D37B82101
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:47:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FB90C385AA
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:47:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649828820;
+        bh=HDKik8QF3OtnxnBSdiMFywaH7pAjKSH73aE+xYfjwA0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=eIUg5nGiYGotfBgo8RxQz4+LyghtaVqFkBnLdhVPxYY7akTr4OCQ0qdvly8M0D79S
+         v0+MxRjCkViWbtPsqyIun9qISL4E8ike+U4MWhUsrMoXSnztORxCK/sMHIILwHuprB
+         xv7Vv+LTN5dRjvGWGTzVWNQv4WHqpGe515bYOOAcZlc2yDmlZU1u+EC9ivd64p0Wri
+         efCASxI23Mu6zRMcTrQshhN8gXWAbhbbAieaROJAMlrqqM0dGaxWTMePr04AJbKtYB
+         t944UHn10ij7ms1lOuAtD7We5taCXFnDQj4TYNyzofhux53DrU+MDhyLxc8sQbi0m2
+         Fboo/kG9QkrGg==
+Received: by mail-vk1-f177.google.com with SMTP id w67so371587vkw.6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:47:00 -0700 (PDT)
+X-Gm-Message-State: AOAM531hVInFa9msaZBetKPEDOnS7Cv+Q+tw5M1ru3waBmQOnNPBWfca
+        4tMFAiNpKSJByo4ZNBLsfw2X/4pZesaUGU16Znw=
+X-Google-Smtp-Source: ABdhPJzxdy1DgTdwkI5mBFUoZAa1bIFYSMWm6GZIzpP6qxRS7suwlxoA4eehs1H37b+vIAsfZDceddRYN0OimyFQs/o=
+X-Received: by 2002:a05:6122:16a2:b0:345:62c8:2321 with SMTP id
+ 34-20020a05612216a200b0034562c82321mr5788236vkl.8.1649828819427; Tue, 12 Apr
+ 2022 22:46:59 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220413030307.133807-1-heiko@sntech.de> <20220413030307.133807-8-heiko@sntech.de>
+In-Reply-To: <20220413030307.133807-8-heiko@sntech.de>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Wed, 13 Apr 2022 13:46:48 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTRj_Lwz_krceR+8UzttsCoJgB5w1ng1cVf5J=5cUbdZ=Q@mail.gmail.com>
+Message-ID: <CAJF2gTRj_Lwz_krceR+8UzttsCoJgB5w1ng1cVf5J=5cUbdZ=Q@mail.gmail.com>
+Subject: Re: [PATCH v9 07/12] riscv: move boot alternatives to after fill_hwcap
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Wei Fu <wefu@redhat.com>, liush <liush@allwinnertech.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Drew Fustini <drew@beagleboard.org>,
+        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Greg Favor <gfavor@ventanamicro.com>,
+        Andrea Mondelli <andrea.mondelli@huawei.com>,
+        Jonathan Behrens <behrensj@mit.edu>,
+        "Xinhaoqu (Freddie)" <xinhaoqu@huawei.com>,
+        Nick Kossifidis <mick@ics.forth.gr>,
+        Allen Baum <allen.baum@esperantotech.com>,
+        Josh Scheid <jscheid@ventanamicro.com>,
+        Richard Trauben <rtrauben@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Christoph Muellner <cmuellner@linux.com>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adhere to linux coding style.
+Reviewed-by: Guo Ren <guoren@kernel.org>
 
-Reported by checkpatch:
+On Wed, Apr 13, 2022 at 11:03 AM Heiko Stuebner <heiko@sntech.de> wrote:
+>
+> Move the application of boot alternatives to after the hw-capabilities
+> are populated. This allows to check for available extensions when
+> determining which alternatives to apply and also makes it actually
+> work if CONFIG_SMP is disabled for whatever reason.
+>
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/riscv/kernel/setup.c   | 2 ++
+>  arch/riscv/kernel/smpboot.c | 2 --
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
+> index f4f4a64bc3a0..9162e9a824d2 100644
+> --- a/arch/riscv/kernel/setup.c
+> +++ b/arch/riscv/kernel/setup.c
+> @@ -21,6 +21,7 @@
+>  #include <linux/efi.h>
+>  #include <linux/crash_dump.h>
+>
+> +#include <asm/alternative.h>
+>  #include <asm/cpu_ops.h>
+>  #include <asm/early_ioremap.h>
+>  #include <asm/pgtable.h>
+> @@ -295,6 +296,7 @@ void __init setup_arch(char **cmdline_p)
+>  #endif
+>
+>         riscv_fill_hwcap();
+> +       apply_boot_alternatives();
+>  }
+>
+>  static int __init topology_init(void)
+> diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
+> index a6d13dca1403..f1e4948a4b52 100644
+> --- a/arch/riscv/kernel/smpboot.c
+> +++ b/arch/riscv/kernel/smpboot.c
+> @@ -32,7 +32,6 @@
+>  #include <asm/sections.h>
+>  #include <asm/sbi.h>
+>  #include <asm/smp.h>
+> -#include <asm/alternative.h>
+>
+>  #include "head.h"
+>
+> @@ -41,7 +40,6 @@ static DECLARE_COMPLETION(cpu_running);
+>  void __init smp_prepare_boot_cpu(void)
+>  {
+>         init_cpu_topology();
+> -       apply_boot_alternatives();
+>  }
+>
+>  void __init smp_prepare_cpus(unsigned int max_cpus)
+> --
+> 2.35.1
+>
 
-spaces preferred around that '{operator}'.
 
-Signed-off-by: Mahak Gupta <mahak_g@cs.iitr.ac.in>
----
- drivers/staging/r8188eu/core/rtw_br_ext.c | 58 +++++++++++------------
- 1 file changed, 29 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
-index 15332f9d6fe3..e1b3e9d5250b 100644
---- a/drivers/staging/r8188eu/core/rtw_br_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
-@@ -87,19 +87,19 @@ static int skb_pull_and_merge(struct sk_buff *skb, unsigned char *src, int len)
- 	int tail_len;
- 	unsigned long end, tail;
- 
--	if ((src+len) > skb_tail_pointer(skb) || skb->len < len)
-+	if ((src + len) > skb_tail_pointer(skb) || skb->len < len)
- 		return -1;
- 
- 	tail = (unsigned long)skb_tail_pointer(skb);
--	end = (unsigned long)src+len;
-+	end = (unsigned long)src + len;
- 	if (tail < end)
- 		return -1;
- 
--	tail_len = (int)(tail-end);
-+	tail_len = (int)(tail - end);
- 	if (tail_len > 0)
--		memmove(src, src+len, tail_len);
-+		memmove(src, src + len, tail_len);
- 
--	skb_trim(skb, skb->len-len);
-+	skb_trim(skb, skb->len - len);
- 	return 0;
- }
- 
-@@ -117,7 +117,7 @@ static void __nat25_generate_ipv4_network_addr(unsigned char *networkAddr,
- 	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
- 
- 	networkAddr[0] = NAT25_IPV4;
--	memcpy(networkAddr+7, (unsigned char *)ipAddr, 4);
-+	memcpy(networkAddr + 7, (unsigned char *)ipAddr, 4);
- }
- 
- static void __nat25_generate_pppoe_network_addr(unsigned char *networkAddr,
-@@ -126,8 +126,8 @@ static void __nat25_generate_pppoe_network_addr(unsigned char *networkAddr,
- 	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
- 
- 	networkAddr[0] = NAT25_PPPOE;
--	memcpy(networkAddr+1, (unsigned char *)sid, 2);
--	memcpy(networkAddr+3, (unsigned char *)ac_mac, 6);
-+	memcpy(networkAddr + 1, (unsigned char *)sid, 2);
-+	memcpy(networkAddr + 3, (unsigned char *)ac_mac, 6);
- }
- 
- static  void __nat25_generate_ipv6_network_addr(unsigned char *networkAddr,
-@@ -136,17 +136,17 @@ static  void __nat25_generate_ipv6_network_addr(unsigned char *networkAddr,
- 	memset(networkAddr, 0, MAX_NETWORK_ADDR_LEN);
- 
- 	networkAddr[0] = NAT25_IPV6;
--	memcpy(networkAddr+1, (unsigned char *)ipAddr, 16);
-+	memcpy(networkAddr + 1, (unsigned char *)ipAddr, 16);
- }
- 
- static unsigned char *scan_tlv(unsigned char *data, int len, unsigned char tag, unsigned char len8b)
- {
- 	while (len > 0) {
--		if (*data == tag && *(data+1) == len8b && len >= len8b*8)
--			return data+2;
-+		if (*data == tag && *(data + 1) == len8b && len >= len8b * 8)
-+			return data + 2;
- 
--		len -= (*(data+1))*8;
--		data += (*(data+1))*8;
-+		len -= (*(data + 1)) * 8;
-+		data += (*(data + 1)) * 8;
- 	}
- 	return NULL;
- }
-@@ -158,7 +158,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 
- 	if (icmphdr->icmp6_type == NDISC_ROUTER_SOLICITATION) {
- 		if (len >= 8) {
--			mac = scan_tlv(&data[8], len-8, 1, 1);
-+			mac = scan_tlv(&data[8], len - 8, 1, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -166,7 +166,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_ROUTER_ADVERTISEMENT) {
- 		if (len >= 16) {
--			mac = scan_tlv(&data[16], len-16, 1, 1);
-+			mac = scan_tlv(&data[16], len - 16, 1, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -174,7 +174,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
- 		if (len >= 24) {
--			mac = scan_tlv(&data[24], len-24, 1, 1);
-+			mac = scan_tlv(&data[24], len - 24, 1, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -182,7 +182,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
- 		if (len >= 24) {
--			mac = scan_tlv(&data[24], len-24, 2, 1);
-+			mac = scan_tlv(&data[24], len - 24, 2, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -190,7 +190,7 @@ static int update_nd_link_layer_addr(unsigned char *data, int len, unsigned char
- 		}
- 	} else if (icmphdr->icmp6_type == NDISC_REDIRECT) {
- 		if (len >= 40) {
--			mac = scan_tlv(&data[40], len-40, 2, 1);
-+			mac = scan_tlv(&data[40], len - 40, 2, 1);
- 			if (mac) {
- 				memcpy(mac, replace_mac, 6);
- 				return 1;
-@@ -397,7 +397,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 			tmp = be32_to_cpu(iph->saddr);
- 			__nat25_generate_ipv4_network_addr(networkAddr, &tmp);
- 			/* record source IP address and , source mac address into db */
--			__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+			__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 			return 0;
- 		default:
- 			return -1;
-@@ -422,7 +422,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 			arp_ptr += arp->ar_hln;
- 			sender = (unsigned int *)arp_ptr;
- 			__nat25_generate_ipv4_network_addr(networkAddr, sender);
--			__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+			__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 			return 0;
- 		default:
- 			return -1;
-@@ -459,22 +459,22 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 							    sizeof(tag_buf))
- 								return -1;
- 
--							memcpy(tag->tag_data+MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN,
-+							memcpy(tag->tag_data + MAGIC_CODE_LEN + RTL_RELAY_TAG_LEN,
- 								pOldTag->tag_data, old_tag_len);
- 
--							if (skb_pull_and_merge(skb, (unsigned char *)pOldTag, TAG_HDR_LEN+old_tag_len) < 0)
-+							if (skb_pull_and_merge(skb, (unsigned char *)pOldTag, TAG_HDR_LEN + old_tag_len) < 0)
- 								return -1;
- 
--							ph->length = htons(ntohs(ph->length)-TAG_HDR_LEN-old_tag_len);
-+							ph->length = htons(ntohs(ph->length) - TAG_HDR_LEN - old_tag_len);
- 						}
- 
- 						tag->tag_type = PTT_RELAY_SID;
--						tag->tag_len = htons(MAGIC_CODE_LEN+RTL_RELAY_TAG_LEN+old_tag_len);
-+						tag->tag_len = htons(MAGIC_CODE_LEN + RTL_RELAY_TAG_LEN + old_tag_len);
- 
- 						/*  insert the magic_code+client mac in relay tag */
- 						pMagic = (__be16 *)tag->tag_data;
- 						*pMagic = htons(MAGIC_CODE);
--						memcpy(tag->tag_data+MAGIC_CODE_LEN, skb->data+ETH_ALEN, ETH_ALEN);
-+						memcpy(tag->tag_data + MAGIC_CODE_LEN, skb->data + ETH_ALEN, ETH_ALEN);
- 
- 						/* Add relay tag */
- 						if (__nat25_add_pppoe_tag(skb, tag) < 0)
-@@ -487,7 +487,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 							return -2;
- 
- 						if (priv->pppoe_connection_in_progress == 0)
--							memcpy(priv->pppoe_addr, skb->data+ETH_ALEN, ETH_ALEN);
-+							memcpy(priv->pppoe_addr, skb->data + ETH_ALEN, ETH_ALEN);
- 
- 						priv->pppoe_connection_in_progress = WAIT_TIME_PPPOE;
- 					}
-@@ -497,11 +497,11 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 			} else {	/*  session phase */
- 				__nat25_generate_pppoe_network_addr(networkAddr, skb->data, &ph->sid);
- 
--				__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+				__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 
- 				if (!priv->ethBrExtInfo.addPPPoETag &&
- 				    priv->pppoe_connection_in_progress &&
--				    !memcmp(skb->data+ETH_ALEN, priv->pppoe_addr, ETH_ALEN))
-+				    !memcmp(skb->data + ETH_ALEN, priv->pppoe_addr, ETH_ALEN))
- 					priv->pppoe_connection_in_progress = 0;
- 			}
- 			return 0;
-@@ -549,7 +549,7 @@ int nat25_db_handle(struct adapter *priv, struct sk_buff *skb, int method)
- 		case NAT25_INSERT:
- 			if (memcmp(&iph->saddr, "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0", 16)) {
- 				__nat25_generate_ipv6_network_addr(networkAddr, (unsigned int *)&iph->saddr);
--				__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
-+				__nat25_db_network_insert(priv, skb->data + ETH_ALEN, networkAddr);
- 
- 				if (iph->nexthdr == IPPROTO_ICMPV6 &&
- 						skb->len > (ETH_HLEN +  sizeof(*iph) + 4)) {
 -- 
-2.17.1
+Best Regards
+ Guo Ren
 
+ML: https://lore.kernel.org/linux-csky/
