@@ -2,126 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C01EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235627AbiDMMxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
+        id S235636AbiDMMyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiDMMxK (ORCPT
+        with ESMTP id S233328AbiDMMyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:53:10 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD993616A;
-        Wed, 13 Apr 2022 05:50:47 -0700 (PDT)
-Received: from apollo.. (unknown [IPv6:2a02:810b:4340:43bf:4685:ff:fe12:5967])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 12A4E22205;
-        Wed, 13 Apr 2022 14:50:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649854246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gGQKNMATt0VXs2Gr3ljY3Dvzv0/7dWKNIw1LPszM13o=;
-        b=s+ChkiLc/0lHYW3E0/kcfVSlc0ch3xCuhjscEPqzUjM4c8VpXpETaEY7gC9FKwwkU/EaX0
-        43XH7x6ykbJxIi256NJdQ8QuqOuKENbr5Axv+LmCOzVfLbqogc33pOW0pqJZMhWEMyaJqd
-        OTQBDozq4yDWXqvbwFf/t6x4rRfcWpc=
-From:   Michael Walle <michael@walle.cc>
-To:     tudor.ambarus@microchip.com
-Cc:     alexandre.belloni@bootlin.com, broonie@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, ludovic.desroches@microchip.com,
-        nicolas.ferre@microchip.com, Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH] spi: atmel-quadspi: Add support for sama7g5 QSPI
-Date:   Wed, 13 Apr 2022 14:50:32 +0200
-Message-Id: <20220413125032.151907-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211214133404.121739-1-tudor.ambarus@microchip.com>
-References: <20211214133404.121739-1-tudor.ambarus@microchip.com>
+        Wed, 13 Apr 2022 08:54:01 -0400
+Received: from iodev.co.uk (iodev.co.uk [46.30.189.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 768EC4E394;
+        Wed, 13 Apr 2022 05:51:40 -0700 (PDT)
+Received: from localhost (255.red-83-50-200.dynamicip.rima-tde.net [83.50.200.255])
+        by iodev.co.uk (Postfix) with ESMTPSA id 7FD0A9DDE8;
+        Wed, 13 Apr 2022 14:51:39 +0200 (CEST)
+From:   Ismael Luceno <ismael@iodev.co.uk>
+To:     linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org
+Cc:     Ismael Luceno <ismael@iodev.co.uk>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Subject: [PATCH] Bluetooth: btusb: Add 0x0bda:0x8771 Realtek 8761BUV devices
+Date:   Wed, 13 Apr 2022 14:54:15 +0200
+Message-Id: <20220413125415.20293-1-ismael@iodev.co.uk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tudor,
+Identifies as just "Realtek Semiconductor Corp."; it's used in many
+adapters, e.g.:
 
-> The sama7g5 QSPI controller uses dedicated clocks for the
-> QSPI Controller Interface and the QSPI Controller Core, and
-> requires synchronization before accessing registers or bit
-> fields.
-> 
-> QSPI_SR.SYNCBSY must be zero before accessing any of the bits:
-> QSPI_CR.QSPIEN, QSPI_CR.QSPIDIS, QSPI_CR.SRFRSH, QSPI_CR.SWRST,
-> QSPI_CR.UPDCFG, QSPI_CR.STTFR, QSPI_CR.RTOUT, QSPI_CR.LASTXFER.
-> 
-> Also, the QSPI controller core configuration can be updated by
-> writing the QSPI_CR.UPDCFG bit to ‘1’. This is needed by the
-> following registers: QSPI_MR, QSPI_SCR, QSPI_IAR, QSPI_WICR,
-> QSPI_IFR, QSPI_RICR, QSPI_SMR, QSPI_SKR,QSPI_REFRESH, QSPI_WRACNT
-> QSPI_PCALCFG.
-> 
-> The Octal SPI supports frequencies up to 200 MHZ DDR. The need
-> for output impedance calibration arises. To avoid the degradation
-> of the signal quality, a PAD calibration cell is used to adjust
-> the output impedance to the driven I/Os.
-> 
-> The transmission flow requires different sequences for setting
-> the configuration and for the actual transfer, than what is in
-> the sama5d2 and sam9x60 versions of the IP. Different interrupts
-> are handled. aq->ops->set_cfg() and aq->ops->transfer() are
-> introduced to help differentiating the flows.
-> 
-> Tested single and octal SPI mode with mx66lm1g45g.
+- UGREEN CM390
+- C-TECH BTD-01
+- Orico BTA-508
 
-I've successfully tested this on a LAN9668 with a SST25VF016B
-and 104 MHz (quad mode). But there are some catches:
+Signed-off-by: Ismael Luceno <ismael@iodev.co.uk>
+---
+ drivers/bluetooth/btusb.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-(1) SPI mode is not set, i.e. SCR.CPHA, SCR.CPOL
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 2afbd87d77c9..07db720baaa0 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -490,6 +490,10 @@ MODULE_DEVICE_TABLE(usb, btusb_table);
+ 	{ USB_DEVICE(0x2550, 0x8761), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
+ 
++	/* Additional Realtek 8761BUV Bluetooth devices */
++	{ USB_DEVICE(0x0bda, 0x8771), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
++
+ 	/* Additional Realtek 8821AE Bluetooth devices */
+ 	{ USB_DEVICE(0x0b05, 0x17dc), .driver_info = BTUSB_REALTEK },
+ 	{ USB_DEVICE(0x13d3, 0x3414), .driver_info = BTUSB_REALTEK },
+-- 
+2.35.1
 
-(2) There is no (or a really short delay) between asserting
-    the chip select and the first clock edge. I.e. SCR.DLYBS
-    is zero. I wasn't able to go faster than ~20MHz with that.
-    Also the slightest capacitance, like a probe tip, made things
-    worse. I've been successful with a value of 2 at 104MHz,
-    although attaching an oscilloscope probe (<4 pF input
-    capacitance, no cheapo probe) made things unreliable again.
-    In the end a value of 4 worked perfectly. I think it is
-    overkill to make this configurable, the added delay should
-    be negligible.
-
-(3) As already discussed on IRC, the driver will iomap the
-    whole memory window which is 256MB for one controller
-    in my case. On arm32 the vmalloc area is only 240MB by
-    default. The lan9668 has three of these controllers
-	(whereas one only has an 8MB window). Therefore, we would
-    potentially waste 520MB just for the SPI windows.
-
-    I had a look at the driver, although IAR is set, it is
-    not used for the accesses through the memory window. doh ;)
-    It seems we need to map the memory just for the memcpy_io.
-    The DMA engine should be happy with the physical addresses
-    and shouldn't need the iomap. What do you think about just
-    mapping like 16MB and after that always fall back to DMA
-    regardless of the transfer size.
-
-    In fact I don't know why that memory window is needed at all.
-    Shouldn't the DMA engine be able to just read from RDR and
-    write to TDR? And PIO mode could do the same.
-
-(4) Odd transfer lengths doesn't work. That is I get different
-    results for the folllwing:
-    (a) dd if=/dev/mtd0 bs=3 | hexdump -C | head
-    (a) dd if=/dev/mtd0 bs=4 | hexdump -C | head
-
-    Actually, I've notived that using the (busybox) hexdump
-    directly on /dev/mtd0 returned some really odd bytes. Might
-    or might not be related to that above.
-
--michael
