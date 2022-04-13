@@ -2,89 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 631E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C391C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:43:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232996AbiDMJpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41530 "EHLO
+        id S234671AbiDMJqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230060AbiDMJpp (ORCPT
+        with ESMTP id S229634AbiDMJqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:45:45 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B26B55755
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:43:25 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id k23so2787922ejd.3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:43:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oylS87girUUrQx7MuINAwy2xTwGf80twzjJs9A96Tb8=;
-        b=Ucug3Vg8Frp9jao+WYFxol+ccmzQexE/zZeVexOK9d/0vYW6O32X63hFa9pz4HsBw/
-         JrInFB4kDRiW5bHl8XhI9LRqEw0We1WvkkELB4mUBgsv17dcvs3YGIph0cc8eGHb6EtP
-         PM3QnljClVN6pMo3S8JFpBNBl7JDRyLQqv2/ozmlclxQUoivNF9+NFiogqr1dryJzs4b
-         utW59fj+Q5UDCpLFNa6txl/LLUI5rbQeL3H1ai9jyMkN4spAzGGwFw0WIpqckuBN93GM
-         0/xCOsjaXZ5xuoDAOnatoralZX9WeYEXXP+y1Ey6xHmDIrvV4UfzTVul8qZD3LmZNuC6
-         7RRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oylS87girUUrQx7MuINAwy2xTwGf80twzjJs9A96Tb8=;
-        b=JhVSD93mW9yr1GUngCk8965iJUOjTOmSyY/MD4JxqLhdlCgNoLn/VWe4LtKpcYaaJz
-         5pnjsJWq029xJKtgK2DC2uUIdbPLyxInHJNerdvGKhhOk1pSho9bdczz6a1NgOc/bM5L
-         dSm2znX8nEWNizhOMK4XuC90ijGZ8f/qs1Hpwib6/diUlrrLcy2YJPMMVyusOMGbueEp
-         rjwRx9+OS5ZyROjL35f5I9gA8zy9JGm/rVZ0Yl53yr/y89PSLhrF0u564iy6X+1pN7NO
-         /+91BIznOTK4iXWnjGzyD0RpTi8sNgQ160FZ+/5dt4nrmTUuxW/zcI/kIPT6SSFCl885
-         gSxg==
-X-Gm-Message-State: AOAM5333kwiJ+VD6HQ5Llza3kFIXvAkckWmheVhqEFb99AiJXhlcInTd
-        laHfhcP+OXkylFp/rlwibnl9mg==
-X-Google-Smtp-Source: ABdhPJwEZyDkRFJmcImmUC0dtcyBcJZKNC3ov+ZdOEUPgWlXoNONtGaBY0kO4A/ljR3ga9neZVmfnA==
-X-Received: by 2002:a17:906:7304:b0:6da:9243:865 with SMTP id di4-20020a170906730400b006da92430865mr38080684ejc.665.1649843003746;
-        Wed, 13 Apr 2022 02:43:23 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id i22-20020a1709063c5600b006e8a8a48baesm2155749ejg.99.2022.04.13.02.43.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 02:43:23 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Roger Quadros <rogerq@kernel.org>, krzk@kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-omap@vger.kernel.org, nm@ti.com,
-        linux-kernel@vger.kernel.org, kishon@ti.com, tony@atomide.com,
-        miquel.raynal@bootlin.com, vigneshr@ti.com
-Subject: Re: [PATCH v3 0/2] memory: omap-gpmc: Allow module build
-Date:   Wed, 13 Apr 2022 11:43:20 +0200
-Message-Id: <164984299612.34759.11981181842672620752.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220411095516.24754-1-rogerq@kernel.org>
-References: <20220411095516.24754-1-rogerq@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Wed, 13 Apr 2022 05:46:03 -0400
+Received: from mo-csw.securemx.jp (mo-csw1115.securemx.jp [210.130.202.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D73955755;
+        Wed, 13 Apr 2022 02:43:42 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1115) id 23D9hM8m029340; Wed, 13 Apr 2022 18:43:22 +0900
+X-Iguazu-Qid: 2wHHcjJI23W94K8XRp
+X-Iguazu-QSIG: v=2; s=0; t=1649843001; q=2wHHcjJI23W94K8XRp; m=7GmIC7vHKUkgQ9s4B63XWJryMl2VZPBa/PaV4pvEob8=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1111) id 23D9hLZA011011
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 13 Apr 2022 18:43:21 +0900
+X-SA-MID: 35962689
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH 0/3] Visconti: Add Toshiba Visconti Video Input Interface driver
+Date:   Wed, 13 Apr 2022 18:41:58 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220413094203.25714-1-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022 12:55:14 +0300, Roger Quadros wrote:
-> These patches allow OMAP_GPMC config to be visible in menuconfig
-> and buildable as a module.
-> 
-> Changelog:
-> v3:
-> - Remove not required MODULE_ALIAS
-> - Mention in commit message why we need to remove of_match_node() call
-> 
-> [...]
-
-Applied, thanks!
-
-[1/2] memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
-      commit: 656d1be692be78b825954e0a2a47fcae81834633
-[2/2] memory: omap-gpmc: Allow building as a module
-      commit: eb55c7180be67774aa728a3c450de441e0dedb5d
+This series is the Video Input Interface driver for Toshiba's ARM SoC, Visconti[0].
+This provides DT binding documentation, device driver, MAINTAINER fiels.
 
 Best regards,
+Yuji
+
+[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
+
+Yuji Ishikawa (5):
+  dt-bindings: media: platform: visconti: Add Toshiba Visconti Video
+    Input Interface bindings
+  media: platform: visconti: Add Toshiba Visconti Video Input Interface
+    driver headers
+  media: platform: visconti: Add Toshiba Visconti Video Input Interface
+    driver body
+  media: platform: visconti: Add Toshiba VIIF image signal processor
+    driver
+  MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
+
+ .../bindings/media/toshiba,visconti-viif.yaml |  103 +
+ MAINTAINERS                                   |    2 +
+ drivers/media/platform/Kconfig                |    2 +
+ drivers/media/platform/Makefile               |    4 +
+ drivers/media/platform/visconti/Kconfig       |    9 +
+ drivers/media/platform/visconti/Makefile      |    9 +
+ drivers/media/platform/visconti/hwd_viif.c    | 2233 ++++++++++
+ drivers/media/platform/visconti/hwd_viif.h    | 1776 ++++++++
+ .../media/platform/visconti/hwd_viif_csi2rx.c |  767 ++++
+ .../platform/visconti/hwd_viif_internal.h     |  361 ++
+ .../media/platform/visconti/hwd_viif_l1isp.c  | 3769 +++++++++++++++++
+ .../media/platform/visconti/hwd_viif_reg.h    | 2802 ++++++++++++
+ drivers/media/platform/visconti/viif.c        | 2384 +++++++++++
+ drivers/media/platform/visconti/viif.h        |  134 +
+ include/uapi/linux/visconti_viif.h            | 1683 ++++++++
+ 15 files changed, 16038 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+ create mode 100644 drivers/media/platform/visconti/Kconfig
+ create mode 100644 drivers/media/platform/visconti/Makefile
+ create mode 100644 drivers/media/platform/visconti/hwd_viif.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif.h
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_csi2rx.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_internal.h
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_l1isp.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_reg.h
+ create mode 100644 drivers/media/platform/visconti/viif.c
+ create mode 100644 drivers/media/platform/visconti/viif.h
+ create mode 100644 include/uapi/linux/visconti_viif.h
+
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.17.1
+
+
