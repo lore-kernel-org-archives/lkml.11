@@ -2,115 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C970C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238395AbiDMTdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40210 "EHLO
+        id S236869AbiDMTfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236864AbiDMTdj (ORCPT
+        with ESMTP id S233005AbiDMTe6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:33:39 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AB876295
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:31:17 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id v4so3660011edl.7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:31:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=frTEyC0/+CfTIF4PYPNiHQ4Gsfm5fIkYJSxFNrCEuso=;
-        b=USSnSZtoD5qwvH/yvxHC79p7rIcFBfYSAwCS/8l+UAOQVYZUKJ+vDuBaAJB/nJmEPx
-         g7xJs94b53G9SqzrTEyV7LiPRqY0+FlEUHXsFaG0byJs5XO9935tw+7S/EMAJuTtQhFu
-         VjfWoAx3Fgh06C/08DWnLONaqlnuWzNwZGJHbJI9za5M55H9pRP/jioGj6z6SD5mSuf5
-         OhqjpbUnqQeW/s2ZVSve+5lCImK8h2qDomy0YIMCtTsk3zqfpMMDy2LoFmTLoUjvNvp4
-         WpBvZbIOz7I46fmHuumVjEpqpu1SEQkwedZ3gusL5+0cPXdh1QTDfn/NzBsWi6w2TCm3
-         pPRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=frTEyC0/+CfTIF4PYPNiHQ4Gsfm5fIkYJSxFNrCEuso=;
-        b=ZxKL2J+GvfiVktlxMZOGCLL26Y5IyTJQD0GjyLtaQz8Fr+I1gKtdpGywe4tV5Be8F1
-         srmWgsSAcX8p5nZQfmxYVG4U4hMMHUO/8J6UMks0nCWszOO/vgxiDCN7E/tv0HzYs9hr
-         3LoJ9+67KaBOCpdXk/joKgQKwF1wRUWPhIAXzsMxy+1YFeIfcnv0RY6xdLTUSHiOa+5Q
-         gKKIu6RM/yNI7s4PVz/EkoG2OfhnF//Govf7Z0JlDCZdMGducI5XZENzVkIfuv4fnIBY
-         Sz3V2jbbrmwmXRJDI3QVHeMn0ZOkIA8Tsiz1BXccbenLpcHUgbaGChJIjZD9uOxcbOeu
-         goJw==
-X-Gm-Message-State: AOAM531e8F0qn12b47c89AjqlmBsI3xxYzliyi5h4nD7WPIn1ewh+W/Q
-        oWoCxEB8DXZD7Nac1Rl1KE5NfQ==
-X-Google-Smtp-Source: ABdhPJxCWuXB+xuTb6sKG9nbhRjhHzVASERrwIqlT8IubgeDh/aIhOShiVtJmLn6LiaKB+HEOkgWow==
-X-Received: by 2002:a05:6402:5250:b0:41d:8556:4191 with SMTP id t16-20020a056402525000b0041d85564191mr14027035edd.269.1649878275612;
-        Wed, 13 Apr 2022 12:31:15 -0700 (PDT)
-Received: from [192.168.0.207] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id e26-20020a50ec9a000000b004193fe50151sm1584782edr.9.2022.04.13.12.31.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 12:31:15 -0700 (PDT)
-Message-ID: <44efe8b6-1712-5b87-f030-2f1328533ee8@linaro.org>
-Date:   Wed, 13 Apr 2022 21:31:13 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 24/33] dt-bindings: crypto: convert rockchip-crypto to
- YAML
-Content-Language: en-US
-To:     Corentin Labbe <clabbe@baylibre.com>, heiko@sntech.de,
-        herbert@gondor.apana.org.au, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        Wed, 13 Apr 2022 15:34:58 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788EB76585;
+        Wed, 13 Apr 2022 12:32:36 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 19:32:33 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649878355;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0iorNaHWnmbP15mgEIAifHH7Nvn7KVWv7GrX/fT9Fhg=;
+        b=SDjahuni5frp/d8eGi7NGXhKJJgca52DhTGRqJghvjGuWV+Z9wy6fjQ6agd/Bqrw8Xhr3A
+        hDny/qzNpK2/EtHkDWOldghdoA1IPw8H6glb1XlwGZsaVSGncLRCHEebRpxuuJk8CvBTAQ
+        26f+k6FOotwkeIyx/R2O0k2wsoYUHLSNgNitI7MAxcT3p3qU1TinmCWZqE5v3wJp0IWuiO
+        eaKZn2y7OzAztjY5HYDnZW3XXumylhoYbNSAsGMzQevTx56TE4HJr5uCrmPjBlFIv1pSO+
+        r4yx+of3qDHQhiI677H7IToPzYoJ2lojcGgm/FDLM0loFCDWcVJ+4JlDnHChZQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649878355;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0iorNaHWnmbP15mgEIAifHH7Nvn7KVWv7GrX/fT9Fhg=;
+        b=ZyTrxx0hkn5OjKVf4CJbN55grN1ixO4TyvBSLWRc1MgWVLGZYaZWk21rFyXa6CGCoZ4Y45
+        4KnGQmf4FIutOQCg==
+From:   "tip-bot2 for Steven Price" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: smp/core] cpu/hotplug: Initialise all cpuhp_cpu_state structs earlier
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Steven Price <steven.price@arm.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220413190713.1427956-1-clabbe@baylibre.com>
- <20220413190713.1427956-25-clabbe@baylibre.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220413190713.1427956-25-clabbe@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20220411152233.474129-3-steven.price@arm.com>
+References: <20220411152233.474129-3-steven.price@arm.com>
+MIME-Version: 1.0
+Message-ID: <164987835389.4207.2665456331757900114.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/04/2022 21:07, Corentin Labbe wrote:
-> Convert rockchip-crypto to YAML.
+The following commit has been merged into the smp/core branch of tip:
 
-Thank you for your patch. There is something to discuss/improve.
+Commit-ID:     d308077e5e4dc8c93f97f5ebc70274e7c7a92d49
+Gitweb:        https://git.kernel.org/tip/d308077e5e4dc8c93f97f5ebc70274e7c7a92d49
+Author:        Steven Price <steven.price@arm.com>
+AuthorDate:    Mon, 11 Apr 2022 16:22:33 +01:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Wed, 13 Apr 2022 21:27:41 +02:00
 
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - rockchip,rk3288-crypto
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 4
-> +
-> +  clock-names:
-> +    maxItems: 4
+cpu/hotplug: Initialise all cpuhp_cpu_state structs earlier
 
-This is not needed and dt_bindings_check should complain.
+Rather than waiting until a CPU is first brought online, do the
+initialisation of the cpuhp_cpu_state structure for each CPU during the
+__init phase. This saves a (small) amount of non-__init memory and
+avoids potential confusion about when the cpuhp_cpu_state struct is
+valid.
 
-> +    items:
-> +      const: aclk
-> +      const: hclk
-> +      const: sclk
-> +      const: apb_pclk
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  reset-names:
-> +    maxItems: 1
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220411152233.474129-3-steven.price@arm.com
 
-The same.
+---
+ kernel/cpu.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-
-Best regards,
-Krzysztof
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index d0a9aa0..02a77ac 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -716,14 +716,6 @@ static int cpuhp_up_callbacks(unsigned int cpu, struct cpuhp_cpu_state *st,
+ /*
+  * The cpu hotplug threads manage the bringup and teardown of the cpus
+  */
+-static void cpuhp_create(unsigned int cpu)
+-{
+-	struct cpuhp_cpu_state *st = per_cpu_ptr(&cpuhp_state, cpu);
+-
+-	init_completion(&st->done_up);
+-	init_completion(&st->done_down);
+-}
+-
+ static int cpuhp_should_run(unsigned int cpu)
+ {
+ 	struct cpuhp_cpu_state *st = this_cpu_ptr(&cpuhp_state);
+@@ -883,15 +875,27 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
+ 
+ static struct smp_hotplug_thread cpuhp_threads = {
+ 	.store			= &cpuhp_state.thread,
+-	.create			= &cpuhp_create,
+ 	.thread_should_run	= cpuhp_should_run,
+ 	.thread_fn		= cpuhp_thread_fun,
+ 	.thread_comm		= "cpuhp/%u",
+ 	.selfparking		= true,
+ };
+ 
++static __init void cpuhp_init_state(void)
++{
++	struct cpuhp_cpu_state *st;
++	int cpu;
++
++	for_each_possible_cpu(cpu) {
++		st = per_cpu_ptr(&cpuhp_state, cpu);
++		init_completion(&st->done_up);
++		init_completion(&st->done_down);
++	}
++}
++
+ void __init cpuhp_threads_init(void)
+ {
++	cpuhp_init_state();
+ 	BUG_ON(smpboot_register_percpu_thread(&cpuhp_threads));
+ 	kthread_unpark(this_cpu_read(cpuhp_state.thread));
+ }
