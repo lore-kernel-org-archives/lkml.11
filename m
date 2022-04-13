@@ -2,239 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 377F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86771C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233583AbiDMLam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56626 "EHLO
+        id S235125AbiDMLbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiDMLak (ORCPT
+        with ESMTP id S229539AbiDMLbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:30:40 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3027F3B033;
-        Wed, 13 Apr 2022 04:28:18 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id C87F821123;
-        Wed, 13 Apr 2022 11:28:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649849296; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Mze/fDiC5ezzJg+W3G0h0m1cO48i6A3nZBdGSu3s5qo=;
-        b=HN2yCrhfOh+I91LWqJzvr9q3kctCtrMukFDUxB5iGOyMHCn/hA+nyVLrf5vKXN56XiMAfn
-        yG95po4dthpTicUALGWCET0l8s9HY13wvSRnPcNqFQZuLM5QMrzfImzn2c62CCsjGRKbpm
-        0CZ+fZj6kXdomhwx4FJ2zWMvGP/+al0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649849296;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Mze/fDiC5ezzJg+W3G0h0m1cO48i6A3nZBdGSu3s5qo=;
-        b=/1mis1vVCHFUMJVTf6hg6nOA1qeWjApeaHCZG3KX4XN9jKK2DiBShIrTcw5lTInFw+D31h
-        fLM/NF51aGZu5FBQ==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id AA939A3B82;
-        Wed, 13 Apr 2022 11:28:16 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 545AFA0615; Wed, 13 Apr 2022 13:28:16 +0200 (CEST)
-Date:   Wed, 13 Apr 2022 13:28:16 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     tj@kernel.org, axboe@kernel.dk, paolo.valente@linaro.org,
-        jack@suse.cz, cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-Subject: Re: [PATCH -next 10/11] block, bfq: decrease
- 'num_groups_with_pending_reqs' earlier
-Message-ID: <20220413112816.fwobg4cp6ttpnpk6@quack3.lan>
-References: <20220305091205.4188398-1-yukuai3@huawei.com>
- <20220305091205.4188398-11-yukuai3@huawei.com>
+        Wed, 13 Apr 2022 07:31:13 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB622E0E4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:28:52 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id r18so1840782ljp.0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RUUekrDlUbpLzqCYZThT9IACZ/bhP9YbCkxyRYsnt0M=;
+        b=V77k8E7Go3c8YgfJi/4I+GJLJ3R1Ys5kruzKXCtk0nFXouJqhvePll1fbbkEYKm4xE
+         YZrPlOCZh1vT1ty2JRsb1q3yzq1gS41FCsaSb12OiKKOx4NuZfOFn2tiW3ZyDLpnkLol
+         z/5xTZZFsq779P9UL/51P/kj0Yy27y90jD57djNGhrQe4VbfTsbIts3LHe3e10niAfMT
+         r4NXtQ2WRuyeH3aB4lkLSnwkQ8N+bbhywkriHTKGY3tA5I7YQkLc724yGbpeFQb7ksL4
+         K/dyrtA5OEsrhyOKLjTmBwSt/gJIKYRRmbL097G33skgKs0CTrL8hELIDbRO21I75giq
+         DLcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RUUekrDlUbpLzqCYZThT9IACZ/bhP9YbCkxyRYsnt0M=;
+        b=UadJoR5Cs7b0gVnXNYT+oZDbhX8Npp0yTeVeriDFHuzlKujx6F/NMgNd/Xf3D7WWnQ
+         xNyI9F+E/3+sDxHk3oZWAHbHYrq90bcVxffzA0IH53yLZA7csL0cAPAtzmxQtG5vJ11a
+         ypiwYqTepsSImQK9/jI8tGGamJcmuof5YEDfQDfbTHbHJ0QXBDW08sR2WeY6D4qPBY2s
+         YS5zPr2oyWGCAEHlljoNRA4V+RPT7fp59CtA9eLhrsljwA+Cpn0aNmuIL6gygMh0aUHv
+         NWe8GmWmcKd6UESOVurmG7JUoeTHWWCRkgK4/EZVfdDhOKs2zpUvKkz1rB6t+38py+zA
+         ZDRQ==
+X-Gm-Message-State: AOAM533HWcMoUd+LIiZAvuZ3m2vdmWN0Iwkyxq0v+Qa+ECqArwydBlan
+        KktMWtWNXS35t3Dch/nvv0z49A==
+X-Google-Smtp-Source: ABdhPJxSObsbRGCRh062l829m9u3AS2rxM/okBiCDA0bzG2WiNog7zUZUyoVbejKOKZm5Tmo3sYdQw==
+X-Received: by 2002:a2e:b008:0:b0:24b:4ff2:5e09 with SMTP id y8-20020a2eb008000000b0024b4ff25e09mr16404348ljk.28.1649849331196;
+        Wed, 13 Apr 2022 04:28:51 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id w14-20020a05651c118e00b0024c80f2b7edsm320995ljo.74.2022.04.13.04.28.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 04:28:50 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 4C8F110369B; Wed, 13 Apr 2022 14:30:24 +0300 (+03)
+Date:   Wed, 13 Apr 2022 14:30:24 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
+Message-ID: <20220413113024.ycvocn6ynerl3b7m@box.shutemov.name>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
+ <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
+ <ff9e0bad-be9a-97ac-ae88-d22bcfbe80d4@redhat.com>
+ <ebf3ccef-e6fe-62d5-74e8-91e30e7c2642@intel.com>
+ <a458c13f-9994-b227-ff61-bfdfec10bc27@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220305091205.4188398-11-yukuai3@huawei.com>
+In-Reply-To: <a458c13f-9994-b227-ff61-bfdfec10bc27@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 05-03-22 17:12:04, Yu Kuai wrote:
-> Currently 'num_groups_with_pending_reqs' won't be decreased when
-> the group doesn't have any pending requests, while some child group
-> still have pending requests. The decrement is delayed to when all the
-> child groups doesn't have any pending requests.
+On Wed, Apr 13, 2022 at 12:36:11PM +0200, David Hildenbrand wrote:
+> On 12.04.22 18:08, Dave Hansen wrote:
+> > On 4/12/22 01:15, David Hildenbrand wrote:
+> >> Can we simply automate this using a kthread or smth like that, which
+> >> just traverses the free page lists and accepts pages (similar, but
+> >> different to free page reporting)?
+> > 
+> > That's definitely doable.
+> > 
+> > The downside is that this will force premature consumption of physical
+> > memory resources that the guest may never use.  That's a particular
+> > problem on TDX systems since there is no way for a VMM to reclaim guest
+> > memory short of killing the guest.
 > 
-> For example:
-> 1) t1 issue sync io on root group, t2 and t3 issue sync io on the same
-> child group. num_groups_with_pending_reqs is 2 now.
-> 2) t1 stopped, num_groups_with_pending_reqs is still 2. io from t2 and
-> t3 still can't be handled concurrently.
+> IIRC, the hypervisor will usually effectively populate all guest RAM
+> either way right now.
+
+No, it is not usual. By default QEMU/KVM uses anonymous mapping and
+fault-in memory on demand.
+
+Yes, there's an option to pre-populate guest memory, but it is not the
+default.
+
+> So yes, for hypervisors that might optimize for
+> that, that statement would be true. But I lost track how helpful it
+> would be in the near future e.g., with the fd-based private guest memory
+> -- maybe they already optimize for delayed acceptance of memory, turning
+> it into delayed population.
 > 
-> Fix the problem by decreasing 'num_groups_with_pending_reqs'
-> immediately upon the weights_tree removal of last bfqq of the group.
+> > 
+> > In other words, I can see a good argument either way:
+> > 1. The kernel should accept everything to avoid the perf nastiness
+> > 2. The kernel should accept only what it needs in order to reduce memory
+> >    use
+> > 
+> > I'm kinda partial to #1 though, if I had to pick only one.
+> > 
+> > The other option might be to tie this all to DEFERRED_STRUCT_PAGE_INIT.
+> >  Have the rule that everything that gets a 'struct page' must be
+> > accepted.  If you want to do delayed acceptance, you do it via
+> > DEFERRED_STRUCT_PAGE_INIT.
 > 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> That could also be an option, yes. At least being able to chose would be
+> good. But IIRC, DEFERRED_STRUCT_PAGE_INIT will still make the system get
+> stuck during boot and wait until everything was accepted.
 
-So I'd find the logic easier to follow if you completely removed
-entity->in_groups_with_pending_reqs and did updates of
-bfqd->num_groups_with_pending_reqs like:
+Right. It deferred page init has to be done before init.
 
-	if (!bfqg->num_entities_with_pending_reqs++)
-		bfqd->num_groups_with_pending_reqs++;
-
-and similarly on the remove side. And there would we literally two places
-(addition & removal from weight tree) that would need to touch these
-counters. Pretty obvious and all can be done in patch 9.
-
-								Honza
-
-> ---
->  block/bfq-iosched.c | 56 +++++++++++++++------------------------------
->  block/bfq-iosched.h | 16 ++++++-------
->  2 files changed, 27 insertions(+), 45 deletions(-)
+> I see the following variants:
 > 
-> diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-> index f221e9cab4d0..119b64c9c1d9 100644
-> --- a/block/bfq-iosched.c
-> +++ b/block/bfq-iosched.c
-> @@ -970,6 +970,24 @@ void __bfq_weights_tree_remove(struct bfq_data *bfqd,
->  	bfq_put_queue(bfqq);
->  }
->  
-> +static void decrease_groups_with_pending_reqs(struct bfq_data *bfqd,
-> +					      struct bfq_queue *bfqq)
-> +{
-> +#ifdef CONFIG_BFQ_GROUP_IOSCHED
-> +	struct bfq_entity *entity = bfqq->entity.parent;
-> +
-> +	/*
-> +	 * The decrement of num_groups_with_pending_reqs is performed
-> +	 * immediately when the last bfqq completes all the requests.
-> +	 */
-> +	if (!bfqq_group(bfqq)->num_entities_with_pending_reqs &&
-> +	    entity->in_groups_with_pending_reqs) {
-> +		entity->in_groups_with_pending_reqs = false;
-> +		bfqd->num_groups_with_pending_reqs--;
-> +	}
-> +#endif
-> +}
-> +
->  /*
->   * Invoke __bfq_weights_tree_remove on bfqq and decrement the number
->   * of active groups for each queue's inactive parent entity.
-> @@ -977,8 +995,6 @@ void __bfq_weights_tree_remove(struct bfq_data *bfqd,
->  void bfq_weights_tree_remove(struct bfq_data *bfqd,
->  			     struct bfq_queue *bfqq)
->  {
-> -	struct bfq_entity *entity = bfqq->entity.parent;
-> -
->  	/*
->  	 * grab a ref to prevent bfqq to be freed in
->  	 * __bfq_weights_tree_remove
-> @@ -991,41 +1007,7 @@ void bfq_weights_tree_remove(struct bfq_data *bfqd,
->  	 */
->  	__bfq_weights_tree_remove(bfqd, bfqq,
->  				  &bfqd->queue_weights_tree);
-> -
-> -	for_each_entity(entity) {
-> -		struct bfq_sched_data *sd = entity->my_sched_data;
-> -
-> -		if (sd->next_in_service || sd->in_service_entity) {
-> -			/*
-> -			 * entity is still active, because either
-> -			 * next_in_service or in_service_entity is not
-> -			 * NULL (see the comments on the definition of
-> -			 * next_in_service for details on why
-> -			 * in_service_entity must be checked too).
-> -			 *
-> -			 * As a consequence, its parent entities are
-> -			 * active as well, and thus this loop must
-> -			 * stop here.
-> -			 */
-> -			break;
-> -		}
-> -
-> -		/*
-> -		 * The decrement of num_groups_with_pending_reqs is
-> -		 * not performed immediately upon the deactivation of
-> -		 * entity, but it is delayed to when it also happens
-> -		 * that the first leaf descendant bfqq of entity gets
-> -		 * all its pending requests completed. The following
-> -		 * instructions perform this delayed decrement, if
-> -		 * needed. See the comments on
-> -		 * num_groups_with_pending_reqs for details.
-> -		 */
-> -		if (entity->in_groups_with_pending_reqs) {
-> -			entity->in_groups_with_pending_reqs = false;
-> -			bfqd->num_groups_with_pending_reqs--;
-> -		}
-> -	}
-> -
-> +	decrease_groups_with_pending_reqs(bfqd, bfqq);
->  	bfq_put_queue(bfqq);
->  }
->  
-> diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-> index 5d904851519c..9ec72bd24fc2 100644
-> --- a/block/bfq-iosched.h
-> +++ b/block/bfq-iosched.h
-> @@ -495,7 +495,7 @@ struct bfq_data {
->  	struct rb_root_cached queue_weights_tree;
->  
->  	/*
-> -	 * Number of groups with at least one descendant process that
-> +	 * Number of groups with at least one process that
->  	 * has at least one request waiting for completion. Note that
->  	 * this accounts for also requests already dispatched, but not
->  	 * yet completed. Therefore this number of groups may differ
-> @@ -508,14 +508,14 @@ struct bfq_data {
->  	 * bfq_better_to_idle().
->  	 *
->  	 * However, it is hard to compute this number exactly, for
-> -	 * groups with multiple descendant processes. Consider a group
-> -	 * that is inactive, i.e., that has no descendant process with
-> +	 * groups with multiple processes. Consider a group
-> +	 * that is inactive, i.e., that has no process with
->  	 * pending I/O inside BFQ queues. Then suppose that
->  	 * num_groups_with_pending_reqs is still accounting for this
-> -	 * group, because the group has descendant processes with some
-> +	 * group, because the group has processes with some
->  	 * I/O request still in flight. num_groups_with_pending_reqs
->  	 * should be decremented when the in-flight request of the
-> -	 * last descendant process is finally completed (assuming that
-> +	 * last process is finally completed (assuming that
->  	 * nothing else has changed for the group in the meantime, in
->  	 * terms of composition of the group and active/inactive state of child
->  	 * groups and processes). To accomplish this, an additional
-> @@ -524,7 +524,7 @@ struct bfq_data {
->  	 * we resort to the following tradeoff between simplicity and
->  	 * accuracy: for an inactive group that is still counted in
->  	 * num_groups_with_pending_reqs, we decrement
-> -	 * num_groups_with_pending_reqs when the first descendant
-> +	 * num_groups_with_pending_reqs when the last
->  	 * process of the group remains with no request waiting for
->  	 * completion.
->  	 *
-> @@ -532,12 +532,12 @@ struct bfq_data {
->  	 * carefulness: to avoid multiple decrements, we flag a group,
->  	 * more precisely an entity representing a group, as still
->  	 * counted in num_groups_with_pending_reqs when it becomes
-> -	 * inactive. Then, when the first descendant queue of the
-> +	 * inactive. Then, when the last queue of the
->  	 * entity remains with no request waiting for completion,
->  	 * num_groups_with_pending_reqs is decremented, and this flag
->  	 * is reset. After this flag is reset for the entity,
->  	 * num_groups_with_pending_reqs won't be decremented any
-> -	 * longer in case a new descendant queue of the entity remains
-> +	 * longer in case a new queue of the entity remains
->  	 * with no request waiting for completion.
->  	 */
->  	unsigned int num_groups_with_pending_reqs;
-> -- 
-> 2.31.1
+> 1) Slow boot; after boot, all memory is already accepted.
+> 2) Fast boot; after boot, all memory will slowly but steadily get
+>    accepted in the background. After a while, all memory is accepted and
+>    can be signaled to user space.
+> 3) Fast boot; after boot, memory gets accepted on demand. This is what
+>    we have in this series.
 > 
+> I somehow don't quite like 3), but with deferred population in the
+> hypervisor, it might just make sense.
+
+Conceptionally, 3 is not different from what happens now. The first time
+normal VM touches the page (like on handling __GFP_ZERO) the page gets
+allocated on host. It can take very long time if it kicks in direct
+reclaim on the host.
+
+The only difference is that it is *usually* slower.
+
+I guest we can make a case for making 1 an option to match pre-populated
+use case for normal VMs.
+
+Frankly, I think option 2 is the worst one. You still CPU cycles from the
+workload after boot to do the job that may or may not be needed. It is an
+half-measure that helps nobody.
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+ Kirill A. Shutemov
