@@ -2,34 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBACC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14479C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238307AbiDMWzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48958 "EHLO
+        id S238393AbiDMWzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233911AbiDMWzl (ORCPT
+        with ESMTP id S238282AbiDMWzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 18:55:41 -0400
+        Wed, 13 Apr 2022 18:55:46 -0400
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 764DE483B3;
-        Wed, 13 Apr 2022 15:53:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70EE55882D;
+        Wed, 13 Apr 2022 15:53:23 -0700 (PDT)
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id D4AE092009D; Thu, 14 Apr 2022 00:53:17 +0200 (CEST)
+        id C07E692009D; Thu, 14 Apr 2022 00:53:22 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id D1BEA92009C;
-        Wed, 13 Apr 2022 23:53:17 +0100 (BST)
-Date:   Wed, 13 Apr 2022 23:53:17 +0100 (BST)
+        by angie.orcam.me.uk (Postfix) with ESMTP id BC4E692009C;
+        Wed, 13 Apr 2022 23:53:22 +0100 (BST)
+Date:   Wed, 13 Apr 2022 23:53:22 +0100 (BST)
 From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
 To:     Bjorn Helgaas <bhelgaas@google.com>
-cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PING^4][PATCH v2] PCI: Sanitise firmware BAR assignments behind a
- PCI-PCI bridge
-In-Reply-To: <alpine.DEB.2.21.2202010150100.58572@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2204132021330.9383@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2202010150100.58572@angie.orcam.me.uk>
+cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PING^2][PATCH] PCI: Avoid handing out address 0 to devices
+In-Reply-To: <alpine.DEB.2.21.2202260044180.25061@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2204132024220.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2202260044180.25061@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -37,16 +35,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 1 Feb 2022, Maciej W. Rozycki wrote:
+On Sat, 26 Feb 2022, Maciej W. Rozycki wrote:
 
-> Fix an issue with the Tyan Tomcat IV S1564D system, the BIOS of which 
-> does not assign PCI buses beyond #2, where our resource reallocation 
-> code preserves the reset default of an I/O BAR assignment outside its 
-> upstream PCI-to-PCI bridge's I/O forwarding range for device 06:08.0 in 
-> this log:
+> We have numerous platforms that permit assigning addresses from 0 to PCI 
+> devices, both in the memory and the I/O bus space, and we happily do so 
+> if there is no conflict, e.g.:
 
  Ping for:
-<https://lore.kernel.org/all/alpine.DEB.2.21.2202010150100.58572@angie.orcam.me.uk/>
+<https://lore.kernel.org/lkml/alpine.DEB.2.21.2202260044180.25061@angie.orcam.me.uk/>
 
   Maciej
 
