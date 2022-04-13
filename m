@@ -2,157 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B35C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236849AbiDMQ1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49662 "EHLO
+        id S236864AbiDMQ1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236854AbiDMQ10 (ORCPT
+        with ESMTP id S236865AbiDMQ10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 12:27:26 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F15A053735
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:25:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C0984A931
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:25:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1649867101;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9+iMkpFEjyk1AZtVXTOzqrt48AoAHLCVKi3QKP08JqE=;
-        b=cpeJe0CxiJXnW53Cs/uRHfIr1QMvgm4B7PsS3vNmRdpBbzvQyn1GazV7fu3vQYQrUeTyjJ
-        lRpRx1C25/yyZAff9hvjii0fe8RpsU0NndhyfF99irXZ6uhpltIsL2LlgIJ8G0kfmSmlZj
-        v+2YMsml3yz+fmy25mT3YceDI90Pmz0=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RgEcoM6U2AWPf465Xahivshzo2kZbOX7C4c0ahKp1Dw=;
+        b=Eplmut0vF4DlV6c+zkqOtHlqzpvGJ3v8k5+lbRl4yV4OIA9iFxRyXwgYXzb6KlsVO9QzW3
+        nl7HxNwJgX3oOvsp23Un2bK8WEuOBeDieMudWOsbppTnuMOa3/mJXAO8o3AjJSCeWGDNZi
+        qjYkdrvIe6mRigEbiz/xC4dFVOxgsL0=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-451--uv6_E8LPqaTv7hyEEi-LQ-1; Wed, 13 Apr 2022 12:24:20 -0400
-X-MC-Unique: -uv6_E8LPqaTv7hyEEi-LQ-1
-Received: by mail-wr1-f69.google.com with SMTP id 105-20020adf82f2000000b002079aba50b9so506976wrc.18
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:24:20 -0700 (PDT)
+ us-mta-307-Etneel-TNCu0P8BCgL-ZbA-1; Wed, 13 Apr 2022 12:25:00 -0400
+X-MC-Unique: Etneel-TNCu0P8BCgL-ZbA-1
+Received: by mail-wm1-f71.google.com with SMTP id n37-20020a05600c502500b0038fdc1394c6so459356wmr.6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:24:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=9+iMkpFEjyk1AZtVXTOzqrt48AoAHLCVKi3QKP08JqE=;
-        b=Rk0PELu4lUEoS/efSuXWUMfrWoHGqjYHFDX7ml9B190IQtNIbZ2lmYrYP9M/Wl33WT
-         niuhX4ERNify6zLws6VIExTf3HkhxP/aG0thH6rR76NftperRegg5+om9WTai/2ZAtjw
-         JqgwFNY3w/ozmCS2ZU+FJiDhftYuvJIkpgGyXGag+/xSZzYW2+wRScwflM5WDz6kq+tC
-         WmeS7ojHqLaw4hA2Qfd5mVRoafErQpKL2Yw1nSsmUnESNHk4wJoBQ9S3vFkr8Cf8PDOF
-         NDVu22oCf4zBB5lmlxol/aCdWL9rGgVD1rhmTQEvp+VPGulbp5PRcuIy5cVp859RwpVB
-         zYBw==
-X-Gm-Message-State: AOAM531vXZRIS+UL9TaQReXa+1QAhmXa3BOePW7yh+BMieyBAswB61Yu
-        tn5YQg5nLpwdKK37Ng1kT81UbYq5612+yJe6tK0ydE4Yd7fdavBczcdzNBPqg+lncUgFH+e+wmI
-        KDuCj5dPQpuUJXx8e8MiZD+kogpbhFOt3JxB3W3IHyKGS9YgcJPYkZoNTkWNKyJ0UsQhM3b3JlW
-        c=
-X-Received: by 2002:a05:600c:2744:b0:38e:b6f7:d548 with SMTP id 4-20020a05600c274400b0038eb6f7d548mr9395341wmw.49.1649867059270;
-        Wed, 13 Apr 2022 09:24:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzwqGxQDzVECdH3ZUuCtLW9dxuvadtDdmYHzpNw2mfwNWoXu5bqtIEYbN/8mZRxCF6rsLOxRQ==
-X-Received: by 2002:a05:600c:2744:b0:38e:b6f7:d548 with SMTP id 4-20020a05600c274400b0038eb6f7d548mr9395298wmw.49.1649867058909;
-        Wed, 13 Apr 2022 09:24:18 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id t9-20020adfa2c9000000b002061561d4a7sm25446096wra.96.2022.04.13.09.24.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 09:24:18 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Chen-Yu Tsai <wens@kernel.org>, Rob Herring <robh@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        dri-devel@lists.freedesktop.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Chen-Yu Tsai <wens@csie.org>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>, devicetree@vger.kernel.org
-Subject: [PATCH v4 0/5] drm/solomon: Add SSD130x OLED displays SPI support
-Date:   Wed, 13 Apr 2022 18:23:53 +0200
-Message-Id: <20220413162359.325021-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        bh=RgEcoM6U2AWPf465Xahivshzo2kZbOX7C4c0ahKp1Dw=;
+        b=t5O09WNr3hts5uznGdCvfE2fJ1jFfGwEk34NTu0Rt0yXPNgx3UzwhVLgMAFQYdd5cO
+         QULybZ12fsjIy7Yv1NMibNxcYmre5SB7ZDciKnmh72xy4jDN14Rz7FrsugGciTvNLNs5
+         ylU42MKAzZ1HhQBZgU2BCqXtRXNTqK8ZfuRuwAR2uUSTJU5Y0EcPoOKubj/ind+rNBT3
+         mqfppSy6CcL2ByOvXKkAYCfewUYZIth/ZPFHTsZ2LsfTrOMAd53y/wuGcYXhVmWI1ZBC
+         74L4yxL9YTfFLOE16l586vb5DVQbDHNjgYzXbsapY8bLQBLQvYVDEp8zevZ3XDWg5Dxe
+         VN6Q==
+X-Gm-Message-State: AOAM533ynyqJFM707tCm0CO8OODyUw08Badn1oQakvL2L7WJctfFJeGZ
+        17mZPi8UlvgdS20nJDpjZWM0dkKLD1eeg5ZS+KS321YPHOcdJL0Da19K2IRw55KT+rxZ+WCuHof
+        pES8ye7YNRZL2Pho6YfkNaURP
+X-Received: by 2002:a05:600c:3c8f:b0:38e:4e47:3e95 with SMTP id bg15-20020a05600c3c8f00b0038e4e473e95mr9076127wmb.173.1649867098870;
+        Wed, 13 Apr 2022 09:24:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwylTIzzqJtz5EFX+MPmIPe9ZuRAk8yMJ3/juBgt0JzCyKFOBhzlfQN6ejdx28PKvB0mUKO0g==
+X-Received: by 2002:a05:600c:3c8f:b0:38e:4e47:3e95 with SMTP id bg15-20020a05600c3c8f00b0038e4e473e95mr9076112wmb.173.1649867098647;
+        Wed, 13 Apr 2022 09:24:58 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c704:5800:1078:ebb9:e2c3:ea8c? (p200300cbc70458001078ebb9e2c3ea8c.dip0.t-ipconnect.de. [2003:cb:c704:5800:1078:ebb9:e2c3:ea8c])
+        by smtp.gmail.com with ESMTPSA id n7-20020a5d5987000000b00207891050d4sm16274621wri.46.2022.04.13.09.24.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 09:24:58 -0700 (PDT)
+Message-ID: <1686fd2d-d9c3-ec12-32df-8c4c5ae26b08@redhat.com>
+Date:   Wed, 13 Apr 2022 18:24:56 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
+ against RLIMIT_MEMLOCK
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-5-chao.p.peng@linux.intel.com>
+ <Yk8L0CwKpTrv3Rg3@google.com>
+ <02e18c90-196e-409e-b2ac-822aceea8891@www.fastmail.com>
+ <YlB3Z8fqJ+67a2Ck@google.com>
+ <7ab689e7-e04d-5693-f899-d2d785b09892@redhat.com>
+ <20220412143636.GG64706@ziepe.ca>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220412143636.GG64706@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 12.04.22 16:36, Jason Gunthorpe wrote:
+> On Fri, Apr 08, 2022 at 08:54:02PM +0200, David Hildenbrand wrote:
+> 
+>> RLIMIT_MEMLOCK was the obvious candidate, but as we discovered int he
+>> past already with secretmem, it's not 100% that good of a fit (unmovable
+>> is worth than mlocked). But it gets the job done for now at least.
+> 
+> No, it doesn't. There are too many different interpretations how
+> MELOCK is supposed to work
+> 
+> eg VFIO accounts per-process so hostile users can just fork to go past
+> it.
+> 
+> RDMA is per-process but uses a different counter, so you can double up
+> 
+> iouring is per-user and users a 3rd counter, so it can triple up on
+> the above two
 
-This series adds a ssd130x-spi driver that provides a 4-wire SPI transport
-support for SSD130x OLED controllers that can be accessed over a SPI bus.
+Thanks for that summary, very helpful.
 
-The driver is quite similar to existing ssd130x-i2c driver that is used by
-I2C controllers, but there is a difference in the protocol used by SSD130x
-depending on the transport used. The details are in patch #4 description.
+> 
+>> So I'm open for alternative to limit the amount of unmovable memory we
+>> might allocate for user space, and then we could convert seretmem as well.
+> 
+> I think it has to be cgroup based considering where we are now :\
 
-Patch #1 just makes the current ssd130x-i2c compatible strings in the DT
-binding to be deprecated, and add new ones that don't have an "fb-i2c".
+Most probably. I think the important lessons we learned are that
 
-Patch #2 extends the DT binding with the properties needed to support SPI.
+* mlocked != unmovable.
+* RLIMIT_MEMLOCK should most probably never have been abused for
+  unmovable memory (especially, long-term pinning)
 
-Patch #3 adds the new compatible strings to the OF device ID table in the
-ssd130x-i2c DRM driver and deprecate the old ones.
-
-Patch #4 moves the device info for the different SSD130x variants from
-the ssd130x-i2c transport driver to the ssd130x core driver.
-
-Finally patch #5 adds the ssd130x-spi DRM driver for the OLED controllers
-that come with a 4-wire SPI interface, instead of an I2C interface.
-
-This is a v4 that addresses the issues pointed out in v3.
-
-Best regards,
-Javier
-
-Changes in v4:
-- Add a description for the dc-gpios property for SPI (Geert Uytterhoeven)
-- Export ssd13x_variants array using EXPORT_SYMBOL_NS_GPL() (Andy Shevchenko)
-- Use MODULE_IMPORT_NS(DRM_SSD130X) in the ssd130x-i2c driver (Andy Shevchenko)
-- Use MODULE_IMPORT_NS(DRM_SSD130X) in the ssd130x-spi driver (Andy Shevchenko)
-
-Changes in v3:
-- Drop the "sinowealth,sh1106-i2c", wasn't in a released version (Chen-Yu Tsai)
-- Continue enforcing required properties for deprecated strings (Maxime Ripard)
-- Add a comment to the properties required for SPI (Geert Uytterhoeven)
-- Drop the "sinowealth,sh1106-i2c", wasn't in a released version (Chen-Yu Tsai)
-- s/it/they in the commit description (Geert Uytterhoeven)
-- Drop unnecessary blank line (Geert Uytterhoeven)
-- Export variants array and use &info[ID] in device table (Andy Shevchenko)
-- Drop ssd130x_spi_get_dc() helper and open code it (Geert Uytterhoeven)
-- Export variants array and use &info[ID] in device table (Andy Shevchenko)
-- Add Geert Uytterhoeven's Reviewed-by tag to patches.
-
-Changes in v2:
-- Drop the -i2c suffixes from the compatible strings too (Geert Uytterhoeven)
-- Don't add compatible strings with an "-spi" suffix (Geert Uytterhoeven)
-- Use the compatible strings that don't have "fb-i2c" (Geert Uytterhoeven).
-- Drop ssd13x_variant_to_info() and just use the array index (Neil Armstrong).
-- Add the same compatible strings than I2C (Geert Uytterhoeven)
-- Add Mark Brown's Acked-by tag to all patches.
-
-Javier Martinez Canillas (5):
-  dt-bindings: display: ssd1307fb: Deprecate "-i2c" compatible strings
-  dt-bindings: display: ssd1307fb: Extend schema for SPI controllers
-  drm/solomon: Add ssd130x new compatible strings and deprecate old
-    ones.
-  drm/solomon: Move device info from ssd130x-i2c to the core driver
-  drm/solomon: Add SSD130x OLED displays SPI support
-
- .../bindings/display/solomon,ssd1307fb.yaml   |  86 +++++++--
- drivers/gpu/drm/solomon/Kconfig               |   9 +
- drivers/gpu/drm/solomon/Makefile              |   1 +
- drivers/gpu/drm/solomon/ssd130x-i2c.c         |  64 +++----
- drivers/gpu/drm/solomon/ssd130x-spi.c         | 178 ++++++++++++++++++
- drivers/gpu/drm/solomon/ssd130x.c             |  35 +++-
- drivers/gpu/drm/solomon/ssd130x.h             |  14 ++
- 7 files changed, 330 insertions(+), 57 deletions(-)
- create mode 100644 drivers/gpu/drm/solomon/ssd130x-spi.c
 
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
