@@ -2,146 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2791C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62149C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235906AbiDMNpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 09:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53994 "EHLO
+        id S235911AbiDMNqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 09:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233893AbiDMNpc (ORCPT
+        with ESMTP id S229487AbiDMNqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 09:45:32 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2051.outbound.protection.outlook.com [40.107.100.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9538606D0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 06:43:10 -0700 (PDT)
+        Wed, 13 Apr 2022 09:46:33 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A965FF0F;
+        Wed, 13 Apr 2022 06:44:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lEfpxHeDsUIhb6I/oqPYSYSNwb6SQlJmCPYP7CiEAS/SgksEgeo9RyDBEjKpDMxYiOWinFdl8p4tR1ehLbeyJZjPjFsbq9pHTbMn/eqgk5Ee0KsQsZrkkmVtO+bR2kwaX4YmIC+h0QL8DwhPZoQetGOoR62h6DYd7j2SPgbfB953CeSbUBHEFtJUPYR3282WfnFkgO6edtTVPy3uftZrEKn2tlGzrWKbgoI1WLyFA5MH946CP4Jqgn/96iGFA1vEobMYKH4j/aAElnFErcnaU9/iXFrRBmiUoKC7+NK6vknWb3sVz1zIPYx2SaYxfFjsTJvI8wSCPsvtk5JdDCQhfw==
+ b=hc0gx4SsbMqSP4fkKFOlE774+rOzwZCL2j49V5/iQg685FNRrBy8/N4pBe8uQayRfmNCOS7y0iOyT5TMlL0qxHpc7lDpWBR7U7sSHYjPPr4m5JVfSiWM5wVg/zQQEIhVO70eHIJIqIwsahSzayRcBnD3/XPosy5OI6go3lrUVDytQPy0ifzU2kh7q1vV/FFR0G/mfn4PHeyxavXRiTt0N6Hg3/XtnF7kPb2mafSFxJbHAw431ClYsVl2a7Ma4SsvtSZMij22CtCYcJTE/FDWaaM3jg+VBDS9Ln7X2VQWfEt4XTrg07NBh4vfjKfElsMMRCD9GXYIsNFzPaB2G1Wsww==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hRx4H9opX7UXPtztSb1BIApszX80GbtnjZ1tB41tWgk=;
- b=Mlh1/JbLuncTo+dIoWT47AzvbPRzuSjfYeTHKLEokwBhx4Kz/jWKbFXZbNA9HB0p2l4FT5Yrj00sMSlqQ5NrDcFf2BbYXDYMvT2vZFMNvMAOA82lgLlxuN74mB8mO6orAl6XaPSxU3bQBMtWhtb2wa05xpc4EMHCoUQBGbYfv87rVrxcc1AR456HcxrEPQSUZjUdguHcQ4o6ITToj6+DK8JqR5XUAHFLO73bhhXyd5N2QooDuIU1kLeKOm67Hm+F8vNp6uIZm9yT8WCqhi2mT5K9It0uA+g675ujvA3Zp5qaLH/pwNSooq+oa1LbaDRufM8L3hW4/IJpy1zRKOrmOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=uUgyCqf9jjQVsK6031CBO3ppBfaESuzFT6nqxW2dt2M=;
+ b=ll7FNcjX+/Uo6Ih46WRZoTRQK6wuTfX47iVvQqYgCrgtKZ830bhqATfxKSGpZI5a0k5cjlOZmO/n60h7fey920+nRQVLl9Y/LxDiLSKZj+I5q1SK6XD4MRDxpbDFNFz6wT+KcJ9XB4j032HhDfA93brKHSvhfF78PZ1kFFroDzn/F7lRhtclVXH2H9Jr9t1/NDULRUr4cMca7BvNTZfN/JZEEOwUA6LzsAZVU2C7Ujk1EbHqQTPuuu0HNirRBzALQ6vBGrsGxDkbEbfcXm+2791gygWBQBcLV8e1dABGJVNLRbANHccYSDgvb5Mau94I6sGKT1rhdJYcc1Lhhm5qOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hRx4H9opX7UXPtztSb1BIApszX80GbtnjZ1tB41tWgk=;
- b=J5ZTR8HnnEHg8tyCyl0rui14lxIESjajsqmL6Y3HsyIF7Qq655xXxEQawZZP/C38xWyA0zQYnsWJ5K7WZdCly1xwUNxWyx4lLED3Nu2Dj5KzwkfNhJJCeBR1ZwDbs3myf0VM37QHZbVe1Z4uNAuxhwmwIxOsc0X4qSDu3F6v6u2D219p0GOmym+j5wfjoUj7dl0szjY0vPIxfHtL2Rz8WV2hnFmhqXSeq1HtSdJPD8YIWYu1lX7ozsEH+hDyzGEKW0+09ZnKMKj0P76JtIE8rE1Pd50230DoAOsktgceH6UQF+9Om5t2sBzlT76rtGinw5z+xIh3QdYP8QvlnDw84Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MWHPR12MB1616.namprd12.prod.outlook.com (2603:10b6:301:b::20) with
+ bh=uUgyCqf9jjQVsK6031CBO3ppBfaESuzFT6nqxW2dt2M=;
+ b=3wf5qAtBY1v1p+/K1Sabge/qSYXYW8Q1RCjKePKlt6MYfD7X7ztdYHQnf7wGY46y5rrcqeA0e5NWpmReQxraTsegz1W/uQwTbmyMQDTrzOrZ1y0Vg4rvqGGXDBubm+VuUdOeG/XZkGMMJRkfqHMvys6EHK+O1+IKia8kFQ8dj6o=
+Received: from BN9PR03CA0662.namprd03.prod.outlook.com (2603:10b6:408:10e::7)
+ by BY5PR12MB4002.namprd12.prod.outlook.com (2603:10b6:a03:1ad::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Wed, 13 Apr
- 2022 13:43:08 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%5]) with mapi id 15.20.5164.018; Wed, 13 Apr 2022
- 13:43:08 +0000
-Date:   Wed, 13 Apr 2022 10:43:07 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Wang, Zhi A" <zhi.a.wang@intel.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 05/34] drm/i915/gvt: cleanup the Makefile
-Message-ID: <20220413134307.GC368031@nvidia.com>
-References: <20220411141403.86980-1-hch@lst.de>
- <20220411141403.86980-6-hch@lst.de>
- <20220411152508.GH2120790@nvidia.com>
- <87zgkrha7c.fsf@intel.com>
- <20220411165121.GA26801@lst.de>
- <877d7tgo33.fsf@intel.com>
- <e8cdc103-f683-0b73-70a7-807f6fee0280@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e8cdc103-f683-0b73-70a7-807f6fee0280@intel.com>
-X-ClientProxiedBy: BL1PR13CA0357.namprd13.prod.outlook.com
- (2603:10b6:208:2c6::32) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ 2022 13:44:08 +0000
+Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10e:cafe::3) by BN9PR03CA0662.outlook.office365.com
+ (2603:10b6:408:10e::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18 via Frontend
+ Transport; Wed, 13 Apr 2022 13:44:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5164.19 via Frontend Transport; Wed, 13 Apr 2022 13:44:07 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Apr
+ 2022 08:44:06 -0500
+Date:   Wed, 13 Apr 2022 08:42:00 -0500
+From:   Michael Roth <michael.roth@amd.com>
+To:     Andy Lutomirski <luto@kernel.org>
+CC:     Vishal Annapurve <vannapurve@google.com>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, <shauh@kernel.org>,
+        <yang.zhong@intel.com>, <drjones@redhat.com>,
+        <ricarkol@google.com>, <aaronlewis@google.com>,
+        <wei.w.wang@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Quentin Perret <qperret@google.com>,
+        Steven Price <steven.price@arm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Marc Orr <marcorr@google.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        Sean Christopherson <seanjc@google.com>, <diviness@google.com>
+Subject: Re: [RFC V1 PATCH 0/5] selftests: KVM: selftests for fd-based
+ approach of supporting private memory
+Message-ID: <20220413134200.ms5lscs7lvvih7a5@amd.com>
+References: <20220408210545.3915712-1-vannapurve@google.com>
+ <e8a4cac5-bc5a-4483-9443-c0e5b9f707d1@www.fastmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <e8a4cac5-bc5a-4483-9443-c0e5b9f707d1@www.fastmail.com>
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3a428c69-e2a5-4f7d-65ef-08da1d538b22
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1616:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB16164F6B1B31FD078825348BC2EC9@MWHPR12MB1616.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: a5d9c6f4-dcdc-4270-7fc8-08da1d53ae9b
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4002:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB4002AC22F31C0EF842A40D1695EC9@BY5PR12MB4002.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zwDgFcoywlRVTx+oLK9T5IzrAJ2E1ahZhZpe4QeyyEvzjfki2Z2H8lMSo1AXGjpRd5/fHI13NAG6Fewa7abnbvFHky7iAJg49GF9SqBsrP2F5BHf6fjs8O0gInHZssnxsQMITD4b2fLvfrIqzu1ZnNv6dWEjKD2x+H/rDy+/MMdlKgWjZwpduTLHHkcoSoTxu+y/QyqbNM0eXbuRoaNY2jHZT/+Ox6KMMgPMgenKYmO6Z04W4I4had9OmLpbWVgK00g7e1AE58HczdR5a+kGtGxmvvqvVd9/+7arEx8sqdbaAEFkA0/ah6VCHkM1XXAwF4yAXEwYirDaEc5yVPr0QelmMF1EU1La8UtnE+TpFq16j55R/LHgz58+dfvR0psORX+dHnqMxjeL1CJZ06rPtyLplz1vB8QwJmIO8YiJUjfgdSPBKn+54yVzqhMPo5i8U9eLs/26R8r1/KtfAU0Ricy/bVc9Tw9AcZ/XWcFpMwLS/1ZaxUpgZQC5idtYSHYuakyTRj5QsX9Z2sOq8ay8usBX3IoIcOu2FoRjWEqHgWTK20tcNLf04jb82Ou5ClbJtF30BnDh+4YHAGC2cRD22tSuTT2ACyuZ/wMfNI90LqavrR4ElsShcBjCGYXKDL9yz7m8hAHZPzj9bd5n2TOz1wOyiOsGrF2yNeW8T6J+/4vHu1WCQtNymi+SpKZwAZThtY9oemK8sdHuaQibCQhueQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(38100700002)(6916009)(54906003)(4744005)(66556008)(66946007)(186003)(508600001)(8676002)(4326008)(2616005)(66476007)(1076003)(86362001)(26005)(83380400001)(316002)(6512007)(6506007)(2906002)(8936002)(5660300002)(36756003)(7416002)(6486002)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kr2hw/s+PMZtuaHT9gYHPqBVGHYPuljeq85DKGb+aWFnh78n3AbYWf0dV2/7?=
- =?us-ascii?Q?Ec+Y37IbBRRBs0TVhKgxwUbna3RMy3FeeERMEO3rKMaAkHOtFdfy3L8KjLi5?=
- =?us-ascii?Q?VlHBaJiYykLh+KhH0kPyIQGmrnZCi245fHsi3tSTGBIQMKMf4JjJdecMRWDw?=
- =?us-ascii?Q?+EBXDmx21fTAaR/IQlTkbdzpBFNHVnwbbFl4C1JgyComPK2Y1vYNys1V+dle?=
- =?us-ascii?Q?k9PF0SuuVaUSZHqKQfmAEbJfrbuWPFMeBJOOXyhEwKEmXxSXxZxgvBpxVp2R?=
- =?us-ascii?Q?XoSYs4E1Rcpoy1OjD6kv1OGyQcVGNOycgA2YPreA5DRwTSVsccwYfo+hGyC7?=
- =?us-ascii?Q?thVDzby2MQY2luw6paFPRPOTsDMA2PN7/iF+fQ7Y3o/R4mP3rG94oUS9vHet?=
- =?us-ascii?Q?I7sOyGqEmEGM11V5H7twHTqQpb7unDY6Ri7NuMeuC35VR/czM2YJnXUPUR45?=
- =?us-ascii?Q?5BlY/wO1+QuU9Hxrd4xLMJDXyweKqzVg0MLYl5kp3CXiCeQ5cWpM5Rxyp1CO?=
- =?us-ascii?Q?GpgjWcis26/xk0UEOdKVLgFRtNEl7Xs81EKPXt+NF1e3yJuK+BJHiHsnxYY5?=
- =?us-ascii?Q?Mn8/dRrNELJq1Cj8DEApiE8RubFjQ5jwkZdrqLc+8gHGooSO7JQo0qOH8tM2?=
- =?us-ascii?Q?APkiy2Bwywhk1gJcQprmlB6jUOe7Z2IubXM897qgdGW3WZt5pExw8wzhv9tq?=
- =?us-ascii?Q?jjpOorqygzr+u97Nr805Ct+mbuvAFehfhHA79mrNSG8ZabqXJ21xBZB1jXmu?=
- =?us-ascii?Q?A/jNt6V1yf9laA4YU9ow4v8ji+KVCUyMkpbdeoiimFpNoi1VmCbQ652RA0d+?=
- =?us-ascii?Q?o53N4YSi0IyrJxUuVguRvY+KS+IsWgEkcO2I8I8/WtAy2pRcjMPtxhxgBppA?=
- =?us-ascii?Q?N087EH/dv44PpDMWAJqKA1FlN0DDUM3jJGonxkwtcrS9IxMMWKO3evh9eNhB?=
- =?us-ascii?Q?gEfnzlAh/61U7hrBek3Yjo5K8CgkUB+QAE/ARAzYy7BvSWlruB6/mLcwkaCb?=
- =?us-ascii?Q?FS2SDtmJ4rq5R0YAzD91EDutLjkaZMWQHa3LC4vF+m17MaHXhMV0ycFJHxhC?=
- =?us-ascii?Q?HfdTHs1zqhPriu01Iw4s9ILQ4md08vxfkCiaI1O5nVX4teXktD7lGfAMLdsf?=
- =?us-ascii?Q?2Vc/h6cPSEywlz5junCDLaXeIWqLLJk5mM+Ah5JnLdZVj9jSIwNl0kayQOhd?=
- =?us-ascii?Q?Iv/JRMdFUP+GFcUId8G40MurIWD8yXCGcBoSH1jr3fy7I2or6Ho+wHAC+WAz?=
- =?us-ascii?Q?IYNkPmSYQ0vlZF85FYzjTpSidF44F4vt7rRvFhPUFRF+RQhDAwA2fuz/+gHR?=
- =?us-ascii?Q?Nkz0VkMke3sfugWroo3eIY1/FhkpU0slpGrmPGUAAbkT2WFEpBBYaRKHkL5a?=
- =?us-ascii?Q?sX5T66Z2nis7KqutetwcW8lRZHERFECcsalj6z3Qy2AtI3XqH2l9GZKF5vhU?=
- =?us-ascii?Q?LBMqvlNwl0R+iqMrB0OR1M0lxSD2nNvDcNwcleBk+00Qxflz/YS5DYbBM1wl?=
- =?us-ascii?Q?JxJpRIMvU8n9rcx1kFj0tg0rBV9Dup+POCtPTYW5HiEUUly4dMuxFbCj0Uss?=
- =?us-ascii?Q?Ca/v98iwTMkGYkTiaOusFU/W6e6W+JLek3mTrFdRg/WOXGmKInhvq47rRhpG?=
- =?us-ascii?Q?OwoQaqg548JAsmU3qroyORJZsY2LEKEu398Bt3a7dVKQ/fgSkQTTMAItE4Ya?=
- =?us-ascii?Q?HckR78zGA9uSoQFVSvPdXG0+TOwvm/fTUTCI0DqYQm3MFejnhLhIwRBdvgDf?=
- =?us-ascii?Q?JVSyfoxOIA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a428c69-e2a5-4f7d-65ef-08da1d538b22
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2022 13:43:08.1530
+X-Microsoft-Antispam-Message-Info: Qcac+kkG/XGa5DTui9rPym6+VcsFLQaRQ63SBOLbOYdBftOduFCG58SzPOdKgnXpcJplAifahUrNjK5r9CtvUWPY9rpTUECxxnxpjxiS15x+F1wfJf2X1abOhHzWVIT25w431ex5A8UZmLPtr3Zywt1D0y8oj7NAh6asxiRIrLuXBaNLixAmCSgfy8OMNw9LtHr2t03csxgmKK/fWnBP6y8h180zFNkSRYEb6jrEvPY1bnR1E80/nfQhkCbZiMlLtunLwrA0GsO1a1vbuH2vX/bQT9JpsBacbAldtK2M1ZcyLuV3Q1uLKykue9eIUPTIg+s20OV/4pL/XdIgbNIGqbT/tmIbElSa6K7k8yJpva9Ol0znwTDG/oWOHkr2ztcKgN3l6F7YHWtq5WJ8mS2mdBlyuduvYIJE7taUavmaruYquibETA80GBYQjVM3Bq19hSUYUjMMo5iYDQ5hIYnQsxGxn0e8VI6BhrxxuhLvEvfec57QPt7s2trInPATcSDTflfKBqFrQKoNLPOj4nUrEFTMiGnDdd4V6KRqdmr/qZmlkoLQaVN+1Kx/8YRDJBYW1H2tZNH5y9tIW9NElhyXCzYKiz+svZQ91wx0FRVDYIZJA2RIAPS60BCRfzTOuzZkZNY841g+H3hL3g4kTKBNHfCSpjgTq1EqhZ7tC1MjePQLcNJbab+xgYnNfey3n98hpJmRr9sKIzm8B8W8aDxY8D0y5wXyPnWXxlyFrhKe197RV26PWDKZATyRlJG1SPZokF1QD9AMhVbErhe97Yhn0HUMZBY9nY+LFtJ+G4iiCEnQSyqixnsHSYJ4B5FXYnHWVQwmyqOrqIyNlfYWdJi+Lw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(16526019)(426003)(82310400005)(2906002)(81166007)(36756003)(966005)(86362001)(5660300002)(336012)(508600001)(83380400001)(4326008)(8676002)(40460700003)(36860700001)(316002)(6666004)(47076005)(2616005)(8936002)(7416002)(356005)(70586007)(54906003)(70206006)(6916009)(44832011)(1076003)(186003)(26005)(7406005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2022 13:44:07.4638
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m84xDoR34/Uk8PLDa2ccgaRARfxNdO6cxx0Fb18g4QQX03kWJBRj78zXnpeJ/rb/
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1616
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5d9c6f4-dcdc-4270-7fc8-08da1d53ae9b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4002
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 01:39:35PM +0000, Wang, Zhi A wrote:
-
-> It seems Jani's makefile clean patch has already included this one, I can
-> just simply drop this one so that Christoph won't need to re-send everything.
+On Tue, Apr 12, 2022 at 05:16:22PM -0700, Andy Lutomirski wrote:
+> On Fri, Apr 8, 2022, at 2:05 PM, Vishal Annapurve wrote:
+> > This series implements selftests targeting the feature floated by Chao
+> > via:
+> > https://lore.kernel.org/linux-mm/20220310140911.50924-1-chao.p.peng@linux.intel.com/
+> >
+> > Below changes aim to test the fd based approach for guest private memory
+> > in context of normal (non-confidential) VMs executing on non-confidential
+> > platforms.
+> >
+> > Confidential platforms along with the confidentiality aware software
+> > stack support a notion of private/shared accesses from the confidential
+> > VMs.
+> > Generally, a bit in the GPA conveys the shared/private-ness of the
+> > access. Non-confidential platforms don't have a notion of private or
+> > shared accesses from the guest VMs. To support this notion,
+> > KVM_HC_MAP_GPA_RANGE
+> > is modified to allow marking an access from a VM within a GPA range as
+> > always shared or private. Any suggestions regarding implementing this ioctl
+> > alternatively/cleanly are appreciated.
 > 
-> For the branch to move on, I am merging the patches and will re-generate the
-> gvt-staging branch, which combines the newest drm-tip vfio-upstream and other
-> gvt branches.
+> This is fantastic.  I do think we need to decide how this should work in general.  We have a few platforms with somewhat different properties:
 > 
-> If you are in a rush of re-basing the patches of non-GVT-g stuff, you can use
-> gvt-staging branch until my pull request landed in drm-intel-next.
+> TDX: The guest decides, per memory access (using a GPA bit), whether an access is private or shared.  In principle, the same address could be *both* and be distinguished by only that bit, and the two addresses would refer to different pages.
 > 
-> Also our QA will test gvt-staging-branch before the pull request. I suppose
-> it will take one or two days.
+> SEV: The guest decides, per memory access (using a GPA bit), whether an access is private or shared.  At any given time, a physical address (with that bit masked off) can be private, shared, or invalid, but it can't be valid as private and shared at the same time.
+> 
+> pKVM (currently, as I understand it): the guest decides by hypercall, in advance of an access, which addresses are private and which are shared.
+> 
+> This series, if I understood it correctly, is like TDX except with no hardware security.
+> 
+> Sean or Chao, do you have a clear sense of whether the current fd-based private memory proposal can cleanly support SEV and pKVM?  What, if anything, needs to be done on the API side to get that working well?  I don't think we need to support SEV or pKVM right away to get this merged, but I do think we should understand how the API can map to them.
 
-When you are wrangling the branches it would be great if Christoph's
-series and it's minimal dependencies could be on a single branch that
-could reasonably be pulled to the VFIO tree too, thanks
+I've been looking at porting the SEV-SNP hypervisor patches over to
+using memfd, and I hit an issue that I think is generally applicable
+to SEV/SEV-ES as well. Namely at guest init time we have something
+like the following flow:
 
-Jason
+  VMM:
+    - allocate shared memory to back the guest and map it into guest
+      address space
+    - initialize shared memory with initialize memory contents (namely
+      the BIOS)
+    - ask KVM to encrypt these pages in-place and measure them to
+      generate the initial measured payload for attestation, via
+      KVM_SEV_LAUNCH_UPDATE with the GPA for each range of memory to
+      encrypt.
+  KVM:
+    - issue SEV_LAUNCH_UPDATE firmware command, which takes an HPA as
+      input and does an in-place encryption/measure of the page.
+
+With current v5 of the memfd/UPM series, I think the expected flow is that
+we would fallocate() these ranges from the private fd backend in advance of
+calling KVM_SEV_LAUNCH_UPDATE (if VMM does it after we'd destroy the initial
+guest payload, since they'd be replaced by newly-allocated pages). But if
+VMM does it before, VMM has no way to initialize the guest memory contents,
+since mmap()/pwrite() are disallowed due to MFD_INACCESSIBLE.
+
+I think something similar to your proposal[1] here of making pread()/pwrite()
+possible for private-fd-backed memory that's been flagged as "shareable"
+would work for this case. Although here the "shareable" flag could be
+removed immediately upon successful completion of the SEV_LAUNCH_UPDATE
+firmware command.
+
+I think with TDX this isn't an issue because their analagous TDH.MEM.PAGE.ADD
+seamcall takes a pair of source/dest HPA as input params, so the VMM
+wouldn't need write access to dest HPA at any point, just source HPA.
+
+[1] https://lwn.net/ml/linux-kernel/eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com/
