@@ -2,225 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 257CEC43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB65C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237374AbiDMRd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
+        id S237382AbiDMRfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237286AbiDMRd5 (ORCPT
+        with ESMTP id S235022AbiDMRez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:33:57 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1965940E5D
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:31:34 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id b21so3083271ljf.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:31:34 -0700 (PDT)
+        Wed, 13 Apr 2022 13:34:55 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AD86C4B5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:32:33 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id b189so1973187qkf.11
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:32:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=ZSkkiX2l2IaW7bhqeNPG13mopQdSjssIldNwTvycvck=;
-        b=CPOXl+WyG9/ZJLu0KTfU8PC5z7Be12tuDbF2hl+bVuUh5JO53r12N/61vhL1VgkMIp
-         /3sznzpoShoavN7DB7iiAsUg9PwE1/QlP+OrLBfUBjTri2Uyed1xSLzvZ+ZBNR7xcg77
-         x9jEXuf2NJG+G2+63wKW4uxJ6K2oi7w10dZlqx1guFTio2/k0EZSwAozgxN8dxg7+37r
-         WL1A1/I56sGTUF99/x5bbux8usqxkgRrMlB20jgF4d6lJ0uqPCK2DpsIzxEkrcih4V5u
-         InkmgJHqq9PPZu6gJ5xfPfxiaXepqFE+LdMPc5Gtb3HFoZJK1J5GClpe/W7gexeWcXjv
-         JmCA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Lnc7mWmtp/Azs9P18utqeeE6j4zrR2fYMw+BED1tF5s=;
+        b=J6eYBfQKjOy6jVLE36Cda2NZLMx47kPxDFrqsMRFPkJSRGzzThvW9GqhxKirDebC/q
+         123Yksrk0P6DcFZ9TjhrUtvgvVnnIQVMYMT1onwi31/8r9bx+nhgzGn/oA0TBiR19Urf
+         2VqXq9APr6Tl+xZE+y4uFW/u+ES6DHL0aFztBq6Z0agGnKHizRcfsIRftsIES1Cph8k/
+         muCxkCOcZP8uqS0y1jpOUKoC3psNW5sJ/HKFWO6xUhuHKGmPzSn7Qw4ZqHAgRG3i21v4
+         8mVBZ1y362cfcjPhD/QFI93Y2dbgtlLNLxd8Em8JJ1yNk4aisBqayd9ccQBxS7lsLKyn
+         RJMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZSkkiX2l2IaW7bhqeNPG13mopQdSjssIldNwTvycvck=;
-        b=JLzurFZw9RlNVlTHUyhkk8jvYhVF1aH7yPjgXo4XWaOYbcA+le49LUady5jbyvsWfu
-         RBOvRGXtzexecOeM91+MjbxYvoKzWcX99L03keJlhl05oofx53HfiZOY8CTbBxu1d+Cj
-         jt+9pN+WHgLQdwoKa4D29/FvdCPjVXjMSGeI6ryC+jf/kUHws++M2xIAs01qpiPosAVU
-         lExNJkQYC7kCPMho9G1pYFxYMFs7ejowPH1bEKq/w6czRyHqxqo+mOJVKqQPnUisRknk
-         ikP7yU8AzuVxtF1jNjymL2SExTGirS6LJ46aUeHhzc6xhpPveZokWMGnxS1q5ttG2b1R
-         Dl/g==
-X-Gm-Message-State: AOAM5309ZPr8gHgaRK7VPyOtje9Dn+doETGVLAnKXaRd+B38FRnqNvjr
-        gPUNv4b+ti5pPU0gAGj5e6PH8g==
-X-Google-Smtp-Source: ABdhPJxEnHmKa8qvzDBl7x3aaaYd1nbYS7kguJNtQFX/AcBo3M73o+DYwzM/1qST05viZ6ZnbvuqVw==
-X-Received: by 2002:a2e:91cf:0:b0:24b:5ade:acbb with SMTP id u15-20020a2e91cf000000b0024b5adeacbbmr13430773ljg.473.1649871092329;
-        Wed, 13 Apr 2022 10:31:32 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id a26-20020a19fc1a000000b0046ba3b78b86sm1349297lfi.41.2022.04.13.10.31.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 10:31:31 -0700 (PDT)
-Message-ID: <c5af6c12-961d-43e2-31ea-cbda9ac347cf@linaro.org>
-Date:   Wed, 13 Apr 2022 20:31:31 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Lnc7mWmtp/Azs9P18utqeeE6j4zrR2fYMw+BED1tF5s=;
+        b=0nfzbsiBiler2GSO/or9y4lLdKYZSOz2zFKZLuLHyxE4jpjABGqbIeXqJH50Bl4KLD
+         uxsRXNDrmBOagZmqnA9YUbQWFksmPIV6vtmK2qJMOkTcoW5XIXQmEnRJExAGeqWbl+Bg
+         TTNss9ko9wHXj1dmuf2k21SR47AxjN95Ymi7irHGnOXeKNXlmauRrHlb9+gNXvrzJqBA
+         2cBKPrMWruD12kpb8i+9FoZ0SRdD1syE+v7A9a1mEvNzLz1PwA+6Sxq97yq9HYgA3IFU
+         DBGuTurzZo3QzEBcfnYP852Z1PHylrhvWKgoxdFdiB7/MSSIFyRiyuE4kGt7f7+PGwIg
+         aRiw==
+X-Gm-Message-State: AOAM533BaykZBYfL0Vj9Zac2VaJkZngmF8PxD5rJwLy0Id2gBLgPaLUz
+        MPkAYVnw3Mj/aSy0I97i1uEkesRqH37GHoRcfu7efA==
+X-Google-Smtp-Source: ABdhPJxYfZjEo46v3aVp9XZYR4cLwdKA7VuBp8VEVH9paA23dAWnOwozb899wXJL0wKh4nDTSipKXllV+x1CIWarPjs=
+X-Received: by 2002:a05:620a:170e:b0:69c:3721:b8e6 with SMTP id
+ az14-20020a05620a170e00b0069c3721b8e6mr7617658qkb.593.1649871153077; Wed, 13
+ Apr 2022 10:32:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v6 00/18] Modernize rest of the krait drivers
-Content-Language: en-GB
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20220321231548.14276-1-ansuelsmth@gmail.com>
+References: <20220321231548.14276-1-ansuelsmth@gmail.com> <20220321231548.14276-4-ansuelsmth@gmail.com>
+ <20220325011037.03173C340EC@smtp.kernel.org> <Yj0XTYgoMScoiUHP@Ansuel-xps.localdomain>
+ <20220325012231.899FBC340EC@smtp.kernel.org> <62570197.1c69fb81.c3de2.7b70@mx.google.com>
+In-Reply-To: <62570197.1c69fb81.c3de2.7b70@mx.google.com>
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220321231548.14276-1-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Date:   Wed, 13 Apr 2022 20:32:21 +0300
+Message-ID: <CAA8EJpp2uipTtV=gitiL0g-ywOirC=-UGrQ4tZMwc42jy2TK1Q@mail.gmail.com>
+Subject: Re: [PATCH v6 03/18] clk: qcom: gcc-ipq806x: add PXO_SRC in clk table
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Stephen Boyd <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/03/2022 02:15, Ansuel Smith wrote:
-> This is a follow-up to the ipq806x gcc modernize series. Manu cleanup
-> changes and also some discoveries of wrong definition notice only with
-> all these conversions.
+On Wed, 13 Apr 2022 at 20:00, Ansuel Smith <ansuelsmth@gmail.com> wrote:
+>
+> On Thu, Mar 24, 2022 at 06:22:29PM -0700, Stephen Boyd wrote:
+> > Quoting Ansuel Smith (2022-03-24 18:13:49)
+> > > On Thu, Mar 24, 2022 at 06:10:35PM -0700, Stephen Boyd wrote:
+> > > > Quoting Ansuel Smith (2022-03-21 16:15:33)
+> > > > > PXO_SRC is currently defined in the gcc include and referenced in the
+> > > > > ipq8064 DTSI. Correctly provide a clk after gcc probe to fix kernel
+> > > > > panic if a driver starts to actually use it.
+> > > > >
+> > > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > > > ---
+> > > >
+> > > > What is this patch about? clk providers shouldn't be calling clk_get().
+> > > >
+> > >
+> > > If pxo is passed as a clock in dts and defined as a fixed clock, what
+> > > should be used?
+> >
+> > clk_parent_data
+>
+> Sorry but I'm not following you. No idea if you missed the cover letter
+> where i describe the problem with PXO_SRC.
+>
+> The problem here is that
+> - In DTS we have node that reference <&gcc PXO_SRC>
+> But
+> - gcc driver NEVER defined PXO_SRC
+> As
+> - PXO_SRC is actually pxo_board that should be defined as a fixed-clock
+>   in dts or is defined using qcom_cc_register_board_clk.
+>
+> So in theory we should just put in PXO_SRC the clk hw of the
+> fixed-clock. That is why I'm using clk_get(). I can use __clk_lookup()
+> as an alternative but I really can't find a way to get the clock defined
+> from DTS or qcom_cc_register_board_clk.
+>
+> (I have the same exact problem with the cpu qsb clock where is defined
+> using fixed-clock API but can also defined directly in DTS and I have to
+> use clk_get())
+>
+> I'm totally missing something so I would love some hint on how to solve
+> this.
 
-General comment regarding this patch series. It contains fixes, clock 
-conversion for several drivers, dts fixes, etc. It's, for example, not 
-straightforwardly obvious if Bjorn can pickup patches 04 or 06 without 
-picking up other patches.
+When we were doing such conversion for other  platforms, we pointed
+clock consumers to the board clocks directly. There is no need to go
+through the gcc to fetch pxo.
+Instead you can use a <&pxo_board> in the dts directly. Typically the
+sequence is the following:
+- Minor cleanup of the clock-controller driver
+(ARRAY_SIZE(parent_data), removal of unused clock sources, unused enum
+entries, etc)
+- update drivers to use both .name and  .fw_name in replacement of
+parent_names. Use parent_hws where possible.
+- update dtsi to reference clocks using clocks/clock-names properties.
+Pass board/rpmh/rpm clocks directly to their consumers without
+bandaids in the gcc driver.
+- (optionally) after several major releases drop parent_data.name
+completely. I think we mostly skipped this, since it provides no gain.
 
-If would be best if you can split this series or at least pull fixes to 
-be the first patches in the pile.
-
-Patch 01 is only used by patch 10, they can stay close.
-
-In some of the commit messages you describe what do they do, but you 
-completely omit the reason for the change, why is the change necessary.
-(Yes, I spot that because I also too often skip that).
-
-> 
-> The first patch is an improvement of the clk_hw_get_parent_index. The
-> original idea of clk_hw_get_parent_index was to give a way to access the
-> parent index but for some reason the final version limited it to the
-> current index. We change it to give the current parent if is not
-> provided and to give the requested parent if provided. Any user of this
-> function is updated to follow the new implementation.
-> 
-> The patch 2 and 3 are some additional fixes for gcc.
-> The first one is a fix that register the pxo and cxo fixed clock only if
-> they are not defined in DTS.
-> The patch 3 require some explaination. In short is a big HACK to prevent
-> kernel panic with this series.
-> 
-> The kpss-xcc driver is a mess.
-> The Documentation declare that the clocks should be provided but for some
-> reason it was never followed.
-> In fact in the ipq8064 DTSI only the clocks for l2cc are declared but
-> for cpu0 and cpu1 the clocks are not defined.
-> The kpss-xcc driver use parent_names so the clks are ignored and never
-> used so till now it wasn't a problem (ignoring the fact that they
-> doesn't follow documentation at all)
-> On top of that, the l2cc node declare the pxo clock in a really strange
-> way. It's declared using the PXO_SRC gcc clock that is never defined in
-> the gcc ipq8064 clock table. (the correct way was to declare a fixed
-> clock in dts and reference that)
-> To prevent any kind of problem we use the patch 3 and provide the clk
-> for PXO_SRC in the gcc clock table. We manually provide the clk after
-> gcc probe.
-> 
-> Patch 4 is just a minor cleanup where we use the poll macro
-> 
-> Patch 5 is the actually kpss-xcc conversion to parent data
-> 
-> Patch 6-7 should be a fixup of a real conver case
-> 
-> Patch 8 converts the krait-cc to parent_data
-> Patch 9 give some love to the code with some minor fixup
-> Patch 10 drop the hardcoded safe sel and use the new
-> clk_hw_get_parent_index to get the safe parent index.
-> (also I discovered that the parent order was wrong)
-> 
-> Patch 11 is an additional fixup to force the reset of the muxes even
-> more.
-> 
-> Patch 12-13 are some additiona taken from the qsdk that were missing in
-> the upstream driver
-> 
-> Patch 14 converts krait-cc to yaml
-> 
-> Patch 15 add to krait-cc Documentation the L2 clocks
-> 
-> Patch 16 converts the kpss-acc driver to yaml and fix some Documentation
-> error
-> 
-> Patch 17 convets the kpss-gcc driver to yaml
-> 
-> Patch 18 finally adds all this stuff to the ipq8064 dtsi (and fix the
-> stupid PXO_SRC phandle)
-> 
-> I tested this series on a ipq8064 SoC by running a cache benchmark test
-> to make sure the changes are correct and we don't silently cause
-> regressions. Also I compared the output of the clk_summary every time
-> and we finally have a sane output where the mux are correctly placed in
-> the correct parent. (till now we had the cpu aux clock all over the
-> place, probably never cause problems but who knows.)
-> 
-> v6:
-> - Move dts patch as last patch
-> - Address commencts from Rob
-> - Fix warning from make dtbs_check
-> v5:
-> - Address comments from Krzysztof
-> v4:
-> - Fix more dt-bindings bog errors
-> v3:
-> - Split Documentation files for kpss and krait-cc
-> v2:
-> - introduce new API instead of fixing the existing one
-> - do not reorganize variables in krait-cc
-> - fix some comments error and improve it
-> - return better error for patch 7
-> - fix missing new line on patch 16
-> 
-> Ansuel Smith (18):
->    clk: introduce clk_hw_get_index_of_parent new API
->    clk: qcom: gcc-ipq806x: skip pxo/cxo fixed clk if already present
->    clk: qcom: gcc-ipq806x: add PXO_SRC in clk table
->    clk: qcom: clk-hfpll: use poll_timeout macro
->    clk: qcom: kpss-xcc: convert to parent data API
->    clk: qcom: clk-krait: unlock spin after mux completion
->    clk: qcom: clk-krait: add hw_parent check for div2_round_rate
->    clk: qcom: krait-cc: convert to parent_data API
->    clk: qcom: krait-cc: drop pr_info and register qsb only if needed
->    clk: qcom: krait-cc: drop hardcoded safe_sel
->    clk: qcom: krait-cc: force sec_mux to QSB
->    clk: qcom: clk-krait: add apq/ipq8064 errata workaround
->    clk: qcom: clk-krait: add enable disable ops
->    dt-bindings: clock: Convert qcom,krait-cc to yaml
->    dt-bindings: clock: Add L2 clocks to qcom,krait-cc Documentation
->    dt-bindings: arm: msm: Convert kpss-acc driver Documentation to yaml
->    dt-bindings: arm: msm: Convert kpss-gcc driver Documentation to yaml
->    ARM: dts: qcom: qcom-ipq8064: add missing krait-cc compatible and
->      clocks
-> 
->   .../bindings/arm/msm/qcom,kpss-acc.txt        |  49 -----
->   .../bindings/arm/msm/qcom,kpss-acc.yaml       |  94 +++++++++
->   .../bindings/arm/msm/qcom,kpss-gcc.txt        |  44 -----
->   .../bindings/arm/msm/qcom,kpss-gcc.yaml       |  69 +++++++
->   .../bindings/clock/qcom,krait-cc.txt          |  34 ----
->   .../bindings/clock/qcom,krait-cc.yaml         |  65 ++++++
->   arch/arm/boot/dts/qcom-ipq8064.dtsi           |  24 ++-
->   drivers/clk/clk.c                             |  14 ++
->   drivers/clk/qcom/clk-hfpll.c                  |  13 +-
->   drivers/clk/qcom/clk-krait.c                  |  44 ++++-
->   drivers/clk/qcom/clk-krait.h                  |   1 +
->   drivers/clk/qcom/gcc-ipq806x.c                |  27 ++-
->   drivers/clk/qcom/kpss-xcc.c                   |  25 +--
->   drivers/clk/qcom/krait-cc.c                   | 186 ++++++++++--------
->   include/linux/clk-provider.h                  |   1 +
->   15 files changed, 453 insertions(+), 237 deletions(-)
->   delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
->   create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
->   delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
->   create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
->   delete mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.txt
->   create mode 100644 Documentation/devicetree/bindings/clock/qcom,krait-cc.yaml
-> 
-
+This way you don't have to play around clk_get to return PXO_SRC from
+gcc clock-controller.
 
 -- 
 With best wishes
