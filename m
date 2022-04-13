@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 088F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:45:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234104AbiDMIrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 04:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
+        id S234097AbiDMIrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 04:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234095AbiDMIql (ORCPT
+        with ESMTP id S234123AbiDMIq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 04:46:41 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A439ABC16;
-        Wed, 13 Apr 2022 01:44:19 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so5612959pjb.2;
-        Wed, 13 Apr 2022 01:44:19 -0700 (PDT)
+        Wed, 13 Apr 2022 04:46:58 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52874AE2C;
+        Wed, 13 Apr 2022 01:44:28 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id u2so1168614pgq.10;
+        Wed, 13 Apr 2022 01:44:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=b14oDzmADLnQU0iBJxS2XBsLb3tdT7kefJ5hMiFLNcI=;
-        b=hI+f1rG27+qJMi49u/tnSWDrnWOUHvZJCtMugo7el9sl7sH6yGt45i6ip4XrgOT3Hq
-         qpKvSxvExKDpSIOR5/mKF+/f/r/c8IELVw21Q/dIxnDbv8QXzgmrEVUj1xGg30jBiGC8
-         MR28i8h6h8NRhNJaWzuKt1Hitn0ceGeQSad0DxhlX5j+IYyAOfUBWrQvT80OwHw7JhWr
-         t7lNyF95h21M49VBFGXGa9zaQA/NaoeJH2OpCU+WJhHUUKNAOle5kaeSc9fuvxqlRzk9
-         CQG+ovzQ8mNkFFFbqAQsl/osG5W4bC3IHMPtTC3rh4IYXnTQGc0DYrCRhDDJNyAtjsWF
-         AN/g==
+        bh=Q3CF2CYyk/KU/cKIRGIDMOGHVL/2+I9I23VjG1uUJC8=;
+        b=CSMXfbjUMzMQUSHDlcY6940ReprM7qI7VMrvYmu6L+uFOM7DoT5aUGa8icSjL4eGYv
+         wCdwhr7PYc5HtsEDZGHhJ2MePSWgmgg8qtGdp2rin2Zm8pN6Cl41cEQ+66wVpHFk/PPD
+         QN9cQe+XT2w7+4QBaMZtRvt7czuI/YwA0obZfwfN72e2mk1l7F7BIsewf7nCo5ZCcdRq
+         4wpofjJIDIaiGdEDMOpX/PsqZN7FpAlKtlOafykU0F28edsB4JzoovC1RkgfkYkq3PDl
+         AknCMLvf3Fpnn4AoiuO+5g1hVkfspoTf7B4oZO2Hp1xxQVdl79Qfqn+xclZrezquJXjI
+         fAPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=b14oDzmADLnQU0iBJxS2XBsLb3tdT7kefJ5hMiFLNcI=;
-        b=3cYjm9JA8NvjQGugoX9efXHYHynO5i+aBRK38crqCeGRCX9TmCUvNbh9s9HzuVwo7A
-         xrYwTbQUd7kB2T9If7iGhDxTLPkRdSTreFOxkTPFuiUpL30uQI4qFP0MIVTwosa9UCjX
-         86E39azAgQ+d1A2QcKxG8nnZA2vJpmVIn4w+E3+QwtyYka89ZTsL2fq5/s5wfbzoFkLI
-         biixwoZPRxLX120m9TKtzmPrmaVVWLzxZeNt21zjzR4IUaoXST1maSWSRbeLKdXrPibi
-         wnejY9VbrEiklbTVh8QtOYPULYrOltIbQhDp6n4BLjXeAt8us2/pru/qaJ3iVcOmv9FV
-         8f+Q==
-X-Gm-Message-State: AOAM532MPrbkEIu2iM6OwVRaWujrINVNIZhZHTWpEjb7QT5lvH7+lo9x
-        s8jyfGUwCVrgR+2RKhCZ9bc=
-X-Google-Smtp-Source: ABdhPJwRUcYPIeZqzrrcSKdRmAml0um0S/cgQN1UijpYsiiP+gASuihj5Uk6CoS8CA+PmoufOE4g7w==
-X-Received: by 2002:a17:902:c2d8:b0:154:2946:4ff with SMTP id c24-20020a170902c2d800b00154294604ffmr41555931pla.99.1649839459225;
-        Wed, 13 Apr 2022 01:44:19 -0700 (PDT)
+        bh=Q3CF2CYyk/KU/cKIRGIDMOGHVL/2+I9I23VjG1uUJC8=;
+        b=bscO76cCV6d2iZXUkgG6ahrMCriC0593Vy60dBWdKwLex4QCPpCkbFRs1ofeDoJ75V
+         i4vnaGoxdotrXVAmTvQx31QWP8e/RXLEs1uU1JKSXd58VYykY94CECao5jH9+YtdnFqS
+         9VSvM2tW+ulNK24lwLAzX7DcR9/Nk+GuL2IqglXh8NNurS+XbJIW1vJ6AEYHryqpTJ5k
+         IKzoSXpcmnz8bGqy7LqJqon+Du9fczsHv8gwhoChtS9lDR8O011jhBtohk7LiKG1vWCd
+         PAXWShIDcevXWVOz0cU23A9Juc4cK/iCVI1iOz6ncsPoBd5pCRv1l/yBDueVBtuf91EF
+         lGRA==
+X-Gm-Message-State: AOAM530f9914tkoSY9KchLTDQifalUqZoISoS2e+tofLzgNhI8nzrIFp
+        qauFFm82r56Nia2JNa0LTuY=
+X-Google-Smtp-Source: ABdhPJwHcdm+jreTHfL7OfNFwhm+bX5jRBwz/tWPt6br+WjRQnxT3R65fOAW2S0C/jOsToIKS7ehGg==
+X-Received: by 2002:a05:6a00:2354:b0:505:c6c3:af87 with SMTP id j20-20020a056a00235400b00505c6c3af87mr14012849pfj.78.1649839468233;
+        Wed, 13 Apr 2022 01:44:28 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.119])
-        by smtp.gmail.com with ESMTPSA id l5-20020a63f305000000b0039daaa10a1fsm2410335pgh.65.2022.04.13.01.44.15
+        by smtp.gmail.com with ESMTPSA id l5-20020a63f305000000b0039daaa10a1fsm2410335pgh.65.2022.04.13.01.44.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 01:44:18 -0700 (PDT)
+        Wed, 13 Apr 2022 01:44:27 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org
@@ -58,9 +58,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         talalahmad@google.com, keescook@chromium.org,
         mengensun@tencent.com, dongli.zhang@oracle.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 7/9] net: ipv6: add skb drop reasons to TLV parse
-Date:   Wed, 13 Apr 2022 16:15:58 +0800
-Message-Id: <20220413081600.187339-8-imagedong@tencent.com>
+Subject: [PATCH net-next 9/9] net: ipv6: add skb drop reasons to ip6_protocol_deliver_rcu()
+Date:   Wed, 13 Apr 2022 16:16:00 +0800
+Message-Id: <20220413081600.187339-10-imagedong@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413081600.187339-1-imagedong@tencent.com>
 References: <20220413081600.187339-1-imagedong@tencent.com>
@@ -72,174 +72,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Replace kfree_skb() used in TLV encoded option header parsing with
-kfree_skb_reason(). Following functions are involved:
+Replace kfree_skb() used in ip6_protocol_deliver_rcu() with
+kfree_skb_reason().
 
-ip6_parse_tlv()
-ipv6_hop_ra()
-ipv6_hop_ioam()
-ipv6_hop_jumbo()
-ipv6_hop_calipso()
-ipv6_dest_hao()
+No new reasons are added.
 
-Most skb drops during this process are regarded as 'InHdrErrors',
-as 'IPSTATS_MIB_INHDRERRORS' is used when ip6_parse_tlv() fails,
-which make we use 'SKB_DROP_REASON_IP_INHDR' correspondingly.
-
-However, 'IP_INHDR' is a relatively general reason. Therefore, we
-can use other reasons with higher priority in some cases. For example,
-'SKB_DROP_REASON_UNHANDLED_PROTO' is used for unknown TLV options.
+Some paths are ignored, as they are not common, such as encapsulation
+on non-final protocol.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 ---
- net/ipv6/exthdrs.c | 36 ++++++++++++++++++++++++------------
- 1 file changed, 24 insertions(+), 12 deletions(-)
+ net/ipv6/ip6_input.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index 31318ee62d29..e670cf2fe85d 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -90,12 +90,13 @@ static bool ip6_tlvopt_unknown(struct sk_buff *skb, int optoff,
- 			break;
- 		fallthrough;
- 	case 2: /* send ICMP PARM PROB regardless and drop packet */
--		icmpv6_param_prob(skb, ICMPV6_UNK_OPTION, optoff);
-+		icmpv6_param_prob_reason(skb, ICMPV6_UNK_OPTION, optoff,
-+					 SKB_DROP_REASON_UNHANDLED_PROTO);
- 		return false;
- 	}
- 
- drop:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_UNHANDLED_PROTO);
- 	return false;
- }
- 
-@@ -218,7 +219,7 @@ static bool ip6_parse_tlv(bool hopbyhop,
- 	if (len == 0)
- 		return true;
- bad:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_IP_INHDR);
- 	return false;
- }
- 
-@@ -232,6 +233,7 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
- 	struct ipv6_destopt_hao *hao;
- 	struct inet6_skb_parm *opt = IP6CB(skb);
- 	struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 1b925ecb26e9..126ae3aa67e1 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -362,6 +362,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+ 	const struct inet6_protocol *ipprot;
+ 	struct inet6_dev *idev;
+ 	unsigned int nhoff;
 +	SKB_DR(reason);
- 	int ret;
+ 	bool raw;
  
- 	if (opt->dsthao) {
-@@ -246,19 +248,23 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
- 	if (hao->length != 16) {
- 		net_dbg_ratelimited("hao invalid option length = %d\n",
- 				    hao->length);
-+		SKB_DR_SET(reason, IP_INHDR);
- 		goto discard;
- 	}
+ 	/*
+@@ -421,12 +422,16 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+ 			if (ipv6_addr_is_multicast(&hdr->daddr) &&
+ 			    !ipv6_chk_mcast_addr(dev, &hdr->daddr,
+ 						 &hdr->saddr) &&
+-			    !ipv6_is_mld(skb, nexthdr, skb_network_header_len(skb)))
++			    !ipv6_is_mld(skb, nexthdr, skb_network_header_len(skb))) {
++				SKB_DR_SET(reason, IP_INADDRERRORS);
+ 				goto discard;
++			}
+ 		}
+ 		if (!(ipprot->flags & INET6_PROTO_NOPOLICY) &&
+-		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
++		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
++			SKB_DR_SET(reason, XFRM_POLICY);
+ 			goto discard;
++		}
  
- 	if (!(ipv6_addr_type(&hao->addr) & IPV6_ADDR_UNICAST)) {
- 		net_dbg_ratelimited("hao is not an unicast addr: %pI6\n",
- 				    &hao->addr);
-+		SKB_DR_SET(reason, INVALID_PROTO);
- 		goto discard;
- 	}
+ 		ret = INDIRECT_CALL_2(ipprot->handler, tcp_v6_rcv, udpv6_rcv,
+ 				      skb);
+@@ -452,8 +457,11 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+ 						IPSTATS_MIB_INUNKNOWNPROTOS);
+ 				icmpv6_send(skb, ICMPV6_PARAMPROB,
+ 					    ICMPV6_UNK_NEXTHDR, nhoff);
++				SKB_DR_SET(reason, IP_NOPROTO);
++			} else {
++				SKB_DR_SET(reason, XFRM_POLICY);
+ 			}
+-			kfree_skb(skb);
++			kfree_skb_reason(skb, reason);
+ 		} else {
+ 			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDELIVERS);
+ 			consume_skb(skb);
+@@ -463,7 +471,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
  
- 	ret = xfrm6_input_addr(skb, (xfrm_address_t *)&ipv6h->daddr,
- 			       (xfrm_address_t *)&hao->addr, IPPROTO_DSTOPTS);
--	if (unlikely(ret < 0))
-+	if (unlikely(ret < 0)) {
-+		SKB_DR_SET(reason, XFRM_POLICY);
- 		goto discard;
-+	}
- 
- 	if (skb_cloned(skb)) {
- 		if (pskb_expand_head(skb, 0, 0, GFP_ATOMIC))
-@@ -281,7 +287,7 @@ static bool ipv6_dest_hao(struct sk_buff *skb, int optoff)
- 	return true;
- 
-  discard:
+ discard:
+ 	__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
 -	kfree_skb(skb);
 +	kfree_skb_reason(skb, reason);
- 	return false;
- }
- #endif
-@@ -934,7 +940,7 @@ static bool ipv6_hop_ra(struct sk_buff *skb, int optoff)
- 	}
- 	net_dbg_ratelimited("ipv6_hop_ra: wrong RA length %d\n",
- 			    nh[optoff + 1]);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_IP_INHDR);
- 	return false;
  }
  
-@@ -988,7 +994,7 @@ static bool ipv6_hop_ioam(struct sk_buff *skb, int optoff)
- 	return true;
- 
- drop:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_IP_INHDR);
- 	return false;
- }
- 
-@@ -997,26 +1003,32 @@ static bool ipv6_hop_ioam(struct sk_buff *skb, int optoff)
- static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff)
- {
- 	const unsigned char *nh = skb_network_header(skb);
-+	SKB_DR(reason);
- 	u32 pkt_len;
- 
- 	if (nh[optoff + 1] != 4 || (optoff & 3) != 2) {
- 		net_dbg_ratelimited("ipv6_hop_jumbo: wrong jumbo opt length/alignment %d\n",
- 				    nh[optoff+1]);
-+		SKB_DR_SET(reason, IP_INHDR);
- 		goto drop;
- 	}
- 
- 	pkt_len = ntohl(*(__be32 *)(nh + optoff + 2));
- 	if (pkt_len <= IPV6_MAXPLEN) {
--		icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, optoff+2);
-+		icmpv6_param_prob_reason(skb, ICMPV6_HDR_FIELD, optoff + 2,
-+					 SKB_DROP_REASON_IP_INHDR);
- 		return false;
- 	}
- 	if (ipv6_hdr(skb)->payload_len) {
--		icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, optoff);
-+		icmpv6_param_prob_reason(skb, ICMPV6_HDR_FIELD, optoff,
-+					 SKB_DROP_REASON_IP_INHDR);
- 		return false;
- 	}
- 
--	if (pkt_len > skb->len - sizeof(struct ipv6hdr))
-+	if (pkt_len > skb->len - sizeof(struct ipv6hdr)) {
-+		SKB_DR_SET(reason, PKT_TOO_SMALL);
- 		goto drop;
-+	}
- 
- 	if (pskb_trim_rcsum(skb, pkt_len + sizeof(struct ipv6hdr)))
- 		goto drop;
-@@ -1025,7 +1037,7 @@ static bool ipv6_hop_jumbo(struct sk_buff *skb, int optoff)
- 	return true;
- 
- drop:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, reason);
- 	return false;
- }
- 
-@@ -1047,7 +1059,7 @@ static bool ipv6_hop_calipso(struct sk_buff *skb, int optoff)
- 	return true;
- 
- drop:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_IP_INHDR);
- 	return false;
- }
- 
+ static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 -- 
 2.35.1
 
