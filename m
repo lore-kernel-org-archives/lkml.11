@@ -2,80 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD83C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6920C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233726AbiDMN0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 09:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49980 "EHLO
+        id S235740AbiDMN1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 09:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbiDMN0b (ORCPT
+        with ESMTP id S235682AbiDMN1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 09:26:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD685A17F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 06:24:10 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649856248;
+        Wed, 13 Apr 2022 09:27:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1D2E27CD2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 06:24:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649856277;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=tPXICJta5haLPFS6jvdk3LgrFwQUzBpKD9OoNyZ5Z/A=;
-        b=shGqH5iew2vdg6NcRgItaWgWqjMdAkG4xs72W0hSjGyglQpaD4J1vbqbAIrGllmOJRIIYD
-        4l9i1fqWyUSZd7nz+ZM5TDn7ND5pcbNRNzkX07GawdrbEtN2wq0Gw0JbzX0SOI0Gg/3D/K
-        /oKwAt5/irlrrrQACdtZyIdT7AFXuUVKD2qj0iDnjWMbblp7wmbgXVrV3Sus/Ce9S/xEpY
-        yp2YanLA7OigPtzPT7aYrL/h6ihX+SJX4eu7g4efPl2NyjmADn9ktpCziOqI5slAMDVkg+
-        TDLSMflwd619msbB1BJxl+YMd6CWtFyOgi0mIi3vZXnSMnPu8emPs/zCEA6lgQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649856248;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tPXICJta5haLPFS6jvdk3LgrFwQUzBpKD9OoNyZ5Z/A=;
-        b=z3Us5IOV/nW26DsKuBlEsBgL9EzSW77cVW6yYp9NoyH4XTs1tgaSVuB5LmiTRX/CkTOtpG
-        AhS8A3N/wKcXmZCA==
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Daniel Vacek <neelx@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] x86/apic: Clarify i82489DX bit overlap in APIC_LVT0
-In-Reply-To: <alpine.DEB.2.21.2204122235140.9383@angie.orcam.me.uk>
-References: <20220202140244.1681140-1-neelx@redhat.com>
- <874k361liu.ffs@tglx>
- <CACjP9X_A7aLmvypyOz1UrXM571gx_X5q7=w-1j+G+MSbCteiEw@mail.gmail.com>
- <87ee22f3ci.ffs@tglx>
- <alpine.DEB.2.21.2204122235140.9383@angie.orcam.me.uk>
-Date:   Wed, 13 Apr 2022 15:24:07 +0200
-Message-ID: <875yndf760.ffs@tglx>
+        bh=fbsrIlecYgH7XGqNRgPdEH/fCCS2sSxeuc+Wr3qYlJ8=;
+        b=OI9mXT/3MJ1gackXgC5bbRbwTSxE2zZ/+ADZ0hnQv4SzR+v90uYEUuKgBnIBO0sCiVGVJI
+        ji0RjQwCIkUIT98gI+8GEeSNF/Et8ttURyf/hbTootQBPaGY2BholxfV+M0DlF5sFrT8Lc
+        aMLgLY7ZgSXO1EO7qzVnJKYyYbJOUdU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-271-v-rTBKHGM9i9Wyc6uLaIgg-1; Wed, 13 Apr 2022 09:24:33 -0400
+X-MC-Unique: v-rTBKHGM9i9Wyc6uLaIgg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 049CE29DD987;
+        Wed, 13 Apr 2022 13:24:33 +0000 (UTC)
+Received: from localhost (ovpn-12-51.pek2.redhat.com [10.72.12.51])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5213C424743;
+        Wed, 13 Apr 2022 13:24:32 +0000 (UTC)
+Date:   Wed, 13 Apr 2022 21:24:29 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Eric DeVolder <eric.devolder@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v6 4/8] crash: add generic infrastructure for crash
+ hotplug support
+Message-ID: <YlbPDedkatzrbWMX@MiWiFi-R3L-srv>
+References: <20220401183040.1624-1-eric.devolder@oracle.com>
+ <20220401183040.1624-5-eric.devolder@oracle.com>
+ <YlPy8CKU4zHsx6Bc@MiWiFi-R3L-srv>
+ <821b3c62-eedf-c1a3-4aba-671c90d83288@oracle.com>
+ <YlY4SlF07iH08Qnj@MiWiFi-R3L-srv>
+ <d3ae80cd-7e1f-50e3-d90d-becf779788c0@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d3ae80cd-7e1f-50e3-d90d-becf779788c0@oracle.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maciej,
+On 04/13/22 at 07:37am, Eric DeVolder wrote:
+> 
+> 
+> On 4/12/22 21:41, Baoquan He wrote:
+> > On 04/11/22 at 08:54am, Eric DeVolder wrote:
+> > > 
+> > > 
+> > > On 4/11/22 04:20, Baoquan He wrote:
+> > > > Hi Eric,
+> > > > 
+> > > > On 04/01/22 at 02:30pm, Eric DeVolder wrote:
+> > > > ... ...
+> > > > 
+> > > > > +static void crash_hotplug_handler(unsigned int hp_action,
+> > > > > +	unsigned long a, unsigned long b)
+> > > > 
+> > > > I am still struggling to consider if these unused parameters should be
+> > > > kept or removed. Do you foresee or feel on which ARCH they could be used?
+> > > > 
+> > > > Considering our elfcorehdr updating method, once memory or cpu changed,
+> > > > we will update elfcorehdr and cpu notes to reflect all existing memory
+> > > > regions and cpu in the current system. We could end up with having them
+> > > > but never being used. Then we may finally need to clean them up.
+> > > > 
+> > > > If you have investigated and foresee or feel they could be used on a
+> > > > certain architecture, we can keep them for the time being.
+> > > 
+> > > So 'hp_action' and 'a' are used within the existing patch series.
+> > > In crash_core.c, there is this bit of code:
+> > > 
+> > > +       kexec_crash_image->offlinecpu =
+> > > +           (hp_action == KEXEC_CRASH_HP_REMOVE_CPU) ?
+> > > +               (unsigned int)a : ~0U;
+> > > 
+> > > which is referencing both 'hp_action' and using 'a' from the cpu notifier handler.
+> > > I looked into removing 'a' and setting offlinecpu directly, but I thought
+> > > it better that offlinecpu be set within the safety of the kexec_mutex.
+> > > Also, Sourabh Jain's work with PowerPC utilizing this framework directly
+> > > references hp_action in the arch-specific handler.
+> > > 
+> > > The cpu and memory notifier handlers set hp_action accordingly. For cpu handler,
+> > > the 'a' is set with the impacted cpu. For memory handler, 'a' and 'b' form the
+> > > impacted memory range. I agree it looks like the memory range is currently
+> > > not useful.
+> > 
+> > OK, memory handler doesn't need the action, memory regions. While cpu
+> > handler needs it to exclude the hot plugged cpu.
+> > 
+> > We could have two ways to acheive this as below. How do you think about
+> > them?
+> > 
+> > static void crash_hotplug_handler(unsigned int hp_action,
+> >          unsigned long cpu)
+> > 
+> > static int crash_memhp_notifier(struct notifier_block *nb,
+> >          unsigned long val, void *v)
+> > {
+> > ......
+> >          switch (val) {
+> >          case MEM_ONLINE:
+> >                  crash_hotplug_handler(KEXEC_CRASH_HP_ADD_MEMORY,
+> >                          -1UL);
+> >                  break;
+> > 
+> >          case MEM_OFFLINE:
+> >                  crash_hotplug_handler(KEXEC_CRASH_HP_REMOVE_MEMORY,
+> >                          -1UL);
+> >                  break;
+> >          }
+> >          return NOTIFY_OK;
+> > }
+> > 
+> > static int crash_cpuhp_online(unsigned int cpu)
+> > {
+> >          crash_hotplug_handler(KEXEC_CRASH_HP_ADD_CPU, cpu);
+> >          return 0;
+> > }
+> > 
+> > static int crash_cpuhp_offline(unsigned int cpu)
+> > {
+> >          crash_hotplug_handler(KEXEC_CRASH_HP_REMOVE_CPU, cpu);
+> >          return 0;
+> > }
+> 
+> I'm OK with the above. Shall I post v7 or are you still looking at patches 7 and 8?
+> Thanks!
 
-On Tue, Apr 12 2022 at 23:17, Maciej W. Rozycki wrote:
-> On Tue, 12 Apr 2022, Thomas Gleixner wrote:
->
->> Daniel stumbled over the undocumented bit overlap of the i82498DX external
->> APIC and the TSC deadline timer configuration bit in modern APICs.
->
->  For the record, it's documented in the i82498DX datasheet[1] and user 
-> manual[2]:
->
-> 'Bits [19:18] Timer Base: This field selects the time base input to be 
-> used by the timer.
+Just acked patch 8. Patch 7 need be updated too, so will check in v7.
 
-That's true, but how many people aside of you and me still have access
-to the i82498DX related documentation? The interwebs has no trace of
-them.
+> > 
+> > OR,
+> > 
+> > static void crash_hotplug_handler(unsigned int hp_action,
+> >          int* cpu)
+> > 
+> > static int crash_cpuhp_online(unsigned int cpu)
+> > {
+> >          crash_hotplug_handler(KEXEC_CRASH_HP_ADD_CPU, NULL);
+> >          return 0;
+> > }
+> > 
+> > static int crash_cpuhp_offline(unsigned int cpu)
+> > {
+> > 	int dead_cpu = cpu;
+> >          crash_hotplug_handler(KEXEC_CRASH_HP_REMOVE_CPU, &cpu);
+> >          return 0;
+> > }
+> > 
+> 
 
-With the above I explicitely meant the undocumented bit overlap both in
-the current SDMs and the kernel source.
-
-Thanks,
-
-        tglx
