@@ -2,179 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C47A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiDMJcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
+        id S234448AbiDMJd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230470AbiDMJcp (ORCPT
+        with ESMTP id S230306AbiDMJd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:32:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4365F344DA
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:30:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649842223;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sUAWCEtJ7W8Lp2MMf8nQbTxa4Gjk9+/HNaILcWqE2Ig=;
-        b=eleBN7IQOYNwqhzyp8UOTfP934gm8Gd8zrWmM2UKQtts8In4H47RE5PI4D7pXWRFbLRVQ/
-        lrHjdNldjjBianOZ/MgMjrFCbtrJdM7dMtX4pzVs8Z/xSP5XI2WBw5h5RzQMA88B4KZFOS
-        PCMgiuD6AZswUKdSIZXo00YuNdC9tGg=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-582-HwBSZAyTNPyHnOcoLml6Kw-1; Wed, 13 Apr 2022 05:30:22 -0400
-X-MC-Unique: HwBSZAyTNPyHnOcoLml6Kw-1
-Received: by mail-wr1-f72.google.com with SMTP id f2-20020a056000036200b00207a14a1f96so210378wrf.3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:30:21 -0700 (PDT)
+        Wed, 13 Apr 2022 05:33:56 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECCD52E5B;
+        Wed, 13 Apr 2022 02:31:36 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso5721347pju.1;
+        Wed, 13 Apr 2022 02:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GlQcG7f/Vl8ZIHjycVnnZm2xMXgzFIcpVLLW16d1xbM=;
+        b=ccL1haMV8PNuUuRABj6cJSN32U45FB1xJNAJiigg74Xrbnaki/OTxQmNQJVL4oraY+
+         Gjk3Ut3Q6UeGZQ+ctMSBMp9DlJpmk3Td0EyOx7Q7YcRUrxkUnIvfujBZHSz9D2RDSwBP
+         4v4l+4diRBuQlBdSsd9zp+Ky8Jw6CWFB/Vm7+0WkuMBenm0nJ6aVzhM3LRczTENkXQJs
+         awqdmNRqSe7wUKdQMe8bWk4i8VEAhOn5apCE0ULyaVOs4Uej0snr5+ez/k4BGAl7Xh1r
+         IjmC1jNtLhFkLxI43ibEg0qpcOKXf+2Yufz/dYPQqsYKTpvuQS5P1MVpdHozzP5RIhDs
+         DPmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=sUAWCEtJ7W8Lp2MMf8nQbTxa4Gjk9+/HNaILcWqE2Ig=;
-        b=nDiu+LTCtry4vVABXlGYbONLPocMkdbJHUPJ+ydIpokvH1APjNWQVmvlBV65Wh6ytc
-         Lu9FRUFO3ORjDg3jm2WKw+F1GJ1kKLGONqXnc0Xuffas2GutfJCi1fvKZk87kvRFFtuC
-         raC2itn+HmEpouHjpmKXSlK6eJZKupPdvl3Z8tiApucY8o3svU5ex/NytV9mSGqmhAPF
-         f9C2ZzOo1Q1MhJL/xX8yUDn8dNTaOFJr9xXejogi8e1a7YrO+OIwJpWtFC2laWp/6z00
-         6czX4jtxiGNotDxoN2v1TJ7LdwqxVcggaZ5Qlg9yupK5qUEac0vhV59lNAxX31ypR9rZ
-         1zGw==
-X-Gm-Message-State: AOAM532JNYMLajuUWG/ELSOolX1pE9Q5nkkiuGP3Gv8OYGmzKPq3rQHT
-        5bIooCW1y+tcYdj5/d4kkQcYnodBQbzD0N8sHw6OjxfR1l4QcoHp0jAnuuOW+/ofejjLeyXbPkH
-        fg4K1DeTlfjW2zPQXGxCn3RWK
-X-Received: by 2002:a05:600c:3ac7:b0:38e:c6ef:ff0 with SMTP id d7-20020a05600c3ac700b0038ec6ef0ff0mr7356601wms.8.1649842220991;
-        Wed, 13 Apr 2022 02:30:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyd3XaLEhPCG4J24HCG8pKWKl8usohh+7J5bIP+p03v6bOndnNfB1jN1ExM+RVo0C4IS9g7NA==
-X-Received: by 2002:a05:600c:3ac7:b0:38e:c6ef:ff0 with SMTP id d7-20020a05600c3ac700b0038ec6ef0ff0mr7356584wms.8.1649842220717;
-        Wed, 13 Apr 2022 02:30:20 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:5800:1078:ebb9:e2c3:ea8c? (p200300cbc70458001078ebb9e2c3ea8c.dip0.t-ipconnect.de. [2003:cb:c704:5800:1078:ebb9:e2c3:ea8c])
-        by smtp.gmail.com with ESMTPSA id i4-20020a05600c354400b0038e9c5924d6sm1958059wmq.29.2022.04.13.02.30.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 02:30:20 -0700 (PDT)
-Message-ID: <374d2be1-e13d-e605-ff80-b9d5eee4c40e@redhat.com>
-Date:   Wed, 13 Apr 2022 11:30:19 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GlQcG7f/Vl8ZIHjycVnnZm2xMXgzFIcpVLLW16d1xbM=;
+        b=Lq6NJl5rtBlDwHTZ/8Ow4mQ1MDgliYIYQZls6IOr4eHZ1SbPeXESVotcFw2a8dUPzR
+         hn+5G2UqjrIak5F7B6jCl//FvkhdSntUceoIMo3Tymu+EYCO1/fSJX6RljTyYMy8GEWi
+         oHTmYIhcIj1ZohhhPGhtVFftP/qiNl9Veh0lqvLSmRY0knubeWzd1T9fnxzjObhFZS6f
+         1OXHcW6Pm6iLbd0hea1ISUWltwq/PjHQrc2kAv/ixCnvUzRhAwehawk5ex1H5PqDDae+
+         JMpUIUYmZSZ4BLFI+SLxdpMKugM1uy4wRMCp1ApaxtUJDZBdV9HcOq/S6nIPCbQlndZ7
+         MVew==
+X-Gm-Message-State: AOAM532Pj/f+cDMvw+Ev+u3zEpfM1u8mhelxMiFMYh1Af7mRY92jlZXN
+        ZnKY3kxboAilU6CoZntCk0o=
+X-Google-Smtp-Source: ABdhPJyMRx3ulLDXmiaULULRDKi4lNbdHeq1Ekq4sRZ+YN30OOK3gC6hDz38EYLjkOZxd9kMpIeaWw==
+X-Received: by 2002:a17:902:dac5:b0:158:5db6:3503 with SMTP id q5-20020a170902dac500b001585db63503mr15351287plx.76.1649842295604;
+        Wed, 13 Apr 2022 02:31:35 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id s20-20020aa78d54000000b004fac74c83b3sm40300363pfe.186.2022.04.13.02.31.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 02:31:34 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, joannekoong@fb.com,
+        lv.ruyi@zte.com.cn, toke@redhat.com, houtao1@huawei.com,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] bpf/benchs: fix error check return value of bpf_program__attach()
+Date:   Wed, 13 Apr 2022 09:31:23 +0000
+Message-Id: <20220413093123.2538001-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220329164329.208407-1-david@redhat.com>
- <20220329164329.208407-2-david@redhat.com>
- <28142e3e-2556-0ca2-7ac5-7420ef862259@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v2 1/8] mm/swap: remember PG_anon_exclusive via a swp pte
- bit
-In-Reply-To: <28142e3e-2556-0ca2-7ac5-7420ef862259@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.04.22 10:58, Miaohe Lin wrote:
-> On 2022/3/30 0:43, David Hildenbrand wrote:
->> Currently, we clear PG_anon_exclusive in try_to_unmap() and forget about
-> ...
->> diff --git a/mm/memory.c b/mm/memory.c
->> index 14618f446139..9060cc7f2123 100644
->> --- a/mm/memory.c
->> +++ b/mm/memory.c
->> @@ -792,6 +792,11 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
->>  						&src_mm->mmlist);
->>  			spin_unlock(&mmlist_lock);
->>  		}
->> +		/* Mark the swap entry as shared. */
->> +		if (pte_swp_exclusive(*src_pte)) {
->> +			pte = pte_swp_clear_exclusive(*src_pte);
->> +			set_pte_at(src_mm, addr, src_pte, pte);
->> +		}
->>  		rss[MM_SWAPENTS]++;
->>  	} else if (is_migration_entry(entry)) {
->>  		page = pfn_swap_entry_to_page(entry);
->> @@ -3559,6 +3564,7 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
->>  	struct page *page = NULL, *swapcache;
->>  	struct swap_info_struct *si = NULL;
->>  	rmap_t rmap_flags = RMAP_NONE;
->> +	bool exclusive = false;
->>  	swp_entry_t entry;
->>  	pte_t pte;
->>  	int locked;
->> @@ -3724,6 +3730,46 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
->>  	BUG_ON(!PageAnon(page) && PageMappedToDisk(page));
->>  	BUG_ON(PageAnon(page) && PageAnonExclusive(page));
->>  
->> +	/*
->> +	 * Check under PT lock (to protect against concurrent fork() sharing
->> +	 * the swap entry concurrently) for certainly exclusive pages.
->> +	 */
->> +	if (!PageKsm(page)) {
->> +		/*
->> +		 * Note that pte_swp_exclusive() == false for architectures
->> +		 * without __HAVE_ARCH_PTE_SWP_EXCLUSIVE.
->> +		 */
->> +		exclusive = pte_swp_exclusive(vmf->orig_pte);
->> +		if (page != swapcache) {
->> +			/*
->> +			 * We have a fresh page that is not exposed to the
->> +			 * swapcache -> certainly exclusive.
->> +			 */
->> +			exclusive = true;
->> +		} else if (exclusive && PageWriteback(page) &&
->> +			   !(swp_swap_info(entry)->flags & SWP_STABLE_WRITES)) {
-> 
-> Really sorry for late respond and a newbie question. IIUC, if SWP_STABLE_WRITES is set,
-> it means concurrent page modifications while under writeback is not supported. For these
-> problematic swap backends, exclusive marker is dropped. So the above if statement is to
-> filter out these problematic swap backends which have SWP_STABLE_WRITES set. If so, the
-> above check should be && (swp_swap_info(entry)->flags & SWP_STABLE_WRITES)), i.e. no "!".
-> Or am I miss something?
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Oh, thanks for your careful eyes!
+bpf_program__attach() returns error ptr when it fails, so we should use
+IS_ERR() to check it in error handling path. The patch fix all the same
+problems in the bpf/benchs/*.
 
-Indeed, SWP_STABLE_WRITES indicates that the backend *requires* stable
-writes, meaning, we must not modify the page while writeback is active.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ .../selftests/bpf/benchs/bench_bloom_filter_map.c      | 10 +++++-----
+ tools/testing/selftests/bpf/benchs/bench_bpf_loop.c    |  2 +-
+ tools/testing/selftests/bpf/benchs/bench_rename.c      |  2 +-
+ tools/testing/selftests/bpf/benchs/bench_ringbufs.c    |  6 +++---
+ tools/testing/selftests/bpf/benchs/bench_strncmp.c     |  2 +-
+ tools/testing/selftests/bpf/benchs/bench_trigger.c     |  2 +-
+ 6 files changed, 12 insertions(+), 12 deletions(-)
 
-So if and only if that is set, we must drop the exclusive marker.
-
-This essentially corresponds to previous reuse_swap_page() logic:
-
-bool reuse_swap_page(struct page *page)
-{
-...
-	if (!PageWriteback(page)) {
-		...
-	} else {
-		...
-		if (p->flags & SWP_STABLE_WRITES) {
-			spin_unlock(&p->lock);
-			return false;
-		}
-...
-}
-
-Fortunately, this only affects such backends. For backends without
-SWP_STABLE_WRITES, the current code is simply sub-optimal.
-
-
-So yes, this has to be
-
-} else if (exclusive && PageWriteback(page) &&
-	   (swp_swap_info(entry)->flags & SWP_STABLE_WRITES)) {
-
-
-Let me try finding a way to test this, the tests I was running so far
-were apparently not using a backend with SWP_STABLE_WRITES.
-
+diff --git a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
+index 5bcb8a8cdeb2..fd1be1042516 100644
+--- a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
++++ b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
+@@ -309,7 +309,7 @@ static void bloom_lookup_setup(void)
+ 	populate_maps();
+ 
+ 	link = bpf_program__attach(ctx.skel->progs.bloom_lookup);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+@@ -326,7 +326,7 @@ static void bloom_update_setup(void)
+ 	populate_maps();
+ 
+ 	link = bpf_program__attach(ctx.skel->progs.bloom_update);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+@@ -345,7 +345,7 @@ static void false_positive_setup(void)
+ 	populate_maps();
+ 
+ 	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+@@ -363,7 +363,7 @@ static void hashmap_with_bloom_setup(void)
+ 	populate_maps();
+ 
+ 	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+@@ -380,7 +380,7 @@ static void hashmap_no_bloom_setup(void)
+ 	populate_maps();
+ 
+ 	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+diff --git a/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c b/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
+index d0a6572bfab6..8dbdc28d26c8 100644
+--- a/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
++++ b/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
+@@ -85,7 +85,7 @@ static void setup(void)
+ 	}
+ 
+ 	link = bpf_program__attach(ctx.skel->progs.benchmark);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+diff --git a/tools/testing/selftests/bpf/benchs/bench_rename.c b/tools/testing/selftests/bpf/benchs/bench_rename.c
+index 3c203b6d6a6e..66d63b92a28a 100644
+--- a/tools/testing/selftests/bpf/benchs/bench_rename.c
++++ b/tools/testing/selftests/bpf/benchs/bench_rename.c
+@@ -65,7 +65,7 @@ static void attach_bpf(struct bpf_program *prog)
+ 	struct bpf_link *link;
+ 
+ 	link = bpf_program__attach(prog);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+diff --git a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
+index c2554f9695ff..fff24ca82dc0 100644
+--- a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
++++ b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
+@@ -181,7 +181,7 @@ static void ringbuf_libbpf_setup(void)
+ 	}
+ 
+ 	link = bpf_program__attach(ctx->skel->progs.bench_ringbuf);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+@@ -271,7 +271,7 @@ static void ringbuf_custom_setup(void)
+ 	}
+ 
+ 	link = bpf_program__attach(ctx->skel->progs.bench_ringbuf);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program\n");
+ 		exit(1);
+ 	}
+@@ -426,7 +426,7 @@ static void perfbuf_libbpf_setup(void)
+ 	}
+ 
+ 	link = bpf_program__attach(ctx->skel->progs.bench_perfbuf);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program\n");
+ 		exit(1);
+ 	}
+diff --git a/tools/testing/selftests/bpf/benchs/bench_strncmp.c b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+index 494b591c0289..dcb9ce5ffcb0 100644
+--- a/tools/testing/selftests/bpf/benchs/bench_strncmp.c
++++ b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+@@ -103,7 +103,7 @@ static void strncmp_attach_prog(struct bpf_program *prog)
+ 	struct bpf_link *link;
+ 
+ 	link = bpf_program__attach(prog);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
+diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
+index 0c481de2833d..bda930a8153c 100644
+--- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
++++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
+@@ -61,7 +61,7 @@ static void attach_bpf(struct bpf_program *prog)
+ 	struct bpf_link *link;
+ 
+ 	link = bpf_program__attach(prog);
+-	if (!link) {
++	if (IS_ERR(link)) {
+ 		fprintf(stderr, "failed to attach program!\n");
+ 		exit(1);
+ 	}
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
