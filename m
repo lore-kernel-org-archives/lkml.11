@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA5DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0164DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236058AbiDMOIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45196 "EHLO
+        id S236068AbiDMOIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236014AbiDMOIH (ORCPT
+        with ESMTP id S236027AbiDMOIJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:08:07 -0400
+        Wed, 13 Apr 2022 10:08:09 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9EBB25E8C;
-        Wed, 13 Apr 2022 07:05:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B82585FF02;
+        Wed, 13 Apr 2022 07:05:47 -0700 (PDT)
 Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id E2EF620C34CF;
-        Wed, 13 Apr 2022 07:05:44 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E2EF620C34CF
+        by linux.microsoft.com (Postfix) with ESMTPSA id C5C8720C34D3;
+        Wed, 13 Apr 2022 07:05:46 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C5C8720C34D3
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649858745;
-        bh=ua+saCsW0mWHqIwTOqh4aD4MZ7FXZAniouHO3DFJtqM=;
+        s=default; t=1649858747;
+        bh=QTQiWJbZvy4H9n+ZDkQWbDZDgb6qzExGsQm68AwKzTY=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=UEfYZJGGejOII3NG5+vz0MtM23kDqwCFIdaeo2gC9ELdjfksCRiKoMWPfqhdGuSLs
-         JZPF8u9Ocm8VdWurlhbnW42PkcMH0XqURLXh/cK88SNNZt4JWw1Jmo9u0dN4FElj2R
-         yK/O+pPOkXEVpVcmIuTzrH7LnAy6S0AID6B6Usw0=
+        b=BkCawjOBy/LuJ2RLeuuG+z9w2yW134uhPMb6D+XT+2YE/hs3E+0IK+EbQoJ9ewNxN
+         FRXmOZviQVPvbjVAsPjoGD8GZr3yut3UEUaSkOvgMTcwhRaFbcZuMSONByZAK2VQAJ
+         n0QHd104gnceHuX+Kvt4hy/2APeJY1nXQtgih1cQ=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -33,9 +33,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [PATCH v14 3/7] arm64: Make the unwind loop in unwind() similar to other architectures
-Date:   Wed, 13 Apr 2022 09:05:24 -0500
-Message-Id: <20220413140528.3815-4-madvenka@linux.microsoft.com>
+Subject: [PATCH v14 5/7] arm64: Create a list of SYM_CODE functions, check return PC against list
+Date:   Wed, 13 Apr 2022 09:05:26 -0500
+Message-Id: <20220413140528.3815-6-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220413140528.3815-1-madvenka@linux.microsoft.com>
 References: <f460a35f88195413bcf7305e5083480aab3ca858>
@@ -48,208 +48,184 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Change the loop in unwind()
-===========================
+SYM_CODE functions don't follow the usual calling conventions. Check if the
+return PC in a stack frame falls in any of these. If it does, consider the
+stack trace unreliable.
 
-Change the unwind loop in unwind() to:
+Define a special section for unreliable functions
+=================================================
 
-	while (unwind_continue(state, consume_entry, cookie))
-		unwind_next(state);
+Define a SYM_CODE_END() macro for arm64 that adds the function address
+range to a new section called "sym_code_functions".
 
-This is easy to understand and maintain.
+Linker file
+===========
 
-New function unwind_continue()
-==============================
+Include the "sym_code_functions" section under read-only data in
+vmlinux.lds.S.
 
-Define a new function unwind_continue() that is used in the unwind loop
-to check for conditions that terminate a stack trace.
+Initialization
+==============
 
-The conditions checked are:
+Define an early_initcall() to create a sym_code_functions[] array from
+the linker data.
 
-	- If the bottom of the stack (final frame) has been reached,
-	  terminate.
+Unwinder check
+==============
 
-	- If the consume_entry() function returns false, the caller of
-	  unwind has asked to terminate the stack trace. So, terminate.
-
-	- If unwind_next() failed for some reason (like stack corruption),
-	  terminate.
-
-Do not return an error value from unwind_next()
-===============================================
-
-We want to check for terminating conditions only in unwind_continue() from
-the unwinder loop. So, do not return an error value from unwind_next().
-Simply set a flag in unwind_state and check the flag in unwind_continue().
-
-Final FP
-========
-
-Introduce a new field "final_fp" in "struct unwind_state". Initialize this
-to the final frame of the stack trace:
-
-	task_pt_regs(task)->stackframe
-
-This is where the stacktrace must terminate if it is successful. Add an
-explicit comment to that effect.
+Add a reliability check in unwind_check_reliability() that compares a
+return PC with sym_code_functions[]. If there is a match, then return
+failure.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
 Reviewed-by: Mark Brown <broonie@kernel.org>
 ---
- arch/arm64/kernel/stacktrace.c | 78 ++++++++++++++++++++++------------
- 1 file changed, 52 insertions(+), 26 deletions(-)
+ arch/arm64/include/asm/linkage.h  | 11 +++++++
+ arch/arm64/include/asm/sections.h |  1 +
+ arch/arm64/kernel/stacktrace.c    | 55 +++++++++++++++++++++++++++++++
+ arch/arm64/kernel/vmlinux.lds.S   | 10 ++++++
+ 4 files changed, 77 insertions(+)
 
+diff --git a/arch/arm64/include/asm/linkage.h b/arch/arm64/include/asm/linkage.h
+index 43f8c25b3fda..d4058de4af78 100644
+--- a/arch/arm64/include/asm/linkage.h
++++ b/arch/arm64/include/asm/linkage.h
+@@ -39,4 +39,15 @@
+ 	SYM_START(name, SYM_L_WEAK, SYM_A_NONE)		\
+ 	bti c ;
+ 
++/*
++ * Record the address range of each SYM_CODE function in a struct code_range
++ * in a special section.
++ */
++#define SYM_CODE_END(name)				\
++	SYM_END(name, SYM_T_NONE)			;\
++99:	.pushsection "sym_code_functions", "aw"		;\
++	.quad	name					;\
++	.quad	99b					;\
++	.popsection
++
+ #endif
+diff --git a/arch/arm64/include/asm/sections.h b/arch/arm64/include/asm/sections.h
+index 40971ac1303f..50cfd1083563 100644
+--- a/arch/arm64/include/asm/sections.h
++++ b/arch/arm64/include/asm/sections.h
+@@ -22,6 +22,7 @@ extern char __irqentry_text_start[], __irqentry_text_end[];
+ extern char __mmuoff_data_start[], __mmuoff_data_end[];
+ extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
+ extern char __relocate_new_kernel_start[], __relocate_new_kernel_end[];
++extern char __sym_code_functions_start[], __sym_code_functions_end[];
+ 
+ static inline size_t entry_tramp_text_size(void)
+ {
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 8e43444d50e2..c749129aba5a 100644
+index 5ef2ce217324..eda8581f7dbe 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -40,6 +40,10 @@
-  *               value.
-  *
-  * @task:        The task being unwound.
-+ *
-+ * @final_fp:	 Pointer to the final frame.
-+ *
-+ * @failed:      Unwind failed.
-  */
- struct unwind_state {
- 	unsigned long fp;
-@@ -51,6 +55,8 @@ struct unwind_state {
- 	struct llist_node *kr_cur;
- #endif
- 	struct task_struct *task;
-+	unsigned long final_fp;
-+	bool failed;
+@@ -62,6 +62,31 @@ struct unwind_state {
+ 	bool reliable;
  };
  
- static void unwind_init_common(struct unwind_state *state,
-@@ -73,6 +79,10 @@ static void unwind_init_common(struct unwind_state *state,
- 	bitmap_zero(state->stacks_done, __NR_STACK_TYPES);
- 	state->prev_fp = 0;
- 	state->prev_type = STACK_TYPE_UNKNOWN;
-+	state->failed = false;
++struct code_range {
++	unsigned long	start;
++	unsigned long	end;
++};
 +
-+	/* Stack trace terminates here. */
-+	state->final_fp = (unsigned long)task_pt_regs(task)->stackframe;
- }
- 
- /*
-@@ -126,6 +136,25 @@ static inline void unwind_init_from_task(struct unwind_state *state,
- 	state->pc = thread_saved_pc(task);
- }
- 
-+static bool notrace unwind_continue(struct unwind_state *state,
-+				    stack_trace_consume_fn consume_entry,
-+				    void *cookie)
++static struct code_range	*sym_code_functions;
++static int			num_sym_code_functions;
++
++int __init init_sym_code_functions(void)
 +{
-+	if (state->failed) {
-+		/* PC is suspect. Cannot consume it. */
-+		return false;
-+	}
++	size_t size = (unsigned long)__sym_code_functions_end -
++		      (unsigned long)__sym_code_functions_start;
 +
-+	if (!consume_entry(cookie, state->pc)) {
-+		/* Caller terminated the unwind. */
-+		state->failed = true;
-+		return false;
-+	}
++	sym_code_functions = (struct code_range *)__sym_code_functions_start;
++	/*
++	 * Order it so that sym_code_functions is not visible before
++	 * num_sym_code_functions.
++	 */
++	smp_mb();
++	num_sym_code_functions = size / sizeof(struct code_range);
 +
-+	return state->fp != state->final_fp;
++	return 0;
 +}
-+NOKPROBE_SYMBOL(unwind_continue);
++early_initcall(init_sym_code_functions);
++
+ static void unwind_init_common(struct unwind_state *state,
+ 			       struct task_struct *task)
+ {
+@@ -251,6 +276,10 @@ NOKPROBE_SYMBOL(unwind_next);
+  */
+ static void unwind_check_reliability(struct unwind_state *state)
+ {
++	const struct code_range *range;
++	unsigned long pc;
++	int i;
++
+ 	if (state->fp == state->final_fp) {
+ 		/* Final frame; no more unwind, no need to check reliability */
+ 		return;
+@@ -263,6 +292,32 @@ static void unwind_check_reliability(struct unwind_state *state)
+ 	 */
+ 	if (!__kernel_text_address(state->pc))
+ 		state->reliable = false;
++
++	/*
++	 * Check the return PC against sym_code_functions[]. If there is a
++	 * match, then the consider the stack frame unreliable.
++	 *
++	 * As SYM_CODE functions don't follow the usual calling conventions,
++	 * we assume by default that any SYM_CODE function cannot be unwound
++	 * reliably.
++	 *
++	 * Note that this includes:
++	 *
++	 * - Exception handlers and entry assembly
++	 * - Trampoline assembly (e.g., ftrace, kprobes)
++	 * - Hypervisor-related assembly
++	 * - Hibernation-related assembly
++	 * - CPU start-stop, suspend-resume assembly
++	 * - Kernel relocation assembly
++	 */
++	pc = state->pc;
++	for (i = 0; i < num_sym_code_functions; i++) {
++		range = &sym_code_functions[i];
++		if (pc >= range->start && pc < range->end) {
++			state->reliable = false;
++			return;
++		}
++	}
+ }
+ 
+ static bool notrace unwind(struct unwind_state *state,
+diff --git a/arch/arm64/kernel/vmlinux.lds.S b/arch/arm64/kernel/vmlinux.lds.S
+index edaf0faf766f..55b61fefb643 100644
+--- a/arch/arm64/kernel/vmlinux.lds.S
++++ b/arch/arm64/kernel/vmlinux.lds.S
+@@ -122,6 +122,14 @@ jiffies = jiffies_64;
+ #define TRAMP_TEXT
+ #endif
+ 
++#define SYM_CODE_FUNCTIONS				\
++	. = ALIGN(16);					\
++	.symcode : AT(ADDR(.symcode) - LOAD_OFFSET) {	\
++		__sym_code_functions_start = .;		\
++		KEEP(*(sym_code_functions))		\
++		__sym_code_functions_end = .;		\
++	}
 +
  /*
-  * Unwind from one frame record (A) to the next frame record (B).
-  *
-@@ -133,24 +162,26 @@ static inline void unwind_init_from_task(struct unwind_state *state,
-  * records (e.g. a cycle), determined based on the location and fp value of A
-  * and the location (but not the fp value) of B.
-  */
--static int notrace unwind_next(struct unwind_state *state)
-+static void notrace unwind_next(struct unwind_state *state)
- {
- 	struct task_struct *tsk = state->task;
- 	unsigned long fp = state->fp;
- 	struct stack_info info;
+  * The size of the PE/COFF section that covers the kernel image, which
+  * runs from _stext to _edata, must be a round multiple of the PE/COFF
+@@ -209,6 +217,8 @@ SECTIONS
+ 	swapper_pg_dir = .;
+ 	. += PAGE_SIZE;
  
--	/* Final frame; nothing to unwind */
--	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
--		return -ENOENT;
--
--	if (fp & 0x7)
--		return -EINVAL;
-+	if (fp & 0x7) {
-+		state->failed = true;
-+		return;
-+	}
- 
--	if (!on_accessible_stack(tsk, fp, 16, &info))
--		return -EINVAL;
-+	if (!on_accessible_stack(tsk, fp, 16, &info)) {
-+		state->failed = true;
-+		return;
-+	}
- 
--	if (test_bit(info.type, state->stacks_done))
--		return -EINVAL;
-+	if (test_bit(info.type, state->stacks_done)) {
-+		state->failed = true;
-+		return;
-+	}
- 
- 	/*
- 	 * As stacks grow downward, any valid record on the same stack must be
-@@ -166,8 +197,10 @@ static int notrace unwind_next(struct unwind_state *state)
- 	 * stack.
- 	 */
- 	if (info.type == state->prev_type) {
--		if (fp <= state->prev_fp)
--			return -EINVAL;
-+		if (fp <= state->prev_fp) {
-+			state->failed = true;
-+			return;
-+		}
- 	} else {
- 		set_bit(state->prev_type, state->stacks_done);
- 	}
-@@ -195,8 +228,10 @@ static int notrace unwind_next(struct unwind_state *state)
- 		 */
- 		orig_pc = ftrace_graph_ret_addr(tsk, NULL, state->pc,
- 						(void *)state->fp);
--		if (WARN_ON_ONCE(state->pc == orig_pc))
--			return -EINVAL;
-+		if (WARN_ON_ONCE(state->pc == orig_pc)) {
-+			state->failed = true;
-+			return;
-+		}
- 		state->pc = orig_pc;
- 	}
- #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
-@@ -204,23 +239,14 @@ static int notrace unwind_next(struct unwind_state *state)
- 	if (is_kretprobe_trampoline(state->pc))
- 		state->pc = kretprobe_find_ret_addr(tsk, (void *)state->fp, &state->kr_cur);
- #endif
--
--	return 0;
- }
- NOKPROBE_SYMBOL(unwind_next);
- 
- static void notrace unwind(struct unwind_state *state,
- 			   stack_trace_consume_fn consume_entry, void *cookie)
- {
--	while (1) {
--		int ret;
--
--		if (!consume_entry(cookie, state->pc))
--			break;
--		ret = unwind_next(state);
--		if (ret < 0)
--			break;
--	}
-+	while (unwind_continue(state, consume_entry, cookie))
-+		unwind_next(state);
- }
- NOKPROBE_SYMBOL(unwind);
- 
++	SYM_CODE_FUNCTIONS
++
+ 	. = ALIGN(SEGMENT_ALIGN);
+ 	__init_begin = .;
+ 	__inittext_begin = .;
 -- 
 2.25.1
 
