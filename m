@@ -2,113 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 748EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F766C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbiDMB27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 21:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46392 "EHLO
+        id S230139AbiDMBdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 21:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231437AbiDMB24 (ORCPT
+        with ESMTP id S229617AbiDMBdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 21:28:56 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21ED537A11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 18:26:33 -0700 (PDT)
+        Tue, 12 Apr 2022 21:33:45 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C49540E53
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 18:31:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649813194; x=1681349194;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=K1dFfKAGAqmFb2acfSDAZBnW2rzbquz+sm7/oVTChW8=;
-  b=HgzZKJUTp0iZncYBPY5Asxfpaw3CtX6ho7cdqoALZsvG7T4aGcKJ233N
-   fz2NOwNOUUG5ykgNPoe2nM+b9ZzhGNiHeBv+4DQMcYmaZ4Mzo65aofNfZ
-   g5Say5VTAEHRv86+vmyoaQDPtzYWRIbYVQiMWjOKoeYdbN/LWsOpTQpXs
-   5JlOPgUoZkkxFgZ3PmZQad+7J6xdlfpr1zUMiT3e85SkShvPPYtLjhWwx
-   PLiohw4M73adV8I//4gcw1aUdUF4kTM+IZbXUIQgrV3lca1NPu8Jy++6F
-   XUkEYNpRWUP3tmfDKaUeJMrZj9awfc/SHpm37WfrLL37lNLYbyreQcPB8
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="325452967"
+  t=1649813486; x=1681349486;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9cQKNkLmhbzSf2E+o2kCsu7pedhma5yOcSaN+DzWIPA=;
+  b=gTPF7EZT2SEeGqoeM4G0yeKAyub0BavH3EmuR2rLT80NfZ0DnAaYr2vF
+   wI2iJsMfO2y66iEt8K0AXG4iMX6C7t7CH6POrvS+4OYnUANUfS7lmCWqT
+   LkLQxkKdb4ejRG9QgD6XHhVkFd+rcvLgeXqiKqrbLJbbwmRuXAkDOeczU
+   FFgMUthWSqscF+xboPIN4sUXFGpsOyQCWG4mVvIdy+jWKipIOOUDay8o7
+   QYw9GKK+OZzL8sl+P22jBGOBGMzT9dwqSVd0H4vvOvo206tzkXO/2ArPh
+   0fKJAeEm8cg3E4pGL7nAplcVVrb5zgTyW5H4mcs/sBEmQjWXTjaPPGMSc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="348983127"
 X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
-   d="scan'208";a="325452967"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 18:26:19 -0700
+   d="scan'208";a="348983127"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 18:31:25 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
-   d="scan'208";a="573049417"
-Received: from zouyunlo-mobl.ccr.corp.intel.com ([10.254.213.123])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 18:26:15 -0700
-Message-ID: <a90dc108e54e19cf3aa3fd21f6321afa8f194adc.camel@intel.com>
-Subject: Re: [PATCH v2 2/9] mm/vmscan: remove unneeded can_split_huge_page
- check
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Oscar Salvador <osalvador@suse.de>
-Cc:     akpm@linux-foundation.org, songmuchun@bytedance.com,
-        hch@infradead.org, willy@infradead.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Tatashin <pasha.tatashin@soleen.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>
-Date:   Wed, 13 Apr 2022 09:26:13 +0800
-In-Reply-To: <b153b758-ce11-364a-2699-753b21250508@redhat.com>
-References: <20220409093500.10329-1-linmiaohe@huawei.com>
-         <20220409093500.10329-3-linmiaohe@huawei.com>
-         <YlU/h0fdE1L846Bd@localhost.localdomain>
-         <7455b680-3d89-5d3e-ba0e-6e4358b114a2@huawei.com>
-         <b153b758-ce11-364a-2699-753b21250508@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+   d="scan'208";a="590570181"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 12 Apr 2022 18:31:24 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neRqt-0003Ju-Ly;
+        Wed, 13 Apr 2022 01:31:23 +0000
+Date:   Wed, 13 Apr 2022 09:31:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        linux-kernel@vger.kernel.org
+Subject: [djwong-xfs:vectorized-scrub 99/396] fs/xfs/scrub/repair.c:181:1:
+ warning: no previous prototype for 'xrep_defer_finish'
+Message-ID: <202204130954.KyCjtAyn-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-12 at 16:59 +0200, David Hildenbrand wrote:
-> On 12.04.22 15:42, Miaohe Lin wrote:
-> > On 2022/4/12 16:59, Oscar Salvador wrote:
-> > > On Sat, Apr 09, 2022 at 05:34:53PM +0800, Miaohe Lin wrote:
-> > > > We don't need to check can_split_folio() because folio_maybe_dma_pinned()
-> > > > is checked before. It will avoid the long term pinned pages to be swapped
-> > > > out. And we can live with short term pinned pages. Without can_split_folio
-> > > > checking we can simplify the code. Also activate_locked can be changed to
-> > > > keep_locked as it's just short term pinning.
-> > > 
-> > > What do you mean by "we can live with short term pinned pages"?
-> > > Does it mean that it was not pinned when we check
-> > > folio_maybe_dma_pinned() but now it is?
-> > > 
-> > > To me it looks like the pinning is fluctuating and we rely on
-> > > split_folio_to_list() to see whether we succeed or not, and if not
-> > > we give it another spin in the next round?
-> > 
-> > Yes. Short term pinned pages is relative to long term pinned pages and these pages won't be
-> > pinned for a noticeable time. So it's expected to split the folio successfully in the next
-> > round as the pinning is really fluctuating. Or am I miss something?
-> > 
-> 
-> Just so we're on the same page. folio_maybe_dma_pinned() only capture
-> FOLL_PIN, but not FOLL_GET. You can have long-term FOLL_GET right now
-> via vmsplice().
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
+head:   bd756ef7af68274b79308166ee64949d288be861
+commit: 80bc1e058e807de278cc530a53694879e4f70cb3 [99/396] xfs: implement block reservation accounting for btrees we're staging
+config: s390-buildonly-randconfig-r001-20220411 (https://download.01.org/0day-ci/archive/20220413/202204130954.KyCjtAyn-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=80bc1e058e807de278cc530a53694879e4f70cb3
+        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
+        git fetch --no-tags djwong-xfs vectorized-scrub
+        git checkout 80bc1e058e807de278cc530a53694879e4f70cb3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash fs/xfs/
 
-Per my original understanding, folio_maybe_dma_pinned() can be used to
-detect long-term pinned pages.  And it seems reasonable to skip the
-long-term pinned pages and try short-term pinned pages during page
-reclaiming.  But as you pointed out, vmsplice() doesn't use FOLL_PIN. 
-So if vmsplice() is expected to pin pages for long time, and we have no
-way to detect it, then we should keep can_split_folio() in the original
-code.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Copying more people who have worked on long-term pinning for comments.
+All warnings (new ones prefixed by >>):
 
-Best Regards,
-Huang, Ying 
-
-> can_split_folio() is more precise then folio_maybe_dma_pinned(), but
-> both are racy as long as the page is still mapped.
-> 
-> 
+>> fs/xfs/scrub/repair.c:181:1: warning: no previous prototype for 'xrep_defer_finish' [-Wmissing-prototypes]
+     181 | xrep_defer_finish(
+         | ^~~~~~~~~~~~~~~~~
 
 
+vim +/xrep_defer_finish +181 fs/xfs/scrub/repair.c
+
+   178	
+   179	/* Finish all deferred work attached to the repair transaction. */
+   180	int
+ > 181	xrep_defer_finish(
+   182		struct xfs_scrub	*sc)
+   183	{
+   184		int			error;
+   185	
+   186		/* Keep the AG header buffers locked so we can keep going. */
+   187		if (sc->sa.agi_bp) {
+   188			xfs_ialloc_log_agi(sc->tp, sc->sa.agi_bp, XFS_AGI_MAGICNUM);
+   189			xfs_trans_bhold(sc->tp, sc->sa.agi_bp);
+   190		}
+   191	
+   192		if (sc->sa.agf_bp) {
+   193			xfs_alloc_log_agf(sc->tp, sc->sa.agf_bp, XFS_AGF_MAGICNUM);
+   194			xfs_trans_bhold(sc->tp, sc->sa.agf_bp);
+   195		}
+   196	
+   197		error = xfs_defer_finish(&sc->tp);
+   198		if (error)
+   199			return error;
+   200	
+   201		/*
+   202		 * The buffer log item (and hence the blf type) can detach from
+   203		 * the buffer across the transaction rolls, so ensure that the
+   204		 * types are still set on the AG header buffers.  Release the hold
+   205		 * that we set above because defer_finish won't do that for us.
+   206		 */
+   207		if (sc->sa.agi_bp) {
+   208			xfs_trans_bhold_release(sc->tp, sc->sa.agi_bp);
+   209			xfs_trans_buf_set_type(sc->tp, sc->sa.agi_bp, XFS_BLFT_AGI_BUF);
+   210		}
+   211		if (sc->sa.agf_bp) {
+   212			xfs_trans_bhold_release(sc->tp, sc->sa.agf_bp);
+   213			xfs_trans_buf_set_type(sc->tp, sc->sa.agf_bp, XFS_BLFT_AGF_BUF);
+   214		}
+   215		return 0;
+   216	}
+   217	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
