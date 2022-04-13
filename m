@@ -2,161 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7250BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 240DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:20:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238017AbiDMXUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 19:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
+        id S239055AbiDMXW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 19:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiDMXT6 (ORCPT
+        with ESMTP id S238205AbiDMXWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 19:19:58 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FF6220FD;
-        Wed, 13 Apr 2022 16:17:36 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5F1F55C01AF;
-        Wed, 13 Apr 2022 19:17:35 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 13 Apr 2022 19:17:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1649891855; x=1649978255; bh=tSItXHrLBGUs0XQQKjEhwuPtZ
-        neu6+UIkfbjKrNGmVg=; b=vJa5eSRn1eWA9g9V/7EuRF+K+uCmBh4GtXhDoMRXd
-        P39S0dSPX+fnwvGsWxlRbmV8alijOSmIGYeZ2IbzJThnnz4wHNoufY5dK6N4rfE7
-        TrxxCTl24HSzUu2Hsc7zmVO5YEUaYfEiN7RiXMLfp9kU9HAFHNccVohuCSh3BDjC
-        i0/AZKwtOmpT8aMCWRWGsQZbeH/5LtXH/xq6sIOxBvkB0ex9ErUMpUEAYrTYUSoD
-        YWj6RZ7+Uy1H7r1Li1/UBtmNyuz0zHhBxsrCUNh5QdqlHQibQzzvsta52aQeF5eG
-        DxjIEJ0f94vsqG2U0oJHRler3VkUis//TlgBQET6qGhHw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm1; t=1649891855; x=1649978255; bh=t
-        SItXHrLBGUs0XQQKjEhwuPtZneu6+UIkfbjKrNGmVg=; b=kEeM1zYFMo+TuNHId
-        ZD2DuLK7heKqI6EpgMSY8/EYZMw+ncUPywOi/ZWcpgmDK3zPHGAvy0RIWdvni8ef
-        TjNQ9vjlW9ZcLkwbxwxEJ8SA5L7RBk07K4D0QdhXZOWcoS2eSIJdTwJY//HeASGp
-        paciplQWXR51UrMmLesiqgpXiGhCLeUg7qf8GmcgKgbb82VZAmYw6VafX0dGro4p
-        nn2VxAUxnecVHyAJNKBU7tUN2hoGNdAs3a0kfLJjXeHvcb1NmQWL4XTxxxgsmgu5
-        vpAHaAuq6eNxEiKTrCWx8k99moogtVuB35Rbqpx4IpmGl0gfBIF5LKlbN1wIfV4z
-        0Z49A==
-X-ME-Sender: <xms:DlpXYqtk_m3XQYofEduY_QFiACCgbvuS8EofE1ac1XjQAJZ52dwGWw>
-    <xme:DlpXYveaXMOd0DQjWPxjI4bRi8HqiNE7I_o1i51TwuYir-cTQ4fs76R0zi9CyPGoZ
-    FloUEL1JaN7k1Tb_Q>
-X-ME-Received: <xmr:DlpXYlw9vGYUPfZ1tJIzH2cuoNsMxufAgpZlim_L33Z0VV0xh-0_yJfWpkcTTBUrRsseNr_2EZHPCHu3nU3w6RZLLpTD6BUhuY6cx1lIotZGN8_zhz5f7q9bNLusOkEEd7roiA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddgvdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
-    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
-    htthgvrhhnpeeiteekhfehuddugfeltddufeejjeefgeevheekueffhffhjeekheeiffdt
-    vedtveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:DlpXYlM0-npvWJrT4SqgFD9WrRN5Dq7NVmZZajtGD_fZJ5q794B2fA>
-    <xmx:DlpXYq-dUpqK3Ff7XFSSPSq7yckssJMfEOYjM63hbVlfqasfcLfc4A>
-    <xmx:DlpXYtX5Eo97c9Uzbp5TmiSbsIMued8wjG3bixd7R5dZ2ue7CwFXDA>
-    <xmx:D1pXYvPQDh5qD2GYcO-t679xKKtOcvk6AaJgcafLqazUEIPcB73i0A>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 19:17:34 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH] rtc: sun6i: Add NVMEM provider
-Date:   Wed, 13 Apr 2022 18:17:30 -0500
-Message-Id: <20220413231731.56709-1-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 13 Apr 2022 19:22:22 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8BF23BDD
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:19:59 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id i23-20020a9d6117000000b005cb58c354e6so2208409otj.10
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:19:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=A76+qe6l2R4PjtaHOG75B4+IXG7YG12PDKm5b7n2jWs=;
+        b=SHoATc0eEmqjjIwRKvexraebmX2kGeRzptDhV06lGjHycAYMT+TOpWHUuC00JxUOTj
+         RHHtsMgFG+ZIU6axzwN0FQc7X9fdSEWHjTK8L/jGvPcI/8iNhZQrE7OwFAp/5b5lWymZ
+         ZpFMog5M4McPKnPsUbvdTa8nAmF0nFb1cEDYU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=A76+qe6l2R4PjtaHOG75B4+IXG7YG12PDKm5b7n2jWs=;
+        b=THbdngb143iXs/KSmRfcaiVvcLx/whEr+rA6nXKAQcUsWukU3jlF9nfvc1Ec8F4E+O
+         S1M2GBpq1OEEGYJMvHERYHjhD1sn8kVetZGIS6OpWjBBjTlQeIKTReq+KWFa+OJuc4Bb
+         FUIDvpDGLtSFHBwbr8PvFenWF7s17oXqkaElz9/2LwFFHcw4FrYEVIeqZSR9APH2gNjO
+         H/TVO9I3sPRb0GdJpXZVDCej1huEoO0/8lfBGELLtPRgZYsEIAmrJwWbN6ZViObZSI5x
+         hcLUZrdg3e8yCN7jL0oPZJTx10NQW9D26n5sjkGj/9fMCK2gcJ1lUtG2obecwCw0L3yj
+         RQvA==
+X-Gm-Message-State: AOAM532/F6QcoVie+DjTGR4l4g9Eu7FFVvIo2BUovZlT+15A/hNz5wUW
+        WeEM9wtZBbFnNPuieoaJT9ubxjAuOtoTDHADhwglCA==
+X-Google-Smtp-Source: ABdhPJz4zQOvWO+Ka65MElptgAevAeXuKyDHAfQnJYr8K685AAWqQ2cIPgcN1VMnmhtkiEpddCxTwpmuwEtmVKjoZ5o=
+X-Received: by 2002:a9d:b85:0:b0:5cb:3eeb:d188 with SMTP id
+ 5-20020a9d0b85000000b005cb3eebd188mr10346oth.77.1649891999102; Wed, 13 Apr
+ 2022 16:19:59 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 13 Apr 2022 16:19:58 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1649883865-9012-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1649883865-9012-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 13 Apr 2022 16:19:58 -0700
+Message-ID: <CAE-0n5259qjMj12LXRp=7kQ7zT3bRMaHpSpwKMwZ8HL6rq7fbw@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/msm/dp: stop event kernel thread when DP unbind
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dmitry.baryshkov@linaro.org, robdclark@gmail.com, sean@poorly.run,
+        vkoul@kernel.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sun6i RTC provides 32 bytes of general-purpose data registers.
-They can be used to save data in the always-on RTC power domain.
-The registers are writable via 32-bit MMIO accesses only.
+Quoting Kuogee Hsieh (2022-04-13 14:04:25)
+> Current DP driver implementation, event thread is kept running
+> after DP display is unbind. This patch fix this problem by disabling
+> DP irq and stop event thread to exit gracefully at dp_display_unbind().
+>
+> Changes in v2:
+> -- start event thread at dp_display_bind()
+>
+> Fixes: e91e3065a806 ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  drivers/gpu/drm/msm/dp/dp_display.c | 40 +++++++++++++++++++++++++++----------
+>  1 file changed, 30 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+> index 01453db..943e4f1 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+> @@ -113,6 +113,7 @@ struct dp_display_private {
+>         u32 hpd_state;
+>         u32 event_pndx;
+>         u32 event_gndx;
+> +       struct task_struct *ev_tsk;
+>         struct dp_event event_list[DP_EVENT_Q_MAX];
+>         spinlock_t event_lock;
+>
+> @@ -230,6 +231,31 @@ void dp_display_signal_audio_complete(struct msm_dp *dp_display)
+>         complete_all(&dp->audio_comp);
+>  }
+>
+> +static int hpd_event_thread(void *data);
 
-Expose them with a NVMEM provider so they can be used by other drivers.
+Is there a reason why this is needed vs. defining the kthread start
+function after hpd_event_thread()?
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+> +
+> +static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
 
- drivers/rtc/rtc-sun6i.c | 42 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+Maybe dp_hpd_event_thread_start()?
 
-diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
-index 5b3e4da63406..755aeb82a285 100644
---- a/drivers/rtc/rtc-sun6i.c
-+++ b/drivers/rtc/rtc-sun6i.c
-@@ -71,6 +71,10 @@
- #define SUN6I_LOSC_OUT_GATING			0x0060
- #define SUN6I_LOSC_OUT_GATING_EN_OFFSET		0
- 
-+/* General-purpose data */
-+#define SUN6I_GP_DATA				0x0100
-+#define SUN6I_GP_DATA_SIZE			0x20
-+
- /*
-  * Get date values
-  */
-@@ -662,6 +666,39 @@ static const struct rtc_class_ops sun6i_rtc_ops = {
- 	.alarm_irq_enable	= sun6i_rtc_alarm_irq_enable
- };
- 
-+static int sun6i_rtc_nvmem_read(void *priv, unsigned int offset, void *_val, size_t bytes)
-+{
-+	struct sun6i_rtc_dev *chip = priv;
-+	u32 *val = _val;
-+	int i;
-+
-+	for (i = 0; i < bytes / 4; ++i)
-+		val[i] = readl(chip->base + SUN6I_GP_DATA + offset + 4 * i);
-+
-+	return 0;
-+}
-+
-+static int sun6i_rtc_nvmem_write(void *priv, unsigned int offset, void *_val, size_t bytes)
-+{
-+	struct sun6i_rtc_dev *chip = priv;
-+	u32 *val = _val;
-+	int i;
-+
-+	for (i = 0; i < bytes / 4; ++i)
-+		writel(val[i], chip->base + SUN6I_GP_DATA + offset + 4 * i);
-+
-+	return 0;
-+}
-+
-+static struct nvmem_config sun6i_rtc_nvmem_cfg = {
-+	.type		= NVMEM_TYPE_BATTERY_BACKED,
-+	.reg_read	= sun6i_rtc_nvmem_read,
-+	.reg_write	= sun6i_rtc_nvmem_write,
-+	.size		= SUN6I_GP_DATA_SIZE,
-+	.word_size	= 4,
-+	.stride		= 4,
-+};
-+
- #ifdef CONFIG_PM_SLEEP
- /* Enable IRQ wake on suspend, to wake up from RTC. */
- static int sun6i_rtc_suspend(struct device *dev)
-@@ -795,6 +832,11 @@ static int sun6i_rtc_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	sun6i_rtc_nvmem_cfg.priv = chip;
-+	ret = devm_rtc_nvmem_register(chip->rtc, &sun6i_rtc_nvmem_cfg);
-+	if (ret)
-+		return ret;
-+
- 	dev_info(&pdev->dev, "RTC enabled\n");
- 
- 	return 0;
--- 
-2.35.1
+> +{
+> +       init_waitqueue_head(&dp_priv->event_q);
+> +       spin_lock_init(&dp_priv->event_lock);
+> +
+> +       dp_priv->ev_tsk = kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
+> +
+> +       if (IS_ERR(dp_priv->ev_tsk))
+> +               DRM_ERROR("failed to create DP event thread\n");
 
+Can we return an error from this function?
+
+> +}
+> +
+> +static void dp_hpd_event_stop(struct dp_display_private *dp_priv)
+
+Maybe dp_hpd_event_thread_stop()?
+
+> +{
+> +       if (IS_ERR(dp_priv->ev_tsk))
+> +               return;
+
+If we handled the error then this check becomes impossible.
+
+> +
+> +       kthread_stop(dp_priv->ev_tsk);
+> +
+> +       /* reset event q to empty */
+> +       dp_priv->event_gndx = 0;
+> +       dp_priv->event_pndx = 0;
+> +}
+> +
+>  static int dp_display_bind(struct device *dev, struct device *master,
+>                            void *data)
+>  {
+> @@ -269,6 +295,7 @@ static int dp_display_bind(struct device *dev, struct device *master,
+>         if (rc)
+>                 DRM_ERROR("Audio registration Dp failed\n");
+>
+> +       dp_hpd_event_setup(dp); /* start event thread */
+
+The comment is useless, please remove.
+
+>  end:
+>         return rc;
+>  }
+> @@ -280,6 +307,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
+>         struct drm_device *drm = dev_get_drvdata(master);
+>         struct msm_drm_private *priv = drm->dev_private;
+>
+> +       disable_irq(dp->irq);
+
+Is the disable_irq() necessary? It would be nicer to silence the
+hardware and remove the disable_irq() so that we can reason about the
+code assuming the irq is always enabled after it is requested.
+
+> +       dp_hpd_event_stop(dp); /* stop event thread */
+>         dp_power_client_deinit(dp->power);
+>         dp_aux_unregister(dp->aux);
+>         priv->dp[dp->id] = NULL;
