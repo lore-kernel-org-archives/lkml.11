@@ -2,156 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C09C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F6B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232169AbiDMD5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39848 "EHLO
+        id S232170AbiDMD5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbiDMD4t (ORCPT
+        with ESMTP id S232125AbiDMD4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 23:56:49 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC3F273A;
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA98F39;
         Tue, 12 Apr 2022 20:54:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649822068; x=1681358068;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=qWnHsji0gnh/xDp7MQF81PbKycXAQAQAMMGE3n28kdA=;
-  b=YlhoMOngZDWEyJon07RvXTvrthpaDc+N+wS0AqTD8UqmyKrHA2Jzq+eP
-   bCxsTEddmO2VWcKEjnfypmWBBOU2QV+rgQY9mWqqwDBwT+azVS6dpvewZ
-   rxMJx2vrHHs8Ltx59uEj83UlNpeG3Yc33hD/0BTUDuZL2CLFwWFjP+XE9
-   VQz33zcwXCmHdnaIPm0rkHBD8lhZMW60qbGBa2TAoWH5UYejoZUD5ujEY
-   eSwJP6GiQNO/VUioeEgUoawKVLeI5ObmJCKWgLMbe7rHVcJDUOXhz1DQM
-   NAj0Jp5iSZxHPK15nkEKWcmizwabXjhZ4xHiFF2/4deaBj+Gi7+u6A0cJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="249852148"
-X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
-   d="scan'208";a="249852148"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 20:54:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
-   d="scan'208";a="724733855"
-Received: from p12hl01tmin.png.intel.com ([10.158.65.75])
-  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 20:54:23 -0700
-From:   Tan Tee Min <tee.min.tan@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp checking loop
-Date:   Wed, 13 Apr 2022 12:01:15 +0800
-Message-Id: <20220413040115.2351987-1-tee.min.tan@intel.com>
+X-UUID: 406331fc68cd45109cff3d28fa3f2b54-20220413
+X-UUID: 406331fc68cd45109cff3d28fa3f2b54-20220413
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 313058973; Wed, 13 Apr 2022 11:54:25 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 13 Apr 2022 11:54:24 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 13 Apr
+ 2022 11:54:23 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 13 Apr 2022 11:54:21 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v4, 6/7] media: mediatek: vcodec: prevent kernel crash when scp ipi timeout
+Date:   Wed, 13 Apr 2022 11:54:09 +0800
+Message-ID: <20220413035410.29568-7-yunfei.dong@mediatek.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220413035410.29568-1-yunfei.dong@mediatek.com>
+References: <20220413035410.29568-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a possibility that the context descriptor still owned by the DMA
-even the previous normal descriptor own bit is already cleared. Checking
-the context descriptor readiness without delay might be not enough time
-for the DMA to update the descriptor field, which causing failure in
-getting HW Rx timestamp.
+When SCP timeout during playing video, kernel crashes with following
+message. It's caused by accessing NULL pointer in vpu_dec_ipi_handler.
+This patch doesn't solve the root cause of NULL pointer, but merely
+prevent kernel crashed when encounter the NULL pointer.
 
-This patch introduces a 1us fsleep() in HW Rx timestamp checking loop
-to give time for DMA to update/complete the context descriptor.
+After applied this patch, kernel keeps alive, only the video player turns
+to green screen.
 
-ptp4l Timestamp log without this patch:
------------------------------------------------------------
-$ echo 10000 > /sys/class/net/enp0s30f4/gro_flush_timeout
-$ echo 10000 > /sys/class/net/enp0s30f4/napi_defer_hard_irqs
-$ ptp4l -P2Hi enp0s30f4 --step_threshold=1 -m
-ptp4l: selected /dev/ptp2 as PTP clock
-ptp4l: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
-ptp4l: selected local clock 901210.fffe.b57df7 as best master
-ptp4l: port 1: new foreign master 22bb22.fffe.bb22bb-1
-ptp4l: selected best master clock 22bb22.fffe.bb22bb
-ptp4l: port 1: LISTENING to UNCALIBRATED on RS_SLAVE
-ptp4l: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
-ptp4l: port 1: received SYNC without timestamp
-ptp4l: rms   49 max   63 freq  -9573 +/-  34 delay    71 +/-   1
-ptp4l: rms   15 max   25 freq  -9553 +/-  20 delay    72 +/-   0
-ptp4l: port 1: received SYNC without timestamp
-ptp4l: rms    9 max   18 freq  -9540 +/-  11 delay    70 +/-   0
-ptp4l: port 1: received PDELAY_REQ without timestamp
-ptp4l: rms   16 max   29 freq  -9519 +/-  12 delay    72 +/-   0
-ptp4l: port 1: received PDELAY_REQ without timestamp
-ptp4l: rms    9 max   18 freq  -9527 +/-  12 delay    72 +/-   0
-ptp4l: rms    5 max    9 freq  -9530 +/-   7 delay    70 +/-   0
-ptp4l: rms   11 max   20 freq  -9530 +/-  16 delay    72 +/-   0
-ptp4l: rms    5 max   11 freq  -9530 +/-   7 delay    74 +/-   0
-ptp4l: rms    6 max    9 freq  -9522 +/-   7 delay    72 +/-   0
-ptp4l: port 1: received PDELAY_REQ without timestamp
------------------------------------------------------------
+[67242.065474] pc : vpu_dec_ipi_handler+0xa0/0xb20 [mtk_vcodec_dec]
+[67242.065485] [MTK_V4L2] level=0 fops_vcodec_open(),334:
+18000000.vcodec_dec decoder [135]
+[67242.065523] lr : scp_ipi_handler+0x11c/0x244 [mtk_scp]
+[67242.065540] sp : ffffffbb4207fb10
+[67242.065557] x29: ffffffbb4207fb30 x28: ffffffd00a1d5000
+[67242.065592] x27: 1ffffffa0143aa24 x26: 0000000000000000
+[67242.065625] x25: dfffffd000000000 x24: ffffffd0168bfdb0
+[67242.065659] x23: 1ffffff76840ff74 x22: ffffffbb41fa8a88
+[67242.065692] x21: ffffffbb4207fb9c x20: ffffffbb4207fba0
+[67242.065725] x19: ffffffbb4207fb98 x18: 0000000000000000
+[67242.065758] x17: 0000000000000000 x16: ffffffd042022094
+[67242.065791] x15: 1ffffff77ed4b71a x14: 1ffffff77ed4b719
+[67242.065824] x13: 0000000000000000 x12: 0000000000000000
+[67242.065857] x11: 0000000000000000 x10: dfffffd000000001
+[67242.065890] x9 : 0000000000000000 x8 : 0000000000000002
+[67242.065923] x7 : 0000000000000000 x6 : 000000000000003f
+[67242.065956] x5 : 0000000000000040 x4 : ffffffffffffffe0
+[67242.065989] x3 : ffffffd043b841b8 x2 : 0000000000000000
+[67242.066021] x1 : 0000000000000010 x0 : 0000000000000010
+[67242.066055] Call trace:
+[67242.066092]  vpu_dec_ipi_handler+0xa0/0xb20 [mtk_vcodec_dec
+12220d230d83a7426fc38c56b3e7bc6066955bae]
+[67242.066119]  scp_ipi_handler+0x11c/0x244 [mtk_scp
+8fb69c2ef141dd3192518b952b65aba35627b8bf]
+[67242.066145]  mt8192_scp_irq_handler+0x70/0x128 [mtk_scp
+8fb69c2ef141dd3192518b952b65aba35627b8bf]
+[67242.066172]  scp_irq_handler+0xa0/0x114 [mtk_scp
+8fb69c2ef141dd3192518b952b65aba35627b8bf]
+[67242.066200]  irq_thread_fn+0x84/0xf8
+[67242.066220]  irq_thread+0x170/0x1ec
+[67242.066242]  kthread+0x2f8/0x3b8
+[67242.066264]  ret_from_fork+0x10/0x30
+[67242.066292] Code: 38f96908 35003628 91004340 d343fc08 (38f96908)
 
-ptp4l Timestamp log with this patch:
------------------------------------------------------------
-$ echo 10000 > /sys/class/net/enp0s30f4/gro_flush_timeout
-$ echo 10000 > /sys/class/net/enp0s30f4/napi_defer_hard_irqs
-$ ptp4l -P2Hi enp0s30f4 --step_threshold=1 -m
-ptp4l: selected /dev/ptp2 as PTP clock
-ptp4l: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
-ptp4l: selected local clock 901210.fffe.b57df7 as best master
-ptp4l: port 1: new foreign master 22bb22.fffe.bb22bb-1
-ptp4l: selected best master clock 22bb22.fffe.bb22bb
-ptp4l: port 1: LISTENING to UNCALIBRATED on RS_SLAVE
-ptp4l: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
-ptp4l: rms   30 max   45 freq  -9400 +/-  23 delay    72 +/-   0
-ptp4l: rms    7 max   16 freq  -9414 +/-  10 delay    70 +/-   0
-ptp4l: rms    6 max    9 freq  -9422 +/-   6 delay    72 +/-   0
-ptp4l: rms   13 max   20 freq  -9436 +/-  13 delay    74 +/-   0
-ptp4l: rms   12 max   27 freq  -9446 +/-  11 delay    72 +/-   0
-ptp4l: rms    9 max   12 freq  -9453 +/-   6 delay    74 +/-   0
-ptp4l: rms    9 max   15 freq  -9438 +/-  11 delay    74 +/-   0
-ptp4l: rms   10 max   16 freq  -9435 +/-  12 delay    74 +/-   0
-ptp4l: rms    8 max   18 freq  -9428 +/-   8 delay    72 +/-   0
-ptp4l: rms    8 max   18 freq  -9423 +/-   8 delay    72 +/-   0
-ptp4l: rms    9 max   16 freq  -9431 +/-  12 delay    70 +/-   0
-ptp4l: rms    9 max   18 freq  -9441 +/-   9 delay    72 +/-   0
------------------------------------------------------------
-
-Fixes: ba1ffd74df74 ("stmmac: fix PTP support for GMAC4")
-Cc: <stable@vger.kernel.org> # 5.4.x
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@intel.com>
+Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+Reviewed-by: Macpaul Lin <macpaul.lin@mediatek.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-index d3b4765c1a5b..289bf26a6105 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-@@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
- 			/* Check if timestamp is OK from context descriptor */
- 			do {
- 				ret = dwmac4_rx_check_timestamp(next_desc);
--				if (ret < 0)
-+				if (ret <= 0)
- 					goto exit;
- 				i++;
+diff --git a/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c b/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c
+index 35f4d5583084..1041dd663e76 100644
+--- a/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c
++++ b/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c
+@@ -91,6 +91,11 @@ static void vpu_dec_ipi_handler(void *data, unsigned int len, void *priv)
+ 	struct vdec_vpu_inst *vpu = (struct vdec_vpu_inst *)
+ 					(unsigned long)msg->ap_inst_addr;
  
-+				fsleep(1);
- 			} while ((ret == 1) && (i < 10));
++	if (!vpu) {
++		mtk_v4l2_err("ap_inst_addr is NULL");
++		return;
++	}
++
+ 	mtk_vcodec_debug(vpu, "+ id=%X", msg->msg_id);
  
- 			if (i == 10)
+ 	vpu->failure = msg->status;
 -- 
-2.25.1
+2.18.0
 
