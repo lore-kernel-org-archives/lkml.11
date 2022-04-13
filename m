@@ -2,130 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2C1C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237478AbiDMRxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
+        id S237489AbiDMRyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235080AbiDMRw5 (ORCPT
+        with ESMTP id S236021AbiDMRye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:52:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAEF37BEF;
-        Wed, 13 Apr 2022 10:50:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99A6261EFF;
-        Wed, 13 Apr 2022 17:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06590C385AD;
-        Wed, 13 Apr 2022 17:50:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649872235;
-        bh=72D0BQpOM8DgsMxYOZ4xGuBKKYvsyfG0yqN4ABcAeNo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ciqNFSB3a6s+6tQacQsr3LwWwxt9yqkxO4Rep5osYLHbC/F7hQJ32xBpsylcBrOTT
-         IrhxgTN10JEvYMF9KPVFBPe0IWBtj+ew8cEdj4V/AtmiUeenjbBNdAH7L5UpVSDrB2
-         PNTgogotTNstEeFYFT578TG4ipBdUm2vThOWL/lyS/EM95uz5M1N3BUjfLtyJok+we
-         tueNkYfafZ9SkL7MZyiXfSiIBdBG7GFEPCojZV9jKQSg0B65hvv1eiVDB4glm93axt
-         CQN1QDV4msZvT2V2WRCcXEnrMyoROzIqJs2opaM1yVrEPBraJVthbUVnUTX/sIZjmP
-         dLbmmrkQXGCrw==
-Received: by mail-oi1-f174.google.com with SMTP id r8so2860477oib.5;
-        Wed, 13 Apr 2022 10:50:34 -0700 (PDT)
-X-Gm-Message-State: AOAM533c0zjAlaqH+tEXd5qa9jpugUhaCDSn/HFxUagOgWIBVBdnzk1M
-        COuf9R2sW89aLJNc52HUt8x9NA7/j9WPncK09I0=
-X-Google-Smtp-Source: ABdhPJwMqB9JakBeMKzBTAQG1328aJ3fK+Q/YGyjfvegtP7jyVLxEMe3r2eQNXMCXu4zy5HvILllejSX9U63sYr5T7A=
-X-Received: by 2002:a05:6808:1513:b0:2fa:7a40:c720 with SMTP id
- u19-20020a056808151300b002fa7a40c720mr988027oiw.126.1649872234062; Wed, 13
- Apr 2022 10:50:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220224154330.26564-1-baskov@ispras.ru> <CAMj1kXGg=HAv3P_NKqUHCg6bRFsB0qhfa_z-TOdmi-G8EqPrZA@mail.gmail.com>
- <20220228183044.GA18400@srcf.ucam.org> <9787f1c1948cc640e70a50e4b929f44f@ispras.ru>
- <20220303204759.GA20294@srcf.ucam.org> <20220318163739.5doimyda5e3kdcef@redhat.com>
- <20e2f5b9ab008b12f14e763127f5ca1b@ispras.ru> <CAMj1kXFgy=e6FEtcWMUU4_aGqy7DA_22S=JaqQRCGinD+9OUrA@mail.gmail.com>
-In-Reply-To: <CAMj1kXFgy=e6FEtcWMUU4_aGqy7DA_22S=JaqQRCGinD+9OUrA@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 13 Apr 2022 19:50:22 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFzO+=z3Zx3BX_1O2YDsB2Xz=Wb0O0miyi84SLOYBUwnQ@mail.gmail.com>
-Message-ID: <CAMj1kXFzO+=z3Zx3BX_1O2YDsB2Xz=Wb0O0miyi84SLOYBUwnQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 0/2] Handle UEFI NX-restricted page tables
-To:     Baskov Evgeniy <baskov@ispras.ru>
-Cc:     Matthew Garrett <mjg59@srcf.ucam.org>,
+        Wed, 13 Apr 2022 13:54:34 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EEF6D3A2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:52:11 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id z16so1918284qtq.6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:52:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AOcfAyqGgzTsDLYWZNFvb/pt3FEBh03V8FeUjVfINLs=;
+        b=Bossa6GEY7VuCphnLPZuOzJUtcvFY0Xkwv27PVSBfCC/FdX4k2U/R/8tc3e6/TDG9b
+         w/9uAgh8u82TWvzqs9/oqezRfVKYTJcg88jPsDyVpjn5i6qVesFEQ/DApakc869u+5lk
+         GwUeq/iRHuUUSbU5VPjF+x+Nxyo3LcL64cerGvihnoxpTS7x163MByH0tjIdn6VLh7j0
+         ORezJT/JFq5so7GsIh61VtI+O3VpLisBAYp/sU9dzGHFPjvZ0UPJeFpJ9W27eu7ET5GJ
+         cvhFhPAZ1ZOsHSur//jxKwQ6gDdtJtdM7gcJ7fyJKGc6kOw1FZQe9pd2KDaJak2ceHpG
+         PJvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AOcfAyqGgzTsDLYWZNFvb/pt3FEBh03V8FeUjVfINLs=;
+        b=cyhfGpIkb+surUcWpxuQkyqtnL5I9WPnvdIplgLzj0A1pFO5Lj58xld2bHHdiFqyOM
+         HNTlEOOj5YqTNf22sG3w1cr2qzS3RFxkZbaylHCLN5XP2Nk9UCIfjvPD1IznJ0azeGJ8
+         Yvyzq9Bf/b0YcB+PPRnmssEic+6zhgMxdHOMpOxxvs6Bouu6uEHe8Hk6anyz0NGmeuP8
+         maewnb62hNWY/kh4prpf684cF9yW+Rr1QULQXjdqtf1qwflYaHN7cbRa8Htu73C/FW35
+         8it4DWmJE47wakzH3+EC/GWWwyBf2kMm3VlEEKo/0CAiH6l+eAu8aUTx6UPA0bmTp2jW
+         lhnA==
+X-Gm-Message-State: AOAM531yKoaS1lvlgh7Mlgr+5hK13+y5A7OsKPbzbSZt7OgeldmBfw4Z
+        tTuDV8H0nvBOSV+VjnKbkkLwaw==
+X-Google-Smtp-Source: ABdhPJyFh5b43Bp+tYjO2fJUecpGRbFTQokPtotFsAvgNZxKoFX6OH3MdddD7y2rpYU6hDl31dtUUQ==
+X-Received: by 2002:a05:622a:1392:b0:2e1:e7b9:3ce4 with SMTP id o18-20020a05622a139200b002e1e7b93ce4mr7976945qtk.153.1649872330523;
+        Wed, 13 Apr 2022 10:52:10 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id w10-20020a05620a424a00b00680c0c0312dsm23050212qko.30.2022.04.13.10.52.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 10:52:09 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nehA0-001kWp-5D; Wed, 13 Apr 2022 14:52:08 -0300
+Date:   Wed, 13 Apr 2022 14:52:08 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Jones <pjones@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>
+Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
+ against RLIMIT_MEMLOCK
+Message-ID: <20220413175208.GI64706@ziepe.ca>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-5-chao.p.peng@linux.intel.com>
+ <Yk8L0CwKpTrv3Rg3@google.com>
+ <02e18c90-196e-409e-b2ac-822aceea8891@www.fastmail.com>
+ <YlB3Z8fqJ+67a2Ck@google.com>
+ <7ab689e7-e04d-5693-f899-d2d785b09892@redhat.com>
+ <20220412143636.GG64706@ziepe.ca>
+ <1686fd2d-d9c3-ec12-32df-8c4c5ae26b08@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1686fd2d-d9c3-ec12-32df-8c4c5ae26b08@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 at 09:06, Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> On Thu, 24 Mar 2022 at 17:39, <baskov@ispras.ru> wrote:
-> >
-> > On 2022-03-18 19:37, Peter Jones wrote:
-> > > On Thu, Mar 03, 2022 at 08:47:59PM +0000, Matthew Garrett wrote:
-> > >> On Thu, Mar 03, 2022 at 04:42:07PM +0300, baskov@ispras.ru wrote:
-> > >> > On 2022-02-28 21:30, Matthew Garrett wrote:
-> > >> > > On Mon, Feb 28, 2022 at 05:45:53PM +0100, Ard Biesheuvel wrote:
-> > >> > >
-> > >> > > > Given that this is a workaround for a very specific issue arising on
-> > >> > > > PI based implementations of UEFI, I consider this a quirk, and so I
-> > >> > > > think this approach is reasonable. I'd still like to gate it on some
-> > >> > > > kind of identification, though - perhaps something related to DMI like
-> > >> > > > the x86 core kernel does as well.
-> > >> > >
-> > >> > > When the V1 patches were reviewed, you suggested allocating
-> > >> > > EFI_LOADER_CODE rather than EFI_LOADER_DATA. The example given for a
-> > >> > > failure case is when NxMemoryProtectionPolicy is set to 0x7fd4, in which
-> > >> > > case EFI_LOADER_CODE, EFI_BOOT_SERVICES_CODE and
-> > >> > > EFI_RUNTIEM_SERVICES_CODE should not have the nx policy applied. So it
-> > >> > > seems like your initial suggestion (s/LOADER_DATA/LOADER_CODE/) should
-> > >> > > have worked, even if there was disagreement about whether the spec
-> > >> > > required it to. Is this firmware applying a stricter policy?
-> > >> >
-> > >> > Yes, this firmware is being modified to enforce stricter policy.
-> > >>
-> > >> Ok. I think this should really go through the UEFI spec process - I
-> > >> agree that from a strict interpretation of the spec, what this
-> > >> firmware
-> > >> is doing is legitimate, but I don't like having a situation where we
-> > >> have to depend on the DXE spec.
-> > >
-> > > It's in the process of getting into the UEFI spec now as
-> > > https://bugzilla.tianocore.org/show_bug.cgi?id=3519 .
-> > >
-> > >> How does Windows handle this? Just update the page tables itself for
-> > >> any
-> > >> regions it needs during boot?
-> > >
-> > > Microsoft's bootloader sets up its own pagetables, though I believe
-> > > they're switching it to use the (soon to be) standardized API.
-> >
-> > The third version of the patch is the most close in structure
-> > to the proposed protocol. And until the protocol is standardized and
-> > implemented on problematic firmware, I think, it remains the better
-> > solution in terms of simplicity and further porting to the new
-> > protocol.
-> >
-> > It is desirable to get the issue resolved, and make the kernel stricter
-> > comply to the spec, without waiting for the new API implementation.
-> > And later, switch the kernel to be using the protocol with
-> > subsequent patches as soon as it gets usable.
-> >
-> > So, is there a chance for these patches to be accepted in current
-> > form, or with some modifications?
-> >
->
-> I am fine with taking the v3, as it is the most likely to only affect
-> the systems that actually need this change in behavior.
->
-> So unless there are any objections, I will queue these up after the
-> merge window.
+On Wed, Apr 13, 2022 at 06:24:56PM +0200, David Hildenbrand wrote:
+> On 12.04.22 16:36, Jason Gunthorpe wrote:
+> > On Fri, Apr 08, 2022 at 08:54:02PM +0200, David Hildenbrand wrote:
+> > 
+> >> RLIMIT_MEMLOCK was the obvious candidate, but as we discovered int he
+> >> past already with secretmem, it's not 100% that good of a fit (unmovable
+> >> is worth than mlocked). But it gets the job done for now at least.
+> > 
+> > No, it doesn't. There are too many different interpretations how
+> > MELOCK is supposed to work
+> > 
+> > eg VFIO accounts per-process so hostile users can just fork to go past
+> > it.
+> > 
+> > RDMA is per-process but uses a different counter, so you can double up
+> > 
+> > iouring is per-user and users a 3rd counter, so it can triple up on
+> > the above two
+> 
+> Thanks for that summary, very helpful.
 
-I have queued these up now.
+I kicked off a big discussion when I suggested to change vfio to use
+the same as io_uring
+
+We may still end up trying it, but the major concern is that libvirt
+sets the RLIMIT_MEMLOCK and if we touch anything here - including
+fixing RDMA, or anything really, it becomes a uAPI break for libvirt..
+
+> >> So I'm open for alternative to limit the amount of unmovable memory we
+> >> might allocate for user space, and then we could convert seretmem as well.
+> > 
+> > I think it has to be cgroup based considering where we are now :\
+> 
+> Most probably. I think the important lessons we learned are that
+> 
+> * mlocked != unmovable.
+> * RLIMIT_MEMLOCK should most probably never have been abused for
+>   unmovable memory (especially, long-term pinning)
+
+The trouble is I'm not sure how anything can correctly/meaningfully
+set a limit.
+
+Consider qemu where we might have 3 different things all pinning the
+same page (rdma, iouring, vfio) - should the cgroup give 3x the limit?
+What use is that really?
+
+IMHO there are only two meaningful scenarios - either you are unpriv
+and limited to a very small number for your user/cgroup - or you are
+priv and you can do whatever you want.
+
+The idea we can fine tune this to exactly the right amount for a
+workload does not seem realistic and ends up exporting internal kernel
+decisions into a uAPI..
+
+Jason
