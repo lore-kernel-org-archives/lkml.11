@@ -2,145 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 858D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD3EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236959AbiDMQod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
+        id S236960AbiDMQpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbiDMQob (ORCPT
+        with ESMTP id S230056AbiDMQpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:44:31 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197456542C;
-        Wed, 13 Apr 2022 09:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649868130; x=1681404130;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gOJsbaOCa8KxicoNnh0loPS6xmr5k28s00irC47bW6o=;
-  b=mL1snkSGZGOlXPPJwCXhc2JRSfN0jv8g0B1gfN87giKNCdB7GDgAaeKu
-   jfr19BSSyr+3yQJqI4I97gN8OzSgM2RhEa1gmw/D+f8eA+hr76zcvmqA5
-   /cq4zfCGFmK8laGm+l74Y6Oq6vCICLofO5Cr171clfCHZFeIICJbgSwGW
-   s=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 13 Apr 2022 09:42:09 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:42:09 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Apr 2022 09:42:09 -0700
-Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Apr 2022 09:42:08 -0700
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-To:     <mani@kernel.org>, <quic_hemantk@quicinc.com>,
-        <quic_bbhatt@quicinc.com>
-CC:     <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [PATCH v3] bus: mhi: host: Use cached values for calculating the shared write pointer
-Date:   Wed, 13 Apr 2022 10:41:53 -0600
-Message-ID: <1649868113-18826-1-git-send-email-quic_jhugo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 13 Apr 2022 12:45:45 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E28B674F7;
+        Wed, 13 Apr 2022 09:43:23 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 20FA768AFE; Wed, 13 Apr 2022 18:43:20 +0200 (CEST)
+Date:   Wed, 13 Apr 2022 18:43:19 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Allen Pais <apais@linux.microsoft.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v3 1/1] firmware: tee_bnxt: Use UUID API for exporting
+ the UUID
+Message-ID: <20220413164319.GA31604@lst.de>
+References: <20220412113250.57997-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412113250.57997-1-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mhi_recycle_ev_ring() computes the shared write pointer for the ring
-(ctxt_wp) using a read/modify/write pattern where the ctxt_wp value in the
-shared memory is read, incremented, and written back.  There are no checks
-on the read value, it is assumed that it is kept in sync with the locally
-cached value.  Per the MHI spec, this is correct.  The device should only
-read ctxt_wp, never write it.
+On Tue, Apr 12, 2022 at 02:32:50PM +0300, Andy Shevchenko wrote:
+> There is export_uuid() function which exports uuid_t to the u8 array.
+> Use it instead of open coding variant.
+> 
+> This allows to hide the uuid_t internals.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-However, there are devices in the wild that violate the spec, and can
-update the ctxt_wp in a specific scenario.  This can cause corruption, and
-violate the above assumption that the ctxt_wp is in sync with the cached
-value.
+Looks good:
 
-This can occur when the device has loaded firmware from the host, and is
-transitioning from the SBL EE to the AMSS EE.  As part of shutting down
-SBL, the SBL flushes it's local MHI context to the shared memory since
-the local context will not persist across an EE change.  In the case of
-the event ring, SBL will flush its entire context, not just the parts that
-it is allowed to update.  This means SBL will write to ctxt_wp, and
-possibly corrupt it.
-
-An example:
-
-Host				Device
-----				---
-Update ctxt_wp to 0x1f0
-				SBL observes 0x1f0
-Update ctxt_wp to 0x0
-				Starts transition to AMSS EE
-				Context flush, writes 0x1f0 to ctxt_wp
-Update ctxt_wp to 0x200
-Update ctxt_wp to 0x210
-				AMSS observes 0x210
-				0x210 exceeds ring size
-				AMSS signals syserr
-
-The reason the ctxt_wp goes off the end of the ring is that the rollover
-check is only performed on the cached wp, which is out of sync with
-ctxt_wp.
-
-Since the host is the authority of the value of ctxt_wp per the MHI spec,
-we can fix this issue by not reading ctxt_wp from the shared memory, and
-instead compute it based on the cached value.  If SBL corrupts ctxt_wp,
-the host won't observe it, and will correct the value at some point later.
-
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
-Reviewed-by: Bhaumik Bhatt <bbhatt@codeaurora.org>
----
-
-v3:
-Rebase to -next
-
-v2:
-Fix typo on the ring base
-
- drivers/bus/mhi/host/main.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/bus/mhi/host/main.c b/drivers/bus/mhi/host/main.c
-index 142eea1..f3aef77a 100644
---- a/drivers/bus/mhi/host/main.c
-+++ b/drivers/bus/mhi/host/main.c
-@@ -534,18 +534,13 @@ irqreturn_t mhi_intvec_handler(int irq_number, void *dev)
- static void mhi_recycle_ev_ring_element(struct mhi_controller *mhi_cntrl,
- 					struct mhi_ring *ring)
- {
--	dma_addr_t ctxt_wp;
--
- 	/* Update the WP */
- 	ring->wp += ring->el_size;
--	ctxt_wp = le64_to_cpu(*ring->ctxt_wp) + ring->el_size;
- 
--	if (ring->wp >= (ring->base + ring->len)) {
-+	if (ring->wp >= (ring->base + ring->len))
- 		ring->wp = ring->base;
--		ctxt_wp = ring->iommu_base;
--	}
- 
--	*ring->ctxt_wp = cpu_to_le64(ctxt_wp);
-+	*ring->ctxt_wp = cpu_to_le64(ring->iommu_base + (ring->wp - ring->base));
- 
- 	/* Update the RP */
- 	ring->rp += ring->el_size;
--- 
-2.7.4
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
