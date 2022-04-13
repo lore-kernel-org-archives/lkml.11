@@ -2,111 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 037B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233090AbiDMGoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 02:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
+        id S232636AbiDMGpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 02:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231899AbiDMGoD (ORCPT
+        with ESMTP id S231713AbiDMGpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 02:44:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B8B72B27D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:41:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649832102;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=f/G4+V/2r9lJkom+e8pScX/b0FmMM9Qy+8u3OkZBVmQ=;
-        b=JXOocOchT3ls61xRiUkwFIt45KauvA1S+famIbxU/vCAT1/qmtSWI3cikUKJPS/NdYMUFG
-        zOgJadzgo7/RDYslG8aTI3hjyCx3c2kabxEo/4T5GIU9Y2uCtnal8xh2VX3i5MGCmCo2zt
-        aViVbvNBO0rLN09yMqQm/sx8YUMaHss=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-6cM1yx9tMj6dMc1NTxRJhg-1; Wed, 13 Apr 2022 02:41:41 -0400
-X-MC-Unique: 6cM1yx9tMj6dMc1NTxRJhg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 13 Apr 2022 02:45:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20522C11C;
+        Tue, 12 Apr 2022 23:42:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DCC3385A5BE;
-        Wed, 13 Apr 2022 06:41:40 +0000 (UTC)
-Received: from localhost (dhcp-192-194.str.redhat.com [10.33.192.194])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 902112166B4F;
-        Wed, 13 Apr 2022 06:41:26 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Halil Pasic <pasic@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
-In-Reply-To: <CACGkMEuUXAUK-8GnBWgij5TOSN0ct_gmxnDQEcovRmTLK6bv4w@mail.gmail.com>
-Organization: Red Hat GmbH
-References: <20220406083538.16274-1-jasowang@redhat.com>
- <20220406083538.16274-5-jasowang@redhat.com>
- <20220406075952-mutt-send-email-mst@kernel.org>
- <87wng2e527.fsf@redhat.com> <20220408150307.24b6b99f.pasic@linux.ibm.com>
- <20220410034556-mutt-send-email-mst@kernel.org>
- <CACGkMEtarZb6g3ij5=+As17+d9jtdAqNa1EzSuTXc7Pq_som0Q@mail.gmail.com>
- <877d7vbspu.fsf@redhat.com> <20220412020145.32e26e5a.pasic@linux.ibm.com>
- <87r1629rio.fsf@redhat.com>
- <CACGkMEuUXAUK-8GnBWgij5TOSN0ct_gmxnDQEcovRmTLK6bv4w@mail.gmail.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Wed, 13 Apr 2022 08:41:25 +0200
-Message-ID: <87o815a3je.fsf@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B225B820FE;
+        Wed, 13 Apr 2022 06:42:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9771DC385A6;
+        Wed, 13 Apr 2022 06:42:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649832159;
+        bh=Z7OFrPj0bX5MvKFUOMLJsvOjs12AWG7MQ65iVC8WD6Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g06SzperoHCgZwa8/92u6JZAJDVi5tdqh7Zi7wvdG190Y7izLVILWrIQh3G9mrep5
+         6bTeAhJ7+8Xhf0aTJbL5KLR7J3w1vqzcxvtvTgIpIfK6PT3MIjX178uqFYjQLLPUSD
+         YpUCS9MLuHbyKcK1cmkVQNQoazh5VwS+dpx4nsSfYYbdahfgveMCRdSCoWu2SW7zkg
+         nOWHQhHyn+LNh8Ndc73bX0n3i3NcsrISrh9L76a0dWJn7CmF70HOWah58Zd/EO+HmQ
+         rxm4hAX2EtR7PvPjBaOpo0sK07d1gWeAxF8fGL/wsYoq1EHoiZAAB1yGuGJaEVd5Mq
+         o1uPF7aYF40Ow==
+Date:   Wed, 13 Apr 2022 12:12:34 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/5] dt-bindings: phy: Fix uniphier descriptions
+Message-ID: <YlZw2jUmLjWuL2SG@matsya>
+References: <1648637715-19262-1-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1648637715-19262-1-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13 2022, Jason Wang <jasowang@redhat.com> wrote:
+On 30-03-22, 19:55, Kunihiko Hayashi wrote:
+> This series fixes dt-schema descriptions for all PHYs implemented in
+> UniPhier SoCs.
 
-> On Wed, Apr 13, 2022 at 12:49 AM Cornelia Huck <cohuck@redhat.com> wrote:
->>
->> On Tue, Apr 12 2022, Halil Pasic <pasic@linux.ibm.com> wrote:
->>
->> > On Mon, 11 Apr 2022 16:27:41 +0200
->> > Cornelia Huck <cohuck@redhat.com> wrote:
->>
->> >> My main concern is that we would need to synchronize against a single
->> >> interrupt that covers all kinds of I/O interrupts, not just a single
->> >> device...
->> >>
->> >
->> > Could we synchronize on struct airq_info's lock member? If we were
->> > to grab all of these that might be involved...
->>
->> Hm, that could possibly narrow the sync down to a subset, which seems
->> better. For devices still using classic interrupts, per-device sync
->> would be easy.
->>
->> >
->> > AFAIU for the synchronize implementation we need a lock or a set of locks
->> > that contain all the possible vring_interrupt() calls with the queuues
->> > that belong to the given device as a critical section. That way, one
->> > has the acquire's and release's in place so that the vrign_interrupt()
->> > either guaranteed to finish before the change of driver_ready is
->> > guaranteed to be complete, or it is guaranteed to see the change.
->> >
->> > In any case, I guess we should first get clear on the first part. I.e.
->> > when do we want to allow host->guest notifications.
->>
->> Also, whether we just care about vring interrupts, or general device
->> interrupts (not sure if a config change interrupt may also trigger
->> things we do not want to trigger?)
->
-> I think only vring interrupts, since the config interrupt hardening is
-> done via 22b7050a024d7 ("virtio: defer config changed notifications")
+Applied, thanks
 
-Ah thanks, I even reviewed that one back then :)
-
+-- 
+~Vinod
