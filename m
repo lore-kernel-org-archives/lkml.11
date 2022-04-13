@@ -2,179 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B07C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:44:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD504C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232533AbiDMFqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 01:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
+        id S232546AbiDMFq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 01:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232517AbiDMFqS (ORCPT
+        with ESMTP id S232539AbiDMFqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 01:46:18 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732CE30F55
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:43:58 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23D1P95q012645;
-        Wed, 13 Apr 2022 05:43:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=lrkIA6FPjNDJVPYlvd4BhJjE46UKmWVVjrSaFHQjxv0=;
- b=IBcuzxLUt3dQLTOy29DcT7eUH9WESD2d2W4QRgahqL4Qzpc92Urj8hQIv4jG+GfkcPY4
- 6et5cIhxBwXwrHsBGdeauIRqF61JxsoDQHsDJnbKe1ejyD7Z2hrh+qNP8fiOVkSgux8x
- Tkm/UJMOPnLWACgDdDWWDFpRT5/PpRGkUfCU1wmbePuLqtETEzKLTGeUP8qvl+/MtYzD
- +ScNoPSp6ZM502ktcNiwfouE4qwVNJVDWfGNyys0uyNtnbr5V7w+xgXgPQg6T4dsI74F
- iTKyb5tX6aoE88uthMR2BWJyi2ljVod42I6NXJSNzgTB2pp+Ua0j+8yO05cwHHxd/1Uy 0g== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3fb2pu0ywe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Apr 2022 05:43:21 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23D5fQVo033782;
-        Wed, 13 Apr 2022 05:43:20 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fb0k3mtfk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Apr 2022 05:43:20 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TRCwjWFEpciZRWqQhlvW/vmywxEtdf6+hLa71m4Xyl3Q44PFzrVArw375BrE5P3aZM/hTsAQviF7yrcWy/HaNe0EnlMEsdJc5sSTMvrvsxMf6TX7BL+QdBsLxuPQXGign3KlSMrhBYKwhu7vh+iu6TyrrbOplTRy75DH1dOoY5hq6WhZoPCKfT4RaqYbFKsGu0qP1UisvP1st2FdcIGXjdbBX6d/dLO4x8gL03V7Vo7lMbID9PRd+NGF0b69chUVyKchaAJtRRUNo/g6kL6mNHNCZF1GyfMO6TwzygdA5AT+sd1xUH4oCjnVyPb/pTLLhLPgZtTYNstQ5Z9VcbpcgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lrkIA6FPjNDJVPYlvd4BhJjE46UKmWVVjrSaFHQjxv0=;
- b=d99oDb7XoCHYCcC6BAIIF2qtUeIhn3rRTIZ4bJWJtzOBtGUzdIdarfxmeEJMvK87tXQLuB2rM5SO6BG2V1/HvYs5mdsMGnLZ2spVO8N2csOKGTZIkII1Y1kM3wCv9kI5jkemDN5gJ8liCNMWqA7xQlI7v0V7JK9Cw18R0HQ8URYVwd2aotKD9RYIg8GSdp39QrXCmIOgQqCU4BrfVPKdYwrPmUS2SJavv55H0oUPsmrVKTnzT8UsQ+jPZwtr/LdMR79htaQURxH80k809DMq08UORzRRXk7fSOhVMmQ8BctdW0sua8IDMxPnL+1u/cI4F0HqoC/Yb7LUrHn1m7yvSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Wed, 13 Apr 2022 01:46:54 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFE32317F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:44:33 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id q189so841851ljb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:44:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lrkIA6FPjNDJVPYlvd4BhJjE46UKmWVVjrSaFHQjxv0=;
- b=X7dbUnXLFqmSi2YalMMglOdhICit6z9Q3LkNMCixQ3JPrk8nY3WF2gHyxsaUgprFG2JMhbKaNaIm8GqIfYUZ+Zqn2uPsHd8nIBtAEh5D+9CKARzpDgf+BFx7h2xuYsh7WjXs4IIO6Uj5IHKqmyohjOPOC/bCv2ae2IyWALFKHW4=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BLAPR10MB5345.namprd10.prod.outlook.com
- (2603:10b6:208:331::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Wed, 13 Apr
- 2022 05:43:18 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b5d5:7b39:ca2d:1b87]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b5d5:7b39:ca2d:1b87%5]) with mapi id 15.20.5144.022; Wed, 13 Apr 2022
- 05:43:17 +0000
-Date:   Wed, 13 Apr 2022 08:42:52 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: Re: [PATCH v2 0/7] drop some unnecessary wrappers
-Message-ID: <20220413054252.GR12805@kadam>
-References: <20220411102136.14937-1-makvihas@gmail.com>
- <3484215.R56niFO833@leap>
- <20220412151529.GF3293@kadam>
- <3134226.AJdgDx1Vlc@leap>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3134226.AJdgDx1Vlc@leap>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0047.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::35)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UNRZZtX1skqqmcukEzSXbvuMVM7LhhiW1Q87eJDB3CE=;
+        b=wa96ESDyEWm4GigkhtA/79HY7+TKR4BOYfnPn9c2SLhkszHUKq2JIazy3cWFzsULou
+         qPsN5Aqa5Jab32cZ4XEGHzpokZZGlmtOCYcVH97NMBl+ipHTsFtKcPeBf4eQp/gJHyka
+         tbu4tHuPQvYF4TCr8cPRR61VooRErOV739wnkVPtEcPA2QgzcIaSNAP5hgB8OtEWibxF
+         YcFyJ8tylESdNB/X9Km5B/FcAvd5ZExdYG5/xD7g4xJYS6XrFJRjPYf53KAQLd0Pqyzg
+         bdlX/v0oP5S95fTOkcyeAc4+IjVFRFU/kmchwg97xReOcHkYFswjS/WwEkkVz3jWrbNO
+         dQVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UNRZZtX1skqqmcukEzSXbvuMVM7LhhiW1Q87eJDB3CE=;
+        b=dhSlMBy0TfxwEH8QnBuGV1BhQCaEYB9JR4kv81s/EMoFx5NXH/PsNoJXfW63YQaJK6
+         8QaDYMeG76mEZkFuxiwvXodJy1m399I0XFy+i9O7rjYIzwzGYUX0zq3zMyFm672gpzSh
+         ztyFbR93xSWH7spNCXEGh2hHxxs23RoqeEammPbNN98tl+GDqSI+60PVqqRW2iGsko0u
+         dzpixs9Nh3SCkRYi+6KQ3lx78pf/qM1+kq0kmtwM2CjhSixjYyEj889K+Z7Jxy8lc+fc
+         nsDE/Uo/wrKfYI4CFKy4VkenrAVeZjUeC5GocAlFmWVneBDVN7QDvN9Z11Q6xvg9pqPn
+         Bpng==
+X-Gm-Message-State: AOAM533t81YtOHioss/m/70ux7A9H5cSUyDNdeOxn5akEyhlEAPzNsyL
+        sEmxUQPmCM0CqgotNpIwm2xk8GK8braIWw==
+X-Google-Smtp-Source: ABdhPJwldDmwqOqnQUIQPsQB5X0nT3MeMWDRvC4QBMdEa2myHcgNHH19bxE+3CgPIjfXtQewdqBIgQ==
+X-Received: by 2002:a05:651c:198b:b0:24c:805b:bcb8 with SMTP id bx11-20020a05651c198b00b0024c805bbcb8mr1964503ljb.228.1649828671304;
+        Tue, 12 Apr 2022 22:44:31 -0700 (PDT)
+Received: from jade.urgonet (h-79-136-84-253.A175.priv.bahnhof.se. [79.136.84.253])
+        by smtp.gmail.com with ESMTPSA id o23-20020ac24357000000b0044adb34b68csm3919835lfl.32.2022.04.12.22.44.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 22:44:30 -0700 (PDT)
+From:   Jens Wiklander <jens.wiklander@linaro.org>
+To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
+Cc:     Sumit Garg <sumit.garg@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>
+Subject: [PATCH v3 0/4] OP-TEE RPC argument cache
+Date:   Wed, 13 Apr 2022 07:44:14 +0200
+Message-Id: <20220413054418.71996-1-jens.wiklander@linaro.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 91d01f31-20f7-47cd-8a30-08da1d108222
-X-MS-TrafficTypeDiagnostic: BLAPR10MB5345:EE_
-X-Microsoft-Antispam-PRVS: <BLAPR10MB5345936A1C80CC65B39912E18EEC9@BLAPR10MB5345.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V5aDO0RfMDtVArk3Sta/75+bWFyJav/elVN8IewfYPuywhvgixNTIFY+aY0uE7oWIS4Ad32CrnPP3APz+mwiUno0ZrvKWsSBN1z7GfU2WzoDhY0Wma+bmp3Ge+6LBgm5BG4oaCKCgLiIvPIH5c6+vk23sW07BSt/Ktl7wYv6+/QCtyBAXPORoMiCoozd7Q1RHnWte7RXE0IfB4mC39TSmGGBOMeEAsKxuzN9QqfB7AUnZcnvJYOvgCItGDs4mCPa9WSknoEl4QGuFEn/CHHTC8LghQ83GSYqbg/9r2Hz674ymnCT2lQDa6m1L2B9Ykgm5WYcn0ncgxn9VjA+WA9rJSU/AukMhLUmv829ZbV4k/Dej7U9EEV+CLwC6eSbwa6k97SmNWhtlJKUfTlmg1bPkVXMLUr7FQgGelW6FofUv/PBmKUr+3h43WTJZRZLuoTn2VEW6O4WPRfiUxUOjV1metlYNx6LtzFI1QAONYPT//BA0w5z1pwKvl/1v19bLObHuw6b53DDJYSQSQDZiJDFqjI/vylCGk5ylPkoBn4jMxSYcQceCWZMpcgcSW5oD141eoglJQMjKEjbExIJlK3szf+z3oChjcq6myfP+dKPvVmR9FgIIrHvuJeQG+bycHWXjUSRYYRLuwNmPom+NDZKp6a+Vh0RJZyhW7ljLXcYuq8QW7cY+xdKlwmb36y4btK+D/XtTiOZiytkK4TRPPGHlg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(33656002)(508600001)(5660300002)(8936002)(44832011)(38100700002)(38350700002)(6486002)(83380400001)(186003)(26005)(2906002)(52116002)(1076003)(6666004)(86362001)(9686003)(6512007)(316002)(54906003)(6916009)(66476007)(4326008)(66556008)(8676002)(66946007)(33716001)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E0Z0rCfUR85rCH8sLO3CcyF2sby6jUljsSSrpUtz1Re4QIi/NYEM+CryAn+h?=
- =?us-ascii?Q?0gYu3nxIiUgKdArCuCt7KNugmQY0087Br3ZgrmlENLY2cwsd0DuxF6QU+ZLn?=
- =?us-ascii?Q?72rzRoByIXWDEgY23YXgBjwkhn+3viRQJn5hEeqUFaX5IasGklkOcR0UVVb1?=
- =?us-ascii?Q?wasH2rTk0nuK/PMPiNNZaT8jUnjc1P05NElDMQ+Kqyvf3q3nVhw74f4CoNZa?=
- =?us-ascii?Q?E+4v7MgP2LdpqE16OWGc5GSrWFiwnuZhrDnNwxZSqPv4SsFu8M6dV5AR6cNJ?=
- =?us-ascii?Q?Q4dg+Sp2WSbm4tNLc2zobPn3QXrXUMW+YIzKKv5l4Pga/yw1QNfF+kKoLEJE?=
- =?us-ascii?Q?O7/dBBnWnCScdzxZgJstq9ltyuor/gHvBjDGDr+zKewh9XNbhkF6ZY7H5giH?=
- =?us-ascii?Q?Z6piO/ZqDQe+i5rLP2ssnnQlzneUa10/t/VCY1FStxK5k1mf6QVTSTvJq/Pn?=
- =?us-ascii?Q?skbZqERGwMnbeEZK3NZiZkOigfmNfGPBn1vfSXGE3V+DuaIbhGNmYxUTkP6m?=
- =?us-ascii?Q?NqKmVrkH4HIN0xpgz6XR7X7NsO3M7gtpnQ6knzPjdfjElaUWxDYlmCmhmA43?=
- =?us-ascii?Q?oIXRruoiBK6eVY56KUQQnDzZmXgT9cDAnd4782vRvpS3riNPcfT8o6W8w3+Z?=
- =?us-ascii?Q?NWV/KMl6/EnuV/nED2eF52P01QVCXDwQzXYVDVcn7AtqhVWUr052nj0D9KFz?=
- =?us-ascii?Q?UC4PofgFzXtiSs/VNR6vAToZZdNS/KYL8xPTeASq4t5QJfkFxJTRo+itJG3X?=
- =?us-ascii?Q?4/g2UTZkq271+8KDxiL1/BE3ygqBSXkq41pBNClPwfMlsMam/oMk8b6JvjcZ?=
- =?us-ascii?Q?dHTz9GLdATLL8hjhQYgReI4hDFsBP8HV4Us3cpOOi7ldz8KHf/cYWytypyWd?=
- =?us-ascii?Q?84Bi62Y74alrPsnxQu6yi1RWaE1UBskL7LlXPClptD49HpKu2uZmmJXwOsLU?=
- =?us-ascii?Q?7mFZV94dxcWbibg/HZsGgeZ+80DN7unstgk8We9lG5HyZeH/SVQmsj5YUhoW?=
- =?us-ascii?Q?cT/zkgQySDNoU/jNFxW2BbeCtm/dXnAgOWFP3cgD3eUiTgJKoXi7gZken1d0?=
- =?us-ascii?Q?vcC5QuVH504w3C5Pv8mwvCW/pKNK8UWvhc9OeCMr1K30ilNeyVm6gQmejSmy?=
- =?us-ascii?Q?vgkDqmdiL3Riegaes/NX2dLHPfHF/g/a1FS94Pk4lbExsI99JRzfldCJ9VnO?=
- =?us-ascii?Q?0IqyKqVsCS1n2DR+cCaebGeRH1i8iNX7LXrm9x83wOaHz+bhyTA+nrMt2RMU?=
- =?us-ascii?Q?S7PNDURb52Lqd5UIF/GYMEUqynP1QtW6LIF2P8NHjCYIaW/vZ5CNZHVVB2Gg?=
- =?us-ascii?Q?R/HyrBISk0MwTcQDytZsKUjhP2ApFmzyfV+7v602sEwqB/o2e351mAVKkfPB?=
- =?us-ascii?Q?JzfRXrPHGv+y43lnjQijqpPOZbM+qR6nEN9JajKyz7GamnSEkuw6h5Ll2M2N?=
- =?us-ascii?Q?MgSuBre/OyC9aoFLsp3ocgK0uDpf0RzjdlBPojkeZ9HZI40lAZphCacmDaK6?=
- =?us-ascii?Q?e7gRcK9lXtkidvyPFxRaJ9aFKC5l9MdUIxVRN45+y6eA8+P+GBxei160egA7?=
- =?us-ascii?Q?5zU8gKCo5H6PMSiWwrNG7R02IPPUASSUIH3T+OneUY0UN2kyd+JSV9Wl0pTn?=
- =?us-ascii?Q?Yd9ccBS5pcgg4vuqPDZ6skbMwJlheYJKZ5xNNO7N9SPcf5M77pmH7kFaV/gP?=
- =?us-ascii?Q?rieAmy3EXMV/WuVV+4vWkTFPUA9R9tfXa4n3ydB/9CGUsJgjpOEjF9s5ZDUR?=
- =?us-ascii?Q?C2nX6RtPyi5PgqokjAjIzZOQfsIKG0o=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 91d01f31-20f7-47cd-8a30-08da1d108222
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2022 05:43:17.7735
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kign1VO16QyVzYKWsjV4EjrjZCpRGbOHFUyGnwsr5S3eJfkrzbMOXU/cKxISt7ymFoZXmpvokB/4SgOxdeiIVLexkOKycPcS3ya7IMmcunA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB5345
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-04-12_06:2022-04-11,2022-04-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 bulkscore=0
- suspectscore=0 mlxlogscore=885 mlxscore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204130033
-X-Proofpoint-ORIG-GUID: _W7Alxsa1s4VG3Hyu_hWpJarC068WIPY
-X-Proofpoint-GUID: _W7Alxsa1s4VG3Hyu_hWpJarC068WIPY
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 06:08:24PM +0200, Fabio M. De Francesco wrote:
-> On marted? 12 aprile 2022 17:15:29 CEST Dan Carpenter wrote:
-> > On Tue, Apr 12, 2022 at 11:53:42AM +0200, Fabio M. De Francesco wrote:
-> > > I didn't suggest a re-write of the commit messages.
-> > 
-> > Yes.  That's the problem.  If you want to complain about a commit
-> > message then you *should* suggest how you would re-write it.  Otherwise
-> > how are we supposed to read your mind?
-> 
-> Ah, sorry. I had missed that you were asking for a re-write (literally).
-> 
-> Here it is a sort of diff on Vihas' patch:
-> 
-> - [PATCH v2 1/7] staging: r8188eu: drop unnecessary wrapper _rtw_free_cmd_priv
-> + [PATCH v2 1/7] staging: r8188eu: drop unnecessary helper _rtw_free_cmd_priv()
-> 
-> - Drop unnecessary wrapper _rtw_free_cmd_priv and move its logic to
-> - rtw_free_cmd_priv.
-> + Drop unnecessary helper (wrapped function) _rtw_free_cmd_priv() and
-> + move its code to the wrapper rtw_free_cmd_priv().
-> 
+Hi all,
 
-I kind of feel like the original is better.  Why would we want to remove
-helper functions?  Helper functions are ok.  What we don't like are
-pointless wrapper functions.  The whole motivation for the patch is to
-remove wrapper functions and that's what it does.
+This patchset optimizes handling of the argument struct passed to
+call_with_arg when doing a yielding call to OP-TEE.
 
-regards,
-dan carpenter
+Prior to this was this struct allocated before the yielding call and
+then freed after it had returned. In case many calls are made in succession
+this results in quite a bit of unnecessary allocte/free and possibly also
+switching back and forth to secure work in order to register if needed.
+
+Another optimization handles the way the argument struct needed to do RPC
+is passed. Please see the patch "optee: add OPTEE_SMC_CALL_WITH_RPC_ARG and
+OPTEE_SMC_CALL_WITH_REGD_ARG" for details.
+
+Thanks,
+Jens
+
+v1->v2:
+* Split out a separate commit "optee: rename rpc_arg_count to
+  rpc_param_count"
+* Check optee->rpc_param_count before calling optee_disable_shm_cache().
+* Mention OPTEE_SMC_CALL_WITH_REGD_ARG in commit message.
+
+v2->v3:
+* Applied Sumit's R-B to "optee: rename rpc_arg_count to rpc_param_count"
+  and "optee: add OPTEE_SMC_CALL_WITH_RPC_ARG and OPTEE_SMC_CALL_WITH_REGD_ARG"
+* Fixed some review comments to "optee: add OPTEE_SMC_CALL_WITH_RPC_ARG and
+  OPTEE_SMC_CALL_WITH_REGD_ARG"
+* Rebased on v5.18-rc1
+
+
+Jens Wiklander (4):
+  optee: rename rpc_arg_count to rpc_param_count
+  optee: add OPTEE_SMC_CALL_WITH_RPC_ARG and
+    OPTEE_SMC_CALL_WITH_REGD_ARG
+  optee: add FF-A capability OPTEE_FFA_SEC_CAP_ARG_OFFSET
+  optee: cache argument shared memory structs
+
+ drivers/tee/optee/call.c          | 238 ++++++++++++++++++++++++------
+ drivers/tee/optee/core.c          |   1 +
+ drivers/tee/optee/ffa_abi.c       |  36 +++--
+ drivers/tee/optee/optee_ffa.h     |  12 +-
+ drivers/tee/optee/optee_private.h |  31 +++-
+ drivers/tee/optee/optee_smc.h     |  48 +++++-
+ drivers/tee/optee/smc_abi.c       | 162 +++++++++++++++-----
+ 7 files changed, 428 insertions(+), 100 deletions(-)
+
+-- 
+2.31.1
 
