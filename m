@@ -2,110 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00373C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235069AbiDMK7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 06:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
+        id S235071AbiDMLBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232020AbiDMK7o (ORCPT
+        with ESMTP id S229887AbiDMLBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 06:59:44 -0400
-X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Apr 2022 03:57:20 PDT
-Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADCB5A17B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:57:19 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id IGR00011;
-        Wed, 13 Apr 2022 18:55:11 +0800
-Received: from localhost.localdomain (10.200.104.82) by
- jtjnmail201609.home.langchao.com (10.100.2.9) with Microsoft SMTP Server id
- 15.1.2308.21; Wed, 13 Apr 2022 18:55:12 +0800
-From:   Deming <wangdeming@inspur.com>
-To:     <mpe@ellerman.id.au>, <benh@kernel.crashing.org>,
-        <paulus@samba.org>
-CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        Deming Wang <wangdeming@inspur.com>
-Subject: [PATCH] powerpc/xive: remove unused parameter
-Date:   Wed, 13 Apr 2022 06:55:07 -0400
-Message-ID: <20220413105507.1729-1-wangdeming@inspur.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 13 Apr 2022 07:01:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75D15A5A3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:58:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 607FB61D99
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46CC3C385A4;
+        Wed, 13 Apr 2022 10:58:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649847530;
+        bh=Fn2dIzbxRTOR59SCxwfCQFPbgzjMcMEZHJv5ka9IDKI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rcSltkzFLmv9wVcwWTMcvoJ+KLPwiW0Bcgm0BWhS8fa2A3pqy4y1p9dnA6xVYBa05
+         Vjz4foWMzaRAD0/ZS9LNsHr7gpT8gdxph4RQY6fyl1TO2oC/kRsalYogUzWxwrEuTf
+         P4s2u8JOgGGOBd3NDDNund6B1DJdMmTlFr13Ca+U=
+Date:   Wed, 13 Apr 2022 12:58:48 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Mukesh Ojha <quic_mojha@quicinc.com>
+Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de, sboyd@kernel.org,
+        johannes@sipsolutions.net, rafael@kernel.org
+Subject: Re: Possible race in dev_coredumpm()-del_timer() path
+Message-ID: <Ylas6F75Y7O6R87U@kroah.com>
+References: <2e1f81e2-428c-f11f-ce92-eb11048cb271@quicinc.com>
+ <YlZg4KkiAgODr45d@kroah.com>
+ <20220413101639.GA24349@hu-mojha-hyd.qualcomm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.200.104.82]
-tUid:   202241318551125e62aa8a26dedd8ece4937ffc9f6d7d
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413101639.GA24349@hu-mojha-hyd.qualcomm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Deming Wang <wangdeming@inspur.com>
+On Wed, Apr 13, 2022 at 03:46:39PM +0530, Mukesh Ojha wrote:
+> On Wed, Apr 13, 2022 at 07:34:24AM +0200, Greg KH wrote:
+> > On Wed, Apr 13, 2022 at 10:59:22AM +0530, Mukesh Ojha wrote:
+> > > Hi All,
+> > > 
+> > > We are hitting one race due to which try_to_grab_pending() is stuck .
+> > 
+> > What kernel version are you using?
+> 
+> 5.10
 
-the parameter xc balongng to xive_cleanup_single_escalation is unused,so we
-need to remove it.
+5.10.0 was released a very long time ago.  Please use a more modern
+kernel release :)
 
-Signed-off-by: Deming Wang <wangdeming@inspur.com>
----
- arch/powerpc/kvm/book3s_xive.c        | 5 ++---
- arch/powerpc/kvm/book3s_xive.h        | 3 +--
- arch/powerpc/kvm/book3s_xive_native.c | 2 +-
- 3 files changed, 4 insertions(+), 6 deletions(-)
+> Sorry, for the formatting mess.
+> 
+> > > In following scenario, while running (p1)dev_coredumpm() devcd device is
+> > > added to
+> > > the framework and uevent notification sent to userspace that result in the
+> > > call to (p2) devcd_data_write()
+> > > which eventually try to delete the queued timer which in the racy scenario
+> > > timer is not queued yet.
+> > > So, debug object report some warning and in the meantime timer is
+> > > initialized and queued from p1 path.
+> > > and from p2 path it gets overriden again timer->entry.pprev=NULL and
+> > > try_to_grab_pending() stuck
+> 	p1 					p2(X)
+> 
+>    dev_coredump() uevent sent to userspace
+>    device_add()  =========================> userspace process X reads the uevents
+>                                             writes to devcd fd which
+>                                             results into writes to
+> 
+>                                             devcd_data_write()
+> 					      mod_delayed_work()
+>                                                 try_to_grab_pending()
+> 						  del_timer()
+> 						   debug_assert_init()
+>   INIT_DELAYED_WORK 
+>   schedule_delayed_work
+> 						    debug_object_fixup()
 
-diff --git a/arch/powerpc/kvm/book3s_xive.c b/arch/powerpc/kvm/book3s_xive.c
-index c0ce553..12693db 100644
---- a/arch/powerpc/kvm/book3s_xive.c
-+++ b/arch/powerpc/kvm/book3s_xive.c
-@@ -1180,8 +1180,7 @@ void kvmppc_xive_disable_vcpu_interrupts(struct kvm_vcpu *vcpu)
-  * stale_p (because it has no easy way to address it).  Hence we have
-  * to adjust stale_p before shutting down the interrupt.
-  */
--void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu,
--				    struct kvmppc_xive_vcpu *xc, int irq)
-+void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu, int irq)
- {
- 	struct irq_data *d = irq_get_irq_data(irq);
- 	struct xive_irq_data *xd = irq_data_get_irq_handler_data(d);
-@@ -1222,7 +1221,7 @@ void kvmppc_xive_cleanup_vcpu(struct kvm_vcpu *vcpu)
- 	for (i = 0; i < KVMPPC_XIVE_Q_COUNT; i++) {
- 		if (xc->esc_virq[i]) {
- 			if (kvmppc_xive_has_single_escalation(xc->xive))
--				xive_cleanup_single_escalation(vcpu, xc,
-+				xive_cleanup_single_escalation(vcpu,
- 							xc->esc_virq[i]);
- 			free_irq(xc->esc_virq[i], vcpu);
- 			irq_dispose_mapping(xc->esc_virq[i]);
-diff --git a/arch/powerpc/kvm/book3s_xive.h b/arch/powerpc/kvm/book3s_xive.h
-index 09d0657..f779ebb 100644
---- a/arch/powerpc/kvm/book3s_xive.h
-+++ b/arch/powerpc/kvm/book3s_xive.h
-@@ -306,8 +306,7 @@ struct kvmppc_xive_src_block *kvmppc_xive_create_src_block(
- int kvmppc_xive_attach_escalation(struct kvm_vcpu *vcpu, u8 prio,
- 				  bool single_escalation);
- struct kvmppc_xive *kvmppc_xive_get_device(struct kvm *kvm, u32 type);
--void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu,
--				    struct kvmppc_xive_vcpu *xc, int irq);
-+void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu, int irq);
- int kvmppc_xive_compute_vp_id(struct kvmppc_xive *xive, u32 cpu, u32 *vp);
- int kvmppc_xive_set_nr_servers(struct kvmppc_xive *xive, u64 addr);
- bool kvmppc_xive_check_save_restore(struct kvm_vcpu *vcpu);
-diff --git a/arch/powerpc/kvm/book3s_xive_native.c b/arch/powerpc/kvm/book3s_xive_native.c
-index f81ba6f..99c23a4 100644
---- a/arch/powerpc/kvm/book3s_xive_native.c
-+++ b/arch/powerpc/kvm/book3s_xive_native.c
-@@ -93,7 +93,7 @@ void kvmppc_xive_native_cleanup_vcpu(struct kvm_vcpu *vcpu)
- 		/* Free the escalation irq */
- 		if (xc->esc_virq[i]) {
- 			if (kvmppc_xive_has_single_escalation(xc->xive))
--				xive_cleanup_single_escalation(vcpu, xc,
-+				xive_cleanup_single_escalation(vcpu,
- 							xc->esc_virq[i]);
- 			free_irq(xc->esc_virq[i], vcpu);
- 			irq_dispose_mapping(xc->esc_virq[i]);
--- 
-1.8.3.1
+Why do you have object debugging enabled?  That's going to take a LONG
+time, and will find bugs in your code.  Perhaps like this one?
 
+What type of device is this?  What bus?  What driver?
+
+And if you turn object debugging off, what happens?
+
+thanks,
+
+greg k-h
