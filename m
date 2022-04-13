@@ -2,264 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D443C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD34C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235013AbiDMVJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
+        id S235266AbiDMVMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238834AbiDMVIL (ORCPT
+        with ESMTP id S229646AbiDMVMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:08:11 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213FC83B17
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:30 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id j129-20020a252387000000b00641e1faafecso1126897ybj.3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=YbrCAd0HTzm8nIYQbKISy9o9brmGYCkpuolMPrFO/E0=;
-        b=nyChMhsTgdMUn1iXKlSFVbjKsXDeEbTqQfWpiFh11D5qmybgKLmDVaVsPJbMnCjLc6
-         61ADOkEaA7YhpdWzy27F2Z3z0CEbT9iegk6w/LChX8Xfzjw9520i7lea9oc+dBJTWNMk
-         0fYT4QBwhW6AKDpFa2WVnvWRkYy29clnkDSl6kuzIEbWoPBtJxbpkwN96cQEMXB9c2NI
-         xUL6UQ9hC8tr5EYvBFfAMPqTrM7hgvywoH2BqEpG+uFD+Pif7XMPsiqw4hZejtMif9Op
-         +U16NVUYtZ6G2fNp3e+5BbJEpoUEK/ijqryPX6+oKj1CzvepRZyo1tic7xDp3mqZXGEg
-         Zkeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=YbrCAd0HTzm8nIYQbKISy9o9brmGYCkpuolMPrFO/E0=;
-        b=3+xjRbHFTcCpWmKnsx5wWh7cNJsVcFvkeoqIFkGAMKNIfn3ANJn+mrKrkNPmu//NW2
-         MsK9WYPgKdQi8b7+H88P50kZGhThp0nf4VzfbNrdQtun9AcNGEX5T7kjZ0TNfnNXFzX9
-         FeNLFrVwtM9PK/a+bXZnffwZ7Qe3DY6bpOJ+G9Q0Fi197HT5apu1i/TITS+TeEjNfF99
-         SQtmQz3vxH1rmBfwWBy2ml9aBPdWRmwzRYiGKHO6wDXdBpLULf6VbtUKI/CJgt0njhHx
-         7OpFD14cnDSqVNM1ls8/gJGh7s/Xh62+feIl08dzAp+K5mvzWGU9GUzfVOUtT7ZUeYfi
-         XWzQ==
-X-Gm-Message-State: AOAM533r3cL3WSxDVN+qi9c2PK2PbZ/ao0cdyu8VM6rwBgNAC2imV7pb
-        stV1WRqa78PrgQphEvHWSBtYHTAHcT+F
-X-Google-Smtp-Source: ABdhPJztFP7Zw7XFEYDHCtwvHmr4hehc+wkwsMIcT6Hl68294Na0xIN8Jze7tgHocr+v3lrQMNMmA1c7UnRv
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9135:da53:a8a2:bf11])
- (user=irogers job=sendgmr) by 2002:a25:b0a5:0:b0:641:4c43:db00 with SMTP id
- f37-20020a25b0a5000000b006414c43db00mr708820ybj.478.1649883929238; Wed, 13
- Apr 2022 14:05:29 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 14:04:59 -0700
-In-Reply-To: <20220413210503.3256922-1-irogers@google.com>
-Message-Id: <20220413210503.3256922-10-irogers@google.com>
-Mime-Version: 1.0
-References: <20220413210503.3256922-1-irogers@google.com>
-X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH 10/14] perf vendor events intel: Update westmereep-sp event topics
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        James Clark <james.clark@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc:     Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 13 Apr 2022 17:12:15 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD68396AF;
+        Wed, 13 Apr 2022 14:09:53 -0700 (PDT)
+Received: from [IPV6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1] (unknown [IPv6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 4EAD71F473D2;
+        Wed, 13 Apr 2022 22:09:50 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649884191;
+        bh=NXfE3m0blQYAD216srx6k3KFQ3FlsjslFM9iENtE754=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mCiS9x/nrN+iDb4jLyyUkpSwyw9Uf4yjAlK3Y/EeQfwteUPpNKKrJAsVDuNnrtbNB
+         EKNQqyqcAK2IQu9n3xq1nUChJc1lAdxU2qFI6J/kQs6tZJyR0aY2BIzmPoYDdyjSCj
+         D0xq4MqsCSQVmUt+Qyptlxhw1lCHABoCpnlRBl/auehQQLAJaItT7NSoKGQgLBN2GU
+         8egbvpU3+vACEA4ROoOxja74Mq120XqN2Gscb3/bn3Z00+WnzXFo7ZfPSbQ45OQct8
+         QMwzr6UOO0LHHv+pzqpoikcwYkHXdl2bsRrhw8Zdynfxwy9oNsAhAoSlRWy8p29kn6
+         6O/TPiq1nrVPA==
+Message-ID: <ae1d1098-f8b5-f41a-c33b-0f4863a43d5e@collabora.com>
+Date:   Thu, 14 Apr 2022 00:09:47 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Patch v7 3/4] dt-bindings: memory: Update reg/reg-names
+ validation
+Content-Language: en-US
+To:     Ashish Mhetre <amhetre@nvidia.com>, Rob Herring <robh@kernel.org>
+Cc:     digetx@gmail.com, krzysztof.kozlowski@linaro.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        vdumpa@nvidia.com, Snikam@nvidia.com
+References: <20220413094012.13589-1-amhetre@nvidia.com>
+ <20220413094012.13589-4-amhetre@nvidia.com>
+ <YlbSGEBKgpVC51dZ@robh.at.kernel.org>
+ <b050247d-a62c-62e7-7750-24cefcc93506@collabora.com>
+ <71fc3efb-5110-287e-0422-10c1ae90139c@nvidia.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <71fc3efb-5110-287e-0422-10c1ae90139c@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Apply topic updates from:
-https://github.com/intel/event-converter-for-linux-perf/
+On 4/13/22 19:17, Ashish Mhetre wrote:
+> 
+> 
+> On 4/13/2022 7:34 PM, Dmitry Osipenko wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> On 4/13/22 16:37, Rob Herring wrote:
+>>> On Wed, Apr 13, 2022 at 03:10:11PM +0530, Ashish Mhetre wrote:
+>>>>  From tegra186 onwards, memory controller support multiple channels.
+>>>> Reg items are updated with address and size of these channels.
+>>>> Tegra186 has overall 5 memory controller channels. Tegra194 and
+>>>> tegra234
+>>>> have overall 17 memory controller channels each.
+>>>> There is 1 reg item for memory controller stream-id registers.
+>>>> So update the reg maxItems to 18 in tegra186 devicetree documentation.
+>>>> Also update validation for reg-names added for these corresponding reg
+>>>> items.
+>>>
+>>> Somehow your subject should indicate this is for Tegra.
+>>>
+>>>>
+>>>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+>>>> ---
+>>>>   .../nvidia,tegra186-mc.yaml                   | 80
+>>>> +++++++++++++++++--
+>>>>   1 file changed, 74 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git
+>>>> a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+>>>> b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+>>>>
+>>>> index 13c4c82fd0d3..c7cfa6c2cd81 100644
+>>>> ---
+>>>> a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+>>>>
+>>>> +++
+>>>> b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+>>>>
+>>>> @@ -34,8 +34,12 @@ properties:
+>>>>             - nvidia,tegra234-mc
+>>>>
+>>>>     reg:
+>>>> -    minItems: 1
+>>>> -    maxItems: 3
+>>>> +    minItems: 6
+>>>
+>>> You just broke current users.
+>>>
+>>>> +    maxItems: 18
+>>>> +
+>>>> +  reg-names:
+>>>> +    minItems: 6
+>>>> +    maxItems: 18
+>>>>
+>>>>     interrupts:
+>>>>       items:
+>>>> @@ -142,7 +146,18 @@ allOf:
+>>>>       then:
+>>>>         properties:
+>>>>           reg:
+>>>> -          maxItems: 1
+>>>> +          maxItems: 6
+>>>> +          description: 5 memory controller channels and 1 for
+>>>> stream-id registers
+>>>> +
+>>>> +        reg-names:
+>>>> +          maxItems: 6
+>>>> +          items:
+>>>> +            - const: sid
+>>>> +            - const: broadcast
+>>>> +            - const: ch0
+>>>> +            - const: ch1
+>>>> +            - const: ch2
+>>>> +            - const: ch3
+>>>>
+>>>>     - if:
+>>>>         properties:
+>>>> @@ -151,7 +166,30 @@ allOf:
+>>>>       then:
+>>>>         properties:
+>>>>           reg:
+>>>> -          minItems: 3
+>>>> +          minItems: 18
+>>>> +          description: 17 memory controller channels and 1 for
+>>>> stream-id registers
+>>>> +
+>>>> +        reg-names:
+>>>> +          minItems: 18
+>>>> +          items:
+>>>> +            - const: sid
+>>>> +            - const: broadcast
+>>>> +            - const: ch0
+>>>> +            - const: ch1
+>>>> +            - const: ch2
+>>>> +            - const: ch3
+>>>> +            - const: ch4
+>>>> +            - const: ch5
+>>>> +            - const: ch6
+>>>> +            - const: ch7
+>>>> +            - const: ch8
+>>>> +            - const: ch9
+>>>> +            - const: ch10
+>>>> +            - const: ch11
+>>>> +            - const: ch12
+>>>> +            - const: ch13
+>>>> +            - const: ch14
+>>>> +            - const: ch15
+>>>>
+>>>>     - if:
+>>>>         properties:
+>>>> @@ -160,13 +198,37 @@ allOf:
+>>>>       then:
+>>>>         properties:
+>>>>           reg:
+>>>> -          minItems: 3
+>>>> +          minItems: 18
+>>>> +          description: 17 memory controller channels and 1 for
+>>>> stream-id registers
+>>>> +
+>>>> +        reg-names:
+>>>> +          minItems: 18
+>>>> +          items:
+>>>> +            - const: sid
+>>>> +            - const: broadcast
+>>>> +            - const: ch0
+>>>> +            - const: ch1
+>>>> +            - const: ch2
+>>>> +            - const: ch3
+>>>> +            - const: ch4
+>>>> +            - const: ch5
+>>>> +            - const: ch6
+>>>> +            - const: ch7
+>>>> +            - const: ch8
+>>>> +            - const: ch9
+>>>> +            - const: ch10
+>>>> +            - const: ch11
+>>>> +            - const: ch12
+>>>> +            - const: ch13
+>>>> +            - const: ch14
+>>>> +            - const: ch15
+>>>>
+>>>>   additionalProperties: false
+>>>>
+>>>>   required:
+>>>>     - compatible
+>>>>     - reg
+>>>> +  - reg-names
+>>>
+>>> New, added properties cannot be required. That's an ABI break.
+>>>
+>>>>     - interrupts
+>>>>     - "#address-cells"
+>>>>     - "#size-cells"
+>>>> @@ -182,7 +244,13 @@ examples:
+>>>>
+>>>>           memory-controller@2c00000 {
+>>>>               compatible = "nvidia,tegra186-mc";
+>>>> -            reg = <0x0 0x02c00000 0x0 0xb0000>;
+>>>> +            reg = <0x0 0x02c00000 0x0 0x10000>,    /* MC-SID */
+>>>> +                  <0x0 0x02c10000 0x0 0x10000>,    /* Broadcast
+>>>> channel */
+>>>> +                  <0x0 0x02c20000 0x0 0x10000>,    /* MC0 */
+>>>> +                  <0x0 0x02c30000 0x0 0x10000>,    /* MC1 */
+>>>> +                  <0x0 0x02c40000 0x0 0x10000>,    /* MC2 */
+>>>> +                  <0x0 0x02c50000 0x0 0x10000>;    /* MC3 */
+>>>> +            reg-names = "sid", "broadcast", "ch0", "ch1", "ch2",
+>>>> "ch3";
+>>>>               interrupts = <GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>;
+>>>>
+>>>>               #address-cells = <2>;
+>>>> -- 
+>>>> 2.17.1
+>>>>
+>>
+>> Oh, wait.. I didn't notice that the new reg ranges are only splitting up
+>> the old ranges. Previously it appeared to me that these are the new
+>> ranges.
+>>  > Ashish, in this case you don't need to change the regs in the DT at
+>> all.
+>> Instead, you need to specify the per-channel reg-base offsets in the
+>> driver code.
+> 
+> Yes, it's kind of splitting up the old ranges and straight forward for
+> Tegra186. But on Tegra194 and Tegra234 the old address is not in single
+> range. It's already split across 3 ranges. We have to choose right range
+> and add channel offsets to that range in order to read interrupts.
+> So I went with the approach of splitting the regs in DT itself as per
+> the channels because that way they can be mapped in a single loop and
+> used easily.
+> If we want to specify per-channel reg-base offsets then that would be
+> per-SOC. Also we would need to choose correct reg-range for Tegra194 and
+> Tegra234 and have a way to maintain offsets of channels from those
+> respective reg-ranges.
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- .../arch/x86/westmereep-sp/other.json         | 66 +------------------
- .../arch/x86/westmereep-sp/pipeline.json      | 66 ++++++++++++++++++-
- 2 files changed, 66 insertions(+), 66 deletions(-)
-
-diff --git a/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json b/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json
-index 23dcd554728c..67bc34984fa8 100644
---- a/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json
-+++ b/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json
-@@ -1,28 +1,4 @@
- [
--    {
--        "BriefDescription": "Early Branch Prediciton Unit clears",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xE8",
--        "EventName": "BPU_CLEARS.EARLY",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x1"
--    },
--    {
--        "BriefDescription": "Late Branch Prediction Unit clears",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xE8",
--        "EventName": "BPU_CLEARS.LATE",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x2"
--    },
--    {
--        "BriefDescription": "Branch prediction unit missed call or return",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xE5",
--        "EventName": "BPU_MISSED_CALL_RET",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x1"
--    },
-     {
-         "BriefDescription": "ES segment renames",
-         "Counter": "0,1,2,3",
-@@ -127,46 +103,6 @@
-         "SampleAfterValue": "200000",
-         "UMask": "0x1"
-     },
--    {
--        "BriefDescription": "All RAT stall cycles",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.ANY",
--        "SampleAfterValue": "2000000",
--        "UMask": "0xf"
--    },
--    {
--        "BriefDescription": "Flag stall cycles",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.FLAGS",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x1"
--    },
--    {
--        "BriefDescription": "Partial register stall cycles",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.REGISTERS",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x2"
--    },
--    {
--        "BriefDescription": "ROB read port stalls cycles",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.ROB_READ_PORT",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x4"
--    },
--    {
--        "BriefDescription": "Scoreboard stall cycles",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.SCOREBOARD",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x8"
--    },
-     {
-         "BriefDescription": "All Store buffer stall cycles",
-         "Counter": "0,1,2,3",
-@@ -284,4 +220,4 @@
-         "SampleAfterValue": "2000000",
-         "UMask": "0x1"
-     }
--]
-\ No newline at end of file
-+]
-diff --git a/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json b/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json
-index 10140f460fbb..403fb2b87fc4 100644
---- a/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json
-+++ b/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json
-@@ -50,6 +50,30 @@
-         "SampleAfterValue": "2000000",
-         "UMask": "0x1"
-     },
-+    {
-+        "BriefDescription": "Early Branch Prediciton Unit clears",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xE8",
-+        "EventName": "BPU_CLEARS.EARLY",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x1"
-+    },
-+    {
-+        "BriefDescription": "Late Branch Prediction Unit clears",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xE8",
-+        "EventName": "BPU_CLEARS.LATE",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x2"
-+    },
-+    {
-+        "BriefDescription": "Branch prediction unit missed call or return",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xE5",
-+        "EventName": "BPU_MISSED_CALL_RET",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x1"
-+    },
-     {
-         "BriefDescription": "Branch instructions decoded",
-         "Counter": "0,1,2,3",
-@@ -494,6 +518,46 @@
-         "SampleAfterValue": "20000",
-         "UMask": "0x4"
-     },
-+    {
-+        "BriefDescription": "All RAT stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.ANY",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0xf"
-+    },
-+    {
-+        "BriefDescription": "Flag stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.FLAGS",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x1"
-+    },
-+    {
-+        "BriefDescription": "Partial register stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.REGISTERS",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x2"
-+    },
-+    {
-+        "BriefDescription": "ROB read port stalls cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.ROB_READ_PORT",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x4"
-+    },
-+    {
-+        "BriefDescription": "Scoreboard stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.SCOREBOARD",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x8"
-+    },
-     {
-         "BriefDescription": "Resource related stall cycles",
-         "Counter": "0,1,2,3",
-@@ -896,4 +960,4 @@
-         "SampleAfterValue": "2000000",
-         "UMask": "0x1"
-     }
--]
-\ No newline at end of file
-+]
--- 
-2.36.0.rc0.470.gd361397f0d-goog
-
+That is not nice too. Should be better to switch to the new DT scheme,
+since those channels weren't used by older kernels. It's okay to change
+the binding ABI in this case then, driver will continue to work for the
+older dtbs. Have you tested driver using the older dtbs?
