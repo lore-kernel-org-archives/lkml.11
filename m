@@ -2,96 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD02BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A59DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235116AbiDMLIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S234993AbiDMLME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235183AbiDMLHy (ORCPT
+        with ESMTP id S231631AbiDMLMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:07:54 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFB25883F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:05:32 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id bg10so3193226ejb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PS3VhaFtyBO9DatsV/CyvDlQh5hYtTRi+Z+F+oPBZHc=;
-        b=aas+peqOgXfaDQtFGQ6PkUFndDFJ/bQN8deYk7uucLlWOQJY6St7o+wM/OMwlm8uMP
-         iWI1BEYVY+4OFhXZ/hlyzNT7NBDbJJj4/ymrICSzMeaO/XTfcIIOzJp4ZDe+GmAXzNf3
-         1+ljJRUBh8/C2Tj4bqZMwMfH6FYMTxaJC/2qL6KC7Xlhdj/MfJ+Ddzk6zysQpqTyTxHO
-         n3qrIZMmGB3paCJZ8rpat4mGdtHncgcCJbpLPEdBbbt7G1W6PHMQM+MA7oUI3ITmIvSG
-         4SfNuMxmrkQmFG9zPPbcvhXJrZJ5AUQFezhe8DhRw6dti5qCRPXWUg1K9OELvHrNpd6Q
-         aiKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PS3VhaFtyBO9DatsV/CyvDlQh5hYtTRi+Z+F+oPBZHc=;
-        b=fdz115GeKs6icICfGg3KR52O9QbN01SYoYqBfWTM7w0vdR5SBHDQ74hYVlYltPqyHk
-         61Tn9gWZhZrOoJbK7Q0ipMfjkbn78/mHV1yJqNMcxA9yGFwbA+9TRvedwS2w4oJPIkjP
-         SCsynTwQj26Ab+L8YcNtymI8KJDXV0+GXy04yjo2ISuNB0U+LT7pBpmpNp/E+HMlCKgp
-         V9/5Q1WyhQXAxP7ZHs0lo3MbHiHJGZQvtRyrjX2YhIB8DWFrd89N9xD87rNruP9xY0WE
-         Qg0IzR9ac6Q6trb1xJ/aQddwRj6/AmPwOlMSXXG+tuzZkdo5dTBHM7NQt+Tk1F+7hS7v
-         nlDg==
-X-Gm-Message-State: AOAM532brtfp+MsfhrUB5i5uvk4ARfVAy13bYIzc0ffeyccUHsvN9v92
-        yPvy2gqvj4U9HWJiIIN4nN1o2A==
-X-Google-Smtp-Source: ABdhPJwK89+NCQ4gDvarGQBiLdX8MSJa2HxKL1uMkTJNddkeBUFdOy0KEsAj7r8eBxU+9poR0zRrEA==
-X-Received: by 2002:a17:907:8a0e:b0:6e8:c5df:d9e with SMTP id sc14-20020a1709078a0e00b006e8c5df0d9emr2841387ejc.142.1649847931499;
-        Wed, 13 Apr 2022 04:05:31 -0700 (PDT)
-Received: from [192.168.0.203] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006d2a835ac33sm13972528ejc.197.2022.04.13.04.05.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 04:05:31 -0700 (PDT)
-Message-ID: <68d16fbb-4250-73bd-b55e-a14db91abe8f@linaro.org>
-Date:   Wed, 13 Apr 2022 13:05:30 +0200
+        Wed, 13 Apr 2022 07:12:03 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58FF140EB;
+        Wed, 13 Apr 2022 04:09:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=CBlu8+J5V5g3eicBd9/EALqxYdrUeqXoa0KFWr1/CBo=; b=bvL9CxLnFpwWqAiMycEp4G+Kyj
+        HwZdWb+IhLaHtvSoz16da28NrRCjV0Uwq9fYWfo8p9g/Zw0p4GyJ6/B/K7LA8K3Y+AdAY+8tXkAo5
+        OLpYrX/fAGFS39RNmnxTdeHfmkKNVrmtEv4jJRQMkuYMlGPPhdr0c6tz+LtoytprYxjCokraCNpTr
+        bQXEV3pvgk7mHJJ9PAYtgsFsJh8SshYoB7zG+mwmkABF0W/oBB27kM9siiJkAt9TUuuP8YA1yG1Nx
+        W6iXtdAIRMNnCKJP3tsP/+ahzrlguAeFLR0ep8zLslhQ/SPJ2f2OUsuFTUjmCsz4pfLVVUK4wYQ7/
+        V4oCzAtg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58238)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1neasP-00032X-I2; Wed, 13 Apr 2022 12:09:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1neasL-0003II-Ni; Wed, 13 Apr 2022 12:09:29 +0100
+Date:   Wed, 13 Apr 2022 12:09:29 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH] kernel-doc: support DECLARE_PHY_INTERFACE_MASK()
+Message-ID: <Ylavaf+OlgTVeI6a@shell.armlinux.org.uk>
+References: <20211030020813.32654-1-rdunlap@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 0/2] memory: omap-gpmc: Allow module build
-Content-Language: en-US
-To:     Roger Quadros <rogerq@kernel.org>, krzk@kernel.org
-Cc:     linux-omap@vger.kernel.org, nm@ti.com,
-        linux-kernel@vger.kernel.org, kishon@ti.com, tony@atomide.com,
-        miquel.raynal@bootlin.com, vigneshr@ti.com
-References: <20220411095516.24754-1-rogerq@kernel.org>
- <164984299612.34759.11981181842672620752.b4-ty@linaro.org>
- <20428012-f164-c03b-fcc5-d3d8df812aff@linaro.org>
- <ed2167af-fc9f-1f52-e8e2-c0881f5d53c6@linaro.org>
- <7b38a717-ffce-0f06-1a77-6d2a114c7e11@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <7b38a717-ffce-0f06-1a77-6d2a114c7e11@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211030020813.32654-1-rdunlap@infradead.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/04/2022 13:01, Roger Quadros wrote:
->> https://krzk.eu/#/builders/63/builds/162
->>
->>
->>>  config OMAP_GPMC
->>> -	bool "Texas Instruments OMAP SoC GPMC driver" if COMPILE_TEST
->>> -	depends on OF_ADDRESS
->>> +	bool "Texas Instruments OMAP SoC GPMC driver"
->>> +	depends on OF_ADDRESS || COMPILE_TEST
+On Fri, Oct 29, 2021 at 07:08:13PM -0700, Randy Dunlap wrote:
+> Support the DECLARE_PHY_INTERFACE_MASK() macro that is used to declare
+> a bitmap by converting the macro to DECLARE_BITMAP(), as has been done
+> for the __ETHTOOL_DECLARE_LINK_MODE_MASK() macro.
 > 
+> This fixes a 'make htmldocs' warning:
 > 
-> Looks like include/linux/irqdomain.h does not have fallbacks if
-> CONFIG_IRQ_DOMAIN is not enabled.
+> include/linux/phylink.h:82: warning: Function parameter or member 'DECLARE_PHY_INTERFACE_MASK(supported_interfaces' not described in 'phylink_config'
 > 
-> I'll have to drop COMPILE_TEST and add depends on IRQ_DOMAIN.
-> Is that OK?
+> that was introduced by commit
+>   38c310eb46f5 ("net: phylink: add MAC phy_interface_t bitmap")
+> 
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Cc: Russell King (Oracle) <linux@armlinux.org.uk>
 
-Previously it was building with COMPILE_TEST on sparc, so what else changed?
+Thanks Randy, sorry I missed this patch.
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-Best regards,
-Krzysztof
+What is the intention for merging this patch? Will Jon merge it?
+Your tags said To: Jon but you don't seem to have included him in
+the email.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
