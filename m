@@ -2,246 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E90CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232194AbiDMD57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
+        id S231392AbiDMD6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232141AbiDMD4y (ORCPT
+        with ESMTP id S232171AbiDMD51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 23:56:54 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8488562E1;
-        Tue, 12 Apr 2022 20:54:32 -0700 (PDT)
-X-UUID: 7db9a74c5e9443a79f4e0e76581e8e8f-20220413
-X-UUID: 7db9a74c5e9443a79f4e0e76581e8e8f-20220413
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 64575598; Wed, 13 Apr 2022 11:54:26 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 13 Apr 2022 11:54:24 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 13 Apr 2022 11:54:23 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v4, 7/7] media: mediatek: vcodec: Add to support H264 inner racing mode
-Date:   Wed, 13 Apr 2022 11:54:10 +0800
-Message-ID: <20220413035410.29568-8-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220413035410.29568-1-yunfei.dong@mediatek.com>
-References: <20220413035410.29568-1-yunfei.dong@mediatek.com>
+        Tue, 12 Apr 2022 23:57:27 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA7613D0F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:55:07 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id a19so836806oie.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:55:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FvzKmQHaXA0DZABJVytp1jfjqBhOZKxzqyShV5ysPaI=;
+        b=OAYW9UBBpw4A+iCY4I5EaWlkldsxeOp+anBKmwX62Q0TRRCSFVHoTCU5lunO/PwDLx
+         o9Lq+MXt+IxvKdH0+TdwOTFmR5YDmI6ZONy2//sJsfgol5+xR2NEjtKeNDnKFkHRMyLX
+         uQV14/xbRAHLShTXWvkTeNZPc7KBdG+lJ2ai5PR/UXkH2YMusFSkfEqo/SBYzYCMwiRZ
+         4CwUcjqa5I8qMkUoPikziGCvExKSgudLFV/G9BqZmw6fXq1ERAJUJUcr8gfAmhDtNXAO
+         U/SWYihomjkSpBd2ZLvLsVY6dBsmG35qBse0B1wtgjTr82HNcKu1hl4mrtjzl7oddirx
+         0AMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FvzKmQHaXA0DZABJVytp1jfjqBhOZKxzqyShV5ysPaI=;
+        b=VATXrxPjexDpjuukkRCtobJaJ++8cnv3obdqPbn+6PXbdJWX4PiRMtkmdlf/fWoFDb
+         Ib6oi2+L6Hv3efUYrh3EVp8FU9kUdg+5A6wGkvgT1w+S52hrtWL6pTp8vLtSvgvN4vNE
+         dCEdQM4LxjIT9Gch3ii/QFBvvXoO6e2QETqE78CNGIcPTKBxI4q/BUZhFbGb89L2gezW
+         1Glg8AFtfJvITmFk3eSNgGptQeDeSsDYNX5PRJOGMnwQ+xBSOR+B6Q6JA6PtZkBcvXkA
+         gubto6ymL5Fihc3XDRIx1ssM552SDft1ITz2lxuWoj4J0VvE/5sw9q/T2Bi68yIY5Ahy
+         ASWw==
+X-Gm-Message-State: AOAM532vYpPoa39Rd9RxDPkfcVA5n2zH6hm73W3izttk1Q1ndqlyyLe/
+        9viEMQQsje15SOFpZkUVdgekMfLxETw8y2A6
+X-Google-Smtp-Source: ABdhPJytHv9MYWBDz80W+4BG+BN0cR8bkxDn1ifdKRCOmARN+MzL0v9/ak+9qWlwCN1TEpvdUahlHA==
+X-Received: by 2002:a05:6808:1201:b0:2f9:ef08:1a4f with SMTP id a1-20020a056808120100b002f9ef081a4fmr3263265oil.192.1649822106718;
+        Tue, 12 Apr 2022 20:55:06 -0700 (PDT)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id e9-20020a056820060900b003216277bfdasm13576747oow.19.2022.04.12.20.55.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 20:55:06 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 20:57:20 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] arm64: dts: qcom: sm8350: Add GENI I2C/SPI DMA
+ channels
+Message-ID: <YlZKIKR1iHO+Btwk@ripper>
+References: <20220412215137.2385831-1-bjorn.andersson@linaro.org>
+ <20220412215137.2385831-2-bjorn.andersson@linaro.org>
+ <YlZALC0DdSPB9n+/@matsya>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlZALC0DdSPB9n+/@matsya>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to reduce decoder latency, enable H264 inner racing mode.
+On Tue 12 Apr 20:14 PDT 2022, Vinod Koul wrote:
 
-Send lat trans buffer information to core when trigger lat to work,
-need not to wait until lat decode done.
+> On 12-04-22, 14:51, Bjorn Andersson wrote:
+> > The GENI I2C and SPI controllers may use the GPI DMA engine, define the
+> > rx and tx channels for these controllers to enable this.
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  arch/arm64/boot/dts/qcom/sm8350.dtsi | 108 +++++++++++++++++++++++++++
+> >  1 file changed, 108 insertions(+)
+> > 
+> > diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+> > index 7e585d9e4c68..8547c0b2f060 100644
+> > --- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+> > @@ -721,6 +721,9 @@ i2c14: i2c@880000 {
+> >  				pinctrl-names = "default";
+> >  				pinctrl-0 = <&qup_i2c14_default>;
+> >  				interrupts = <GIC_SPI 373 IRQ_TYPE_LEVEL_HIGH>;
+> > +				dmas = <&gpi_dma2 0 0 QCOM_GPI_I2C>,
+> > +				       <&gpi_dma2 1 0 QCOM_GPI_I2C>;
+> > +				dma-names = "tx", "rx";
+> 
+> I have been thinking about this. I dont feel this is right approach here
+> as this is board dependent and having the firmware loaded on the board..
+> 
+> This was tested on HDK and can fail in MTP or other boards.. which might
+> be in FIFO mode
+> 
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
----
- .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |  4 +++
- .../mediatek/vcodec/mtk_vcodec_dec_pm.c       | 34 +++++++++++++++++++
- .../platform/mediatek/vcodec/mtk_vcodec_drv.h | 10 ++++++
- .../vcodec/vdec/vdec_h264_req_multi_if.c      | 25 +++++++++++---
- 4 files changed, 68 insertions(+), 5 deletions(-)
+But if the controller is in FIFO mode, then !fifo_disable so we wouldn't
+try to pick up the dmas. And in the opposite case, i.e. when
+fifo_disable, the introduction of the GPI implementation meant that the
+i2c driver wouldn't no longer probe without the dmas specified.
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-index b9b99770c5cb..456cf33bc74f 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
-@@ -388,6 +388,10 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	atomic_set(&dev->dec_active_cnt, 0);
-+	memset(dev->vdec_racing_info, 0, sizeof(dev->vdec_racing_info));
-+	mutex_init(&dev->dec_racing_info_mutex);
-+
- 	ret = video_register_device(vfd_dec, VFL_TYPE_VIDEO, -1);
- 	if (ret) {
- 		mtk_v4l2_err("Failed to register video device");
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c
-index d69faa463d04..4305e4eb9900 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_pm.c
-@@ -144,6 +144,34 @@ static void mtk_vcodec_dec_disable_irq(struct mtk_vcodec_dev *vdec_dev, int hw_i
- 	}
- }
- 
-+static void mtk_vcodec_load_racing_info(struct mtk_vcodec_ctx *ctx)
-+{
-+	void __iomem *vdec_racing_addr;
-+	int j;
-+
-+	mutex_lock(&ctx->dev->dec_racing_info_mutex);
-+	if (atomic_inc_return(&ctx->dev->dec_active_cnt) == 1) {
-+		vdec_racing_addr = ctx->dev->reg_base[VDEC_MISC] + 0x100;
-+		for (j = 0; j < 132; j++)
-+			writel(ctx->dev->vdec_racing_info[j], vdec_racing_addr + j * 4);
-+	}
-+	mutex_unlock(&ctx->dev->dec_racing_info_mutex);
-+}
-+
-+static void mtk_vcodec_record_racing_info(struct mtk_vcodec_ctx *ctx)
-+{
-+	void __iomem *vdec_racing_addr;
-+	int j;
-+
-+	mutex_lock(&ctx->dev->dec_racing_info_mutex);
-+	if (atomic_dec_and_test(&ctx->dev->dec_active_cnt)) {
-+		vdec_racing_addr = ctx->dev->reg_base[VDEC_MISC] + 0x100;
-+		for (j = 0; j < 132; j++)
-+			ctx->dev->vdec_racing_info[j] = readl(vdec_racing_addr + j * 4);
-+	}
-+	mutex_unlock(&ctx->dev->dec_racing_info_mutex);
-+}
-+
- static struct mtk_vcodec_pm *mtk_vcodec_dec_get_pm(struct mtk_vcodec_dev *vdec_dev,
- 						   int hw_idx)
- {
-@@ -214,11 +242,17 @@ void mtk_vcodec_dec_enable_hardware(struct mtk_vcodec_ctx *ctx, int hw_idx)
- 	mtk_vcodec_dec_child_dev_on(ctx->dev, hw_idx);
- 
- 	mtk_vcodec_dec_enable_irq(ctx->dev, hw_idx);
-+
-+	if (IS_VDEC_INNER_RACING(ctx->dev->dec_capability))
-+		mtk_vcodec_load_racing_info(ctx);
- }
- EXPORT_SYMBOL_GPL(mtk_vcodec_dec_enable_hardware);
- 
- void mtk_vcodec_dec_disable_hardware(struct mtk_vcodec_ctx *ctx, int hw_idx)
- {
-+	if (IS_VDEC_INNER_RACING(ctx->dev->dec_capability))
-+		mtk_vcodec_record_racing_info(ctx);
-+
- 	mtk_vcodec_dec_disable_irq(ctx->dev, hw_idx);
- 
- 	mtk_vcodec_dec_child_dev_off(ctx->dev, hw_idx);
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-index 0e3db8ccb398..677f47b34172 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-@@ -28,6 +28,7 @@
- #define MTK_V4L2_BENCHMARK	0
- #define WAIT_INTR_TIMEOUT_MS	1000
- #define IS_VDEC_LAT_ARCH(hw_arch) ((hw_arch) >= MTK_VDEC_LAT_SINGLE_CORE)
-+#define IS_VDEC_INNER_RACING(capability) (capability & MTK_VCODEC_INNER_RACING)
- 
- /*
-  * enum mtk_hw_reg_idx - MTK hw register base index
-@@ -357,6 +358,7 @@ enum mtk_vdec_format_types {
- 	MTK_VDEC_FORMAT_H264_SLICE = 0x100,
- 	MTK_VDEC_FORMAT_VP8_FRAME = 0x200,
- 	MTK_VDEC_FORMAT_VP9_FRAME = 0x400,
-+	MTK_VCODEC_INNER_RACING = 0x20000,
- };
- 
- /**
-@@ -478,6 +480,10 @@ struct mtk_vcodec_enc_pdata {
-  * @subdev_dev: subdev hardware device
-  * @subdev_prob_done: check whether all used hw device is prob done
-  * @subdev_bitmap: used to record hardware is ready or not
-+ *
-+ * @dec_active_cnt: used to mark whether need to record register value
-+ * @vdec_racing_info: record register value
-+ * @dec_racing_info_mutex: mutex lock used for inner racing mode
-  */
- struct mtk_vcodec_dev {
- 	struct v4l2_device v4l2_dev;
-@@ -523,6 +529,10 @@ struct mtk_vcodec_dev {
- 	void *subdev_dev[MTK_VDEC_HW_MAX];
- 	int (*subdev_prob_done)(struct mtk_vcodec_dev *vdec_dev);
- 	DECLARE_BITMAP(subdev_bitmap, MTK_VDEC_HW_MAX);
-+
-+	atomic_t dec_active_cnt;
-+	u32 vdec_racing_info[132];
-+	struct mutex dec_racing_info_mutex;
- };
- 
- static inline struct mtk_vcodec_ctx *fh_to_ctx(struct v4l2_fh *fh)
-diff --git a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c
-index e199620b076d..c386655ea14c 100644
---- a/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c
-+++ b/drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c
-@@ -626,6 +626,18 @@ static int vdec_h264_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
- 		goto err_free_fb_out;
- 	}
- 
-+	share_info->trans_end = inst->ctx->msg_queue.wdma_addr.dma_addr +
-+		inst->vsi->wdma_end_addr_offset;
-+	share_info->trans_start = inst->ctx->msg_queue.wdma_wptr_addr;
-+	share_info->nal_info = inst->vsi->dec.nal_info;
-+
-+	if (IS_VDEC_INNER_RACING(inst->ctx->dev->dec_capability)) {
-+		memcpy_fromio(&share_info->h264_slice_params,
-+			      &inst->vsi->h264_slice_params,
-+			      sizeof(share_info->h264_slice_params));
-+		vdec_msg_queue_qbuf(&inst->ctx->dev->msg_queue_core_ctx, lat_buf);
-+	}
-+
- 	/* wait decoder done interrupt */
- 	timeout = mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
- 					       WAIT_INTR_TIMEOUT_MS, MTK_VDEC_LAT0);
-@@ -639,14 +651,17 @@ static int vdec_h264_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
- 
- 	share_info->trans_end = inst->ctx->msg_queue.wdma_addr.dma_addr +
- 		inst->vsi->wdma_end_addr_offset;
--	share_info->trans_start = inst->ctx->msg_queue.wdma_wptr_addr;
--	share_info->nal_info = inst->vsi->dec.nal_info;
- 	vdec_msg_queue_update_ube_wptr(&lat_buf->ctx->msg_queue,
- 				       share_info->trans_end);
- 
--	memcpy_fromio(&share_info->h264_slice_params, &inst->vsi->h264_slice_params,
--		      sizeof(share_info->h264_slice_params));
--	vdec_msg_queue_qbuf(&inst->ctx->dev->msg_queue_core_ctx, lat_buf);
-+	if (!IS_VDEC_INNER_RACING(inst->ctx->dev->dec_capability)) {
-+		memcpy_fromio(&share_info->h264_slice_params,
-+			      &inst->vsi->h264_slice_params,
-+			      sizeof(share_info->h264_slice_params));
-+		vdec_msg_queue_qbuf(&inst->ctx->dev->msg_queue_core_ctx, lat_buf);
-+	}
-+	mtk_vcodec_debug(inst, "dec num: %d lat crc: 0x%x 0x%x 0x%x", inst->slice_dec_num,
-+			 inst->vsi->dec.crc[0], inst->vsi->dec.crc[1], inst->vsi->dec.crc[2]);
- 
- 	inst->slice_dec_num++;
- 	return 0;
--- 
-2.18.0
+Unfortunately we don't have any i2c busses enabled on the MTP currently,
+so I'm not able to validate this easily.
 
+
+For the SPI driver though, the same logic is used to invoke
+spi_geni_grab_gpi_chan(). So dmas will only be considered if
+fifo_disabled is set.
+
+That said, in the even that the SPI driver finds a fifo_disabled
+controller and dma_request_chan() returns an error, we will fall back to
+fifo mode instead. I'm not sure if that's desirable...
+
+If that makes sense, we should at least handle EPROBE_DEFER instead of
+falling through to fifo mode.
+
+Regards,
+Bjorn
+
+> So, I think it might be apt to move these to board dtsi.. what do you
+> think?
+> 
+> -- 
+> ~Vinod
