@@ -2,149 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E73FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C09C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:55:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232185AbiDMD53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
+        id S232169AbiDMD5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232123AbiDMD4t (ORCPT
+        with ESMTP id S232126AbiDMD4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 23:56:49 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F3662EB;
-        Tue, 12 Apr 2022 20:54:27 -0700 (PDT)
-X-UUID: c80a6648214d48a4b4a5a94561bae101-20220413
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:239001d8-e1c8-4bf9-9c3c-a93feee27325,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:87e9f8a8-d103-4e36-82b9-b0e86991b3df,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: c80a6648214d48a4b4a5a94561bae101-20220413
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1656252812; Wed, 13 Apr 2022 11:54:24 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 13 Apr 2022 11:54:22 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 13 Apr
- 2022 11:54:21 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 13 Apr 2022 11:54:19 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v4, 5/7] media: mediatek: vcodec: Different codec using different capture format
-Date:   Wed, 13 Apr 2022 11:54:08 +0800
-Message-ID: <20220413035410.29568-6-yunfei.dong@mediatek.com>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC3F273A;
+        Tue, 12 Apr 2022 20:54:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649822068; x=1681358068;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qWnHsji0gnh/xDp7MQF81PbKycXAQAQAMMGE3n28kdA=;
+  b=YlhoMOngZDWEyJon07RvXTvrthpaDc+N+wS0AqTD8UqmyKrHA2Jzq+eP
+   bCxsTEddmO2VWcKEjnfypmWBBOU2QV+rgQY9mWqqwDBwT+azVS6dpvewZ
+   rxMJx2vrHHs8Ltx59uEj83UlNpeG3Yc33hD/0BTUDuZL2CLFwWFjP+XE9
+   VQz33zcwXCmHdnaIPm0rkHBD8lhZMW60qbGBa2TAoWH5UYejoZUD5ujEY
+   eSwJP6GiQNO/VUioeEgUoawKVLeI5ObmJCKWgLMbe7rHVcJDUOXhz1DQM
+   NAj0Jp5iSZxHPK15nkEKWcmizwabXjhZ4xHiFF2/4deaBj+Gi7+u6A0cJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="249852148"
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="249852148"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 20:54:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="724733855"
+Received: from p12hl01tmin.png.intel.com ([10.158.65.75])
+  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 20:54:23 -0700
+From:   Tan Tee Min <tee.min.tan@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Song Yoong Siang <yoong.siang.song@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>
+Subject: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp checking loop
+Date:   Wed, 13 Apr 2022 12:01:15 +0800
+Message-Id: <20220413040115.2351987-1-tee.min.tan@intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220413035410.29568-1-yunfei.dong@mediatek.com>
-References: <20220413035410.29568-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vp8 need to use MM21, but vp9 and h264 need to use HyFbc mode
-for mt8195. Vp8/vp9/h264 use the same MM21 format for mt8192.
+There is a possibility that the context descriptor still owned by the DMA
+even the previous normal descriptor own bit is already cleared. Checking
+the context descriptor readiness without delay might be not enough time
+for the DMA to update the descriptor field, which causing failure in
+getting HW Rx timestamp.
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+This patch introduces a 1us fsleep() in HW Rx timestamp checking loop
+to give time for DMA to update/complete the context descriptor.
+
+ptp4l Timestamp log without this patch:
+-----------------------------------------------------------
+$ echo 10000 > /sys/class/net/enp0s30f4/gro_flush_timeout
+$ echo 10000 > /sys/class/net/enp0s30f4/napi_defer_hard_irqs
+$ ptp4l -P2Hi enp0s30f4 --step_threshold=1 -m
+ptp4l: selected /dev/ptp2 as PTP clock
+ptp4l: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
+ptp4l: selected local clock 901210.fffe.b57df7 as best master
+ptp4l: port 1: new foreign master 22bb22.fffe.bb22bb-1
+ptp4l: selected best master clock 22bb22.fffe.bb22bb
+ptp4l: port 1: LISTENING to UNCALIBRATED on RS_SLAVE
+ptp4l: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l: port 1: received SYNC without timestamp
+ptp4l: rms   49 max   63 freq  -9573 +/-  34 delay    71 +/-   1
+ptp4l: rms   15 max   25 freq  -9553 +/-  20 delay    72 +/-   0
+ptp4l: port 1: received SYNC without timestamp
+ptp4l: rms    9 max   18 freq  -9540 +/-  11 delay    70 +/-   0
+ptp4l: port 1: received PDELAY_REQ without timestamp
+ptp4l: rms   16 max   29 freq  -9519 +/-  12 delay    72 +/-   0
+ptp4l: port 1: received PDELAY_REQ without timestamp
+ptp4l: rms    9 max   18 freq  -9527 +/-  12 delay    72 +/-   0
+ptp4l: rms    5 max    9 freq  -9530 +/-   7 delay    70 +/-   0
+ptp4l: rms   11 max   20 freq  -9530 +/-  16 delay    72 +/-   0
+ptp4l: rms    5 max   11 freq  -9530 +/-   7 delay    74 +/-   0
+ptp4l: rms    6 max    9 freq  -9522 +/-   7 delay    72 +/-   0
+ptp4l: port 1: received PDELAY_REQ without timestamp
+-----------------------------------------------------------
+
+ptp4l Timestamp log with this patch:
+-----------------------------------------------------------
+$ echo 10000 > /sys/class/net/enp0s30f4/gro_flush_timeout
+$ echo 10000 > /sys/class/net/enp0s30f4/napi_defer_hard_irqs
+$ ptp4l -P2Hi enp0s30f4 --step_threshold=1 -m
+ptp4l: selected /dev/ptp2 as PTP clock
+ptp4l: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
+ptp4l: selected local clock 901210.fffe.b57df7 as best master
+ptp4l: port 1: new foreign master 22bb22.fffe.bb22bb-1
+ptp4l: selected best master clock 22bb22.fffe.bb22bb
+ptp4l: port 1: LISTENING to UNCALIBRATED on RS_SLAVE
+ptp4l: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l: rms   30 max   45 freq  -9400 +/-  23 delay    72 +/-   0
+ptp4l: rms    7 max   16 freq  -9414 +/-  10 delay    70 +/-   0
+ptp4l: rms    6 max    9 freq  -9422 +/-   6 delay    72 +/-   0
+ptp4l: rms   13 max   20 freq  -9436 +/-  13 delay    74 +/-   0
+ptp4l: rms   12 max   27 freq  -9446 +/-  11 delay    72 +/-   0
+ptp4l: rms    9 max   12 freq  -9453 +/-   6 delay    74 +/-   0
+ptp4l: rms    9 max   15 freq  -9438 +/-  11 delay    74 +/-   0
+ptp4l: rms   10 max   16 freq  -9435 +/-  12 delay    74 +/-   0
+ptp4l: rms    8 max   18 freq  -9428 +/-   8 delay    72 +/-   0
+ptp4l: rms    8 max   18 freq  -9423 +/-   8 delay    72 +/-   0
+ptp4l: rms    9 max   16 freq  -9431 +/-  12 delay    70 +/-   0
+ptp4l: rms    9 max   18 freq  -9441 +/-   9 delay    72 +/-   0
+-----------------------------------------------------------
+
+Fixes: ba1ffd74df74 ("stmmac: fix PTP support for GMAC4")
+Cc: <stable@vger.kernel.org> # 5.4.x
+Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+Signed-off-by: Tan Tee Min <tee.min.tan@intel.com>
 ---
- .../platform/mediatek/vcodec/mtk_vcodec_dec.c | 41 +++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-index 3859e4c651c6..d0f2dedcc911 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
-@@ -35,6 +35,44 @@ mtk_vdec_find_format(struct v4l2_format *f,
- 	return NULL;
- }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+index d3b4765c1a5b..289bf26a6105 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+@@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
+ 			/* Check if timestamp is OK from context descriptor */
+ 			do {
+ 				ret = dwmac4_rx_check_timestamp(next_desc);
+-				if (ret < 0)
++				if (ret <= 0)
+ 					goto exit;
+ 				i++;
  
-+static bool mtk_vdec_get_cap_fmt(struct mtk_vcodec_ctx *ctx, int format_index)
-+{
-+	const struct mtk_vcodec_dec_pdata *dec_pdata = ctx->dev->vdec_pdata;
-+	const struct mtk_video_fmt *fmt;
-+	struct mtk_q_data *q_data;
-+	int num_frame_count = 0, i;
-+	bool ret = true;
-+
-+	for (i = 0; i < *dec_pdata->num_formats; i++) {
-+		if (dec_pdata->vdec_formats[i].type != MTK_FMT_FRAME)
-+			continue;
-+
-+		num_frame_count++;
-+	}
-+
-+	if (num_frame_count == 1)
-+		return true;
-+
-+	fmt = &dec_pdata->vdec_formats[format_index];
-+	q_data = &ctx->q_data[MTK_Q_DATA_SRC];
-+	switch (q_data->fmt->fourcc) {
-+	case V4L2_PIX_FMT_VP8_FRAME:
-+		if (fmt->fourcc == V4L2_PIX_FMT_MM21)
-+			ret = true;
-+		break;
-+	case V4L2_PIX_FMT_H264_SLICE:
-+	case V4L2_PIX_FMT_VP9_FRAME:
-+		if (fmt->fourcc == V4L2_PIX_FMT_MM21)
-+			ret = false;
-+		break;
-+	default:
-+		ret = true;
-+		break;
-+	};
-+
-+	return ret;
-+}
-+
- static struct mtk_q_data *mtk_vdec_get_q_data(struct mtk_vcodec_ctx *ctx,
- 					      enum v4l2_buf_type type)
- {
-@@ -577,6 +615,9 @@ static int vidioc_enum_fmt(struct v4l2_fmtdesc *f, void *priv,
- 		    dec_pdata->vdec_formats[i].type != MTK_FMT_FRAME)
- 			continue;
++				fsleep(1);
+ 			} while ((ret == 1) && (i < 10));
  
-+		if (!output_queue && !mtk_vdec_get_cap_fmt(ctx, i))
-+			continue;
-+
- 		if (j == f->index)
- 			break;
- 		++j;
+ 			if (i == 10)
 -- 
-2.18.0
+2.25.1
 
