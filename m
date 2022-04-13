@@ -2,111 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235683AbiDMM7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60016 "EHLO
+        id S235540AbiDMNBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 09:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233390AbiDMM7r (ORCPT
+        with ESMTP id S229521AbiDMNBM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:59:47 -0400
-X-Greylist: delayed 1809 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Apr 2022 05:57:25 PDT
-Received: from bjm7-spam01.kuaishou.com (smtpcn03.kuaishou.com [103.107.217.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C8250E33
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:57:24 -0700 (PDT)
-Received: from bjm7-spam01.kuaishou.com (localhost [127.0.0.2] (may be forged))
-        by bjm7-spam01.kuaishou.com with ESMTP id 23DCRHxc089299
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 20:27:17 +0800 (GMT-8)
-        (envelope-from tianzichen@kuaishou.com)
-Received: from bjm7-pm-mail26.kuaishou.com ([172.28.1.62])
-        by bjm7-spam01.kuaishou.com with ESMTPS id 23DCR75u089255
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 13 Apr 2022 20:27:07 +0800 (GMT-8)
-        (envelope-from tianzichen@kuaishou.com)
-Content-Language: zh-CN
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F41F2052051878449E4DC01E52BCB8A1@kuaishou.com>
-Content-Transfer-Encoding: base64
-DKIM-Signature: v=1; a=rsa-sha256; d=kuaishou.com; s=dkim; c=relaxed/relaxed;
-        t=1649852827; h=from:subject:to:date:message-id;
-        bh=TnyptApGhZYqd8SJSRCUR+JWQamR+5AGe393lfj5Tao=;
-        b=ldsJrdMBrlcT9XZ2RBqOwGwnfTmsUQsL0PBjbpPq+xmgDQOPhNUEA1QGZh+K0MiQFFK/vXwSd/Y
-        Y9wxMF7xDL/ec/MrTw4w8pdR6/bUuapp/z46yqGsQxJpWXrP0vS82FNHAOhUW4qx+g+UTLEyPEan5
-        nUEHM0FTGUkeD7tnk50=
-Received: from bjfk-pm-mail30.kuaishou.com (172.29.5.62) by
- bjm7-pm-mail26.kuaishou.com (172.28.1.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.14; Wed, 13 Apr 2022 20:27:07 +0800
-Received: from bjfk-pm-mail30.kuaishou.com ([fe80::2534:b256:58c3:b20]) by
- bjfk-pm-mail30.kuaishou.com ([fe80::2534:b256:58c3:b20%17]) with mapi id
- 15.01.2176.014; Wed, 13 Apr 2022 20:27:07 +0800
-From:   =?utf-8?B?55Sw5a2Q5pmo?= <tianzichen@kuaishou.com>
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>,
-        "jefflexu@linux.alibaba.com" <jefflexu@linux.alibaba.com>
-CC:     Jeffle Xu <jefflexu@linux.alibaba.com>,
-        "linux-erofs@lists.ozlabs.org" <linux-erofs@lists.ozlabs.org>,
-        "fannaihao@baidu.com" <fannaihao@baidu.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "joseph.qi@linux.alibaba.com" <joseph.qi@linux.alibaba.com>,
-        "linux-cachefs@redhat.com" <linux-cachefs@redhat.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "luodaowen.backend@bytedance.com" <luodaowen.backend@bytedance.com>,
-        "gerry@linux.alibaba.com" <gerry@linux.alibaba.com>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v8 00/20] fscache,erofs: fscache-based on-demand read
- semantics
-Thread-Topic: [PATCH v8 00/20] fscache,erofs: fscache-based on-demand read
- semantics
-Thread-Index: AQHYTzHKf6eBDuhir0CXwRoLEUpF1A==
-Date:   Wed, 13 Apr 2022 12:27:06 +0000
-Message-ID: <B58D56BF-4456-4AD4-A25F-0C9779355DEA@kuaishou.com>
-References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
- <YlLS47A9TpHyZJQi@B-P7TQMD6M-0146.local>
-In-Reply-To: <YlLS47A9TpHyZJQi@B-P7TQMD6M-0146.local>
-Accept-Language: zh-CN, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.20.112.61]
+        Wed, 13 Apr 2022 09:01:12 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064AC5B3D3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:58:47 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 79759200012;
+        Wed, 13 Apr 2022 12:58:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649854726;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/lt5mlGJZcuBVHxRss/04dHWoVmPgHYi8/JWSHvb6Dk=;
+        b=Px+SIUNwXGbqpReLs2RRDVD+hDL8TDHEUwFW5MVebHhxM4E5YWiVny3r5i81UC3drFpHmX
+        E07RVeqIKlSfYAABvYULm/UftBS1eaVN6Slwg8G8HDnarnpiBp2y8f3I8yJM1ByfVo2Dw5
+        eo4HIQB1iIeH7Qds3q0jVTCPjXy9TPoxOHxf5y5dd4MMvtDIjZ/FrTal95izOwP4lnMJ2u
+        jXPBv0yDW+KReaDFOSUlFmoRnnJOSsW92/WxheuyGc8nFDRJwPZqTjDtFmCIlDNnzYBjro
+        Df10JWWGIWKqLNhUFdVS9U0oaRWZAhBBB8bReMNjZLUSF/XuNsG4Nt2VM1vH8A==
+Date:   Wed, 13 Apr 2022 14:58:43 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Chuanhong Guo <gch981213@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Palmer <daniel@0x0f.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH v2] mtd: spinand: add support for ESMT F50x1G41LB
+Message-ID: <20220413145843.46a3d9b5@xps13>
+In-Reply-To: <20220413083824.247136-1-gch981213@gmail.com>
+References: <20220413083824.247136-1-gch981213@gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-DNSRBL: 
-X-MAIL: bjm7-spam01.kuaishou.com 23DCRHxc089299
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4gMjAyMuW5tDTmnIgxMOaXpSDkuIvljYg4OjUx77yMR2FvIFhpYW5nIDxoc2lhbmdrYW9A
-bGludXguYWxpYmFiYS5jb20+IOWGmemBk++8mg0KPiANCj4gT24gV2VkLCBBcHIgMDYsIDIwMjIg
-YXQgMDM6NTU6NTJQTSArMDgwMCwgSmVmZmxlIFh1IHdyb3RlOg0KPj4gY2hhbmdlcyBzaW5jZSB2
-NzoNCj4+IC0gcmViYXNlZCB0byA1LjE4LXJjMQ0KPj4gLSBpbmNsdWRlICJjYWNoZWZpbGVzOiB1
-bm1hcmsgaW5vZGUgaW4gdXNlIGluIGVycm9yIHBhdGgiIHBhdGNoIGludG8NCj4+ICB0aGlzIHBh
-dGNoc2V0IHRvIGF2b2lkIHdhcm5pbmcgZnJvbSB0ZXN0IHJvYm90IChwYXRjaCAxKQ0KPj4gLSBj
-YWNoZWZpbGVzOiByZW5hbWUgW2Nvb2tpZXx2b2x1bWVdX2tleV9sZW4gZmllbGQgb2Ygc3RydWN0
-DQo+PiAgY2FjaGVmaWxlc19vcGVuIHRvIFtjb29raWV8dm9sdW1lXV9rZXlfc2l6ZSB0byBhdm9p
-ZCBwb3RlbnRpYWwNCj4+ICBtaXN1bmRlcnN0YW5kaW5nLiBBbHNvIGFkZCBtb3JlIGRvY3VtZW50
-YXRpb24gdG8NCj4+ICBpbmNsdWRlL3VhcGkvbGludXgvY2FjaGVmaWxlcy5oLiAocGF0Y2ggMykN
-Cj4+IC0gY2FjaGVmaWxlczogdmFsaWQgY2hlY2sgZm9yIGVycm9yIGNvZGUgcmV0dXJuZWQgZnJv
-bSB1c2VyIGRhZW1vbg0KPj4gIChwYXRjaCAzKQ0KPj4gLSBjYWNoZWZpbGVzOiBjaGFuZ2UgV0FS
-Tl9PTl9PTkNFKCkgdG8gcHJfaW5mb19vbmNlKCkgd2hlbiB1c2VyIGRhZW1vbg0KPj4gIGNsb3Nl
-cyBhbm9uX2ZkIHByZW1hdHVyZWx5IChwYXRjaCA0LzUpDQo+PiAtIHJlYWR5IGZvciBjb21wbGV0
-ZSByZXZpZXcNCj4+IA0KPj4gDQo+PiBLZXJuZWwgUGF0Y2hzZXQNCj4+IC0tLS0tLS0tLS0tLS0t
-LQ0KPj4gR2l0IHRyZWU6DQo+PiANCj4+ICAgIGh0dHBzOi8vZ2l0aHViLmNvbS9sb3N0amVmZmxl
-L2xpbnV4LmdpdCBqaW5nYm8vZGV2LWVyb2ZzLWZzY2FjaGUtdjgNCj4+IA0KPj4gR2l0d2ViOg0K
-Pj4gDQo+PiAgICBodHRwczovL2dpdGh1Yi5jb20vbG9zdGplZmZsZS9saW51eC9jb21taXRzL2pp
-bmdiby9kZXYtZXJvZnMtZnNjYWNoZS12OA0KPj4gDQo+PiANCj4+IFVzZXIgRGFlbW9uIGZvciBR
-dWljayBUZXN0DQo+PiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPj4gR2l0IHRyZWU6DQo+
-PiANCj4+ICAgIGh0dHBzOi8vZ2l0aHViLmNvbS9sb3N0amVmZmxlL2RlbWFuZC1yZWFkLWNhY2hl
-ZmlsZXNkLmdpdCBtYWluDQo+PiANCj4+IEdpdHdlYjoNCj4+IA0KPj4gICAgaHR0cHM6Ly9naXRo
-dWIuY29tL2xvc3RqZWZmbGUvZGVtYW5kLXJlYWQtY2FjaGVmaWxlc2QNCj4+IA0KPiANCj4gQnR3
-LCB3ZSd2ZSBhbHNvIGZpbmlzaGVkIGEgcHJlbGltaW5hcnkgZW5kLXRvLWVuZCBvbi1kZW1hbmQg
-ZG93bmxvYWQNCj4gZGFlbW9uIGluIG9yZGVyIHRvIHRlc3QgdGhlIGZzY2FjaGUgb24tZGVtYW5k
-IGtlcm5lbCBjb2RlIGFzIGEgcmVhbA0KPiBlbmQtdG8tZW5kIHdvcmtsb2FkIGZvciBjb250YWlu
-ZXIgdXNlIGNhc2VzOg0KPiANCj4gVXNlciBndWlkZTogaHR0cHM6Ly9naXRodWIuY29tL2RyYWdv
-bmZseW9zcy9pbWFnZS1zZXJ2aWNlL2Jsb2IvZnNjYWNoZS9kb2NzL255ZHVzLWZzY2FjaGUubWQN
-Cj4gVmlkZW86IGh0dHBzOi8veW91dHUuYmUvRjRJRjJfREVOWG8NCg0KVGVzdGVkLWJ5OiBaaWNo
-ZW4gVGlhbiA8dGlhbnppY2hlbkBrdWFpc2hvdS5jb20+DQoNCj4gVGhhbmtzLA0KPiBHYW8gWGlh
-bmcNCj4gDQoNCg==
+Hi,
+
+gch981213@gmail.com wrote on Wed, 13 Apr 2022 16:38:19 +0800:
+
+> This patch adds support for ESMT F50L1G41LB and F50D1G41LB.
+> It seems that ESMT likes to use random JEDEC ID from other vendors.
+> Their 1G chips uses 0xc8 from GigaDevice and 2G/4G chips uses 0x2c from
+> Micron. For this reason, the ESMT entry is named esmt_c8 with explicit
+> JEDEC ID in variable name.
+>=20
+> Datasheets:
+> https://www.esmt.com.tw/upload/pdf/ESMT/datasheets/F50L1G41LB(2M).pdf
+> https://www.esmt.com.tw/upload/pdf/ESMT/datasheets/F50D1G41LB(2M).pdf
+>=20
+> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+> ---
+> This patch is made purely based on datasheet info without testing
+> on any actual chips.
+
+Do you plan to get one of these any time soon?
+
+I am not really confident merging a 100% non-tested driver :)
+
+> Change since v1: drop 0x7f padding from SPINAND_ID.
+>=20
+>  drivers/mtd/nand/spi/Makefile |  2 +-
+>  drivers/mtd/nand/spi/core.c   |  1 +
+>  drivers/mtd/nand/spi/esmt.c   | 94 +++++++++++++++++++++++++++++++++++
+>  include/linux/mtd/spinand.h   |  1 +
+>  4 files changed, 97 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/mtd/nand/spi/esmt.c
+>=20
+> diff --git a/drivers/mtd/nand/spi/Makefile b/drivers/mtd/nand/spi/Makefile
+> index 9662b9c1d5a9..7e3ab8a9aec7 100644
+> --- a/drivers/mtd/nand/spi/Makefile
+> +++ b/drivers/mtd/nand/spi/Makefile
+> @@ -1,3 +1,3 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -spinand-objs :=3D core.o gigadevice.o macronix.o micron.o paragon.o tosh=
+iba.o winbond.o
+> +spinand-objs :=3D core.o esmt.o gigadevice.o macronix.o micron.o paragon=
+.o toshiba.o winbond.o
+>  obj-$(CONFIG_MTD_SPI_NAND) +=3D spinand.o
+> diff --git a/drivers/mtd/nand/spi/core.c b/drivers/mtd/nand/spi/core.c
+> index ff8336870bc0..6c5d79ec3501 100644
+> --- a/drivers/mtd/nand/spi/core.c
+> +++ b/drivers/mtd/nand/spi/core.c
+> @@ -927,6 +927,7 @@ static const struct nand_ops spinand_ops =3D {
+>  };
+> =20
+>  static const struct spinand_manufacturer *spinand_manufacturers[] =3D {
+> +	&esmt_c8_spinand_manufacturer,
+>  	&gigadevice_spinand_manufacturer,
+>  	&macronix_spinand_manufacturer,
+>  	&micron_spinand_manufacturer,
+> diff --git a/drivers/mtd/nand/spi/esmt.c b/drivers/mtd/nand/spi/esmt.c
+> new file mode 100644
+> index 000000000000..f86716332893
+> --- /dev/null
+> +++ b/drivers/mtd/nand/spi/esmt.c
+> @@ -0,0 +1,94 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Author:
+> + *	Chuanhong Guo <gch981213@gmail.com>
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mtd/spinand.h>
+> +
+> +/* ESMT uses GigaDevice 0xc8 JECDEC ID on some SPI NANDs */
+> +#define SPINAND_MFR_ESMT_C8			0xc8
+
+What happens if the gigadevice driver probes first?
+
+> +
+> +#define F50L2G41XA_ECC_STATUS_MASK		GENMASK(6, 4)
+> +#define F50L2G41XA_STATUS_ECC_1_3_BITFLIPS	(1 << 4)
+> +#define F50L2G41XA_STATUS_ECC_4_6_BITFLIPS	(3 << 4)
+> +#define F50L2G41XA_STATUS_ECC_7_8_BITFLIPS	(5 << 4)
+> +
+
+
+Thanks,
+Miqu=C3=A8l
