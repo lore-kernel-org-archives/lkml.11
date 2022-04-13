@@ -2,418 +2,352 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27CBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67CE4C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234602AbiDMJmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33540 "EHLO
+        id S234607AbiDMJmr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234647AbiDMJmf (ORCPT
+        with ESMTP id S232272AbiDMJmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:42:35 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D642E0AE;
-        Wed, 13 Apr 2022 02:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=UFEvVEPP/ZgNd4BfkJxogNQd+MVlwANmMEZKhdkYdAw=; b=uRWQyn6ZrANh0GbXqBPc3vJndI
-        MDx5h6Y4vOyeMHmw4BrbX62Wiblzdx/oXv/3ky6MKKEoctY81wYvZz3iHphkemCEhjWBaVLePbprk
-        91VPMjVG03f1fiiFdH1zoMgLuBeB62CXFuRmo0Bi0/kRyHibu6Re5yVpUXVxCkQv776SD6q/aMLY3
-        /ibyP/gQ3ZhRqnxWEGlOE/P/DqrUzRfkCYUKMPeqMgmbr6nNmRkBwkD051xXbDuYDR3qS6hbyUpsC
-        KXRVRNQCr9uGWwY3IhbomCTEVipSfwYBqL8jyRMnBNsETn0vH+iX/rldhfBOq6Q/WWgzO61x64X1g
-        KpGalxXw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neZTa-00E9IH-Rk; Wed, 13 Apr 2022 09:39:51 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 306AE9861CB; Wed, 13 Apr 2022 11:39:49 +0200 (CEST)
-Date:   Wed, 13 Apr 2022 11:39:49 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     linux-cxl@vger.kernel.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Kevin Tian <kevin.tian@intel.com>, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev
-Subject: Re: [PATCH v2 03/12] cxl/core: Refactor a cxl_lock_class() out of
- cxl_nested_lock()
-Message-ID: <20220413093949.GW2731@worktop.programming.kicks-ass.net>
-References: <164982968798.684294.15817853329823976469.stgit@dwillia2-desk3.amr.corp.intel.com>
- <164982970436.684294.12004091884213856239.stgit@dwillia2-desk3.amr.corp.intel.com>
+        Wed, 13 Apr 2022 05:42:44 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9393586F;
+        Wed, 13 Apr 2022 02:40:23 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id c6so1645361edn.8;
+        Wed, 13 Apr 2022 02:40:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QV2H8Zpc3cQYjchDu8RYw5gWfW1y7hY5+ft9F48s9lg=;
+        b=qPQtL4dx5UsyjmfJN1u2zFmTxY9nARpLmPh3SIwgOeAl6LunvZ77eTTgWZkXe1Db2n
+         5dgiV02CRGnQXBnQ2kbmEnt7wvHMlZb1Dx49BbrzoICLWJuF+iDqQlI5MoWKryXGBO0N
+         uLWkc+kTAWpUSgC0qylQGE4aRCXDqZUWoSBtaJY1GVbKf6HsjhPZb1DRHjfsgNqzuHJa
+         UusJTCm/Sci4jSYGYk7OpRcgBVxkK7ggF0N88v88nL13GxAIQ3IzqGf79bYmLpr9E0Z8
+         JaDAxI9jf1xBqzomjPy16HrmpRhH9mf+nlruximkz8tmRp5HimoB7fVl5cvXPNvD3B6c
+         0Vkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QV2H8Zpc3cQYjchDu8RYw5gWfW1y7hY5+ft9F48s9lg=;
+        b=6kTEXOvNEche1e3F0fir6CyvvyaAyfctj22npkPtRV7WJ5moGqOmk8/qB5R7K7e2EQ
+         nmJgvSjLu5StKCFcYMJ8vyGy6wa/Qu15mnLSzhz586uiXh9A5nwE1XipjqD2OyMIfLyl
+         i8PNGKmmBL5XAXRDKf6ElRTz5p37pEoW84VyILf+KZZwjqMQzqUXmY2E4ZUojOeRYDA+
+         Y2ZYQRCQkAYfJIqQKuKlCZihbBew5kz9mrqXtgFUF8Ob2RW2zA10o9AetW7s2rf2cwhD
+         6/GiROiUd96cMFUwWVgkzWE3gWu/F5QWADphI1Mi91WzM9R6eYUiLyKnz8S0420sVv9/
+         JIZg==
+X-Gm-Message-State: AOAM530yUelcsbMeoVwSB0WVdhvKJaCrew9Z8j81VrNMIV48GK/Y66zw
+        OlRrlR6PyZ7H8YLdAabRGz8=
+X-Google-Smtp-Source: ABdhPJwQTDqwvRxq+U5T7h87eKFZua1Dz6/aJbupJ6rps5B27cxrMfXpWPKTvZmoPdRkG6trWPSZJQ==
+X-Received: by 2002:a05:6402:2881:b0:41d:8c32:917 with SMTP id eg1-20020a056402288100b0041d8c320917mr9355516edb.328.1649842822325;
+        Wed, 13 Apr 2022 02:40:22 -0700 (PDT)
+Received: from demon-pc.localdomain ([188.24.22.234])
+        by smtp.gmail.com with ESMTPSA id t1-20020a170906178100b006e7edb2c0bdsm11403265eje.15.2022.04.13.02.40.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 02:40:21 -0700 (PDT)
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: [PATCH v1 1/3] dt-bindings: iio: adc: add AD4130
+Date:   Wed, 13 Apr 2022 12:40:09 +0300
+Message-Id: <20220413094011.185269-1-cosmin.tanislav@analog.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <164982970436.684294.12004091884213856239.stgit@dwillia2-desk3.amr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+AD4130-8 is an ultra-low power, high precision,
+measurement solution for low bandwidth battery
+operated applications.
 
-*Completely* untested (I wouldn't know where to begin and probably odn't
-have the hardware anyway), and known incomplete.
+The fully integrated AFE (Analog Front-End)
+includes a multiplexer for up to 16 single-ended
+or 8 differential inputs, PGA (Programmable Gain
+Amplifier), 24-bit Sigma-Delta ADC, on-chip
+reference and oscillator, selectable filter
+options, smart sequencer, sensor biasing and
+excitation options, diagnostics, and a FIFO
+buffer.
 
-What's wrong with something like this then?
-
+Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
 ---
- drivers/cxl/core/pmem.c |  8 +++++
- drivers/cxl/core/port.c | 58 +++++++++++++++++++++---------------
- drivers/cxl/cxl.h       | 78 -------------------------------------------------
- 3 files changed, 42 insertions(+), 102 deletions(-)
+ .../bindings/iio/adc/adi,ad4130.yaml          | 255 ++++++++++++++++++
+ 1 file changed, 255 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
 
-diff --git a/drivers/cxl/core/pmem.c b/drivers/cxl/core/pmem.c
-index 8de240c4d96b..aca0dd5eefeb 100644
---- a/drivers/cxl/core/pmem.c
-+++ b/drivers/cxl/core/pmem.c
-@@ -80,6 +80,8 @@ struct cxl_nvdimm_bridge *cxl_find_nvdimm_bridge(struct cxl_nvdimm *cxl_nvd)
- }
- EXPORT_SYMBOL_NS_GPL(cxl_find_nvdimm_bridge, CXL);
- 
-+static lock_class_key cxl_nvdimm_bridge_key;
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
+new file mode 100644
+index 000000000000..e9dce54e9802
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
+@@ -0,0 +1,255 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2022 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,ad4130.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static struct cxl_nvdimm_bridge *cxl_nvdimm_bridge_alloc(struct cxl_port *port)
- {
- 	struct cxl_nvdimm_bridge *cxl_nvb;
-@@ -104,6 +106,8 @@ static struct cxl_nvdimm_bridge *cxl_nvdimm_bridge_alloc(struct cxl_port *port)
- 	dev->bus = &cxl_bus_type;
- 	dev->type = &cxl_nvdimm_bridge_type;
- 
-+	lockdep_set_class(&dev->mutex, &cxl_nvdimm_bridge_key);
++title: Analog Devices AD4130 ADC device driver
 +
- 	return cxl_nvb;
- 
- err:
-@@ -214,6 +218,8 @@ struct cxl_nvdimm *to_cxl_nvdimm(struct device *dev)
- }
- EXPORT_SYMBOL_NS_GPL(to_cxl_nvdimm, CXL);
- 
-+static struct lock_class_key cxl_nvdimm_key;
++maintainers:
++  - Cosmin Tanislav <cosmin.tanislav@analog.com>
 +
- static struct cxl_nvdimm *cxl_nvdimm_alloc(struct cxl_memdev *cxlmd)
- {
- 	struct cxl_nvdimm *cxl_nvd;
-@@ -231,6 +237,8 @@ static struct cxl_nvdimm *cxl_nvdimm_alloc(struct cxl_memdev *cxlmd)
- 	dev->bus = &cxl_bus_type;
- 	dev->type = &cxl_nvdimm_type;
- 
-+	lockdep_set_class(&dev->mutex, &cxl_nvdimm_key);
++description: |
++  Bindings for the Analog Devices AD4130 ADC. Datasheet can be found here:
++    https://www.analog.com/media/en/technical-documentation/data-sheets/AD4130-8.pdf
 +
- 	return cxl_nvd;
- }
- 
-diff --git a/drivers/cxl/core/port.c b/drivers/cxl/core/port.c
-index 2ab1ba4499b3..cae88404612f 100644
---- a/drivers/cxl/core/port.c
-+++ b/drivers/cxl/core/port.c
-@@ -312,10 +312,10 @@ static void cxl_port_release(struct device *dev)
- 	struct cxl_port *port = to_cxl_port(dev);
- 	struct cxl_ep *ep, *_e;
- 
--	cxl_device_lock(dev);
-+	device_lock(dev);
- 	list_for_each_entry_safe(ep, _e, &port->endpoints, list)
- 		cxl_ep_release(ep);
--	cxl_device_unlock(dev);
-+	device_unlock(dev);
- 	ida_free(&cxl_port_ida, port->id);
- 	kfree(port);
- }
-@@ -391,6 +391,8 @@ static int devm_cxl_link_uport(struct device *host, struct cxl_port *port)
- 	return devm_add_action_or_reset(host, cxl_unlink_uport, port);
- }
- 
-+static struct lock_class_key cxl_port_key;
++properties:
++  compatible:
++    enum:
++      - adi,ad4130-8-16-lfcsp
++      - adi,ad4130-8-16-wlcsp
++      - adi,ad4130-8-24-lfcsp
++      - adi,ad4130-8-24-wlcsp
 +
- static struct cxl_port *cxl_port_alloc(struct device *uport,
- 				       resource_size_t component_reg_phys,
- 				       struct cxl_port *parent_port)
-@@ -431,6 +433,8 @@ static struct cxl_port *cxl_port_alloc(struct device *uport,
- 	dev->bus = &cxl_bus_type;
- 	dev->type = &cxl_port_type;
- 
-+	lockdep_set_class(&dev->mutex, &cxl_port_key);
++  reg:
++    maxItems: 1
 +
- 	return port;
- 
- err:
-@@ -457,8 +461,10 @@ struct cxl_port *devm_cxl_add_port(struct device *host, struct device *uport,
- 	if (IS_ERR(port))
- 		return port;
- 
--	if (parent_port)
-+	if (parent_port) {
- 		port->depth = parent_port->depth + 1;
-+		lockdep_set_class_and_subclass(&port->dev->mutex, &cxl_port, port->depth);
-+	}
- 	dev = &port->dev;
- 	if (is_cxl_memdev(uport))
- 		rc = dev_set_name(dev, "endpoint%d", port->id);
-@@ -554,7 +560,7 @@ static int match_root_child(struct device *dev, const void *match)
- 		return 0;
- 
- 	port = to_cxl_port(dev);
--	cxl_device_lock(dev);
-+	device_lock(dev);
- 	list_for_each_entry(dport, &port->dports, list) {
- 		iter = match;
- 		while (iter) {
-@@ -564,7 +570,7 @@ static int match_root_child(struct device *dev, const void *match)
- 		}
- 	}
- out:
--	cxl_device_unlock(dev);
-+	device_unlock(dev);
- 
- 	return !!iter;
- }
-@@ -623,13 +629,13 @@ static int add_dport(struct cxl_port *port, struct cxl_dport *new)
- static void cond_cxl_root_lock(struct cxl_port *port)
- {
- 	if (is_cxl_root(port))
--		cxl_device_lock(&port->dev);
-+		device_lock(&port->dev);
- }
- 
- static void cond_cxl_root_unlock(struct cxl_port *port)
- {
- 	if (is_cxl_root(port))
--		cxl_device_unlock(&port->dev);
-+		device_unlock(&port->dev);
- }
- 
- static void cxl_dport_remove(void *data)
-@@ -736,15 +742,15 @@ static int add_ep(struct cxl_port *port, struct cxl_ep *new)
- {
- 	struct cxl_ep *dup;
- 
--	cxl_device_lock(&port->dev);
-+	device_lock(&port->dev);
- 	if (port->dead) {
--		cxl_device_unlock(&port->dev);
-+		device_unlock(&port->dev);
- 		return -ENXIO;
- 	}
- 	dup = find_ep(port, new->ep);
- 	if (!dup)
- 		list_add_tail(&new->list, &port->endpoints);
--	cxl_device_unlock(&port->dev);
-+	device_unlock(&port->dev);
- 
- 	return dup ? -EEXIST : 0;
- }
-@@ -854,12 +860,12 @@ static void delete_endpoint(void *data)
- 		goto out;
- 	parent = &parent_port->dev;
- 
--	cxl_device_lock(parent);
-+	device_lock(parent);
- 	if (parent->driver && endpoint->uport) {
- 		devm_release_action(parent, cxl_unlink_uport, endpoint);
- 		devm_release_action(parent, unregister_port, endpoint);
- 	}
--	cxl_device_unlock(parent);
-+	device_unlock(parent);
- 	put_device(parent);
- out:
- 	put_device(&endpoint->dev);
-@@ -920,7 +926,7 @@ static void cxl_detach_ep(void *data)
- 		}
- 
- 		parent_port = to_cxl_port(port->dev.parent);
--		cxl_device_lock(&parent_port->dev);
-+		device_lock(&parent_port->dev);
- 		if (!parent_port->dev.driver) {
- 			/*
- 			 * The bottom-up race to delete the port lost to a
-@@ -928,12 +934,12 @@ static void cxl_detach_ep(void *data)
- 			 * parent_port ->remove() will have cleaned up all
- 			 * descendants.
- 			 */
--			cxl_device_unlock(&parent_port->dev);
-+			device_unlock(&parent_port->dev);
- 			put_device(&port->dev);
- 			continue;
- 		}
- 
--		cxl_device_lock(&port->dev);
-+		device_lock(&port->dev);
- 		ep = find_ep(port, &cxlmd->dev);
- 		dev_dbg(&cxlmd->dev, "disconnect %s from %s\n",
- 			ep ? dev_name(ep->ep) : "", dev_name(&port->dev));
-@@ -948,7 +954,7 @@ static void cxl_detach_ep(void *data)
- 			port->dead = true;
- 			list_splice_init(&port->dports, &reap_dports);
- 		}
--		cxl_device_unlock(&port->dev);
-+		device_unlock(&port->dev);
- 
- 		if (!list_empty(&reap_dports)) {
- 			dev_dbg(&cxlmd->dev, "delete %s\n",
-@@ -956,7 +962,7 @@ static void cxl_detach_ep(void *data)
- 			delete_switch_port(port, &reap_dports);
- 		}
- 		put_device(&port->dev);
--		cxl_device_unlock(&parent_port->dev);
-+		device_unlock(&parent_port->dev);
- 	}
- }
- 
-@@ -1004,7 +1010,7 @@ static int add_port_attach_ep(struct cxl_memdev *cxlmd,
- 		return -EAGAIN;
- 	}
- 
--	cxl_device_lock(&parent_port->dev);
-+	device_lock(&parent_port->dev);
- 	if (!parent_port->dev.driver) {
- 		dev_warn(&cxlmd->dev,
- 			 "port %s:%s disabled, failed to enumerate CXL.mem\n",
-@@ -1022,7 +1028,7 @@ static int add_port_attach_ep(struct cxl_memdev *cxlmd,
- 			get_device(&port->dev);
- 	}
- out:
--	cxl_device_unlock(&parent_port->dev);
-+	device_unlock(&parent_port->dev);
- 
- 	if (IS_ERR(port))
- 		rc = PTR_ERR(port);
-@@ -1133,14 +1139,14 @@ struct cxl_dport *cxl_find_dport_by_dev(struct cxl_port *port,
- {
- 	struct cxl_dport *dport;
- 
--	cxl_device_lock(&port->dev);
-+	device_lock(&port->dev);
- 	list_for_each_entry(dport, &port->dports, list)
- 		if (dport->dport == dev) {
--			cxl_device_unlock(&port->dev);
-+			device_unlock(&port->dev);
- 			return dport;
- 		}
- 
--	cxl_device_unlock(&port->dev);
-+	device_unlock(&port->dev);
- 	return NULL;
- }
- EXPORT_SYMBOL_NS_GPL(cxl_find_dport_by_dev, CXL);
-@@ -1173,6 +1179,8 @@ static int decoder_populate_targets(struct cxl_decoder *cxld,
- 	return rc;
- }
- 
-+static struct lock_class_key cxl_decoder_key;
++  clocks:
++    maxItems: 1
++    description: phandle to the master clock (mclk)
 +
- /**
-  * cxl_decoder_alloc - Allocate a new CXL decoder
-  * @port: owning port of this decoder
-@@ -1224,6 +1232,8 @@ static struct cxl_decoder *cxl_decoder_alloc(struct cxl_port *port,
- 	else
- 		cxld->dev.type = &cxl_decoder_switch_type;
- 
-+	lockdep_set_class(&dev->mutex, cxl_decoder_key);
++  clock-names:
++    items:
++      - const: mclk
 +
- 	/* Pre initialize an "empty" decoder */
- 	cxld->interleave_ways = 1;
- 	cxld->interleave_granularity = PAGE_SIZE;
-@@ -1379,9 +1389,9 @@ int cxl_decoder_add(struct cxl_decoder *cxld, int *target_map)
- 
- 	port = to_cxl_port(cxld->dev.parent);
- 
--	cxl_device_lock(&port->dev);
-+	device_lock(&port->dev);
- 	rc = cxl_decoder_add_locked(cxld, target_map);
--	cxl_device_unlock(&port->dev);
-+	device_unlock(&port->dev);
- 
- 	return rc;
- }
-diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-index 990b6670222e..140dc3278cde 100644
---- a/drivers/cxl/cxl.h
-+++ b/drivers/cxl/cxl.h
-@@ -405,82 +405,4 @@ struct cxl_nvdimm_bridge *cxl_find_nvdimm_bridge(struct cxl_nvdimm *cxl_nvd);
- #define __mock static
- #endif
- 
--#ifdef CONFIG_PROVE_CXL_LOCKING
--enum cxl_lock_class {
--	CXL_ANON_LOCK,
--	CXL_NVDIMM_LOCK,
--	CXL_NVDIMM_BRIDGE_LOCK,
--	CXL_PORT_LOCK,
--	/*
--	 * Be careful to add new lock classes here, CXL_PORT_LOCK is
--	 * extended by the port depth, so a maximum CXL port topology
--	 * depth would need to be defined first.
--	 */
--};
--
--static inline void cxl_nested_lock(struct device *dev)
--{
--	if (is_cxl_port(dev)) {
--		struct cxl_port *port = to_cxl_port(dev);
--
--		mutex_lock_nested(&dev->lockdep_mutex,
--				  CXL_PORT_LOCK + port->depth);
--	} else if (is_cxl_decoder(dev)) {
--		struct cxl_port *port = to_cxl_port(dev->parent);
--
--		/*
--		 * A decoder is the immediate child of a port, so set
--		 * its lock class equal to other child device siblings.
--		 */
--		mutex_lock_nested(&dev->lockdep_mutex,
--				  CXL_PORT_LOCK + port->depth + 1);
--	} else if (is_cxl_nvdimm_bridge(dev))
--		mutex_lock_nested(&dev->lockdep_mutex, CXL_NVDIMM_BRIDGE_LOCK);
--	else if (is_cxl_nvdimm(dev))
--		mutex_lock_nested(&dev->lockdep_mutex, CXL_NVDIMM_LOCK);
--	else
--		mutex_lock_nested(&dev->lockdep_mutex, CXL_ANON_LOCK);
--}
--
--static inline void cxl_nested_unlock(struct device *dev)
--{
--	mutex_unlock(&dev->lockdep_mutex);
--}
--
--static inline void cxl_device_lock(struct device *dev)
--{
--	/*
--	 * For double lock errors the lockup will happen before lockdep
--	 * warns at cxl_nested_lock(), so assert explicitly.
--	 */
--	lockdep_assert_not_held(&dev->lockdep_mutex);
--
--	device_lock(dev);
--	cxl_nested_lock(dev);
--}
--
--static inline void cxl_device_unlock(struct device *dev)
--{
--	cxl_nested_unlock(dev);
--	device_unlock(dev);
--}
--#else
--static inline void cxl_nested_lock(struct device *dev)
--{
--}
--
--static inline void cxl_nested_unlock(struct device *dev)
--{
--}
--
--static inline void cxl_device_lock(struct device *dev)
--{
--	device_lock(dev);
--}
--
--static inline void cxl_device_unlock(struct device *dev)
--{
--	device_unlock(dev);
--}
--#endif
- #endif /* __CXL_H__ */
++  interrupts:
++    minItems: 1
++    maxItems: 1
++
++  interrupt-names:
++    minItems: 1
++    maxItems: 1
++    description:
++      Default if not supplied is dout-int.
++    items:
++      enum:
++        - dout-int
++        - clk
++        - p1
++        - dout
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  refin1-supply:
++    description: refin1 supply. Can be used as reference for conversion.
++
++  refin2-supply:
++    description: refin2 supply. Can be used as reference for conversion.
++
++  avdd-supply:
++    description: AVDD voltage supply. Can be used as reference for conversion.
++
++  iovdd-supply:
++    description: IOVDD voltage supply. Used for the chip interface.
++
++  spi-max-frequency:
++    maximum: 5000000
++
++  adi,mclk-sel:
++    description: |
++      Select the clock.
++      0: Internal 76.8kHz clock.
++      1: Internal 76.8kHz clock, output to the CLK pin.
++      2: External 76.8kHz clock.
++      3. External 153.6kHz clock.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1, 2, 3]
++    default: 0
++
++  adi,int-ref-en:
++    description: |
++      Specify if internal reference should be enabled.
++    type: boolean
++    default: true
++
++  adi,bipolar:
++    description: Specify if the device should be used in bipolar mode.
++    type: boolean
++    default: false
++
++  adi,vbias-pins:
++    description: Analog inputs to apply a voltage bias of (AVDD − AVSS) / 2 to.
++    items:
++      minimum: 0
++      maximum: 15
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++patternProperties:
++  "^channel@([0-9]|1[0-5])$":
++    type: object
++    $ref: adc.yaml
++
++    properties:
++      reg:
++        description: |
++          The channel number.
++        items:
++          minimum: 0
++          maximum: 15
++
++      diff-channels:
++        description: |
++          Besides the analog inputs available, internal inputs can be used.
++          16: Internal temperature sensor.
++          17: AVss
++          18: Internal reference.
++          19: DGND.
++          20: (AVDD − AVSS)/6+
++          21: (AVDD − AVSS)/6-
++          22: (IOVDD − DGND)/6+
++          23: (IOVDD − DGND)/6-
++          24: (ALDO − AVSS)/6+
++          25: (ALDO − AVSS)/6-
++          26: (DLDO − DGND)/6+
++          27: (DLDO − DGND)/6-
++          28: V_MV_P
++          29: V_MV_M
++        $ref: adc.yaml
++        items:
++          minimum: 0
++          maximum: 29
++
++      adi,reference-select:
++        description: |
++          Select the reference source to use when converting on the
++          specific channel. Valid values are:
++          0: REFIN1(+)/REFIN1(−).
++          1: REFIN2(+)/REFIN2(−).
++          2: REFOUT/AVSS (Internal reference)
++          3: AVDD/AVSS
++          If not specified, internal reference is used.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 1, 2, 3]
++        default: 2
++
++      adi,excitation-pin-0:
++        description: |
++          Analog input to apply excitation current to while the channel
++          is active.
++        minimum: 0
++        maximum: 15
++        default: 0
++
++      adi,excitation-pin-1:
++        description: |
++          Analog input to apply excitation current to while this channel
++          is active.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        minimum: 0
++        maximum: 15
++        default: 0
++
++      adi,excitation-current-0-nanoamps:
++        description: |
++          Excitation current in nanoamps to be applied to pin specified in
++          adi,excitation-pin-0 while this channel is active.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 100, 10000, 20000, 50000, 100000, 150000, 200000]
++        default: 0
++
++      adi,excitation-current-1-nanoamps:
++        description: |
++          Excitation current in nanoamps to be applied to pin specified in
++          adi,excitation-pin-1 while this channel is active.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 100, 10000, 20000, 50000, 100000, 150000, 200000]
++        default: 0
++
++      adi,burnout-current-nanoamps:
++        description: |
++          Burnout current in nanoamps to be applied for this channel.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 500, 2000, 4000]
++        default: 0
++
++      adi,buffered-positive:
++        description: Enable buffered mode for positive input.
++        type: boolean
++
++      adi,buffered-negative:
++        description: Enable buffered mode for negative input.
++        type: boolean
++
++    required:
++      - reg
++      - diff-channels
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      adc@0 {
++        compatible = "adi,ad4130-8-24-wlcsp";
++        reg = <0>;
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        spi-max-frequency = <5000000>;
++        interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
++        interrupt-parent = <&gpio>;
++
++        channel@0 {
++          reg = <0>;
++          /* AIN8, AIN9 */
++          diff-channels = <8 9>;
++        };
++
++        channel@1 {
++          reg = <1>;
++          /* AIN10, AIN11 */
++          diff-channels = <10 11>;
++        };
++
++        channel@2 {
++          reg = <2>;
++          /* Temperature Sensor, DGND */
++          diff-channels = <16 19>;
++        };
++
++        channel@3 {
++          reg = <3>;
++          /* Internal reference, DGND */
++          diff-channels = <18 19>;
++        };
++
++        channel@4 {
++          reg = <4>;
++          /* DGND, DGND */
++          diff-channels = <19 19>;
++        };
++      };
++    };
+-- 
+2.35.1
+
