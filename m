@@ -2,144 +2,665 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF871C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 606E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238366AbiDMXYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 19:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
+        id S239432AbiDMXY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 19:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239322AbiDMXXt (ORCPT
+        with ESMTP id S239237AbiDMXWf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 19:23:49 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2062.outbound.protection.outlook.com [40.107.102.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A2A5DA3C
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:20:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NvsIUVY3d5F/TNLIsoxk9qmY/FvCq+93fGsg3rtQh0mB5jBN7dJydf5DUhQdRekEqSvYSva46Y8N1EsNKg3Xx62/BFm/Spw/MHWB+gLDbC0bBCbVT9d2rtQU7vWJ0sjgLwCIVJ1ukfMtxZiWJ5bxl32fYORF8BeD/z0NmdMjA5feUx9KuPvHVwOlny1ghO9+1hmTjBYISbGGaurDc4lZyykQ6Tf9LDKICa7MhlMSDDYU9PZpkUSS42oo6aKGw4Ih6k8FtEr+t4tNEbkGaEleu/J+KhpT6dwz7ROzPyNWT17rGyZgmhkkDtTi1jUp4wJUoZhXeRBoqfDdS9MV99n+kQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XqXCGl/Z8A2I2pkZSnJ+MWHsG2UGtsIbBmqqSMZsrmY=;
- b=iKz2rUQulVeJ012BEgpOemOPN9eO/5p7JC9e0jAoy9pCscce1QV2MeO9CeIFQfpviS7xvDOzymVdvx7mNr3O+6sMYVABNYFUKy6D9LMOMGEo+2UXBx9jxCMNxslXETnmHYfmjquyAc3MqJWfjocbKU/ZfXl1ESXuAQG1N76VcM2V3M0Y2vYlPPCR9CdRPkEjntHoWoPnCqchAcWbL7IOYfHsS8TAmIpx15nBy5uKroIDzvhuZIJ6eiLQqYJ/20QMPmrTBmXiDYnXaNx4JoHRg3BQxcQ64gqmUrg4KXoKR60mI7c+cJ7gApc8LiE3adqc8zEvJ9Fd3Ba3bunfYWy6wg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XqXCGl/Z8A2I2pkZSnJ+MWHsG2UGtsIbBmqqSMZsrmY=;
- b=hk3Kb5PrjtopzjJBFvLoOQUMVf3tav6O7eeGIrOChTw2a8N0C5xf/TahUdqg3Bu1Sshabx5IcnX/J0VkP5paR9Gp4MFytsu1sZ5s2ddP+XmWDHI5Fn/Z4lC2gG9sWoMDLhuPONbJ/CaU371TGBJgyfak3yVh1NuHaBPI+1jB2snzvdpHWxR692zcSnTOelYxE3Dw/wXqAuOyfWByCdUhzfHrFB34kbehTBvDV6ciHkTpLa7HmSYNZCT3ORtbPVy1uDHrxoSwjUni/qx0z+EW9mFWbZuxlRGdTp3aij55fu/JOKPakfpoMEop42FGgrAaOMcLovwiY8iBJ1E3bL7GNg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16)
- by CH2PR12MB4326.namprd12.prod.outlook.com (2603:10b6:610:af::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Wed, 13 Apr
- 2022 23:20:55 +0000
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::c911:71b5:78e6:3a38]) by CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::c911:71b5:78e6:3a38%8]) with mapi id 15.20.5144.030; Wed, 13 Apr 2022
- 23:20:55 +0000
-Date:   Wed, 13 Apr 2022 20:20:53 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Wang, Zhi A" <zhi.a.wang@intel.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: refactor the i915 GVT support and move to the modern mdev API v3
-Message-ID: <20220413232053.GA2120790@nvidia.com>
-References: <20220411141403.86980-1-hch@lst.de>
- <82c13d8e-1cb4-2873-86e9-16fd38e15b27@intel.com>
- <20220413154642.GA28095@lst.de>
- <871qy1geko.fsf@intel.com>
- <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
-X-ClientProxiedBy: MN2PR07CA0002.namprd07.prod.outlook.com
- (2603:10b6:208:1a0::12) To CH2PR12MB4181.namprd12.prod.outlook.com
- (2603:10b6:610:a8::16)
+        Wed, 13 Apr 2022 19:22:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C59D3A5D1
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:20:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649892010;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ychhaRzz2uHI/l+EWy0iFhYfdo18db/Qi9v32WYip94=;
+        b=GzOQS1LvYqnLbc+mt6hj3tLJh9zWOeV7YNhMBLnJ/OwmQvlpibPzsIOCqVgeimwWoIS7vP
+        lwlugJHXZKwaBn/5p9tiZsTezpZsPzQSa+XbXQjEZv6khaMDrCg7j4ZKU01BVXDKi+Qg04
+        urSDg/HQ6kgcLLJT/ywN3T7w31yWvi8=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-250-DVus8TnFMeeqAwHXQByseQ-1; Wed, 13 Apr 2022 19:20:09 -0400
+X-MC-Unique: DVus8TnFMeeqAwHXQByseQ-1
+Received: by mail-qk1-f199.google.com with SMTP id q5-20020a05620a0d8500b004738c1b48beso2165991qkl.7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:20:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ychhaRzz2uHI/l+EWy0iFhYfdo18db/Qi9v32WYip94=;
+        b=UPflxhrZjHWyjq1M7uxZN54ZuKsC+fOISBpVPZY3xrSWIj41jcs1h7oMHzxlzbFSy7
+         4xGvlRm5W4BWDHCZW/iRbxHccBkm5944hA1R5fsGg87cP6T73paybFpe7orWvEZpjriG
+         qqf5ypeD9o4PcjqXellmuykvrze+JIFMHsNmhvBd4JJ1y46mrTXHOqdyk3ZSXJQjn8EJ
+         53Da4vqXjCoVK/OneLAQE1YYJvrZ43aqh/bRs7XKhl85z4K7z3OSfOWl69af0PCQFLFv
+         eS34PavjscD36UqemT+Vyea/dbc5k+eCOQ4QJGxBEfr22/dmCImhWGcYXvYvYjn1cRIN
+         X7qg==
+X-Gm-Message-State: AOAM531I0NcEVmv+yzvdHk2/FTCiMZEywtCEB4qoHuC1fvXb00FGUtFr
+        i9P2iqg6GJuj5Ggkw5VuFwCwcFZ9alnYQ+QF7OezgV5Fcbwo1snih5YFUMjz63sE+T7Oa0xzjL2
+        sc0HQMbuj6qyPjwC+iwq+chOZ
+X-Received: by 2002:a05:6214:21ad:b0:444:3de0:148c with SMTP id t13-20020a05621421ad00b004443de0148cmr1048700qvc.119.1649892008659;
+        Wed, 13 Apr 2022 16:20:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyjgHCMnYGzKJl9ADv96L9Xgz0T1Mo2xZEQCVbid6X7kYJ/KAendvokv9sGhAiGbhln4zYrTg==
+X-Received: by 2002:a05:6214:21ad:b0:444:3de0:148c with SMTP id t13-20020a05621421ad00b004443de0148cmr1048679qvc.119.1649892008340;
+        Wed, 13 Apr 2022 16:20:08 -0700 (PDT)
+Received: from treble.redhat.com ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id b20-20020a05622a021400b002f08f5658a2sm193925qtx.68.2022.04.13.16.20.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 16:20:07 -0700 (PDT)
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     x86@kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH 07/18] objtool: Reorganize cmdline options
+Date:   Wed, 13 Apr 2022 16:19:42 -0700
+Message-Id: <fef7a0e4fd371c152d268ec9472815c34193a626.1649891421.git.jpoimboe@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1649891421.git.jpoimboe@redhat.com>
+References: <cover.1649891421.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 397bda6a-844f-4b28-8ce5-08da1da4424f
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4326:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB43268E532C685EEFA5ACB7B0C2EC9@CH2PR12MB4326.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7LgYxRfx+t/WrGtw+P/a2ncAhnw0u6kDRzA0KQ4V9bYsR3ehm8lXTkG/5t45aFe+DcF/CETbMRo4jFNQD778vwR+rNsSaXekgBrWDkqHXdGNfE5KUmRb4u3RWRh1ARbq28cv7m+AMlWTq0S/EV+CrCNnVpOMa7ooogNE+VkkkW91p2VDE5YiVXKWfDcrhdtZjtGvpgpHLH9YwAf7IYPmsmLR6FT8IQfDXq1iSdfT3eNTwasBRzu5fhyPZlml0gY1i7w8eV891TM/sXzZb+pdMeP8HogA1aY01X+w8OV0xN0nV7IFDSNRtmkMj+L5/4zU5cdNzcsNiHrPadP6co10D4e+9hi9n3WCMYwh7Pi6IcyOn4Zt98PLhLHYxDf+BVjB/MkmiLL0CxxSpY5wZ7i0TN3Qk7O7R0HJNCMe4lSbp6f90xXH8XyPwYCsxSixdfYHNzISgZAuCpOzz44Wx0nw33+aywX3rWoSH3ruoSlyaNQo8iYg1aBLLgWmyhZBWSewGxCbqhaiQ/xZgyVivplFjpmOGy1D+LCC4tp84wr6n4t7FB26IpfhAxfToWM5CcNzJfA8hMKZm2BFlGq0/tqCVoV7QE8p6feb3fEh3ICcLwqsnOjpgJItBDaJqN/RyqasN80tBu57vD34dL3FJaegvS6so0qrrVhVqdugLaCFJ8odl46Tvi/4aTwOybhUz7BKn1y4JL4J7s0Ih1nv62HlVgv7KKuwp5eRY0RBNgXzUyo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(966005)(54906003)(6512007)(186003)(316002)(66476007)(66556008)(36756003)(83380400001)(508600001)(26005)(33656002)(1076003)(6486002)(2616005)(8676002)(4744005)(66946007)(38100700002)(6506007)(4326008)(2906002)(8936002)(86362001)(7416002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1PmlkrDq0titB/PeihK4HvYt5z6xDr3ffXuxBHQth/Xg6cbVGqfl329d5vUA?=
- =?us-ascii?Q?vpE9Q5FT+H43nDkljjo9uKR45YQH7oMwF5pJEr9ygnRlvZXaDyTFM3hJt7XV?=
- =?us-ascii?Q?nQj8tK7Tljv0CKCXc9a/SBDu67MduMPozK/myTu3F6P2ESPWvuljKxg8Ceaz?=
- =?us-ascii?Q?/HVvG5mjjjSF6IpXvXyMAWCILYqOxY8p3aTlSwCIMW80l153/SFXU9a48OUm?=
- =?us-ascii?Q?rEaGjFJEn77Mrp1VdbXezCEGvRadOxold0+/dPgKFxnZCIDanhqSOQyWoY21?=
- =?us-ascii?Q?KFjOYibP6kWWgnlkVFhyOLupIEPuaceuoWh7o3lN4V4LmEJxOu0tQxlTncWO?=
- =?us-ascii?Q?yf+oVGncsDIdAoxHZaPEzwLzJRx6uHSo5CbiHNpEkd21ThP/bXXPo1P/IK9a?=
- =?us-ascii?Q?vwQ4TRa5NgjRBooduXaibWE8z73LSvg8UOzWYnTcq39AS9zrvZFYF1cN7sIC?=
- =?us-ascii?Q?eCHo58FpAayKBCTQ0/FhlmtuZdZWtD8eAUys6C51IRTrgopsJlHXqND7V9iT?=
- =?us-ascii?Q?BnnDczRhYgn5JEwCU2BLFoU6F6Fp4oW0tlGmdhI2nspfsRtl/hhAyE6nJteD?=
- =?us-ascii?Q?W6xDmEPuDzq8o42/Um1yhHSTgIkLBpUlPwXdUOiIizxXxAeQNHkkiOdD0MVs?=
- =?us-ascii?Q?SGQxtLeLU/j8KGN+1hlepvmebj3Q3JJOAHVRWmgNQV0yDuPTId5mUHHvKt8h?=
- =?us-ascii?Q?l6x2KDrV9ojRNMVpJ/590XzIyjHeGogJD1qgAPF5L61KydXr0Zwwe/OHij8V?=
- =?us-ascii?Q?YOBsO1at4Wnd14g+2dQFEUJcdF4MaPEaGEXOrKmZdnsAefI2aFwzEr8DhRHn?=
- =?us-ascii?Q?uRWSLopWlbQCd8vz8BWwaDDlU9vOWI/12UscC46hXyqemODvEseuyMXpyiem?=
- =?us-ascii?Q?DAZFpc2TUJoj4MlXrth3oA4j/fZ3+/8fIULXe3ZE6LOWv4Cx4X/z2HE1wR20?=
- =?us-ascii?Q?M2nFoxhAFyKhBNox+2PUk4tilxcQGIDdXF8q3WAbJGZO0qoU4xz6yJxNLF38?=
- =?us-ascii?Q?LlktRcaFL2BLS1AN0kd/BBp1whg6q7n6t67JOFphKTkqJVWruqbznh/5LlhF?=
- =?us-ascii?Q?E7DHm58fSV+qnZJGc14mgB9EdAWClzY4BIxEGkh+x2g/IPbTaujMTKfgitnH?=
- =?us-ascii?Q?YbA3bAtx8LQSUN7MyEFoA2BkPwY77oxaLbWExiH8aotScSm04gJMaEhaWgeg?=
- =?us-ascii?Q?rjL5uswKwEMc/q+3EKxuWXexL0N1h8paZ564y92fqb3nafINsoNKnh/SUgqe?=
- =?us-ascii?Q?7797Gpnvzl7TEAKCN9iAMcktxa3P8amGVWsJ7R2MqVvLiLhRJ9BjumaFRY1B?=
- =?us-ascii?Q?MHQoNtHpPs68KpeNHLh3JR/sRG7BFxnlTor4SeMcGCaftk9MIpdIDs2BuGwc?=
- =?us-ascii?Q?iJA/e9Di2HxLwTvZvcLeLJhIghzEqBIwd8gMrvFJ9p0uk1B769Y/5zXtJPSJ?=
- =?us-ascii?Q?JUAJyq4V3CA6ukO/jsyxYctiG+FAfKS07+LhyeCiAZlPv9yYeZ645eeu0GdL?=
- =?us-ascii?Q?xrqzXeiAD7yLR7l6QnHTRorivumMbK8V1CCu9xr+YYjimT0BlGwSu14GptPp?=
- =?us-ascii?Q?Ux7LgxUh/I0glAMiM3wwUu1xXAYS6VE6l8Z20aVwhpBxdFr0Fe8VAUmoQJyc?=
- =?us-ascii?Q?154t94d1xP1qzbgieUXp/xd/OZf+HM98TShUesHCxAfn5Yz6YBZ8QGMLdis0?=
- =?us-ascii?Q?b8ktKEiDNL2uYZpoJLwm8a/iu/8N8axE6y8LC1rcG3JNaBPk+HJCgcCxO92b?=
- =?us-ascii?Q?FHqzvkxtXA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 397bda6a-844f-4b28-8ce5-08da1da4424f
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4181.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2022 23:20:55.1635
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ce2n7nVgY4UTG68npRgjI/tDIMxSUxwtgnkfp0CLhwZLdbtgcWSPFqXO+y6QyHGX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4326
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 11:13:06PM +0000, Wang, Zhi A wrote:
-> Hi folks:
-> 
-> Thanks so much for the efforts. I prepared a branch which contains all our patches.The aim of the branch is for the VFIO maintainers to pull the whole bunch easily after the drm-intel-next got merged through drm (as one of the MMIO patches depends on a patch in drm-intel-next).
-> 
-> I dropped patch 4 and patch 5 as they have been covered by Jani's patches. Some conflicts was solved.
-> QA is going to test it today. 
-> 
-> You can find it here:
-> 
-> git clone https://github.com/intel/gvt-linux -b for-christoph
+Split the existing options into two groups: actions, which actually do
+something; and options, which modify the actions in some way.
 
-There are alot of extra commits on there - is it possible to base this
-straight on rc1 not on some kind of existing DRM tree?
+Also there's no need to have short flags for all the non-action options.
+Reserve short flags for the more important actions.
 
-Why did you choose drm/i915/fbc: Call intel_fbc_activate() directly
-from frontbuffer flush  as a base?
+While at it:
 
-Jason
+- change a few of the short flags to be more intuitive
+
+- make option descriptions more consistently descriptive
+
+- sort options in the source like they are when printed
+
+- move options to a global struct
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+---
+ scripts/Makefile.build                  | 10 ++--
+ scripts/link-vmlinux.sh                 | 30 +++++++-----
+ tools/objtool/arch/x86/decode.c         |  2 +-
+ tools/objtool/arch/x86/special.c        |  2 +-
+ tools/objtool/builtin-check.c           | 40 ++++++++--------
+ tools/objtool/check.c                   | 62 ++++++++++++-------------
+ tools/objtool/elf.c                     |  8 ++--
+ tools/objtool/include/objtool/builtin.h | 26 +++++++++--
+ tools/objtool/objtool.c                 |  6 +--
+ 9 files changed, 108 insertions(+), 78 deletions(-)
+
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 33c1ed581522..dd9d582808d6 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -228,14 +228,14 @@ objtool := $(objtree)/tools/objtool/objtool
+ 
+ objtool_args =								\
+ 	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
+-	$(if $(part-of-module), --module)				\
+ 	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
+-	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+-	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)			\
++	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
++	$(if $(CONFIG_SLS), --sls)					\
+ 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+-	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+-	$(if $(CONFIG_SLS), --sls)
++	$(if $(part-of-module), --module)				\
++	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
++	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)
+ 
+ cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
+ cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 9361a1ef02c9..c6e9fef61b11 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -117,8 +117,6 @@ objtool_link()
+ 			objtoolcmd="orc generate"
+ 		fi
+ 
+-		objtoolopt="${objtoolopt} --lto"
+-
+ 		if is_enabled CONFIG_X86_KERNEL_IBT; then
+ 			objtoolopt="${objtoolopt} --ibt"
+ 		fi
+@@ -126,6 +124,8 @@ objtool_link()
+ 		if is_enabled CONFIG_FTRACE_MCOUNT_USE_OBJTOOL; then
+ 			objtoolopt="${objtoolopt} --mcount"
+ 		fi
++
++		objtoolopt="${objtoolopt} --lto"
+ 	fi
+ 
+ 	if is_enabled CONFIG_VMLINUX_VALIDATION; then
+@@ -133,25 +133,33 @@ objtool_link()
+ 	fi
+ 
+ 	if [ -n "${objtoolopt}" ]; then
++
+ 		if [ -z "${objtoolcmd}" ]; then
+ 			objtoolcmd="check"
+ 		fi
+-		objtoolopt="${objtoolopt} --vmlinux"
+-		if ! is_enabled CONFIG_FRAME_POINTER; then
+-			objtoolopt="${objtoolopt} --no-fp"
+-		fi
+-		if is_enabled CONFIG_GCOV_KERNEL; then
+-			objtoolopt="${objtoolopt} --no-unreachable"
+-		fi
++
+ 		if is_enabled CONFIG_RETPOLINE; then
+ 			objtoolopt="${objtoolopt} --retpoline"
+ 		fi
++
++		if is_enabled CONFIG_SLS; then
++			objtoolopt="${objtoolopt} --sls"
++		fi
++
+ 		if is_enabled CONFIG_X86_SMAP; then
+ 			objtoolopt="${objtoolopt} --uaccess"
+ 		fi
+-		if is_enabled CONFIG_SLS; then
+-			objtoolopt="${objtoolopt} --sls"
++
++		if ! is_enabled CONFIG_FRAME_POINTER; then
++			objtoolopt="${objtoolopt} --no-fp"
+ 		fi
++
++		if is_enabled CONFIG_GCOV_KERNEL; then
++			objtoolopt="${objtoolopt} --no-unreachable"
++		fi
++
++		objtoolopt="${objtoolopt} --vmlinux"
++
+ 		info OBJTOOL ${1}
+ 		tools/objtool/objtool ${objtoolcmd} ${objtoolopt} ${1}
+ 	fi
+diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
+index 943cb41cddf7..8b990a52aada 100644
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -581,7 +581,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+ 		break;
+ 
+ 	case 0xc7: /* mov imm, r/m */
+-		if (!noinstr)
++		if (!opts.noinstr)
+ 			break;
+ 
+ 		if (insn.length == 3+4+4 && !strncmp(sec->name, ".init.text", 10)) {
+diff --git a/tools/objtool/arch/x86/special.c b/tools/objtool/arch/x86/special.c
+index e707d9bcd161..7c97b7391279 100644
+--- a/tools/objtool/arch/x86/special.c
++++ b/tools/objtool/arch/x86/special.c
+@@ -20,7 +20,7 @@ void arch_handle_alternative(unsigned short feature, struct special_alt *alt)
+ 		 * find paths that see the STAC but take the NOP instead of
+ 		 * CLAC and the other way around.
+ 		 */
+-		if (uaccess)
++		if (opts.uaccess)
+ 			alt->skip_orig = true;
+ 		else
+ 			alt->skip_alt = true;
+diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
+index fc6975ab8b06..4f4a087720b3 100644
+--- a/tools/objtool/builtin-check.c
++++ b/tools/objtool/builtin-check.c
+@@ -19,12 +19,10 @@
+ #include <objtool/builtin.h>
+ #include <objtool/objtool.h>
+ 
+-bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
+-     lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
+-     ibt;
++struct opts opts;
+ 
+ static const char * const check_usage[] = {
+-	"objtool check [<options>] file.o",
++	"objtool check <actions> [<options>] file.o",
+ 	NULL,
+ };
+ 
+@@ -34,21 +32,25 @@ static const char * const env_usage[] = {
+ };
+ 
+ const struct option check_options[] = {
+-	OPT_BOOLEAN('f', "no-fp", &no_fp, "Skip frame pointer validation"),
+-	OPT_BOOLEAN('u', "no-unreachable", &no_unreachable, "Skip 'unreachable instruction' warnings"),
+-	OPT_BOOLEAN('r', "retpoline", &retpoline, "Validate retpoline assumptions"),
+-	OPT_BOOLEAN('m', "module", &module, "Indicates the object will be part of a kernel module"),
+-	OPT_BOOLEAN('b', "backtrace", &backtrace, "unwind on error"),
+-	OPT_BOOLEAN('a', "uaccess", &uaccess, "enable uaccess checking"),
+-	OPT_BOOLEAN('s', "stats", &stats, "print statistics"),
+-	OPT_BOOLEAN(0, "lto", &lto, "whole-archive like runs"),
+-	OPT_BOOLEAN('n', "noinstr", &noinstr, "noinstr validation for vmlinux.o"),
+-	OPT_BOOLEAN('l', "vmlinux", &vmlinux, "vmlinux.o validation"),
+-	OPT_BOOLEAN('M', "mcount", &mcount, "generate __mcount_loc"),
+-	OPT_BOOLEAN('B', "backup", &backup, "create .orig files before modification"),
+-	OPT_BOOLEAN('S', "sls", &sls, "validate straight-line-speculation"),
+-	OPT_BOOLEAN(0, "dry-run", &dryrun, "don't write the modifications"),
+-	OPT_BOOLEAN(0, "ibt", &ibt, "validate ENDBR placement"),
++	OPT_GROUP("Actions:"),
++	OPT_BOOLEAN('i', "ibt", &opts.ibt, "validate and annotate IBT"),
++	OPT_BOOLEAN('m', "mcount", &opts.mcount, "annotate mcount/fentry calls for ftrace"),
++	OPT_BOOLEAN('n', "noinstr", &opts.noinstr, "validate noinstr rules"),
++	OPT_BOOLEAN('r', "retpoline", &opts.retpoline, "validate and annotate retpoline usage"),
++	OPT_BOOLEAN('S', "sls", &opts.sls, "validate straight-line-speculation mitigations"),
++	OPT_BOOLEAN('u', "uaccess", &opts.uaccess, "validate uaccess rules for SMAP"),
++
++	OPT_GROUP("Options:"),
++	OPT_BOOLEAN(0, "backtrace", &opts.backtrace, "unwind on error"),
++	OPT_BOOLEAN(0, "backup", &opts.backup, "create .orig files before modification"),
++	OPT_BOOLEAN(0, "dry-run", &opts.dryrun, "don't write modifications"),
++	OPT_BOOLEAN(0, "lto", &opts.lto, "whole-archive like runs"),
++	OPT_BOOLEAN(0, "module", &opts.module, "object is part of a kernel module"),
++	OPT_BOOLEAN(0, "no-fp", &opts.no_fp, "skip frame pointer validation"),
++	OPT_BOOLEAN(0, "no-unreachable", &opts.no_unreachable, "skip 'unreachable instruction' warnings"),
++	OPT_BOOLEAN(0, "stats", &opts.stats, "print statistics"),
++	OPT_BOOLEAN(0, "vmlinux", &opts.vmlinux, "vmlinux.o validation"),
++
+ 	OPT_END(),
+ };
+ 
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index b27c2ce5d79e..5059c097c563 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -274,7 +274,7 @@ static void init_insn_state(struct insn_state *state, struct section *sec)
+ 	 * not correctly determine insn->call_dest->sec (external symbols do
+ 	 * not have a section).
+ 	 */
+-	if (vmlinux && noinstr && sec)
++	if (opts.vmlinux && opts.noinstr && sec)
+ 		state->noinstr = sec->noinstr;
+ }
+ 
+@@ -340,7 +340,7 @@ static void *cfi_hash_alloc(unsigned long size)
+ 	if (cfi_hash == (void *)-1L) {
+ 		WARN("mmap fail cfi_hash");
+ 		cfi_hash = NULL;
+-	}  else if (stats) {
++	}  else if (opts.stats) {
+ 		printf("cfi_bits: %d\n", cfi_bits);
+ 	}
+ 
+@@ -435,7 +435,7 @@ static int decode_instructions(struct objtool_file *file)
+ 		}
+ 	}
+ 
+-	if (stats)
++	if (opts.stats)
+ 		printf("nr_insns: %lu\n", nr_insns);
+ 
+ 	return 0;
+@@ -498,7 +498,7 @@ static int init_pv_ops(struct objtool_file *file)
+ 	struct symbol *sym;
+ 	int idx, nr;
+ 
+-	if (!noinstr)
++	if (!opts.noinstr)
+ 		return 0;
+ 
+ 	file->pv_ops = NULL;
+@@ -669,7 +669,7 @@ static int create_static_call_sections(struct objtool_file *file)
+ 
+ 		key_sym = find_symbol_by_name(file->elf, tmp);
+ 		if (!key_sym) {
+-			if (!module) {
++			if (!opts.module) {
+ 				WARN("static_call: can't find static_call_key symbol: %s", tmp);
+ 				return -1;
+ 			}
+@@ -762,7 +762,7 @@ static int create_ibt_endbr_seal_sections(struct objtool_file *file)
+ 	list_for_each_entry(insn, &file->endbr_list, call_node)
+ 		idx++;
+ 
+-	if (stats) {
++	if (opts.stats) {
+ 		printf("ibt: ENDBR at function start: %d\n", file->nr_endbr);
+ 		printf("ibt: ENDBR inside functions:  %d\n", file->nr_endbr_int);
+ 		printf("ibt: superfluous ENDBR:       %d\n", idx);
+@@ -1029,7 +1029,7 @@ static void add_uaccess_safe(struct objtool_file *file)
+ 	struct symbol *func;
+ 	const char **name;
+ 
+-	if (!uaccess)
++	if (!opts.uaccess)
+ 		return;
+ 
+ 	for (name = uaccess_safe_builtin; *name; name++) {
+@@ -1171,7 +1171,7 @@ static void annotate_call_site(struct objtool_file *file,
+ 		return;
+ 	}
+ 
+-	if (mcount && sym->fentry) {
++	if (opts.mcount && sym->fentry) {
+ 		if (sibling)
+ 			WARN_FUNC("Tail call to __fentry__ !?!?", insn->sec, insn->offset);
+ 
+@@ -1257,7 +1257,7 @@ static bool is_first_func_insn(struct objtool_file *file, struct instruction *in
+ 	if (insn->offset == insn->func->offset)
+ 		return true;
+ 
+-	if (ibt) {
++	if (opts.ibt) {
+ 		struct instruction *prev = prev_insn_same_sym(file, insn);
+ 
+ 		if (prev && prev->type == INSN_ENDBR &&
+@@ -1700,7 +1700,7 @@ static int add_special_section_alts(struct objtool_file *file)
+ 		free(special_alt);
+ 	}
+ 
+-	if (stats) {
++	if (opts.stats) {
+ 		printf("jl\\\tNOP\tJMP\n");
+ 		printf("short:\t%ld\t%ld\n", file->jl_nop_short, file->jl_short);
+ 		printf("long:\t%ld\t%ld\n", file->jl_nop_long, file->jl_long);
+@@ -1946,7 +1946,7 @@ static int read_unwind_hints(struct objtool_file *file)
+ 
+ 		insn->hint = true;
+ 
+-		if (ibt && hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
++		if (opts.ibt && hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
+ 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
+ 
+ 			if (sym && sym->bind == STB_GLOBAL &&
+@@ -2807,7 +2807,7 @@ static int update_cfi_state(struct instruction *insn,
+ 		}
+ 
+ 		/* detect when asm code uses rbp as a scratch register */
+-		if (!no_fp && insn->func && op->src.reg == CFI_BP &&
++		if (!opts.no_fp && insn->func && op->src.reg == CFI_BP &&
+ 		    cfa->base != CFI_BP)
+ 			cfi->bp_scratch = true;
+ 		break;
+@@ -3364,7 +3364,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 
+ 				ret = validate_branch(file, func, alt->insn, state);
+ 				if (ret) {
+-					if (backtrace)
++					if (opts.backtrace)
+ 						BT_FUNC("(alt)", insn);
+ 					return ret;
+ 				}
+@@ -3380,7 +3380,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 		switch (insn->type) {
+ 
+ 		case INSN_RETURN:
+-			if (sls && !insn->retpoline_safe &&
++			if (opts.sls && !insn->retpoline_safe &&
+ 			    next_insn && next_insn->type != INSN_TRAP) {
+ 				WARN_FUNC("missing int3 after ret",
+ 					  insn->sec, insn->offset);
+@@ -3393,7 +3393,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 			if (ret)
+ 				return ret;
+ 
+-			if (!no_fp && func && !is_fentry_call(insn) &&
++			if (!opts.no_fp && func && !is_fentry_call(insn) &&
+ 			    !has_valid_stack_frame(&state)) {
+ 				WARN_FUNC("call without frame pointer save/setup",
+ 					  sec, insn->offset);
+@@ -3416,7 +3416,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 				ret = validate_branch(file, func,
+ 						      insn->jump_dest, state);
+ 				if (ret) {
+-					if (backtrace)
++					if (opts.backtrace)
+ 						BT_FUNC("(branch)", insn);
+ 					return ret;
+ 				}
+@@ -3428,7 +3428,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 			break;
+ 
+ 		case INSN_JUMP_DYNAMIC:
+-			if (sls && !insn->retpoline_safe &&
++			if (opts.sls && !insn->retpoline_safe &&
+ 			    next_insn && next_insn->type != INSN_TRAP) {
+ 				WARN_FUNC("missing int3 after indirect jump",
+ 					  insn->sec, insn->offset);
+@@ -3500,7 +3500,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 			break;
+ 		}
+ 
+-		if (ibt)
++		if (opts.ibt)
+ 			validate_ibt_insn(file, insn);
+ 
+ 		if (insn->dead_end)
+@@ -3542,7 +3542,7 @@ static int validate_unwind_hints(struct objtool_file *file, struct section *sec)
+ 	while (&insn->list != &file->insn_list && (!sec || insn->sec == sec)) {
+ 		if (insn->hint && !insn->visited && !insn->ignore) {
+ 			ret = validate_branch(file, insn->func, insn, state);
+-			if (ret && backtrace)
++			if (ret && opts.backtrace)
+ 				BT_FUNC("<=== (hint)", insn);
+ 			warnings += ret;
+ 		}
+@@ -3572,7 +3572,7 @@ static int validate_retpoline(struct objtool_file *file)
+ 		 * loaded late, they very much do need retpoline in their
+ 		 * .init.text
+ 		 */
+-		if (!strcmp(insn->sec->name, ".init.text") && !module)
++		if (!strcmp(insn->sec->name, ".init.text") && !opts.module)
+ 			continue;
+ 
+ 		WARN_FUNC("indirect %s found in RETPOLINE build",
+@@ -3622,7 +3622,7 @@ static bool ignore_unreachable_insn(struct objtool_file *file, struct instructio
+ 	 * In this case we'll find a piece of code (whole function) that is not
+ 	 * covered by a !section symbol. Ignore them.
+ 	 */
+-	if (!insn->func && lto) {
++	if (!insn->func && opts.lto) {
+ 		int size = find_symbol_hole_containing(insn->sec, insn->offset);
+ 		unsigned long end = insn->offset + size;
+ 
+@@ -3729,7 +3729,7 @@ static int validate_symbol(struct objtool_file *file, struct section *sec,
+ 	state->uaccess = sym->uaccess_safe;
+ 
+ 	ret = validate_branch(file, insn->func, insn, *state);
+-	if (ret && backtrace)
++	if (ret && opts.backtrace)
+ 		BT_FUNC("<=== (sym)", insn);
+ 	return ret;
+ }
+@@ -3854,12 +3854,12 @@ int check(struct objtool_file *file)
+ {
+ 	int ret, warnings = 0;
+ 
+-	if (lto && !(vmlinux || module)) {
++	if (opts.lto && !(opts.vmlinux || opts.module)) {
+ 		fprintf(stderr, "--lto requires: --vmlinux or --module\n");
+ 		return 1;
+ 	}
+ 
+-	if (ibt && !lto) {
++	if (opts.ibt && !opts.lto) {
+ 		fprintf(stderr, "--ibt requires: --lto\n");
+ 		return 1;
+ 	}
+@@ -3884,7 +3884,7 @@ int check(struct objtool_file *file)
+ 	if (list_empty(&file->insn_list))
+ 		goto out;
+ 
+-	if (vmlinux && !lto) {
++	if (opts.vmlinux && !opts.lto) {
+ 		ret = validate_vmlinux_functions(file);
+ 		if (ret < 0)
+ 			goto out;
+@@ -3893,7 +3893,7 @@ int check(struct objtool_file *file)
+ 		goto out;
+ 	}
+ 
+-	if (retpoline) {
++	if (opts.retpoline) {
+ 		ret = validate_retpoline(file);
+ 		if (ret < 0)
+ 			return ret;
+@@ -3910,7 +3910,7 @@ int check(struct objtool_file *file)
+ 		goto out;
+ 	warnings += ret;
+ 
+-	if (ibt) {
++	if (opts.ibt) {
+ 		ret = validate_ibt(file);
+ 		if (ret < 0)
+ 			goto out;
+@@ -3929,28 +3929,28 @@ int check(struct objtool_file *file)
+ 		goto out;
+ 	warnings += ret;
+ 
+-	if (retpoline) {
++	if (opts.retpoline) {
+ 		ret = create_retpoline_sites_sections(file);
+ 		if (ret < 0)
+ 			goto out;
+ 		warnings += ret;
+ 	}
+ 
+-	if (mcount) {
++	if (opts.mcount) {
+ 		ret = create_mcount_loc_sections(file);
+ 		if (ret < 0)
+ 			goto out;
+ 		warnings += ret;
+ 	}
+ 
+-	if (ibt) {
++	if (opts.ibt) {
+ 		ret = create_ibt_endbr_seal_sections(file);
+ 		if (ret < 0)
+ 			goto out;
+ 		warnings += ret;
+ 	}
+ 
+-	if (stats) {
++	if (opts.stats) {
+ 		printf("nr_insns_visited: %ld\n", nr_insns_visited);
+ 		printf("nr_cfi: %ld\n", nr_cfi);
+ 		printf("nr_cfi_reused: %ld\n", nr_cfi_reused);
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index d7b99a737496..f7b2ad27bb1c 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -355,7 +355,7 @@ static int read_sections(struct elf *elf)
+ 		elf_hash_add(section_name, &sec->name_hash, str_hash(sec->name));
+ 	}
+ 
+-	if (stats) {
++	if (opts.stats) {
+ 		printf("nr_sections: %lu\n", (unsigned long)sections_nr);
+ 		printf("section_bits: %d\n", elf->section_bits);
+ 	}
+@@ -475,7 +475,7 @@ static int read_symbols(struct elf *elf)
+ 		elf_add_symbol(elf, sym);
+ 	}
+ 
+-	if (stats) {
++	if (opts.stats) {
+ 		printf("nr_symbols: %lu\n", (unsigned long)symbols_nr);
+ 		printf("symbol_bits: %d\n", elf->symbol_bits);
+ 	}
+@@ -700,7 +700,7 @@ static int read_relocs(struct elf *elf)
+ 		tot_reloc += nr_reloc;
+ 	}
+ 
+-	if (stats) {
++	if (opts.stats) {
+ 		printf("max_reloc: %lu\n", max_reloc);
+ 		printf("tot_reloc: %lu\n", tot_reloc);
+ 		printf("reloc_bits: %d\n", elf->reloc_bits);
+@@ -1079,7 +1079,7 @@ int elf_write(struct elf *elf)
+ 	struct section *sec;
+ 	Elf_Scn *s;
+ 
+-	if (dryrun)
++	if (opts.dryrun)
+ 		return 0;
+ 
+ 	/* Update changed relocation sections and section headers: */
+diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
+index c39dbfaef6dc..87c1a7351e3c 100644
+--- a/tools/objtool/include/objtool/builtin.h
++++ b/tools/objtool/include/objtool/builtin.h
+@@ -8,9 +8,29 @@
+ #include <subcmd/parse-options.h>
+ 
+ extern const struct option check_options[];
+-extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
+-	    lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
+-	    ibt;
++
++struct opts {
++	/* actions: */
++	bool ibt;
++	bool mcount;
++	bool noinstr;
++	bool retpoline;
++	bool sls;
++	bool uaccess;
++
++	/* options: */
++	bool backtrace;
++	bool backup;
++	bool dryrun;
++	bool lto;
++	bool module;
++	bool no_fp;
++	bool no_unreachable;
++	bool stats;
++	bool vmlinux;
++};
++
++extern struct opts opts;
+ 
+ extern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);
+ 
+diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
+index 843ff3c2f28e..a0f3d3c9558d 100644
+--- a/tools/objtool/objtool.c
++++ b/tools/objtool/objtool.c
+@@ -118,7 +118,7 @@ struct objtool_file *objtool_open_read(const char *_objname)
+ 	if (!file.elf)
+ 		return NULL;
+ 
+-	if (backup && !objtool_create_backup(objname)) {
++	if (opts.backup && !objtool_create_backup(objname)) {
+ 		WARN("can't create backup file");
+ 		return NULL;
+ 	}
+@@ -129,7 +129,7 @@ struct objtool_file *objtool_open_read(const char *_objname)
+ 	INIT_LIST_HEAD(&file.static_call_list);
+ 	INIT_LIST_HEAD(&file.mcount_loc_list);
+ 	INIT_LIST_HEAD(&file.endbr_list);
+-	file.ignore_unreachables = no_unreachable;
++	file.ignore_unreachables = opts.no_unreachable;
+ 	file.hints = false;
+ 
+ 	return &file;
+@@ -137,7 +137,7 @@ struct objtool_file *objtool_open_read(const char *_objname)
+ 
+ void objtool_pv_add(struct objtool_file *f, int idx, struct symbol *func)
+ {
+-	if (!noinstr)
++	if (!opts.noinstr)
+ 		return;
+ 
+ 	if (!f->pv_ops) {
+-- 
+2.34.1
+
