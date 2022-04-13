@@ -2,104 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB182C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5927C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236348AbiDMO6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47486 "EHLO
+        id S235254AbiDMPBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 11:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234367AbiDMO6c (ORCPT
+        with ESMTP id S234367AbiDMPBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:58:32 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998CEE0DD;
-        Wed, 13 Apr 2022 07:56:10 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id lc2so4454796ejb.12;
-        Wed, 13 Apr 2022 07:56:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MXDRi2nnaXpmTvbxw2dgQTuBsMOOy1/I/di9bKsVPUE=;
-        b=aNT4a0hgVXfh34wZO4AZcl1QySQWNDk20i5GSbAIzd2DwalGkhx9rNpgQcY2d5X/Es
-         YH7KJkEKSwa8QSOIOJZ2KTBGsURATGKY+3c8Wlr4686FygRAdCrBO+/wtuUoAn6FLLzC
-         bgpnPRHuWU9oRCSpR3JE9aIgeGO/2lFWdzaNQHwy+9oxHZ3QKCsRs+Qu+7d8STG+ForU
-         VQi++3nMWQkfT4ldLBdkkWSohKGnj67yA2y1MJ5TlpY4Tk2LmuS3KVPSwCHtxcn/Moth
-         dY+FTaeqQxIGkOoJLGchWgxgjMGRT4eUN0MNF2a00uL5nMLLUrZoy7Fx7JABHMlxyJ1v
-         JWzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MXDRi2nnaXpmTvbxw2dgQTuBsMOOy1/I/di9bKsVPUE=;
-        b=JMWgBjXu51DlrRJ5s7NnjAQWPhH6f1Bz+w3mN9IAahfJ+/iaqkaj5jte0554wM3Nd2
-         FQSQVYAK3+L6RnS/G3AZHpRJG7lZdPbc7rKt9SJhDq6r23NqkiqfaaLlbdtt7fR1K0R4
-         GdT5IUF01PYFRk083nJhY0pON9VW8Xgojm7WLvTCimDdhDFTeIaizHhqy06aY481jn+j
-         dhQPmHm8yFm+65dO9kK5rtLzob0WplICXjeN7FG9xEjdG2A5qt+ej9kILEJ3vVb1Ok2a
-         sYWhsjgCLyWdVsXlM9Ca30Cb3eJGt5K7GqctaHq8HlEjlkxRwnqy+dxqrEckNeZZYfMB
-         /1tw==
-X-Gm-Message-State: AOAM533PN0en3Ju+C8JMbDA+WwquoF2SjYBDQjM4sqkRtuPBqnu4ah8W
-        Zlw7L7oyLEqq4daH9uOZtxVfkNlnPYXuXa2cgf0=
-X-Google-Smtp-Source: ABdhPJw/adFhHAFsrTBlvFb8K2Wp4aBtafuEsINtvoCqxDo4Bqx/NK9WXjmFzlIXM+HAr6LfzmtFTxoLfgW1ulNTuj8=
-X-Received: by 2002:a17:907:e8d:b0:6e0:19e7:9549 with SMTP id
- ho13-20020a1709070e8d00b006e019e79549mr39432086ejc.44.1649861769049; Wed, 13
- Apr 2022 07:56:09 -0700 (PDT)
+        Wed, 13 Apr 2022 11:01:05 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CE464702;
+        Wed, 13 Apr 2022 07:58:43 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4E7DB2160F;
+        Wed, 13 Apr 2022 14:58:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649861922; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+GxKh4jt1u41zQwY9fFHOMk5qmURUsLIVA8mQOYyxDU=;
+        b=O6hVIo50wvWHDzF2F5mxM/evBWX1ys7K4C3M3vCUT2/eLnQPfFweYZx95LplidWNT9oCQb
+        RYGWdMnxCHlJEv7H9ZLPkRwecQX5aKb1syXbVucHysYiEIqxoQNSONpHRS+LrS/5askTWF
+        AIBvmRYRknoHncWQPEAHiGVUB5yAxxk=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CBA0113A91;
+        Wed, 13 Apr 2022 14:58:41 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GDquLiHlVmIsJgAAMHmgww
+        (envelope-from <nborisov@suse.com>); Wed, 13 Apr 2022 14:58:41 +0000
+Message-ID: <09c2a9ce-3b04-ed94-1d62-0e5a072b9dac@suse.com>
+Date:   Wed, 13 Apr 2022 17:58:41 +0300
 MIME-Version: 1.0
-References: <20220413094011.185269-1-cosmin.tanislav@analog.com> <20220413094011.185269-2-cosmin.tanislav@analog.com>
-In-Reply-To: <20220413094011.185269-2-cosmin.tanislav@analog.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 13 Apr 2022 17:51:57 +0300
-Message-ID: <CAHp75VexJBnAqoQ53=_nif=bso0-cNj4EsTbUwKGKxfNq_Fvyw@mail.gmail.com>
-Subject: Re: [PATCH v1 2/3] iio: ABI: adc: ad4130: document filter_mode{,_available}
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] btrfs: zstd: use spin_lock in timer callback
+Content-Language: en-US
+To:     Schspa Shi <schspa@gmail.com>, dsterba@suse.cz
+Cc:     clm@fb.com, dsterba@suse.com, josef@toxicpanda.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        terrelln@fb.com
+References: <20220411135136.GG15609@suse.cz>
+ <20220411155540.36853-1-schspa@gmail.com>
+From:   Nikolay Borisov <nborisov@suse.com>
+In-Reply-To: <20220411155540.36853-1-schspa@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 4:17 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
-
-It's good you provided documentation, but I think the part "ABI:" is
-not needed in the Subject.
-
-> AD4130-8 is an ultra-low power, high precision,
-> measurement solution for low bandwidth battery
-> operated applications.
->
-> The fully integrated AFE (Analog Front-End)
-> includes a multiplexer for up to 16 single-ended
-> or 8 differential inputs, PGA (Programmable Gain
-> Amplifier), 24-bit Sigma-Delta ADC, on-chip
-> reference and oscillator, selectable filter
-> options, smart sequencer, sensor biasing and
-> excitation options, diagnostics, and a FIFO
-> buffer.
-
-Indentation issue as per patch 1.
-
-...
-
-> +               Set the filter mode of the differential channel. When the filter
-> +               mode changes, the in_voltageY-voltageZ_sampling_frequency and
-> +               in_voltageY-voltageZ_sampling_frequency_available attributes
-> +               might also change to accomodate the new filter mode.
-
-accommodate
-
-> +               If the current sampling frequency is out of range for the new
-> +               filter mode, the sampling frequency will be changed to the
-> +               closest valid one.
 
 
--- 
-With Best Regards,
-Andy Shevchenko
+On 11.04.22 г. 18:55 ч., Schspa Shi wrote:
+> This is an optimization for fix fee13fe96529 ("btrfs:
+> correct zstd workspace manager lock to use spin_lock_bh()")
+> 
+> The critical region for wsm.lock is only accessed by the process context and
+> the softirq context.
+> 
+> Because in the soft interrupt, the critical section will not be preempted by the
+> soft interrupt again, there is no need to call spin_lock_bh(&wsm.lock) to turn
+> off the soft interrupt, spin_lock(&wsm.lock) is enough for this situation.
+> 
+> Changelog:
+> v1 -> v2:
+> 	- Change the commit message to make it more readable.
+> 
+> [1] https://lore.kernel.org/all/20220408181523.92322-1-schspa@gmail.com/
+> 
+> Signed-off-by: Schspa Shi <schspa@gmail.com>
+
+Has there been any measurable impact by this change? While it's correct it does mean that
+  someone looking at the code would see that in one call site we use plain spinlock and in
+another a _bh version and this is somewhat inconsistent.
+
+What's more I believe this is a noop since when softirqs are executing preemptible() would
+be false due to preempt_count() being non-0 and in the bh-disabling code
+in the spinlock we have:
+
+  /* First entry of a task into a BH disabled section? */
+     1         if (!current->softirq_disable_cnt) {
+   167                 if (preemptible()) {
+     1                         local_lock(&softirq_ctrl.lock);
+     2                         /* Required to meet the RCU bottomhalf requirements. */
+     3                         rcu_read_lock();
+     4                 } else {
+     5                         DEBUG_LOCKS_WARN_ON(this_cpu_read(softirq_ctrl.cnt));
+     6                 }
+     7         }
+
+
+In this case we'd hit the else branch.
+> ---
+>   fs/btrfs/zstd.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/fs/btrfs/zstd.c b/fs/btrfs/zstd.c
+> index fc42dd0badd7..faa74306f0b7 100644
+> --- a/fs/btrfs/zstd.c
+> +++ b/fs/btrfs/zstd.c
+> @@ -105,10 +105,10 @@ static void zstd_reclaim_timer_fn(struct timer_list *timer)
+>   	unsigned long reclaim_threshold = jiffies - ZSTD_BTRFS_RECLAIM_JIFFIES;
+>   	struct list_head *pos, *next;
+>   
+> -	spin_lock_bh(&wsm.lock);
+> +	spin_lock(&wsm.lock);
+>   
+>   	if (list_empty(&wsm.lru_list)) {
+> -		spin_unlock_bh(&wsm.lock);
+> +		spin_unlock(&wsm.lock);
+>   		return;
+>   	}
+>   
+> @@ -137,7 +137,7 @@ static void zstd_reclaim_timer_fn(struct timer_list *timer)
+>   	if (!list_empty(&wsm.lru_list))
+>   		mod_timer(&wsm.timer, jiffies + ZSTD_BTRFS_RECLAIM_JIFFIES);
+>   
+> -	spin_unlock_bh(&wsm.lock);
+> +	spin_unlock(&wsm.lock);
+>   }
+>   
+>   /*
