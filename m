@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87414C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23748C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238443AbiDMWz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
+        id S238340AbiDMW4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238384AbiDMWzu (ORCPT
+        with ESMTP id S238449AbiDMWz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 18:55:50 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5A7058816;
-        Wed, 13 Apr 2022 15:53:28 -0700 (PDT)
+        Wed, 13 Apr 2022 18:55:58 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB6364A3F4;
+        Wed, 13 Apr 2022 15:53:35 -0700 (PDT)
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id F02BF92009D; Thu, 14 Apr 2022 00:53:27 +0200 (CEST)
+        id B71C892009E; Thu, 14 Apr 2022 00:53:33 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id ED04A92009C;
-        Wed, 13 Apr 2022 23:53:27 +0100 (BST)
-Date:   Wed, 13 Apr 2022 23:53:27 +0100 (BST)
+        by angie.orcam.me.uk (Postfix) with ESMTP id B097992009B;
+        Wed, 13 Apr 2022 23:53:33 +0100 (BST)
+Date:   Wed, 13 Apr 2022 23:53:33 +0100 (BST)
 From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-cc:     Stefan Roese <sr@denx.de>, Jim Wilson <wilson@tuliptree.org>,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PING][PATCH v4] pci: Work around ASMedia ASM2824 PCIe link training
- failures
-In-Reply-To: <alpine.DEB.2.21.2203310037480.44113@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2204132027360.9383@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2203310037480.44113@angie.orcam.me.uk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PING][PATCH v3] serial: 8250: Report which option to enable for
+ blacklisted PCI devices
+In-Reply-To: <alpine.DEB.2.21.2203310054120.44113@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2204132057280.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2203310054120.44113@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -40,12 +40,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Thu, 31 Mar 2022, Maciej W. Rozycki wrote:
 
-> Attempt to handle cases with a downstream port of the ASMedia ASM2824 
-> PCIe switch where link training never completes and the link continues 
-> switching between speeds indefinitely with the data link layer never 
-> reaching the active state.
+> Provide information in the kernel log as to what configuration option to 
+> enable for PCI UART devices that have been blacklisted in the generic 
+> PCI 8250 UART driver and which have a dedicated driver available to 
+> handle that has been disabled.  The rationale is there is no easy way 
+> for the user to map a specific PCI vendor:device pair to an individual 
+> dedicated driver while the generic driver has this information readily 
+> available and it will likely be confusing that the generic driver does 
+> not register such a port.
 
  Ping for:
-<https://lore.kernel.org/lkml/alpine.DEB.2.21.2203310037480.44113@angie.orcam.me.uk/>
+<https://lore.kernel.org/lkml/alpine.DEB.2.21.2203310054120.44113@angie.orcam.me.uk/>
 
   Maciej
