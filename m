@@ -2,515 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99389C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235149AbiDMOhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
+        id S233601AbiDMOiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232591AbiDMOhQ (ORCPT
+        with ESMTP id S234248AbiDMOiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:37:16 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB1D606E9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:34:53 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id l127so448625pfl.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:34:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CIsNfPRidIIb5w/SYfIH9yDnHL/BsniyVDIkT3SgKfE=;
-        b=cZces3/TX0L42HH5c7+xdCKMeClrHdOe6cQo5eOl2pHiJhItiP68v8/rJ1lXTVLM4M
-         /G8V8fyfivYMeuzK8+Z0SUDyq4YVFEdywCfv+C+v1uc/CMrRn7Iy619z+4/mN5AUxpoi
-         yw85g0lEHSTp/Qg5lBBYJukxmC6eTX4Kl5dyKyx8G87h8KA6TH4zWpkWc8UZd7D1PmqL
-         SyQq99ecyH2UB3zYlfny0bZq7DCHldmdyekUY3xdlnsd21993bGZzCllUZniUBwNU1MU
-         6trOxRfECcOtObxE/XFPRgFSy9hp/EunhWEKAixvIDPhCCkQuHDhWXoGKEbC8Dy2zrbN
-         Ggdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CIsNfPRidIIb5w/SYfIH9yDnHL/BsniyVDIkT3SgKfE=;
-        b=AdKvQq8vEcaJpewWxCyTcnL2KLQTg5G/Mj2KFSrCp6b03FnvTyQ3E5IgYNrY4/dvWB
-         FT+4rrwdEbZgEbS3WAOM1Ss2FpSMFkeprTil0cqP40YS9TMk2plQ//3jLqWT2kvOenyk
-         m0s4KXxGj3ErweIRsn8MX7BYb6yHTI54frGAo9WKoB6uuUKdY1z1Rfaa2B3rRXdepQ5W
-         nCmUxJtD1pNdXimSMxxnkgdn2vKfgr5CDYs0eJ5FfOd/YLTcOKunDzbJ0b4mI1qWTFcO
-         AnWv5Hp3E2cv4unBUZ6T9sxTd9A8qGUf/Y6JEOonjIkjh17Hw6Ml78omE2s2PyXYoK9V
-         P1HQ==
-X-Gm-Message-State: AOAM532Zhd4c2nNJc7PQN4W8wh0ki66qC+sadMZVB9EEkbpv3Ta5qXEC
-        e5xnOelhHDYVajYaSvLzoOrzSw==
-X-Google-Smtp-Source: ABdhPJxsOp9HkFtEvCCysqwpqV1XI4MvKtyxfGpt0EZC80W3r5iXZoMS85u0uRuSecwUSEYKupt2VQ==
-X-Received: by 2002:a63:ff03:0:b0:39d:ac7f:d97a with SMTP id k3-20020a63ff03000000b0039dac7fd97amr4148248pgi.362.1649860491922;
-        Wed, 13 Apr 2022 07:34:51 -0700 (PDT)
-Received: from localhost.localdomain ([49.37.166.144])
-        by smtp.gmail.com with ESMTPSA id l2-20020a056a0016c200b004f7e3181a41sm45194705pfc.98.2022.04.13.07.34.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 07:34:50 -0700 (PDT)
-From:   Arun Ajith S <aajith@arista.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
-        noureddine@arista.com, gk@arista.com, aajith@arista.com
-Subject: [PATCH net-next v3] net/ipv6: Introduce accept_unsolicited_na knob to implement router-side changes for RFC9131
-Date:   Wed, 13 Apr 2022 14:34:34 +0000
-Message-Id: <20220413143434.527-1-aajith@arista.com>
-X-Mailer: git-send-email 2.27.0
+        Wed, 13 Apr 2022 10:38:06 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE049606E9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:35:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649860544; x=1681396544;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=OOnLqTLDkxCmgOTdNgsm1CzZ/iQdTAwWFJ0n3OcCG5A=;
+  b=Sjw5ooUqiRoD6v3zY0aFE6uR21iqUo5lKulJP36bXaX/PxAD947jrg3g
+   DVPHzBY4/S4x0qVHdxm7fpEB0vjt65nsscnrfX35Z9uq8x5GSK+wadIvt
+   KcrJ+UIeAXeEwL9iU9TwPhNPvOHqaa+AsM+hDxqiLozwSNyR1k9FEBnxg
+   AD/ldmPcH0RsvoF6RGLraUkz0D1d3roiO6pFCJ5b3DwoOlrHZohL6Ii6R
+   olQn8jsQssphfo8TJZc6aF8iqyfmixaVZ3Tj7GLJLo7yq5Q4MMK/VxfcU
+   K6GcyrHcD3Ooku7xYa5oKVX6GfOB36RlQFdontmtFeimeepBT/YkXy9Mn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="260279299"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="260279299"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 07:26:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="611904866"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by fmsmga008.fm.intel.com with ESMTP; 13 Apr 2022 07:26:26 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 13 Apr 2022 07:26:25 -0700
+Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 13 Apr 2022 07:26:25 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 13 Apr 2022 07:26:25 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.46) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 13 Apr 2022 07:26:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nxvQDulT6fmZts8bYJAI8j+n5ii/Bnh73yZ3BdSH4JkqgUxDQ+fjJBamKSmiAsVzN5jJZ3JoDBBemLrXdKP4dSVe5xFjG7crIg3hxXOHramzM4oafP4JuVPir2IFC06LctwW6hGxys7JjAJv9rhEOG6fJh9z5ODwtKy2IonHrgdTCYMExYDCYzzz7SVW8dK8/Eozepxw98FGgognRxrVTqM2rp9yYuSrbrwBut1+/FVZMa1xaBTVdLhUg1DIYtbmalWvXzAdadOjUUMjtxHqc2IMwQlTXy5rNZN6TQJmD6a6Jv+sgc1sNJNFjyPWDYc/Bfzanz77UBMC2TgmxrWSvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OOnLqTLDkxCmgOTdNgsm1CzZ/iQdTAwWFJ0n3OcCG5A=;
+ b=Ud8hGJpqrDxO0ev75vj4TYoQItOMPIObAZWWcLXREvepy/MIB002VvsxYktUTbY3NRuB7mTQHOZOaxwmqjA7YLOlioXq1bQOHfo1RC174vQdnX2Kkwspcb9CFXktpfBcbMTycv/KWZM3BHtlw+XcfUZFVgLoACekHws88v2yrP+KxRhlgapRjvbJiRvSUMjDLmTFe7rdzYVyJlxFKmsLhGKJOZLNzXOK9QeLtF5WnvaGrAzlvIQfauo3hGbQdsDuH7dTWxEy+1w6UeKBCQwjtd/zIX8D5ChG7cQ5syuKfQitcx7aMo/X0AUcET3ETkaew3ItGj4NLexuUTf5tQmQnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM4PR11MB5549.namprd11.prod.outlook.com (2603:10b6:5:388::7) by
+ CO1PR11MB4946.namprd11.prod.outlook.com (2603:10b6:303:9e::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5164.18; Wed, 13 Apr 2022 14:26:23 +0000
+Received: from DM4PR11MB5549.namprd11.prod.outlook.com
+ ([fe80::e5b8:93eb:e06b:f1ab]) by DM4PR11MB5549.namprd11.prod.outlook.com
+ ([fe80::e5b8:93eb:e06b:f1ab%6]) with mapi id 15.20.5144.030; Wed, 13 Apr 2022
+ 14:26:23 +0000
+From:   "Wang, Zhi A" <zhi.a.wang@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 05/34] drm/i915/gvt: cleanup the Makefile
+Thread-Topic: [PATCH 05/34] drm/i915/gvt: cleanup the Makefile
+Thread-Index: AQHYTa57MrQvrkmHQUyclnfpNoW96Kzq1UoAgAAM1ICAAAtDgIAC3JIAgAASg4CAAAD9gIAADBUA
+Date:   Wed, 13 Apr 2022 14:26:23 +0000
+Message-ID: <86ee8fcc-e021-bb9f-fda6-a8e85cb1d9b4@intel.com>
+References: <20220411141403.86980-1-hch@lst.de>
+ <20220411141403.86980-6-hch@lst.de> <20220411152508.GH2120790@nvidia.com>
+ <87zgkrha7c.fsf@intel.com> <20220411165121.GA26801@lst.de>
+ <877d7tgo33.fsf@intel.com> <e8cdc103-f683-0b73-70a7-807f6fee0280@intel.com>
+ <20220413134307.GC368031@nvidia.com>
+In-Reply-To: <20220413134307.GC368031@nvidia.com>
+Accept-Language: en-FI, en-US
+Content-Language: aa
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9db205c6-d10f-441b-6d5e-08da1d599657
+x-ms-traffictypediagnostic: CO1PR11MB4946:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <CO1PR11MB494659231E8085C675889DF9CAEC9@CO1PR11MB4946.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2ITm4TH9abAWjHKZQNjoegOL7CvpJ+68PuRGfrZnrbrWHn0Ui9cZ6pEpexShVcCyItv8ar4m21iDnRqzcI/J4KQZu6UTWuB3oy+e/pOB5JmKQ5EJuZ2Y438/wj87K2pMfewrBs1NjLWMFGjGL+dR/1WHwUB3MsVdtShLVHkRRClIKn0pd/WipU1pa10VnRAV1Lfzpmzl4W7aGs5CUcU0MXDatrF+lgrZtd9EZenTWc7PZy+UayUjxbM37o622dFkub4zzNKS6xq4n2tUq0QTcuPg/Xdu3G7BgmfzZEmP/S+Y0PemfPlHIOcdKKBtEwNzyBJNSur+/6pdG+BoN1byu+E06YK5wv9727tQxGDnC9Ymj7urD6EdBYKXZQNCTbJCVN9+7grJO8uuewbQatrRM+vLmOAjabBh3GFgwMfzQP/tu4/a08jp/M+fPhjZHOAZwDgdkFx6RPhyTaOfcUo3LVuNrOTWaMe3Q0Ca304CI0qaUamMtyXutZb2uMPCUIzjHRT/p0j0ISvAHWLFc8lq+PnQhhdH3oVQz7rEEwc87n0B55MCUAvl83TP7tdquRyT2R//C6xA62U2KvufTjn/0IP3PhykQ2pMcQhKB6tvCvDioVzK+xRyRlzgsr8147BlfppMf56fSNipMKvToZpK6sWKDOBgp4P1HE7vUyPBqOdZyOIN54LoGwWWrjppU426G8djI+o7CvPHpu5Fl0q2Gow5mXoJpEnuLVlp/QRpMUZeGwfel7jlXAWtrnoDAIOep7WsR5cKfa9jjLFLSFdP3Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5549.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(508600001)(31696002)(6486002)(2616005)(186003)(8936002)(6512007)(6506007)(122000001)(82960400001)(38100700002)(86362001)(53546011)(5660300002)(83380400001)(38070700005)(66556008)(66946007)(8676002)(76116006)(4326008)(31686004)(66476007)(316002)(64756008)(66446008)(71200400001)(54906003)(6916009)(36756003)(91956017)(26005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?M6gYNyMFaK2OJK3EKWpYPwmxBFu/fFnl03UxX08gr/kzndg1sb9M975M?=
+ =?Windows-1252?Q?5ZHBzzcVBQLkjQy5mqN+vh0mXj8EV0H4WKne8CIWyiMyG+Y7c6753n3M?=
+ =?Windows-1252?Q?CJIVbWHAGP+hiu0M/+8sNs5fxJMLpoMoemt5JvHs4WGEZ/2Y36Kzor54?=
+ =?Windows-1252?Q?QJY7DM0TCpasvPfGrP7f1KR+kuN6nN1Eg0vLMmjKBtE7x+DvXPbgwlz1?=
+ =?Windows-1252?Q?E25QUZTg6cKh1eywUPSVKvrguwMF+4kRMkKHUK0ijf70cxWOK4dpslrL?=
+ =?Windows-1252?Q?loKzcVf72301pu3/ZoK/OuCSMj0VH3KrtRA79gDFsCICaLGjXOtNCpEM?=
+ =?Windows-1252?Q?20jQoTDL3haWGKr41suCKbu8rJ/cmVHo19ksnSGFgNbUIs2LIwE7vbGS?=
+ =?Windows-1252?Q?3oMGSuVBw4S5fTt0eh40Z69lHLubLy8FvKbRNB4yEk+Hk3/PhtOzcSpM?=
+ =?Windows-1252?Q?qFGjEGnEhGL42kvRfTOz7rYOfQQbDgcLuknIxsiH8LxATPiMG8bPSisD?=
+ =?Windows-1252?Q?r2vr5xtxFroNfzEmULdLAuTolGIDS9SPd3OhI4nQQdKMYtoP9QHT34qw?=
+ =?Windows-1252?Q?pFxWyiloMbwPu4gVpV8XjV6TnTHI+kCWYVf3PLUb75tKKJgEX7RjTAsH?=
+ =?Windows-1252?Q?i4ZaMSyKfokig2SUbsO3XP0Y3LWXXBmkru5/s4it1TvIyGMbeZLxVKdD?=
+ =?Windows-1252?Q?JuzqYT5zIQo20xGOzUAagWu53BOGi/XtabnricJqIhH6Q4xt8TSYP0GA?=
+ =?Windows-1252?Q?E/3OqVI0OHIIrkI70H6ANrKDRzkMygSJnbCvHvkkKJUSsGb8P4VXuVC+?=
+ =?Windows-1252?Q?TFBUwkktG2/f9QftDw+TEm9PXDg9APAdwTZCdoYo0zT03tvnoJcfreLK?=
+ =?Windows-1252?Q?CJRpi6Ood1G06EBeTDpCgHCVo7iRG86mmZl/3Yl0c26Z629rMy3eYdh3?=
+ =?Windows-1252?Q?Zw8mPX0c99VyVUFXArvL8kr9C4EM0nSEPZalWME6T7CHJ/JI6Vb+geps?=
+ =?Windows-1252?Q?szHISzgKwkH249RqF+RwxQm9hRlGVviqeMpNq1nR4vd5pCJY6O5vlxGh?=
+ =?Windows-1252?Q?TTNjQ6EdUOlWG5TeTF6yRnHYqnsJCSszfnVy+BkD3aZO3oLx+/CpHkm+?=
+ =?Windows-1252?Q?BDI8kt9xX5YCGMPqgJ846/I5/FqDEgrrW+ZU+Y1QhDrcOXzZQMNuKt6e?=
+ =?Windows-1252?Q?/tXIKcx9zQ4BM2qWVfzymHh5fhrVJo3x8tSS8e3V1LY4+BjwEtnyAj8N?=
+ =?Windows-1252?Q?jeBt7C9ljO99JGCqKl1Z1OR8FQMdni6GCafD7Znetcp3krRIKwqw3b/h?=
+ =?Windows-1252?Q?ejZRYZNcMIam0jKpRDzr2ZGGfssBy5WiK6tjV9xDBSWeU9H6S5xCHfky?=
+ =?Windows-1252?Q?UIwCM40DMNqrQQfVq/LWtlaKWAMhfbLt8AGNvDPfGJENmvP1cE2wt5AL?=
+ =?Windows-1252?Q?NE/sXcdMpYGJujhAWgQPc0Bf8E8U0Yh0nPIwNWtHLZFBQR5/fARWKJGJ?=
+ =?Windows-1252?Q?X3CCEF3M9RpvQ6sKW1kZmxKdujVUpqrH7BrxaKyKgSQd0PonQuZqARD8?=
+ =?Windows-1252?Q?2FmhkYDYQr/ibXMIfxUeoB/7R2Q4WRFV0LPOuCNC7X/u+soW+iryfISP?=
+ =?Windows-1252?Q?kyOk581M51u4+jg6X2a8/uU+6mXQnTQt1nwJCLj/Pbi3T+QdXQKUVQla?=
+ =?Windows-1252?Q?Fwud0togDn73bWBUeCGBfLSTRCIHk/M+D1T4UVUiLervmqk5lhB887Ld?=
+ =?Windows-1252?Q?sGKwZGpv4TWMrUMXoL3KmTgOWGoMNbF0bHHEgpKQIzsGoGZnSTZ0OhsJ?=
+ =?Windows-1252?Q?GxipBEQsHyFqRQ8r33fZcEWkgk0ln1zs5iDq+YfNZXyv7FDOBhvjEImZ?=
+ =?Windows-1252?Q?0DJi2bZOeCzSTw=3D=3D?=
+Content-Type: text/plain; charset="Windows-1252"
+Content-ID: <0FAF46D230F6AC4FB5A1C739A69CDB09@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5549.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9db205c6-d10f-441b-6d5e-08da1d599657
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2022 14:26:23.6859
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EiZIQq10DZSldmPlukn2wtx8HcVNRW+C8eb5a6Bg4wAWASnUbUzfyqgTTQGzQSC9L92N8W6rtZPiSmqQmNdGDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4946
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new neighbour cache entry in STALE state for routers on receiving
-an unsolicited (gratuitous) neighbour advertisement with
-target link-layer-address option specified.
-This is similar to the arp_accept configuration for IPv4.
-A new sysctl endpoint is created to turn on this behaviour:
-/proc/sys/net/ipv6/conf/interface/accept_unsolicited_na.
+On 4/13/22 1:43 PM, Jason Gunthorpe wrote:
+> On Wed, Apr 13, 2022 at 01:39:35PM +0000, Wang, Zhi A wrote:
+>=20
+>> It seems Jani's makefile clean patch has already included this one, I ca=
+n
+>> just simply drop this one so that Christoph won't need to re-send everyt=
+hing.
+>>
+>> For the branch to move on, I am merging the patches and will re-generate=
+ the
+>> gvt-staging branch, which combines the newest drm-tip vfio-upstream and =
+other
+>> gvt branches.
+>>
+>> If you are in a rush of re-basing the patches of non-GVT-g stuff, you ca=
+n use
+>> gvt-staging branch until my pull request landed in drm-intel-next.
+>>
+>> Also our QA will test gvt-staging-branch before the pull request. I supp=
+ose
+>> it will take one or two days.
+>=20
+> When you are wrangling the branches it would be great if Christoph's
+> series and it's minimal dependencies could be on a single branch that
+> could reasonably be pulled to the VFIO tree too, thanks
+>=20
+> Jason
+>=20
 
-Signed-off-by: Arun Ajith S <aajith@arista.com>
----
- Documentation/networking/ip-sysctl.rst        |  23 ++
- include/linux/ipv6.h                          |   1 +
- include/uapi/linux/ipv6.h                     |   1 +
- net/ipv6/addrconf.c                           |  10 +
- net/ipv6/ndisc.c                              |  20 +-
- tools/testing/selftests/net/Makefile          |   1 +
- .../net/ndisc_unsolicited_na_test.py          | 255 ++++++++++++++++++
- 7 files changed, 310 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/net/ndisc_unsolicited_na_test.py
+Hi Jason:
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index b0024aa7b051..9e17efe343ac 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2467,6 +2467,29 @@ drop_unsolicited_na - BOOLEAN
- 
- 	By default this is turned off.
- 
-+accept_unsolicited_na - BOOLEAN
-+	Add a new neighbour cache entry in STALE state for routers on receiving an
-+	unsolicited neighbour advertisement with target link-layer address option
-+	specified. This is as per router-side behavior documented in RFC9131.
-+	This has lower precedence than drop_unsolicited_na.
-+	 drop   accept  fwding                   behaviour
-+	 ----   ------  ------  ----------------------------------------------
-+	    1        X       X  Drop NA packet and don't pass up the stack
-+	    0        0       X  Pass NA packet up the stack, don't update NC
-+	    0        1       0  Pass NA packet up the stack, don't update NC
-+	    0        1       1  Pass NA packet up the stack, and add a STALE
-+	                          NC entry
-+	This will optimize the return path for the initial off-link communication
-+	that is initiated by a directly connected host, by ensuring that
-+	the first-hop router which turns on this setting doesn't have to
-+	buffer the initial return packets to do neighbour-solicitation.
-+	The prerequisite is that the host is configured to send
-+	unsolicited neighbour advertisements on interface bringup.
-+	This setting should be used in conjunction with the ndisc_notify setting
-+	on the host to satisfy this prerequisite.
-+
-+	By default this is turned off.
-+
- enhanced_dad - BOOLEAN
- 	Include a nonce option in the IPv6 neighbor solicitation messages used for
- 	duplicate address detection per RFC7527. A received DAD NS will only signal
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index 16870f86c74d..918bfea4ef5f 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -61,6 +61,7 @@ struct ipv6_devconf {
- 	__s32		suppress_frag_ndisc;
- 	__s32		accept_ra_mtu;
- 	__s32		drop_unsolicited_na;
-+	__s32		accept_unsolicited_na;
- 	struct ipv6_stable_secret {
- 		bool initialized;
- 		struct in6_addr secret;
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index d4178dace0bf..549ddeaf788b 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -194,6 +194,7 @@ enum {
- 	DEVCONF_IOAM6_ID,
- 	DEVCONF_IOAM6_ID_WIDE,
- 	DEVCONF_NDISC_EVICT_NOCARRIER,
-+	DEVCONF_ACCEPT_UNSOLICITED_NA,
- 	DEVCONF_MAX
- };
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 1afc4c024981..6473dc84b71d 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5587,6 +5587,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
- 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
- 	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
-+	array[DEVCONF_ACCEPT_UNSOLICITED_NA] = cnf->accept_unsolicited_na;
- }
- 
- static inline size_t inet6_ifla6_size(void)
-@@ -7037,6 +7038,15 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.extra1		= (void *)SYSCTL_ZERO,
- 		.extra2		= (void *)SYSCTL_ONE,
- 	},
-+	{
-+		.procname	= "accept_unsolicited_na",
-+		.data		= &ipv6_devconf.accept_unsolicited_na,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+		.extra1		= (void *)SYSCTL_ZERO,
-+		.extra2		= (void *)SYSCTL_ONE,
-+	},
- 	{
- 		/* sentinel */
- 	}
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index fcb288b0ae13..254addad0dd3 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -979,6 +979,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 	struct inet6_dev *idev = __in6_dev_get(dev);
- 	struct inet6_ifaddr *ifp;
- 	struct neighbour *neigh;
-+	bool create_neigh;
- 
- 	if (skb->len < sizeof(struct nd_msg)) {
- 		ND_PRINTK(2, warn, "NA: packet too short\n");
-@@ -999,6 +1000,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 	/* For some 802.11 wireless deployments (and possibly other networks),
- 	 * there will be a NA proxy and unsolicitd packets are attacks
- 	 * and thus should not be accepted.
-+	 * drop_unsolicited_na takes precedence over accept_unsolicited_na
- 	 */
- 	if (!msg->icmph.icmp6_solicited && idev &&
- 	    idev->cnf.drop_unsolicited_na)
-@@ -1039,7 +1041,23 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 		in6_ifa_put(ifp);
- 		return;
- 	}
--	neigh = neigh_lookup(&nd_tbl, &msg->target, dev);
-+	/* RFC 9131 updates original Neighbour Discovery RFC 4861.
-+	 * An unsolicited NA can now create a neighbour cache entry
-+	 * on routers if it has Target LL Address option.
-+	 *
-+	 * drop   accept  fwding                   behaviour
-+	 * ----   ------  ------  ----------------------------------------------
-+	 *    1        X       X  Drop NA packet and don't pass up the stack
-+	 *    0        0       X  Pass NA packet up the stack, don't update NC
-+	 *    0        1       0  Pass NA packet up the stack, don't update NC
-+	 *    0        1       1  Pass NA packet up the stack, and add a STALE
-+	 *                          NC entry
-+	 * Note that we don't do a (daddr == all-routers-mcast) check.
-+	 */
-+	create_neigh = !msg->icmph.icmp6_solicited && lladdr &&
-+		       idev && idev->cnf.forwarding &&
-+		       idev->cnf.accept_unsolicited_na;
-+	neigh = __neigh_lookup(&nd_tbl, &msg->target, dev, create_neigh);
- 
- 	if (neigh) {
- 		u8 old_flags = neigh->flags;
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 3fe2515aa616..69415dbb61d2 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -36,6 +36,7 @@ TEST_PROGS += srv6_end_dt4_l3vpn_test.sh
- TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
- TEST_PROGS += vrf_strict_mode_test.sh
- TEST_PROGS += arp_ndisc_evict_nocarrier.sh
-+TEST_PROGS += ndisc_unsolicited_na_test.py
- TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
- TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =  socket nettest
-diff --git a/tools/testing/selftests/net/ndisc_unsolicited_na_test.py b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
-new file mode 100755
-index 000000000000..f508657ee126
---- /dev/null
-+++ b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
-@@ -0,0 +1,255 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# This test is for the accept_unsolicited_na feature to
-+# enable RFC9131 behaviour. The following is the test-matrix.
-+# drop   accept  fwding                   behaviour
-+# ----   ------  ------  ----------------------------------------------
-+#    1        X       X  Drop NA packet and don't pass up the stack
-+#    0        0       X  Pass NA packet up the stack, don't update NC
-+#    0        1       0  Pass NA packet up the stack, don't update NC
-+#    0        1       1  Pass NA packet up the stack, and add a STALE
-+#                           NC entry
-+
-+ret=0
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+PAUSE_ON_FAIL=no
-+PAUSE=no
-+
-+HOST_NS="ns-host"
-+ROUTER_NS="ns-router"
-+
-+HOST_INTF="veth-host"
-+ROUTER_INTF="veth-router"
-+
-+ROUTER_ADDR="2000:20::1"
-+HOST_ADDR="2000:20::2"
-+SUBNET_WIDTH=64
-+ROUTER_ADDR_WITH_MASK="${ROUTER_ADDR}/${SUBNET_WIDTH}"
-+HOST_ADDR_WITH_MASK="${HOST_ADDR}/${SUBNET_WIDTH}"
-+
-+IP_HOST="ip -6 -netns ${HOST_NS}"
-+IP_HOST_EXEC="ip netns exec ${HOST_NS}"
-+IP_ROUTER="ip -6 -netns ${ROUTER_NS}"
-+IP_ROUTER_EXEC="ip netns exec ${ROUTER_NS}"
-+
-+tcpdump_stdout=
-+tcpdump_stderr=
-+
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		printf "    TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "    TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+		echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+
-+	if [ "${PAUSE}" = "yes" ]; then
-+		echo
-+		echo "hit enter to continue, 'q' to quit"
-+		read a
-+		[ "$a" = "q" ] && exit 1
-+	fi
-+}
-+
-+setup()
-+{
-+	set -e
-+
-+	local drop_unsolicited_na=$1
-+	local accept_unsolicited_na=$2
-+	local forwarding=$3
-+
-+	# Setup two namespaces and a veth tunnel across them.
-+	# On end of the tunnel is a router and the other end is a host.
-+	ip netns add ${HOST_NS}
-+	ip netns add ${ROUTER_NS}
-+	${IP_ROUTER} link add ${ROUTER_INTF} type veth \
-+                peer name ${HOST_INTF} netns ${HOST_NS}
-+
-+	# Enable IPv6 on both router and host, and configure static addresses.
-+	# The router here is the DUT
-+	# Setup router configuration as specified by the arguments.
-+	# forwarding=0 case is to check that a non-router
-+	# doesn't add neighbour entries.
-+        ROUTER_CONF=net.ipv6.conf.${ROUTER_INTF}
-+	${IP_ROUTER_EXEC} sysctl -qw \
-+                ${ROUTER_CONF}.forwarding=${forwarding}
-+	${IP_ROUTER_EXEC} sysctl -qw \
-+                ${ROUTER_CONF}.drop_unsolicited_na=${drop_unsolicited_na}
-+	${IP_ROUTER_EXEC} sysctl -qw \
-+                ${ROUTER_CONF}.accept_unsolicited_na=${accept_unsolicited_na}
-+	${IP_ROUTER_EXEC} sysctl -qw ${ROUTER_CONF}.disable_ipv6=0
-+	${IP_ROUTER} addr add ${ROUTER_ADDR_WITH_MASK} dev ${ROUTER_INTF}
-+
-+	# Turn on ndisc_notify on host interface so that
-+	# the host sends unsolicited NAs.
-+	HOST_CONF=net.ipv6.conf.${HOST_INTF}
-+	${IP_HOST_EXEC} sysctl -qw ${HOST_CONF}.ndisc_notify=1
-+	${IP_HOST_EXEC} sysctl -qw ${HOST_CONF}.disable_ipv6=0
-+	${IP_HOST} addr add ${HOST_ADDR_WITH_MASK} dev ${HOST_INTF}
-+
-+	set +e
-+}
-+
-+start_tcpdump() {
-+	set -e
-+	tcpdump_stdout=`mktemp`
-+	tcpdump_stderr=`mktemp`
-+	${IP_ROUTER_EXEC} timeout 15s \
-+                tcpdump --immediate-mode -tpni ${ROUTER_INTF} -c 1 \
-+                "icmp6 && icmp6[0] == 136 && src ${HOST_ADDR}" \
-+                > ${tcpdump_stdout} 2> /dev/null
-+	set +e
-+}
-+
-+cleanup_tcpdump()
-+{
-+	set -e
-+	[[ ! -z  ${tcpdump_stdout} ]] && rm -f ${tcpdump_stdout}
-+	[[ ! -z  ${tcpdump_stderr} ]] && rm -f ${tcpdump_stderr}
-+	tcpdump_stdout=
-+	tcpdump_stderr=
-+	set +e
-+}
-+
-+cleanup()
-+{
-+	cleanup_tcpdump
-+	ip netns del ${HOST_NS}
-+	ip netns del ${ROUTER_NS}
-+}
-+
-+link_up() {
-+	set -e
-+	${IP_ROUTER} link set dev ${ROUTER_INTF} up
-+	${IP_HOST} link set dev ${HOST_INTF} up
-+	set +e
-+}
-+
-+verify_ndisc() {
-+	local drop_unsolicited_na=$1
-+	local accept_unsolicited_na=$2
-+	local forwarding=$3
-+
-+	neigh_show_output=$(${IP_ROUTER} neigh show \
-+                to ${HOST_ADDR} dev ${ROUTER_INTF} nud stale)
-+	if [ ${drop_unsolicited_na} -eq 0 ] && \
-+			[ ${accept_unsolicited_na} -eq 1 ] && \
-+			[ ${forwarding} -eq 1 ]; then
-+		# Neighbour entry expected to be present for 011 case
-+		[[ ${neigh_show_output} ]]
-+	else
-+		# Neighbour entry expected to be absent for all other cases
-+		[[ -z ${neigh_show_output} ]]
-+	fi
-+}
-+
-+test_unsolicited_na_common()
-+{
-+	# Setup the test bed, but keep links down
-+	setup $1 $2 $3
-+
-+	# Bring the link up, wait for the NA,
-+	# and add a delay to ensure neighbour processing is done.
-+	link_up
-+	start_tcpdump
-+
-+	# Verify the neighbour table
-+	verify_ndisc $1 $2 $3
-+
-+}
-+
-+test_unsolicited_na_combination() {
-+	test_unsolicited_na_common $1 $2 $3
-+	test_msg=("test_unsolicited_na: "
-+		"drop_unsolicited_na=$1 "
-+		"accept_unsolicited_na=$2 "
-+		"forwarding=$3")
-+	log_test $? 0 "${test_msg[*]}"
-+	cleanup
-+}
-+
-+test_unsolicited_na_combinations() {
-+	# Args: drop_unsolicited_na accept_unsolicited_na forwarding
-+
-+	# Expect entry
-+	test_unsolicited_na_combination 0 1 1
-+
-+	# Expect no entry
-+	test_unsolicited_na_combination 0 0 0
-+	test_unsolicited_na_combination 0 0 1
-+	test_unsolicited_na_combination 0 1 0
-+	test_unsolicited_na_combination 1 0 0
-+	test_unsolicited_na_combination 1 0 1
-+	test_unsolicited_na_combination 1 1 0
-+	test_unsolicited_na_combination 1 1 1
-+}
-+
-+###############################################################################
-+# usage
-+
-+usage()
-+{
-+	cat <<EOF
-+usage: ${0##*/} OPTS
-+        -p          Pause on fail
-+        -P          Pause after each test before cleanup
-+EOF
-+}
-+
-+###############################################################################
-+# main
-+
-+while getopts :pPh o
-+do
-+	case $o in
-+		p) PAUSE_ON_FAIL=yes;;
-+		P) PAUSE=yes;;
-+		h) usage; exit 0;;
-+		*) usage; exit 1;;
-+	esac
-+done
-+
-+# make sure we don't pause twice
-+[ "${PAUSE}" = "yes" ] && PAUSE_ON_FAIL=no
-+
-+if [ "$(id -u)" -ne 0 ];then
-+	echo "SKIP: Need root privileges"
-+	exit $ksft_skip;
-+fi
-+
-+if [ ! -x "$(command -v ip)" ]; then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit $ksft_skip
-+fi
-+
-+if [ ! -x "$(command -v tcpdump)" ]; then
-+	echo "SKIP: Could not run test without tcpdump tool"
-+	exit $ksft_skip
-+fi
-+
-+# start clean
-+cleanup &> /dev/null
-+
-+test_unsolicited_na_combinations
-+
-+printf "\nTests passed: %3d\n" ${nsuccess}
-+printf "Tests failed: %3d\n"   ${nfail}
-+
-+exit $ret
--- 
-2.27.0
----
-Changes from v2:
-1. Address David Ahern's review comments
- - Remove Tested-by from commit description
- - Add limits to new sysctl with extra1 and extra2
- - Add an unit test, added to TEST_PROGS
+I am thinking about the process of merging process. Here are the dependence=
+:
 
-Test output:
-#  time ./ndisc_unsolicited_na_test.py
-    TEST: test_unsolicited_na:  drop_unsolicited_na=0  accept_unsolicited_na=1  forwarding=1  [ OK ]
-    TEST: test_unsolicited_na:  drop_unsolicited_na=0  accept_unsolicited_na=0  forwarding=0  [ OK ]
-    TEST: test_unsolicited_na:  drop_unsolicited_na=0  accept_unsolicited_na=0  forwarding=1  [ OK ]
-    TEST: test_unsolicited_na:  drop_unsolicited_na=0  accept_unsolicited_na=1  forwarding=0  [ OK ]
-    TEST: test_unsolicited_na:  drop_unsolicited_na=1  accept_unsolicited_na=0  forwarding=0  [ OK ]
-    TEST: test_unsolicited_na:  drop_unsolicited_na=1  accept_unsolicited_na=0  forwarding=1  [ OK ]
-    TEST: test_unsolicited_na:  drop_unsolicited_na=1  accept_unsolicited_na=1  forwarding=0  [ OK ]
-    TEST: test_unsolicited_na:  drop_unsolicited_na=1  accept_unsolicited_na=1  forwarding=1  [ OK ]
+1) My patches depend on one patch in drm-intel/drm-intel-next. So it has to
+go through drm.
+My patches of GVT-g will go through drm-intel-next -> drm -> upstream.=20
 
-Tests passed:   8
-Tests failed:   0
+2) Christoph's patches depends on my patches, but part of them are for VFIO=
+.
 
-real    0m21.700s
-user    0m1.365s
-sys     0m0.049s
+a. If they are fully going through VFIO repo, they might have to wait my
+patches to get landed first.
+
+b. If only the GVT-g parts goes through GVT repo, and rest of them goes
+through VFIO, the rest part still needs to wait.
+
+What would be a better process?
+
+Thanks,
+Zhi.
