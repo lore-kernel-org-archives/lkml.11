@@ -2,186 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD190C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57273C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233325AbiDMH3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 03:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
+        id S233328AbiDMH3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 03:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233310AbiDMH3b (ORCPT
+        with ESMTP id S233335AbiDMH3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 03:29:31 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116933D1FF
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 00:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649834831; x=1681370831;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9+856DcjO2YNbuW7rEr3u9PhAYPs1Ie75ilf0c59pmE=;
-  b=POQjT+t+Z3PeNFogwepYexD//ydowkSUWsca8zEWoruI18kqFtAiQWJ+
-   sD3M+AiOGZAa2ub8GMH9tfuiQHtRKzIMlz8M/mx7NHiBh/qXOLBNnNVZD
-   wjZB39zU57TRayaJkoOErV2+T7z1SHNxhUN+7nLiFyVhRXAFaXDZlRJVA
-   D8W16OxmxHYZ7g8b3Vfgk8QxLCuyTQaCOyuur/eU80OvcDvjXcJyUOCbR
-   tHgxcjIpVLwujXgV3+q8YSWEv21+tSOQz1xpuip+QS7fnR3lNBD6hQg/R
-   LpNDLL/WQbtCZ+V/bFV/eDyBB1zu5K9gG0jkesJGk/zaWSh7hqj+jh+bF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242533607"
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="242533607"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 00:27:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="590656716"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 13 Apr 2022 00:27:08 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neXPA-00006i-3N;
-        Wed, 13 Apr 2022 07:27:08 +0000
-Date:   Wed, 13 Apr 2022 15:26:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-lib 2/19]
- fs/netfs/objects.c:48:2: error: implicit declaration of function
- 'netfs_proc_add_writeback' is invalid in C99
-Message-ID: <202204131520.EiLQsAAH-lkp@intel.com>
+        Wed, 13 Apr 2022 03:29:43 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A2CD47
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 00:27:23 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id w19so1898376lfu.11
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 00:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QARgvmkpr8VVbyyV9NCF/ci4KYaV871c1Ej+b6nyl0E=;
+        b=aSERqlI6AgOSiUivPNKdqIbmT5M9Xv2yCQJxrGNk7ZF/XMJYXIkpoKgA/YEvUsje1y
+         090G2iyN7TJFvJqgRn2IQVPedZ7bIlDdZgkwACxORsQ2x47GASAOJ574hsEiNHtY+A6M
+         QP6guAS99tnF4hG5Mez/T74bgZbcRgageIJ5cDoirD1/URyjKP1zHU40n4Cv+Ry8dGq7
+         N6QvyW1QExYFHxrk7cBYKxObhUqiVaswFg+dbdwgDhVkVaeqZdK15cui+TR1pSjhdCTm
+         Xfl2vUq4bJROYc6z7yV+MR5BYUpJxIpxzNHJNDdb4PeudOFx44liJBr9QkHa+xzMXNn5
+         wonQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QARgvmkpr8VVbyyV9NCF/ci4KYaV871c1Ej+b6nyl0E=;
+        b=gyV7IiWoDVj/u4ePHEoA/QKMOmdFfR/tTsF2JAHfuuPXPdZPKXTjShmBCXw4S9fMZq
+         KRhH1CEm8N/iRKVpg2dtCQfmWgS8BmQB2Pai/jDpcn3/UEITkLKUKY+80iTG5LCoUTn7
+         CCyFfJR6fSs1vK5lRva1Pos5w1/1Gn/GdBWRv7oYGXUOx8SnIHUn2Kuzh0okhz9ZAtrN
+         xNh3DCib6AszzIeUzZPG5T+0m9aH8oRnt5K/9PC2EEvirXQ6QUXZMZ8A8d6tVBsVzQWU
+         qwVCm8G8WcuKhlFJoQX1ww3vQxTLsWu4mq9xN3sfB/spM6Ds0fOGT4P9CsM8WkeciNQm
+         60yA==
+X-Gm-Message-State: AOAM533wO0gJ0xgRnN2m2OmPp6q0WM3FiodqTiDWrF5GTwnXcEk5xs1P
+        H95l8LheXWi8ObRKggk5HvxZsA==
+X-Google-Smtp-Source: ABdhPJyCMeaEoNC8ctpBkTlLeoBr7h/Q6l6by9SEIGLzZHnngd0lYcZwtTOD4kceei/TXW5O2Cm12Q==
+X-Received: by 2002:a05:6512:1526:b0:45d:cd2b:912d with SMTP id bq38-20020a056512152600b0045dcd2b912dmr28578677lfb.409.1649834841264;
+        Wed, 13 Apr 2022 00:27:21 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id b6-20020a2ebc06000000b0024b5c9e91c4sm1125356ljf.63.2022.04.13.00.27.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 00:27:20 -0700 (PDT)
+Message-ID: <bad40b1b-73af-a1f3-d0df-b59e4a599015@linaro.org>
+Date:   Wed, 13 Apr 2022 10:27:19 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 2/2] phy: qcom-qmp: Add SM8150 PCIe QMP PHYs
+Content-Language: en-GB
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-phy@lists.infradead.org
+Cc:     bhupesh.linux@gmail.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vkoul@kernel.org,
+        bjorn.andersson@linaro.org
+References: <20220325222130.1783242-1-bhupesh.sharma@linaro.org>
+ <20220325222130.1783242-3-bhupesh.sharma@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220325222130.1783242-3-bhupesh.sharma@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-lib
-head:   581c77dd1ab4abe122b649ed7118b3581ff1a437
-commit: 20239f3d18983c183a267ab537919bc88990b832 [2/19] netfs: Add a procfile to list in-progress requests
-config: s390-buildonly-randconfig-r002-20220412 (https://download.01.org/0day-ci/archive/20220413/202204131520.EiLQsAAH-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/20239f3d18983c183a267ab537919bc88990b832
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-lib
-        git checkout 20239f3d18983c183a267ab537919bc88990b832
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+On 26/03/2022 01:21, Bhupesh Sharma wrote:
+> SM8150 has multiple (different) PHY versions:
+> QMP GEN3x1 PHY - 1 lane
+> QMP GEN3x2 PHY - 2 lanes
+> 
+> Add support for these with relevant init sequence.
+> 
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>   drivers/phy/qualcomm/phy-qcom-qmp.c | 90 +++++++++++++++++++++++++++++
+>   1 file changed, 90 insertions(+)
+> 
+> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> index b144ae1f729a..8e928b9619b6 100644
+> --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
+> +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> @@ -3294,6 +3294,11 @@ static const char * const sdm845_pciephy_clk_l[] = {
+>   	"aux", "cfg_ahb", "ref", "refgen",
+>   };
+>   
+> +/* the pcie phy on sm8150 doesn't have a ref clock */
+> +static const char * const sm8150_pciephy_clk_l[] = {
+> +	"aux", "cfg_ahb", "refgen",
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On sm8250 we use GCC_WIFI/WIGIG/MDM_CLKREF_EN clocks as "ref". 
+Downstream dts lists them as "pcie_X_ldo". sm8150 also has these clocks 
+(GCC_PCIE_n_CLKREF_CLK). Is there any reason why we use CLKREF clocks on 
+sm8250, but ommit them on sm8150?
 
-All errors (new ones prefixed by >>):
+> +};
+> +
+>   static const char * const qmp_v4_phy_clk_l[] = {
+>   	"aux", "ref_clk_src", "ref", "com_aux",
+>   };
+> @@ -3583,6 +3588,85 @@ static const struct qmp_phy_cfg sdm845_qhp_pciephy_cfg = {
+>   	.pwrdn_delay_max	= 1005,		/* us */
+>   };
+>   
+> +static const struct qmp_phy_cfg sm8150_qmp_gen3x1_pciephy_cfg = {
+> +	.type = PHY_TYPE_PCIE,
+> +	.nlanes = 1,
+> +
+> +	.serdes_tbl		= sm8250_qmp_pcie_serdes_tbl,
+> +	.serdes_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_serdes_tbl),
+> +	.serdes_tbl_sec		= sm8250_qmp_gen3x1_pcie_serdes_tbl,
+> +	.serdes_tbl_num_sec	= ARRAY_SIZE(sm8250_qmp_gen3x1_pcie_serdes_tbl),
+> +	.tx_tbl			= sm8250_qmp_pcie_tx_tbl,
+> +	.tx_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_tx_tbl),
+> +	.rx_tbl			= sm8250_qmp_pcie_rx_tbl,
+> +	.rx_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_rx_tbl),
+> +	.rx_tbl_sec		= sm8250_qmp_gen3x1_pcie_rx_tbl,
+> +	.rx_tbl_num_sec		= ARRAY_SIZE(sm8250_qmp_gen3x1_pcie_rx_tbl),
+> +	.pcs_tbl		= sm8250_qmp_pcie_pcs_tbl,
+> +	.pcs_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_pcs_tbl),
+> +	.pcs_tbl_sec		= sm8250_qmp_gen3x1_pcie_pcs_tbl,
+> +	.pcs_tbl_num_sec		= ARRAY_SIZE(sm8250_qmp_gen3x1_pcie_pcs_tbl),
+> +	.pcs_misc_tbl		= sm8250_qmp_pcie_pcs_misc_tbl,
+> +	.pcs_misc_tbl_num	= ARRAY_SIZE(sm8250_qmp_pcie_pcs_misc_tbl),
+> +	.pcs_misc_tbl_sec		= sm8250_qmp_gen3x1_pcie_pcs_misc_tbl,
+> +	.pcs_misc_tbl_num_sec	= ARRAY_SIZE(sm8250_qmp_gen3x1_pcie_pcs_misc_tbl),
+> +	.clk_list		= sm8150_pciephy_clk_l,
+> +	.num_clks		= ARRAY_SIZE(sm8150_pciephy_clk_l),
+> +	.reset_list		= sdm845_pciephy_reset_l,
+> +	.num_resets		= ARRAY_SIZE(sdm845_pciephy_reset_l),
+> +	.vreg_list		= qmp_phy_vreg_l,
+> +	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
+> +	.regs			= sm8250_pcie_regs_layout,
+> +
+> +	.start_ctrl		= PCS_START | SERDES_START,
+> +	.pwrdn_ctrl		= SW_PWRDN | REFCLK_DRV_DSBL,
+> +	.phy_status		= PHYSTATUS,
+> +
+> +	.has_pwrdn_delay	= true,
+> +	.pwrdn_delay_min	= 995,		/* us */
+> +	.pwrdn_delay_max	= 1005,		/* us */
+> +};
+> +
+> +static const struct qmp_phy_cfg sm8150_qmp_gen3x2_pciephy_cfg = {
+> +	.type = PHY_TYPE_PCIE,
+> +	.nlanes = 2,
+> +
+> +	.serdes_tbl		= sm8250_qmp_pcie_serdes_tbl,
+> +	.serdes_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_serdes_tbl),
+> +	.tx_tbl			= sm8250_qmp_pcie_tx_tbl,
+> +	.tx_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_tx_tbl),
+> +	.tx_tbl_sec		= sm8250_qmp_gen3x2_pcie_tx_tbl,
+> +	.tx_tbl_num_sec		= ARRAY_SIZE(sm8250_qmp_gen3x2_pcie_tx_tbl),
+> +	.rx_tbl			= sm8250_qmp_pcie_rx_tbl,
+> +	.rx_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_rx_tbl),
+> +	.rx_tbl_sec		= sm8250_qmp_gen3x2_pcie_rx_tbl,
+> +	.rx_tbl_num_sec		= ARRAY_SIZE(sm8250_qmp_gen3x2_pcie_rx_tbl),
+> +	.pcs_tbl		= sm8250_qmp_pcie_pcs_tbl,
+> +	.pcs_tbl_num		= ARRAY_SIZE(sm8250_qmp_pcie_pcs_tbl),
+> +	.pcs_tbl_sec		= sm8250_qmp_gen3x2_pcie_pcs_tbl,
+> +	.pcs_tbl_num_sec		= ARRAY_SIZE(sm8250_qmp_gen3x2_pcie_pcs_tbl),
+> +	.pcs_misc_tbl		= sm8250_qmp_pcie_pcs_misc_tbl,
+> +	.pcs_misc_tbl_num	= ARRAY_SIZE(sm8250_qmp_pcie_pcs_misc_tbl),
+> +	.pcs_misc_tbl_sec		= sm8250_qmp_gen3x2_pcie_pcs_misc_tbl,
+> +	.pcs_misc_tbl_num_sec	= ARRAY_SIZE(sm8250_qmp_gen3x2_pcie_pcs_misc_tbl),
+> +	.clk_list		= sm8150_pciephy_clk_l,
+> +	.num_clks		= ARRAY_SIZE(sm8150_pciephy_clk_l),
+> +	.reset_list		= sdm845_pciephy_reset_l,
+> +	.num_resets		= ARRAY_SIZE(sdm845_pciephy_reset_l),
+> +	.vreg_list		= qmp_phy_vreg_l,
+> +	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
+> +	.regs			= sm8250_pcie_regs_layout,
+> +
+> +	.start_ctrl		= PCS_START | SERDES_START,
+> +	.pwrdn_ctrl		= SW_PWRDN | REFCLK_DRV_DSBL,
+> +	.phy_status		= PHYSTATUS,
+> +
+> +	.is_dual_lane_phy	= true,
+> +	.has_pwrdn_delay	= true,
+> +	.pwrdn_delay_min	= 995,		/* us */
+> +	.pwrdn_delay_max	= 1005,		/* us */
+> +};
+> +
+>   static const struct qmp_phy_cfg sm8250_qmp_gen3x1_pciephy_cfg = {
+>   	.type = PHY_TYPE_PCIE,
+>   	.nlanes = 1,
+> @@ -6007,6 +6091,12 @@ static const struct of_device_id qcom_qmp_phy_of_match_table[] = {
+>   	}, {
+>   		.compatible = "qcom,sm6115-qmp-ufs-phy",
+>   		.data = &sm6115_ufsphy_cfg,
+> +	}, {
+> +		.compatible = "qcom,sm8150-qmp-gen3x1-pcie-phy",
+> +		.data = &sm8150_qmp_gen3x1_pciephy_cfg,
+> +	}, {
+> +		.compatible = "qcom,sm8150-qmp-gen3x2-pcie-phy",
+> +		.data = &sm8150_qmp_gen3x2_pciephy_cfg,
+>   	}, {
+>   		.compatible = "qcom,sm8150-qmp-ufs-phy",
+>   		.data = &sm8150_ufsphy_cfg,
 
->> fs/netfs/objects.c:48:2: error: implicit declaration of function 'netfs_proc_add_writeback' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           netfs_proc_add_writeback(rreq);
-           ^
-   fs/netfs/objects.c:48:2: note: did you mean 'netfs_proc_add_rreq'?
-   fs/netfs/internal.h:51:20: note: 'netfs_proc_add_rreq' declared here
-   static inline void netfs_proc_add_rreq(struct netfs_io_request *rreq) {}
-                      ^
->> fs/netfs/objects.c:80:2: error: implicit declaration of function 'netfs_proc_del_writeback' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           netfs_proc_del_writeback(rreq);
-           ^
-   fs/netfs/objects.c:80:2: note: did you mean 'netfs_proc_del_rreq'?
-   fs/netfs/internal.h:52:20: note: 'netfs_proc_del_rreq' declared here
-   static inline void netfs_proc_del_rreq(struct netfs_io_request *rreq) {}
-                      ^
-   2 errors generated.
-
-
-vim +/netfs_proc_add_writeback +48 fs/netfs/objects.c
-
-    10	
-    11	/*
-    12	 * Allocate an I/O request and initialise it.
-    13	 */
-    14	struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
-    15						     struct file *file,
-    16						     loff_t start, size_t len,
-    17						     enum netfs_io_origin origin)
-    18	{
-    19		static atomic_t debug_ids;
-    20		struct inode *inode = file ? file_inode(file) : mapping->host;
-    21		struct netfs_i_context *ctx = netfs_i_context(inode);
-    22		struct netfs_io_request *rreq;
-    23		int ret;
-    24	
-    25		rreq = kzalloc(sizeof(struct netfs_io_request), GFP_KERNEL);
-    26		if (!rreq)
-    27			return ERR_PTR(-ENOMEM);
-    28	
-    29		rreq->start	= start;
-    30		rreq->len	= len;
-    31		rreq->origin	= origin;
-    32		rreq->netfs_ops	= ctx->ops;
-    33		rreq->mapping	= mapping;
-    34		rreq->inode	= inode;
-    35		rreq->i_size	= i_size_read(inode);
-    36		rreq->debug_id	= atomic_inc_return(&debug_ids);
-    37		INIT_LIST_HEAD(&rreq->subrequests);
-    38		refcount_set(&rreq->ref, 1);
-    39		__set_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags);
-    40		if (rreq->netfs_ops->init_request) {
-    41			ret = rreq->netfs_ops->init_request(rreq, file);
-    42			if (ret < 0) {
-    43				kfree(rreq);
-    44				return ERR_PTR(ret);
-    45			}
-    46		}
-    47	
-  > 48		netfs_proc_add_writeback(rreq);
-    49		netfs_stat(&netfs_n_rh_rreq);
-    50		return rreq;
-    51	}
-    52	
-    53	void netfs_get_request(struct netfs_io_request *rreq, enum netfs_rreq_ref_trace what)
-    54	{
-    55		int r;
-    56	
-    57		__refcount_inc(&rreq->ref, &r);
-    58		trace_netfs_rreq_ref(rreq->debug_id, r + 1, what);
-    59	}
-    60	
-    61	void netfs_clear_subrequests(struct netfs_io_request *rreq, bool was_async)
-    62	{
-    63		struct netfs_io_subrequest *subreq;
-    64	
-    65		while (!list_empty(&rreq->subrequests)) {
-    66			subreq = list_first_entry(&rreq->subrequests,
-    67						  struct netfs_io_subrequest, rreq_link);
-    68			list_del(&subreq->rreq_link);
-    69			netfs_put_subrequest(subreq, was_async,
-    70					     netfs_sreq_trace_put_clear);
-    71		}
-    72	}
-    73	
-    74	static void netfs_free_request(struct work_struct *work)
-    75	{
-    76		struct netfs_io_request *rreq =
-    77			container_of(work, struct netfs_io_request, work);
-    78	
-    79		trace_netfs_rreq(rreq, netfs_rreq_trace_free);
-  > 80		netfs_proc_del_writeback(rreq);
-    81		netfs_clear_subrequests(rreq, false);
-    82		if (rreq->netfs_ops->free_request)
-    83			rreq->netfs_ops->free_request(rreq);
-    84		if (rreq->cache_resources.ops)
-    85			rreq->cache_resources.ops->end_operation(&rreq->cache_resources);
-    86		kfree_rcu(rreq, rcu);
-    87		netfs_stat_d(&netfs_n_rh_rreq);
-    88	}
-    89	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With best wishes
+Dmitry
