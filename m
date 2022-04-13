@@ -2,245 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231777AbiDMGNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 02:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54924 "EHLO
+        id S231438AbiDMGOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 02:14:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233220AbiDMGMg (ORCPT
+        with ESMTP id S229662AbiDMGOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 02:12:36 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468BD33E15
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:10:14 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2ebf4b91212so11004327b3.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:10:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5fgVChRRApKlBIxVlW1f3hD3updGvqv5yvWmNDhjdtM=;
-        b=sI58AZkwnV0PCwyvFIbzfa5QQOD2KOa4/arl6YdzEnwXWAhOnYuzFBRM7LS9aH+/Bx
-         lZ5qzStf0i7jmdVP+bD2gt4luZx+SYboLf8Z0boKiZnt2/Y1XqjdMMMAgBOnwWT1nwOd
-         /+3y6q0sg6fTMSJv3/ieKe4oSjz27TUBC0bz5Idccf64BemXK7Zz4WVqLBU/4AngPlkq
-         rVrGNebOihUvSCCiugDQz8ahIhi5UJbqzb8Z3WIWItzxQBVyH6gLuxH0gypY35v7j5P+
-         C+ALokXhuan4JZ+3M5C09TpgU0kN8IIWje2bnLnT3+0BwZhunY4BdFvvXYxyNxuXBdDe
-         R+cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5fgVChRRApKlBIxVlW1f3hD3updGvqv5yvWmNDhjdtM=;
-        b=JZl0AwRMGlUh+MLLH0xbWaK0cYO+F4pd9xNx29BFcpULbqr8yfC2YBVx3VxiMsxWzU
-         WHfYL6g+Zb9qkG8BdxOpbNWGmItn7MyixmXGWXAYh2Kwl6BY9KsOhOweqklOWnHweROE
-         le9Hh7B2+fRe4xgvXRBJrWPycfBB2FUxxAhvsq0mfU8RMR0JkdWys1kw6nVui+43CSky
-         J147uc7jOnEMQ1JcPFaLpVp//KDEDl7XyyRYRlJxgIMyZolzuxxGHuJ/PYA3py2RBOhb
-         IlvZCoeluNzLydv/mEl7NA/JrytK8DqZGUv+uSJIti6Qfnl7kzbYUrHI2yp9Sv48AVbn
-         1KwQ==
-X-Gm-Message-State: AOAM533HJjLPns++WcVOu5IIb9acTcdXV6ryzEllz/9oEw45pLIo9a2f
-        dsWwQRz/oD/Eyx3B5LqCQ3/BwwZ8gt4NcX3/b06XWQ==
-X-Google-Smtp-Source: ABdhPJyL+jMiw5z7EODt9P0QXbBXCN/kSj7h9Iv6Dz1aDHs5FhCsk1IdpCBf2tyRfFSkdgqquVySeXxYu3HczxYW3aI=
-X-Received: by 2002:a81:bf51:0:b0:2ef:414a:f03b with SMTP id
- s17-20020a81bf51000000b002ef414af03bmr2551046ywk.199.1649830213341; Tue, 12
- Apr 2022 23:10:13 -0700 (PDT)
+        Wed, 13 Apr 2022 02:14:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7B13A5EE;
+        Tue, 12 Apr 2022 23:11:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFAF0B8210E;
+        Wed, 13 Apr 2022 06:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95EEC385A6;
+        Wed, 13 Apr 2022 06:11:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649830306;
+        bh=LgHIzY7EW2JlZQiFNPaNQv1hWKib1EqgqFQRnlXmey4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RezEm1vbs11Llplocc8D3OaWU+c1yhnGJOfEbnETpVea3VNvjoPljMe2/N0dDkM4o
+         yf1AV+O11eVhbWzrMnAx7OTuTtbIgd1AJvTCSsPPCaV1t0PDpOYRQLQpWWufQG3Jcp
+         9bBGNGPi0453X/iWefV2qMhdPIAPTELOAK3BSN7jHmVwHhprxQJeYVW1dWcr9Q5XER
+         7+Ts+h8kGcOjwvyDUpxua5NpusWUbThWEDlT1dm2UVUwF/GVj0EzXY4d8cTb9TqOV2
+         vO0MnGSXnq6nkIs+mO93KtakTf1TX8uQUkIaYdaHfYDmitTBcktJb/ax2c1l6Demiv
+         i9UayJ92OaoAg==
+Date:   Wed, 13 Apr 2022 11:41:42 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Liu Ying <victor.liu@nxp.com>
+Cc:     linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, kishon@ti.com,
+        robh+dt@kernel.org, andrzej.hajda@intel.com,
+        narmstrong@baylibre.com, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        agx@sigxcpu.org, robert.chiras@nxp.com, martin.kepplinger@puri.sm,
+        robert.foss@linaro.org
+Subject: Re: [PATCH v6 resend 2/5] phy: Add LVDS configuration options
+Message-ID: <YlZpnrKt9NbHZv26@matsya>
+References: <20220402052451.2517469-1-victor.liu@nxp.com>
+ <20220402052451.2517469-3-victor.liu@nxp.com>
 MIME-Version: 1.0
-References: <20220412173836.126811734@linuxfoundation.org>
-In-Reply-To: <20220412173836.126811734@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 13 Apr 2022 11:40:02 +0530
-Message-ID: <CA+G9fYvwjKoO4TmPDgZ8pZfuv3b9_3V9keR7rR6aiH2_n4a6cw@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/277] 5.15.34-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220402052451.2517469-3-victor.liu@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 at 23:17, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.34 release.
-> There are 277 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 14 Apr 2022 17:37:56 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.34-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On 02-04-22, 13:24, Liu Ying wrote:
+> This patch allows LVDS PHYs to be configured through
+> the generic functions and through a custom structure
+> added to the generic union.
+> 
+> The parameters added here are based on common LVDS PHY
+> implementation practices.  The set of parameters
+> should cover all potential users.
+> 
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Signed-off-by: Liu Ying <victor.liu@nxp.com>
+> ---
+> v5->v6:
+> * Rebase upon v5.17-rc1.
+> 
+> v4->v5:
+> * Align kernel-doc style to include/linux/phy/phy.h. (Vinod)
+> * Trivial tweaks.
+> * Drop Robert's R-b tag.
+> 
+> v3->v4:
+> * Add Robert's R-b tag.
+> 
+> v2->v3:
+> * No change.
+> 
+> v1->v2:
+> * No change.
+> 
+>  include/linux/phy/phy-lvds.h | 32 ++++++++++++++++++++++++++++++++
+>  include/linux/phy/phy.h      |  4 ++++
+>  2 files changed, 36 insertions(+)
+>  create mode 100644 include/linux/phy/phy-lvds.h
+> 
+> diff --git a/include/linux/phy/phy-lvds.h b/include/linux/phy/phy-lvds.h
+> new file mode 100644
+> index 000000000000..7a2f4747f624
+> --- /dev/null
+> +++ b/include/linux/phy/phy-lvds.h
+> @@ -0,0 +1,32 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright 2020 NXP
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+2022 now
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> + */
+> +
+> +#ifndef __PHY_LVDS_H_
+> +#define __PHY_LVDS_H_
+> +
+> +/**
+> + * struct phy_configure_opts_lvds - LVDS configuration set
+> + * @bits_per_lane_and_dclk_cycle:	Number of bits per data lane and
+> + *					differential clock cycle.
 
-## Build
-* kernel: 5.15.34-rc2
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-5.15.y
-* git commit: 1ad810a5a764358347407720dd6ea61e771cfe36
-* git describe: v5.15.33-278-g1ad810a5a764
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.33-278-g1ad810a5a764
+What does it mean by bits per data lane and differential clock cycle?
 
-## Test Regressions (compared to v5.15.33-277-g059c7c9bf722)
-No test regressions found.
+> + * @differential_clk_rate:		Clock rate, in Hertz, of the LVDS
+> + *					differential clock.
+> + * @lanes:				Number of active, consecutive,
+> + *					data lanes, starting from lane 0,
+> + *					used for the transmissions.
+> + * @is_slave:				Boolean, true if the phy is a slave
+> + *					which works together with a master
+> + *					phy to support dual link transmission,
+> + *					otherwise a regular phy or a master phy.
+> + *
+> + * This structure is used to represent the configuration state of a LVDS phy.
+> + */
+> +struct phy_configure_opts_lvds {
+> +	unsigned int	bits_per_lane_and_dclk_cycle;
+> +	unsigned long	differential_clk_rate;
+> +	unsigned int	lanes;
+> +	bool		is_slave;
+> +};
 
-## Metric Regressions (compared to v5.15.33-277-g059c7c9bf722)
-No metric regressions found.
+Where is the user of this new configuration? Can you post that patch for
+reference as well please
 
-## Test Fixes (compared to v5.15.33-277-g059c7c9bf722)
-No test fixes found.
-
-## Metric Fixes (compared to v5.15.33-277-g059c7c9bf722)
-No metric fixes found.
-
-## Test result summary
-total: 100224, pass: 84238, fail: 999, skip: 13860, xfail: 1127
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 291 total, 291 passed, 0 failed
-* arm64: 41 total, 41 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 40 total, 40 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 37 total, 37 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 60 total, 54 passed, 6 failed
-* riscv: 27 total, 22 passed, 5 failed
-* s390: 21 total, 21 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 41 total, 41 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-
-* kselftest-android
-* kselftest-arm64
-* kselftest-arm6[
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* prep-inline
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+-- 
+~Vinod
