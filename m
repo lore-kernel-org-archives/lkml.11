@@ -2,153 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81513C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1417DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237638AbiDMSTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
+        id S237641AbiDMSTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235896AbiDMSTK (ORCPT
+        with ESMTP id S229804AbiDMSTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 14:19:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6767B46157
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:16:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 13 Apr 2022 14:19:42 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514614DF62
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:17:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649873840; x=1681409840;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zoiqkI45OBXfZ+KneNUP3/NBmBFmzCfXcCxT+9CZjWY=;
+  b=Kh/26PmuAKJNt4wxmHGX9BefwgMTP2oCah+RDLA/Np4g5Fdt3aeOSbtx
+   i5jQzL6jEeW6ULJP3XInqhwfB3MijVl86TTPzJ2+ud3Qm+I4e7JASHWeZ
+   7AQ4tRXm2YcrHGXGMTETLVVp/lyfN3LKhRrm4c2839iY/y3UMEbzEdTLg
+   ZWscnMEQdDqI1JGMwCzyqdd48xXoMdJMlXXs/OS4SaNiWai0VSjeLB2sD
+   V6mog1mU75rlF+p+96ym23ufxlcatDgdNT0KREeuE2vGg+PjWzRRxbVWX
+   aFcvpDvay4SOfnEsaMy+3kejc6IoJzmpFl1WdlGyR2miUERQwsj73gQQe
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="287773014"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="287773014"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:17:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="645270075"
+Received: from linux.intel.com ([10.54.29.200])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Apr 2022 11:17:19 -0700
+Received: from [10.212.225.84] (kliang2-MOBL.ccr.corp.intel.com [10.212.225.84])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2600EB82273
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:16:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58370C385A3;
-        Wed, 13 Apr 2022 18:16:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649873805;
-        bh=2PyU5+wH+1ioE4szb8MizzXuB+wDw+SvOadxmPcv3gw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=XCfqrjUnlFQ2/Z3Dw1r25L1UJS/3jKHbfIkuMvjc9WxH/ngfCXMYbuA/iO/ouh3U5
-         T0+221xA/m/n8vXhJf2Lh61SA8h8xH+zK3PLMhlyEc75mE89ClhUfyWnVgB7DAlEgS
-         EjuQVXJRyn6Qy37OTeW3T7cDyAaiZRumMrceQ65TqzmyXtcsZRsTxcEALQ32CSc/l0
-         qX23IuS3yLMZvE3hqqxyTSWYDfjMFHRW5+espAK701WLu8BBnbqAEwETFVJge/uBWo
-         DLZQiVQ/CJqrlTXoYgEvXGSaGe2HcSuwQYxVA6faSDWqO7ga2aAT8AfPqjxpdfO54P
-         q2qFDZ7W9LTHw==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH] arm64: Improve HAVE_DYNAMIC_FTRACE_WITH_REGS selection for clang
-Date:   Wed, 13 Apr 2022 11:14:21 -0700
-Message-Id: <20220413181420.3522187-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.2
+        by linux.intel.com (Postfix) with ESMTPS id 962F25805BD;
+        Wed, 13 Apr 2022 11:17:17 -0700 (PDT)
+Message-ID: <74d36e66-5b16-ee10-bcae-171e2b681845@linux.intel.com>
+Date:   Wed, 13 Apr 2022 14:17:16 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [LKP] Re: [perf vendor events] 3f5f0df7bf:
+ perf-sanity-tests.perf_all_metrics_test.fail
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>
+Cc:     Carel Si <beibei.si@intel.com>, acme@redhat.com,
+        alexander.shishkin@linux.intel.com, alexandre.torgue@foss.st.com,
+        ak@linux.intel.com, mingo@redhat.com, james.clark@arm.com,
+        jolsa@kernel.org, john.garry@huawei.com, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, namhyung@kernel.org,
+        peterz@infradead.org, eranian@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, lkp@lists.01.org,
+        lkp@intel.com
+References: <20220304083329.GC20556@xsang-OptiPlex-9020>
+ <CAP-5=fVz=arWo19PQR_4UKY_PyywyXoyp+MUnfAJxCFZy5rhWg@mail.gmail.com>
+ <20220413070529.GA1320@linux.intel.com>
+ <CAP-5=fXGqODZYGu781qjEEVtGFpCQJ=dCXi5shYOAbBSt5wQkw@mail.gmail.com>
+ <85eed89f-e4a8-2887-a0b3-579704304357@linux.intel.com>
+ <CAP-5=fXj+WT3ExNo-fL4d9b_Wm5swnKaCWd67rU85Q=QFg5KUw@mail.gmail.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <CAP-5=fXj+WT3ExNo-fL4d9b_Wm5swnKaCWd67rU85Q=QFg5KUw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Will and Anders reported that using just 'CC=clang' with CONFIG_FTRACE=y
-and CONFIG_STACK_TRACER=y would result in an error while linking:
 
-  aarch64-linux-gnu-ld: .init.data has both ordered [`__patchable_function_entries' in init/main.o] and unordered [`.meminit.data' in mm/sparse.o] sections
-  aarch64-linux-gnu-ld: final link failed: bad value
 
-This error was exposed by commit f12b034afeb3 ("scripts/Makefile.clang:
-default to LLVM_IAS=1") in combination with binutils older than 2.36.
+On 4/13/2022 1:09 PM, Ian Rogers wrote:
+> On Wed, Apr 13, 2022 at 9:37 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
+>>
+>>
+>>
+>> On 4/13/2022 12:03 PM, Ian Rogers wrote:
+>>> 3) Weak group doesn't fall back to no group:
+>>
+>> That's because the group validation code doesn't take pinned events,
+>> such as the NMI watchdog, into account.
+>>
+>> I proposed a kernel patch to fix it, but it's rejected. It should be
+>> hard to find a generic way to fix it from the kernel side.
+>> https://lore.kernel.org/lkml/1565977750-76693-1-git-send-email-kan.liang@linux.intel.com/
+>>
+>> Maybe we can workaround it from the perf tool side?
+>> For example, for each weak group with cycles event and NMI watchdog is
+>> enabled, add an extra cycles event when opening the group. If the open
+>> fails with the extra cycles event, fall back to no group. After the
+>> extra cycles event check, remove the extra cycles.
+>>
+>> What do you think?
+> 
+> Thanks Kan, it is a shame the kernel support is lacking here. I'm not
+> sure what you are proposing for the perf tool to do. So:
+> 
+>> for each weak group with cycles event and NMI watchdog
+> 
+> Okay, let's try Branching_Overhead as mentioned in this report - but
+> the event is CPU_CLK_UNHALTED.THREAD here :-/
+> 
+>> add an extra cycles event when opening the group
+> 
+> So the perf_event_open doesn't fail here for me:
+> $ perf stat -e '{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,BR_INST_RETIRED.NOT_TAKEN,BR_INST_RETIRED.CONDITIONAL,CPU_CLK_UNHALTED.THREAD},cycles'
+> -a sleep 1
+> 
 
-When '-fpatchable-function-entry' was implemented in LLVM, two code
-paths were added for adding the section attributes, one for the
-integrated assembler and another for GNU as, due to binutils
-deficiencies at the time. If the integrated assembler was used,
-attributes that GNU ld < 2.36 could not handle were added, presumably
-with the assumption that use of the integrated assembler meant the whole
-LLVM stack was being used, namely ld.lld.
+No, I mean modifying the perf tool code and add an extra cycles in the 
+weak group.
 
-Prior to the kernel change previously mentioned, that assumption was
-valid, as there were three commonly used combinations of tools for
-compiling, assembling, and linking respectively:
+Here is a very initial POC patch, which should prove the idea.
 
-$ make CC=clang (clang, GNU as, GNU ld)
-$ make LLVM=1 (clang, GNU as, ld.lld)
-$ make LLVM=1 LLVM_IAS=1 (clang, integrated assembler, ld.lld)
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index b7fe88beb584..782c3d7f1b32 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -71,7 +71,9 @@
+  #include "util/bpf_counter.h"
+  #include "util/iostat.h"
+  #include "util/pmu-hybrid.h"
++#include "util/util.h"
+  #include "asm/bug.h"
++#include "perf-sys.h"
 
-After the default switch of the integrated assembler, the second and
-third commands become equivalent and the first command means "clang,
-integrated assembler, and GNU ld", which was not a combination that was
-considered when the aforementioned LLVM change was implemented.
+  #include <linux/time64.h>
+  #include <linux/zalloc.h>
+@@ -777,6 +779,8 @@ static enum counter_recovery 
+stat_handle_error(struct evsel *counter)
+  	return COUNTER_FATAL;
+  }
 
-It is not possible to go back and fix LLVM, as this change was
-implemented in the 10.x series, which is no longer supported. To
-workaround this on the kernel side, split out the selection of
-HAVE_DYNAMIC_FTRACE_WITH_REGS to two separate configurations, one for
-GCC and one for clang.
-
-The GCC config inherits the '-fpatchable-function-entry' check. The
-Clang config does not it, as '-fpatchable-function-entry' is always
-available for LLVM 11.0.0 and newer, which is the supported range of
-versions for the kernel.
-
-The Clang config makes sure that the user is using GNU as or the
-integrated assembler with ld.lld or GNU ld 2.36 or newer, which will
-avoid the error above.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1507
-Link: https://github.com/ClangBuiltLinux/linux/issues/788
-Link: https://lore.kernel.org/YlCA5PoIjF6nhwYj@dev-arch.thelio-3990X/
-Link: https://sourceware.org/bugzilla/show_bug.cgi?id=26256
-Link: https://github.com/llvm/llvm-project/commit/7fa5290d5bd5632d7a36a4ea9f46e81e04fb819e
-Link: https://github.com/llvm/llvm-project/commit/853a2649160c1c80b9bbd38a20b53ca8fab704e8
-Reported-by: Anders Roxell <anders.roxell@linaro.org>
-Reported-by: Will Deacon <will@kernel.org>
-Tested-by: Will Deacon <will@kernel.org>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
-
-If there is a better place to put these symbols, please let me know!
-
-No fixes tag, as commit f12b034afeb3 ("scripts/Makefile.clang: default
-to LLVM_IAS=1") made this easier to hit but this has always been a
-problem that could be hit ('make CC=clang LLVM_IAS=1').
-
- arch/arm64/Kconfig | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 57c4c995965f..1fd16faa7f31 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -175,8 +175,6 @@ config ARM64
- 	select HAVE_DEBUG_KMEMLEAK
- 	select HAVE_DMA_CONTIGUOUS
- 	select HAVE_DYNAMIC_FTRACE
--	select HAVE_DYNAMIC_FTRACE_WITH_REGS \
--		if $(cc-option,-fpatchable-function-entry=2)
- 	select FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY \
- 		if DYNAMIC_FTRACE_WITH_REGS
- 	select HAVE_EFFICIENT_UNALIGNED_ACCESS
-@@ -228,6 +226,17 @@ config ARM64
- 	help
- 	  ARM 64-bit (AArch64) Linux support.
- 
-+config CLANG_SUPPORTS_DYNAMIC_FTRACE_WITH_REGS
-+	def_bool CC_IS_CLANG
-+	# https://github.com/ClangBuiltLinux/linux/issues/1507
-+	depends on AS_IS_GNU || (AS_IS_LLVM && (LD_IS_LLD || LD_VERSION >= 23600))
-+	select HAVE_DYNAMIC_FTRACE_WITH_REGS
++#define FD(e, x, y) (*(int *)xyarray__entry(e->core.fd, x, y))
 +
-+config GCC_SUPPORTS_DYNAMIC_FTRACE_WITH_REGS
-+	def_bool CC_IS_GCC
-+	depends on $(cc-option,-fpatchable-function-entry=2)
-+	select HAVE_DYNAMIC_FTRACE_WITH_REGS
+  static int __run_perf_stat(int argc, const char **argv, int run_idx)
+  {
+  	int interval = stat_config.interval;
+@@ -793,6 +797,7 @@ static int __run_perf_stat(int argc, const char 
+**argv, int run_idx)
+  	struct affinity saved_affinity, *affinity = NULL;
+  	int err;
+  	bool second_pass = false;
++	bool has_cycles = false;
+
+  	if (forks) {
+  		if (evlist__prepare_workload(evsel_list, &target, argv, is_pipe, 
+workload_exec_failed_signal) < 0) {
+@@ -821,6 +826,8 @@ static int __run_perf_stat(int argc, const char 
+**argv, int run_idx)
+  	evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
+  		counter = evlist_cpu_itr.evsel;
+
++		if (counter->core.attr.config == 0x3c)
++			has_cycles = true;
+  		/*
+  		 * bperf calls evsel__open_per_cpu() in bperf__load(), so
+  		 * no need to call it again here.
+@@ -867,6 +874,24 @@ static int __run_perf_stat(int argc, const char 
+**argv, int run_idx)
+  		counter->supported = true;
+  	}
+
++	//make it model specific. need to move to a better place
++	if (counter->supported && !second_pass && has_cycles && 
+counter->weak_group && sysctl__nmi_watchdog_enabled()) {
++		struct evsel *leader = evsel__leader(counter);
++		int group_fd = FD(leader, 0, 0);
++		struct evsel *evsel;
++		int fd;
 +
- config 64BIT
- 	def_bool y
- 
++		evsel = evsel__new_cycles(0, PERF_TYPE_HARDWARE, 
+PERF_COUNT_HW_CPU_CYCLES);
++		fd = sys_perf_event_open(&evsel->core.attr, -1, 0, group_fd, 0x8);
++
++		if (fd < 0) {
++			evlist__reset_weak_group(evsel_list, counter, false);
++			second_pass = true;
++		} else {
++			evsel__close(evsel);
++		}
++	}
++
+  	if (second_pass) {
+  		/*
+  		 * Now redo all the weak group after closing them,
 
-base-commit: ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
--- 
-2.35.2
+With the above patch,
 
+$ sudo ./perf stat -e 
+'{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,BR_INST_RETIRED.NOT_TAKEN,BR_INST_RETIRED.CONDITIONAL,CPU_CLK_UNHALTED.THREAD}:W' 
+-C0 sleep 1
+
+  Performance counter stats for 'CPU(s) 0':
+
+            913,369      BR_INST_RETIRED.NEAR_CALL 
+                       (79.95%)
+          3,648,433      BR_INST_RETIRED.NEAR_TAKEN 
+                       (80.00%)
+          2,481,976      BR_INST_RETIRED.NOT_TAKEN 
+                       (80.05%)
+          3,696,298      BR_INST_RETIRED.CONDITIONAL 
+                       (80.04%)
+         27,792,053      CPU_CLK_UNHALTED.THREAD 
+                       (79.96%)
+
+        1.002224709 seconds time elapsed
+
+
+Thanks,
+Kan
