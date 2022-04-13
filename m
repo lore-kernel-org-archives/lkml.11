@@ -2,120 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C02C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237637AbiDMSDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59058 "EHLO
+        id S237809AbiDMSDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237604AbiDMSC2 (ORCPT
+        with ESMTP id S237568AbiDMSCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 14:02:28 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3483FDB0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:04 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id n8so2618054plh.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:04 -0700 (PDT)
+        Wed, 13 Apr 2022 14:02:22 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F5F40918
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:00 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id bf10-20020a656d0a000000b0039d4f854e22so1475356pgb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:00:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Svs19TUafKQm/jCU2RrZAsQ5QwXjh0iyJjgadXLqin0=;
-        b=xLqG+MWjB+1ONdwrTD0/w1/RC8Cfa0ESVVwZNBb5TYNlChKDlGlurbuIAhq0g3JOLY
-         HBalb10a9q5otPR4Ue4esCZJhdzZn3erpsytC0MtHM/NGjzOEojXQxx2TbJoL5PJ8x1n
-         UJsuKYLvVWQiFf8eN47eWokol4IH5IeBctvKmR1hR7FpwfyJJ0VYotDpdg3xdere/5Du
-         sbagu6ImkoKzwNfliSHrNBSzt0HwvxAWijAdaBWaHf0ne/1d0iEFTdmT2otr9T8AEKAV
-         zO4XuNE+MQ7TquLYInmTp5lGFGMxdCBFaEsle5Ae7QbwHAS//6uDL6aqvyYwPcfU7nxj
-         X8qg==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=S9c5hfgea9nF2vcGLAzTx3MCtPKtuM/ZU/yidQX2w98=;
+        b=fysxMTw5FfeK2kfCYyldf+U2U6tRB7zRsq9JmBoQbVpkoKWgjcJFFsaxGEaogeuHP2
+         0tkRlXfnlvVimHa9GCR61mV1Cwo8kJeXLMx8NY3eLl+pNzl0E70NCHbzTodLmT3FCJ+S
+         ulQ+1RrkXHdi6NuH3A9ke1uwAs40IuhESL/zkPW3jhBOq9XChi9ndNgfZiQJzkwp/nwp
+         W+Ro7evQEnJDKZObBIaEEZmKBimsckWmr+UseTNZ7Juk5JyA3mf8sE2krn3iCSJ8ryMR
+         ZBE3RYt7ww+T8Q5A3WHEOuUDMYzIvb+hjkWJnMHRgNGpKV6cx8n55PYy8Ox07OAqcVTf
+         yMcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Svs19TUafKQm/jCU2RrZAsQ5QwXjh0iyJjgadXLqin0=;
-        b=zIJZ8YlaySGzUOxwpG0x3XbhSkrYL9wKUJ0LzWTLfy8pVtS9ltOd2amrs9bzwo+L6F
-         apDXq/L0nXgLHg1rzWioluVLDAq0X0sCQVzJeturEXa47DyeF5vl+azZMRMVauKekbjz
-         A3dDANFgvfxWhlghcdZcwi7DT8AVxYdYmkA83vRoFxhsz2F9ofNu/p766tfMMPYOc11h
-         /vVsf4CYkVtieaaPTxHcrCfXZ9DF4ecyBv8sGChm1L/p3VT0Sgsc0ZH9sS8jyl9M2mA1
-         UkqGDA7+7Q4Jj+6H7AT+wtgIu4JRY4RPP7IL+dW0VxtT5S2mQ8IgQHyG7MWl/2iB3F5I
-         x4iA==
-X-Gm-Message-State: AOAM530r3WlLFhcwEFISfsGMy3H1DInVzzjqjOSF2LAOEjYNbOwiLRJK
-        6XiQsq0GYFlklOob5xAfxZfTgA==
-X-Google-Smtp-Source: ABdhPJxC4fnpXtuWpOkL3gqwzMGvaPHtdemOp/P9bcKS6MectCfQp1h+7v//HPZZb5PfpyIJ6nKnoA==
-X-Received: by 2002:a17:90b:384b:b0:1c7:41fd:9991 with SMTP id nl11-20020a17090b384b00b001c741fd9991mr12251421pjb.199.1649872802844;
-        Wed, 13 Apr 2022 11:00:02 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id k5-20020a17090ac50500b001cd5ffcca96sm1930645pjt.27.2022.04.13.11.00.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 11:00:01 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 11:59:59 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Daniel Baluta <daniel.baluta@oss.nxp.com>
-Cc:     linux-remoteproc@vger.kernel.org, bjorn.andersson@linaro.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
-        shengjiu.wang@nxp.com, daniel.baluta@gmail.com,
-        Daniel Baluta <daniel.baluta@nxp.com>
-Subject: Re: [PATCH] remoteproc: imx_dsp_rproc: Make rsc_table optional
-Message-ID: <20220413175959.GC547134@p14s>
-References: <20220331103237.340796-1-daniel.baluta@oss.nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220331103237.340796-1-daniel.baluta@oss.nxp.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=S9c5hfgea9nF2vcGLAzTx3MCtPKtuM/ZU/yidQX2w98=;
+        b=esZiQpwFIXG25FZLY4hWHrMXQPSF0W2nWdXBySR52jGUk1QaO1EC6pklBY4dipdDWj
+         dPf/yrnIVaEY4/q1y1aFmAid03cGwbVooat9K30DOApYqh5NO/fPTQ5yBd+bRxeD1y/s
+         G6Daf2G4w+HWpmpNE6kCixXy+C2Y3slvzUh4JoZateEPsm8l+F3+kje8x0NQoW1efaoE
+         yoEzaPzvWq8N7n1kpQLhQlG+9G6wraPjEccXSMMMHpzBY1kB5H0JCB+QyS+xF58dF1Ne
+         KukITuNP+k9C2465b2c8Aj9EdKX8S38YXDS+wRzGjouMZSI5mawAbggwc1GGpJUz6LER
+         yK8Q==
+X-Gm-Message-State: AOAM531hbjfKAcvu7dngc02fWWphDe9aQoHmuIw/KVbPYvzFhrO43YAh
+        qI5zesXwqzeMkpqLfxZzd+EtMsOJyjWAPOsfx/q2Xl/Dzeypc8HcfDE70Rz0lIbSFHuwPQNI8hp
+        WHcwU5CsHBExMND4i+ieZTk02t40rE84JQ+aGleSO+4EFUhlD6+uinkR/VpHyq67MDtfr3fk8
+X-Google-Smtp-Source: ABdhPJwz1kE+LgFkjp6n93PoL8eszyj+sUtefQWtn3Wy529KwG2yZvBjUXDzUykj7XYTEdt1lSJb6vGRqYH9
+X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:c087:f2f2:f5f0:f73])
+ (user=bgardon job=sendgmr) by 2002:a17:902:d2d0:b0:158:761e:c165 with SMTP id
+ n16-20020a170902d2d000b00158761ec165mr13217509plc.59.1649872800278; Wed, 13
+ Apr 2022 11:00:00 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 10:59:41 -0700
+In-Reply-To: <20220413175944.71705-1-bgardon@google.com>
+Message-Id: <20220413175944.71705-8-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220413175944.71705-1-bgardon@google.com>
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [PATCH v5 07/10] KVM: x86: Fix errant brace in KVM capability handling
+From:   Ben Gardon <bgardon@google.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+The braces around the KVM_CAP_XSAVE2 block also surround the
+KVM_CAP_PMU_CAPABILITY block, likely the result of a merge issue. Simply
+move the curly brace back to where it belongs.
 
-On Thu, Mar 31, 2022 at 01:32:37PM +0300, Daniel Baluta wrote:
-> From: Daniel Baluta <daniel.baluta@nxp.com>
-> 
-> There are cases when we want to test a simple "hello world"
-> app on the DSP and we do not need a resource table.
-> 
-> remoteproc core allows us having an optional rsc_table.
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@nxp.com>
-> ---
->  drivers/remoteproc/imx_dsp_rproc.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/remoteproc/imx_dsp_rproc.c b/drivers/remoteproc/imx_dsp_rproc.c
-> index 2abee78df96e..987ab1add761 100644
-> --- a/drivers/remoteproc/imx_dsp_rproc.c
-> +++ b/drivers/remoteproc/imx_dsp_rproc.c
-> @@ -802,6 +802,14 @@ static void imx_dsp_rproc_kick(struct rproc *rproc, int vqid)
->  		dev_err(dev, "%s: failed (%d, err:%d)\n", __func__, vqid, err);
->  }
->  
-> +static int imx_dsp_rproc_parse_fw(struct rproc *rproc, const struct firmware *fw)
-> +{
-> +	if (rproc_elf_load_rsc_table(rproc, fw))
-> +		dev_warn(&rproc->dev, "no resource table found for this firmware\n");
-> +
-> +	return 0;
-> +}
-> +
->  static const struct rproc_ops imx_dsp_rproc_ops = {
->  	.prepare	= imx_dsp_rproc_prepare,
->  	.unprepare	= imx_dsp_rproc_unprepare,
-> @@ -809,7 +817,7 @@ static const struct rproc_ops imx_dsp_rproc_ops = {
->  	.stop		= imx_dsp_rproc_stop,
->  	.kick		= imx_dsp_rproc_kick,
->  	.load		= imx_dsp_rproc_elf_load_segments,
-> -	.parse_fw	= rproc_elf_load_rsc_table,
-> +	.parse_fw	= imx_dsp_rproc_parse_fw,
+Fixes: ba7bb663f5547 ("KVM: x86: Provide per VM capability for disabling PMU virtualization")
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ arch/x86/kvm/x86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied.
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index ab336f7c82e4..665c1fa8bb57 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4382,10 +4382,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 		if (r < sizeof(struct kvm_xsave))
+ 			r = sizeof(struct kvm_xsave);
+ 		break;
++	}
+ 	case KVM_CAP_PMU_CAPABILITY:
+ 		r = enable_pmu ? KVM_CAP_PMU_VALID_MASK : 0;
+ 		break;
+-	}
+ 	case KVM_CAP_DISABLE_QUIRKS2:
+ 		r = KVM_X86_VALID_QUIRKS;
+ 		break;
+-- 
+2.35.1.1178.g4f1659d476-goog
 
-Thanks,
-Mathieu
-
->  	.sanity_check	= rproc_elf_sanity_check,
->  	.get_boot_addr	= rproc_elf_get_boot_addr,
->  };
-> -- 
-> 2.27.0
-> 
