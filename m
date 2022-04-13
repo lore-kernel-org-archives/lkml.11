@@ -2,69 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80579C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB45C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234725AbiDMJrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
+        id S234734AbiDMJrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234703AbiDMJq5 (ORCPT
+        with ESMTP id S234697AbiDMJqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:46:57 -0400
-Received: from mo-csw.securemx.jp (mo-csw1514.securemx.jp [210.130.202.153])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4844E3B2B9;
-        Wed, 13 Apr 2022 02:44:30 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 23D9iDHH014454; Wed, 13 Apr 2022 18:44:13 +0900
-X-Iguazu-Qid: 34trMBIs3DXverXhLu
-X-Iguazu-QSIG: v=2; s=0; t=1649843053; q=34trMBIs3DXverXhLu; m=Og2oeBoBh1hoZh8oSI6h3l3zIr8QWsoxe2Bjtw+Rt6E=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1513) id 23D9iCZY038502
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 13 Apr 2022 18:44:13 +0900
-X-SA-MID: 2335256
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH 5/5] MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
-Date:   Wed, 13 Apr 2022 18:42:03 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220413094203.25714-6-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220413094203.25714-1-yuji2.ishikawa@toshiba.co.jp>
-References: <20220413094203.25714-1-yuji2.ishikawa@toshiba.co.jp>
+        Wed, 13 Apr 2022 05:46:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49A103B3C0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649843069;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bRkyB4PbFZ1fbO3XHovGn6TsXRtRWyjrzEzQotyYPuQ=;
+        b=RN9/xp7NKXl+BIiYQRNM9R7Z5bS7VzWKgqd896qnp8zdVmjmZW+PCQLezKF28FgO2340jL
+        kCXJqu+0zwLkN9+wj07zdpdLWrNJqKhFnSE9mxyTHKbn2xOIQkJkFk5c1Hpc9VkcmkyopB
+        l/Nw6Aiu2vFioeKfgNvMVpKtDTMqj5Y=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-425-0QdxnFSqMUCOK2gBg7-BEA-1; Wed, 13 Apr 2022 05:44:26 -0400
+X-MC-Unique: 0QdxnFSqMUCOK2gBg7-BEA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BF4F11C01700;
+        Wed, 13 Apr 2022 09:44:25 +0000 (UTC)
+Received: from thuth.com (unknown [10.39.193.12])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D05EE53CD;
+        Wed, 13 Apr 2022 09:44:23 +0000 (UTC)
+From:   Thomas Huth <thuth@redhat.com>
+To:     Tony Krowiak <akrowiak@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     Harald Freudenberger <freude@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] s390: vfio-ap: Remove the superfluous MODULE_DEVICE_TABLE declaration
+Date:   Wed, 13 Apr 2022 11:44:16 +0200
+Message-Id: <20220413094416.412114-1-thuth@redhat.com>
+MIME-Version: 1.0
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+The vfio_ap module tries to register for the vfio_ap bus - but that's
+the interface that it provides itself, so this does not make much sense,
+thus let's simply drop this statement now.
+
+Signed-off-by: Thomas Huth <thuth@redhat.com>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ See also my previous patch to register it for the "ap" bus instead:
+ https://lore.kernel.org/linux-s390/20211201141110.94636-1-thuth@redhat.com/
+ ... but since it has been decided to not auto-load the module uncondi-
+ tionally, I'd like to suggest to rather drop this line now instead.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index dd36acc87..62d547008 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2792,12 +2792,14 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iwamatsu/linux-visconti.git
- F:	Documentation/devicetree/bindings/arm/toshiba.yaml
-+F:	Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
- F:	Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
- F:	Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
- F:	Documentation/devicetree/bindings/pci/toshiba,visconti-pcie.yaml
- F:	Documentation/devicetree/bindings/pinctrl/toshiba,visconti-pinctrl.yaml
- F:	Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml
- F:	arch/arm64/boot/dts/toshiba/
-+F:	drivers/media/platform/visconti/
- F:	drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
- F:	drivers/gpio/gpio-visconti.c
- F:	drivers/pci/controller/dwc/pcie-visconti.c
+ drivers/s390/crypto/vfio_ap_drv.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/s390/crypto/vfio_ap_drv.c b/drivers/s390/crypto/vfio_ap_drv.c
+index 29ebd54f8919..4ac9c6521ec1 100644
+--- a/drivers/s390/crypto/vfio_ap_drv.c
++++ b/drivers/s390/crypto/vfio_ap_drv.c
+@@ -46,8 +46,6 @@ static struct ap_device_id ap_queue_ids[] = {
+ 	{ /* end of sibling */ },
+ };
+ 
+-MODULE_DEVICE_TABLE(vfio_ap, ap_queue_ids);
+-
+ static struct ap_matrix_mdev *vfio_ap_mdev_for_queue(struct vfio_ap_queue *q)
+ {
+ 	struct ap_matrix_mdev *matrix_mdev;
 -- 
-2.17.1
-
+2.27.0
 
