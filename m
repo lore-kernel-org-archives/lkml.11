@@ -2,84 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2CEC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 401D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237423AbiDMTPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
+        id S236196AbiDMTPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238633AbiDMTNY (ORCPT
+        with ESMTP id S239135AbiDMTOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:13:24 -0400
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A87F7938D;
-        Wed, 13 Apr 2022 12:09:07 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e2442907a1so2989192fac.8;
-        Wed, 13 Apr 2022 12:09:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DLfFRlPR18ak0Dg98RjZkZ+swlB0PONrUxc3NZGeV2c=;
-        b=vPebnLDsWtFRRCt7KvZX9tAeUU6BxIg+CZBdi/YxNeyLLAx4ifffad8wZS5YU0gRue
-         jcGxNppYBXAEr1rmnZDJVxUtl+gZgoCGk26CtgCFhliPvLqURvm/nSVcm643KMJ5yjRz
-         tJSo+dqktAnXHck4VSWfMSSWLS49R+WqbZYOA33/inuKPsHVkyDDtdYLMh5Cyf8h8zqp
-         ypl1J6qCTJQDi2D54oNv1f5wU98yqIxTMz9kkIYrBRvilVKSuz8W+5n/FW/i2dpe+KuQ
-         ZdyxPEEG0craU+4dr8VQWkkkeQ9nPkq13cWxA1HLypNtJaxmwQeFzA/OoRZw8t/Vhf68
-         yrew==
-X-Gm-Message-State: AOAM532R9kZDvC+ZhQ9rcSA6wX42jDozhkqglFGI/MTL8oTXSuwKkPR7
-        RhGlXXEKPkKyeaDQj0Fl5xTo04nQxg==
-X-Google-Smtp-Source: ABdhPJw7hT2QmeBA/ltdKB38j/W8WiKNHRYpddijFqt+fqHm6/4cCtwZkGaKp1wKMMN4w5kGnCJ2/g==
-X-Received: by 2002:a05:6870:b525:b0:e3:9db:e075 with SMTP id v37-20020a056870b52500b000e309dbe075mr90116oap.41.1649876946855;
-        Wed, 13 Apr 2022 12:09:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l14-20020a056820030e00b00320edaf9b8esm13631840ooe.44.2022.04.13.12.09.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 12:09:06 -0700 (PDT)
-Received: (nullmailer pid 3659930 invoked by uid 1000);
-        Wed, 13 Apr 2022 19:09:05 -0000
-Date:   Wed, 13 Apr 2022 14:09:05 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: interrrupt-controller: uniphier-aidet: Use
- unevaluatedProperties
-Message-ID: <Ylcf0QOBAne6fKQr@robh.at.kernel.org>
-References: <1649317664-21391-1-git-send-email-hayashi.kunihiko@socionext.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649317664-21391-1-git-send-email-hayashi.kunihiko@socionext.com>
+        Wed, 13 Apr 2022 15:14:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BAA48E5B;
+        Wed, 13 Apr 2022 12:10:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3026AB82761;
+        Wed, 13 Apr 2022 19:10:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59C03C385A3;
+        Wed, 13 Apr 2022 19:10:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649877053;
+        bh=7zffni3b6WrTkbJ/vkGXvRk4tdERsTcUIscgc872JCQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SqqwH/ILeJhcYHRxq2AClOf8Giw69xPlpG9aNeHURMMSzmwK4WpuapedIeUPEC9+1
+         8PiG87qt/kuClb3p6ErUbd2GuAIWw7YlDCQF4u2BiMVfsaHuYzCZUwJGEr1b8uXtqi
+         NLCeoVYVhofr6h4dBfWKxp5jWITD4C0bA8pfpC+A=
+Date:   Wed, 13 Apr 2022 12:10:51 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, mcgrof@kernel.org,
+        keescook@chromium.org, yzaikin@google.com, osalvador@suse.de,
+        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v8 4/4] mm: hugetlb_vmemmap: add
+ hugetlb_optimize_vmemmap sysctl
+Message-Id: <20220413121051.a363193c726451115c634a69@linux-foundation.org>
+In-Reply-To: <20220413144748.84106-5-songmuchun@bytedance.com>
+References: <20220413144748.84106-1-songmuchun@bytedance.com>
+        <20220413144748.84106-5-songmuchun@bytedance.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 04:47:44PM +0900, Kunihiko Hayashi wrote:
-> This refers common bindings, so this is preferred for
-> unevaluatedProperties instead of additionalProperties.
-> 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> ---
->  .../bindings/interrupt-controller/socionext,uniphier-aidet.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml b/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml
-> index f89ebde76dab..77f2d58a9c3f 100644
-> --- a/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml
-> +++ b/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml
-> @@ -49,7 +49,7 @@ required:
->    - interrupt-controller
->    - '#interrupt-cells'
->  
-> -additionalProperties: false
-> +unevaluatedProperties: false
+On Wed, 13 Apr 2022 22:47:48 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
 
-As mentioned elsewhere, not necessary here.
+> We must add hugetlb_free_vmemmap=on (or "off") to the boot cmdline and
+> reboot the server to enable or disable the feature of optimizing vmemmap
+> pages associated with HugeTLB pages.  However, rebooting usually takes a
+> long time.  So add a sysctl to enable or disable the feature at runtime
+> without rebooting.
 
-Rob
+Do we really need this feature?  Really?  What's the use case and what
+is the end-user value?
+
+Presumably CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP worsens things for some
+setups/workloads?  Please tell us much more about that.  What is the
+magnitude of the deoptimization?
