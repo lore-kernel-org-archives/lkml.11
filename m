@@ -2,80 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D510C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 04:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 04:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232336AbiDMEqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 00:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
+        id S231904AbiDMEqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 00:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbiDMEqE (ORCPT
+        with ESMTP id S232244AbiDMEql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 00:46:04 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DEB31DDD;
-        Tue, 12 Apr 2022 21:43:44 -0700 (PDT)
+        Wed, 13 Apr 2022 00:46:41 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BA9C1F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 21:44:20 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id bk12so567484qkb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 21:44:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649825025; x=1681361025;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=Euy5GyMcnB1dcHLsisZMhR4czkWWcNeX4uR3GjmBfcw=;
-  b=rV2BuH1Ma1k9AJGdycvPbJY6qE7b8Kib/9XNR5Yl9XJ0aL6PeOavKTyE
-   63wHEjHDTy0Uhwn2PsSY+h/wSZzrfScVFfuBGHDYxwOwZi0QuQtX8l40o
-   zAyvKDwKfB6YJqZpx3xB3MUGDZHZ70KDq2cX7yg1Sr4JOBCY4zEU469iV
-   k=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Apr 2022 21:43:44 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 21:43:44 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 21:43:24 -0700
-Received: from blr-ubuntu-173.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 21:43:21 -0700
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-To:     <tony@atomide.com>, <paul@pwsan.com>
-CC:     <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Rajendra Nayak" <quic_rjendra@quicinc.com>
-Subject: [PATCH] MAINTAINERS: omap: remove me as a maintainer
-Date:   Wed, 13 Apr 2022 10:13:03 +0530
-Message-ID: <1649824983-29400-1-git-send-email-quic_rjendra@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ZLPVnz8+CmyHrIBYurkIW2TTvDikbuZwnfUEIgf50uI=;
+        b=nANZ40d7vawO4uMCRvgPuFdQC14wrez+F1spKBqrPRbKH/PbQhWPj3BukiLVnold9U
+         0wojkJNsY/E/O3lZwDBdyV/13isiyg56SFHMum30GeQ7MI5Wf/DZFDN4R1G32WD6xGX0
+         CLBFcVbLaS3pLQPo0qSRfDpIi+erD8//drjNs+KK0WU5rBicFeJqf8yEhHO2LP1gUIZO
+         VSEo1ZYvh6MXAXGgL0PXgLBXlaV14PDz+1RGQhj+FMImklOK2cNXja9eacJOGDduK6Rv
+         pp598Y/ISAHe/3kuBj/Ay5qTboJIMigTawILJSa59NyK7yV0Poy7rwUcusXQxPXhWbBG
+         cbKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZLPVnz8+CmyHrIBYurkIW2TTvDikbuZwnfUEIgf50uI=;
+        b=iJwWJEki3oHIn3+Fj6M2KRXfchmdbtlQzRokGCd5GryBDSiF3rNtkunxNpw7BiZcYh
+         bEoLYbfFiEGWzY2Mk1Tef0T00ENwQnUQE9ruirppwLWs0A7hWR9YK3EXr4Ajfn6Ku+O4
+         HeVlPbGYFDN/Lh42t7WwgM6cmBZHUaz1w1DGLmXPXB9huIelA7nW+oj6P6iT/tfF260H
+         jHIOdcCCy+mD8kcRMcj1nrqQH2e9MkmhULbMRbbHN4YYwADCFArZoKkzK/J13P0t9ZVS
+         yQYv++rDCobHGNEr6I0NMXN8MH0QupuMpscLuXJcRYfIWm86lQHBhP+OuXunGhLl/0dd
+         /oDw==
+X-Gm-Message-State: AOAM532MxNg33wOwTyzl44ymTrXbNXbu9XRGN720D3UJ2QTAnBZ8VAk9
+        GsEVhAcN//0+GtgHLBQ5eL0=
+X-Google-Smtp-Source: ABdhPJxhvR9BbzTTdUPd0GN26sm1C64fuJ3oWzB8hVSptjitL40jxKTzif/wA+YYGD7UvYGksUmXDg==
+X-Received: by 2002:a05:620a:4014:b0:69c:10af:d98e with SMTP id h20-20020a05620a401400b0069c10afd98emr5471620qko.633.1649825059953;
+        Tue, 12 Apr 2022 21:44:19 -0700 (PDT)
+Received: from jaehee-ThinkPad-X1-Extreme ([2607:fb90:50fb:900e:5e57:caff:f44b:33f4])
+        by smtp.gmail.com with ESMTPSA id b126-20020a37b284000000b0069a11927e57sm10232117qkf.101.2022.04.12.21.44.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 21:44:19 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 00:44:16 -0400
+From:   Jaehee Park <jhpark1013@gmail.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Subject: Re: [PATCH v2 2/2] staging: greybus: remove unneeded return
+Message-ID: <20220413044416.GB3357359@jaehee-ThinkPad-X1-Extreme>
+References: <cover.1649793138.git.jhpark1013@gmail.com>
+ <d4d01ecdabc492e52a3decebf165d1f584f3b3bf.1649793138.git.jhpark1013@gmail.com>
+ <5792471.alqRGMn8q6@leap>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5792471.alqRGMn8q6@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The codeaurora.org domain is no longer valid, remove my id
-from the maintainers for OMAP PM frameworks.
-I haven't contributed to them in years, neither do I plan to
-in the future so not updating this with my new quicinc id.
+On Tue, Apr 12, 2022 at 10:35:58PM +0200, Fabio M. De Francesco wrote:
+> On martedì 12 aprile 2022 21:59:15 CEST Jaehee Park wrote:
+> > An empty function with void return type does not need an explicit
+> > return. Issue found by checkpatch.
+> > 
+> > Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> > ---
+> >  drivers/staging/greybus/audio_codec.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> > diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/
+> greybus/audio_codec.c
+> > index 0f50d1e51e2c..3e3a16568def 100644
+> > --- a/drivers/staging/greybus/audio_codec.c
+> > +++ b/drivers/staging/greybus/audio_codec.c
+> > @@ -1032,7 +1032,6 @@ static int gbcodec_probe(struct snd_soc_component 
+> *comp)
+> >  static void gbcodec_remove(struct snd_soc_component *comp)
+> >  {
+> >  	/* Empty function for now */
+> > -	return;
+> >  }
+> >  
+> >  static int gbcodec_write(struct snd_soc_component *comp, unsigned int 
+> reg,
+> > -- 
+> > 2.25.1
+> > 
+> Hi Jaehee,
+> 
+> If I recall it correctly, Dan Carpenter suggested to remove this empty 
+> function. 
+> 
+> When developers remove lines of code from a function which becomes empty
+> after the removals, they also remove the resulting empty function and
+> delete all the calls (if there are any left) at the same time.
+> 
+> Thanks,
+> 
+> Fabio M. De Francesco 
+> 
+> 
+>
 
-Signed-off-by: Rajendra Nayak <quic_rjendra@quicinc.com>
----
- MAINTAINERS | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 61d9f11..9dbadc8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14364,7 +14364,6 @@ F:	arch/arm/*omap*/*pm*
- F:	drivers/cpufreq/omap-cpufreq.c
- 
- OMAP POWERDOMAIN SOC ADAPTATION LAYER SUPPORT
--M:	Rajendra Nayak <rnayak@codeaurora.org>
- M:	Paul Walmsley <paul@pwsan.com>
- L:	linux-omap@vger.kernel.org
- S:	Maintained
--- 
-2.7.4
-
+Thanks Fabio for pointing this out!
