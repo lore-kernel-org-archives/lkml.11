@@ -2,90 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5137C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD14C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239088AbiDMXK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 19:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
+        id S238895AbiDMXQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 19:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232204AbiDMXKX (ORCPT
+        with ESMTP id S232204AbiDMXP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 19:10:23 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE2B25C4C
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:08:00 -0700 (PDT)
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nelpW-0002n1-Cw; Thu, 14 Apr 2022 00:51:18 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nelpW-000AyP-7e; Thu, 14 Apr 2022 00:51:18 +0200
-Subject: Re: [ammarfaizi2-block:bpf/bpf-next/pr/bpf-sysctl 1/1]
- kernel/bpf/syscall.c:4944:13: warning: no previous prototype for
- 'unpriv_ebpf_notify'
-To:     kernel test robot <lkp@intel.com>, Yan Zhu <zhuyan34@huawei.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-References: <202204140614.Tt9e1fIt-lkp@intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <bb65135e-035b-b82e-f75c-236a4ec72923@iogearbox.net>
-Date:   Thu, 14 Apr 2022 00:51:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Wed, 13 Apr 2022 19:15:59 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2E61FCDA;
+        Wed, 13 Apr 2022 16:13:37 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso3911470pjf.5;
+        Wed, 13 Apr 2022 16:13:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kWx4kuwqUqPCRq2vnSKBnzzGe5+yrJ0mzhBM9ESQvds=;
+        b=qeL5sRdil4P1oO5GVdWOovYd5WwhZ+goHVTepE0Eqx/2H3qtJzKKTZme7lHRmfMW/Q
+         UusYhPDToq1dlNCFX8A9sW01Msnfd9JI0Axlv/rpnJwGFbql8jlkG16n20SNYZibbMmf
+         KblnmUVPv9/hZYcIvZBX2Z9i1qihzmpRwSXFAz+/HYaDnQTssahfnqAqfZ7q9GNCl8uE
+         /EN8TPoSBiExnWrCOEz5J8JbqGQelRQfGt5SnbEq2M2taNxqnPYkpRdofeyX8rLhcjVM
+         zfXPq+yombU5+XcGUgb+sfqT+BrjpdfEcVqtoNIzR4RpcpOEfvNYqwUQonWNnZF3Ze3t
+         6ZAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kWx4kuwqUqPCRq2vnSKBnzzGe5+yrJ0mzhBM9ESQvds=;
+        b=sYzQM8V7Gzcazer1zNO+d6RDlbj34cngzSmJsnHk1CP/CkeWRswA2ftVhY1YAPnmO7
+         k5lw8XFxbxQgaFd7v31F5f9Q0Y/3dMTuKFK5nH3YRuaT7jzNPpL4cxGZFngiS64Q4e+B
+         32FcgxZLuPvaVMhHf2tmexN52EHeM+JuBSqJIYcbPtzkZfA4GZ2JtoAqyJx2KFwsUvJ0
+         VjqHzEXTxld0IGkXHxWsgGPYEG5zxF0ToV/s8oqSYTbh4nKmXrF7yBuyDXV0tmbP0lo1
+         /KNKCWYcLKCIGs6rR6Pxyq6Kx7VS19IWeaq7bVyQO17KZZTd+UBaE9F2u1wYjgiFyK0j
+         XrTA==
+X-Gm-Message-State: AOAM5333XeQdbmJqahiFdYQX4fS7tiE9da9yCcgh2j05iJtWtlZ77WD1
+        BohWTm5OAvlrK7w12mx/WNa8nRQGCeg=
+X-Google-Smtp-Source: ABdhPJxzBPi73YEPEQiMGVA1+E5/vikRotNKxeILYirYP1w1ewhUibYQFMdWYGiJqtjeKoaKay7pEg==
+X-Received: by 2002:a17:90b:4a41:b0:1c7:a0d7:718c with SMTP id lb1-20020a17090b4a4100b001c7a0d7718cmr1120180pjb.57.1649891617074;
+        Wed, 13 Apr 2022 16:13:37 -0700 (PDT)
+Received: from [172.30.1.44] ([14.32.163.5])
+        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm166419pgp.22.2022.04.13.16.13.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 16:13:36 -0700 (PDT)
+Message-ID: <582e3645-b24e-356e-7f0f-0d37bb1e32e6@gmail.com>
+Date:   Thu, 14 Apr 2022 08:13:32 +0900
 MIME-Version: 1.0
-In-Reply-To: <202204140614.Tt9e1fIt-lkp@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH 2/2] PM / devfreq: rk3399_dmc: Block PMU during
+ transitions
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26511/Wed Apr 13 10:22:45 2022)
+To:     =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
+        Brian Norris <briannorris@chromium.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+References: <20220406014842.2771799-1-briannorris@chromium.org>
+ <20220405184816.RFC.2.I2d73b403944f0b8b5871a77585b73f31ccc62999@changeid>
+ <8824147c-5512-a7a5-9e89-60b510111500@gmail.com> <3484357.R56niFO833@diego>
+From:   Chanwoo Choi <cwchoi00@gmail.com>
+In-Reply-To: <3484357.R56niFO833@diego>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/14/22 12:42 AM, kernel test robot wrote:
-> tree:   https://github.com/ammarfaizi2/linux-block bpf/bpf-next/pr/bpf-sysctl
-> head:   2900005ea287b11dcc8c1b9fcf24893b7ff41d6d
-> commit: 2900005ea287b11dcc8c1b9fcf24893b7ff41d6d [1/1] bpf: Move BPF sysctls from kernel/sysctl.c to BPF core
-> config: sh-buildonly-randconfig-r001-20220413 (https://download.01.org/0day-ci/archive/20220414/202204140614.Tt9e1fIt-lkp@intel.com/config)
-> compiler: sh4-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # https://github.com/ammarfaizi2/linux-block/commit/2900005ea287b11dcc8c1b9fcf24893b7ff41d6d
->          git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
->          git fetch --no-tags ammarfaizi2-block bpf/bpf-next/pr/bpf-sysctl
->          git checkout 2900005ea287b11dcc8c1b9fcf24893b7ff41d6d
->          # save the config file to linux build tree
->          mkdir build_dir
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh SHELL=/bin/bash
+On 22. 4. 14. 07:45, Heiko Stübner wrote:
+> Hi,
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+> Am Donnerstag, 14. April 2022, 00:14:40 CEST schrieb Chanwoo Choi:
+>> On 22. 4. 6. 10:48, Brian Norris wrote:
+>>> See the previous patch ("soc: rockchip: power-domain: Manage resource
+>>> conflicts with firmware") for a thorough explanation of the conflicts.
+>>> While ARM Trusted Firmware may be modifying memory controller and
+>>> power-domain states, we need to block the kernel's power-domain driver.
+>>>
+>>> If the power-domain driver is disabled, there is no resource conflict
+>>> and this becomes a no-op.
+>>>
+>>> Signed-off-by: Brian Norris <briannorris@chromium.org>
+>>> ---
+>>>
+>>>    drivers/devfreq/rk3399_dmc.c | 13 +++++++++++++
+>>>    1 file changed, 13 insertions(+)
+>>>
+>>> diff --git a/drivers/devfreq/rk3399_dmc.c b/drivers/devfreq/rk3399_dmc.c
+>>> index e494d1497d60..daff40702615 100644
+>>> --- a/drivers/devfreq/rk3399_dmc.c
+>>> +++ b/drivers/devfreq/rk3399_dmc.c
+>>> @@ -21,6 +21,7 @@
+>>>    #include <linux/rwsem.h>
+>>>    #include <linux/suspend.h>
+>>>    
+>>> +#include <soc/rockchip/pm_domains.h>
+>>>    #include <soc/rockchip/rk3399_grf.h>
+>>>    #include <soc/rockchip/rockchip_sip.h>
+>>>    
+>>> @@ -93,6 +94,16 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
+>>>    
+>>>    	mutex_lock(&dmcfreq->lock);
+>>>    
+>>> +	/*
+>>> +	 * Ensure power-domain transitions don't interfere with ARM Trusted
+>>> +	 * Firmware power-domain idling.
+>>> +	 */
+>>> +	err = rockchip_pmu_block();
+>>> +	if (err) {
+>>> +		dev_err(dev, "Failed to block PMU: %d\n", err);
+>>> +		goto out_unlock;
+>>> +	}
+>>> +
+>>>    	/*
+>>>    	 * Some idle parameters may be based on the DDR controller clock, which
+>>>    	 * is half of the DDR frequency.
+>>> @@ -198,6 +209,8 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
+>>>    	dmcfreq->volt = target_volt;
+>>>    
+>>>    out:
+>>> +	rockchip_pmu_unblock();
+>>> +out_unlock:
+>>>    	mutex_unlock(&dmcfreq->lock);
+>>>    	return err;
+>>>    }
+>>
+>> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
 > 
-> All error/warnings (new ones prefixed by >>):
-> 
->     sh4-linux-ld: arch/sh/lib/mcount.o: in function `stack_panic':
->>> (.text+0x50): undefined reference to `dump_stack'
-> --
->>> kernel/bpf/syscall.c:4944:13: warning: no previous prototype for 'unpriv_ebpf_notify' [-Wmissing-prototypes]
->      4944 | void __weak unpriv_ebpf_notify(int new_state)
->           |             ^~~~~~~~~~~~~~~~~~
-> 
-> 
-> vim +/unpriv_ebpf_notify +4944 kernel/bpf/syscall.c
-> 
->    4943	
->> 4944	void __weak unpriv_ebpf_notify(int new_state)
->    4945	{
->    4946	}
->    4947	
-> 
+> so I guess you're ok with me picking up both patches, right?
+> [Just making sure :-) ]
 
-(Note that this is no different than the way it was before wrt prototype.)
+This patch have the dependency of latest devfreq-next branch.
+So that need to make the immutable branch between rockchip and devfreq.
+
+-- 
+Best Regards,
+Samsung Electronics
+Chanwoo Choi
