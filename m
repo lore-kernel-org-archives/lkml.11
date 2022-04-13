@@ -2,88 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90121C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E60C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239129AbiDMXwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 19:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
+        id S239181AbiDMXwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 19:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiDMXwK (ORCPT
+        with ESMTP id S234649AbiDMXwM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 19:52:10 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7104C3CFCB
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:49:46 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id bg24so3551667pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:49:46 -0700 (PDT)
+        Wed, 13 Apr 2022 19:52:12 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF623E0CB
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:49:49 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id p10so3271188plf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:49:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2D/qBXdrk7ZXIoBr7a89aPIY20fw/HMXa9aQEJud9fA=;
-        b=B7ESQlFRcLSjm8ncxhQggA9eJW5n7dvus1LsemSYq3h/tA9JxUM1Cx1h0ey5iqPVCI
-         ZsZCrosRxaOY+V59K161xjtvovm6aGW3EiGFEWhxkY5Y6XLqOaZtJPSsK4HobbJxhGdt
-         iyleaYOVVFHkevCL1Yju5RVzS6AYe3T1v9g5hY8kltHmgq8zKWsLE5vuEJbAXdWb44pa
-         maDHPgfb68vMVKEBHNnAerhnt2lpqF6d2tN0j7XYCujfIirsjqCSVjRxtLr8KBk5d1OO
-         EaEZ20LCJN9aTS55PmhJnsHnq+jG2VppDayu9XrUPDxrvfTx7IUwcRMukUTOajp41QS5
-         UyWg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Sj2r+1mAjOUKlt7+Wq917atgiw1yhu7tQvGsGnE62eE=;
+        b=UL37UhtyLGdU/4BmV48pF7FtOHXCK4o3yxIMzuVDdoasQm4t4wYaXKt8v2EjYXTmya
+         oN3CSaVrQiLDsgbBMb6Gw0larTB/48InB5JqBKm7OZFRVgLBPl5/e4MUk7vL2s3ihHKr
+         yRwMFoS0ZZCPGtujKnGIZCkzg0cc6CDxKuMQzCgBeqZ5F16n3IHLnWXVP73pguxEWFWz
+         hyVusMBzNE72ssuVaEtXJ8QBx2uJ6YSrmyIbOsQ12K/AnW4malqnUKFSid3i3kAZXWJk
+         2jecDTALKmEkfvhyG/Ky3cckwFYaapwYC4mvyQ78gGiEbaABsszklNIs/XHFhplrvIti
+         EYvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2D/qBXdrk7ZXIoBr7a89aPIY20fw/HMXa9aQEJud9fA=;
-        b=Oqe66Oqt8LQjMoZNgZfskOdohik50s/40zd6HCOKhS4PxDWz20gQ4+sDomR/wy14ut
-         9+eft9Zb6TlIJQyLE6iNK3s1duLcfzxX2qhHKCPzlhVQcmITVNpOAduf+U/M+J7MPdwT
-         jN926cVfbhVdW8FPBHeysZmPK6Rv6dyChKGDsgXNqMHcTsl95kf6B88LFx0K/Mf8sgI9
-         iWw5DWLtMGK1GTdY9H0vgWcrf2eeBUi117QM/vvbtph7lgL6qhHtKwPJBIe8VHfbRddb
-         ByaYTJOeyZ2JqTgf5kaYWjotf+xtyR6x+Y85kkkI+ZnPSBSTo/Z496kB77DhobhIwpMD
-         6+8g==
-X-Gm-Message-State: AOAM530Bkti7mDuGNBbNkDOWj63xRn9ip0JuKkX8l2fWbcqlr/3NS3pe
-        ZjWZloaeCuhZc+HLG8l9D4Q=
-X-Google-Smtp-Source: ABdhPJw2/u+79k8T6MV5jVby/X54BZPOWhnaBZkt9mTSf5shL9wGn4GDop9TwgAt5kPH+f8l8MvdFg==
-X-Received: by 2002:a17:90b:4c43:b0:1cb:bc2c:ad4a with SMTP id np3-20020a17090b4c4300b001cbbc2cad4amr675144pjb.230.1649893785961;
-        Wed, 13 Apr 2022 16:49:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Sj2r+1mAjOUKlt7+Wq917atgiw1yhu7tQvGsGnE62eE=;
+        b=fwNxyOTNhx886fFWeJAHMrIsB5OgQuVsf/tTsTeoE6xViKpyU4Vfa3iJDr9wlqDrXx
+         t7AMm7hJOKt7CLJO/SyUkVQgQVHoLf005OKwfBJ+f9fkWX9Sy9+kPuOqj79avF05aZeO
+         vMZkhdGtP5U43gv1eE0tLRInDYYwgkeMlIetZQF1DmcH6gCzjfpc7oYc64wVrMd+pMGh
+         v+rJ/+irjJLr0W0AruZuqA+J3/FtZdRNA66P7UzalOFnfXUSpRqNx8G3aEF3WFTGpROk
+         GvSDoFbipkOI7/RmH6MbsA9iu5kIIaxDsS6urMV63Srupo3b/EDu8w/ND/TJycLYzCx6
+         Ahug==
+X-Gm-Message-State: AOAM532T/y8S5xnrHS38ThcxjL2uqfIkBGCNuCEb3BBvIl0Muycvd2Db
+        LAV4Dc5bIYS58e99ZyOPVEk=
+X-Google-Smtp-Source: ABdhPJx/ylC7tdyCKXX9fALkR9q3gdZnvqaWMrtd1u6qYarVuiO3w4TCAxYASVm1gHRa4I8AZSVUsw==
+X-Received: by 2002:a17:90b:4a4a:b0:1c7:82e9:1014 with SMTP id lb10-20020a17090b4a4a00b001c782e91014mr1336612pjb.0.1649893788922;
+        Wed, 13 Apr 2022 16:49:48 -0700 (PDT)
 Received: from octofox.hsd1.ca.comcast.net ([2601:641:400:e00:389b:6ba3:7cbd:d8d])
-        by smtp.gmail.com with ESMTPSA id d20-20020a056a00199400b005060849909esm197075pfl.176.2022.04.13.16.49.44
+        by smtp.gmail.com with ESMTPSA id d20-20020a056a00199400b005060849909esm197075pfl.176.2022.04.13.16.49.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 16:49:45 -0700 (PDT)
+        Wed, 13 Apr 2022 16:49:48 -0700 (PDT)
 From:   Max Filippov <jcmvbkbc@gmail.com>
 To:     linux-xtensa@linux-xtensa.org
 Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
         Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 0/3] xtensa: allow handling protection faults in noMMU
-Date:   Wed, 13 Apr 2022 16:49:27 -0700
-Message-Id: <20220413234930.1212335-1-jcmvbkbc@gmail.com>
+Subject: [PATCH 2/3] xtensa: extract vmalloc_fault code into a function
+Date:   Wed, 13 Apr 2022 16:49:29 -0700
+Message-Id: <20220413234930.1212335-3-jcmvbkbc@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220413234930.1212335-1-jcmvbkbc@gmail.com>
+References: <20220413234930.1212335-1-jcmvbkbc@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Move full MMU-specific code into a separate function to isolate it from
+more generic do_page_fault code. No functional changes.
 
-most xtensa cores have some sort of memory protection mechanism, even
-those without full MMU. This series separates protection fault handling
-from the CONFIG_MMU setting and allows noMMU configurations to also
-do it. This improves userspace behavior in case of errors such as
-passing NULL pointer to a syscall that expects a valid memory pointer:
-instead of killing the process the kernel is now able to return -EINVAL
-from a syscall.
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+ arch/xtensa/mm/fault.c | 107 +++++++++++++++++++++--------------------
+ 1 file changed, 54 insertions(+), 53 deletions(-)
 
-Max Filippov (3):
-  xtensa: move asid_cache from fault.c to mmu.c
-  xtensa: extract vmalloc_fault code into a function
-  xtensa: noMMU: allow handling protection faults
-
- arch/xtensa/Kconfig        |  11 ++++
- arch/xtensa/kernel/traps.c |  20 +++----
- arch/xtensa/mm/Makefile    |   3 +-
- arch/xtensa/mm/fault.c     | 112 +++++++++++++++++++------------------
- arch/xtensa/mm/mmu.c       |   2 +
- 5 files changed, 83 insertions(+), 65 deletions(-)
-
+diff --git a/arch/xtensa/mm/fault.c b/arch/xtensa/mm/fault.c
+index 2a120c024334..01e66da4a6b0 100644
+--- a/arch/xtensa/mm/fault.c
++++ b/arch/xtensa/mm/fault.c
+@@ -23,6 +23,55 @@
+ 
+ void bad_page_fault(struct pt_regs*, unsigned long, int);
+ 
++static void vmalloc_fault(struct pt_regs *regs, unsigned int address)
++{
++	/* Synchronize this task's top level page-table
++	 * with the 'reference' page table.
++	 */
++	struct mm_struct *act_mm = current->active_mm;
++	int index = pgd_index(address);
++	pgd_t *pgd, *pgd_k;
++	p4d_t *p4d, *p4d_k;
++	pud_t *pud, *pud_k;
++	pmd_t *pmd, *pmd_k;
++	pte_t *pte_k;
++
++	if (act_mm == NULL)
++		goto bad_page_fault;
++
++	pgd = act_mm->pgd + index;
++	pgd_k = init_mm.pgd + index;
++
++	if (!pgd_present(*pgd_k))
++		goto bad_page_fault;
++
++	pgd_val(*pgd) = pgd_val(*pgd_k);
++
++	p4d = p4d_offset(pgd, address);
++	p4d_k = p4d_offset(pgd_k, address);
++	if (!p4d_present(*p4d) || !p4d_present(*p4d_k))
++		goto bad_page_fault;
++
++	pud = pud_offset(p4d, address);
++	pud_k = pud_offset(p4d_k, address);
++	if (!pud_present(*pud) || !pud_present(*pud_k))
++		goto bad_page_fault;
++
++	pmd = pmd_offset(pud, address);
++	pmd_k = pmd_offset(pud_k, address);
++	if (!pmd_present(*pmd) || !pmd_present(*pmd_k))
++		goto bad_page_fault;
++
++	pmd_val(*pmd) = pmd_val(*pmd_k);
++	pte_k = pte_offset_kernel(pmd_k, address);
++
++	if (!pte_present(*pte_k))
++		goto bad_page_fault;
++	return;
++
++bad_page_fault:
++	bad_page_fault(regs, address, SIGKILL);
++}
+ /*
+  * This routine handles page faults.  It determines the address,
+  * and the problem, and then passes it off to one of the appropriate
+@@ -48,8 +97,10 @@ void do_page_fault(struct pt_regs *regs)
+ 	/* We fault-in kernel-space virtual memory on-demand. The
+ 	 * 'reference' page table is init_mm.pgd.
+ 	 */
+-	if (address >= TASK_SIZE && !user_mode(regs))
+-		goto vmalloc_fault;
++	if (address >= TASK_SIZE && !user_mode(regs)) {
++		vmalloc_fault(regs, address);
++		return;
++	}
+ 
+ 	/* If we're in an interrupt or have no user
+ 	 * context, we must not take the fault..
+@@ -113,7 +164,7 @@ void do_page_fault(struct pt_regs *regs)
+ 
+ 	if (fault_signal_pending(fault, regs)) {
+ 		if (!user_mode(regs))
+-			goto bad_page_fault;
++			bad_page_fault(regs, address, SIGKILL);
+ 		return;
+ 	}
+ 
+@@ -180,56 +231,6 @@ void do_page_fault(struct pt_regs *regs)
+ 	if (!user_mode(regs))
+ 		bad_page_fault(regs, address, SIGBUS);
+ 	return;
+-
+-vmalloc_fault:
+-	{
+-		/* Synchronize this task's top level page-table
+-		 * with the 'reference' page table.
+-		 */
+-		struct mm_struct *act_mm = current->active_mm;
+-		int index = pgd_index(address);
+-		pgd_t *pgd, *pgd_k;
+-		p4d_t *p4d, *p4d_k;
+-		pud_t *pud, *pud_k;
+-		pmd_t *pmd, *pmd_k;
+-		pte_t *pte_k;
+-
+-		if (act_mm == NULL)
+-			goto bad_page_fault;
+-
+-		pgd = act_mm->pgd + index;
+-		pgd_k = init_mm.pgd + index;
+-
+-		if (!pgd_present(*pgd_k))
+-			goto bad_page_fault;
+-
+-		pgd_val(*pgd) = pgd_val(*pgd_k);
+-
+-		p4d = p4d_offset(pgd, address);
+-		p4d_k = p4d_offset(pgd_k, address);
+-		if (!p4d_present(*p4d) || !p4d_present(*p4d_k))
+-			goto bad_page_fault;
+-
+-		pud = pud_offset(p4d, address);
+-		pud_k = pud_offset(p4d_k, address);
+-		if (!pud_present(*pud) || !pud_present(*pud_k))
+-			goto bad_page_fault;
+-
+-		pmd = pmd_offset(pud, address);
+-		pmd_k = pmd_offset(pud_k, address);
+-		if (!pmd_present(*pmd) || !pmd_present(*pmd_k))
+-			goto bad_page_fault;
+-
+-		pmd_val(*pmd) = pmd_val(*pmd_k);
+-		pte_k = pte_offset_kernel(pmd_k, address);
+-
+-		if (!pte_present(*pte_k))
+-			goto bad_page_fault;
+-		return;
+-	}
+-bad_page_fault:
+-	bad_page_fault(regs, address, SIGKILL);
+-	return;
+ }
+ 
+ 
 -- 
 2.30.2
 
