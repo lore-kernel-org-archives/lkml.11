@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F27C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237671AbiDMWWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
+        id S238364AbiDMWXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238074AbiDMWW3 (ORCPT
+        with ESMTP id S238201AbiDMWW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 18:22:29 -0400
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7119D24BE9;
-        Wed, 13 Apr 2022 15:19:48 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id CB4D95C02B7;
-        Wed, 13 Apr 2022 18:19:47 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6289F255B8;
+        Wed, 13 Apr 2022 15:19:52 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id B5DB05C029F;
+        Wed, 13 Apr 2022 18:19:51 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 13 Apr 2022 18:19:47 -0400
+  by compute4.internal (MEProxy); Wed, 13 Apr 2022 18:19:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649888387; x=1649974787; bh=fM
-        itBsbOl69eJtZqeNqN7y5Gep0bncSngDUeMZp8zB4=; b=qJkffVFYB9u7OIdDzI
-        T+1qUMCsmcnyDpSK9V3nkFZ5QOoQsHC/fGuXl63TdKyWdr72KmxelbV6YPH7WaQ7
-        Baf3DTKZeommUEDIxwu+J+/OwRmkTX+phQZWLXNE4EyZ/80yATPkevMKvx6PQQku
-        DvbyMupWMAu9HlWSjjud30mpLgrW1oaWCLhiDEuirEqfEAgEbRvOd2i1IWyhqqmo
-        flEf8CWNhsligN4vGyse639Z6hV+Avv09HlueYb/KVCsbk7jLUeIaQ/MRmy+AFqH
-        Q2lNi5ZeQNi5RgdxbYaaq+YAowpHa5WnFT3Ek6/aP2swQ7dSpi0Myn0Ctc3uTi6i
-        TQNw==
+        :subject:subject:to:to; s=fm2; t=1649888391; x=1649974791; bh=r6
+        8Xnm3H33EQgdbz7LYraAskJdNQ1ivO7aFZEAoIKAI=; b=i1JMYe+VYvdvr43zkv
+        rDuNGZ58Ro3xDHMyKyBN4OnEAlxiHGLPtCA4+O4bdMEUCj14lZE8046cnZCJ9jnD
+        8DLeXDbxxpqVN2xqdlD4cKBi3N/KFWK+l2jmNrrj3TD2wIAfJcE+PH1IyjO7KMkA
+        5h+nsE12K6BGbwmLolsUNvj7e1/0ZVxxEcd2LrhvLve6b2Hd2ZGPkb10J8DTfg1N
+        n/4Il/14MsUqiF4LmQ15q2tSfeI+3eEab/HWqd5/OY5Bttbjkf7zkhJtr37YIF+d
+        1/S+sHJdKWT9rxKu/K2a0xb/s1bpv5XsegcU6zMXBylPARz6LyaWebpxLNBunYxI
+        0qYQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1649888387; x=1649974787; bh=fMitBsbOl69eJtZqeNqN7y5Gep0bncSngDU
-        eMZp8zB4=; b=iFab+bH6MXUBpnDsciPRLYKcTitrp1MRRAMJsBccGx0Yj72+C54
-        qt0C6cHdYHQgI536AX+ZfWtAyYD1261wPAL10dugJO1L+R9kDXDwJVRzYgYhS3Wg
-        igMT9SrlenjEXrpj5bTVasZpwFp+wTYHSKMLPgcjAoorkJILWjszYaFWU3DQZQ39
-        kzqHcMf2F16lcAa/dIedVMMsg16vJ4kPkYy96vHFp+Wl3hOZO5/cA1pXmsNA5mBv
-        zsHy4zQi4qGoDlhvchcnQ36PgsEErts66IqUmxTVpmtRw77/GCSsf9TTdbO3aOhm
-        zWRxjedZPyxwL68m8khLTjbcXEqqG0X0ezA==
-X-ME-Sender: <xms:g0xXYtq0gLXvboy0GsxiZEeC8KTPOSWdgxykZ1PovVlJ4GwE-fuRyQ>
-    <xme:g0xXYvr4NvcVt8DFEIPal1TSYh8yQP0ibPrNXLjBWowNxIACW_-TP4vZEOP9ZuRuh
-    jmiAInFIKbEKxjCzA>
-X-ME-Received: <xmr:g0xXYqP28O_1v3d2s8ihZrOXJHO087D3eoZp-zESf8_e14M2VIr4Fr-CI38FgW4fW2UkcT1T6nqOAPJ6xgz7Dbstc3ddompA2lT8003K7gRMMdxShzkl4TjgGHbyO_TGYHrOKA>
+        1649888391; x=1649974791; bh=r68Xnm3H33EQgdbz7LYraAskJdNQ1ivO7aF
+        ZEAoIKAI=; b=oJmZjkvbs64pHexVyL74MFyo9GHxVwHCiDfNn4xRbkQq4HDfreq
+        QStpQ8heF6cB14ziPQPfc/GPgN0wbD6qAgc8KvyZjnTrDvsTtUFzBqRiKW81EBu1
+        7K2TUQ8fm84JxB/xtYY2MvqGO3ln2axczz8UPpfY9/kNAb7Zw3hl9HyYGFK1U+lD
+        2RXkZTz9/V3qRhIRgvqtU/VPh6ZWwm34BSY5LkJn7y9cw5IwT08i7kHCgzmZj8oD
+        QecYDvudLylKTpyEDTqNAIpHTwMelF+BocUpWdFy1MT+BPSQsEJrx1ew9ksbQS0Y
+        akqFdJqTkcpdv7usqoKqzH4oLDWqxd0mNTg==
+X-ME-Sender: <xms:h0xXYr_0kS_F0wycl6-5Oe5zb3iylMP3AjT5qD2-O-CDdemnxZUqPg>
+    <xme:h0xXYnvrEu3BVvUcrngelESvvNLqMaJ94oUD81ZWqQNT0dWLoNEgk5_LsTKQMvdyp
+    vmJEmrSB5VtgDm9tA>
+X-ME-Received: <xmr:h0xXYpAdY6cBxnSldvsjmitlYMaIIvBgkB21yxcYqv9qLombZaeMJMp9uuJHQYFP522krfsjECkdKeY3VnSsviy7u9nuzb1kG5JmdQLGm3Ww5H0u1Y34WmKMSZ0Te3pCLIiuKw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddgtdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
     lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
     frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
-    gfejheeuieenucevlhhushhtvghrufhiiigvpeejnecurfgrrhgrmhepmhgrihhlfhhroh
+    gfejheeuieenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:g0xXYo7hVqSxK_v7zzGMhpv6w6KepFsAHvIN3-z_fYIXJzfSddXmdg>
-    <xmx:g0xXYs5hz1byBMezdfKKKFLPTyxIYqtTlpEW7lWtZLMNI6MdUBqs3w>
-    <xmx:g0xXYghV-pY2RFYK-Fql4TxS4Wg9NTzzw67H8D0vf2TYdIIPKy9WuQ>
-    <xmx:g0xXYvLtXab7fJiPDP0JtGnNjmKr3qpGhkjX6aYWjlmCpp-DDddHhw>
+X-ME-Proxy: <xmx:h0xXYndiZrcC_2nDLoKdaqIpEktczpH-hXSLG887NJidp0Dsd4RfVQ>
+    <xmx:h0xXYgObBkd1TDUaMvi5vg8La8vBp12YPY5uVC65iPvkKxi5cBq_cQ>
+    <xmx:h0xXYplOvy4QEZxBl-r2Ea6WdGZtASpsnB1gqNovxZxul-bTqK8VaA>
+    <xmx:h0xXYvM0kgTVrC8H6SQTFQi8hJNrZQEQUyJIaApc1MO8MsBDCEndPg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 18:19:46 -0400 (EDT)
+ 13 Apr 2022 18:19:50 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
         Sandy Huang <hjc@rock-chips.com>,
@@ -86,9 +86,9 @@ Cc:     linux-rockchip@lists.infradead.org,
         Thomas Zimmermann <tzimmermann@suse.de>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 13/16] drm/rockchip: ebc: Add a panel reflection option
-Date:   Wed, 13 Apr 2022 17:19:13 -0500
-Message-Id: <20220413221916.50995-14-samuel@sholland.org>
+Subject: [RFC PATCH 15/16] arm64: dts: rockchip: rk356x: Add EBC node
+Date:   Wed, 13 Apr 2022 17:19:15 -0500
+Message-Id: <20220413221916.50995-16-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413221916.50995-1-samuel@sholland.org>
 References: <20220413221916.50995-1-samuel@sholland.org>
@@ -98,82 +98,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some panels, like the one in the PineNote, are reflected. Since the
-driver already has to copy pixels, the driver can handle this with
-little additional overhead.
-
-Currently, there is no devicetree binding for this situation, so control
-the behavior via a module parameter.
+The RK356x SoCs contain an EBC. Add its node.
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- drivers/gpu/drm/rockchip/rockchip_ebc.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_ebc.c b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-index 93d689ff0933..9d0b2cdc5fdc 100644
---- a/drivers/gpu/drm/rockchip/rockchip_ebc.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-@@ -166,6 +166,10 @@ static bool direct_mode = true;
- module_param(direct_mode, bool, 0444);
- MODULE_PARM_DESC(direct_mode, "compute waveforms in software (software LUT)");
+diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+index 7cdef800cb3c..58c26f240af0 100644
+--- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+@@ -508,6 +508,20 @@ gpu: gpu@fde60000 {
+ 		status = "disabled";
+ 	};
  
-+static bool panel_reflection = true;
-+module_param(panel_reflection, bool, 0644);
-+MODULE_PARM_DESC(panel_reflection, "reflect the image horizontally");
++	ebc: ebc@fdec0000 {
++		compatible = "rockchip,rk3568-ebc";
++		reg = <0x0 0xfdec0000 0x0 0x5000>;
++		interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru HCLK_EBC>, <&cru DCLK_EBC>;
++		clock-names = "hclk", "dclk";
++		pinctrl-0 = <&ebc_pins>;
++		pinctrl-names = "default";
++		power-domains = <&power RK3568_PD_RGA>;
++		resets = <&cru SRST_H_EBC>, <&cru SRST_D_EBC>;
++		reset-names = "hclk", "dclk";
++		status = "disabled";
++	};
 +
- static bool skip_reset;
- module_param(skip_reset, bool, 0444);
- MODULE_PARM_DESC(skip_reset, "skip the initial display reset");
-@@ -1046,23 +1050,29 @@ static bool rockchip_ebc_blit_fb(const struct rockchip_ebc_ctx *ctx,
- {
- 	unsigned int dst_pitch = ctx->gray4_pitch;
- 	unsigned int src_pitch = fb->pitches[0];
--	unsigned int x, y;
-+	unsigned int start_x, x, y;
- 	const void *src;
- 	u8 changed = 0;
-+	int delta_x;
- 	void *dst;
- 
-+	delta_x = panel_reflection ? -1 : 1;
-+	start_x = panel_reflection ? src_clip->x2 - 1 : src_clip->x1;
-+
- 	dst = ctx->final + dst_clip->y1 * dst_pitch + dst_clip->x1 / 2;
--	src = vaddr + src_clip->y1 * src_pitch + src_clip->x1 * fb->format->cpp[0];
-+	src = vaddr + src_clip->y1 * src_pitch + start_x * fb->format->cpp[0];
- 
- 	for (y = src_clip->y1; y < src_clip->y2; y++) {
- 		const u32 *sbuf = src;
- 		u8 *dbuf = dst;
- 
- 		for (x = src_clip->x1; x < src_clip->x2; x += 2) {
--			u32 rgb0 = *sbuf++;
--			u32 rgb1 = *sbuf++;
-+			u32 rgb0, rgb1;
- 			u8 gray;
- 
-+			rgb0 = *sbuf; sbuf += delta_x;
-+			rgb1 = *sbuf; sbuf += delta_x;
-+
- 			/* Truncate the RGB values to 5 bits each. */
- 			rgb0 &= 0x00f8f8f8U; rgb1 &= 0x00f8f8f8U;
- 			/* Put the sum 2R+5G+B in bits 24-31. */
-@@ -1136,6 +1146,13 @@ static void rockchip_ebc_plane_atomic_update(struct drm_plane *plane,
- 		dst_clip->x2 += adjust;
- 		src_clip.x2  += adjust;
- 
-+		if (panel_reflection) {
-+			int x1 = dst_clip->x1, x2 = dst_clip->x2;
-+
-+			dst_clip->x1 = plane_state->dst.x2 - x2;
-+			dst_clip->x2 = plane_state->dst.x2 - x1;
-+		}
-+
- 		if (!rockchip_ebc_blit_fb(ctx, dst_clip, vaddr,
- 					  plane_state->fb, &src_clip)) {
- 			/* Drop the area if the FB didn't actually change. */
+ 	sdmmc2: mmc@fe000000 {
+ 		compatible = "rockchip,rk3568-dw-mshc", "rockchip,rk3288-dw-mshc";
+ 		reg = <0x0 0xfe000000 0x0 0x4000>;
 -- 
 2.35.1
 
