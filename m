@@ -2,100 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEF8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED06C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236778AbiDMQIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
+        id S236774AbiDMQJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236825AbiDMQHt (ORCPT
+        with ESMTP id S236759AbiDMQJa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:07:49 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D01D644C6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:05:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649865928; x=1681401928;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=l4DbhfHxywn/EQ+sYTtpNBRF4EsncCGGgPFv8MfLgLs=;
-  b=hrEeTzBi3vwKfVOQEkTm9CWwcTvi4tdKJWhBUcD7R6AaF3igxfTIwQpQ
-   MCpWna3mQhc364j98iif+h3Drqp42zDokV70Rj/uD5YOYnHbNNnYRVXzz
-   j/fJAAVrkH+LqhWVORP+PtkEM7gbz7LOzsIEiBNrPME+gqwuKShM+Cgye
-   7DOPnSUkPM6kp8vSCerDucHc+arUUoEy/2NOn3+9SDkgGvWVvffFv0nHi
-   21DOq9rdlmB/tOTNgtqSQbNtvh9aBKl9HJXtuQvY31J1cz7uh+Z8vfhxU
-   fhtTh8pyVAPCBip5v9o6Q69ouYGntZYNM/rHtCqw60IuY3R6tcgYZaxi7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="260302906"
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="260302906"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:05:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="526528859"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 13 Apr 2022 09:05:26 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nefUj-0000R2-O1;
-        Wed, 13 Apr 2022 16:05:25 +0000
-Date:   Thu, 14 Apr 2022 00:04:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
+        Wed, 13 Apr 2022 12:09:30 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAB966AF0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:07:07 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id x17so4376782lfa.10
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:07:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+gGRtOFsAgBFuY/HR0wysWygPo2Lk5mA8o5nY/205wk=;
+        b=CBUODdGn8Cq6YWWpsGh25g2014RVwdTZRnAx4hj0paLyMetGc9QwHOC5u+2SdFeVYA
+         VvK1ZlpY9V2BtWRJTDTqpZOpcC6fbev33f/xPzINT0kbw7Kxz+A57bc6VVkLD9EFGYkg
+         ya/mlUHqv/9wy5D8+qN8VNq8I0qnEezdCsFK/3adMddyD5q/EGZzwGl1lnSYq8aYDzCt
+         qjugJks2FNh9Yty4SUfW3bwm8NQpYlYvgECkEoM92Y7YxZU3tEgH0x4Ikp1mV1zmRCil
+         kwrzg4MQCPuF5TAvQgN1MVxDeB2YlKNKso3VV0rWnbueKEGJQEeIpKN+7h0BKC/hqJah
+         8yPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+gGRtOFsAgBFuY/HR0wysWygPo2Lk5mA8o5nY/205wk=;
+        b=ZnsnRymmiAX0A51Ms+riAffY+g0CkAjsJocW3Hyyx9lNmPUVREYYyphJ+EICQfhAgb
+         cwvT0JB5xvT36YzpvCuGP2Jjj+zOnD9/cK+Tu7JUJWeC9nP/F+AXJ0ysu20UBbj52uBy
+         ZgRHYXwJKN5HIpIOah/UzcxZvn7bixzX3BF+Ys6NcVB9SxuTMZsvsRkU3sfuyZ8k6yFC
+         Al/3ta+ogxhxoBv3zCKQ4iyk6324aZvfrWVF7e1Pa135kWe5CKIrp2Lzi3i2ULh2M77z
+         vwwJf0fclsFOF+ctQqHTUwG+LNxO010JzYOtWFdG+JrhBV+fLCC7W3igo4MG9lcHYjdl
+         F1ZQ==
+X-Gm-Message-State: AOAM530D6nEXi2kSVgB/9qSpdOB21C7a6ED8QseCffm8qP7QK9lzw6F4
+        Lyn8vG33oObhxrwDwXDFatSf4g==
+X-Google-Smtp-Source: ABdhPJy6n1MaCGCQLYNjTpg1q51ciwj44r8aVWk9FrFKjHkLPaJum7yrK/G+zFIgXcw0linOTMBg/w==
+X-Received: by 2002:a19:5f05:0:b0:46b:a5f2:5fab with SMTP id t5-20020a195f05000000b0046ba5f25fabmr11079100lfb.8.1649866026127;
+        Wed, 13 Apr 2022 09:07:06 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id o2-20020a056512052200b0046b8e14d2edsm1719695lfc.267.2022.04.13.09.07.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 09:07:05 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 85DD710397F; Wed, 13 Apr 2022 19:08:39 +0300 (+03)
+Date:   Wed, 13 Apr 2022 19:08:39 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: [linux-next:master 3834/3955] mm/memory.c:1238:1: sparse: sparse:
- symbol 'vma_needs_copy' was not declared. Should it be static?
-Message-ID: <202204140043.Tx7BIBvI-lkp@intel.com>
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv4 6/8] x86/mm: Provide helpers for unaccepted memory
+Message-ID: <20220413160839.arbbw5dcvmubdidz@box.shutemov.name>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-7-kirill.shutemov@linux.intel.com>
+ <0e366406-9a3a-0bf3-e073-272279f6abf2@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <0e366406-9a3a-0bf3-e073-272279f6abf2@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   c97e430ab5539993ab2afc6e80deea80aef9d799
-commit: 729c63ce2bbd5813b8061e50cc38187aed05114c [3834/3955] mm/shmem: handle uffd-wp during fork()
-config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220414/202204140043.Tx7BIBvI-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=729c63ce2bbd5813b8061e50cc38187aed05114c
-        git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-        git fetch --no-tags linux-next master
-        git checkout 729c63ce2bbd5813b8061e50cc38187aed05114c
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
+On Fri, Apr 08, 2022 at 12:21:19PM -0700, Dave Hansen wrote:
+> On 4/5/22 16:43, Kirill A. Shutemov wrote:
+> > +void accept_memory(phys_addr_t start, phys_addr_t end)
+> > +{
+> > +	unsigned long *unaccepted_memory;
+> > +	unsigned long flags;
+> > +	unsigned int rs, re;
+> > +
+> > +	if (!boot_params.unaccepted_memory)
+> > +		return;
+> > +
+> > +	unaccepted_memory = __va(boot_params.unaccepted_memory);
+> > +	rs = start / PMD_SIZE;
+> > +
+> > +	spin_lock_irqsave(&unaccepted_memory_lock, flags);
+> > +	for_each_set_bitrange_from(rs, re, unaccepted_memory,
+> > +				   DIV_ROUND_UP(end, PMD_SIZE)) {
+> > +		/* Platform-specific memory-acceptance call goes here */
+> > +		panic("Cannot accept memory");
+> > +		bitmap_clear(unaccepted_memory, rs, re - rs);
+> > +	}
+> > +	spin_unlock_irqrestore(&unaccepted_memory_lock, flags);
+> > +}
+> 
+> Just to reiterate: this is a global spinlock.  It's disabling
+> interrupts.  "Platform-specific memory-acceptance call" will soon become:
+> 
+> 	tdx_accept_memory(rs * PMD_SIZE, re * PMD_SIZE);
+> 
+> which is a page-by-page __tdx_module_call():
+> 
+> > +	for (i = 0; i < (end - start) / PAGE_SIZE; i++) {
+> > +		if (__tdx_module_call(TDACCEPTPAGE, start + i * PAGE_SIZE,
+> > +				      0, 0, 0, NULL)) {
+> > +			error("Cannot accept memory: page accept failed\n");
+> > +		}
+> > +	}
+> 
+> Each __tdx_module_call() involves a privilege transition that also
+> surely includes things like changing CR3.  It can't be cheap.  It also
+> is presumably touching the memory and probably flushing it out of the
+> CPU caches.  It's also unbounded:
+> 
+> 	spin_lock_irqsave(&unaccepted_memory_lock, flags);
+> 	for (i = 0; i < (end - start) / PAGE_SIZE; i++)
+> 		// thousands?  tens-of-thousands of cycles??
+> 	spin_lock_irqsave(&unaccepted_memory_lock, flags);
+> 
+> How far apart can end and start be?  It's at *least* 2MB in the page
+> allocator, which is on the order of a millisecond.  Are we sure there
+> aren't any callers that want to do this at a gigabyte granularity?  That
+> would hold the global lock and disable interrupts on the order of a second.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This codepath only gets invoked with orders <MAX_ORDER or 4M on x86-64.
 
+> Do we want to bound the time that the lock can be held?  Or, should we
+> just let the lockup detectors tell us that we're being naughty?
 
-sparse warnings: (new ones prefixed by >>)
->> mm/memory.c:1238:1: sparse: sparse: symbol 'vma_needs_copy' was not declared. Should it be static?
-   mm/memory.c:1031:17: sparse: sparse: context imbalance in 'copy_pte_range' - different lock contexts for basic block
-   mm/memory.c:1827:16: sparse: sparse: context imbalance in '__get_locked_pte' - different lock contexts for basic block
-   mm/memory.c:1875:9: sparse: sparse: context imbalance in 'insert_page' - different lock contexts for basic block
-   mm/memory.c:2377:17: sparse: sparse: context imbalance in 'remap_pte_range' - different lock contexts for basic block
-   mm/memory.c:2633:17: sparse: sparse: context imbalance in 'apply_to_pte_range' - unexpected unlock
-   mm/memory.c:2922:9: sparse: sparse: context imbalance in 'wp_page_copy' - different lock contexts for basic block
-   mm/memory.c:3274:17: sparse: sparse: context imbalance in 'wp_pfn_shared' - unexpected unlock
-   mm/memory.c:3341:19: sparse: sparse: context imbalance in 'do_wp_page' - different lock contexts for basic block
-   mm/memory.c:5211:5: sparse: sparse: context imbalance in 'follow_invalidate_pte' - wrong count at exit
-   mm/memory.c:5332:23: sparse: sparse: context imbalance in 'follow_pfn' - unexpected unlock
-   mm/memory.c:5362:9: sparse: sparse: context imbalance in 'follow_phys' - unexpected unlock
-   mm/memory.c:5396:9: sparse: sparse: context imbalance in 'generic_access_phys' - unexpected unlock
+Host can always DoS the guess, so yes this can lead to lockups.
 
-Please review and possibly fold the followup patch.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ Kirill A. Shutemov
