@@ -2,174 +2,294 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF86C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237009AbiDMQqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S236977AbiDMQqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236977AbiDMQpy (ORCPT
+        with ESMTP id S236982AbiDMQpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:45:54 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54C967D21
+        Wed, 13 Apr 2022 12:45:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C64568305
         for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:43:31 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23DFXJU2012784;
-        Wed, 13 Apr 2022 16:42:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references :
- content-transfer-encoding : content-type : mime-version;
- s=corp-2021-07-09; bh=ZgkuZ8r/VymLdhLJB2PMa9DE7jwyd1kzggyTkOXJs4M=;
- b=fgkcK0NyXPpEH2V9VpFCA1ccEUsofW/2j145eLTwY+u0UZf7DTmAjlerRcE9k2bsUGWk
- /wBUbD5J9rBxFmIsn2zUa4GvoI/z++spNg297z9Au9RRsqt03LBH9tnlDD6kuLb62vZe
- Yt7Ynqm0Oly46M99C4fBPYIBjKWjTgmcV9PeulsypKPeKlhR9Gzd/QYEdmKO3rnlfJch
- sFJc9cv8ucCmEXzEdojbtUlgM7PHqNohrNOR0BlFCg6Q1IXvbPJcwokSWPYgc/2yE0kb
- I6QHGBWx3ceGSXyV3A0DlmwZp687bKbte/493WD3zzcZYaFl1pRrg6dX6kI9YTtDbCEa YA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3fb2pu2rax-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Apr 2022 16:42:58 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23DGRQLC008425;
-        Wed, 13 Apr 2022 16:42:56 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2109.outbound.protection.outlook.com [104.47.70.109])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fb0k45r31-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Apr 2022 16:42:56 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OBPC4XBOjQDesXd7S1tjl6GFAIdveYfA+IZoO8D+2+N9g2SQwsMkLDPNV7eoW91qs+cWJql9xtSrYu9w4N80U2KJZn7DJjm3pUgilpc3HOUj1Dz2WdP5iQ7fd10KI+hSu47uHbitUkg/b8bY6daKXeQK+K5F1RWxYiIbmBIrY6nsHqZQKyv2v6MTVVDZmXut5Qqm7E75WvnD9bTnJsgt6PMe1Ouij8uTHMEFdeX8wdP8qGAki4NGD6fepLcvQ8MC9g0ZxHYZun1+ZCsUcbELvEJH55XzEgK4LP7LMF3PIgi7D/U3D4lMKxtFNaoeAW9/eCcTpNIROHu4c8TnMmb//w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZgkuZ8r/VymLdhLJB2PMa9DE7jwyd1kzggyTkOXJs4M=;
- b=jOZ93g3FvlNZStN3rB0tZ7uEI/AOUmjDjOJqyMkw6y2LnD+BBx8pIjWpxFfKyQGqp1v3fYqQKB73PQk7lI6+dW4sM2CprBTtuS1WIGIopG9kXCc+ZDLZgr3lAT9mHQMCfgDcTucQFrVbRRZXZx5thu1nnvgMKLom+AXPnFN9Mw2qCFQKrEDntFulBCfBnLwlC1HAd8XFc+ZVsCMLX7ttwHY6a23qY0RCvdHr9PtTOMw37XqKJGVCOboT3CHtKG6jSqYF2uVhtLIpHaGEhlxJx4SP5nN0TOdx7HU4Ab6UVT4tllkwAXbaVcw2ZppwdgVi5TxiHGcx71gYM3KL9/x6pQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZgkuZ8r/VymLdhLJB2PMa9DE7jwyd1kzggyTkOXJs4M=;
- b=uooCY0b022V/POSlpBjKRsvqE6BFKxWJzmKNa4Gr0fy2Ehg2XzVjC/cTiMK3dY4/Dgfhb336z800dDsHyxuYTauz9zHaUDXq+pmKyh6fK7+EtuNMuBeYA5xrWLURCdMvoQtZcHDHDgnD+TA+/oY1voSIimpUu52WZpFFoiW1CjQ=
-Received: from CO1PR10MB4531.namprd10.prod.outlook.com (2603:10b6:303:6c::22)
- by BYAPR10MB3560.namprd10.prod.outlook.com (2603:10b6:a03:124::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Wed, 13 Apr
- 2022 16:42:54 +0000
-Received: from CO1PR10MB4531.namprd10.prod.outlook.com
- ([fe80::65fa:78de:f4d:1a5c]) by CO1PR10MB4531.namprd10.prod.outlook.com
- ([fe80::65fa:78de:f4d:1a5c%3]) with mapi id 15.20.5144.030; Wed, 13 Apr 2022
- 16:42:54 +0000
-From:   Eric DeVolder <eric.devolder@oracle.com>
-To:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com,
-        nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        eric.devolder@oracle.com
-Subject: [PATCH v7 1/8] x86/crash: fix minor typo/bug in debug message
-Date:   Wed, 13 Apr 2022 12:42:30 -0400
-Message-Id: <20220413164237.20845-2-eric.devolder@oracle.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220413164237.20845-1-eric.devolder@oracle.com>
-References: <20220413164237.20845-1-eric.devolder@oracle.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR13CA0024.namprd13.prod.outlook.com
- (2603:10b6:a03:2c0::29) To CO1PR10MB4531.namprd10.prod.outlook.com
- (2603:10b6:303:6c::22)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649868210;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yOc8sJgoC4OMuHlex8YSxARCRvJnhktuH3N8MCBMIJw=;
+        b=UmdNJ9i4g4NYJObeOeqR0rulPtZ5UvZs+8kxVBOvgtf/GuO97vxEII3G+GsocLWlX+aegh
+        0q2uHroAg7hkVlMB/Z4sVf1Xp6wODwSPpu5A+yMxXLXykwKRP7tOyIvQQ2HczKmCNnp3EC
+        mEbMO2cNC14btK3QRCOQWjFaZM+/rNU=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-434-zMsh-HpVPqaJ3ODmPzQfwQ-1; Wed, 13 Apr 2022 12:43:29 -0400
+X-MC-Unique: zMsh-HpVPqaJ3ODmPzQfwQ-1
+Received: by mail-io1-f70.google.com with SMTP id d19-20020a0566022bf300b00645eba5c992so1411924ioy.4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:43:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yOc8sJgoC4OMuHlex8YSxARCRvJnhktuH3N8MCBMIJw=;
+        b=lNv+bkgj45kEz9LzBXYZoJdLyihCcGP9ZHf5+CY5plB/uO4HOgRTXrtFMHW8CABzBq
+         OMOoi9vXCUqPSE30BShuDKr1QKHiKqVMBPYu8MNuSuDUg6nOBRQ59bEjqXCi8hCIvtWJ
+         0XxwwHR5dEChbhZ5fxcDhlGsx0AAWS4xGEZcO8S5c46aO32NaFqGMgVXtTBPV5Sn392h
+         veDdBAxQ1R/XpWxa8+WtxikSBiR+IEPOeB/Dw/68dtOGtj3rOsUu1etDD+Z9nwK3PAsg
+         CNjWlxRPYQxw1gVTnpYhUOfVJonFY2FNJAhnm1WiJIBU+EoWKxzRUjheVMhjTOfzUS4h
+         Ivkg==
+X-Gm-Message-State: AOAM532/4+SIwcAiYnN1RNwDBpA11nyTIRBiZepBgEPGbXQRdaxwhGvh
+        +hk2CPmnDRqBl4WirS0z1SjA0B1Pib46Ddrj8pO73pDaxRObLi1Ai6C5Ou2dPcKxDbZCmUwoZdi
+        9+jr99dxejDPXoRTsA8JJFAy8
+X-Received: by 2002:a92:dd07:0:b0:2ca:b240:e548 with SMTP id n7-20020a92dd07000000b002cab240e548mr7647578ilm.11.1649868207801;
+        Wed, 13 Apr 2022 09:43:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw0TZg/jo3qMMiFg3aidR13MOpqUZoW0Op3cc4CUGwfI9PSUDeHZ2hQJcifShcNCSrJ1WPg2A==
+X-Received: by 2002:a92:dd07:0:b0:2ca:b240:e548 with SMTP id n7-20020a92dd07000000b002cab240e548mr7647567ilm.11.1649868207530;
+        Wed, 13 Apr 2022 09:43:27 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id a5-20020a056e020e0500b002caca72891fsm237308ilk.27.2022.04.13.09.43.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 09:43:27 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 12:43:25 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Alistair Popple <apopple@nvidia.com>
+Subject: Re: [PATCH v8 03/23] mm: Check against orig_pte for finish_fault()
+Message-ID: <Ylb9rXJyPm8/ao8f@xz-m1.local>
+References: <20220405014646.13522-1-peterx@redhat.com>
+ <20220405014836.14077-1-peterx@redhat.com>
+ <CGME20220413140330eucas1p167da41e079712b829ef8237dc27b049c@eucas1p1.samsung.com>
+ <710c48c9-406d-e4c5-a394-10501b951316@samsung.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1bd8d276-be0d-401a-c573-08da1d6ca81d
-X-MS-TrafficTypeDiagnostic: BYAPR10MB3560:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR10MB35602A7E01242DAF345E2CAF97EC9@BYAPR10MB3560.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JERVDt3/ZY3xe5Xl7QfJv3SaDKV84DiInywtpRiQrlvSta5War3MYacrOJuC30fxdeWasnIR9CgvNUQVVLXhcDGSCx/srdWh4LG/5YO85zSlhPDdjXRY6S7c00mJbcsgTLhdRleBW0dx5UOH+o6FtU3xXgOR5nyR+wcO47oSapCi1o2u/LOaWjjljRI8PxWjQ/Lj9nAwHEPIxI1PjESHtEHkXpBDxSwSdrYuMGYesyFQiPyX0hhgbv8BfARm7gUnTdrt9M6o3WYaKPQxF1hNaO7nHBgr2/BBA5ZWZlr7+Er8FIbhokOsk3iBRvDP8c8E9gd42/hrGrLsGbbV037/UepywthPpj3z14ZVqs5if2GXQw/CqpA35jrgeNpOLJik/3t5Cqg/rTYTEjX1yqfykHLQRPcR9PhNpdnuUC7E7Ftx8iUIh/XEAiw11m0jVnzQFAHOOyvD6/Xf9TGlhQniki52TMydGyhc5QYISJTECT27kwHp5qddaWLLiVdVQPy7dVtSRs26Hg2K8H0+hH67y8j0RSMlgJOQr4ZEWAVblhar792SLAK7IqEGg3e5FspAygQJ3U2CeQlULXc7zXjtBtFjN6ocCz9wWOH+NI28wTyvKnk6ELzb4L4irkbQtFL5t/0PeSwNwd3RuByPx8y0Apu6NeI3/lSnejaXQdz4fibwNPS3r9+Fzh7qH09XoCe4pCDEj3zrlZ3hKs0PXyAa2Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4531.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6666004)(83380400001)(4744005)(38350700002)(66556008)(36756003)(2906002)(2616005)(6512007)(86362001)(52116002)(6506007)(38100700002)(6486002)(508600001)(66476007)(186003)(26005)(107886003)(1076003)(66946007)(316002)(7416002)(5660300002)(4326008)(8676002)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TwVWrxPyCFyvbG6tHObRn5P3Zt8iipKzTLxXl+xNRxnTWvspR3lVo8scjikV?=
- =?us-ascii?Q?Yk2lgYHxfRbqfYNoWC5e0cW+7n/vlbnRvkIcH+VvNQqHWdV738QEUyR2N2Zq?=
- =?us-ascii?Q?ogV9+mj2Uuzod2rgL34DKxLG/85AACZmM27xSLL83iFuAaXkS3kDgC6r+7T+?=
- =?us-ascii?Q?jMXNsVhLioPaInm1tOx3x3wn9vG21OsSSCT2vInsc5Sc2CAC1I13c0A09b6N?=
- =?us-ascii?Q?a67GmsLC8f/ILQ+dqt7Pfg2/EaMH08Wk9JI5gGIGakEYjoXm6QxoYxfhhVhw?=
- =?us-ascii?Q?qrq+Ie+Mmlx3k3ROGJr153uL5xd+V2u+tE7+ylQY5MRXv+dKihRQLByfjxxO?=
- =?us-ascii?Q?1HbB0CelkCjl73NDzql3znUaZ+5+Hpx1qdFjdTVvPCLJDYl185rbAqHfvFI8?=
- =?us-ascii?Q?LvQHJjeEdGOtqEDK1uApbBF0oxySwRkNE1iDZHMJ2KzpclYFyMUODma4lrfz?=
- =?us-ascii?Q?uHEk73yUhSDgyZE+OrHBWfqt7NeGAntzz7DhPNkO7nD/qK/ARyVyhPX9DRqu?=
- =?us-ascii?Q?J85zG+hBGiQ63FPtMkvFaDyyRFmE10y0E99TXJkqVTPm85hbuT+2CyXPJbNP?=
- =?us-ascii?Q?Ci5KCeBT0M7mYJgtouuOaDFJemJSu3Imh9n9mHAh0TJWL8I5BzdmR+E6LAan?=
- =?us-ascii?Q?n26ti7BYcw88Tn/UyaLD/pZt4QnktksGGlLhHaf9BS/wTl9aASH3tUlOww2d?=
- =?us-ascii?Q?XJa8CDZ9JYO7reo4GzjgYOQRP0XLETnFRUHTJcZV2OBy3dMd250yfe83lQJz?=
- =?us-ascii?Q?X+L48Ldd8btf8db2hNRhBYSxeYVfyb7ZCGIhZ0iIZBW2RoCy6bKahOBMcis0?=
- =?us-ascii?Q?14gtEzYrwcw9hsODW89XCMtlwScBA6bSv1D/xK+4iS/9+OlaNLaUZgjUBBec?=
- =?us-ascii?Q?/S7M+aDlveAd1j+TW/KlBVXdwV+L4mmSScqJMK/2strlIZR04WlPnaGp+h6/?=
- =?us-ascii?Q?6lyqLQBfKjQ5QrOfooKgmRJcRT2oPYxnxRNAJATry/MttFx5sAoU1W7HmY93?=
- =?us-ascii?Q?zzuqn+tdiEfCOM8Hm7aX0MdiBEATkAGUnz48FUocabnvO7F/zTKhf3K1eaHi?=
- =?us-ascii?Q?Oz8xmZ7uz2FPemnIRcSShBsR03X25FnxRoRoHk7PAPt2+Y4a/kkqOaa7UpRi?=
- =?us-ascii?Q?iqgqfO9oegBkxGlGbeO54l2UkNl+2blExK5huubzIohHWDwNRknLBqHoOKwn?=
- =?us-ascii?Q?R9hJYTS41/b212V67bKBUDFb+16H5x5VY2j0/sCnhPNIytOljZkEZtCjgP3b?=
- =?us-ascii?Q?aSQ+/LgVIka80aqnA2OH8oIOOGR1b41cu0AeL7H+aK5dzGPprxx37ioqEHEZ?=
- =?us-ascii?Q?d42YDur41VtYOLuPBdk9zmMP5HaXjVR0goXAOcaUIk+KyRp4Fsq58WS4VbnF?=
- =?us-ascii?Q?vpFUo45IlPJJfMVuH7Ai5v+ZAmo/RrMoIzN55lSwb/c1Cw6kgT4GK560lEPc?=
- =?us-ascii?Q?1jm4Vd56W4en9gSwz8pgC2pkE3XA8lwb/OKsnV6s/NMc5RFWuY4P14IejI9r?=
- =?us-ascii?Q?pLYiSpG1yf99lYRXBgM+LOCPK1SrR/V2SOJGqwpxj+JRh9qNFQw23gUpBVjT?=
- =?us-ascii?Q?h051K8Ak9b796NLAuG/6OOtMqCgQH14WbzXma2Le3L+5L3aTstacQ7g5mhl4?=
- =?us-ascii?Q?5nSA0KcLeA2zCdcR9Z3fFqu0hUILHnyRrM0MNuS9OxvwGdYoPmjN15b0gqfT?=
- =?us-ascii?Q?8lYGWsSYxsjUMH1tqOE+pEcw7XLHqJO++u+qDrEArcRpMe9tOZsUk4NyBpVr?=
- =?us-ascii?Q?bHnwhxCKdl6+PIivOvPcuH48KUUm/V0=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1bd8d276-be0d-401a-c573-08da1d6ca81d
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4531.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2022 16:42:54.2105
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: L2aM/RV5AxW1wcgsM+vSzV6TNGm1M0Orc9Wzk84bwsUGPKzHJ04kzGKRLPTFJWa4BMVm8byw431+SSnzxBlmWxZwcyWYn74jLDisd3G84dE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3560
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-04-13_03:2022-04-13,2022-04-13 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 bulkscore=0
- suspectscore=0 mlxlogscore=999 mlxscore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204130085
-X-Proofpoint-ORIG-GUID: vzi0pRSwzQwiflG9BNTHUKKkgvmNkE57
-X-Proofpoint-GUID: vzi0pRSwzQwiflG9BNTHUKKkgvmNkE57
+Content-Type: multipart/mixed; boundary="lOFzOqXxPC8HVUYQ"
+Content-Disposition: inline
+In-Reply-To: <710c48c9-406d-e4c5-a394-10501b951316@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pr_debug() intends to display the memsz member, but the
-parameter is actually the bufsz member (which is already
-displayed). Correct this to display memsz value.
 
-Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
-Acked-by: Baoquan He <bhe@redhat.com>
----
- arch/x86/kernel/crash.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--lOFzOqXxPC8HVUYQ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
-index e8326a8d1c5d..9730c88530fc 100644
---- a/arch/x86/kernel/crash.c
-+++ b/arch/x86/kernel/crash.c
-@@ -407,7 +407,7 @@ int crash_load_segments(struct kimage *image)
- 	}
- 	image->elf_load_addr = kbuf.mem;
- 	pr_debug("Loaded ELF headers at 0x%lx bufsz=0x%lx memsz=0x%lx\n",
--		 image->elf_load_addr, kbuf.bufsz, kbuf.bufsz);
-+		 image->elf_load_addr, kbuf.bufsz, kbuf.memsz);
- 
- 	return ret;
- }
+On Wed, Apr 13, 2022 at 04:03:28PM +0200, Marek Szyprowski wrote:
+> Hi,
+
+Hi, Marek,
+
+> 
+> On 05.04.2022 03:48, Peter Xu wrote:
+> > We used to check against none pte in finish_fault(), with the assumption
+> > that the orig_pte is always none pte.
+> >
+> > This change prepares us to be able to call do_fault() on !none ptes.  For
+> > example, we should allow that to happen for pte marker so that we can restore
+> > information out of the pte markers.
+> >
+> > Let's change the "pte_none" check into detecting changes since we fetched
+> > orig_pte.  One trivial thing to take care of here is, when pmd==NULL for
+> > the pgtable we may not initialize orig_pte at all in handle_pte_fault().
+> >
+> > By default orig_pte will be all zeros however the problem is not all
+> > architectures are using all-zeros for a none pte.  pte_clear() will be the
+> > right thing to use here so that we'll always have a valid orig_pte value
+> > for the whole handle_pte_fault() call.
+> >
+> > Signed-off-by: Peter Xu <peterx@redhat.com>
+> 
+> This patch landed in today's linux next-202204213 as commit fa6009949163 
+> ("mm: check against orig_pte for finish_fault()"). Unfortunately it 
+> causes serious system instability on some ARM 32bit machines. I've 
+> observed it on all tested boards (various Samsung Exynos based, 
+> Raspberry Pi 3b and 4b, even QEMU's virt 32bit machine) when kernel was 
+> compiled from multi_v7_defconfig.
+
+Thanks for the report.
+
+> 
+> Here is a crash log from QEMU's ARM 32bit virt machine:
+> 
+> 8<--- cut here ---
+> Unable to handle kernel paging request at virtual address e093263c
+> [e093263c] *pgd=42083811, *pte=00000000, *ppte=00000000
+> Internal error: Oops: 807 [#1] SMP ARM
+> Modules linked in:
+> CPU: 1 PID: 37 Comm: kworker/u4:0 Not tainted 
+> 5.18.0-rc2-00176-gfa6009949163 #11684
+> Hardware name: Generic DT based system
+> PC is at cpu_ca15_set_pte_ext+0x4c/0x58
+> LR is at handle_mm_fault+0x46c/0xbb0
+
+I had a feeling that for some reason the pte_clear() isn't working right
+there when it's applying to a kernel stack variable for arm32.  I'm totally
+newbie to arm32, so what I'm reading is this:
+
+https://people.kernel.org/linusw/arm32-page-tables
+
+Especially:
+
+https://dflund.se/~triad/images/classic-mmu-page-table.jpg
+
+It does match with what I read from arm32's proc-v7-2level.S of it, where
+from the comment above cpu_v7_set_pte_ext:
+
+  * - ptep  - pointer to level 2 translation table entry
+  *    (hardware version is stored at +2048 bytes)        <----------
+
+So it seems to me that arm32 needs to store some metadata at offset 0x800
+of any pte_t* pointer passed over to pte_clear(), then it must be a real
+pgtable or it'll write to random places in the kernel, am I correct?
+
+Does it mean that all pte_*() operations upon a kernel stack var will be
+wrong?  I thought it could happen easily in the rest of mm too but I didn't
+yet check much.  The fact shows that it's mostly possible the current code
+just work well with arm32 and no such violation occured yet.
+
+That does sound a bit tricky, IMHO.  But I don't have an immediate solution
+to make it less tricky.. though I have a thought of workaround, by simply
+not calling pte_clear() on the stack var.
+
+Would you try the attached patch to replace this problematic patch? So we
+need to revert commit fa6009949163 and apply the new one.  Please let me
+know whether it'll solve the problem, so far I only compile tested it, but
+I'll run some more test to make sure the uffd-wp scenarios will be working
+right with the new version.
+
+Thanks,
+
 -- 
-2.27.0
+Peter Xu
+
+--lOFzOqXxPC8HVUYQ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: attachment;
+	filename="0001-mm-Check-against-orig_pte-for-finish_fault-when-prop.patch"
+
+From c9eb74ef2414b542b20f934060a4b9123ba83d0f Mon Sep 17 00:00:00 2001
+From: Peter Xu <peterx@redhat.com>
+Date: Wed, 13 Apr 2022 12:31:01 -0400
+Subject: [PATCH] mm: Check against orig_pte for finish_fault() when proper
+
+This patch allows do_fault() to trigger on !pte_none() cases too.  This
+prepares for the pte markers to be handled by do_fault() just like none
+pte.
+
+To achieve this, instead of unconditionally check against pte_none() in
+finish_fault(), we may hit the case that the orig_pte was some pte marker
+so what we want to do is to replace the pte marker with some valid pte
+entry.  Then if orig_pte was set we'd want to check the current *pte (under
+pgtable lock) against orig_pte rather than none pte.
+
+Right now there's no solid way to safely reference orig_pte because when
+pmd is not allocated handle_pte_fault() will not initialize orig_pte, so
+it's not safe to reference it.
+
+There's another solution proposed before this patch to do pte_clear() for
+vmf->orig_pte for pmd==NULL case, however it turns out it'll break arm32
+because arm32 could have assumption that pte_t* pointer will always reside
+on a real ram32 pgtable, not any kernel stack variable.
+
+To solve this, we add a new flag FAULT_FLAG_ORIG_PTE_VALID, and it'll be
+set along with orig_pte when there is valid orig_pte, or it'll be cleared
+when orig_pte was not initialized.
+
+It'll be updated every time we call handle_pte_fault(), so e.g. if a page
+fault retry happened it'll be properly updated along with orig_pte.
+
+[1] https://lore.kernel.org/lkml/710c48c9-406d-e4c5-a394-10501b951316@samsung.com/
+
+Signed-off-by: Peter Xu <peterx@redhat.com>
+---
+ include/linux/mm_types.h |  3 +++
+ mm/memory.c              | 13 ++++++++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 5c567eabfb16..717a47056330 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -817,6 +817,8 @@ typedef struct {
+  * @FAULT_FLAG_UNSHARE: The fault is an unsharing request to unshare (and mark
+  *                      exclusive) a possibly shared anonymous page that is
+  *                      mapped R/O.
++ * @FAULT_FLAG_ORIG_PTE_VALID: whether the fault has vmf->orig_pte cached.
++ *                        We should only access orig_pte if this flag set.
+  *
+  * About @FAULT_FLAG_ALLOW_RETRY and @FAULT_FLAG_TRIED: we can specify
+  * whether we would allow page faults to retry by specifying these two
+@@ -853,6 +855,7 @@ enum fault_flag {
+ 	FAULT_FLAG_INSTRUCTION =	1 << 8,
+ 	FAULT_FLAG_INTERRUPTIBLE =	1 << 9,
+ 	FAULT_FLAG_UNSHARE =		1 << 10,
++	FAULT_FLAG_ORIG_PTE_VALID =	1 << 11,
+ };
+ 
+ #endif /* _LINUX_MM_TYPES_H */
+diff --git a/mm/memory.c b/mm/memory.c
+index f89034a60e9a..8e7f39c651c3 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -4301,6 +4301,15 @@ void do_set_pte(struct vm_fault *vmf, struct page *page, unsigned long addr)
+ 	set_pte_at(vma->vm_mm, addr, vmf->pte, entry);
+ }
+ 
++static bool vmf_pte_changed(struct vm_fault *vmf)
++{
++	if (vmf->flags & FAULT_FLAG_ORIG_PTE_VALID) {
++		return !pte_same(*vmf->pte, vmf->orig_pte);
++	}
++
++	return !pte_none(*vmf->pte);
++}
++
+ /**
+  * finish_fault - finish page fault once we have prepared the page to fault
+  *
+@@ -4359,7 +4368,7 @@ vm_fault_t finish_fault(struct vm_fault *vmf)
+ 				      vmf->address, &vmf->ptl);
+ 	ret = 0;
+ 	/* Re-check under ptl */
+-	if (likely(pte_none(*vmf->pte)))
++	if (likely(!vmf_pte_changed(vmf)))
+ 		do_set_pte(vmf, page, vmf->address);
+ 	else
+ 		ret = VM_FAULT_NOPAGE;
+@@ -4837,6 +4846,7 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
+ 		 * concurrent faults and from rmap lookups.
+ 		 */
+ 		vmf->pte = NULL;
++		vmf->flags &= ~FAULT_FLAG_ORIG_PTE_VALID;
+ 	} else {
+ 		/*
+ 		 * If a huge pmd materialized under us just retry later.  Use
+@@ -4860,6 +4870,7 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
+ 		 */
+ 		vmf->pte = pte_offset_map(vmf->pmd, vmf->address);
+ 		vmf->orig_pte = *vmf->pte;
++		vmf->flags |= FAULT_FLAG_ORIG_PTE_VALID;
+ 
+ 		/*
+ 		 * some architectures can have larger ptes than wordsize,
+-- 
+2.32.0
+
+
+--lOFzOqXxPC8HVUYQ--
 
