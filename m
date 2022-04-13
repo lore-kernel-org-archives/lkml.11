@@ -2,278 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDDBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234469AbiDMJ1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
+        id S234487AbiDMJ2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234442AbiDMJ1C (ORCPT
+        with ESMTP id S234588AbiDMJ2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:27:02 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4090BDF8E;
-        Wed, 13 Apr 2022 02:24:41 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KdcZK6jz6zgYl0;
-        Wed, 13 Apr 2022 17:22:49 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Apr 2022 17:24:39 +0800
-Received: from huawei.com (10.67.174.169) by dggpemm500001.china.huawei.com
- (7.185.36.107) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Apr
- 2022 17:24:39 +0800
-From:   Chen Lifu <chenlifu@huawei.com>
-To:     <masahiroy@kernel.org>, <linux-kbuild@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <chenlifu@huawei.com>
-Subject: [PATCH v3 -next] scripts: add compare-config utility
-Date:   Wed, 13 Apr 2022 17:23:31 +0800
-Message-ID: <20220413092331.203284-1-chenlifu@huawei.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 13 Apr 2022 05:28:05 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA7525C5E;
+        Wed, 13 Apr 2022 02:25:44 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=yaohongbo@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V9z3Zrl_1649841940;
+Received: from 30.225.28.93(mailfrom:yaohongbo@linux.alibaba.com fp:SMTPD_---0V9z3Zrl_1649841940)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 13 Apr 2022 17:25:41 +0800
+Message-ID: <ebd1b238-6e48-6561-93ab-f562096b1c05@linux.alibaba.com>
+Date:   Wed, 13 Apr 2022 17:25:40 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.169]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.0
+Subject: Re: [PATCH v2] uio/uio_pci_generic: Introduce refcnt on open/release
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     alikernel-developer@linux.alibaba.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1649833302-27299-1-git-send-email-yaohongbo@linux.alibaba.com>
+ <YlZ8vZ9RX5i7mWNk@kroah.com> <20220413044246-mutt-send-email-mst@kernel.org>
+From:   Yao Hongbo <yaohongbo@linux.alibaba.com>
+In-Reply-To: <20220413044246-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an alternative utility to compare two .config files. Unlike
-existing utilities "diffconfig" in the kernel tree, it prints detailed
-results in table style, and support config name prefix so that it can be
-used elsewhere. It is useful sometimes, for example, to analyze .config
-files through tables, or to compare Buildroot .config.
 
-With grep and awk, it can print similar results like "diffconfg" as well.
+在 2022/4/13 下午4:51, Michael S. Tsirkin 写道:
+> On Wed, Apr 13, 2022 at 09:33:17AM +0200, Greg KH wrote:
+>> On Wed, Apr 13, 2022 at 03:01:42PM +0800, Yao Hongbo wrote:
+>>> If two userspace programs both open the PCI UIO fd, when one
+>>> of the program exits uncleanly, the other will cause IO hang
+>>> due to bus-mastering disabled.
+>>>
+>>> It's a common usage for spdk/dpdk to use UIO. So, introduce refcnt
+>>> to avoid such problems.
+>> Why do you have multiple userspace programs opening the same device?
+>> Shouldn't they coordinate?
+> Or to restate, I think the question is, why not open the device
+> once and pass the FD around?
 
-Signed-off-by: Chen Lifu <chenlifu@huawei.com>
----
-Changes in v3:
-- Add -D option, a combination of -C -O -N, and set it as default mode
+Hmm, it will have the same result, no matter  whether opening the same 
+device or pass the FD around.
 
-Changes in v2:
-- Add config name prefix support
+Our expectation is that even if the primary process exits abnormally,  
+the second process can still send
 
- scripts/compare-config | 203 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 203 insertions(+)
- create mode 100755 scripts/compare-config
+or receive data.
 
-diff --git a/scripts/compare-config b/scripts/compare-config
-new file mode 100755
-index 000000000000..f770a1b02170
---- /dev/null
-+++ b/scripts/compare-config
-@@ -0,0 +1,203 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# An utility to compare two .config files and print the results in table style.
-+#
-+
-+import sys
-+import argparse
-+import traceback
-+
-+def args_parser():
-+    comment = ("An utility to compare two .config files and "
-+               "print the results in table style.")
-+    parser = argparse.ArgumentParser(description = comment,
-+                                     formatter_class =
-+                                         argparse.RawTextHelpFormatter)
-+    parser.add_argument(dest = "old_file", nargs = "?",
-+                        metavar = "old-file",
-+                        default = ".config.old",
-+                        help = "specify old .config file "
-+                               "(default: .config.old)")
-+    parser.add_argument(dest = "new_file", nargs = "?",
-+                        metavar = "new-file",
-+                        default = ".config",
-+                        help = "specify new .config file "
-+                               "(default: .config)")
-+    parser.add_argument("-S", dest = "S", action = "store_true",
-+                        help = "print configs that exist in both files "
-+                               "and are equal")
-+    parser.add_argument("-C", dest = "C", action = "store_true",
-+                        help = "print configs that exist in both files "
-+                               "but are not equal")
-+    parser.add_argument("-O", dest = "O", action = "store_true",
-+                        help = "print configs that only exist in old-file")
-+    parser.add_argument("-N", dest = "N", action = "store_true",
-+                        help = "print configs that only exist in new-file")
-+    parser.add_argument("-D", dest = "D", action = "store_true",
-+                        help = "a combination of -C -O -N, it's the default mode")
-+    parser.add_argument("-y", dest = "y", action = "store_true",
-+                        help = "print configs that are y")
-+    parser.add_argument("-n", dest = "n", action = "store_true",
-+                        help = "print configs that are n (not set)")
-+    parser.add_argument("-m", dest = "m", action = "store_true",
-+                        help = "print configs that are m")
-+    parser.add_argument("-v", dest = "v", action = "store_true",
-+                        help = "print configs that are "
-+                               "string/hex/int value")
-+    parser.add_argument("--old", dest = "old", action = "store_true",
-+                        help = "filter configs base on old-file")
-+    parser.add_argument("--new", dest = "new", action = "store_true",
-+                        help = "filter configs base on new-file")
-+    parser.add_argument("-p", "--prefix", dest = "prefix",
-+                        action = "store", default = "CONFIG_",
-+                        help = "config name prefix (default: CONFIG_)")
-+    return parser
-+
-+def usage():
-+    args_parser().parse_args(["-h"])
-+
-+def parse_args():
-+    args = args_parser().parse_args()
-+    setattr(args, "doptions", diff_options(args))
-+    setattr(args, "voptions", value_options(args))
-+    old = args.old or not args.new
-+    new = args.new or not args.old
-+    args.old = old
-+    args.new = new
-+    return args
-+
-+def diff_options(args):
-+    doptions = []
-+    if args.S: doptions.append("S")
-+    if args.C or args.D: doptions.append("C")
-+    if args.O or args.D: doptions.append("O")
-+    if args.N or args.D: doptions.append("N")
-+    if len(doptions) == 0:
-+        doptions = ["C", "O", "N"]
-+    return doptions
-+
-+def value_options(args):
-+    voptions = set()
-+    if args.y: voptions.add("y")
-+    if args.n: voptions.add("n")
-+    if args.m: voptions.add("m")
-+    if args.v: voptions.add("v")
-+    if len(voptions) == 0:
-+        voptions = {"y", "n", "m", "v"}
-+    return voptions
-+
-+def test_value(val, voptions):
-+    if val is None: return False
-+    if val in voptions: return True
-+    return (not val in {"y", "n", "m"}) and ("v" in voptions)
-+
-+def format_exception():
-+    es = ""
-+    exc_type, exc_value, exc_traceback = sys.exc_info()
-+    exc_str = traceback.format_exception(exc_type, exc_value, exc_traceback)
-+    for s in exc_str:
-+        es += s
-+    return es
-+
-+def read_line(line, prefix):
-+    line = line.strip()
-+    if line.endswith(" is not set"):
-+        beg = line.find(prefix)
-+        if beg == -1: return None, None
-+        name, val = line[beg:-10].rsplit(" ", 1)
-+        return name.strip(), "n"
-+    if line.startswith(prefix):
-+        if line.find("=") == -1: return None, None
-+        name, val = line.split("=", 1)
-+        return name.strip(), val.strip()
-+    return None, None
-+
-+def read_file(filename, prefix):
-+    configs = {}
-+    with open(filename, "r", encoding = "utf-8") as f:
-+        for line in f:
-+            name, val = read_line(line, prefix)
-+            if not name is None: configs[name] = val
-+    return configs
-+
-+def compare_config(args):
-+    result = {"S": {}, "C": {}, "O": {}, "N": {}}
-+    try:
-+        old_configs = read_file(args.old_file, args.prefix)
-+        new_configs = read_file(args.new_file, args.prefix)
-+        while len(old_configs) > 0:
-+            name, old_val = old_configs.popitem()
-+            new_val = new_configs.pop(name, None)
-+            if new_val is None:
-+                result["O"][name] = (old_val, None)
-+            elif old_val == new_val:
-+                result["S"][name] = (old_val, new_val)
-+            else:
-+                result["C"][name] = (old_val, new_val)
-+        while len(new_configs) > 0:
-+            name, new_val = new_configs.popitem()
-+            result["N"][name] = (None, new_val)
-+    except:
-+        print(format_exception())
-+        usage()
-+    return result
-+
-+def filter_output(result, args):
-+    output = {"S": {}, "C": {}, "O": {}, "N": {}}
-+    for opt in args.doptions:
-+        for name, val in result[opt].items():
-+            if (args.old and test_value(val[0], args.voptions) or
-+                args.new and test_value(val[1], args.voptions)):
-+                old_val = "-" if val[0] is None else val[0]
-+                new_val = "-" if val[1] is None else val[1]
-+                output[opt][name] = (old_val, new_val)
-+    return output
-+
-+def print_table(output, args):
-+    name_max_len = 8
-+    old_max_len  = 8
-+    new_max_len  = 8
-+    name_list = sum([list(output[opt].keys()) for opt in args.doptions], [])
-+    if len(name_list) > 0:
-+        name_max_len = len(max(name_list, key = len))
-+    val_list = sum([list(output[opt].values()) for opt in args.doptions], [])
-+    if len(val_list) > 0:
-+        old_max_len = len(max([val[0] for val in val_list], key = len))
-+        new_max_len = len(max([val[1] for val in val_list], key = len))
-+    diff_max_len = len(max([diff_types[opt] for opt in args.doptions], key = len))
-+    header = ["NAME", "DIFF", "OLD", "NEW"]
-+    # table row format
-+    row = ("{{:{}}}\t{{:{}}}\t{{:{}}}\t{{:{}}}"
-+           .format(min(max(name_max_len, len(header[0])), 40),
-+                   min(max(diff_max_len, len(header[1])), 40),
-+                   min(max(old_max_len,  len(header[2])), 40),
-+                   min(max(new_max_len,  len(header[3])), 40)))
-+    print(row.format(header[0], header[1], header[2], header[3]))
-+    for opt in args.doptions:
-+        for name, val in sorted(output[opt].items()):
-+            print(row.format(name, diff_types[opt], val[0], val[1]))
-+
-+def print_summary(output, args):
-+    diff_max_len = len(max([diff_types[opt] for opt in args.doptions], key = len))
-+    # summary line format
-+    line = "{{:{}}}: {{}}".format(max(diff_max_len, 8))
-+    print("\nSummary:")
-+    print(line.format("Old-file", args.old_file))
-+    print(line.format("New-file", args.new_file))
-+    total = 0
-+    for opt in args.doptions:
-+        count = len(output[opt])
-+        print(line.format(diff_types[opt], count))
-+        total += count
-+    print(line.format("Total", total))
-+
-+def print_result(result, args):
-+    output = filter_output(result, args)
-+    print_table(output, args)
-+    print_summary(output, args)
-+
-+diff_types = {"S": "Same", "C": "Changed", "O": "Old-only", "N": "New-only"}
-+args = parse_args()
-+result = compare_config(args)
-+print_result(result, args)
--- 
-2.35.1
+The impact of disabling pci bus-master is relatively large, and we 
+should make some restrictions on
 
+this behavior.
+
+>
+>>> Fixes: 865a11f987ab("uio/uio_pci_generic: Disable bus-mastering on release")
+>
+> space missing before ( here .
+>
+>>> Reported-by: Xiu Yang <yangxiu.yx@alibaba-inc.com>
+>>> Signed-off-by: Yao Hongbo <yaohongbo@linux.alibaba.com>
+>>> ---
+>>> Changes for v2:
+>>> 	Use refcount_t instead of atomic_t to catch overflow/underflows.
+>>> ---
+>>>   drivers/uio/uio_pci_generic.c | 16 +++++++++++++++-
+>>>   1 file changed, 15 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/uio/uio_pci_generic.c b/drivers/uio/uio_pci_generic.c
+>>> index e03f9b5..1a5e1fd 100644
+>>> --- a/drivers/uio/uio_pci_generic.c
+>>> +++ b/drivers/uio/uio_pci_generic.c
+>>> @@ -31,6 +31,7 @@
+>>>   struct uio_pci_generic_dev {
+>>>   	struct uio_info info;
+>>>   	struct pci_dev *pdev;
+>>> +	refcount_t refcnt;
+>>>   };
+>>>   
+>>>   static inline struct uio_pci_generic_dev *
+>>> @@ -39,6 +40,14 @@ struct uio_pci_generic_dev {
+>>>   	return container_of(info, struct uio_pci_generic_dev, info);
+>>>   }
+>>>   
+>>> +static int open(struct uio_info *info, struct inode *inode)
+>>> +{
+>>> +	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
+>>> +
+>>> +	refcount_inc(&gdev->refcnt);
+>>> +	return 0;
+>>> +}
+>>> +
+>>>   static int release(struct uio_info *info, struct inode *inode)
+>>>   {
+>>>   	struct uio_pci_generic_dev *gdev = to_uio_pci_generic_dev(info);
+>>> @@ -51,7 +60,9 @@ static int release(struct uio_info *info, struct inode *inode)
+>>>   	 * Note that there's a non-zero chance doing this will wedge the device
+>>>   	 * at least until reset.
+>>>   	 */
+>>> -	pci_clear_master(gdev->pdev);
+>>> +	if (refcount_dec_and_test(&gdev->refcnt))
+>>> +		pci_clear_master(gdev->pdev);
+>> The goal here is to flush things when userspace closes the device, as
+>> the comment says.  So don't you want that to happen for when userspace
+>> closes the file handle no matter who opened it?
+>>
+>> As this is a functional change, how is userspace going to "know" this
+>> functionality is now changed or not?
+>>
+>> And if userspace really wants to open this multiple times, then properly
+>> switch the code to only create the device-specific structures when open
+>> is called.  Otherwise you are sharing structures here that are not
+>> intended to be shared, shouldn't you have your own private one?
+>>
+>> this feels odd.
+>>
+>> thanks,
+>>
+>> greg k-h
+> Sigh. Maybe it was a mistake to do 865a11f987ab to begin with.
+> Anyone doing DMA with UIO is already on very thin ice.
+> But oh well.
+>
