@@ -2,105 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3420C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231317AbiDMBqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 21:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37438 "EHLO
+        id S231588AbiDMBwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 21:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiDMBqO (ORCPT
+        with ESMTP id S229831AbiDMBwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 21:46:14 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309312C117;
-        Tue, 12 Apr 2022 18:43:55 -0700 (PDT)
-Received: from kwepemi100014.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KdQL02RJdzFpkH;
-        Wed, 13 Apr 2022 09:41:28 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100014.china.huawei.com (7.221.188.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Apr 2022 09:43:52 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Apr 2022 09:43:51 +0800
-Subject: Re: [PATCH 5.10 000/171] 5.10.111-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
-        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
-        <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
-References: <20220412062927.870347203@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <b56e6b79-dfb1-6840-a620-81041df2ea87@huawei.com>
-Date:   Wed, 13 Apr 2022 09:43:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Tue, 12 Apr 2022 21:52:43 -0400
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273981B7B1;
+        Tue, 12 Apr 2022 18:50:23 -0700 (PDT)
+Received: by mail-ot1-f52.google.com with SMTP id c24-20020a9d6c98000000b005e6b7c0a8a8so258019otr.2;
+        Tue, 12 Apr 2022 18:50:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TrgI0eS1ElcLM6jhSgmzrK2AfeoXw8Ye7zQQqXAfmeY=;
+        b=1pkbQqHe/7Mkt8P10R+3Qz6FkkcTgEKxGaTB7JozputZAC5ARBAj3z2vyqjOuQg4Jo
+         PRAYFikU2rgeTdDEb9x61t+RftiISHU9mRXNET4zVfl+ESgP2OhOPVmcQFtTJtG8jsVT
+         hBz2PMbFJBNEZ5GobCjT3+Q7xmlUkS5FdvTw+fgNA/Nw1dfa8h0hn7yTw8bleZahqUOp
+         B5PiGVKYchwMR5GqR+Lc416YKmknHzkOx15z8duAGjMSJhVltYoCtWgsvksOBj52viHZ
+         Ay+M6p79RPbV7acgGDb4gnVJuxPFGcvgUORz40L9gcVRblG0HDWw7b/2LMIeJXSki7Yz
+         78vQ==
+X-Gm-Message-State: AOAM530PpLOVzWjVfg9rBe68+gOcwn5A3ay5E+CFo13FNsnfm9iNFcGw
+        gWVeykAQMx4g6mFyuR2pjQ==
+X-Google-Smtp-Source: ABdhPJxE74US2W8ggBrC29BIxNrWj5fAECF+o/bPpXAhAJmGMZomqDl468oD66LN7mZS0P5bRihU3Q==
+X-Received: by 2002:a05:6830:2695:b0:5e6:e220:511e with SMTP id l21-20020a056830269500b005e6e220511emr5100629otu.9.1649814622427;
+        Tue, 12 Apr 2022 18:50:22 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id c79-20020a4a4f52000000b003325496f49fsm242137oob.1.2022.04.12.18.50.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 18:50:22 -0700 (PDT)
+Received: (nullmailer pid 1409466 invoked by uid 1000);
+        Wed, 13 Apr 2022 01:50:21 -0000
+Date:   Tue, 12 Apr 2022 20:50:21 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_jprakash@quicinc.com, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>, swboyd@chromium.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, quic_subbaram@quicinc.com,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH V9 1/6] dt-bindings: mfd: pm8008: Add reset-gpios
+Message-ID: <YlYsXUZr1Mtr+rjm@robh.at.kernel.org>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-2-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649166633-25872-2-git-send-email-quic_c_skakit@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/4/12 14:28, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.111 release.
-> There are 171 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue, 05 Apr 2022 19:20:28 +0530, Satya Priya wrote:
+> Add reset-gpios property for pm8008.
 > 
-> Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
-> Anything received after that time might be too late.
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> ---
+> Changes in V7:
+>  - Removed the intermediate regulators node and added ldos
+>    directly under mfd node.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.111-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
+> Changes in V8:
+>  - Change the compatible as per driver, remove interrupts from required
+>    properties, add reset-gpios and move regulators to separate binding.
 > 
-> thanks,
+> Changes in V9:
+>  - Undo the changes from V8 and only add reset-gpios. Leave interrupts
+>    as required properties and do not change compatible.
 > 
-> greg k-h
+>  Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
 
-Tested on arm64 and x86 for 5.10.111-rc1,
-
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-5.10.y
-Version: 5.10.111-rc1
-Commit: d3243c194290743f86302b7d651338c47b29f406
-Compiler: gcc version 7.3.0 (GCC)
-
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9030
-passed: 9030
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9030
-passed: 9030
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
