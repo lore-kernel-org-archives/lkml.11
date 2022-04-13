@@ -2,241 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A31C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47001C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 04:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbiDMECQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 00:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
+        id S232233AbiDMEGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 00:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbiDMECN (ORCPT
+        with ESMTP id S230454AbiDMEGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 00:02:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B35349F81
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:59:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649822390;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/qiTSPilnqb+8HttBSbUgM80usd/Sw8eEZqKgB3SiXI=;
-        b=iPQwJ3Yxoqr+VTY7lq5w9k1gM2vku1j5Zawsxv6HbwkzlYnevSfAk83u62kSYV9iR5iKH5
-        7h4HLHPYuD17EFZ+a8v+ZiYE35ZG149Cmm81ze0PGckPdJ1IJU2qF9LFFyn0PjlQ+REAly
-        dSUuGkxDaJWMO/NP6eRYNR1xHRHZgUc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-633-4XVIyB8ENPq93URrelPJvQ-1; Tue, 12 Apr 2022 23:59:47 -0400
-X-MC-Unique: 4XVIyB8ENPq93URrelPJvQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4664829A9CCB;
-        Wed, 13 Apr 2022 03:59:45 +0000 (UTC)
-Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C80B5145BA59;
-        Wed, 13 Apr 2022 03:59:38 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v5 04/10] KVM: arm64: Add vendor hypervisor firmware
- register
-To:     Raghavendra Rao Ananta <rananta@google.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org
-References: <20220407011605.1966778-1-rananta@google.com>
- <20220407011605.1966778-5-rananta@google.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <06b7539f-c5c0-843d-7617-a35a9f1d0e60@redhat.com>
-Date:   Wed, 13 Apr 2022 11:59:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Wed, 13 Apr 2022 00:06:42 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62B7C4EF6F;
+        Tue, 12 Apr 2022 21:04:14 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2791A13D5;
+        Tue, 12 Apr 2022 21:04:14 -0700 (PDT)
+Received: from [10.163.39.141] (unknown [10.163.39.141])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9FE6B3F73B;
+        Tue, 12 Apr 2022 21:04:09 -0700 (PDT)
+Message-ID: <78d9bb56-19ae-ea00-cb66-8d1f4baf4f68@arm.com>
+Date:   Wed, 13 Apr 2022 09:34:46 +0530
 MIME-Version: 1.0
-In-Reply-To: <20220407011605.1966778-5-rananta@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V5 2/7] powerpc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+Cc:     "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>
+References: <20220412043848.80464-1-anshuman.khandual@arm.com>
+ <20220412043848.80464-3-anshuman.khandual@arm.com>
+ <bc1a9e40-7625-3d22-e72e-9100aca1a523@csgroup.eu>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <bc1a9e40-7625-3d22-e72e-9100aca1a523@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Raghavendra,
 
-On 4/7/22 9:15 AM, Raghavendra Rao Ananta wrote:
-> Introduce the firmware register to hold the vendor specific
-> hypervisor service calls (owner value 6) as a bitmap. The
-> bitmap represents the features that'll be enabled for the
-> guest, as configured by the user-space. Currently, this
-> includes support for KVM-vendor features, and Precision Time
-> Protocol (PTP), represented by bit-0 and bit-1 respectively.
+
+On 4/12/22 17:57, Christophe Leroy wrote:
 > 
-> Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
-> ---
->   arch/arm64/include/asm/kvm_host.h |  2 ++
->   arch/arm64/include/uapi/asm/kvm.h |  4 ++++
->   arch/arm64/kvm/hypercalls.c       | 21 +++++++++++++++++----
->   include/kvm/arm_hypercalls.h      |  4 ++++
->   4 files changed, 27 insertions(+), 4 deletions(-)
 > 
-> diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-> index 20165242ebd9..b79161bad69a 100644
-> --- a/arch/arm64/include/asm/kvm_host.h
-> +++ b/arch/arm64/include/asm/kvm_host.h
-> @@ -106,10 +106,12 @@ struct kvm_arch_memory_slot {
->    *
->    * @std_bmap: Bitmap of standard secure service calls
->    * @std_hyp_bmap: Bitmap of standard hypervisor service calls
-> + * @vendor_hyp_bmap: Bitmap of vendor specific hypervisor service calls
->    */
->   struct kvm_smccc_features {
->   	u64 std_bmap;
->   	u64 std_hyp_bmap;
-> +	u64 vendor_hyp_bmap;
->   };
->   
->   struct kvm_arch {
-> diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
-> index 67353bf4e69d..9a5ac0ed4113 100644
-> --- a/arch/arm64/include/uapi/asm/kvm.h
-> +++ b/arch/arm64/include/uapi/asm/kvm.h
-> @@ -344,6 +344,10 @@ struct kvm_arm_copy_mte_tags {
->   #define KVM_REG_ARM_STD_HYP_BMAP		KVM_REG_ARM_FW_FEAT_BMAP_REG(1)
->   #define KVM_REG_ARM_STD_HYP_BIT_PV_TIME		BIT(0)
->   
-> +#define KVM_REG_ARM_VENDOR_HYP_BMAP		KVM_REG_ARM_FW_FEAT_BMAP_REG(2)
-> +#define KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT	BIT(0)
-> +#define KVM_REG_ARM_VENDOR_HYP_BIT_PTP		BIT(1)
-> +
->   /* Device Control API: ARM VGIC */
->   #define KVM_DEV_ARM_VGIC_GRP_ADDR	0
->   #define KVM_DEV_ARM_VGIC_GRP_DIST_REGS	1
-> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
-> index 64ae6c7e7145..80836c341fd3 100644
-> --- a/arch/arm64/kvm/hypercalls.c
-> +++ b/arch/arm64/kvm/hypercalls.c
-> @@ -66,8 +66,6 @@ static const u32 hvc_func_default_allowed_list[] = {
->   	ARM_SMCCC_VERSION_FUNC_ID,
->   	ARM_SMCCC_ARCH_FEATURES_FUNC_ID,
->   	ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID,
-> -	ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID,
-> -	ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
->   };
->   
->   static bool kvm_hvc_call_default_allowed(struct kvm_vcpu *vcpu, u32 func_id)
-> @@ -102,6 +100,12 @@ static bool kvm_hvc_call_allowed(struct kvm_vcpu *vcpu, u32 func_id)
->   	case ARM_SMCCC_HV_PV_TIME_ST:
->   		return kvm_arm_fw_reg_feat_enabled(smccc_feat->std_hyp_bmap,
->   					KVM_REG_ARM_STD_HYP_BIT_PV_TIME);
-> +	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
-> +		return kvm_arm_fw_reg_feat_enabled(smccc_feat->vendor_hyp_bmap,
-> +					KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT);
-> +	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
-> +		return kvm_arm_fw_reg_feat_enabled(smccc_feat->vendor_hyp_bmap,
-> +					KVM_REG_ARM_VENDOR_HYP_BIT_PTP);
->   	default:
->   		return kvm_hvc_call_default_allowed(vcpu, func_id);
->   	}
-
-I guess we may return SMCCC_RET_NOT_SUPPORTED for ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID
-if KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT isn't set? Otherwise, we need explain it
-in the commit log.
-
-KVM_REG_ARM_VENDOR_HYP_BIT_{FUNC_FEAT, PTP} aren't parallel to each other.
-I think PTP can't be on if KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT is off.
-
-> @@ -194,8 +198,7 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
->   		val[3] = ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_3;
->   		break;
->   	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
-> -		val[0] = BIT(ARM_SMCCC_KVM_FUNC_FEATURES);
-> -		val[0] |= BIT(ARM_SMCCC_KVM_FUNC_PTP);
-> +		val[0] = smccc_feat->vendor_hyp_bmap;
->   		break;
->   	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
->   		kvm_ptp_get_time(vcpu, val);
-> @@ -222,6 +225,7 @@ static const u64 kvm_arm_fw_reg_ids[] = {
->   	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3,
->   	KVM_REG_ARM_STD_BMAP,
->   	KVM_REG_ARM_STD_HYP_BMAP,
-> +	KVM_REG_ARM_VENDOR_HYP_BMAP,
->   };
->   
->   void kvm_arm_init_hypercalls(struct kvm *kvm)
-> @@ -230,6 +234,7 @@ void kvm_arm_init_hypercalls(struct kvm *kvm)
->   
->   	smccc_feat->std_bmap = KVM_ARM_SMCCC_STD_FEATURES;
->   	smccc_feat->std_hyp_bmap = KVM_ARM_SMCCC_STD_HYP_FEATURES;
-> +	smccc_feat->vendor_hyp_bmap = KVM_ARM_SMCCC_VENDOR_HYP_FEATURES;
->   }
->   
->   int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
-> @@ -322,6 +327,9 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
->   	case KVM_REG_ARM_STD_HYP_BMAP:
->   		val = READ_ONCE(smccc_feat->std_hyp_bmap);
->   		break;
-> +	case KVM_REG_ARM_VENDOR_HYP_BMAP:
-> +		val = READ_ONCE(smccc_feat->vendor_hyp_bmap);
-> +		break;
->   	default:
->   		return -ENOENT;
->   	}
-> @@ -348,6 +356,10 @@ static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu, u64 reg_id, u64 val)
->   		fw_reg_bmap = &smccc_feat->std_hyp_bmap;
->   		fw_reg_features = KVM_ARM_SMCCC_STD_HYP_FEATURES;
->   		break;
-> +	case KVM_REG_ARM_VENDOR_HYP_BMAP:
-> +		fw_reg_bmap = &smccc_feat->vendor_hyp_bmap;
-> +		fw_reg_features = KVM_ARM_SMCCC_VENDOR_HYP_FEATURES;
-> +		break;
->   	default:
->   		return -ENOENT;
->   	}
-
-If KVM_REG_ARM_VENDOR_HYP_BIT_{FUNC_FEAT, PTP} aren't parallel to each other,
-special code is needed to gurantee PTP is cleared if VENDOR_HYP is disabled.
-
-> @@ -453,6 +465,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
->   		return 0;
->   	case KVM_REG_ARM_STD_BMAP:
->   	case KVM_REG_ARM_STD_HYP_BMAP:
-> +	case KVM_REG_ARM_VENDOR_HYP_BMAP:
->   		return kvm_arm_set_fw_reg_bmap(vcpu, reg->id, val);
->   	default:
->   		return -ENOENT;
-> diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
-> index b0915d8c5b81..eaf4f6b318a8 100644
-> --- a/include/kvm/arm_hypercalls.h
-> +++ b/include/kvm/arm_hypercalls.h
-> @@ -9,6 +9,7 @@
->   /* Last valid bits of the bitmapped firmware registers */
->   #define KVM_REG_ARM_STD_BMAP_BIT_MAX		0
->   #define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX	0
-> +#define KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX	1
->   
->   #define KVM_ARM_SMCCC_STD_FEATURES \
->   	GENMASK_ULL(KVM_REG_ARM_STD_BMAP_BIT_MAX, 0)
-> @@ -16,6 +17,9 @@
->   #define KVM_ARM_SMCCC_STD_HYP_FEATURES \
->   	GENMASK_ULL(KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX, 0)
->   
-> +#define KVM_ARM_SMCCC_VENDOR_HYP_FEATURES \
-> +	GENMASK_ULL(KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX, 0)
-> +
->   int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
->   
->   static inline u32 smccc_get_function(struct kvm_vcpu *vcpu)
+> Le 12/04/2022 à 06:38, Anshuman Khandual a écrit :
+>> This defines and exports a platform specific custom vm_get_page_prot() via
+>> subscribing ARCH_HAS_VM_GET_PAGE_PROT. While here, this also localizes
+>> arch_vm_get_page_prot() as __vm_get_page_prot() and moves it near
+>> vm_get_page_prot().
+>>
+>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>> Cc: Paul Mackerras <paulus@samba.org>
+>> Cc: linuxppc-dev@lists.ozlabs.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>> ---
+>>   arch/powerpc/Kconfig               |  1 +
+>>   arch/powerpc/include/asm/mman.h    | 12 ------------
+>>   arch/powerpc/mm/book3s64/pgtable.c | 20 ++++++++++++++++++++
+>>   3 files changed, 21 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+>> index 174edabb74fa..69e44358a235 100644
+>> --- a/arch/powerpc/Kconfig
+>> +++ b/arch/powerpc/Kconfig
+>> @@ -140,6 +140,7 @@ config PPC
+>>   	select ARCH_HAS_TICK_BROADCAST		if GENERIC_CLOCKEVENTS_BROADCAST
+>>   	select ARCH_HAS_UACCESS_FLUSHCACHE
+>>   	select ARCH_HAS_UBSAN_SANITIZE_ALL
+>> +	select ARCH_HAS_VM_GET_PAGE_PROT	if PPC_BOOK3S_64
+>>   	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+>>   	select ARCH_KEEP_MEMBLOCK
+>>   	select ARCH_MIGHT_HAVE_PC_PARPORT
+>> diff --git a/arch/powerpc/include/asm/mman.h b/arch/powerpc/include/asm/mman.h
+>> index 7cb6d18f5cd6..1b024e64c8ec 100644
+>> --- a/arch/powerpc/include/asm/mman.h
+>> +++ b/arch/powerpc/include/asm/mman.h
+>> @@ -24,18 +24,6 @@ static inline unsigned long arch_calc_vm_prot_bits(unsigned long prot,
+>>   }
+>>   #define arch_calc_vm_prot_bits(prot, pkey) arch_calc_vm_prot_bits(prot, pkey)
+>>   
+>> -static inline pgprot_t arch_vm_get_page_prot(unsigned long vm_flags)
+>> -{
+>> -#ifdef CONFIG_PPC_MEM_KEYS
+>> -	return (vm_flags & VM_SAO) ?
+>> -		__pgprot(_PAGE_SAO | vmflag_to_pte_pkey_bits(vm_flags)) :
+>> -		__pgprot(0 | vmflag_to_pte_pkey_bits(vm_flags));
+>> -#else
+>> -	return (vm_flags & VM_SAO) ? __pgprot(_PAGE_SAO) : __pgprot(0);
+>> -#endif
+>> -}
+>> -#define arch_vm_get_page_prot(vm_flags) arch_vm_get_page_prot(vm_flags)
+>> -
+>>   static inline bool arch_validate_prot(unsigned long prot, unsigned long addr)
+>>   {
+>>   	if (prot & ~(PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM | PROT_SAO))
+>> diff --git a/arch/powerpc/mm/book3s64/pgtable.c b/arch/powerpc/mm/book3s64/pgtable.c
+>> index 052e6590f84f..d0319524e27f 100644
+>> --- a/arch/powerpc/mm/book3s64/pgtable.c
+>> +++ b/arch/powerpc/mm/book3s64/pgtable.c
+>> @@ -7,6 +7,7 @@
+>>   #include <linux/mm_types.h>
+>>   #include <linux/memblock.h>
+>>   #include <linux/memremap.h>
+>> +#include <linux/pkeys.h>
+>>   #include <linux/debugfs.h>
+>>   #include <misc/cxl-base.h>
+>>   
+>> @@ -549,3 +550,22 @@ unsigned long memremap_compat_align(void)
+>>   }
+>>   EXPORT_SYMBOL_GPL(memremap_compat_align);
+>>   #endif
+>> +
+>> +static pgprot_t __vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +#ifdef CONFIG_PPC_MEM_KEYS
+>> +	return (vm_flags & VM_SAO) ?
+>> +		__pgprot(_PAGE_SAO | vmflag_to_pte_pkey_bits(vm_flags)) :
+>> +		__pgprot(0 | vmflag_to_pte_pkey_bits(vm_flags));
+>> +#else
+>> +	return (vm_flags & VM_SAO) ? __pgprot(_PAGE_SAO) : __pgprot(0);
+>> +#endif
+>> +}
+>> +
+>> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	return __pgprot(pgprot_val(protection_map[vm_flags &
+>> +			(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]) |
+>> +			pgprot_val(__vm_get_page_prot(vm_flags)));
+>> +}
+>> +EXPORT_SYMBOL(vm_get_page_prot);
 > 
+> This looks functionnaly OK, but I think we could go in the same 
+> direction as ARM and try to integrate __vm_get_page_prot() inside 
+> vm_get_page_prot() to get something simpler and cleaner:
+> 
+> Something like below (untested):
+> 
+> pgprot_t vm_get_page_prot(unsigned long vm_flags)
+> {
+> 	unsigned long prot = pgprot_val(protection_map[vm_flags &
+> 				 (VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]);
+> 
+> 	if (vm_flags & VM_SAO)
+> 		prot |= _PAGE_SAO
+> 
+> #ifdef CONFIG_PPC_MEM_KEYS
+> 	prot |= vmflag_to_pte_pkey_bits(vm_flags);
+> #endif
+> 
+> 	return __pgprot(prot);
+> }
 
-Thanks,
-Gavin
-
+Okay, will integrate these functions into vm_get_page_prot() as suggested.
