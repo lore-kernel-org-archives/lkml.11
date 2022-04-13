@@ -2,170 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0898C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB068C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:23:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236790AbiDMQW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        id S236791AbiDMQZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234365AbiDMQWz (ORCPT
+        with ESMTP id S231865AbiDMQZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:22:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D4832E083
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:20:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649866832;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dQ64bLtEVZ+APpRlTSXSaScluxess+bMVBlFs6Kt68A=;
-        b=bqIjedFfOyKMk7pUW6H2cxY7SkdVNtnOd+F8U343oCR+YXC7CWf3bWEyGyx2/aIPTUKESD
-        pnIi4jBApAerXAeRmVcNVW9jApw4Dkim2Y07k3BU+s8rgNZ2Y6b/WdoKlMwBEAP9QG9iI+
-        ZRr0sgqBQukMh8Ge/satS8unI8ecVtE=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-258-_TeO9B0SOVKw52_wm5Wkyg-1; Wed, 13 Apr 2022 12:20:31 -0400
-X-MC-Unique: _TeO9B0SOVKw52_wm5Wkyg-1
-Received: by mail-wr1-f70.google.com with SMTP id r10-20020adfc10a000000b00207a2c7bcf6so509209wre.0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:20:31 -0700 (PDT)
+        Wed, 13 Apr 2022 12:25:16 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E0D3206A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:22:55 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id c15so2836036ljr.9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EsxSjVG8kNa20sGc7UpfrBrGphyqTawiJapJvuQafrs=;
+        b=XdJ/dmKaqAlkeNmwHqVM6mC0GRFNdyHrqfVtwzNO4hqerVqgJWXDDNFBhdov8vLwKV
+         PcNSkxa5aMFJNAAmvJVKGgl8l9HfbioaOSEWqaUx2eDF7mHVRZ2Pvvdq9uUco6g6F4QS
+         KO02pXC98R/2tEy0DWmUmr0N8OBg5OF/UBBGtZeX/yaqRqxMC94FuG48VUl6vA/wpMC0
+         t2nwrne8NcmmC2wuCHugdPqdlgRLr1lM8Ew0yqpU/rwsVAtgZA0rYxA+AHFWX2OLn8rE
+         I8/t3oT9BfUnxStoGwO7D4lFmtW7OcaJmDVHP55MKJuDAVYmchiwVAtrAuk197PppbKa
+         SW0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=dQ64bLtEVZ+APpRlTSXSaScluxess+bMVBlFs6Kt68A=;
-        b=AbTAZpV5uR19fnEADEmqejL7eHwcAqx95Dcy1YLqT4wo0sPXQMXVqUajfCTomhK45l
-         u/y4KmXwfPFSN6jFQ+Ut+a0vgnqlKU44E23yEOKoWc2TAVYfqyVNIuzxqVKgU7UhNoiF
-         CcoBITFayF0ul7w5jpczekYXhUtWVEMcY69t7P2iwivI0HKKpLp3vSY8Odp0G8yHk+vw
-         GZEG+BSNG9riBnHm6i3X1IZ6ahD/tMUCAXVuhDNM6jHJHf87N41pTP9sjczYZNII6nMn
-         Z5ttTp7QhqtgKDdLSyOeFDU5pj8zp5AGNez+/xEHGvQKTzhxAadCNft8vZGn7TPjWA/N
-         pb3w==
-X-Gm-Message-State: AOAM531ZTBQ9A9Ti+gVxVLuga8+T5bVHxOoXfEiGjZPMvU8u0hcSmpcE
-        Zx6s43bU+6ORlSRVhHDZLjvQ7+yic9gfpxePYhzqfq7hzLWw33wDwsAvFt5sg5PaKHIBb4KYa/k
-        KMRILmFxuxpMIPpxluHNU2I8i
-X-Received: by 2002:a7b:c350:0:b0:38c:6d3c:6c8 with SMTP id l16-20020a7bc350000000b0038c6d3c06c8mr9082269wmj.45.1649866830183;
-        Wed, 13 Apr 2022 09:20:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxbrrSYAH6xBT3EvIXb/61ZOGSr7pOKzCt5GDKiyQdvREB4rw53ZUTMAhXOGOzlf05bfV7LKQ==
-X-Received: by 2002:a7b:c350:0:b0:38c:6d3c:6c8 with SMTP id l16-20020a7bc350000000b0038c6d3c06c8mr9082233wmj.45.1649866829941;
-        Wed, 13 Apr 2022 09:20:29 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:5800:1078:ebb9:e2c3:ea8c? (p200300cbc70458001078ebb9e2c3ea8c.dip0.t-ipconnect.de. [2003:cb:c704:5800:1078:ebb9:e2c3:ea8c])
-        by smtp.gmail.com with ESMTPSA id v188-20020a1cacc5000000b0038e9c60f0e7sm2845408wme.28.2022.04.13.09.20.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 09:20:29 -0700 (PDT)
-Message-ID: <a37351a3-fb02-0709-1f4b-81525be34f05@redhat.com>
-Date:   Wed, 13 Apr 2022 18:20:27 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EsxSjVG8kNa20sGc7UpfrBrGphyqTawiJapJvuQafrs=;
+        b=oQt+luuO1MKh26xp1CpzY5c0yQ73L2lRN5VU2LTiL23845wIPTgPuLGy7Q74pBdphl
+         p1KH7UP0RTwJtjOeKLpeFFrzT99MFuHaBjh3u21q67gAgq0ZkirWL5zjmQJGOgIDG7Be
+         DDf6QqO/ClY+q7nnjz9iwA/dU7JgT/RZAKwhKaF9yz3x7LxuYnXLtOEKq86xZuCzToe0
+         SmwT4jv1iC95DQO7W5pM7HdOCKIEGd62JH0SI7UUQwfsA8xHRplqwW6O35ueSYFQobuX
+         V6R7JdbTYoJ4NSXFMXMJvouyLS9iTFjp4DRbgL5QouYWlYufJO4PVVICoUWuakraOkD1
+         xrQw==
+X-Gm-Message-State: AOAM532fV5i8qhXt2lufYkzmc9RTdd8h51oToMB2wW4jYSZw8pC5/jwI
+        Dh0i24+fLmaik6BnWya7IqfVdg==
+X-Google-Smtp-Source: ABdhPJxItrR8spBKK0GKnFxBDIgY0Ti2eyMcpmcgx5QL2y7Tgx8HR9MxVY8Qex9KNQICbLsriZt2ig==
+X-Received: by 2002:a05:651c:a0e:b0:249:90c8:453d with SMTP id k14-20020a05651c0a0e00b0024990c8453dmr26224552ljq.399.1649866973168;
+        Wed, 13 Apr 2022 09:22:53 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id z24-20020a19e218000000b0046bbc65356bsm720143lfg.183.2022.04.13.09.22.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 09:22:52 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id ADB2E104197; Wed, 13 Apr 2022 19:24:26 +0300 (+03)
+Date:   Wed, 13 Apr 2022 19:24:26 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
         David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-9-david@redhat.com>
- <4cb92b41-95e1-1666-321e-96ff9e6095bb@suse.cz>
- <368902ab-8d3f-5d62-581e-1ff930bcefa0@redhat.com>
- <YlbBXiVezzVw+NZZ@casper.infradead.org>
- <0c9d2c39-5080-a855-8ecd-e2c1bd1179fa@redhat.com>
- <YlbGswXaIRblKN9j@casper.infradead.org>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v3 08/16] mm/rmap: drop "compound" parameter from
- page_add_new_anon_rmap()
-In-Reply-To: <YlbGswXaIRblKN9j@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
+Message-ID: <20220413162426.3sy6kjkaqvdgdbl6@box.shutemov.name>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
+ <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
+ <ff9e0bad-be9a-97ac-ae88-d22bcfbe80d4@redhat.com>
+ <ebf3ccef-e6fe-62d5-74e8-91e30e7c2642@intel.com>
+ <a458c13f-9994-b227-ff61-bfdfec10bc27@redhat.com>
+ <20220413113024.ycvocn6ynerl3b7m@box.shutemov.name>
+ <cfcf9f82-7e5f-58b6-7b47-9ac552832596@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cfcf9f82-7e5f-58b6-7b47-9ac552832596@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.04.22 14:48, Matthew Wilcox wrote:
-> On Wed, Apr 13, 2022 at 02:28:38PM +0200, David Hildenbrand wrote:
->> On 13.04.22 14:26, Matthew Wilcox wrote:
->>> On Tue, Apr 12, 2022 at 11:37:09AM +0200, David Hildenbrand wrote:
->>>> On 12.04.22 10:47, Vlastimil Babka wrote:
->>>>> There's a VM_BUG_ON_PAGE(PageTransCompound(page), page); later in a
->>>>> !compound branch. Since compound is now determined by the same check, could
->>>>> be deleted.
->>>>
->>>> Yes, eventually we could get rid of both VM_BUG_ON_PAGE() on both
->>>> branches and add a single VM_BUG_ON_PAGE(PageTail(page), page) check on
->>>> the compound branch. (we could also make sure that we're not given a
->>>> hugetlb page)
->>>
->>> As a rule of thumb, if you find yourself wanting to add
->>> VM_BUG_ON_PAGE(PageTail(page), page), you probably want to change the
->>> interface to take a folio.
->>
->> Yeah, I had the same in mind. Might be a reasonable addon on top --
->> although it would stick out in the rmap code a bit because most
->> functions deal with both, folios and subpages.
+On Wed, Apr 13, 2022 at 08:36:52AM -0700, Dave Hansen wrote:
+> On 4/13/22 04:30, Kirill A. Shutemov wrote:
+> >> 2) Fast boot; after boot, all memory will slowly but steadily get
+> >>    accepted in the background. After a while, all memory is accepted and
+> >>    can be signaled to user space.
+> ...
+> > Frankly, I think option 2 is the worst one. You still CPU cycles from the
+> > workload after boot to do the job that may or may not be needed. It is an
+> > half-measure that helps nobody.
 > 
-> I have the start of a series which starts looking at the fault path
-> to see where it makes sense to use folios and where it makes sense to
-> use pages.
+> Let's not be too hyperbolic here.  "Worst" is entirely subjective and it
+> totally depends on your perspective and what you care about.
 > 
-> We're (generally) faulting on a PTE, so we need the precise page to
-> be returned in vmf->page.  However vmf->cow_page can/should be a
-> folio (because it's definitely not a tail page).  That trickles
-> down into copy_present_page() (new_page and prealloc both become folios)
-> and so page_add_new_anon_rmap() then looks like a good target to
-> take a folio.
+> There are basically four options:
 > 
-> The finish_fault() -> do_set_pte() -> page_add_new_anon_rmap() looks
-> like the only kind of strange place where we don't necessarily have a
-> folio (all the others we just allocated it).
+>  * Accept everything in early boot
+>  * Accept with deferred page free
+>  * Accept with kthread after boot
+>  * Accept on demand
 > 
+> and four things that matter:
+> 
+>  * Code complexity
+>  * Time to a shell prompt
+>  * CPU/Memory waste
+>  * Deterministic overhead
+> 
+> Did I miss any?
 
-That's an interesting point. In this patch I'm assuming that we don't
-have a compound page here (see below).
+"Time to shell" is not equal to "time to do the job". Real workloads do
+stuff beyond memory allocations. But, yes, it is harder quantify.
 
-Which makes sense, because as the interface states "Same as
-page_add_anon_rmap but must only be called on *new* pages.".
+> News flash: none of the options wins on all the things that matter.
+> We're going to have to pick one (or maybe two).  I'm also not horribly
+> convinced that there's a problem here worth solving, especially one that
+> requires surgery in the core of the buddy allocator.
+> 
+> This is essentially making a performance argument: it takes too long to
+> boot if we go with a simpler solution.  Yet, I haven't seen any data.  I
+> think we need to go with the simplest approach(es) until there's some
+> actual data to guide us here.
+> 
+> Here's another way to look at it:
+> 
+> > https://docs.google.com/spreadsheets/d/1Fpv0Yp0CTF5_JXHR2pywvNtImTwUVGTxDMlJ5t8qiis/edit?usp=sharing
 
-At least to me it would be weird to allocate a new compound page to then
-pass a subpage to do_set_pte() page_add_new_anon_rmap().
+The link is view-only.
 
-
-And in fact, inside page_add_new_anon_rmap(compound=false) we have
-
-/* Anon THP always mapped first with PMD */
-VM_BUG_ON_PAGE(PageTransCompound(page), page);
-
-
-which makes sure that we cannot have a compound page here, but in fact a
-folio.
-
-So unless I am missing something, do_set_pte() should in fact have a
-folio here unless BUG?
+AFAICS, complexity of the kthread approach is on par or greater comparing
+to on-demand. You need coordination between allocator and the thread.
+It can be hard to hit right balance for the kthread between being CPU hog
+and not providing enough accepted memory.
 
 -- 
-Thanks,
-
-David / dhildenb
-
+ Kirill A. Shutemov
