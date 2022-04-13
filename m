@@ -2,83 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF376C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4408C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235521AbiDMM2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35372 "EHLO
+        id S234631AbiDMM3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235535AbiDMM2p (ORCPT
+        with ESMTP id S230146AbiDMM31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:28:45 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E92C5DA3A
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:26:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bWS+cFnyEmbmqc6rZj6HU0wroameTU2nroSVRaqfs/E=; b=SUdi2YLNNEAnDrA3xDEKJqL4th
-        CdmHx5JXh0io1LMw0ZZm+yQG+xPrKvHz5aJA314m19WCYYRN+0tVKIUad7VCdXdc9rRVldNJb94u3
-        AJ4efEN9X/GXelavnYvERM5zU5Mt/9Pcq4uq7kY67ZK6BADU19fTr8POGgXknRg+mq4YbgnNNb6zi
-        zVKbG7fqaqXR4f6uLiBH09bFGV1HQqXUm2fFF+F0NgEyBb7d7iAsoylAgA9r0ZFodrZCEX6oIrZiW
-        4IVdiQerlDkrwwQl58j9eRRpokBwTNMF7fYxXpNXTN0L/V5nLZX9xFwhkyUv8cQK+0iNZF9gdLRrv
-        FXeEzsng==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nec4U-00EFTA-Fn; Wed, 13 Apr 2022 12:26:06 +0000
-Date:   Wed, 13 Apr 2022 13:26:06 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-Subject: Re: [PATCH v3 08/16] mm/rmap: drop "compound" parameter from
- page_add_new_anon_rmap()
-Message-ID: <YlbBXiVezzVw+NZZ@casper.infradead.org>
-References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-9-david@redhat.com>
- <4cb92b41-95e1-1666-321e-96ff9e6095bb@suse.cz>
- <368902ab-8d3f-5d62-581e-1ff930bcefa0@redhat.com>
+        Wed, 13 Apr 2022 08:29:27 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BB45DA4E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:27:03 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id g20so2148324edw.6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=UWf3WD8etSo1FUiV/Va7759QYZ2hF4d/jpBeQeYNuh0=;
+        b=V1YebfM3uL4q1jK8/PspIru7Nkbh7M2BcwDi8WKctQcIrkCwf4tddAevvUJ7NJX9th
+         NhUhIzyxqZ4HdW6OlwRxDPZFiTYztI9/qL97vT/L5AQmRyuUyUt27IAH/kBY0L7AcrGv
+         5oJNVQdIPIZtkLwHWZMG2ZVRqAI7o+ffiPYPNFL7GKqPdroRvFIdsyPXuRi0f4eTjC9S
+         ojoCIuHQnE20+96uU/aud0d6tlxB7+rbNJjg5yK46MAIcJRTXG1KZSSvmiMm6BG6KL5+
+         jE7T+kRwq+ZjSc23P1MhTe4AMzDn2Bw0EXwbiCs5C3vhtcXmdKfYO5I3mlRQNHq/Mc0f
+         ZiZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UWf3WD8etSo1FUiV/Va7759QYZ2hF4d/jpBeQeYNuh0=;
+        b=T7no2yAOFezQPRF7K5Ef17CLBvnypssMTJ2TUEWcmjktz5jtl5BrxBTeXyuaI+dWJ7
+         E+ucGOx22vZ9anLre8cbcJ3MKPzpRTqX/y25kliQawwbQfExYJux2zUQ7YKQTIP4cjVH
+         yGW5a6vsKCCioV8f8PmwjOATOez3r1iIKmc5q0kGJOjhps3VRjXlielU8yo5Sf8eNpnn
+         S1cNAQVAkrptg8ZDWXSvaMgvF6BFBLhYxeVb8hdhQ4/X2MFE4f61daUyycJ3Q1sriepy
+         hEFcqjMaqIK1WvP1MFbHLHW6RvjKU/2euH/uWSWLT4Guohle09slTXJK3aLwO9QoayZX
+         Zmew==
+X-Gm-Message-State: AOAM533AvhGWeuOpsl80fgLlK197JOwbR/GfYepLBDwq8gA6fptOoiZa
+        OsGU7GG1lDBeZ0feMsxJRzC02A==
+X-Google-Smtp-Source: ABdhPJxFkgSsSbyre3Mhq9/5vpL/TcAtBritChJHV6hHs0Thrw4NNs9uIjp2WHOlI6cLIlMu4LSdIg==
+X-Received: by 2002:a05:6402:1941:b0:413:2b5f:9074 with SMTP id f1-20020a056402194100b004132b5f9074mr42989674edz.414.1649852821599;
+        Wed, 13 Apr 2022 05:27:01 -0700 (PDT)
+Received: from [192.168.0.204] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id s4-20020a170906a18400b006db0a78bde8sm14177221ejy.87.2022.04.13.05.27.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 05:27:01 -0700 (PDT)
+Message-ID: <a4b6c158-da56-7879-04a4-558f751cb372@linaro.org>
+Date:   Wed, 13 Apr 2022 14:27:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <368902ab-8d3f-5d62-581e-1ff930bcefa0@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] arm64: dts: imx8mm-evk: add pwm1/backlight support
+Content-Language: en-US
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     linux-amarula@amarulasolutions.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Richard Zhu <hongxing.zhu@nxp.com>, Li Jun <jun.li@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220413102052.20207-1-tommaso.merciai@amarulasolutions.com>
+ <c6fe3895-29b2-a371-ccae-c5a12c45d4f1@linaro.org>
+ <20220413115810.GA4713@tom-ThinkPad-T14s-Gen-2i>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220413115810.GA4713@tom-ThinkPad-T14s-Gen-2i>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 11:37:09AM +0200, David Hildenbrand wrote:
-> On 12.04.22 10:47, Vlastimil Babka wrote:
-> > There's a VM_BUG_ON_PAGE(PageTransCompound(page), page); later in a
-> > !compound branch. Since compound is now determined by the same check, could
-> > be deleted.
+On 13/04/2022 13:58, Tommaso Merciai wrote:
+>>> +	backlight: backlight {
+>>> +		status = "disabled";
+>>
+>> Why disabled?
+>>
+>>> +		compatible = "pwm-backlight";
+>>> +		pwms = <&pwm1 0 5000000>;
+>>> +		brightness-levels = <0 255>;
+>>> +		num-interpolated-steps = <255>;
+>>> +		default-brightness-level = <250>;
+>>> +	};
+>>> +
+>>>  	ir-receiver {
+>>>  		compatible = "gpio-ir-receiver";
+>>>  		gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
+>>> @@ -395,6 +404,12 @@ &wdog1 {
+>>>  	status = "okay";
+>>>  };
+>>>  
+>>> +&pwm1 {
+>>> +	pinctrl-names = "default";
+>>> +	pinctrl-0 = <&pinctrl_backlight>;
+>>> +	status = "disabled";
+>>
+>> Same here.
+>>
+>>
+>> Best regards,
+>> Krzysztof
 > 
-> Yes, eventually we could get rid of both VM_BUG_ON_PAGE() on both
-> branches and add a single VM_BUG_ON_PAGE(PageTail(page), page) check on
-> the compound branch. (we could also make sure that we're not given a
-> hugetlb page)
+> Hi Krzysztof,
+> I think is better to keep disable into .dtsi and enable it at .dts
+> level.
+> What do you think about?
 
-As a rule of thumb, if you find yourself wanting to add
-VM_BUG_ON_PAGE(PageTail(page), page), you probably want to change the
-interface to take a folio.
+Why better? This is already board DTSI, not a SoC DTSI. All boards using
+it are supposed to have it available, aren't they?
+
+Usually nodes should be disabled in a DTSI if they need some resources
+not available in that DTSI. For example if they need some supply. It's
+not the case here, right?
+
+
+Best regards,
+Krzysztof
