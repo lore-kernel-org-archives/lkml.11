@@ -2,132 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27872C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:04:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4956DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236756AbiDMQGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
+        id S236757AbiDMQHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234479AbiDMQGU (ORCPT
+        with ESMTP id S235154AbiDMQHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:06:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B85B366216
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:03:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649865836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Wed, 13 Apr 2022 12:07:19 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316F74F446;
+        Wed, 13 Apr 2022 09:04:56 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CEEF52160E;
+        Wed, 13 Apr 2022 16:04:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649865894;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qaes6GsZIWmYMSJxhYz4nyZc0I8zaCDHxt97W/Tu4Ck=;
-        b=A/GacZqnUW3k+f27LJSZjQUNtZx6yGncVwBu97k7Nxie/Eu1AEpFACEpxM5LZBjKM53SUw
-        05ZiM5sNC3VDJmrxw+OmLXGe1dWkPpx+bNqVJIfPkYm1DnN53RzE8Im2r6aYt3l1TzIVwh
-        9ACeaEKq1Jgn+s0w+/s5OzLs3TlyvPc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-459-IAaEfzPiMTmFnWYVul6tsw-1; Wed, 13 Apr 2022 12:03:55 -0400
-X-MC-Unique: IAaEfzPiMTmFnWYVul6tsw-1
-Received: by mail-wm1-f69.google.com with SMTP id c125-20020a1c3583000000b0038e3f6e871aso1062952wma.8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:03:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qaes6GsZIWmYMSJxhYz4nyZc0I8zaCDHxt97W/Tu4Ck=;
-        b=mCJeI429W62pa41QhVBM1CnbmeVTWWdI/k6OROXdxHc6+k4eIEQypUhM3R1i7ihQ8d
-         WZONrJRvkGnouV8nCRjirWrx9s/6B0KChqgRwwxtnmhHMODSYy+sEVE5nw9mg+1h5Rvv
-         HmvD8lFEbz4Ubcbxp+p4rbg5WurYQgMi/uF4MyoQZSoQx9tiLvcZ+Ep1dTvar/Kcll82
-         M8WUbHzVrCsErFgpPVFDpaEp7Q/6+IiudS4mUbde6+nkwT9aIG+LXJGpfBWX8S7DK4/N
-         xRPaDPIUQs8xCx/2DMmwJoFeZ0GMoSJLeQbLfFiSnoc9PLIvflYGCyTp/nMPrDBkJVhz
-         PnAA==
-X-Gm-Message-State: AOAM531i6wllaum3nGrslB3nE0BbZZ4inhSN0PPr/uQtxUXPmXguJFg7
-        aGFO91QdvtBALYY6jgVBuqf2GNf6zleUIW0vsFAGnU6Hz6B24t9c0jI8OWRqz0zSXaEjwt7jNj+
-        yGGQz+YxSQhfULXwpQWrKvpNA
-X-Received: by 2002:a5d:684b:0:b0:207:b978:1a51 with SMTP id o11-20020a5d684b000000b00207b9781a51mr2135109wrw.189.1649865833670;
-        Wed, 13 Apr 2022 09:03:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwr8eDe+uZec98zyFAbHiVBo/INth+bOteQZ2k4WxUL0QZvCYOhQblO8Y9OngstuW8Kb5UMbg==
-X-Received: by 2002:a5d:684b:0:b0:207:b978:1a51 with SMTP id o11-20020a5d684b000000b00207b9781a51mr2135076wrw.189.1649865833408;
-        Wed, 13 Apr 2022 09:03:53 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id n1-20020a5d5981000000b00207a0853460sm11755147wri.14.2022.04.13.09.03.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 09:03:52 -0700 (PDT)
-Message-ID: <e549d4c4-ca56-da1d-cc50-1a73621ba487@redhat.com>
-Date:   Wed, 13 Apr 2022 18:03:51 +0200
+        bh=4XLAbSyVXPKjSGZzX2V8mPUgpCPzkvji4+ZrbQVbWJU=;
+        b=F/WT8vAqEWEcZeODhRqAMAWopyLiVbiuSVwKrvlT6VgfTD5SGW7u3tOusWJmsmQ3ddjgZM
+        /IpxNFBn7pDOiwkC0Lppwnoj1ljxUw/pQhodDFmvEWBlXrYVVY0jybzuPCZ1GsFSDe6Apy
+        lnXfjOI5Eb4DEwOZJ4FMAY/k7DvwZPw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649865894;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4XLAbSyVXPKjSGZzX2V8mPUgpCPzkvji4+ZrbQVbWJU=;
+        b=QM6xjLy0S7b49acN22RVsLVqYO+9S8On+wHsiYmO1TMGWRsLtpDNC889tTU+8xektbqnWl
+        k7a7351XVpycikDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 97D0F13AB8;
+        Wed, 13 Apr 2022 16:04:54 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id VTQqJKb0VmKQQAAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Wed, 13 Apr 2022 16:04:54 +0000
+Date:   Wed, 13 Apr 2022 18:00:47 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Nikolay Borisov <nborisov@suse.com>
+Cc:     Schspa Shi <schspa@gmail.com>, clm@fb.com, dsterba@suse.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, terrelln@fb.com
+Subject: Re: [PATCH v2] btrfs: zstd: use spin_lock in timer callback
+Message-ID: <20220413160047.GL15609@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Nikolay Borisov <nborisov@suse.com>,
+        Schspa Shi <schspa@gmail.com>, clm@fb.com, dsterba@suse.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, terrelln@fb.com
+References: <20220411135136.GG15609@suse.cz>
+ <20220411155540.36853-1-schspa@gmail.com>
+ <09c2a9ce-3b04-ed94-1d62-0e5a072b9dac@suse.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH V3 2/4] KVM: X86: Introduce role.glevel for level
- expanded pagetable
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Lai Jiangshan <jiangshanlai@gmail.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org
-References: <20220330132152.4568-1-jiangshanlai@gmail.com>
- <20220330132152.4568-3-jiangshanlai@gmail.com> <YlXvtMqWpyM9Bjox@google.com>
- <caffa434-5644-ee73-1636-45a87517bae2@redhat.com>
- <YlbhVov4cvM26FnC@google.com>
- <d2122fb0-7327-0490-9077-c69bbfba4830@redhat.com>
- <YlbtEorfabzkRucF@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <YlbtEorfabzkRucF@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <09c2a9ce-3b04-ed94-1d62-0e5a072b9dac@suse.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/13/22 17:32, Sean Christopherson wrote:
->>> Are we planning on removing direct?
->>
->> I think so, it's redundant and the code almost always checks
->> direct||passthrough (which would be passthrough_delta > 0 with your scheme).
+On Wed, Apr 13, 2022 at 05:58:41PM +0300, Nikolay Borisov wrote:
 > 
-> I'm ok dropping direct and rolling it into target_level, just so long as we add
-> helpers, e.g. IIUC they would be
 > 
-> static inline bool is_sp_direct(...)
-> {
-> 	return !sp->role.target_level;
-> }
+> On 11.04.22 г. 18:55 ч., Schspa Shi wrote:
+> > This is an optimization for fix fee13fe96529 ("btrfs:
+> > correct zstd workspace manager lock to use spin_lock_bh()")
+> > 
+> > The critical region for wsm.lock is only accessed by the process context and
+> > the softirq context.
+> > 
+> > Because in the soft interrupt, the critical section will not be preempted by the
+> > soft interrupt again, there is no need to call spin_lock_bh(&wsm.lock) to turn
+> > off the soft interrupt, spin_lock(&wsm.lock) is enough for this situation.
+> > 
+> > Changelog:
+> > v1 -> v2:
+> > 	- Change the commit message to make it more readable.
+> > 
+> > [1] https://lore.kernel.org/all/20220408181523.92322-1-schspa@gmail.com/
+> > 
+> > Signed-off-by: Schspa Shi <schspa@gmail.com>
 > 
-> static inline bool is_sp_direct_or_passthrough(...)
-> {
-> 	return sp->role.target_level != sp->role.level;
-> }
+> Has there been any measurable impact by this change? While it's correct it does mean that
+>   someone looking at the code would see that in one call site we use plain spinlock and in
+> another a _bh version and this is somewhat inconsistent.
 
-Yes of course.  Or respectively:
+I think it would be hard to measure the impact, maybe in some kind of
+load the _bh version would be unnecessarily blocking some other threads.
 
-	return sp->role.passthrough_levels == s->role.level;
-
-	return sp->role.passthrough_levels > 0;
-
-I'm not sure about a more concise name for the latter.  Maybe 
-sp_has_gpt(...) but I haven't thought it through very much.
-
->>> Hmm, it's not a raw level though.
->>
->> Hence the plural. :)
-> 
-> LOL, I honestly thought that was a typo.  Making it plural sounds like it's passing
-> through to multiple levels.
-
-I meant it as number of levels being passed through.  I'll leave that to 
-Jiangshan, either target_level or passthrough_levels will do for me.
-
-Paolo
-
+Regarding the used locking primitives, I'll add a comment about that to
+the function, it is indeed inconsistent and not obvious from the
+context.
