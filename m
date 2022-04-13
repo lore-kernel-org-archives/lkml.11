@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83358C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235220AbiDMLkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
+        id S235239AbiDMLkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234973AbiDMLkf (ORCPT
+        with ESMTP id S235202AbiDMLkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:40:35 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06535B3EF
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:14 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id q129so1747705oif.4
+        Wed, 13 Apr 2022 07:40:36 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0921C58822
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:15 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id z99so2009245ede.5
         for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3/ju3WN6s0uhv8pmBaiBX2cd1/4pEd72BZojvQ2bhxo=;
-        b=IqJzaL1rSE3nVx8k1MPaHHdFZQgkrRusk5DDwk3Eyw9Rno8e7Bnkqg6a0rgKccisMw
-         QtDxGMAhrjHgE8Owjx7Tp3v7TSK4W1dgFADnYVV3uzQKVvgxdT4NNgwikpv8r4iUDFhQ
-         o4HY8E3dMbF5uvS/fdKxc3xCvwBAvg60F6F8g=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=b9JbZM1/gAbcuCSgzitqQgGnzkrB8hE/3F5FE4npMMY=;
+        b=WtCYKflLYJfCcEGbpC48ZVJIJgkOmzZvvZwcomVJTa/7NuLM469DYokRYCO3orRSYK
+         9nnALsXGmBByS9DwmWy6ttYB3uHE6tRzC9zByQNUgky7ohAU+geTcIdjCUvVBAvnE1zT
+         KYrMolwL7uwPN1YLeMJqLf+eX2IgTL2v2oTjYh80FqzhymAH5dTAmhojC4pqxzcVFJk9
+         D3Ptc9p4n93QkwBNvx1RQt0JF2KVfWDSb3861Z+NwGX5xpHRYReFu6ur5mhoR7ZyLiBw
+         7XDl1UoLaiAA3wTK3ii+dldirtGhwiHmFOyct1nw5Mo1LVd5u16n8jWfAS3TcdLTOzWX
+         9vqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=3/ju3WN6s0uhv8pmBaiBX2cd1/4pEd72BZojvQ2bhxo=;
-        b=nu4Pe1agrvEDk65K+NrvVCV9wKJ/tMX70bkg2Cw+VSgGMB6R3QKFTw7pBse4xaY9sU
-         spLyMjS3vU0wXpya05Y5j42uQeIKXr9Fzma5nVkTg+bdbxhASoYZx7tJuG9oDPI64SiM
-         ebF9if8s+THR70cHCTSDE/naPmAjyuztXXUT8bX0YHcDNDcr0LLcuCQIMj1jgXHQ3+p6
-         cMNwP9D+WceHVjLM6dY45J3tpa4jxsQxehQ1WgKUsMrBNu5VoILgQHSVoukZHGYTZLwv
-         l1hWvc+kZdOfmUwPIMR/3EczrA+uacpLYk4nxlwyKv9eA3nXRXKp1AyrYh6DidXwrPDE
-         U8rA==
-X-Gm-Message-State: AOAM532rrdcWh9rufQS67QGsJAgzCOfEzVshVifZlJe/JhNmonT4Dkcv
-        rrhbtjAr/MSLClFB5o5364bInQ==
-X-Google-Smtp-Source: ABdhPJxg7ZozcS4h5lTD+fGFNdGzLi4q/n3Iqf7FwV66pRGzMC9VqSznelQxCjaQR8W79O+09OZ9BQ==
-X-Received: by 2002:aca:1006:0:b0:2fa:543f:845c with SMTP id 6-20020aca1006000000b002fa543f845cmr2972147oiq.182.1649849893881;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=b9JbZM1/gAbcuCSgzitqQgGnzkrB8hE/3F5FE4npMMY=;
+        b=tCU2G/Tzp5kX3XibEllQYytb9oYYfnO2ICJw93ywQCtjlXEyFRoEyU5sSIv1DdpDVd
+         JxvHrXD2H182dgQNDfWjHFApRayYJN/MZxES0YInKsQCr9MEzwpl+cpy2+2tlpovpT4N
+         KJM9RhdzVqviF0gVwzHIYoLsCjwZPoNoyVjvxF7gY+AltJGYUOBCC9fplCQtL3IPNYB5
+         i8aOeYsEzezRKRK5gSq30YtEinYwzLTeJsybtZ1DOCh46oVbre/G4Zhr2zRh5xA4O2OR
+         3bOVPIU8DHq69Zag0jblp3K+oO84M2RZeW8/2TQXnfZmrIlORZCkLh+T2SQxE/kwbxqq
+         EbYg==
+X-Gm-Message-State: AOAM532w77z89GzDaILzcA+l5hdRH/WgPQBZw09/Y/XAcKH7IGg0mP0t
+        CwW+cxbYacx9ZVk5AvB+QC/ZYA==
+X-Google-Smtp-Source: ABdhPJzcFhKHFSAPtp2yAjnsOtivadRH69IbPhFXrHhUJCyVkldZzwgNyUL1CPHvDsMwMqKnW0cDuw==
+X-Received: by 2002:a05:6402:1d55:b0:419:992b:9286 with SMTP id dz21-20020a0564021d5500b00419992b9286mr43241654edb.235.1649849893495;
         Wed, 13 Apr 2022 04:38:13 -0700 (PDT)
-Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
-        by smtp.gmail.com with ESMTPSA id q13-20020a4ab3cd000000b0032830efe365sm13453317ooo.43.2022.04.13.04.38.12
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id cb25-20020a170906a45900b006e87e5f9c4asm4452783ejb.140.2022.04.13.04.38.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 13 Apr 2022 04:38:13 -0700 (PDT)
-Sender: Justin Forbes <jmforbes@linuxtx.org>
-Date:   Wed, 13 Apr 2022 06:38:11 -0500
-From:   Justin Forbes <jforbes@fedoraproject.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.16 000/285] 5.16.20-rc1 review
-Message-ID: <Yla2Iy4yS/pC5F7/@fedora64.linuxtx.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vincent Shih <vincent.sunplus@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [RESEND PATCH 2/3] nvmem: sunplus-ocotp: staticize sp_otp_v0
+Date:   Wed, 13 Apr 2022 13:38:08 +0200
+Message-Id: <20220413113809.243288-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220413113809.243288-1-krzysztof.kozlowski@linaro.org>
+References: <20220413113809.243288-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 08:27:37AM +0200, Greg Kroah-Hartman wrote:
-> ----------------------
-> Note, this will be the LAST 5.16.y kernel to be released.  Please move
-> to the 5.17.y tree at this time.
-> ----------------------
-> 
-> This is the start of the stable review cycle for the 5.16.20 release.
-> There are 285 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.20-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
-s390x, x86_64), and boot tested x86_64. No regressions noted.
+The "sp_otp_v0" file scope variable is not used outside, so make it
+static to fix warning:
 
-Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+  drivers/nvmem/sunplus-ocotp.c:74:29: sparse:
+    sparse: symbol 'sp_otp_v0' was not declared. Should it be static?
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/nvmem/sunplus-ocotp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/nvmem/sunplus-ocotp.c b/drivers/nvmem/sunplus-ocotp.c
+index 2dc59c22eb55..c94134649714 100644
+--- a/drivers/nvmem/sunplus-ocotp.c
++++ b/drivers/nvmem/sunplus-ocotp.c
+@@ -71,7 +71,7 @@ struct sp_ocotp_data {
+ 	int size;
+ };
+ 
+-const struct sp_ocotp_data  sp_otp_v0 = {
++static const struct sp_ocotp_data sp_otp_v0 = {
+ 	.size = QAC628_OTP_SIZE,
+ };
+ 
+-- 
+2.32.0
+
