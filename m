@@ -2,480 +2,577 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F355EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231937AbiDMDIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        id S231482AbiDMDNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231968AbiDMDIL (ORCPT
+        with ESMTP id S231231AbiDMDNO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 23:08:11 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FA65574E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:05:49 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.fritz.box)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1neTHv-0006sN-UT; Wed, 13 Apr 2022 05:03:23 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
-        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
-        hch@lst.de, arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
-        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
-        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
-        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v9 12/12] riscv: add memory-type errata for T-Head
-Date:   Wed, 13 Apr 2022 05:03:07 +0200
-Message-Id: <20220413030307.133807-13-heiko@sntech.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220413030307.133807-1-heiko@sntech.de>
-References: <20220413030307.133807-1-heiko@sntech.de>
+        Tue, 12 Apr 2022 23:13:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B6E22340FD
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:10:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649819453;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=d/E8sODF5KkKF51xjTe8pUp1XC3ON6zwSSW28Lw3IVg=;
+        b=RLBBsZBLIq85eIWvMgwgw7Sx2BaicPUJ1g0OaacxpivLFwntZ1opW2S6UI0i9Y/PvzuPv1
+        RPSeadmgb7Q1KzLjNLokHHX6sIzd0EyHH9RQeReevdb+PpfWjw1OAXsQGzr001PeTcltZp
+        NBQkMk8NBH7XBiFG2fFWO2n880dEHis=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-163-P084io5RPQ-AfGHw1NSHWA-1; Tue, 12 Apr 2022 23:10:50 -0400
+X-MC-Unique: P084io5RPQ-AfGHw1NSHWA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A68401C068DC;
+        Wed, 13 Apr 2022 03:10:49 +0000 (UTC)
+Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DAA28814B;
+        Wed, 13 Apr 2022 03:10:29 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v5 01/10] KVM: arm64: Factor out firmware register
+ handling from psci.c
+To:     Raghavendra Rao Ananta <rananta@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+References: <20220407011605.1966778-1-rananta@google.com>
+ <20220407011605.1966778-2-rananta@google.com>
+ <6797f003-85f2-d1af-c106-c17091268a55@redhat.com>
+ <CAJHc60x82Az_NeiCmPznp6aidT5ER=Gud=KfZQ07mD5w7So8cA@mail.gmail.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <2b28ed53-8564-482e-992f-abc47a6c2954@redhat.com>
+Date:   Wed, 13 Apr 2022 11:10:26 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJHc60x82Az_NeiCmPznp6aidT5ER=Gud=KfZQ07mD5w7So8cA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some current cpus based on T-Head cores implement memory-types
-way different than described in the svpbmt spec even going
-so far as using PTE bits marked as reserved.
+Hi Raghavendra,
 
-Add the T-Head vendor-id and necessary errata code to
-replace the affected instructions.
+On 4/13/22 12:41 AM, Raghavendra Rao Ananta wrote:
+> On Tue, Apr 12, 2022 at 12:07 AM Gavin Shan <gshan@redhat.com> wrote:
+>> On 4/7/22 9:15 AM, Raghavendra Rao Ananta wrote:
+>>> Common hypercall firmware register handing is currently employed
+>>> by psci.c. Since the upcoming patches add more of these registers,
+>>> it's better to move the generic handling to hypercall.c for a
+>>> cleaner presentation.
+>>>
+>>> While we are at it, collect all the firmware registers under
+>>> fw_reg_ids[] to help implement kvm_arm_get_fw_num_regs() and
+>>> kvm_arm_copy_fw_reg_indices() in a generic way. Also, define
+>>> KVM_REG_FEATURE_LEVEL_MASK using a GENMASK instead.
+>>>
+>>> No functional change intended.
+>>>
+>>> Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+>>> Reviewed-by: Oliver Upton <oupton@google.com>
+>>> ---
+>>>    arch/arm64/kvm/guest.c       |   2 +-
+>>>    arch/arm64/kvm/hypercalls.c  | 185 +++++++++++++++++++++++++++++++++++
+>>>    arch/arm64/kvm/psci.c        | 183 ----------------------------------
+>>>    include/kvm/arm_hypercalls.h |   7 ++
+>>>    include/kvm/arm_psci.h       |   7 --
+>>>    5 files changed, 193 insertions(+), 191 deletions(-)
+>>>
+>>
+>> Apart from the below nits:
+>>
+>> Reviewed-by: Gavin Shan <gshan@redhat.com>
+>>
+>>> diff --git a/arch/arm64/kvm/guest.c b/arch/arm64/kvm/guest.c
+>>> index 7e15b03fbdf8..0d5cca56cbda 100644
+>>> --- a/arch/arm64/kvm/guest.c
+>>> +++ b/arch/arm64/kvm/guest.c
+>>> @@ -18,7 +18,7 @@
+>>>    #include <linux/string.h>
+>>>    #include <linux/vmalloc.h>
+>>>    #include <linux/fs.h>
+>>> -#include <kvm/arm_psci.h>
+>>> +#include <kvm/arm_hypercalls.h>
+>>>    #include <asm/cputype.h>
+>>>    #include <linux/uaccess.h>
+>>>    #include <asm/fpsimd.h>
+>>> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+>>> index 202b8c455724..fa6d9378d8e7 100644
+>>> --- a/arch/arm64/kvm/hypercalls.c
+>>> +++ b/arch/arm64/kvm/hypercalls.c
+>>> @@ -158,3 +158,188 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>>>        smccc_set_retval(vcpu, val[0], val[1], val[2], val[3]);
+>>>        return 1;
+>>>    }
+>>> +
+>>> +static const u64 kvm_arm_fw_reg_ids[] = {
+>>> +     KVM_REG_ARM_PSCI_VERSION,
+>>> +     KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1,
+>>> +     KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
+>>> +     KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3,
+>>> +};
+>>> +
+>>> +int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
+>>> +{
+>>> +     return ARRAY_SIZE(kvm_arm_fw_reg_ids);
+>>> +}
+>>> +
+>>> +int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+>>> +{
+>>> +     int i;
+>>> +
+>>> +     for (i = 0; i < ARRAY_SIZE(kvm_arm_fw_reg_ids); i++) {
+>>> +             if (put_user(kvm_arm_fw_reg_ids[i], uindices++))
+>>> +                     return -EFAULT;
+>>> +     }
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>
+>> Since we're here, I think we can make this function to return 'ARRAY_SIZE(kvm_arm_fw_reg_ids)',
+>> to be consistent with copy_{core, sve}_reg_indices(). With the return value fixed, additional
+>> patch can use @ret in kvm_arm_copy_reg_indices().
+>>
+> Well we can, however, since this is mostly refactoring, I didn't want
+> to change the original functionality of the code.
+> The only caller of this is kvm_arm_copy_reg_indices()
+> (arch/arm64/kvm/guest.c), which only checks for 'ret < 0'.
+> Also, do you have a need for it? If yes, I can change it in the next revision.
+> 
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Tested-by: Samuel Holland <samuel@sholland.org>
----
- arch/riscv/Kconfig.erratas             | 20 +++++++
- arch/riscv/errata/Makefile             |  1 +
- arch/riscv/errata/sifive/errata.c      |  7 ++-
- arch/riscv/errata/thead/Makefile       |  1 +
- arch/riscv/errata/thead/errata.c       | 82 ++++++++++++++++++++++++++
- arch/riscv/include/asm/alternative.h   |  6 ++
- arch/riscv/include/asm/errata_list.h   | 50 +++++++++++++++-
- arch/riscv/include/asm/pgtable-64.h    | 18 +++++-
- arch/riscv/include/asm/pgtable.h       | 18 +++++-
- arch/riscv/include/asm/vendorid_list.h |  1 +
- arch/riscv/kernel/alternative.c        | 12 ++++
- arch/riscv/kernel/cpufeature.c         |  7 ++-
- arch/riscv/mm/init.c                   |  1 +
- 13 files changed, 215 insertions(+), 9 deletions(-)
- create mode 100644 arch/riscv/errata/thead/Makefile
- create mode 100644 arch/riscv/errata/thead/errata.c
+The current implementation isn't wrong. With the return value fixed,
+The individual snippets in kvm_arm_copy_reg_indices() looks similar.
+It's not a big deal. If you plan to fix the return value for
+kvm_arm_copy_fw_reg_indices() and copy_timer_indices(), a separate
+patch can make the changes before this patch [v5 01/10]. Or we
+can ignore this and fix it after this series is merged :)
 
-diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
-index c521c2ae2de2..12036e65648e 100644
---- a/arch/riscv/Kconfig.erratas
-+++ b/arch/riscv/Kconfig.erratas
-@@ -33,4 +33,24 @@ config ERRATA_SIFIVE_CIP_1200
- 
- 	  If you don't know what to do here, say "Y".
- 
-+config ERRATA_THEAD
-+	bool "T-HEAD errata"
-+	select RISCV_ALTERNATIVE
-+	help
-+	  All T-HEAD errata Kconfig depend on this Kconfig. Disabling
-+	  this Kconfig will disable all T-HEAD errata. Please say "Y"
-+	  here if your platform uses T-HEAD CPU cores.
-+
-+	  Otherwise, please say "N" here to avoid unnecessary overhead.
-+
-+config ERRATA_THEAD_PBMT
-+	bool "Apply T-Head memory type errata"
-+	depends on ERRATA_THEAD && 64BIT
-+	default y
-+	help
-+	  This will apply the memory type errata to handle the non-standard
-+	  memory type bits in page-table-entries on T-Head SoCs.
-+
-+	  If you don't know what to do here, say "Y".
-+
- endmenu
-diff --git a/arch/riscv/errata/Makefile b/arch/riscv/errata/Makefile
-index 0ca1c5281a2d..a1055965fbee 100644
---- a/arch/riscv/errata/Makefile
-+++ b/arch/riscv/errata/Makefile
-@@ -1 +1,2 @@
- obj-$(CONFIG_ERRATA_SIFIVE) += sifive/
-+obj-$(CONFIG_ERRATA_THEAD) += thead/
-diff --git a/arch/riscv/errata/sifive/errata.c b/arch/riscv/errata/sifive/errata.c
-index 3e39587a49dc..672f02b21ce0 100644
---- a/arch/riscv/errata/sifive/errata.c
-+++ b/arch/riscv/errata/sifive/errata.c
-@@ -88,10 +88,15 @@ void __init_or_module sifive_errata_patch_func(struct alt_entry *begin,
- 					       unsigned int stage)
- {
- 	struct alt_entry *alt;
--	u32 cpu_req_errata = sifive_errata_probe(archid, impid);
-+	u32 cpu_req_errata;
- 	u32 cpu_apply_errata = 0;
- 	u32 tmp;
- 
-+	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
-+		return;
-+
-+	cpu_req_errata = sifive_errata_probe(archid, impid);
-+
- 	for (alt = begin; alt < end; alt++) {
- 		if (alt->vendor_id != SIFIVE_VENDOR_ID)
- 			continue;
-diff --git a/arch/riscv/errata/thead/Makefile b/arch/riscv/errata/thead/Makefile
-new file mode 100644
-index 000000000000..2d644e19caef
---- /dev/null
-+++ b/arch/riscv/errata/thead/Makefile
-@@ -0,0 +1 @@
-+obj-y += errata.o
-diff --git a/arch/riscv/errata/thead/errata.c b/arch/riscv/errata/thead/errata.c
-new file mode 100644
-index 000000000000..e5d75270b99c
---- /dev/null
-+++ b/arch/riscv/errata/thead/errata.c
-@@ -0,0 +1,82 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2021 Heiko Stuebner <heiko@sntech.de>
-+ */
-+
-+#include <linux/bug.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/string.h>
-+#include <linux/uaccess.h>
-+#include <asm/alternative.h>
-+#include <asm/cacheflush.h>
-+#include <asm/errata_list.h>
-+#include <asm/patch.h>
-+#include <asm/vendorid_list.h>
-+
-+struct errata_info {
-+	char name[ERRATA_STRING_LENGTH_MAX];
-+	bool (*check_func)(unsigned long arch_id, unsigned long impid);
-+	unsigned int stage;
-+};
-+
-+static bool errata_mt_check_func(unsigned long  arch_id, unsigned long impid)
-+{
-+	if (arch_id != 0 || impid != 0)
-+		return false;
-+	return true;
-+}
-+
-+static const struct errata_info errata_list[ERRATA_THEAD_NUMBER] = {
-+	{
-+		.name = "memory-types",
-+		.stage = RISCV_ALTERNATIVES_EARLY_BOOT,
-+		.check_func = errata_mt_check_func
-+	},
-+};
-+
-+static u32 thead_errata_probe(unsigned int stage, unsigned long archid, unsigned long impid)
-+{
-+	const struct errata_info *info;
-+	u32 cpu_req_errata = 0;
-+	int idx;
-+
-+	for (idx = 0; idx < ERRATA_THEAD_NUMBER; idx++) {
-+		info = &errata_list[idx];
-+
-+		if ((stage == RISCV_ALTERNATIVES_MODULE ||
-+		     info->stage == stage) && info->check_func(archid, impid))
-+			cpu_req_errata |= (1U << idx);
-+	}
-+
-+	return cpu_req_errata;
-+}
-+
-+void __init_or_module thead_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
-+					      unsigned long archid, unsigned long impid,
-+					      unsigned int stage)
-+{
-+	struct alt_entry *alt;
-+	u32 cpu_req_errata = thead_errata_probe(stage, archid, impid);
-+	u32 tmp;
-+
-+	for (alt = begin; alt < end; alt++) {
-+		if (alt->vendor_id != THEAD_VENDOR_ID)
-+			continue;
-+		if (alt->errata_id >= ERRATA_THEAD_NUMBER)
-+			continue;
-+
-+		tmp = (1U << alt->errata_id);
-+		if (cpu_req_errata & tmp) {
-+			/* On vm-alternatives, the mmu isn't running yet */
-+			if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
-+				memcpy((void *)__pa_symbol(alt->old_ptr),
-+				       (void *)__pa_symbol(alt->alt_ptr), alt->alt_len);
-+			else
-+				patch_text_nosync(alt->old_ptr, alt->alt_ptr, alt->alt_len);
-+		}
-+	}
-+
-+	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
-+		local_flush_icache_all();
-+}
-diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
-index 64936356c37c..6511dd73e812 100644
---- a/arch/riscv/include/asm/alternative.h
-+++ b/arch/riscv/include/asm/alternative.h
-@@ -21,8 +21,10 @@
- 
- #define RISCV_ALTERNATIVES_BOOT		0 /* alternatives applied during regular boot */
- #define RISCV_ALTERNATIVES_MODULE	1 /* alternatives applied during module-init */
-+#define RISCV_ALTERNATIVES_EARLY_BOOT	2 /* alternatives applied before mmu start */
- 
- void __init apply_boot_alternatives(void);
-+void __init apply_early_boot_alternatives(void);
- void apply_module_alternatives(void *start, size_t length);
- 
- struct alt_entry {
-@@ -41,6 +43,9 @@ struct errata_checkfunc_id {
- void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
- 			      unsigned long archid, unsigned long impid,
- 			      unsigned int stage);
-+void thead_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
-+			     unsigned long archid, unsigned long impid,
-+			     unsigned int stage);
- 
- void riscv_cpufeature_patch_func(struct alt_entry *begin, struct alt_entry *end,
- 				 unsigned int stage);
-@@ -48,6 +53,7 @@ void riscv_cpufeature_patch_func(struct alt_entry *begin, struct alt_entry *end,
- #else /* CONFIG_RISCV_ALTERNATIVE */
- 
- static inline void apply_boot_alternatives(void) { }
-+static inline void apply_early_boot_alternatives(void) { }
- static inline void apply_module_alternatives(void *start, size_t length) { }
- 
- #endif /* CONFIG_RISCV_ALTERNATIVE */
-diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-index dbfcd9b72bd8..9e2888dbb5b1 100644
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@ -14,6 +14,11 @@
- #define	ERRATA_SIFIVE_NUMBER 2
- #endif
- 
-+#ifdef CONFIG_ERRATA_THEAD
-+#define	ERRATA_THEAD_PBMT 0
-+#define	ERRATA_THEAD_NUMBER 1
-+#endif
-+
- #define	CPUFEATURE_SVPBMT 0
- #define	CPUFEATURE_NUMBER 1
- 
-@@ -42,12 +47,51 @@ asm(ALTERNATIVE("sfence.vma %0", "sfence.vma", SIFIVE_VENDOR_ID,	\
-  * in the default case.
-  */
- #define ALT_SVPBMT_SHIFT 61
-+#define ALT_THEAD_PBMT_SHIFT 59
- #define ALT_SVPBMT(_val, prot)						\
--asm(ALTERNATIVE("li %0, 0\t\nnop", "li %0, %1\t\nslli %0,%0,%2", 0,	\
--		CPUFEATURE_SVPBMT, CONFIG_RISCV_ISA_SVPBMT)		\
-+asm(ALTERNATIVE_2("li %0, 0\t\nnop",					\
-+		  "li %0, %1\t\nslli %0,%0,%3", 0,			\
-+			CPUFEATURE_SVPBMT, CONFIG_RISCV_ISA_SVPBMT,	\
-+		  "li %0, %2\t\nslli %0,%0,%4", THEAD_VENDOR_ID,	\
-+			ERRATA_THEAD_PBMT, CONFIG_ERRATA_THEAD_PBMT)	\
- 		: "=r"(_val)						\
- 		: "I"(prot##_SVPBMT >> ALT_SVPBMT_SHIFT),		\
--		  "I"(ALT_SVPBMT_SHIFT))
-+		  "I"(prot##_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
-+		  "I"(ALT_SVPBMT_SHIFT),				\
-+		  "I"(ALT_THEAD_PBMT_SHIFT))
-+
-+#ifdef CONFIG_ERRATA_THEAD_PBMT
-+/*
-+ * IO/NOCACHE memory types are handled together with svpbmt,
-+ * so on T-Head chips, check if no other memory type is set,
-+ * and set the non-0 PMA type if applicable.
-+ */
-+#define ALT_THEAD_PMA(_val)						\
-+asm volatile(ALTERNATIVE(						\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop",								\
-+	"li      t3, %2\n\t"						\
-+	"slli    t3, t3, %4\n\t"					\
-+	"and     t3, %0, t3\n\t"					\
-+	"bne     t3, zero, 2f\n\t"					\
-+	"li      t3, %3\n\t"						\
-+	"slli    t3, t3, %4\n\t"					\
-+	"or      %0, %0, t3\n\t"					\
-+	"2:",  THEAD_VENDOR_ID,						\
-+		ERRATA_THEAD_PBMT, CONFIG_ERRATA_THEAD_PBMT)		\
-+	: "+r"(_val)							\
-+	: "0"(_val),							\
-+	  "I"(_PAGE_MTMASK_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
-+	  "I"(_PAGE_PMA_THEAD >> ALT_THEAD_PBMT_SHIFT),			\
-+	  "I"(ALT_THEAD_PBMT_SHIFT))
-+#else
-+#define ALT_THEAD_PMA(_val)
-+#endif
- 
- #endif /* __ASSEMBLY__ */
- 
-diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-index 2354501f0203..e4ff3e0ab887 100644
---- a/arch/riscv/include/asm/pgtable-64.h
-+++ b/arch/riscv/include/asm/pgtable-64.h
-@@ -86,6 +86,18 @@ typedef struct {
- #define _PAGE_IO_SVPBMT		(1UL << 62)
- #define _PAGE_MTMASK_SVPBMT	(_PAGE_NOCACHE_SVPBMT | _PAGE_IO_SVPBMT)
- 
-+/*
-+ * [63:59] T-Head Memory Type definitions:
-+ *
-+ * 00000 - NC   Weakly-ordered, Non-cacheable, Non-bufferable, Non-shareable, Non-trustable
-+ * 01110 - PMA  Weakly-ordered, Cacheable, Bufferable, Shareable, Non-trustable
-+ * 10000 - IO   Strongly-ordered, Non-cacheable, Non-bufferable, Non-shareable, Non-trustable
-+ */
-+#define _PAGE_PMA_THEAD		((1UL << 62) | (1UL << 61) | (1UL << 60))
-+#define _PAGE_NOCACHE_THEAD	0UL
-+#define _PAGE_IO_THEAD		(1UL << 63)
-+#define _PAGE_MTMASK_THEAD	(_PAGE_PMA_THEAD | _PAGE_IO_THEAD | (1UL << 59))
-+
- static inline u64 riscv_page_mtmask(void)
- {
- 	u64 val;
-@@ -193,7 +205,11 @@ static inline bool mm_pud_folded(struct mm_struct *mm)
- 
- static inline pmd_t pfn_pmd(unsigned long pfn, pgprot_t prot)
- {
--	return __pmd((pfn << _PAGE_PFN_SHIFT) | pgprot_val(prot));
-+	unsigned long prot_val = pgprot_val(prot);
-+
-+	ALT_THEAD_PMA(prot_val);
-+
-+	return __pmd((pfn << _PAGE_PFN_SHIFT) | prot_val);
- }
- 
- static inline unsigned long _pmd_pfn(pmd_t pmd)
-diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-index c55341b72de1..6f0a260d3f2c 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -250,7 +250,11 @@ static inline void pmd_clear(pmd_t *pmdp)
- 
- static inline pgd_t pfn_pgd(unsigned long pfn, pgprot_t prot)
- {
--	return __pgd((pfn << _PAGE_PFN_SHIFT) | pgprot_val(prot));
-+	unsigned long prot_val = pgprot_val(prot);
-+
-+	ALT_THEAD_PMA(prot_val);
-+
-+	return __pgd((pfn << _PAGE_PFN_SHIFT) | prot_val);
- }
- 
- static inline unsigned long _pgd_pfn(pgd_t pgd)
-@@ -289,7 +293,11 @@ static inline unsigned long pte_pfn(pte_t pte)
- /* Constructs a page table entry */
- static inline pte_t pfn_pte(unsigned long pfn, pgprot_t prot)
- {
--	return __pte((pfn << _PAGE_PFN_SHIFT) | pgprot_val(prot));
-+	unsigned long prot_val = pgprot_val(prot);
-+
-+	ALT_THEAD_PMA(prot_val);
-+
-+	return __pte((pfn << _PAGE_PFN_SHIFT) | prot_val);
- }
- 
- #define mk_pte(page, prot)       pfn_pte(page_to_pfn(page), prot)
-@@ -398,7 +406,11 @@ static inline int pmd_protnone(pmd_t pmd)
- /* Modify page protection bits */
- static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
- {
--	return __pte((pte_val(pte) & _PAGE_CHG_MASK) | pgprot_val(newprot));
-+	unsigned long newprot_val = pgprot_val(newprot);
-+
-+	ALT_THEAD_PMA(newprot_val);
-+
-+	return __pte((pte_val(pte) & _PAGE_CHG_MASK) | newprot_val);
- }
- 
- #define pgd_ERROR(e) \
-diff --git a/arch/riscv/include/asm/vendorid_list.h b/arch/riscv/include/asm/vendorid_list.h
-index 9d934215b3c8..cb89af3f0704 100644
---- a/arch/riscv/include/asm/vendorid_list.h
-+++ b/arch/riscv/include/asm/vendorid_list.h
-@@ -6,5 +6,6 @@
- #define ASM_VENDOR_LIST_H
- 
- #define SIFIVE_VENDOR_ID	0x489
-+#define THEAD_VENDOR_ID		0x5b7
- 
- #endif
-diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
-index 27f722ae452b..e7980bf17e8b 100644
---- a/arch/riscv/kernel/alternative.c
-+++ b/arch/riscv/kernel/alternative.c
-@@ -42,6 +42,11 @@ static void __init_or_module riscv_fill_cpu_mfr_info(struct cpu_manufacturer_inf
- 	case SIFIVE_VENDOR_ID:
- 		cpu_mfr_info->vendor_patch_func = sifive_errata_patch_func;
- 		break;
-+#endif
-+#ifdef CONFIG_ERRATA_THEAD
-+	case THEAD_VENDOR_ID:
-+		cpu_mfr_info->vendor_patch_func = thead_errata_patch_func;
-+		break;
- #endif
- 	default:
- 		cpu_mfr_info->vendor_patch_func = NULL;
-@@ -82,6 +87,13 @@ void __init apply_boot_alternatives(void)
- 			    RISCV_ALTERNATIVES_BOOT);
- }
- 
-+void __init apply_early_boot_alternatives(void)
-+{
-+	_apply_alternatives((struct alt_entry *)__alt_start,
-+			    (struct alt_entry *)__alt_end,
-+			    RISCV_ALTERNATIVES_EARLY_BOOT);
-+}
-+
- #ifdef CONFIG_MODULES
- void apply_module_alternatives(void *start, size_t length)
- {
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index f514b949c6a7..dea3ea19deee 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -254,7 +254,12 @@ struct cpufeature_info {
- static bool __init_or_module cpufeature_svpbmt_check_func(unsigned int stage)
- {
- #ifdef CONFIG_RISCV_ISA_SVPBMT
--	return riscv_isa_extension_available(NULL, SVPBMT);
-+	switch (stage) {
-+	case RISCV_ALTERNATIVES_EARLY_BOOT:
-+		return false;
-+	default:
-+		return riscv_isa_extension_available(NULL, SVPBMT);
-+	}
- #endif
- 
- 	return false;
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index 9535bea8688c..1d35a0667db3 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -935,6 +935,7 @@ asmlinkage void __init setup_vm(uintptr_t dtb_pa)
- 	BUG_ON((kernel_map.virt_addr + kernel_map.size) > ADDRESS_SPACE_END - SZ_4K);
- #endif
- 
-+	apply_early_boot_alternatives();
- 	pt_ops_set_early();
- 
- 	/* Setup early PGD for fixmap */
--- 
-2.35.1
+>>> +#define KVM_REG_FEATURE_LEVEL_WIDTH  4
+>>> +#define KVM_REG_FEATURE_LEVEL_MASK   GENMASK(KVM_REG_FEATURE_LEVEL_WIDTH, 0)
+>>> +
+>>
+>> It seems 'BIT()' is replaced with 'GENMASK' in the movement, but it's not mentioned
+>> in the commit log. I guess it'd better to mention it if you agree.
+>>
+> The last sentence of the commit text mentions this :)
+> Please let me know if it's not clear.
+> 
+
+Exactly and it's clear. Sorry that I missed it :)
+
+>>> +/*
+>>> + * Convert the workaround level into an easy-to-compare number, where higher
+>>> + * values mean better protection.
+>>> + */
+>>> +static int get_kernel_wa_level(u64 regid)
+>>> +{
+>>> +     switch (regid) {
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+>>> +             switch (arm64_get_spectre_v2_state()) {
+>>> +             case SPECTRE_VULNERABLE:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_NOT_AVAIL;
+>>> +             case SPECTRE_MITIGATED:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_AVAIL;
+>>> +             case SPECTRE_UNAFFECTED:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_NOT_REQUIRED;
+>>> +             }
+>>> +             return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_NOT_AVAIL;
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
+>>> +             switch (arm64_get_spectre_v4_state()) {
+>>> +             case SPECTRE_MITIGATED:
+>>> +                     /*
+>>> +                      * As for the hypercall discovery, we pretend we
+>>> +                      * don't have any FW mitigation if SSBS is there at
+>>> +                      * all times.
+>>> +                      */
+>>> +                     if (cpus_have_final_cap(ARM64_SSBS))
+>>> +                             return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+>>> +                     fallthrough;
+>>> +             case SPECTRE_UNAFFECTED:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED;
+>>> +             case SPECTRE_VULNERABLE:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+>>> +             }
+>>> +             break;
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+>>> +             switch (arm64_get_spectre_bhb_state()) {
+>>> +             case SPECTRE_VULNERABLE:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
+>>> +             case SPECTRE_MITIGATED:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL;
+>>> +             case SPECTRE_UNAFFECTED:
+>>> +                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED;
+>>> +             }
+>>> +             return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
+>>> +     }
+>>> +
+>>> +     return -EINVAL;
+>>> +}
+>>> +
+>>> +int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+>>> +{
+>>> +     void __user *uaddr = (void __user *)(long)reg->addr;
+>>> +     u64 val;
+>>> +
+>>> +     switch (reg->id) {
+>>> +     case KVM_REG_ARM_PSCI_VERSION:
+>>> +             val = kvm_psci_version(vcpu);
+>>> +             break;
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+>>> +             val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+>>> +             break;
+>>> +     default:
+>>> +             return -ENOENT;
+>>> +     }
+>>> +
+>>> +     if (copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id)))
+>>> +             return -EFAULT;
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+>>> +{
+>>> +     void __user *uaddr = (void __user *)(long)reg->addr;
+>>> +     u64 val;
+>>> +     int wa_level;
+>>> +
+>>> +     if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
+>>> +             return -EFAULT;
+>>> +
+>>> +     switch (reg->id) {
+>>> +     case KVM_REG_ARM_PSCI_VERSION:
+>>> +     {
+>>> +             bool wants_02;
+>>> +
+>>> +             wants_02 = test_bit(KVM_ARM_VCPU_PSCI_0_2, vcpu->arch.features);
+>>> +
+>>> +             switch (val) {
+>>> +             case KVM_ARM_PSCI_0_1:
+>>> +                     if (wants_02)
+>>> +                             return -EINVAL;
+>>> +                     vcpu->kvm->arch.psci_version = val;
+>>> +                     return 0;
+>>> +             case KVM_ARM_PSCI_0_2:
+>>> +             case KVM_ARM_PSCI_1_0:
+>>> +             case KVM_ARM_PSCI_1_1:
+>>> +                     if (!wants_02)
+>>> +                             return -EINVAL;
+>>> +                     vcpu->kvm->arch.psci_version = val;
+>>> +                     return 0;
+>>> +             }
+>>> +             break;
+>>> +     }
+>>> +
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+>>> +             if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
+>>> +                     return -EINVAL;
+>>> +
+>>> +             if (get_kernel_wa_level(reg->id) < val)
+>>> +                     return -EINVAL;
+>>> +
+>>> +             return 0;
+>>> +
+>>> +     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
+>>> +             if (val & ~(KVM_REG_FEATURE_LEVEL_MASK |
+>>> +                         KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED))
+>>> +                     return -EINVAL;
+>>> +
+>>> +             /* The enabled bit must not be set unless the level is AVAIL. */
+>>> +             if ((val & KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED) &&
+>>> +                 (val & KVM_REG_FEATURE_LEVEL_MASK) != KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_AVAIL)
+>>> +                     return -EINVAL;
+>>> +
+>>> +             /*
+>>> +              * Map all the possible incoming states to the only two we
+>>> +              * really want to deal with.
+>>> +              */
+>>> +             switch (val & KVM_REG_FEATURE_LEVEL_MASK) {
+>>> +             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL:
+>>> +             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_UNKNOWN:
+>>> +                     wa_level = KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+>>> +                     break;
+>>> +             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_AVAIL:
+>>> +             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED:
+>>> +                     wa_level = KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED;
+>>> +                     break;
+>>> +             default:
+>>> +                     return -EINVAL;
+>>> +             }
+>>> +
+>>> +             /*
+>>> +              * We can deal with NOT_AVAIL on NOT_REQUIRED, but not the
+>>> +              * other way around.
+>>> +              */
+>>> +             if (get_kernel_wa_level(reg->id) < wa_level)
+>>> +                     return -EINVAL;
+>>> +
+>>> +             return 0;
+>>> +     default:
+>>> +             return -ENOENT;
+>>> +     }
+>>> +
+>>> +     return -EINVAL;
+>>> +}
+>>> diff --git a/arch/arm64/kvm/psci.c b/arch/arm64/kvm/psci.c
+>>> index 372da09a2fab..bdfa93ca57d1 100644
+>>> --- a/arch/arm64/kvm/psci.c
+>>> +++ b/arch/arm64/kvm/psci.c
+>>> @@ -439,186 +439,3 @@ int kvm_psci_call(struct kvm_vcpu *vcpu)
+>>>                return -EINVAL;
+>>>        }
+>>>    }
+>>> -
+>>> -int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
+>>> -{
+>>> -     return 4;               /* PSCI version and three workaround registers */
+>>> -}
+>>> -
+>>> -int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+>>> -{
+>>> -     if (put_user(KVM_REG_ARM_PSCI_VERSION, uindices++))
+>>> -             return -EFAULT;
+>>> -
+>>> -     if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1, uindices++))
+>>> -             return -EFAULT;
+>>> -
+>>> -     if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2, uindices++))
+>>> -             return -EFAULT;
+>>> -
+>>> -     if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3, uindices++))
+>>> -             return -EFAULT;
+>>> -
+>>> -     return 0;
+>>> -}
+>>> -
+>>> -#define KVM_REG_FEATURE_LEVEL_WIDTH  4
+>>> -#define KVM_REG_FEATURE_LEVEL_MASK   (BIT(KVM_REG_FEATURE_LEVEL_WIDTH) - 1)
+>>> -
+>>> -/*
+>>> - * Convert the workaround level into an easy-to-compare number, where higher
+>>> - * values mean better protection.
+>>> - */
+>>> -static int get_kernel_wa_level(u64 regid)
+>>> -{
+>>> -     switch (regid) {
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+>>> -             switch (arm64_get_spectre_v2_state()) {
+>>> -             case SPECTRE_VULNERABLE:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_NOT_AVAIL;
+>>> -             case SPECTRE_MITIGATED:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_AVAIL;
+>>> -             case SPECTRE_UNAFFECTED:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_NOT_REQUIRED;
+>>> -             }
+>>> -             return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1_NOT_AVAIL;
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
+>>> -             switch (arm64_get_spectre_v4_state()) {
+>>> -             case SPECTRE_MITIGATED:
+>>> -                     /*
+>>> -                      * As for the hypercall discovery, we pretend we
+>>> -                      * don't have any FW mitigation if SSBS is there at
+>>> -                      * all times.
+>>> -                      */
+>>> -                     if (cpus_have_final_cap(ARM64_SSBS))
+>>> -                             return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+>>> -                     fallthrough;
+>>> -             case SPECTRE_UNAFFECTED:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED;
+>>> -             case SPECTRE_VULNERABLE:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+>>> -             }
+>>> -             break;
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+>>> -             switch (arm64_get_spectre_bhb_state()) {
+>>> -             case SPECTRE_VULNERABLE:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
+>>> -             case SPECTRE_MITIGATED:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL;
+>>> -             case SPECTRE_UNAFFECTED:
+>>> -                     return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED;
+>>> -             }
+>>> -             return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
+>>> -     }
+>>> -
+>>> -     return -EINVAL;
+>>> -}
+>>> -
+>>> -int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+>>> -{
+>>> -     void __user *uaddr = (void __user *)(long)reg->addr;
+>>> -     u64 val;
+>>> -
+>>> -     switch (reg->id) {
+>>> -     case KVM_REG_ARM_PSCI_VERSION:
+>>> -             val = kvm_psci_version(vcpu);
+>>> -             break;
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+>>> -             val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+>>> -             break;
+>>> -     default:
+>>> -             return -ENOENT;
+>>> -     }
+>>> -
+>>> -     if (copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id)))
+>>> -             return -EFAULT;
+>>> -
+>>> -     return 0;
+>>> -}
+>>> -
+>>> -int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+>>> -{
+>>> -     void __user *uaddr = (void __user *)(long)reg->addr;
+>>> -     u64 val;
+>>> -     int wa_level;
+>>> -
+>>> -     if (copy_from_user(&val, uaddr, KVM_REG_SIZE(reg->id)))
+>>> -             return -EFAULT;
+>>> -
+>>> -     switch (reg->id) {
+>>> -     case KVM_REG_ARM_PSCI_VERSION:
+>>> -     {
+>>> -             bool wants_02;
+>>> -
+>>> -             wants_02 = test_bit(KVM_ARM_VCPU_PSCI_0_2, vcpu->arch.features);
+>>> -
+>>> -             switch (val) {
+>>> -             case KVM_ARM_PSCI_0_1:
+>>> -                     if (wants_02)
+>>> -                             return -EINVAL;
+>>> -                     vcpu->kvm->arch.psci_version = val;
+>>> -                     return 0;
+>>> -             case KVM_ARM_PSCI_0_2:
+>>> -             case KVM_ARM_PSCI_1_0:
+>>> -             case KVM_ARM_PSCI_1_1:
+>>> -                     if (!wants_02)
+>>> -                             return -EINVAL;
+>>> -                     vcpu->kvm->arch.psci_version = val;
+>>> -                     return 0;
+>>> -             }
+>>> -             break;
+>>> -     }
+>>> -
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+>>> -             if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
+>>> -                     return -EINVAL;
+>>> -
+>>> -             if (get_kernel_wa_level(reg->id) < val)
+>>> -                     return -EINVAL;
+>>> -
+>>> -             return 0;
+>>> -
+>>> -     case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
+>>> -             if (val & ~(KVM_REG_FEATURE_LEVEL_MASK |
+>>> -                         KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED))
+>>> -                     return -EINVAL;
+>>> -
+>>> -             /* The enabled bit must not be set unless the level is AVAIL. */
+>>> -             if ((val & KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED) &&
+>>> -                 (val & KVM_REG_FEATURE_LEVEL_MASK) != KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_AVAIL)
+>>> -                     return -EINVAL;
+>>> -
+>>> -             /*
+>>> -              * Map all the possible incoming states to the only two we
+>>> -              * really want to deal with.
+>>> -              */
+>>> -             switch (val & KVM_REG_FEATURE_LEVEL_MASK) {
+>>> -             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL:
+>>> -             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_UNKNOWN:
+>>> -                     wa_level = KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_AVAIL;
+>>> -                     break;
+>>> -             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_AVAIL:
+>>> -             case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED:
+>>> -                     wa_level = KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED;
+>>> -                     break;
+>>> -             default:
+>>> -                     return -EINVAL;
+>>> -             }
+>>> -
+>>> -             /*
+>>> -              * We can deal with NOT_AVAIL on NOT_REQUIRED, but not the
+>>> -              * other way around.
+>>> -              */
+>>> -             if (get_kernel_wa_level(reg->id) < wa_level)
+>>> -                     return -EINVAL;
+>>> -
+>>> -             return 0;
+>>> -     default:
+>>> -             return -ENOENT;
+>>> -     }
+>>> -
+>>> -     return -EINVAL;
+>>> -}
+>>> diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
+>>> index 0e2509d27910..5d38628a8d04 100644
+>>> --- a/include/kvm/arm_hypercalls.h
+>>> +++ b/include/kvm/arm_hypercalls.h
+>>> @@ -40,4 +40,11 @@ static inline void smccc_set_retval(struct kvm_vcpu *vcpu,
+>>>        vcpu_set_reg(vcpu, 3, a3);
+>>>    }
+>>>
+>>> +struct kvm_one_reg;
+>>> +
+>>> +int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu);
+>>> +int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices);
+>>> +int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
+>>> +int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
+>>> +
+>>>    #endif
+>>> diff --git a/include/kvm/arm_psci.h b/include/kvm/arm_psci.h
+>>> index 68b96c3826c3..6e55b9283789 100644
+>>> --- a/include/kvm/arm_psci.h
+>>> +++ b/include/kvm/arm_psci.h
+>>> @@ -39,11 +39,4 @@ static inline int kvm_psci_version(struct kvm_vcpu *vcpu)
+>>>
+>>>    int kvm_psci_call(struct kvm_vcpu *vcpu);
+>>>
+>>> -struct kvm_one_reg;
+>>> -
+>>> -int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu);
+>>> -int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices);
+>>> -int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
+>>> -int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg);
+>>> -
+>>>    #endif /* __KVM_ARM_PSCI_H__ */
+>>>
+>>
+
+[...]
+
+> Thank you for the review, Gavin.
+> 
+
+No worries. The SDEI virtualization series depends on this to
+some extent :)
+
+Thanks,
+Gavin
+
 
