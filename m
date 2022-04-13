@@ -2,187 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7582C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:36:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA36C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234536AbiDMJjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
+        id S234528AbiDMJj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234540AbiDMJjO (ORCPT
+        with ESMTP id S234442AbiDMJjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:39:14 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B3054699
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:36:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649842612; x=1681378612;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version:content-transfer-encoding;
-  bh=MT1Kf7edS218qgu1PUr9mXSGIu5bS3fCzq8ZJBUhQT4=;
-  b=XCTXPatTIMqebrhjtS1oXzDl4fAbbf+IW+QT2P9U7Ir/xm0XegjoVRia
-   Vk5hPSHjciGILKYgvFBoX6BIBaLkyiM6QnnN0sQvyJFBvtfDvNni0vk2m
-   B2mKSNxsV+Y3FDzCKVyxhbp0b3D4sREifzR1nmHgWA0ELDiUUPbhMb17v
-   RPaa2OJfcYStCc8i9zYY2L34o2RN7pL2qXC2Dsy7QCOuSd9wNhyZ5yxSP
-   QPMSeXqpFP/rsCUD1b2JaQN34EryliOv4/tEV1QL1ssvLFVR17y6Ynh/z
-   6N+iZHbZpZS0YOGwk43AyHTTq0zKJJrpkKE3sYYFDxXAyPFuR3GnIxMfb
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="243206855"
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="243206855"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 02:31:13 -0700
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="573192674"
-Received: from psoltysi-mobl.ger.corp.intel.com (HELO localhost) ([10.249.149.160])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 02:31:09 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     "Wang, Zhi A" <zhi.a.wang@intel.com>,
-        Zhi Wang <zhi.wang.linux@gmail.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>
-Cc:     Zhi Wang <zhi.a.wang@gmail.com>, Christoph Hellwig <hch@lst.de>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>
-Subject: Re: [PATCH v9 1/3] i915/gvt: Separate the MMIO tracking table from
- GVT-g
-In-Reply-To: <986b8ff0-d0de-437c-8a56-c54aafb6159a@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220407071945.72148-1-zhi.a.wang@intel.com>
- <20220407071945.72148-2-zhi.a.wang@intel.com> <874k35541h.fsf@intel.com>
- <986b8ff0-d0de-437c-8a56-c54aafb6159a@intel.com>
-Date:   Wed, 13 Apr 2022 12:31:07 +0300
-Message-ID: <87h76xgwis.fsf@intel.com>
+        Wed, 13 Apr 2022 05:39:24 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537AB541B4;
+        Wed, 13 Apr 2022 02:37:04 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id s137so1293701pgs.5;
+        Wed, 13 Apr 2022 02:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZIbqNzlM4mGyXngbvjcRG1LQx/UAY6/404TR2/PWwFs=;
+        b=j8GfcResZEwut76VbSxBlfk8dbQVlR/c6a10PTJq1uirvnk1P3Mbf+HyHcxtJ1p5hj
+         Gwx43aaHNSsBcKYUlaYbg1Cg74OSxxrZFYOt2Lo9MzYF3LJPDI1DQHRWb4uKTiYnhQXA
+         M+B6g4BKwOihidCO0V6RaUxc1BUESxcM71p9YUwLzUhjCBJN/YYJJGO8cSom54IT2sIC
+         pysgQbnApUHSFR6rSjDTZby7noM9q80dnKDNp/cHbi0rvDVcwJQSDzdyyJo7zLfQFakh
+         JCrp609KqPe+18ASLprBBLFxtgiaeaeUTI1TAmWyv/FvmGVjYjAJbL7U1+6PHkZeOnU/
+         D0WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZIbqNzlM4mGyXngbvjcRG1LQx/UAY6/404TR2/PWwFs=;
+        b=Gd7xQZ/t8n9Tt1m28HBTrchLbH2npKgYoqT6Z/nc5aigv7a3kyRinwtviIPyFGHi3y
+         zF+uQrlFJlbSQDC98T50/c8nFbVX7JnicS0PAHSnH5N6B9AJYcaznUvtUX8VMOFMPF1f
+         rtIbvsm2AZqIbEZCxgZBRzGplf3lX5tt1EVxeq6NW8NsgWus10psjjAL5DYVH23idpnu
+         z8oFZEvqPSODbfkCcMcX/pL7S5EkPX66S60Sa51Mx/UHsEV54Wln1Pw28ShJR6DXI3QS
+         KjuOtfnHmh6FQ7xYnd/7qeP0XhrXbA1CoRMWNB0HbMCkF3uf938GW8X+xwSPSgRhoko2
+         7RBw==
+X-Gm-Message-State: AOAM5322AJ3w9F3sn3V5yETUgJSpxrOGIq+9luyFqm6OjY41sDWJrqkI
+        1rMSPeLYlsxF4hfmGgY+4ms=
+X-Google-Smtp-Source: ABdhPJyP10IR9XEvNvaxdXCbbuP6cBLOlt/6ra1wKwndHOwZHpzIuU325rdV0pyhDg3hMTSZjTFxEQ==
+X-Received: by 2002:a63:ec43:0:b0:382:11ef:b94a with SMTP id r3-20020a63ec43000000b0038211efb94amr34761353pgj.409.1649842623860;
+        Wed, 13 Apr 2022 02:37:03 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id y15-20020a17090a1f4f00b001c7ecaf9e13sm2391836pjy.35.2022.04.13.02.37.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 02:37:03 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     broonie@kernel.org
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] spi: spi-cadence-quadspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Wed, 13 Apr 2022 09:36:56 +0000
+Message-Id: <20220413093656.2538504-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 08 Apr 2022, "Wang, Zhi A" <zhi.a.wang@intel.com> wrote:
-> Hi Jani:
->
-> Thanks so much for the help. Can you generate a new tag on
-> drm-intel-next? I noticed that there was one patch moving the DMC
-> related registers into display/intel_dmc_regs.h, which is not included
-> in the latest tag on drm-intel-next.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Sorry, I'm not sure what you're asking exactly. We do tags when we
-create pull requests for drm-next, but I don't see the connection to
-gvt.
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-BR,
-Jani.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/spi/spi-mem.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
->
-> Guess it would be better that I can change this patch according to it
-> when checking in. This would prevent a conflict in future.
->
-> Thanks,
-> Zhi.
->
-> On 4/7/22 3:03 PM, Jani Nikula wrote:
->> On Thu, 07 Apr 2022, Zhi Wang <zhi.wang.linux@gmail.com> wrote:
->>> diff --git a/drivers/gpu/drm/i915/intel_gvt.h b/drivers/gpu/drm/i915/in=
-tel_gvt.h
->>> index d7d3fb6186fd..7665d7cf0bdd 100644
->>> --- a/drivers/gpu/drm/i915/intel_gvt.h
->>> +++ b/drivers/gpu/drm/i915/intel_gvt.h
->>> @@ -26,7 +26,17 @@
->>>=20=20
->>>  struct drm_i915_private;
->>>=20=20
->>> +#include <linux/kernel.h>
->>=20
->> You only need <linux/types.h>. Please add it before the forward
->> declaration above.
->>=20
->>> +
->>>  #ifdef CONFIG_DRM_I915_GVT
->>> +
->>> +struct intel_gvt_mmio_table_iter {
->>> +	struct drm_i915_private *i915;
->>> +	void *data;
->>> +	int (*handle_mmio_cb)(struct intel_gvt_mmio_table_iter *iter,
->>> +			      u32 offset, u32 size);
->>> +};
->>> +
->>>  int intel_gvt_init(struct drm_i915_private *dev_priv);
->>>  void intel_gvt_driver_remove(struct drm_i915_private *dev_priv);
->>>  int intel_gvt_init_device(struct drm_i915_private *dev_priv);
->>> @@ -34,6 +44,7 @@ void intel_gvt_clean_device(struct drm_i915_private *=
-dev_priv);
->>>  int intel_gvt_init_host(void);
->>>  void intel_gvt_sanitize_options(struct drm_i915_private *dev_priv);
->>>  void intel_gvt_resume(struct drm_i915_private *dev_priv);
->>> +int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *ite=
-r);
->>>  #else
->>>  static inline int intel_gvt_init(struct drm_i915_private *dev_priv)
->>>  {
->>> @@ -51,6 +62,16 @@ static inline void intel_gvt_sanitize_options(struct=
- drm_i915_private *dev_priv)
->>>  static inline void intel_gvt_resume(struct drm_i915_private *dev_priv)
->>>  {
->>>  }
->>> +
->>> +unsigned long intel_gvt_get_device_type(struct drm_i915_private *i915)
->>> +{
->>> +	return 0;
->>> +}
->>=20
->> The CONFIG_DRM_I915_GVT=3Dy counterpart for this is in mmio.h. Should be
->> both in the same header.
->>=20
->>> +
->>> +int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *ite=
-r)
->>> +{
->>> +	return 0;
->>> +}
->>>  #endif
->>>=20=20
->>>  #endif /* _INTEL_GVT_H_ */
->>> diff --git a/drivers/gpu/drm/i915/intel_gvt_mmio_table.c b/drivers/gpu/=
-drm/i915/intel_gvt_mmio_table.c
->>> new file mode 100644
->>> index 000000000000..d29491a6d209
->>> --- /dev/null
->>> +++ b/drivers/gpu/drm/i915/intel_gvt_mmio_table.c
->>> @@ -0,0 +1,1290 @@
->>> +// SPDX-License-Identifier: MIT
->>> +/*
->>> + * Copyright =C2=A9 2020 Intel Corporation
->>> + */
->>> +
->>> +#include "i915_drv.h"
->>> +#include "i915_reg.h"
->>> +#include "display/vlv_dsi_pll_regs.h"
->>> +#include "gt/intel_gt_regs.h"
->>> +#include "intel_mchbar_regs.h"
->>> +#include "i915_pvinfo.h"
->>> +#include "intel_gvt.h"
->>> +#include "gvt/gvt.h"
->>=20
->> Generally we have the include lists sorted.
->>=20
->> Other than the nitpicks above, the series is
->>=20
->> Acked-by: Jani Nikula <jani.nikula@intel.com>
->>=20
->>=20
->> BR,
->> Jani.
->>=20
->>=20
->
+diff --git a/drivers/spi/spi-mem.c b/drivers/spi/spi-mem.c
+index 0e8dafc62d94..7d7091aa0c22 100644
+--- a/drivers/spi/spi-mem.c
++++ b/drivers/spi/spi-mem.c
+@@ -262,9 +262,8 @@ static int spi_mem_access_start(struct spi_mem *mem)
+ 	if (ctlr->auto_runtime_pm) {
+ 		int ret;
+ 
+-		ret = pm_runtime_get_sync(ctlr->dev.parent);
++		ret = pm_runtime_resume_and_get(ctlr->dev.parent);
+ 		if (ret < 0) {
+-			pm_runtime_put_noidle(ctlr->dev.parent);
+ 			dev_err(&ctlr->dev, "Failed to power device: %d\n",
+ 				ret);
+ 			return ret;
+-- 
+2.25.1
 
---=20
-Jani Nikula, Intel Open Source Graphics Center
+
