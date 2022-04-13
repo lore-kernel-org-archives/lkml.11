@@ -2,81 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E74AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238236AbiDMTPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
+        id S237423AbiDMTPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238328AbiDMTM4 (ORCPT
+        with ESMTP id S238633AbiDMTNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:12:56 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0042A72446;
-        Wed, 13 Apr 2022 12:08:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649876903; x=1681412903;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/NRCMCz/oyRtVdmOgQk/fJ76afo2WGVrCiTYNHVE2xg=;
-  b=jp1BTGQnqg6om4h3RVprXPx8foex2/AFlEgBn9uIgdsusvqtOC+ANY7b
-   JwaDJMv105ChXwZjTwAB5UK7wtymp51mqnnF+nTUiXc4SKjMO1+YeOxXp
-   Ofg4B/Mz+Hf1qSAwXKUi7sYaZPyysors26lvFQ6LmKXPKHR1uTSEAR447
-   VTj0bctodH+fRDMnJZvL8stADFVRpp7rt9z07Do1AWqE35nAfWRzqSHw+
-   fS5E+ZVqMflRZ3AkVL5E98iAkcDfEfZzh32gz+69kMWOFfxQcVZsvHcak
-   FOk7Wzy/qib7kx44SEXAcsuf1IBmkHR7dqkqMfPv7rtjMXbGf8ZsHG856
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="242686450"
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="242686450"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 12:08:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="526590986"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 13 Apr 2022 12:08:20 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 6E66412C; Wed, 13 Apr 2022 22:08:20 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iio: dac: lpc18xx: Drop dependency on OF
-Date:   Wed, 13 Apr 2022 22:08:19 +0300
-Message-Id: <20220413190819.38206-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 13 Apr 2022 15:13:24 -0400
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A87F7938D;
+        Wed, 13 Apr 2022 12:09:07 -0700 (PDT)
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e2442907a1so2989192fac.8;
+        Wed, 13 Apr 2022 12:09:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DLfFRlPR18ak0Dg98RjZkZ+swlB0PONrUxc3NZGeV2c=;
+        b=vPebnLDsWtFRRCt7KvZX9tAeUU6BxIg+CZBdi/YxNeyLLAx4ifffad8wZS5YU0gRue
+         jcGxNppYBXAEr1rmnZDJVxUtl+gZgoCGk26CtgCFhliPvLqURvm/nSVcm643KMJ5yjRz
+         tJSo+dqktAnXHck4VSWfMSSWLS49R+WqbZYOA33/inuKPsHVkyDDtdYLMh5Cyf8h8zqp
+         ypl1J6qCTJQDi2D54oNv1f5wU98yqIxTMz9kkIYrBRvilVKSuz8W+5n/FW/i2dpe+KuQ
+         ZdyxPEEG0craU+4dr8VQWkkkeQ9nPkq13cWxA1HLypNtJaxmwQeFzA/OoRZw8t/Vhf68
+         yrew==
+X-Gm-Message-State: AOAM532R9kZDvC+ZhQ9rcSA6wX42jDozhkqglFGI/MTL8oTXSuwKkPR7
+        RhGlXXEKPkKyeaDQj0Fl5xTo04nQxg==
+X-Google-Smtp-Source: ABdhPJw7hT2QmeBA/ltdKB38j/W8WiKNHRYpddijFqt+fqHm6/4cCtwZkGaKp1wKMMN4w5kGnCJ2/g==
+X-Received: by 2002:a05:6870:b525:b0:e3:9db:e075 with SMTP id v37-20020a056870b52500b000e309dbe075mr90116oap.41.1649876946855;
+        Wed, 13 Apr 2022 12:09:06 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id l14-20020a056820030e00b00320edaf9b8esm13631840ooe.44.2022.04.13.12.09.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 12:09:06 -0700 (PDT)
+Received: (nullmailer pid 3659930 invoked by uid 1000);
+        Wed, 13 Apr 2022 19:09:05 -0000
+Date:   Wed, 13 Apr 2022 14:09:05 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: interrrupt-controller: uniphier-aidet: Use
+ unevaluatedProperties
+Message-ID: <Ylcf0QOBAne6fKQr@robh.at.kernel.org>
+References: <1649317664-21391-1-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649317664-21391-1-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Nothing in this driver depends on OF firmware so drop the dependency
-and update the headers to remove the false impression such a dependency
-exists.
+On Thu, Apr 07, 2022 at 04:47:44PM +0900, Kunihiko Hayashi wrote:
+> This refers common bindings, so this is preferred for
+> unevaluatedProperties instead of additionalProperties.
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> ---
+>  .../bindings/interrupt-controller/socionext,uniphier-aidet.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml b/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml
+> index f89ebde76dab..77f2d58a9c3f 100644
+> --- a/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphier-aidet.yaml
+> @@ -49,7 +49,7 @@ required:
+>    - interrupt-controller
+>    - '#interrupt-cells'
+>  
+> -additionalProperties: false
+> +unevaluatedProperties: false
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/dac/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+As mentioned elsewhere, not necessary here.
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 8d5b3bad75ad..d578e242d74d 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -304,7 +304,7 @@ config DS4424
- config LPC18XX_DAC
- 	tristate "NXP LPC18xx DAC driver"
- 	depends on ARCH_LPC18XX || COMPILE_TEST
--	depends on OF && HAS_IOMEM
-+	depends on HAS_IOMEM
- 	help
- 	  Say yes here to build support for NXP LPC18XX DAC.
- 
--- 
-2.35.1
-
+Rob
