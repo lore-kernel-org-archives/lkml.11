@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A34C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD55C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233587AbiDMWXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
+        id S236770AbiDMWXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238263AbiDMWW3 (ORCPT
+        with ESMTP id S238145AbiDMWW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 18:22:29 -0400
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E4C26122;
-        Wed, 13 Apr 2022 15:19:54 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id A2E4E5C034D;
-        Wed, 13 Apr 2022 18:19:53 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9A224F36;
+        Wed, 13 Apr 2022 15:19:50 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id C2EC85C0347;
+        Wed, 13 Apr 2022 18:19:49 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Wed, 13 Apr 2022 18:19:53 -0400
+  by compute3.internal (MEProxy); Wed, 13 Apr 2022 18:19:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1649888393; x=
-        1649974793; bh=hsDsSOvCiPnQ5iI1qwr559UylC5AhqoZAQgmwuaC8k8=; b=k
-        Xb3zpUzSFboY38A9QsINY8zApMK7WgMQOw4Ng9USwQlBfyE0MVR1tylfrDy1I+qT
-        g6Ae3V2zcIx2tvVyWavFpOefn02gLujLxskrpAgB2ouD6bVYY/TyCEtU75OJgzuQ
-        CtDJ1zFxURn+0MoLRdIN9C5oEb8rS2PPEtEpqdLe9pzkjMDfbS3gbsHqCpwyVtr3
-        wkSz6DEc0SZGuSDZdhgr84lkYnQBSwUn0BiU2neopyrN2eKfYhL7P8/EGsNz5vgo
-        g3LS5Q5MwFtxZK393zFQkVhuycwBfDKjq6aUHmXoKC26Z9uZCOxMyUUcQG0H4Pir
-        6UwhlIZrILTqi9yBgtJzQ==
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1649888389; x=1649974789; bh=Ix
+        LBprYD2crzgvrunvWymMhkE+BNBrBvN21E3wbwSFs=; b=F0pVSeeJEeN1Z2J7WT
+        2sMD/Ww3ziFwKcYXwvLoicHMtLPYxUv98wFKu8AoOtsK00YNmglvA8b++NZ/DxLg
+        OtcCt2AZjZfa/qVRgVDqwPyCOFuKEeKof/AiOp8kgUnZof16PdUbH+X/t5gmHLuv
+        s6p7OrBqffK+IT8QVY32iD+oyVNWFnkma9/q9mLy4sZq/IuukJmv7IhPS09/j/Mq
+        cJbaT3w2lH9pQPmThQhf4ir3Ka5IL0rK+uc7DQkx7n/8OajV8Y4TAOzEFPjheBdo
+        G0Tum5uKE+RSsr3yr/OAFoKtlSMeiGpTqvndwMHSWzGURbvbT2OKxGRzhQottMaF
+        2IBg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1649888393; x=1649974793; bh=hsDsSOvCiPnQ5
-        iI1qwr559UylC5AhqoZAQgmwuaC8k8=; b=n79GBWEz27CFo3CUyVTIM2mlJvVB4
-        GWqkXbvRylHmhP1oBQmf9fho/teYBHdDOG4ciwUJa76OD4mn4/2Vhv88prKdzsW0
-        zJZZJ90LMSOxjMeMr3hYVNwNmiyuzpPExJw5afj7suKgWw1VCOJyy/makbfugb+K
-        At/hXMNATMZE+gAq/ptOXpa5IUQeFYzeaphTCFZw6othu5L1LkG/H4rnOPr816Lq
-        +BWxhlisnGN2dshkh4kdJYtxilmZRcY4DX37I3Jn2eIzIVZ1xcauxjM8hy8VMMca
-        mSptsN/8SF34KnI+sG6ZJsOzf3i1xJmQ9kB6W3R0ecCzGd4JlhpKzLmhg==
-X-ME-Sender: <xms:iUxXYgSbu83lW-FusmWhDNn1xp4p3JJL4SMK3lYZlvQC7VtBNTKfQQ>
-    <xme:iUxXYty0zM1tfOCIY0Dx0V9K30inxIO9vvPdHjWC3XXK90PkznD-4cFmFBMq0Tqg7
-    gmdymYHbIedqknF3g>
-X-ME-Received: <xmr:iUxXYt0B1wQVfsntMAb2AoiKqdRfoDQTv16_LRggZCoMxh6uA63f8KtSakvfFewAM1o5ZjZ89td24YB5jowZTKUaIjNK8yHpJzhn2smqRiNOAvW5Va9qRFte94GjPmKjbA0jew>
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1649888389; x=1649974789; bh=IxLBprYD2crzgvrunvWymMhkE+BNBrBvN21
+        E3wbwSFs=; b=WHBYwoeJdEcfsRY7exrnwpuzazuw+st4toSxu0pPTvq2UaKL/+a
+        hyzHJM1H4mohKKXkkyM0NOygsRl1XqqIGjwSX7Jj5s7F8R58wWbVSQye0psNMAnd
+        +U7TZYi053Tk13RPWLCP/EqiahCyQteZk+dB3FMgOhzQ3nfTI1DHcjEUndB7tbza
+        reNqUjwq8EmnHJpDPGZYg04pAnFYH8oBlvJACrrlB3eoDI8RjURVYckVxKwQPe1H
+        ziPmtc1FZTC5exk5RP9I7iiW2VzYsW4Q40QH4pm7wii4LsJdUuXTsPJY5PiYVNAZ
+        vtj8D14l++mzYOgkQ6DYfgEK22Qc3O3sphQ==
+X-ME-Sender: <xms:hUxXYpviu3SplvEBuzVQzCxj24wSzkkb3cPrkmcMqquTXkZzBm2N2Q>
+    <xme:hUxXYifacBrxLBK_zklbk_BlLX8F6du3M0-ha3STfxLuffbb80Wrkws23DwXeIsRv
+    JTm9x19gI6E254Scg>
+X-ME-Received: <xmr:hUxXYsxEYIs_KwvGV7BKkf5udtjZFV8QOkleoGfeKBalk-OqfXFOjVM76Te_-kWXcVM5apxcizGh9ybnUlOpj86p4n73TQF5GMCmMy0gmNpVoYZN-j0RH7x0DK-y2HuAkG2Scg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddguddtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfgggtgfesthekredtredtjeenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepfedvffetgeduiedtfffgleelvdfhheekkeduffetuddvgeeffedu
-    fefhgeehueejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:iUxXYkDF191GxSw6_CviUvn75FZDJqFmn1I70ugGY9FnrvQx_qJbvg>
-    <xmx:iUxXYphAWuNOnJL-oPswsx6CO0P-zhyCyG1WGz_lE-8DtOWJdz7Dzw>
-    <xmx:iUxXYgqtfMBa34tVIA184caUhC4WeVe81paCYPoFaQ8rfllnQT8aEA>
-    <xmx:iUxXYtRCub4d5reKlxmAsasjqljRGRzUuc1UmKA3p15Lc-E7Q376bg>
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpefhvddvjeevleduteevveeiieetudejheetgeevgefhveehtdegieet
+    jeevgeduveenucffohhmrghinhepphhinhgvieegrdhorhhgnecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
+    ugdrohhrgh
+X-ME-Proxy: <xmx:hUxXYgP_v27Gd3MKzFtDqt2kVC3JGeqelAOByojBEsBMJoSpO9ibXQ>
+    <xmx:hUxXYp8K5JPfkOl_4YkzTZKl4Cd_UvJ8PGSXBD5eSAyMR-G6JSj4dQ>
+    <xmx:hUxXYgX8HQdle_OqA-eBsXLQqvGcAfEgQJ9OIR6qsKmz0rNZ6C9s8A>
+    <xmx:hUxXYp_pyOQeLmYo3hEfuOCGDXR-rM59OZmdIQ4to7qpz5SM2bT-xw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 18:19:52 -0400 (EDT)
+ 13 Apr 2022 18:19:48 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
         Sandy Huang <hjc@rock-chips.com>,
@@ -86,140 +87,98 @@ Cc:     linux-rockchip@lists.infradead.org,
         Thomas Zimmermann <tzimmermann@suse.de>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 16/16] [DO NOT MERGE] arm64: dts: rockchip: pinenote: Enable EBC display pipeline
-Date:   Wed, 13 Apr 2022 17:19:16 -0500
-Message-Id: <20220413221916.50995-17-samuel@sholland.org>
+Subject: [RFC PATCH 14/16] drm/panel-simple: Add eInk ED103TC2
+Date:   Wed, 13 Apr 2022 17:19:14 -0500
+Message-Id: <20220413221916.50995-15-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413221916.50995-1-samuel@sholland.org>
 References: <20220413221916.50995-1-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PineNote contains an eInk ED103TC2 panel connected to the EBC,
-powered by a TI TPS651851 PMIC.
+ED103TC2 is a 10.3" 1872x1404 eInk panel which supports up to 16 levels
+of grayscale and an 85 Hz frame rate. The timings and polarities here
+were taken from the manufacturer's datasheet.
 
+Since this panel is an electrophoretic display (EPD), the color depth is
+independent from the bus width. Instead, it is largely determined by the
+number of frames in the selected waveform. Each pixel uses two parallel
+data lines to specify one of only three states each frame: positive,
+negative, or no voltage.
+
+This specific panel has a 16-bit data bus, allowing it to update 8
+pixels during each source driver (horizontal) clock cycle. As a result,
+the horizontal timings given in the datasheet were all multiplied by 8
+to convert the units from clock cycles to pixels.
+
+Since the 16-bit data bus is double the width of the usual 8-bit bus
+used by eInk panels, the source driver clock will be half the usual
+frequency. This is signified by the DRM_MODE_FLAG_CLKDIV2 flag.
+
+The hskew parameter provides the spacing between the horizontal sync
+puls and the gate driver (vertical) clock pulse. This spacing is
+symmetrical on both sides, so it can be used to compute the gate
+driver clock pulse width.
+
+Datasheet: https://files.pine64.org/doc/quartz64/Eink%20P-511-828-V1_ED103TC2%20Formal%20Spec%20V1.0_20190514.pdf
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- .../boot/dts/rockchip/rk3566-pinenote.dtsi    | 80 +++++++++++++++++++
- 1 file changed, 80 insertions(+)
+ drivers/gpu/drm/panel/panel-simple.c | 31 ++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3566-pinenote.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-pinenote.dtsi
-index fea748adfa90..4a53931c3f92 100644
---- a/arch/arm64/boot/dts/rockchip/rk3566-pinenote.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3566-pinenote.dtsi
-@@ -72,6 +72,16 @@ led-0 {
- 		};
- 	};
- 
-+	panel {
-+		compatible = "eink,ed103tc2";
-+
-+		port {
-+			panel_in_ebc: endpoint {
-+				remote-endpoint = <&ebc_out_panel>;
-+			};
-+		};
-+	};
-+
- 	sdio_pwrseq: sdio-pwrseq {
- 		compatible = "mmc-pwrseq-simple";
- 		clocks = <&rk817 1>;
-@@ -213,6 +223,20 @@ &cpu3 {
- 	cpu-supply = <&vdd_cpu>;
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index a34f4198a534..c6b104ba01ee 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -1686,6 +1686,34 @@ static const struct panel_desc edt_etmv570g2dhu = {
+ 	.connector_type = DRM_MODE_CONNECTOR_DPI,
  };
  
-+&ebc {
-+	io-channels = <&ebc_pmic 0>;
-+	panel-supply = <&v3p3>;
-+	vcom-supply = <&vcom>;
-+	vdrive-supply = <&vdrive>;
-+	status = "okay";
-+
-+	port {
-+		ebc_out_panel: endpoint {
-+			remote-endpoint = <&panel_in_ebc>;
-+		};
-+	};
++static const struct drm_display_mode eink_ed103tc2_mode = {
++	.clock = 266693,
++	.hdisplay = 1872,
++	.hsync_start = 1872 + 184,
++	.hsync_end = 1872 + 184 + 88,
++	.htotal = 1872 + 184 + 88 + 64,
++	.hskew = 136,
++	.vdisplay = 1404,
++	.vsync_start = 1404 + 12,
++	.vsync_end = 1404 + 12 + 1,
++	.vtotal = 1404 + 12 + 1 + 4,
++	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_NVSYNC |
++		 DRM_MODE_FLAG_HSKEW | DRM_MODE_FLAG_CLKDIV2,
 +};
 +
- &i2c0 {
- 	status = "okay";
- 
-@@ -466,6 +490,47 @@ led@1 {
- 			default-brightness = <0>;
- 		};
- 	};
++static const struct panel_desc eink_ed103tc2 = {
++	.modes = &eink_ed103tc2_mode,
++	.num_modes = 1,
++	.bpc = 4,
++	.size = {
++		.width = 210,
++		.height = 157,
++	},
++	.bus_format = MEDIA_BUS_FMT_FIXED,
++	.bus_flags = DRM_BUS_FLAG_DE_LOW | DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE,
++	.connector_type = DRM_MODE_CONNECTOR_DPI,
++};
 +
-+	/* TODO: write binding */
-+	ebc_pmic: pmic@68 {
-+		compatible = "ti,tps65185";
-+		reg = <0x68>;
-+		interrupt-parent = <&gpio3>;
-+		interrupts = <RK_PA6 IRQ_TYPE_LEVEL_LOW>;
-+		#io-channel-cells = <1>;
-+		pinctrl-0 = <&ebc_pmic_pins>;
-+		pinctrl-names = "default";
-+		powerup-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
-+		pwr_good-gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
-+		vcom_ctrl-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
-+		vin-supply = <&vcc_bat>;
-+		vin3p3-supply = <&vcc_3v3>;
-+		wakeup-gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
-+		ti,up-sequence = <1>, <0>, <2>, <3>;
-+		ti,up-delay-ms = <3>, <3>, <3>, <3>;
-+		ti,down-sequence = <2>, <3>, <1>, <0>;
-+		ti,down-delay-ms = <3>, <6>, <6>, <6>;
-+
-+		regulators {
-+			v3p3: v3p3 {
-+				regulator-name = "v3p3";
-+				regulator-always-on;
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3300000>;
-+			};
-+
-+			vcom: vcom {
-+				regulator-name = "vcom";
-+				/* voltage range is board-specific */
-+			};
-+
-+			vdrive: vdrive {
-+				regulator-name = "vdrive";
-+				regulator-min-microvolt = <15000000>;
-+				regulator-max-microvolt = <15000000>;
-+			};
-+		};
-+	};
- };
- 
- &i2s1_8ch {
-@@ -508,6 +573,21 @@ bt_wake_h: bt-wake-h {
- 		};
- 	};
- 
-+	ebc-pmic {
-+		ebc_pmic_pins: ebc-pmic-pins {
-+			rockchip,pins = /* wakeup */
-+					<3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>,
-+					/* int */
-+					<3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
-+					/* pwr_good */
-+					<3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>,
-+					/* pwrup */
-+					<3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>,
-+					/* vcom_ctrl */
-+					<4 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
-+
- 	led {
- 		led_pin: led-pin {
- 			rockchip,pins = <3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
+ static const struct display_timing eink_vb3300_kca_timing = {
+ 	.pixelclock = { 40000000, 40000000, 40000000 },
+ 	.hactive = { 334, 334, 334 },
+@@ -3807,6 +3835,9 @@ static const struct of_device_id platform_of_match[] = {
+ 	}, {
+ 		.compatible = "edt,etmv570g2dhu",
+ 		.data = &edt_etmv570g2dhu,
++	}, {
++		.compatible = "eink,ed103tc2",
++		.data = &eink_ed103tc2,
+ 	}, {
+ 		.compatible = "eink,vb3300-kca",
+ 		.data = &eink_vb3300_kca,
 -- 
 2.35.1
 
