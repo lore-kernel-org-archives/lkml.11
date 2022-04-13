@@ -2,172 +2,352 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9499FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FD9C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238774AbiDMVHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47710 "EHLO
+        id S238734AbiDMVHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbiDMVG7 (ORCPT
+        with ESMTP id S238832AbiDMVHh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:06:59 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0EF1EADC;
-        Wed, 13 Apr 2022 14:04:36 -0700 (PDT)
+        Wed, 13 Apr 2022 17:07:37 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB3747AFA
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:15 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d11b6259adso26593347b3.19
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649883876; x=1681419876;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=4g9kIwKn84VsdzcM7eVUWEjweV9j7Y7uJiQP/4rq6JE=;
-  b=r0AJ0iQykUeW6GJH+18icmVt3zDwa4aGELAhYJvghoIHdAy0q/hF4+lC
-   XkdmbDa03pEyyE6nkvb5zJ+V/ZQboSoBPfImdhrwvzTfymlgd0MY/H7ID
-   GH6VXkNl7j0wPXuQPoPUUFG/ASILcrTcnglmjdOer7jDAgdPZXRqKFi3e
-   s=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Apr 2022 14:04:36 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:04:35 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Apr 2022 14:04:35 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Apr 2022 14:04:34 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] drm/msm/dp: stop event kernel thread when DP unbind
-Date:   Wed, 13 Apr 2022 14:04:25 -0700
-Message-ID: <1649883865-9012-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=+gtnTZ0Ui0fjQ6PlMfk1tXFCeUDxgDy5EJOsSSiIAT8=;
+        b=QTH9GSoYVXDl+zc3aHBzUQJEePfxKGQq/b70vqCjHezgfMlhlFi1/myc7r4pphxiyU
+         3m+4j6YIFLj2KoWCVpe5MsxGq+PX9vbszgO2pvqGNm2PTUYsGYaUjNFW0RWaGt0lVTAb
+         qNtdvkAvpv77ywxxTKz1GQF27OU/H8uCC8uHlS6c3AvB3q3VWP9Qjw1BKY/kc8R4Bexs
+         Z7NlqNfjMkLd4zyqtyezB4SOijaRTJSlIUB0LACXbLzBOXyFoPEupsZzu9KecazhfYn8
+         J2iBNnZbvMx2uu+fHAg+B1NlXbnYy2KxL+Hj3MYK4fqmgKl+xNhmsVn6+4D7xaqoW26k
+         FmWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=+gtnTZ0Ui0fjQ6PlMfk1tXFCeUDxgDy5EJOsSSiIAT8=;
+        b=qfZqvDrbNWnBMs71+XbFIXS6Jd+h3mx3iPIvNmPVSp//N7YMocqsnxJC4BArLz9wGd
+         Q4Ez9GdfXmkIUpx/WNDhyIyDqN/mjuK4xOkkASanT/y6yLH+zwliMgEcc4yGQ3b1ZGfl
+         FuLqIk3IMhnHl/J5ZMT4xxUonX6S29Z2zA+qm+DZf03Z3m6RH76w3VGG/X71X8vQ4msv
+         VmUZwAZjsdNxe1PmOAd0dMC5BgE0G47MNkqOGLO/BzlXo802jj2n5KgDuoYcwyAfvRoX
+         db7svrX6K7KgmWHydCQcvrpt0sVQ89xj+y9YGXchABcJMZD4AEHtuEv33ZABgIp8XEEv
+         zZ7g==
+X-Gm-Message-State: AOAM532gYvnyxn2bZJiWvT2fPKgFHCcVRLZUPZjPyjsQPZ31IJ8X6+YR
+        pPwcnNenyR4ALWB1FFxoM53tU+Ptfp7H
+X-Google-Smtp-Source: ABdhPJxyuLtqGum779Qh86iA+H17LMM84j42h7x5EVbV+81rRO6GJnQ53JlY6GldT5LGCkLVwVYMF7MU+9mB
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9135:da53:a8a2:bf11])
+ (user=irogers job=sendgmr) by 2002:a25:3b8b:0:b0:63d:f010:ed04 with SMTP id
+ i133-20020a253b8b000000b0063df010ed04mr611621yba.591.1649883914400; Wed, 13
+ Apr 2022 14:05:14 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 14:04:53 -0700
+In-Reply-To: <20220413210503.3256922-1-irogers@google.com>
+Message-Id: <20220413210503.3256922-4-irogers@google.com>
+Mime-Version: 1.0
+References: <20220413210503.3256922-1-irogers@google.com>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+Subject: [PATCH 04/14] perf vendor events intel: Update CLX uncore to v1.14
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        James Clark <james.clark@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current DP driver implementation, event thread is kept running
-after DP display is unbind. This patch fix this problem by disabling
-DP irq and stop event thread to exit gracefully at dp_display_unbind().
+JSON uncore events are generated for CascadeLake Server for v1.14
+with events from:
+https://download.01.org/perfmon/CLX/
 
-Changes in v2:
--- start event thread at dp_display_bind()
+New event names are added, that match the original json names,
+due to an update to:
+https://github.com/intel/event-converter-for-linux-perf/
 
-Fixes: e91e3065a806 ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- drivers/gpu/drm/msm/dp/dp_display.c | 40 +++++++++++++++++++++++++++----------
- 1 file changed, 30 insertions(+), 10 deletions(-)
+ .../arch/x86/cascadelakex/uncore-memory.json  | 61 ++++++++++++
+ .../arch/x86/cascadelakex/uncore-other.json   | 92 +++++++++++++++++++
+ 2 files changed, 153 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 01453db..943e4f1 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -113,6 +113,7 @@ struct dp_display_private {
- 	u32 hpd_state;
- 	u32 event_pndx;
- 	u32 event_gndx;
-+	struct task_struct *ev_tsk;
- 	struct dp_event event_list[DP_EVENT_Q_MAX];
- 	spinlock_t event_lock;
- 
-@@ -230,6 +231,31 @@ void dp_display_signal_audio_complete(struct msm_dp *dp_display)
- 	complete_all(&dp->audio_comp);
- }
- 
-+static int hpd_event_thread(void *data);
-+
-+static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
-+{
-+	init_waitqueue_head(&dp_priv->event_q);
-+	spin_lock_init(&dp_priv->event_lock);
-+
-+	dp_priv->ev_tsk = kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
-+
-+	if (IS_ERR(dp_priv->ev_tsk))
-+		DRM_ERROR("failed to create DP event thread\n");
-+}
-+
-+static void dp_hpd_event_stop(struct dp_display_private *dp_priv)
-+{
-+	if (IS_ERR(dp_priv->ev_tsk))
-+		return;
-+
-+	kthread_stop(dp_priv->ev_tsk);
-+
-+	/* reset event q to empty */
-+	dp_priv->event_gndx = 0;
-+	dp_priv->event_pndx = 0;
-+}
-+
- static int dp_display_bind(struct device *dev, struct device *master,
- 			   void *data)
- {
-@@ -269,6 +295,7 @@ static int dp_display_bind(struct device *dev, struct device *master,
- 	if (rc)
- 		DRM_ERROR("Audio registration Dp failed\n");
- 
-+	dp_hpd_event_setup(dp); /* start event thread */
- end:
- 	return rc;
- }
-@@ -280,6 +307,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
- 	struct drm_device *drm = dev_get_drvdata(master);
- 	struct msm_drm_private *priv = drm->dev_private;
- 
-+	disable_irq(dp->irq);
-+	dp_hpd_event_stop(dp); /* stop event thread */
- 	dp_power_client_deinit(dp->power);
- 	dp_aux_unregister(dp->aux);
- 	priv->dp[dp->id] = NULL;
-@@ -1054,7 +1083,7 @@ static int hpd_event_thread(void *data)
- 
- 	dp_priv = (struct dp_display_private *)data;
- 
--	while (1) {
-+	while (!kthread_should_stop()) {
- 		if (timeout_mode) {
- 			wait_event_timeout(dp_priv->event_q,
- 				(dp_priv->event_pndx == dp_priv->event_gndx),
-@@ -1132,13 +1161,6 @@ static int hpd_event_thread(void *data)
- 	return 0;
- }
- 
--static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
--{
--	init_waitqueue_head(&dp_priv->event_q);
--	spin_lock_init(&dp_priv->event_lock);
--
--	kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
--}
- 
- static irqreturn_t dp_display_irq_handler(int irq, void *dev_id)
- {
-@@ -1441,8 +1463,6 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
- 
- 	dp = container_of(dp_display, struct dp_display_private, dp_display);
- 
--	dp_hpd_event_setup(dp);
--
- 	dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
- }
- 
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-memory.json b/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-memory.json
+index 2600fd8d7a54..a416515d41da 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-memory.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-memory.json
+@@ -9,6 +9,16 @@
+         "UMask": "0x3",
+         "Unit": "iMC"
+     },
++    {
++        "BriefDescription": "read requests to memory controller",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x4",
++        "EventName": "UNC_M_CAS_COUNT.RD",
++        "PerPkg": "1",
++        "ScaleUnit": "64Bytes",
++        "UMask": "0x3",
++        "Unit": "iMC"
++    },
+     {
+         "BriefDescription": "write requests to memory controller. Derived from unc_m_cas_count.wr",
+         "Counter": "0,1,2,3",
+@@ -19,6 +29,16 @@
+         "UMask": "0xC",
+         "Unit": "iMC"
+     },
++    {
++        "BriefDescription": "write requests to memory controller",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x4",
++        "EventName": "UNC_M_CAS_COUNT.WR",
++        "PerPkg": "1",
++        "ScaleUnit": "64Bytes",
++        "UMask": "0xC",
++        "Unit": "iMC"
++    },
+     {
+         "BriefDescription": "Memory controller clock ticks",
+         "Counter": "0,1,2,3",
+@@ -89,6 +109,15 @@
+         "ScaleUnit": "6.103515625E-5MB/sec",
+         "Unit": "iMC"
+     },
++    {
++        "BriefDescription": "Intel Optane DC persistent memory bandwidth read (MB/sec)",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xE3",
++        "EventName": "UNC_M_PMM_RPQ_INSERTS",
++        "PerPkg": "1",
++        "ScaleUnit": "6.103515625E-5MB/sec",
++        "Unit": "iMC"
++    },
+     {
+         "BriefDescription": "Intel Optane DC persistent memory bandwidth write (MB/sec). Derived from unc_m_pmm_wpq_inserts",
+         "Counter": "0,1,2,3",
+@@ -98,6 +127,15 @@
+         "ScaleUnit": "6.103515625E-5MB/sec",
+         "Unit": "iMC"
+     },
++    {
++        "BriefDescription": "Intel Optane DC persistent memory bandwidth write (MB/sec)",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xE7",
++        "EventName": "UNC_M_PMM_WPQ_INSERTS",
++        "PerPkg": "1",
++        "ScaleUnit": "6.103515625E-5MB/sec",
++        "Unit": "iMC"
++    },
+     {
+         "BriefDescription": "Intel Optane DC persistent memory bandwidth total (MB/sec). Derived from unc_m_pmm_rpq_inserts",
+         "Counter": "0,1,2,3",
+@@ -109,6 +147,17 @@
+         "ScaleUnit": "6.103515625E-5MB/sec",
+         "Unit": "iMC"
+     },
++    {
++        "BriefDescription": "Intel Optane DC persistent memory bandwidth total (MB/sec)",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xE3",
++        "EventName": "UNC_M_PMM_RPQ_INSERTS",
++        "MetricExpr": "UNC_M_PMM_RPQ_INSERTS + UNC_M_PMM_WPQ_INSERTS",
++        "MetricName": "UNC_M_PMM_BANDWIDTH.TOTAL",
++        "PerPkg": "1",
++        "ScaleUnit": "6.103515625E-5MB/sec",
++        "Unit": "iMC"
++    },
+     {
+         "BriefDescription": "Read Pending Queue Occupancy of all read requests for Intel Optane DC persistent memory",
+         "Counter": "0,1,2,3",
+@@ -130,6 +179,18 @@
+         "UMask": "0x1",
+         "Unit": "iMC"
+     },
++    {
++        "BriefDescription": "Intel Optane DC persistent memory read latency (ns)",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xE0",
++        "EventName": "UNC_M_PMM_RPQ_OCCUPANCY.ALL",
++        "MetricExpr": "UNC_M_PMM_RPQ_OCCUPANCY.ALL / UNC_M_PMM_RPQ_INSERTS / UNC_M_CLOCKTICKS",
++        "MetricName": "UNC_M_PMM_READ_LATENCY",
++        "PerPkg": "1",
++        "ScaleUnit": "6000000000ns",
++        "UMask": "0x1",
++        "Unit": "iMC"
++    },
+     {
+         "BriefDescription": "DRAM Page Activate commands sent due to a write request",
+         "Counter": "0,1,2,3",
+diff --git a/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json b/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json
+index 7f1cf4d8f0fa..03575ef9f4c3 100644
+--- a/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json
++++ b/tools/perf/pmu-events/arch/x86/cascadelakex/uncore-other.json
+@@ -16,6 +16,16 @@
+         "UMask": "0x21",
+         "Unit": "CHA"
+     },
++    {
++        "BriefDescription": "LLC misses - Uncacheable reads (from cpu) ",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x35",
++        "EventName": "UNC_CHA_TOR_INSERTS.IA_MISS",
++        "Filter": "config1=0x40e33",
++        "PerPkg": "1",
++        "UMask": "0x21",
++        "Unit": "CHA"
++    },
+     {
+         "BriefDescription": "MMIO reads. Derived from unc_cha_tor_inserts.ia_miss",
+         "Counter": "0,1,2,3",
+@@ -26,6 +36,16 @@
+         "UMask": "0x21",
+         "Unit": "CHA"
+     },
++    {
++        "BriefDescription": "MMIO reads",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x35",
++        "EventName": "UNC_CHA_TOR_INSERTS.IA_MISS",
++        "Filter": "config1=0x40040e33",
++        "PerPkg": "1",
++        "UMask": "0x21",
++        "Unit": "CHA"
++    },
+     {
+         "BriefDescription": "MMIO writes. Derived from unc_cha_tor_inserts.ia_miss",
+         "Counter": "0,1,2,3",
+@@ -36,6 +56,16 @@
+         "UMask": "0x21",
+         "Unit": "CHA"
+     },
++    {
++        "BriefDescription": "MMIO writes",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x35",
++        "EventName": "UNC_CHA_TOR_INSERTS.IA_MISS",
++        "Filter": "config1=0x40041e33",
++        "PerPkg": "1",
++        "UMask": "0x21",
++        "Unit": "CHA"
++    },
+     {
+         "BriefDescription": "Streaming stores (full cache line). Derived from unc_cha_tor_inserts.ia_miss",
+         "Counter": "0,1,2,3",
+@@ -47,6 +77,17 @@
+         "UMask": "0x21",
+         "Unit": "CHA"
+     },
++    {
++        "BriefDescription": "Streaming stores (full cache line)",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x35",
++        "EventName": "UNC_CHA_TOR_INSERTS.IA_MISS",
++        "Filter": "config1=0x41833",
++        "PerPkg": "1",
++        "ScaleUnit": "64Bytes",
++        "UMask": "0x21",
++        "Unit": "CHA"
++    },
+     {
+         "BriefDescription": "Streaming stores (partial cache line). Derived from unc_cha_tor_inserts.ia_miss",
+         "Counter": "0,1,2,3",
+@@ -58,6 +99,17 @@
+         "UMask": "0x21",
+         "Unit": "CHA"
+     },
++    {
++        "BriefDescription": "Streaming stores (partial cache line)",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x35",
++        "EventName": "UNC_CHA_TOR_INSERTS.IA_MISS",
++        "Filter": "config1=0x41a33",
++        "PerPkg": "1",
++        "ScaleUnit": "64Bytes",
++        "UMask": "0x21",
++        "Unit": "CHA"
++    },
+     {
+         "BriefDescription": "read requests from home agent",
+         "Counter": "0,1,2,3",
+@@ -113,6 +165,16 @@
+         "UMask": "0xf",
+         "Unit": "UPI LL"
+     },
++    {
++        "BriefDescription": "UPI interconnect send bandwidth for payload",
++        "Counter": "0,1,2,3",
++        "EventCode": "0x2",
++        "EventName": "UNC_UPI_TxL_FLITS.ALL_DATA",
++        "PerPkg": "1",
++        "ScaleUnit": "7.11E-06Bytes",
++        "UMask": "0xf",
++        "Unit": "UPI LL"
++    },
+     {
+         "BriefDescription": "PCI Express bandwidth writing at IIO, part 0",
+         "Counter": "0,1",
+@@ -176,6 +238,21 @@
+         "UMask": "0x01",
+         "Unit": "IIO"
+     },
++    {
++        "BriefDescription": "PCI Express bandwidth writing at IIO",
++        "Counter": "0,1",
++        "EventCode": "0x83",
++        "EventName": "UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART0",
++        "FCMask": "0x07",
++        "Filter": "ch_mask=0x1f",
++        "MetricExpr": "UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART0 + UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART1 + UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART2 + UNC_IIO_DATA_REQ_OF_CPU.MEM_WRITE.PART3",
++        "MetricName": "LLC_MISSES.PCIE_WRITE",
++        "PerPkg": "1",
++        "PortMask": "0x01",
++        "ScaleUnit": "4Bytes",
++        "UMask": "0x01",
++        "Unit": "IIO"
++    },
+     {
+         "BriefDescription": "PCI Express bandwidth reading at IIO, part 0",
+         "Counter": "0,1",
+@@ -239,6 +316,21 @@
+         "UMask": "0x04",
+         "Unit": "IIO"
+     },
++    {
++        "BriefDescription": "PCI Express bandwidth reading at IIO",
++        "Counter": "0,1",
++        "EventCode": "0x83",
++        "EventName": "UNC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART0",
++        "FCMask": "0x07",
++        "Filter": "ch_mask=0x1f",
++        "MetricExpr": "UNC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART0 + UNC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART1 + UNC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART2 + UNC_IIO_DATA_REQ_OF_CPU.MEM_READ.PART3",
++        "MetricName": "LLC_MISSES.PCIE_READ",
++        "PerPkg": "1",
++        "PortMask": "0x01",
++        "ScaleUnit": "4Bytes",
++        "UMask": "0x04",
++        "Unit": "IIO"
++    },
+     {
+         "BriefDescription": "Core Cross Snoops Issued; Multiple Core Requests",
+         "Counter": "0,1,2,3",
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.36.0.rc0.470.gd361397f0d-goog
 
