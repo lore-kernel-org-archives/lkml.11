@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96780C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D670FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238853AbiDMVIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:08:35 -0400
+        id S238827AbiDMVIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:08:38 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238824AbiDMVIQ (ORCPT
+        with ESMTP id S238858AbiDMVIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:08:16 -0400
+        Wed, 13 Apr 2022 17:08:18 -0400
 Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C915383B2F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:32 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id x132-20020a25ce8a000000b00640812b1ebaso2677925ybe.14
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B20384EC5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:37 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 128-20020a250286000000b00641d48351fbso2193190ybc.23
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=sKVGn/1ladzaP0YExN38aLKS4szg337axwqCtRoFPKY=;
-        b=PeHSOCfhIr2t78utrnhqPnF2CwqBEgBbCu7akmhDubxfj7JzPm/WRYWKXB0v4CO/uV
-         rgkA/6RHAZXvKST4aeqC1c6sU0pqCtKXE5AafERDwD+8nK19VoEBMai3V+AN5o4pZtzY
-         KfeBObtDiyvaRTxg0m5fBzjiAs1UqctyukQZhqyXHDZcPsn9iq4yugb5hwNmXxW2awWH
-         g2xzed2jUbpZcYh7bzDjKfXsC2FYPgj21XDGTQm7iswDBcj7H6vjAlh1e59wWqj/4uJY
-         j5+4eAutBsReOaA7Dq2eR67L7JkxhFLX7EHOwK+yBrxqE3g5aR8Gj9qFPMkE2KF2MBZ7
-         9Kng==
+         :cc:content-transfer-encoding;
+        bh=LyKxohxYFWz+xkAFcBS7lS5LRzEYPlTQWXTfn7sqhYQ=;
+        b=Nx7watmXyUrR4GYJ3PPJgGjbxfpPFfxk4xRwtM1yJbXh7/4nevOyjoEREH5PMLV3TC
+         Gjyn9uLVONZnYTCGvoGwCoDZxZ2J4nWgjwgLa2BVmgYCXxR55TcMraYg7W3OSsyF6e5y
+         pGDBEoZvqxSKFXW4XDREPeEqwKv3HKAQw1JQ1IiBqMwxzCn2B9VAYC4imNDRnr995EnD
+         DyQe2XsqSkFTjGb1boEzNKTEUX5mLAXOoGHgV9lr14kk3Tfe4y6Xwkz7xELOO7tLqA2v
+         1wU0P2Pzgs4u6pVPzM/HsSMNgAN5xVdSleuRIL7Inua9AzHGjlvGVuVyLRE8k5TOorJv
+         0cDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=sKVGn/1ladzaP0YExN38aLKS4szg337axwqCtRoFPKY=;
-        b=P1D6mOHtE2r0gsJXCBA6zB6kmxHw2Xi3raXupSlOT54cEfz5LfmlY+hxkWTQBPaFRY
-         X/t8ymBB2GzKuPZXPXQTH7U5FsTBA6PxJqqPqv11N/z7CgJr1l0xLL6i4DuWVIhwPaiV
-         OKGNjC1nEHmosgTK2ceD+q3mNQTAZeZZiow3hX7nvHBu3c73/JZY/bNkgg+m8j5Zeaah
-         GXY+xzoBMBHzPbO9cunRqMs8RjA+vwYpOHOb6SHaSnD+QqsyFLvhPaMFEyXO4GQUXD6h
-         WA3zosdtgQBgoBs1TOjStb8o/NIyfiU1OLmjlAsRKC32XtEUl46wFAmzfurri+6/1U9Q
-         dZCw==
-X-Gm-Message-State: AOAM5338E8Az8MyLXLb7Pop1F5dir9sOtT+MHunVnVIm1nb+nhQBficl
-        Iu/G+gevMeEEDXTTFTWEMrgLjS4DGRei
-X-Google-Smtp-Source: ABdhPJxZ2hVLrrOW+xEw8cx39cBykS8TWylOmFMH74o7mx69pQ+eojR+GtMWOKA+h1jmB3nZLera8QjqfrrN
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=LyKxohxYFWz+xkAFcBS7lS5LRzEYPlTQWXTfn7sqhYQ=;
+        b=d6a3yQMR9Exhg/dsax5qME7lcouC+UOnepo9XLd3f0ANSgtyU1jLnSLrBId2eBw6H/
+         vhlStirvclyiWWiuEbJDrg3MZViAndYyewPYXRJCulRwurC44yWMa8zOSYQqt/4zhZy7
+         Gwy9voQ3088czD1gujaP2Atmh3gv52y9+NjmPiXGeULmZWFFR0BWPr3ipRUJLfFNqz3c
+         nuJ9nUWs9Rdb96nrYtnP1OBYG0uPKq1dAQjfq6oUUdltRKNVnLz6WKlWbnyWsK4+RDZ1
+         z4ueKfpPx6R6lnT1GElZwY8XzHJk59wYd28lyB5hlHWpraI8z52Cyb2j2NVzDXAUbTpm
+         +6ag==
+X-Gm-Message-State: AOAM531pVBfApv+oGaCCKSGwjzXounb67xvF4D9OaebDeeBDLtyPUzwf
+        +HCwy5cMBtH9HbbFdNpW811CxLZ8JiER
+X-Google-Smtp-Source: ABdhPJyK6Nh2wX2uXt+tJg5ODBuAK9xGSuEdTA8pwtmv0AaWfOjqxjeN6A9lEvHI77IsSxwKp7b69nVXgUWp
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9135:da53:a8a2:bf11])
- (user=irogers job=sendgmr) by 2002:a81:a43:0:b0:2eb:d709:1cfa with SMTP id
- 64-20020a810a43000000b002ebd7091cfamr723496ywk.212.1649883931767; Wed, 13 Apr
- 2022 14:05:31 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 14:05:00 -0700
+ (user=irogers job=sendgmr) by 2002:a0d:c903:0:b0:2ef:5484:2224 with SMTP id
+ l3-20020a0dc903000000b002ef54842224mr728981ywd.365.1649883936638; Wed, 13 Apr
+ 2022 14:05:36 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 14:05:02 -0700
 In-Reply-To: <20220413210503.3256922-1-irogers@google.com>
-Message-Id: <20220413210503.3256922-11-irogers@google.com>
+Message-Id: <20220413210503.3256922-13-irogers@google.com>
 Mime-Version: 1.0
 References: <20220413210503.3256922-1-irogers@google.com>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH 11/14] perf vendor events intel: Update westmereex event topics
+Subject: [PATCH 13/14] perf vendor events intel: Update goldmontplus event topics
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -71,6 +71,7 @@ To:     Peter Zijlstra <peterz@infradead.org>,
         linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
 Cc:     Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -80,186 +81,147 @@ https://github.com/intel/event-converter-for-linux-perf/
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- .../pmu-events/arch/x86/westmereex/other.json | 66 +------------------
- .../arch/x86/westmereex/pipeline.json         | 66 ++++++++++++++++++-
- 2 files changed, 66 insertions(+), 66 deletions(-)
+ .../arch/x86/goldmontplus/other.json          | 37 +------------------
+ .../arch/x86/goldmontplus/pipeline.json       | 37 ++++++++++++++++++-
+ 2 files changed, 37 insertions(+), 37 deletions(-)
 
-diff --git a/tools/perf/pmu-events/arch/x86/westmereex/other.json b/tools/perf/pmu-events/arch/x86/westmereex/other.json
-index 23dcd554728c..67bc34984fa8 100644
---- a/tools/perf/pmu-events/arch/x86/westmereex/other.json
-+++ b/tools/perf/pmu-events/arch/x86/westmereex/other.json
-@@ -1,28 +1,4 @@
- [
--    {
--        "BriefDescription": "Early Branch Prediciton Unit clears",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xE8",
--        "EventName": "BPU_CLEARS.EARLY",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x1"
--    },
--    {
--        "BriefDescription": "Late Branch Prediction Unit clears",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xE8",
--        "EventName": "BPU_CLEARS.LATE",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x2"
--    },
--    {
--        "BriefDescription": "Branch prediction unit missed call or return",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xE5",
--        "EventName": "BPU_MISSED_CALL_RET",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x1"
--    },
-     {
-         "BriefDescription": "ES segment renames",
-         "Counter": "0,1,2,3",
-@@ -127,46 +103,6 @@
-         "SampleAfterValue": "200000",
+diff --git a/tools/perf/pmu-events/arch/x86/goldmontplus/other.json b/tools=
+/perf/pmu-events/arch/x86/goldmontplus/other.json
+index 3378f48cb818..92586fe4538a 100644
+--- a/tools/perf/pmu-events/arch/x86/goldmontplus/other.json
++++ b/tools/perf/pmu-events/arch/x86/goldmontplus/other.json
+@@ -57,40 +57,5 @@
+         "PublicDescription": "Counts hardware interrupts received by the p=
+rocessor.",
+         "SampleAfterValue": "203",
          "UMask": "0x1"
-     },
--    {
--        "BriefDescription": "All RAT stall cycles",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.ANY",
--        "SampleAfterValue": "2000000",
--        "UMask": "0xf"
 -    },
 -    {
--        "BriefDescription": "Flag stall cycles",
+-        "BriefDescription": "Unfilled issue slots per cycle",
+-        "CollectPEBSRecord": "1",
 -        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.FLAGS",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x1"
+-        "EventCode": "0xCA",
+-        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.ANY",
+-        "PDIR_COUNTER": "na",
+-        "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Counts the number of issue slots per core cy=
+cle that were not consumed by the backend due to either a full resource  in=
+ the backend (RESOURCE_FULL) or due to the processor recovering from some e=
+vent (RECOVERY).",
+-        "SampleAfterValue": "200003"
 -    },
 -    {
--        "BriefDescription": "Partial register stall cycles",
+-        "BriefDescription": "Unfilled issue slots per cycle to recover",
+-        "CollectPEBSRecord": "1",
 -        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.REGISTERS",
--        "SampleAfterValue": "2000000",
+-        "EventCode": "0xCA",
+-        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RECOVERY",
+-        "PDIR_COUNTER": "na",
+-        "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Counts the number of issue slots per core cy=
+cle that were not consumed by the backend because allocation is stalled wai=
+ting for a mispredicted jump to retire or other branch-like conditions (e.g=
+. the event is relevant during certain microcode flows).   Counts all issue=
+ slots blocked while within this window including slots where uops were not=
+ available in the Instruction Queue.",
+-        "SampleAfterValue": "200003",
 -        "UMask": "0x2"
 -    },
 -    {
--        "BriefDescription": "ROB read port stalls cycles",
+-        "BriefDescription": "Unfilled issue slots per cycle because of a f=
+ull resource in the backend",
+-        "CollectPEBSRecord": "1",
 -        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.ROB_READ_PORT",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x4"
--    },
--    {
--        "BriefDescription": "Scoreboard stall cycles",
--        "Counter": "0,1,2,3",
--        "EventCode": "0xD2",
--        "EventName": "RAT_STALLS.SCOREBOARD",
--        "SampleAfterValue": "2000000",
--        "UMask": "0x8"
--    },
+-        "EventCode": "0xCA",
+-        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RESOURCE_FULL",
+-        "PDIR_COUNTER": "na",
+-        "PEBScounters": "0,1,2,3",
+-        "PublicDescription": "Counts the number of issue slots per core cy=
+cle that were not consumed because of a full resource in the backend.  Incl=
+uding but not limited to resources such as the Re-order Buffer (ROB), reser=
+vation stations (RS), load/store buffers, physical registers, or any other =
+needed machine resource that is currently unavailable.   Note that uops mus=
+t be available for consumption in order for this event to fire.  If a uop i=
+s not available (Instruction Queue is empty), this event will not count.",
+-        "SampleAfterValue": "200003",
+-        "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/goldmontplus/pipeline.json b/to=
+ols/perf/pmu-events/arch/x86/goldmontplus/pipeline.json
+index 8305e2ecf617..4d7e3129e5ac 100644
+--- a/tools/perf/pmu-events/arch/x86/goldmontplus/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/goldmontplus/pipeline.json
+@@ -290,6 +290,41 @@
+         "PublicDescription": "Counts INST_RETIRED.ANY using the Reduced Sk=
+id PEBS feature that reduces the shadow in which events aren't counted allo=
+wing for a more unbiased distribution of samples across instructions retire=
+d.",
+         "SampleAfterValue": "2000003"
+     },
++    {
++        "BriefDescription": "Unfilled issue slots per cycle",
++        "CollectPEBSRecord": "1",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xCA",
++        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.ANY",
++        "PDIR_COUNTER": "na",
++        "PEBScounters": "0,1,2,3",
++        "PublicDescription": "Counts the number of issue slots per core cy=
+cle that were not consumed by the backend due to either a full resource  in=
+ the backend (RESOURCE_FULL) or due to the processor recovering from some e=
+vent (RECOVERY).",
++        "SampleAfterValue": "200003"
++    },
++    {
++        "BriefDescription": "Unfilled issue slots per cycle to recover",
++        "CollectPEBSRecord": "1",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xCA",
++        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RECOVERY",
++        "PDIR_COUNTER": "na",
++        "PEBScounters": "0,1,2,3",
++        "PublicDescription": "Counts the number of issue slots per core cy=
+cle that were not consumed by the backend because allocation is stalled wai=
+ting for a mispredicted jump to retire or other branch-like conditions (e.g=
+. the event is relevant during certain microcode flows).   Counts all issue=
+ slots blocked while within this window including slots where uops were not=
+ available in the Instruction Queue.",
++        "SampleAfterValue": "200003",
++        "UMask": "0x2"
++    },
++    {
++        "BriefDescription": "Unfilled issue slots per cycle because of a f=
+ull resource in the backend",
++        "CollectPEBSRecord": "1",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xCA",
++        "EventName": "ISSUE_SLOTS_NOT_CONSUMED.RESOURCE_FULL",
++        "PDIR_COUNTER": "na",
++        "PEBScounters": "0,1,2,3",
++        "PublicDescription": "Counts the number of issue slots per core cy=
+cle that were not consumed because of a full resource in the backend.  Incl=
+uding but not limited to resources such as the Re-order Buffer (ROB), reser=
+vation stations (RS), load/store buffers, physical registers, or any other =
+needed machine resource that is currently unavailable.   Note that uops mus=
+t be available for consumption in order for this event to fire.  If a uop i=
+s not available (Instruction Queue is empty), this event will not count.",
++        "SampleAfterValue": "200003",
++        "UMask": "0x1"
++    },
      {
-         "BriefDescription": "All Store buffer stall cycles",
-         "Counter": "0,1,2,3",
-@@ -284,4 +220,4 @@
-         "SampleAfterValue": "2000000",
+         "BriefDescription": "Loads blocked because address has 4k partial =
+address false dependence (Precise event capable)",
+         "CollectPEBSRecord": "2",
+@@ -456,4 +491,4 @@
+         "SampleAfterValue": "2000003",
          "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/westmereex/pipeline.json b/tools/perf/pmu-events/arch/x86/westmereex/pipeline.json
-index 620d9084d860..7d6c2c1e0db0 100644
---- a/tools/perf/pmu-events/arch/x86/westmereex/pipeline.json
-+++ b/tools/perf/pmu-events/arch/x86/westmereex/pipeline.json
-@@ -50,6 +50,30 @@
-         "SampleAfterValue": "2000000",
-         "UMask": "0x1"
-     },
-+    {
-+        "BriefDescription": "Early Branch Prediciton Unit clears",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xE8",
-+        "EventName": "BPU_CLEARS.EARLY",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x1"
-+    },
-+    {
-+        "BriefDescription": "Late Branch Prediction Unit clears",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xE8",
-+        "EventName": "BPU_CLEARS.LATE",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x2"
-+    },
-+    {
-+        "BriefDescription": "Branch prediction unit missed call or return",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xE5",
-+        "EventName": "BPU_MISSED_CALL_RET",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x1"
-+    },
-     {
-         "BriefDescription": "Branch instructions decoded",
-         "Counter": "0,1,2,3",
-@@ -494,6 +518,46 @@
-         "SampleAfterValue": "20000",
-         "UMask": "0x4"
-     },
-+    {
-+        "BriefDescription": "All RAT stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.ANY",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0xf"
-+    },
-+    {
-+        "BriefDescription": "Flag stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.FLAGS",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x1"
-+    },
-+    {
-+        "BriefDescription": "Partial register stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.REGISTERS",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x2"
-+    },
-+    {
-+        "BriefDescription": "ROB read port stalls cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.ROB_READ_PORT",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x4"
-+    },
-+    {
-+        "BriefDescription": "Scoreboard stall cycles",
-+        "Counter": "0,1,2,3",
-+        "EventCode": "0xD2",
-+        "EventName": "RAT_STALLS.SCOREBOARD",
-+        "SampleAfterValue": "2000000",
-+        "UMask": "0x8"
-+    },
-     {
-         "BriefDescription": "Resource related stall cycles",
-         "Counter": "0,1,2,3",
-@@ -894,4 +958,4 @@
-         "SampleAfterValue": "2000000",
-         "UMask": "0x1"
-     }
--]
-\ No newline at end of file
-+]
--- 
+--=20
 2.36.0.rc0.470.gd361397f0d-goog
 
