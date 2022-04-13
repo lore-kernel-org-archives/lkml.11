@@ -2,80 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 315A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED500C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235612AbiDMOcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
+        id S235964AbiDMOeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233793AbiDMOcR (ORCPT
+        with ESMTP id S233309AbiDMOeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:32:17 -0400
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8083EF19;
-        Wed, 13 Apr 2022 07:29:55 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id t67so4099235ybi.2;
-        Wed, 13 Apr 2022 07:29:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P6HqlanCyPSwncb4shZm76Hg2UdOq2aV2/+OAl9p+/g=;
-        b=NMP0IWxZfJse6iT27NVOPoj7/t3UtTKGwibRMRnREJaHei+/pHWm+yJtJL7toiqir9
-         R5r1CVqeaPKvUsTc2SyDEjob3iyvdkqz7HnCnwTIlEdtKDgsR5f2/omdsM7Gak4XIZVr
-         M8PNAf9gAt1nF2SZ5GfPqM2oWKn6Ycp5AfSoRGDjRLhBloyFtIrDQq/6KNf0fHHWRCr2
-         YARgSD8a6pAkgfMecLyl5sLp7sKtqzOSEZx+tIQ4dCfGsbv6LT/RQZ2kDbeeTOTQe1YC
-         ysk7VsozITI6ug1X9T6aSLN06Mmc96putFFCvOMCpLLcQO/GX885GZFE2o7Ny7Eq2Pee
-         EmoA==
-X-Gm-Message-State: AOAM531pZY1V4I+jhnPf5stobmqkpuXxxF19/Vq/hos5fngWtc5dNNLC
-        siiPNh+HX13x6OSaADnk1KeH7Xvf/P7DTqljX+4=
-X-Google-Smtp-Source: ABdhPJyIEe6g/M5R+wfhGO1Tn2f6GQ9LY3zIVdu915DAN1BxmCSF3smK/dPKs7NrgvevM6qmuH0nezgz/sviDNUop8I=
-X-Received: by 2002:a05:6902:1544:b0:63d:d3a7:8cc4 with SMTP id
- r4-20020a056902154400b0063dd3a78cc4mr31215822ybu.622.1649860195288; Wed, 13
- Apr 2022 07:29:55 -0700 (PDT)
+        Wed, 13 Apr 2022 10:34:08 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4784B1C0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:31:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649860306; x=1681396306;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Y/7YzmTOCuS8W/C5XNlxHah8vs65pb+CWzux7/MAFp8=;
+  b=Ufga/wZJlnRe2eWcUSo2dstgXn31fK5LYGuJqCMRcabOrtaVoOYO6Ptl
+   0kew92jDXjQim88ZrMg/H5sXbcIags7HASdxukwSYINNSiw0zFj7RGMcf
+   HpWcg38ixGSzXE+WNmXkSRvFEYlt98WBo1halgEaQB7i+5hTBmsPqPrbZ
+   kJQRMHXYSjrJL5UztGGwfA+ObrJ3Y5GqFrEPJvRHQNm5QO7viyzu61LTc
+   jGINnMYFZ0T29dcGvIQyMSWzMsc3PecKrJh4GRUpBinoqpXROzHVBL7KI
+   2Cb9wodQmUfGfGCbzNczCvUqIzLkVK9atBnje2bBuLcbDgsPqNnaQrynp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="249970259"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="249970259"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 07:23:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="854807017"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 13 Apr 2022 07:23:19 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nedtu-0000NA-Ja;
+        Wed, 13 Apr 2022 14:23:18 +0000
+Date:   Wed, 13 Apr 2022 22:23:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mark:stacktrace/testing 1/1] lib/test_stacktrace/kunit.c:35:26:
+ error: implicit declaration of function 'stack_trace_save'; did you mean
+ 'stack_depot_save'?
+Message-ID: <202204132247.0dgxogvX-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220321095729.20655-1-lukasz.luba@arm.com> <76230a1c-73b8-c471-c62e-3ec9b33461a6@arm.com>
- <55d4a19d-15d4-4d15-8430-8a8ed8149497@arm.com>
-In-Reply-To: <55d4a19d-15d4-4d15-8430-8a8ed8149497@arm.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 13 Apr 2022 16:29:44 +0200
-Message-ID: <CAJZ5v0g5vcC7aS4KS-uN+fHmbrKCmA-MVbJEKOnPgEyDDfqSRw@mail.gmail.com>
-Subject: Re: [RESEND][PATCH 0/8] Introduce support for artificial Energy Model
-To:     Lukasz Luba <lukasz.luba@arm.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Pierre Gondois <Pierre.Gondois@arm.com>,
-        Ionela Voinescu <ionela.voinescu@arm.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Nishanth Menon <nm@ti.com>, Stephen Boyd <sboyd@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git stacktrace/testing
+head:   a8e8825116626f8c3e8be3bb889b6442a7465cb8
+commit: a8e8825116626f8c3e8be3bb889b6442a7465cb8 [1/1] WIP: stacktrace tests
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220413/202204132247.0dgxogvX-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=a8e8825116626f8c3e8be3bb889b6442a7465cb8
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark stacktrace/testing
+        git checkout a8e8825116626f8c3e8be3bb889b6442a7465cb8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
 
-On Tue, Apr 12, 2022 at 8:53 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
->
-> Hi Rafael,
->
-> gentle ping. If you need some help with this maintenance,
-> we can help.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Sorry for the delay.
+All errors (new ones prefixed by >>):
 
-Given the lack of objections or concerns, I've applied the whole
-series as 5.19 material.
+   lib/test_stacktrace/kunit.c: In function 'callback_st_save':
+>> lib/test_stacktrace/kunit.c:35:26: error: implicit declaration of function 'stack_trace_save'; did you mean 'stack_depot_save'? [-Werror=implicit-function-declaration]
+      35 |         st->nr_entries = stack_trace_save(st->store, MAX_STACK_ENTRIES, 0);
+         |                          ^~~~~~~~~~~~~~~~
+         |                          stack_depot_save
+   lib/test_stacktrace/kunit.c: At top level:
+   lib/test_stacktrace/kunit.c:54:5: warning: no previous prototype for 'st_find_func_idx' [-Wmissing-prototypes]
+      54 | int st_find_func_idx(struct st_data *st, void *func, int start)
+         |     ^~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
-Thanks!
+
+vim +35 lib/test_stacktrace/kunit.c
+
+    30	
+    31	static void *callback_st_save(void *arg)
+    32	{
+    33		struct st_data *st = arg;
+    34	
+  > 35		st->nr_entries = stack_trace_save(st->store, MAX_STACK_ENTRIES, 0);
+    36	
+    37		return st;
+    38	}
+    39	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
