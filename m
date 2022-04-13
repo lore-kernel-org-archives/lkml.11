@@ -2,80 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4684CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 02:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7130FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 02:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiDMCu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 22:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
+        id S231761AbiDMCvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 22:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbiDMCuZ (ORCPT
+        with ESMTP id S229847AbiDMCvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 22:50:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C404849F3C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 19:48:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649818084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HL4I/kbAi4EMYznQst2SX99qMFId0RHWKlLCdi0UXhg=;
-        b=VUcnPMhey8K/t+VwbhF/6deXa6Wi7G4N0kkCZcXAlFKMZkhwboOF0YeQMCQBoRgJ28i2c3
-        JmCV5j+JqdKI8ILyuDa5O9NWU6Ca+Fb8uxpNHCM/OhHqddG9+YopAMUl+Dx83ULVW2lRwK
-        XoE8Q2oD1HBFAvpXmyJ/cFUeEL/VuzM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-QIkJcyNEMZaTlr0_V49QTQ-1; Tue, 12 Apr 2022 22:48:00 -0400
-X-MC-Unique: QIkJcyNEMZaTlr0_V49QTQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C77D3101AA44;
-        Wed, 13 Apr 2022 02:47:59 +0000 (UTC)
-Received: from localhost (ovpn-12-51.pek2.redhat.com [10.72.12.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C8B0A2024CBC;
-        Wed, 13 Apr 2022 02:47:52 +0000 (UTC)
-Date:   Wed, 13 Apr 2022 10:47:49 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org, dyoung@redhat.com, linux-mm@kvack.org
-Subject: Re: [PATCH v2 0/2] x86/kexec: fix memory leak of elf header buffer
-Message-ID: <YlY51XjPFN1vMvQV@MiWiFi-R3L-srv>
-References: <20220223113225.63106-1-bhe@redhat.com>
- <YkWRQdp7TxV22ygO@MiWiFi-R3L-srv>
- <20220412192734.fcda8988d189c8e2e2830b03@linux-foundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412192734.fcda8988d189c8e2e2830b03@linux-foundation.org>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+        Tue, 12 Apr 2022 22:51:06 -0400
+X-Greylist: delayed 623 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 19:48:45 PDT
+Received: from mo-csw-fb.securemx.jp (mo-csw-fb1514.securemx.jp [210.130.202.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAA449FAD;
+        Tue, 12 Apr 2022 19:48:44 -0700 (PDT)
+Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1514) id 23D2cNxE003698; Wed, 13 Apr 2022 11:38:23 +0900
+Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 23D2c6JR014597; Wed, 13 Apr 2022 11:38:07 +0900
+X-Iguazu-Qid: 34tr9prRwlYkQNYgqf
+X-Iguazu-QSIG: v=2; s=0; t=1649817486; q=34tr9prRwlYkQNYgqf; m=4X27Qc70k4NcBFsqh43GhnVtM6zh0ClRbenDwojhOuQ=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1513) id 23D2c6Rw009816
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 13 Apr 2022 11:38:06 +0900
+X-SA-MID: 35919152
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH 0/3] Visconti: Add Toshiba Visconti Video Input Interface driver
+Date:   Wed, 13 Apr 2022 11:32:31 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220413023234.19526-1-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/12/22 at 07:27pm, Andrew Morton wrote:
-> On Thu, 31 Mar 2022 19:32:17 +0800 Baoquan He <bhe@redhat.com> wrote:
-> 
-> > Hi Andrew,
-> > 
-> > On 02/23/22 at 07:32pm, Baoquan He wrote:
-> > > The memory leak is reported by kmemleak detector, has been existing
-> > > for very long time. It casue much memory loss on large machine
-> > > with huge memory hotplug which will trigger kdump kernel reloading
-> > > many times, with kexec_file_load interface.
-> > 
-> > Could you merge these two patches? Or should I ping x86 maintainers to
-> > take them? 
-> 
-> Ah, sorry, I tend to fall asleep if there's "x86" in the subject. 
-> Poking a sleeping Andrew is always the right thing to do.  Shall look
-> at them.
+This series is the Video Input Interface driver for Toshiba's ARM SoC, Visconti[0].
+This provides DT binding documentation, device driver, MAINTAINER fiels.
 
-Thanks, Andrew.
+Best regards,
+Yuji
 
-Since it's also MM related, so ping you and x86 maintainers to see who
-can help pick them.
+[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
+
+Yuji Ishikawa (3):
+  dt-bindings: media: platform: visconti: Add Toshiba Visconti Video
+    Input Interface bindings
+  media: platform: visconti: Add Toshiba Visconti Video Input Interface
+    driver
+  MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
+
+ .../bindings/media/toshiba,visconti-viif.yaml |  103 +
+ MAINTAINERS                                   |    2 +
+ drivers/media/platform/Kconfig                |    2 +
+ drivers/media/platform/Makefile               |    4 +
+ drivers/media/platform/visconti/Kconfig       |    9 +
+ drivers/media/platform/visconti/Makefile      |    9 +
+ drivers/media/platform/visconti/hwd_viif.c    | 2233 ++++++++++
+ drivers/media/platform/visconti/hwd_viif.h    | 1776 ++++++++
+ .../media/platform/visconti/hwd_viif_csi2rx.c |  767 ++++
+ .../platform/visconti/hwd_viif_internal.h     |  361 ++
+ .../media/platform/visconti/hwd_viif_l1isp.c  | 3769 +++++++++++++++++
+ .../media/platform/visconti/hwd_viif_reg.h    | 2802 ++++++++++++
+ drivers/media/platform/visconti/viif.c        | 2384 +++++++++++
+ drivers/media/platform/visconti/viif.h        |  134 +
+ include/uapi/linux/visconti_viif.h            | 1683 ++++++++
+ 15 files changed, 16038 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+ create mode 100644 drivers/media/platform/visconti/Kconfig
+ create mode 100644 drivers/media/platform/visconti/Makefile
+ create mode 100644 drivers/media/platform/visconti/hwd_viif.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif.h
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_csi2rx.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_internal.h
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_l1isp.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_reg.h
+ create mode 100644 drivers/media/platform/visconti/viif.c
+ create mode 100644 drivers/media/platform/visconti/viif.h
+ create mode 100644 include/uapi/linux/visconti_viif.h
+
+-- 
+2.17.1
+
 
