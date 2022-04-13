@@ -2,120 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A55AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238388AbiDMTbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
+        id S236706AbiDMTdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238392AbiDMTbg (ORCPT
+        with ESMTP id S234082AbiDMTcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:31:36 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863D576647
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:29:13 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id bq30so5360638lfb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ze4SVP5i5zsP2I9AhxuyfeE8P/HaUEekN0ckGJjo3WI=;
-        b=GRkH4KsJRBinbD8PDvRvxZddDDQBgVmtY+9S7GEjBz4F+zU2SmgpbHJALHBZFQAsyU
-         pymx33QW/NCijKNhunbIxA/eqb4GchRBZqBVWXA47zogsugtt2Cnk7zrXv2221f+z9pZ
-         69vkDURJiA/czEjur0bU38AaKSqoPsweXiDKsPjyD/znwQt6fXoVD5qqA99wbD7iyAN+
-         5lQg9DP3eeqiPmagLqv/VZp38M7mtLdIvNxcbcryM6kqIthk536JVD/6R5/OXNte4oeO
-         Vm6UMXVGLYTLmZJf4/XpgGmf76MkWmKo4j/450pPqvJCSNctMTvY8N14FNBSurUzAwan
-         vGpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ze4SVP5i5zsP2I9AhxuyfeE8P/HaUEekN0ckGJjo3WI=;
-        b=pbCXMNapgdZgHmy3S+1vOB8kH3vJ7zEjRSPJkIW/0Wq/WuQU7tsH5LycBadK/IltON
-         FDAneTliDTmu0MddB0Kl2YVj8pIolNd37dHVxRJnWK8lmJ0blY0PMgLgANsZWmaZssf3
-         yBqBlJmuiZnUuVntEZT5c2RVf8CWDOzaX2yQ52MpbbwZlFSa05BleG0VLeo388s9qqjz
-         27jqDqlWDdmzRyGO1D+rhXu/Fiqs17PEzH7B9sjRYX1lbECcpCzTLuZUi7mv3JDjrzw4
-         hTjJW8GAM4eV7X3IgWITuNRtNTAPuXQK8IwOnM4eOIMQ6OU0cvdYJEyRRp+8CVxJhbB5
-         YBcQ==
-X-Gm-Message-State: AOAM532FiTaErvkkOFz41xe3JnegXhhosRy/xzEITBc05GdQPgOP8S9H
-        A8tLfM7saZKY9p5MIdclntJEZND+TQs=
-X-Google-Smtp-Source: ABdhPJxiRRH1bbuTJUz/sG6LRfcaXkEQgJDxTIBUJdcDxgaL9MBM6NDKcHmawlmq2jeJ1OSmLWMf8A==
-X-Received: by 2002:a05:6512:b11:b0:44a:2ead:daf2 with SMTP id w17-20020a0565120b1100b0044a2eaddaf2mr29636142lfu.642.1649878151554;
-        Wed, 13 Apr 2022 12:29:11 -0700 (PDT)
-Received: from noname.. ([2a02:2698:8c2a:149d:6d9:f5ff:fecb:a8ab])
-        by smtp.googlemail.com with ESMTPSA id m12-20020a19434c000000b0046baf0e3022sm1047999lfj.254.2022.04.13.12.29.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 12:29:11 -0700 (PDT)
-From:   Grigory Vasilyev <h0tc0d3@gmail.com>
-Cc:     Grigory Vasilyev <h0tc0d3@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] tools/x86_energy_perf_policy: Fix comparing int with LONG_MIN and LONG_MAX
-Date:   Wed, 13 Apr 2022 22:29:00 +0300
-Message-Id: <20220413192901.179470-1-h0tc0d3@gmail.com>
-X-Mailer: git-send-email 2.35.2
+        Wed, 13 Apr 2022 15:32:20 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DBED263A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649878198; x=1681414198;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UBmMG/Y1pzjOMY+f80C2PIXPYSoEJlNzIOTHjCL4Elg=;
+  b=SKMvbpUv0MQMIRP7B34dEp/nV0VCRpPqrQm+JAEq1+sxGdwMCR5e3rAS
+   jy82FWm3FPjXeRb6H11nM+dohoH2QZiuJpw8Jb99hBFV4SqInd+eQR6lB
+   toEY4VVf+eR3WiMRhHRpYEwUPxqsXb4TWMosjyrGU8ryjwZcbhJnn6898
+   zgwj/Wn81+5V7KfBvkOC/HnZKqad4W4a9/huTeDaZVSe/yb2NnAhkylRd
+   NP92NJb0Nt1K7l6H3GJ1Qjo6In1NGwGUpMbrJcpXHLPdZFgGWvRIfg+dJ
+   4Fun4Ik8k7QbjMMY+mpMVOleAW19O1C6yP6vTgNDASchVKgCLwgPIKU6b
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244641606"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="244641606"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 12:29:58 -0700
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="552337805"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 12:29:57 -0700
+Date:   Wed, 13 Apr 2022 12:31:52 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "outreachy@lists.linux.dev" <outreachy@lists.linux.dev>
+Subject: Re: [PATCH] staging: Remove the drivers for the Unisys s-Par
+Message-ID: <20220413193152.GA1242449@alison-desk>
+References: <20220412215901.31046-1-fmdefrancesco@gmail.com>
+ <3988824.6PsWsQAL7t@leap>
+ <20220413153824.GA1241369@alison-desk>
+ <7390243.EvYhyI6sBW@leap>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7390243.EvYhyI6sBW@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A condition that will never be met.
-strtol return long value but we have int variable and strtool can
-overflow it.
+On Wed, Apr 13, 2022 at 11:57:20AM -0700, Fabio M. De Francesco wrote:
+> On mercoled? 13 aprile 2022 17:38:24 CEST Alison Schofield wrote:
+> > On Wed, Apr 13, 2022 at 09:35:53AM +0200, Fabio M. De Francesco wrote:
+> > > On mercoled? 13 aprile 2022 08:52:47 CEST Greg Kroah-Hartman wrote:
+> > > > On Tue, Apr 12, 2022 at 11:59:01PM +0200, Fabio M. De Francesco 
+> wrote:
+> > > > > The Unisys sub-tree contains three drivers for the "Unisys Secure 
+> > > Partition"
+> > > > > (s-Par(R)): visorhba, visorinput, visornic.
+> > > > > 
+> > > > > They have no maintainers, in fact the only one that is listed in 
+> > > MAINTAINERS
+> > > > > has an unreacheable email address. During 2021 and 2022 several 
+> patches 
+> > > have
+> > > > > been submitted to these drivers but nobody at Unisys cared of 
+> reviewing 
+> > > the
+> > > > > changes. Probably, also the "sparmaintainer" internal list of 
+> > > unisys.com is
+> > > > > not anymore read by interested Unisys' engineers.
+> > > > > 
+> > > > > Therefore, remove the ./unisys subdirectory of staging and delete 
+> the 
+> > > related
+> > > > > entries in the MAINTAINERS, Kconfig, Makefile files.
+> > > > > 
+> > > > > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > > > > ---
+> > > > >  MAINTAINERS                                   |    8 -
+> > > > 
+> > > > You forgot to at least cc: the people/list on the MAINTAINERS entry 
+> that
+> > > > you are removing here, to give them a hint that this is happening in
+> > > > case they want to speak up here (and to give us the ability to point 
+> to
+> > > > that years later when they complain they were never notified...)
+> > > 
+> > > Yes, this is a good idea. I'll submit a v2 and add two "Cc:" lines, one 
+> to 
+> > > David Kershner and the other to the "sparmaintainer" list at 
+> unisys.com.
+> > 
+> > There is another contact in the TODO file (last updated 2015 though ;))
+> > Ken Cox <jkc@redhat.com>
+> 
+> Hi Alison, Greg,
+> 
+> Thank you very much for noticing that other contact :) 
+> 
+> In the last 12 months I have sent several patches for Unisys s-Par drivers 
+> but I never noticed that other contact simply because I only ever use 
+> scripts / get_maintainer.pl to find out who and to which lists to send my 
+> works.
+> 
+> @Greg: 
+> 
+> Do you think that we should care of a contact that is no more active since 
+> 2015 and resubmit a v3 with one more "Cc:" line? I have no problems to 
+> resubmit, I just want to be sure that this is the right thing to do.
 
-Remove meaningless extra overflow comparisons.
+I didn't see a v2, so confused about a v3. You could simply do a group
+reply and add the contact, that'll put a trail in lore. Not my call.
+Guessing Greg has a protocol for such removals. 
 
-Warning:
-
-x86_energy_perf_policy.c:337:25:
-warning: result of comparison of constant 9223372036854775807
-with expression of type 'int' is always false
-        if (i == LONG_MIN || i == LONG_MAX)
-                             ~ ^  ~~~~~~~~
-x86_energy_perf_policy.c:337:8:
-warning: result of comparison of constant -9223372036854775808
-with expression of type 'int' is always false
-        if (i == LONG_MIN || i == LONG_MAX)
-
-Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
----
- .../x86_energy_perf_policy/x86_energy_perf_policy.c  | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
-
-diff --git a/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c b/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c
-index 5fd9e594079c..5fd7e2d4cd0e 100644
---- a/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c
-+++ b/tools/power/x86/x86_energy_perf_policy/x86_energy_perf_policy.c
-@@ -308,7 +308,7 @@ int parse_cmdline_turbo(int i)
- 
- int parse_optarg_string(char *s)
- {
--	int i;
-+	long i;
- 	char *endptr;
- 
- 	if (!strncmp(s, "default", 7))
-@@ -334,15 +334,11 @@ int parse_optarg_string(char *s)
- 		fprintf(stderr, "no digits in \"%s\"\n", s);
- 		usage();
- 	}
--	if (i == LONG_MIN || i == LONG_MAX)
--		errx(-1, "%s", s);
- 
--	if (i > 0xFF)
--		errx(-1, "%d (0x%x) must be < 256", i, i);
-+	if (i < 0 || i > 255)
-+		errx(-1, "%ld (0x%lx) must be >= 0 and < 256", i, i);
- 
--	if (i < 0)
--		errx(-1, "%d (0x%x) must be >= 0", i, i);
--	return i;
-+	return (int)i;
- }
- 
- void parse_cmdline_all(char *s)
--- 
-2.35.2
-
+> 
+> Thanks,
+> 
+> Fabio M. De Francesco
+>  
+> 
+> 
