@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E74C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239169AbiDMVPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55392 "EHLO
+        id S239175AbiDMVP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239056AbiDMVNN (ORCPT
+        with ESMTP id S239011AbiDMVNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:13:13 -0400
+        Wed, 13 Apr 2022 17:13:07 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930E53A5C1;
-        Wed, 13 Apr 2022 14:10:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627C23A5C1;
+        Wed, 13 Apr 2022 14:10:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649884251; x=1681420251;
+  t=1649884245; x=1681420245;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vNBikG4gYkUyvIo7XiITqm12yzQ/ap2t7cXvNNbhqNA=;
-  b=KPdP5ShMTuOTGKswzy+mEq7hWnAY6zY4+QZ+xrP/trFaD14zZpmJSUv3
-   Q1t7tuPmDo8obAAqVrxXzr6mypVw6zlX9H4dg1bKvWT9DWhcXSOOw1Dk/
-   wpUjKLjP2qE4yM4krGnho8TKvlTODYECHB8pj9DNIIsa7PqCcSh5MZn13
-   9tgtJ+pcGJfEZcZZZ+lfKyUArMOO9I34xXG47g2taMgsL8kmCQY5210C8
-   YG+7zxNqWja32uzRk+Qc70iBmYiT6y2lkJp6B3caKw+Hdbe3LoO8IVkg1
-   rBqZ1FFV4XX2QdT8+y7qk78ebOugqSXw//WozpsnJS3GvF7Hl1WbuG68O
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="323219067"
+  bh=OXPfbaFXmvgsbCmIRR+xO9GdT1TQ8nzKB+sNNYKHV9E=;
+  b=a5zWOEDR0z44UJzkwK/MVrXm5DIP1IJDzeXEfvlqpKm9I5ihkvCpg/6C
+   AKBJrT0Fgd6dJLXROqtbEtpGafrjTni4NB0rxUY/VqArgYUgiQX5lCzg3
+   jZlLSsbzJ4jQelOgO+QgZ3vPdG48l2E9NTFFlfgw0wYxDwqZiv6tgg1tN
+   HJETOmJu+tHkm53yREA/YuC/8osfpn+0z2+eiYJO45hlqHJ9ffywFJe0/
+   68skNgb0f7J1YR0HbTXL06MuIADaogQ7JmEfIRatazNQQzOzTg/szNmQo
+   AZbJqcsoH3wbGTGu0YfGsjy7sW7dozGHt3VBVOuVzDP9378GsTjMHNCBS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="323219017"
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="323219067"
+   d="scan'208";a="323219017"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:46 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:42 -0700
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="725054321"
+   d="scan'208";a="725054262"
 Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:46 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:42 -0700
 From:   Reinette Chatre <reinette.chatre@intel.com>
 To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
         bp@alien8.de, luto@kernel.org, mingo@redhat.com,
@@ -46,9 +46,9 @@ Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
         cedric.xing@intel.com, haitao.huang@intel.com,
         mark.shanahan@intel.com, vijay.dhanraj@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V4 26/31] selftests/sgx: Introduce TCS initialization enclave operation
-Date:   Wed, 13 Apr 2022 14:10:26 -0700
-Message-Id: <e3485cab7c764d4a37810f5e25c728ed83e66339.1649878359.git.reinette.chatre@intel.com>
+Subject: [PATCH V4 09/31] x86/sgx: Make sgx_ipi_cb() available internally
+Date:   Wed, 13 Apr 2022 14:10:09 -0700
+Message-Id: <41e34a579bd81ea4085e27ae4bf16c73914340ca.1649878359.git.reinette.chatre@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1649878359.git.reinette.chatre@intel.com>
 References: <cover.1649878359.git.reinette.chatre@intel.com>
@@ -58,102 +58,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Thread Control Structure (TCS) contains meta-data used by the
-hardware to save and restore thread specific information when
-entering/exiting the enclave. A TCS can be added to an initialized
-enclave by first adding a new regular enclave page, initializing the
-content of the new page from within the enclave, and then changing that
-page's type to a TCS.
+The ETRACK function followed by an IPI to all CPUs within an enclave
+is a common pattern with more frequent use in support of SGX2.
 
-Support the initialization of a TCS from within the enclave.
-The variable information needed that should be provided from outside
-the enclave is the address of the TCS, address of the State Save Area
-(SSA), and the entry point that the thread should use to enter the
-enclave. With this information provided all needed fields of a TCS
-can be initialized.
+Make the (empty) IPI callback function available internally in
+preparation for usage by SGX2.
 
-Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
 Changes since V3:
-- Add Jarkko's Acked-by tag.
+- Add Jarkko's Reviewed-by tag.
 
- tools/testing/selftests/sgx/defines.h   |  8 +++++++
- tools/testing/selftests/sgx/test_encl.c | 30 +++++++++++++++++++++++++
- 2 files changed, 38 insertions(+)
+Changes since V1:
+- Replace "for more usages" by "for usage by SGX2" (Jarkko)
 
-diff --git a/tools/testing/selftests/sgx/defines.h b/tools/testing/selftests/sgx/defines.h
-index b638eb98c80c..d8587c971941 100644
---- a/tools/testing/selftests/sgx/defines.h
-+++ b/tools/testing/selftests/sgx/defines.h
-@@ -26,6 +26,7 @@ enum encl_op_type {
- 	ENCL_OP_NOP,
- 	ENCL_OP_EACCEPT,
- 	ENCL_OP_EMODPE,
-+	ENCL_OP_INIT_TCS_PAGE,
- 	ENCL_OP_MAX,
- };
- 
-@@ -68,4 +69,11 @@ struct encl_op_emodpe {
- 	uint64_t flags;
- };
- 
-+struct encl_op_init_tcs_page {
-+	struct encl_op_header header;
-+	uint64_t tcs_page;
-+	uint64_t ssa;
-+	uint64_t entry;
-+};
-+
- #endif /* DEFINES_H */
-diff --git a/tools/testing/selftests/sgx/test_encl.c b/tools/testing/selftests/sgx/test_encl.c
-index 5b6c65331527..c0d6397295e3 100644
---- a/tools/testing/selftests/sgx/test_encl.c
-+++ b/tools/testing/selftests/sgx/test_encl.c
-@@ -57,6 +57,35 @@ static void *memcpy(void *dest, const void *src, size_t n)
- 	return dest;
+ arch/x86/kernel/cpu/sgx/main.c | 2 +-
+ arch/x86/kernel/cpu/sgx/sgx.h  | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
+index ce9e87d5f8ec..6e2cb7564080 100644
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -172,7 +172,7 @@ static int __sgx_encl_ewb(struct sgx_epc_page *epc_page, void *va_slot,
+ 	return ret;
  }
  
-+static void *memset(void *dest, int c, size_t n)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < n; i++)
-+		((char *)dest)[i] = c;
-+
-+	return dest;
-+}
-+
-+static void do_encl_init_tcs_page(void *_op)
-+{
-+	struct encl_op_init_tcs_page *op = _op;
-+	void *tcs = (void *)op->tcs_page;
-+	uint32_t val_32;
-+
-+	memset(tcs, 0, 16);			/* STATE and FLAGS */
-+	memcpy(tcs + 16, &op->ssa, 8);		/* OSSA */
-+	memset(tcs + 24, 0, 4);			/* CSSA */
-+	val_32 = 1;
-+	memcpy(tcs + 28, &val_32, 4);		/* NSSA */
-+	memcpy(tcs + 32, &op->entry, 8);	/* OENTRY */
-+	memset(tcs + 40, 0, 24);		/* AEP, OFSBASE, OGSBASE */
-+	val_32 = 0xFFFFFFFF;
-+	memcpy(tcs + 64, &val_32, 4);		/* FSLIMIT */
-+	memcpy(tcs + 68, &val_32, 4);		/* GSLIMIT */
-+	memset(tcs + 72, 0, 4024);		/* Reserved */
-+}
-+
- static void do_encl_op_put_to_buf(void *op)
+-static void sgx_ipi_cb(void *info)
++void sgx_ipi_cb(void *info)
  {
- 	struct encl_op_put_to_buf *op2 = op;
-@@ -100,6 +129,7 @@ void encl_body(void *rdi,  void *rsi)
- 		do_encl_op_nop,
- 		do_encl_eaccept,
- 		do_encl_emodpe,
-+		do_encl_init_tcs_page,
- 	};
+ }
  
- 	struct encl_op_header *op = (struct encl_op_header *)rdi;
+diff --git a/arch/x86/kernel/cpu/sgx/sgx.h b/arch/x86/kernel/cpu/sgx/sgx.h
+index 0f17def9fe6f..b30cee4de903 100644
+--- a/arch/x86/kernel/cpu/sgx/sgx.h
++++ b/arch/x86/kernel/cpu/sgx/sgx.h
+@@ -90,6 +90,8 @@ void sgx_mark_page_reclaimable(struct sgx_epc_page *page);
+ int sgx_unmark_page_reclaimable(struct sgx_epc_page *page);
+ struct sgx_epc_page *sgx_alloc_epc_page(void *owner, bool reclaim);
+ 
++void sgx_ipi_cb(void *info);
++
+ #ifdef CONFIG_X86_SGX_KVM
+ int __init sgx_vepc_init(void);
+ #else
 -- 
 2.25.1
 
