@@ -2,163 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234684AbiDMJqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
+        id S234708AbiDMJqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234181AbiDMJqE (ORCPT
+        with ESMTP id S234673AbiDMJqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:46:04 -0400
-Received: from mo-csw.securemx.jp (mo-csw1516.securemx.jp [210.130.202.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1012055BE8;
-        Wed, 13 Apr 2022 02:43:43 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 23D9hSY5001550; Wed, 13 Apr 2022 18:43:28 +0900
-X-Iguazu-Qid: 34trQigfs8YEx5u9D9
-X-Iguazu-QSIG: v=2; s=0; t=1649843008; q=34trQigfs8YEx5u9D9; m=1OveN9GVe/qWVmHsjdWgkGCN9AjcJcafsCG3VZfEI68=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1510) id 23D9hR5T026553
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 13 Apr 2022 18:43:28 +0900
-X-SA-MID: 2335259
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH 1/5] dt-bindings: media: platform: visconti: Add Toshiba Visconti Video Input Interface bindings
-Date:   Wed, 13 Apr 2022 18:41:59 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220413094203.25714-2-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220413094203.25714-1-yuji2.ishikawa@toshiba.co.jp>
-References: <20220413094203.25714-1-yuji2.ishikawa@toshiba.co.jp>
+        Wed, 13 Apr 2022 05:46:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2F256208;
+        Wed, 13 Apr 2022 02:43:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BB9361AB6;
+        Wed, 13 Apr 2022 09:43:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA242C385A3;
+        Wed, 13 Apr 2022 09:43:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649843026;
+        bh=jcmwPp4MF6Yr0BKX1cHrkpKFTpSsXujiXAGpaOJWw/8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kFcJDmu6gGoU9P2nAzY/jutQqkM4Yx5pozWwXcjBIYo6yGGPOW5oi5S44hagvG2XJ
+         a95mgxZ+s9t+e1xQl2Tgbo7dGuGkLnU+nDbcTy/6jDlxBubD0/rdJtovw8yTrjqgA3
+         eHCJXfI7jhQJk9+VHlF/ksmm15D3JuZt5WuHZR78=
+Date:   Wed, 13 Apr 2022 11:43:43 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        alikernel-developer@linux.alibaba.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] uio/uio_pci_generic: Introduce refcnt on open/release
+Message-ID: <YlabT7+Hqc3h62AT@kroah.com>
+References: <1649833302-27299-1-git-send-email-yaohongbo@linux.alibaba.com>
+ <YlZ8vZ9RX5i7mWNk@kroah.com>
+ <20220413044246-mutt-send-email-mst@kernel.org>
+ <ebd1b238-6e48-6561-93ab-f562096b1c05@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ebd1b238-6e48-6561-93ab-f562096b1c05@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds the Device Tree binding documentation that allows to describe
-the Video Input Interface found in Toshiba Visconti SoCs.
+On Wed, Apr 13, 2022 at 05:25:40PM +0800, Yao Hongbo wrote:
+> 
+> 在 2022/4/13 下午4:51, Michael S. Tsirkin 写道:
+> > On Wed, Apr 13, 2022 at 09:33:17AM +0200, Greg KH wrote:
+> > > On Wed, Apr 13, 2022 at 03:01:42PM +0800, Yao Hongbo wrote:
+> > > > If two userspace programs both open the PCI UIO fd, when one
+> > > > of the program exits uncleanly, the other will cause IO hang
+> > > > due to bus-mastering disabled.
+> > > > 
+> > > > It's a common usage for spdk/dpdk to use UIO. So, introduce refcnt
+> > > > to avoid such problems.
+> > > Why do you have multiple userspace programs opening the same device?
+> > > Shouldn't they coordinate?
+> > Or to restate, I think the question is, why not open the device
+> > once and pass the FD around?
+> 
+> Hmm, it will have the same result, no matter  whether opening the same
+> device or pass the FD around.
 
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- .../bindings/media/toshiba,visconti-viif.yaml | 103 ++++++++++++++++++
- 1 file changed, 103 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+How?  You only open once, and close once.  Where is the multiple closes?
 
-diff --git a/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
-new file mode 100644
-index 000000000..848ea5019
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
-@@ -0,0 +1,103 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/toshiba,visconti-viif.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Toshiba Visconti5 SoC Video Input Interface Device Tree Bindings
-+
-+maintainers:
-+  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-+
-+description: |
-+  Toshiba Visconti5 SoC Video Input Interface (VIIF) receives MIPI CSI2 video stream,
-+  processes the stream with embedded image signal processor (L1ISP, L2ISP), then stores pictures to main memory.
-+
-+properties:
-+  compatible:
-+    const: toshiba,visconti-viif
-+
-+  reg:
-+    items:
-+      - description: registers for capture control
-+      - description: registers for CSI2 receiver control
-+
-+  interrupts:
-+    items:
-+      - description: Sync Interrupt
-+      - description: Status (Error) Interrupt
-+      - description: CSI2 Receiver Interrupt
-+      - description: L1ISP Interrupt
-+
-+  index:
-+    enum: [0, 1]
-+
-+  port:
-+    $ref: /schemas/graph.yaml#/$defs/port-base
-+    unevaluatedProperties: false
-+    description: Input port node, single endpoint describing the CSI-2 transmitter.
-+
-+    properties:
-+      endpoint:
-+        $ref: video-interfaces.yaml#
-+        unevaluatedProperties: false
-+
-+        properties:
-+          data-lanes:
-+            description: VIIF supports 2 or 4 data lines
-+            items:
-+              minItems: 1
-+              maxItems: 4
-+              items:
-+                - const: 1
-+                - const: 2
-+                - const: 3
-+                - const: 4
-+          clock-lanes:
-+            description: VIIF supports 1 clock line
-+            const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - port
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        viif0: viif@1c000000 {
-+            compatible = "toshiba,visconti-viif";
-+            reg = <0 0x1c000000 0 0x6000>,
-+                  <0 0x1c008000 0 0x400>;
-+            interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
-+            index = <0>;
-+            status = "disabled";
-+
-+            port {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                csi_in0: endpoint {
-+                    remote-endpoint = <&imx219_out0>;
-+                    bus-type = <4>;
-+                    data-lanes = <1 2>;
-+                    clock-lanes = <0>;
-+                    clock-noncontinuous;
-+                    link-frequencies = /bits/ 64 <456000000>;
-+                };
-+            };
-+        };
-+    };
-+
--- 
-2.17.1
+> Our expectation is that even if the primary process exits abnormally,  the
+> second process can still send
+> 
+> or receive data.
 
+Then use the same file descriptor.
 
+> The impact of disabling pci bus-master is relatively large, and we should
+> make some restrictions on
+> this behavior.
+
+Why?  UIO is "you better really really know what you are doing to use
+this interface", right?  Just duplicate the fd and pass it around if you
+must have multiple accesses to the same device.
+
+And again, this will be a functional change.  How can you handle your
+userspace on older kernels if you make this change?
+
+thanks,
+
+greg k-h
