@@ -2,109 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 238ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 967C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235043AbiDMPix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 11:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42518 "EHLO
+        id S236582AbiDMPjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 11:39:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbiDMPiu (ORCPT
+        with ESMTP id S236509AbiDMPjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 11:38:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B2964713
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 08:36:29 -0700 (PDT)
+        Wed, 13 Apr 2022 11:39:09 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C156514D;
+        Wed, 13 Apr 2022 08:36:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649864189; x=1681400189;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Iq4ltTTN69V9QzH/TlL8lL1lwJpSTAOC+133meFHn4o=;
-  b=Q7xtkVCk0onK6/n8+cL4NIOvuzowSgD9wNSEpLxnq1wECfRfA19TaoML
-   yE6Vp2mLAHeppJYPj+UoFsR0bAdzvUaMJ5ZJb39t2JDhgFVCsVw1JQCh9
-   yFtRRnAVGSELHtFqmSmT2S4wACqzht/x8urUD/+Wy0Mgq1CEu8KCbdM8v
-   sh5k3l8nB72lvKSAW+VGRtllwOE/adl583+t8V2eikSI+QTM9JwVnAPLo
-   J8DrRlNGRbwcruvFsD9T8FomeHAvfq1INSkkGz0GpVnkMfW5WrhZov3Zf
-   +9vYmnRH5CSewzlwKwUxp614CDKEnNBCZYW04RG9VSz3p+tUVWM14c5wB
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="249988009"
+  t=1649864207; x=1681400207;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=oIiCjJKpo00HkSNcMJpuGaaA17RzsSWMzH4oj7iHyy8=;
+  b=Je7G3kM5dmQj2cX90v9DuZIfXtlqKgiCycMZhsSsTj3PBq/gOYmA0eP8
+   NfLFM9AcJHGOOVLbU+c5L3XyiimGpqxDTU6JcaTXRFK+HHecKMW/abYE+
+   g564/YAIwu2r4yuzuwGjoNQYFMsmFwwA5VUSd9jmnopl/MCnZ5YxKsGGq
+   018wHC9CJrtDsDGdBPYbfH/+BctdekU2tvyquKOrFbssA0krokhNBH3Ss
+   rkGWB2yrCnBQq+ExQzt/eOUxBieTEfL0mhsbaHSX3tZDPk/nDwKCEmF5V
+   zRggL7X+zUUx6La0Mx6zPIQjjWJrYKmKHGbvtJdaesFHodZWx23N0uRI9
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262879943"
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="249988009"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 08:36:28 -0700
+   d="scan'208";a="262879943"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 08:36:46 -0700
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="526518653"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 08:36:28 -0700
-Date:   Wed, 13 Apr 2022 08:38:24 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: Re: [PATCH] staging: Remove the drivers for the Unisys s-Par
-Message-ID: <20220413153824.GA1241369@alison-desk>
-References: <20220412215901.31046-1-fmdefrancesco@gmail.com>
- <YlZzP5ghZeR1AtIg@kroah.com>
- <3988824.6PsWsQAL7t@leap>
+   d="scan'208";a="559791794"
+Received: from jmsepko-mobl.amr.corp.intel.com (HELO [10.212.61.150]) ([10.212.61.150])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 08:36:45 -0700
+Message-ID: <cfcf9f82-7e5f-58b6-7b47-9ac552832596@intel.com>
+Date:   Wed, 13 Apr 2022 08:36:52 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3988824.6PsWsQAL7t@leap>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        David Hildenbrand <david@redhat.com>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
+ <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
+ <ff9e0bad-be9a-97ac-ae88-d22bcfbe80d4@redhat.com>
+ <ebf3ccef-e6fe-62d5-74e8-91e30e7c2642@intel.com>
+ <a458c13f-9994-b227-ff61-bfdfec10bc27@redhat.com>
+ <20220413113024.ycvocn6ynerl3b7m@box.shutemov.name>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
+In-Reply-To: <20220413113024.ycvocn6ynerl3b7m@box.shutemov.name>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 09:35:53AM +0200, Fabio M. De Francesco wrote:
-> On mercoled? 13 aprile 2022 08:52:47 CEST Greg Kroah-Hartman wrote:
-> > On Tue, Apr 12, 2022 at 11:59:01PM +0200, Fabio M. De Francesco wrote:
-> > > The Unisys sub-tree contains three drivers for the "Unisys Secure 
-> Partition"
-> > > (s-Par(R)): visorhba, visorinput, visornic.
-> > > 
-> > > They have no maintainers, in fact the only one that is listed in 
-> MAINTAINERS
-> > > has an unreacheable email address. During 2021 and 2022 several patches 
-> have
-> > > been submitted to these drivers but nobody at Unisys cared of reviewing 
-> the
-> > > changes. Probably, also the "sparmaintainer" internal list of 
-> unisys.com is
-> > > not anymore read by interested Unisys' engineers.
-> > > 
-> > > Therefore, remove the ./unisys subdirectory of staging and delete the 
-> related
-> > > entries in the MAINTAINERS, Kconfig, Makefile files.
-> > > 
-> > > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > > ---
-> > >  MAINTAINERS                                   |    8 -
-> > 
-> > You forgot to at least cc: the people/list on the MAINTAINERS entry that
-> > you are removing here, to give them a hint that this is happening in
-> > case they want to speak up here (and to give us the ability to point to
-> > that years later when they complain they were never notified...)
-> 
-> Yes, this is a good idea. I'll submit a v2 and add two "Cc:" lines, one to 
-> David Kershner and the other to the "sparmaintainer" list at unisys.com.
+On 4/13/22 04:30, Kirill A. Shutemov wrote:
+>> 2) Fast boot; after boot, all memory will slowly but steadily get
+>>    accepted in the background. After a while, all memory is accepted and
+>>    can be signaled to user space.
+...
+> Frankly, I think option 2 is the worst one. You still CPU cycles from the
+> workload after boot to do the job that may or may not be needed. It is an
+> half-measure that helps nobody.
 
-There is another contact in the TODO file (last updated 2015 though ;))
-Ken Cox <jkc@redhat.com>
+Let's not be too hyperbolic here.  "Worst" is entirely subjective and it
+totally depends on your perspective and what you care about.
 
-> 
-> > Also, if you are in the "delete code" mood, I think drivers/staging/vme/
-> > and drivers/vme/ can probably also be deleted given that the maintainer
-> > for that has moved on to other jobs.  Ask them and see!
-> 
-> I can and will do exactly as you just suggested, but only after April 22nd 
-> (unless others want to do these tasks sooner, and in that case they are 
-> welcome :)).
-> 
-> Thanks,
-> 
-> Fabio M. De Francesco
-> 
-> 
-> 
+There are basically four options:
+
+ * Accept everything in early boot
+ * Accept with deferred page free
+ * Accept with kthread after boot
+ * Accept on demand
+
+and four things that matter:
+
+ * Code complexity
+ * Time to a shell prompt
+ * CPU/Memory waste
+ * Deterministic overhead
+
+Did I miss any?
+
+News flash: none of the options wins on all the things that matter.
+We're going to have to pick one (or maybe two).  I'm also not horribly
+convinced that there's a problem here worth solving, especially one that
+requires surgery in the core of the buddy allocator.
+
+This is essentially making a performance argument: it takes too long to
+boot if we go with a simpler solution.  Yet, I haven't seen any data.  I
+think we need to go with the simplest approach(es) until there's some
+actual data to guide us here.
+
+Here's another way to look at it:
+
+> https://docs.google.com/spreadsheets/d/1Fpv0Yp0CTF5_JXHR2pywvNtImTwUVGTxDMlJ5t8qiis/edit?usp=sharing
+
