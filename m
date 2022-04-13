@@ -2,148 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8328DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 419A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236710AbiDMTPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
+        id S237570AbiDMTPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238543AbiDMTNP (ORCPT
+        with ESMTP id S238137AbiDMTLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:13:15 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C29176E1F;
-        Wed, 13 Apr 2022 12:08:52 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id F0C9A218EF;
-        Wed, 13 Apr 2022 19:08:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649876930; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9EyFhZgfXVFqDOsGJ8GGdwNni7OZbvbe647ljn8l0Kg=;
-        b=crSSLVb7nuaM5pMQ9PmWBc+Yv5OTLyBrGq/yvmHYRW6kBmQpl9rH14sTEvCsnuU2T6OwUD
-        cF6lo/Dcn/QQ04wcLreovJ8K6Pw90vXEQmSYKGJ2BWelryhwjnrvbBAWXsCtGuhrhj0lV7
-        MVY22fkx0No8qug34GDhqIwqPtUEx/k=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 78A6413A91;
-        Wed, 13 Apr 2022 19:08:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id X2JiGsIfV2J8AgAAMHmgww
-        (envelope-from <nborisov@suse.com>); Wed, 13 Apr 2022 19:08:50 +0000
-Message-ID: <c3577a83-9889-c741-bb74-051a6d9a0f61@suse.com>
-Date:   Wed, 13 Apr 2022 22:08:49 +0300
+        Wed, 13 Apr 2022 15:11:49 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911F3716F8
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:07:52 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso1761185wmz.4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:07:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7MLyGA4WUDMi+Qf8y5tCaEOv26U6HFRODkGLHS/fFC8=;
+        b=0fnXMottDMHawO/G08dPtjRNELO7Z6wbMXWUyV9JBCKEbxGl1L07CPdlG/u469u6Ci
+         dSYaA4Njd/hnbpaK3oWB6U3dgyhTTeMWN2izBvw70jPVaP9wDh1R0OLzzCpC+zJ3hnSu
+         DkcIZIDycX4jt626uaocz4P6s0zTE0IFFFcU4SOLCz0mJVQHU1KkWvxHV66paQzR5ePE
+         sgkwi6gGtR3bUFS/lcnQaJZtCOSV7gWHpQSBMw2FWB4/fxLocvman8Y8CvOD7J0lOOjr
+         veu6RoNI9R3QFqF0jAO/ghChMFf9dnBdVnjEwHrgqnBs9BGXVCwud70/OlvTTJdxhAmW
+         +hiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7MLyGA4WUDMi+Qf8y5tCaEOv26U6HFRODkGLHS/fFC8=;
+        b=U0sBbUlyni/iaJGcDE8ZrdfK1WqwGPdeURloScB2zS2UFnkVJnQv/S4pYZla3MWjFz
+         zlNqC0S+iP/5jcrhS41NE9UyukYdY51aro6NMUT3kUOM8ZBO3Pb0zvQ3vWIDj5LW6J/G
+         0e8Uxb4kHo6YNuaEvd6itviQKUSc5DElz8xHDw09bK2bxwamdeYBtJrOGUn6X/wcs1Gz
+         JzV+7WYaL+xLi0hCbNVMfHb3WOecIIFF8DC4QBUSebtfLdE+/Y6gpAoYIm1xAwyKEqg4
+         DigBwp6OJNuNuCofR5RV9hDi65qllCXyZ6yUlGW0F21+BEHvLhWV8cqzG044amofX5Eg
+         33DA==
+X-Gm-Message-State: AOAM530Xwb/LmY7KMc0sBLHU21G8wy2p3lIRrOiAIjtAkMS6f3rO6SJY
+        BGe3JPcvzPMIXn5GPJGHCAGWjg==
+X-Google-Smtp-Source: ABdhPJz9DDjuscrfaJJ0xJ53yOFv+BYcHWFfJFxuo2CFhEIbsRQ6tHN5Qx+X/5f1JsOmdn8U5tUH9A==
+X-Received: by 2002:a1c:f604:0:b0:38c:8ffd:dbb6 with SMTP id w4-20020a1cf604000000b0038c8ffddbb6mr154513wmc.43.1649876870996;
+        Wed, 13 Apr 2022 12:07:50 -0700 (PDT)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id o29-20020a05600c511d00b0038e3532b23csm3551852wms.15.2022.04.13.12.07.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 12:07:50 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     heiko@sntech.de, herbert@gondor.apana.org.au,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v5 27/33] arm64: dts: rockchip: add rk3328 crypto node
+Date:   Wed, 13 Apr 2022 19:07:07 +0000
+Message-Id: <20220413190713.1427956-28-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220413190713.1427956-1-clabbe@baylibre.com>
+References: <20220413190713.1427956-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] btrfs: zstd: use spin_lock in timer callback
-Content-Language: en-US
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     dsterba@suse.cz, clm@fb.com, dsterba@suse.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, terrelln@fb.com
-References: <20220411135136.GG15609@suse.cz>
- <20220411155540.36853-1-schspa@gmail.com>
- <09c2a9ce-3b04-ed94-1d62-0e5a072b9dac@suse.com>
- <CAMA88TpjDczKAGN3f+tcsa98rbM7EA0XgT3bHn8UjDqNJ_DeFQ@mail.gmail.com>
-From:   Nikolay Borisov <nborisov@suse.com>
-In-Reply-To: <CAMA88TpjDczKAGN3f+tcsa98rbM7EA0XgT3bHn8UjDqNJ_DeFQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+rk3328 has a crypto IP handled by the rk3288 crypto driver so adds a
+node for it.
 
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-On 13.04.22 г. 19:03 ч., Schspa Shi wrote:
-> Nikolay Borisov <nborisov@suse.com> writes:
-> 
->> On 11.04.22 г. 18:55 ч., Schspa Shi wrote:
->>> This is an optimization for fix fee13fe96529 ("btrfs:
->>> correct zstd workspace manager lock to use spin_lock_bh()")
->>> The critical region for wsm.lock is only accessed by the process context and
->>> the softirq context.
->>> Because in the soft interrupt, the critical section will not be preempted by
->>> the
->>> soft interrupt again, there is no need to call spin_lock_bh(&wsm.lock) to turn
->>> off the soft interrupt, spin_lock(&wsm.lock) is enough for this situation.
->>> Changelog:
->>> v1 -> v2:
->>>       - Change the commit message to make it more readable.
->>> [1] https://lore.kernel.org/all/20220408181523.92322-1-schspa@gmail.com/
->>> Signed-off-by: Schspa Shi <schspa@gmail.com>
->>
->> Has there been any measurable impact by this change? While it's correct it does mean that
->>   someone looking at the code would see that in one call site we use plain spinlock and in
->> another a _bh version and this is somewhat inconsistent.
->>
-> Yes, it may seem a little confused. but it's allowed to save some
-> little peace of CPU times.
-> and "static inline void red_adaptative_timer(struct timer_list *t) in
-> net/sched/sch_red.c"
-> have similar usage.
-> 
->> What's more I believe this is a noop since when softirqs are executing preemptible() would
->> be false due to preempt_count() being non-0 and in the bh-disabling code
->> in the spinlock we have:
->>
->>   /* First entry of a task into a BH disabled section? */
->>      1         if (!current->softirq_disable_cnt) {
->>    167                 if (preemptible()) {
->>      1                         local_lock(&softirq_ctrl.lock);
->>      2                         /* Required to meet the RCU bottomhalf requirements. */
->>      3                         rcu_read_lock();
->>      4                 } else {
->>      5                         DEBUG_LOCKS_WARN_ON(this_cpu_read(softirq_ctrl.cnt));
->>      6                 }
->>      7         }
->>
->>
->> In this case we'd hit the else branch.
-> 
-> We won't hit the else branch. because current->softirq_disable_cnt
-> won't be zero in the origin case.
-> 
-> __do_softirq(void)
->          softirq_handle_begin(void)
->          __local_bh_disable_ip(_RET_IP_, SOFTIRQ_OFFSET);
->                          current->softirq_disable_cnt will be > 0 at this time.
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+index b822533dc7f1..c23fa985e66d 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -1007,6 +1007,17 @@ gic: interrupt-controller@ff811000 {
+ 		      (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+ 	};
+ 
++	crypto: crypto@ff060000 {
++		compatible = "rockchip,rk3328-crypto";
++		reg = <0x0 0xff060000 0x0 0x4000>;
++		interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru HCLK_CRYPTO_MST>, <&cru HCLK_CRYPTO_SLV>,
++			 <&cru SCLK_CRYPTO>;
++		clock-names = "hclk_master", "hclk_slave", "sclk";
++		resets = <&cru SRST_CRYPTO>;
++		reset-names = "crypto-rst";
++	};
++
+ 	pinctrl: pinctrl {
+ 		compatible = "rockchip,rk3328-pinctrl";
+ 		rockchip,grf = <&grf>;
+-- 
+2.35.1
 
-That's only relevant on CONFIG_PREEMPT_RT though, on usual kernels 
-softirq_handle_being is empty. Furthermore, in case of the non-preempt 
-rt if preemptible() always returns false this means that even in the 
-__do_softirq path we'll never increment softirq_disable_cnt. So if 
-anything this change is only beneficial (theoretically at that in 
-preempt_rt scenarios).
-
->      ......
->          zstd_reclaim_timer_fn(struct timer_list *timer)
->                          spin_lock_bh(&wsm.lock);
->                          __local_bh_disable_ip(_RET_IP_, SOFTIRQ_OFFSET);
->                          if (!current->softirq_disable_cnt) {
->                                                  // this if branch won't hit
->                                          }
-> 
->          softirq_handle_end();
-> 
-> In this case, the "__local_bh_disable_ip(_RET_IP_, SOFTIRQ_OFFSET);"
-> won't do anything useful it only
-> increase softirq disable depth and decrease it in
-> "__local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);".
-> 
-> So it's safe to replace spin_lock_bh with spin_lock in a timer
-> callback function.
-> 
-> 
-> For the ksoftirqd, it's all the same.
-> 
