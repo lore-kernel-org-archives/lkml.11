@@ -2,113 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB822C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7020CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235465AbiDMMMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
+        id S233876AbiDMMNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235463AbiDMMMN (ORCPT
+        with ESMTP id S230072AbiDMMNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:12:13 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CF73F8B4;
-        Wed, 13 Apr 2022 05:09:48 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2eba37104a2so20206037b3.0;
-        Wed, 13 Apr 2022 05:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uHgjRJ5n7gxa3U8bHk8ZxYgUPiikIG3e7D0EHXtK/WI=;
-        b=Bu0b0Y/KrqMGaQ4XJKkH1snEUiP5tOPA+/pDExEqKjnvrtenziyOmLtOByO8yMXuLz
-         vPf6g56ZQ4o6xcz7/UTrb6IvkeJIhqpA7ATKqKSPVVqO/k33/xFJ4Aed/FocWMs2WUN2
-         0xXheoOV9fn4KwKnhOc3foPFRav+bDee4afUyrIyRksibz+ruSPBSV5AbpzjtlqrMzZR
-         2xB5e8PvEx6vA3cAEDbuAViP/fmX07uF+XyZTZ31Ij0vssvoggpeuX6Z2JEuNeJkMrn4
-         a2aKUJ2/jXxmFnQw0+1zMapR577dUDxf0G9Kem3oDSZquoK9lNXdGMO405vjkV39C+Fm
-         J7/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uHgjRJ5n7gxa3U8bHk8ZxYgUPiikIG3e7D0EHXtK/WI=;
-        b=koVKMEpVqm+bEnMMj9wZ2aUm8f+cZUkBGdN6IAg4MNXXooQnJmV2E4gPrJClsUltXX
-         rNk8SdY9XubDCCPBU85nzuIrXplkZ/t9NbIhzXg9mqI8SVvnd2j3WZy/8trp/jsiXvpd
-         0txAPY84KKdVLdkDUMBgI3Ayz1eWynboxlDKWUCNxnToiMLuqVWJB8NNGA+xoUSTHw23
-         PPOdcJKYqqjAyQpbmZulSuKyPgvdDEFhGDlzK8dv31d5yPPI3dF7+jVtVUkXHHrRZVxi
-         79G14g4muwY3t4KYjJngUN2HZjkQGK4PX6QipAhMr/dY6+wPRvhNARD1XMDd44AWe15n
-         p7Mw==
-X-Gm-Message-State: AOAM533nxEPOLztRHscrGNVGsR0BmAWaUWVi6/MkbDMs5BqBtyhgLCrq
-        9N6JKf0rjmb2/gGrmSsWnF5WmezMvxXOh91yjVE=
-X-Google-Smtp-Source: ABdhPJwMJK0m2bHfAT/ZqxMVu8kycGcqPLvMYcqzO9MiUl1ZsR/O2Xc/2lRjo9G2u4vlQIt0yFuVlD/CuSh3WZ381yg=
-X-Received: by 2002:a81:578c:0:b0:2e6:2488:7ef8 with SMTP id
- l134-20020a81578c000000b002e624887ef8mr34012300ywb.519.1649851787737; Wed, 13
- Apr 2022 05:09:47 -0700 (PDT)
+        Wed, 13 Apr 2022 08:13:37 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F017349F38
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649851876; x=1681387876;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Q1LBazRwlxDRL0neWWfPeZfDvwo2lF2UwCcqRqWpbf8=;
+  b=HvHxwyOEVI791IdLuD5nyzcEG8XDMQylj7HQsabf5EPVGcVUQ9Uz3ehR
+   zXQv9CfppVNHyApy4m3roD66MYZsdv0MdqA9bI7R91hhoV82YC0H166FL
+   xEg86H63ECVwk1y5BHwD67MxV2rJUPLd+34hIEOq5ah+87UO3xV0fjdgT
+   HuHye4H/weoIR31BiACdtjyftzTG/lu9tXcpQj4vvvLB5A7qilI4NrriE
+   9y2DHuDVkrMnUcZH8Q0AqHsXzcuVVaWnB995A8F3Zem3NZxMgqSsVfl3z
+   nSHz9z4SXlRt1s8rzWkqeRZj71M+uoQbSg52KNtispr3JNtabkh0iV7KZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="325552018"
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="325552018"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 05:11:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="611859541"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 13 Apr 2022 05:11:14 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nebq6-0000Gi-6c;
+        Wed, 13 Apr 2022 12:11:14 +0000
+Date:   Wed, 13 Apr 2022 20:10:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jgunthorpe:iommufd 7/13] include/linux/overflow.h:66:22: warning:
+ comparison of distinct pointer types lacks a cast
+Message-ID: <202204132034.dp2f42wp-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220412185751.124783-1-pgwipeout@gmail.com> <20220412185751.124783-3-pgwipeout@gmail.com>
- <0cf83ec0-29d3-fbde-0b7d-9d58d210f0a4@rock-chips.com>
-In-Reply-To: <0cf83ec0-29d3-fbde-0b7d-9d58d210f0a4@rock-chips.com>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Wed, 13 Apr 2022 08:09:36 -0400
-Message-ID: <CAMdYzYoX=4a_nMfNJ++nVTm18896g6jDngPrq36mRs8e2kj7tA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/4] PCI: dwc: rockchip: add legacy interrupt support
-To:     Shawn Lin <shawn.lin@rock-chips.com>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        PCI <linux-pci@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:54 PM Shawn Lin <shawn.lin@rock-chips.com> wrote=
-:
->
-> Hi Peter,
->
-> =E5=9C=A8 2022/4/13 2:57, Peter Geis =E5=86=99=E9=81=93:
-> > The legacy interrupts on the rk356x pcie controller are handled by a
-> > single muxed interrupt. Add irq domain support to the pcie-dw-rockchip =
->
-> > +static void rockchip_pcie_legacy_int_handler(struct irq_desc *desc)
-> > +{
-> > +     struct irq_chip *chip =3D irq_desc_get_chip(desc);
-> > +     struct rockchip_pcie *rockchip =3D irq_desc_get_handler_data(desc=
-);
-> > +     struct device *dev =3D rockchip->pci.dev;
-> > +     u32 reg;
-> > +     u32 hwirq;
-> > +     u32 virq;
-> > +
-> > +     chained_irq_enter(chip, desc);
-> > +
-> > +     reg =3D rockchip_pcie_readl_apb(rockchip, 0x8);
-> > +
->
->
-> Overall it looks good except that 0x8 has a name,
-> PCIE_CLIENT_INTR_STATUS_LEGACY. BTW, If you consider adding more support
-> to it, for instance, enable/disable/affinity?  The downstream kernel
-> finished these for better fitting for function driver usage.
+tree:   https://github.com/jgunthorpe/linux iommufd
+head:   fc388f906088fe5f5f2db6a36931e00124f52042
+commit: 1af524ce30ddf820ec974c8635d3299caefc72ed [7/13] iommufd: Data structure to provide IOVA to PFN mapping
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220413/202204132034.dp2f42wp-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jgunthorpe/linux/commit/1af524ce30ddf820ec974c8635d3299caefc72ed
+        git remote add jgunthorpe https://github.com/jgunthorpe/linux
+        git fetch --no-tags jgunthorpe iommufd
+        git checkout 1af524ce30ddf820ec974c8635d3299caefc72ed
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/iommu/iommufd/
 
-Good catch, thanks.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This patch has remained largely unchanged from when I first created it
-prior to asking for Rockchip to include support for it in the initial
-series.
-I would have left it out based on the original counter arguments,
-except in testing we have discovered two issues:
-A surprising number of cards do not support MSIs.
-The current MSI implementation has poor compatibility.
+All warnings (new ones prefixed by >>):
 
-I will look at the downstream implementation and consider possible
-changes, but for the time being this does the job.
+   In file included from arch/arc/include/asm/bug.h:30,
+                    from include/linux/bug.h:5,
+                    from include/linux/cpumask.h:14,
+                    from include/linux/smp.h:13,
+                    from include/linux/lockdep.h:14,
+                    from drivers/iommu/iommufd/io_pagetable.c:11:
+   drivers/iommu/iommufd/io_pagetable.c: In function 'iopt_unaccess_pages':
+>> include/linux/overflow.h:66:22: warning: comparison of distinct pointer types lacks a cast
+      66 |         (void) (&__a == &__b);                  \
+         |                      ^~
+   include/asm-generic/bug.h:121:32: note: in definition of macro 'WARN_ON'
+     121 |         int __ret_warn_on = !!(condition);                              \
+         |                                ^~~~~~~~~
+   drivers/iommu/iommufd/io_pagetable.c:486:21: note: in expansion of macro 'check_add_overflow'
+     486 |             WARN_ON(check_add_overflow(iova, length - 1, &last_iova)))
+         |                     ^~~~~~~~~~~~~~~~~~
+
+
+vim +66 include/linux/overflow.h
+
+9b80e4c4ddaca35 Kees Cook        2020-08-12  53  
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  54  /*
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  55   * For simplicity and code hygiene, the fallback code below insists on
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  56   * a, b and *d having the same type (similar to the min() and max()
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  57   * macros), whereas gcc's type-generic overflow checkers accept
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  58   * different types. Hence we don't just make check_add_overflow an
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  59   * alias for __builtin_add_overflow, but add type checks similar to
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  60   * below.
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  61   */
+9b80e4c4ddaca35 Kees Cook        2020-08-12  62  #define check_add_overflow(a, b, d) __must_check_overflow(({	\
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  63  	typeof(a) __a = (a);			\
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  64  	typeof(b) __b = (b);			\
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  65  	typeof(d) __d = (d);			\
+f0907827a8a9152 Rasmus Villemoes 2018-05-08 @66  	(void) (&__a == &__b);			\
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  67  	(void) (&__a == __d);			\
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  68  	__builtin_add_overflow(__a, __b, __d);	\
+9b80e4c4ddaca35 Kees Cook        2020-08-12  69  }))
+f0907827a8a9152 Rasmus Villemoes 2018-05-08  70  
+
+:::::: The code at line 66 was first introduced by commit
+:::::: f0907827a8a9152aedac2833ed1b674a7b2a44f2 compiler.h: enable builtin overflow checkers and add fallback code
+
+:::::: TO: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+:::::: CC: Kees Cook <keescook@chromium.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
