@@ -2,132 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 490D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235201AbiDMLha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
+        id S235210AbiDMLkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiDMLh1 (ORCPT
+        with ESMTP id S232568AbiDMLke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:37:27 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C092E237F8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:35:05 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 7B2F71F38D;
-        Wed, 13 Apr 2022 11:35:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649849704; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fFqfiFiCx2hMGSLHkHBmN5BfJizyHy0EGQZ4MjVsO7g=;
-        b=XtWQOfFS03MuJAoFKw1G6tY/N1VE3kpuCtr0LmuGD4fnq65kIvngZSl5T++LA3Mq3rRCYS
-        a67zEvFqPSLazUTz+DgtckdMscYtdBliJwJZuDpE5232BPC3skv3uDE7PA4+yiP124+Cqr
-        13h6mfA6/zXRPY9JdvtF2uuA7If9DBQ=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 3C5E4A3B87;
-        Wed, 13 Apr 2022 11:35:03 +0000 (UTC)
-Date:   Wed, 13 Apr 2022 13:35:03 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Wu Yan <wu-yan@tcl.com>
-Cc:     jaegeuk@kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, tang.ding@tcl.com
-Subject: Re: [PATCH] f2fs: avoid deadlock in gc thread under low memory
-Message-ID: <Yla1Z8Ze0iJvXRFT@dhcp22.suse.cz>
-References: <181ce21548da652d9a14eebc684fe75c@sslemail.net>
- <Ylab+Tz4d8kZYjef@dhcp22.suse.cz>
- <ff186d65-2103-b796-79b9-3eb4a3e04380@tcl.com>
+        Wed, 13 Apr 2022 07:40:34 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3D558822
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:13 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id v15so1970100edb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:38:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5RsCT0+H3Evp2pw/6AUGDU0mA0FIE163HBKTFYOpVTk=;
+        b=YTex7apl5fRj0QTFhN8XZ8gjLXHbYSuxxG7QpUKzu4EszwI1I3vWKugOKEdiJMCruP
+         JWEylSK18hobJ8LloQXX4j57PRR8cPz+Ess9N4XGVzXowMulwyjet20sWAefzXLsNOnh
+         ECVn/umamp/CZtpvx428GuQcW7vEypQTJAM0kJXunmq9Zq2b2V7TJeQavZEi/pZXEpON
+         LI6uAexxMTE6OH1p27vqtofgDgPTRt2yQplrBeT1TbskkPQKbptcgVAiDMEJsNHzvzF5
+         F4UcelCOK+buy8ikGKdccsqH+1y1WXqxXMmL31eEphLu2Yy/XzSShlKOWEJ9/eD7PH2Z
+         iz8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5RsCT0+H3Evp2pw/6AUGDU0mA0FIE163HBKTFYOpVTk=;
+        b=l/2V2LT9C1383g82WgmuHfQOhxb+dm3FB0nV5UvulSKliC3uCF0ZBqiw3RJnUJcFg3
+         APrgQTb2ADn3fFgm8X5sJoJHdcBg4Dv6xn2nTGZFD19gIOEkrVbZkRCQJPVQqDjLMxzO
+         YZA9BnWQoeTUD+2erz0+IQ4jihq1801j+KM03i4y9Yj09U7uiTybFu7S1KndmB49DvQK
+         fU8p3Ici/vKwDUX6HR10L/lMxp+Xdbjn1CPaIPFfXmsBdS4eja6Gp3ccokrOtLp6uI//
+         HntrNvQhgF8f6/m72xmki6KzOGRTe83bg/7rHnNf0idm3F/OXURT64zTSbbHvGUvdwFR
+         +RvA==
+X-Gm-Message-State: AOAM533iR05Q9prMTqhES27KPf32oWRD9hNGADn6SLG4ExlDQbWDMxcD
+        XhPLwT+UuBOOhXuvXj50/osXXg==
+X-Google-Smtp-Source: ABdhPJxLfttImPqo0xPL/hs3UL57c21Q1w0uozJT+/KDO77ktTP2llbqZc/OLp7dpzYCA1xJRX9ZMw==
+X-Received: by 2002:a05:6402:3489:b0:419:88f0:4bcd with SMTP id v9-20020a056402348900b0041988f04bcdmr43677265edc.401.1649849892211;
+        Wed, 13 Apr 2022 04:38:12 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id cb25-20020a170906a45900b006e87e5f9c4asm4452783ejb.140.2022.04.13.04.38.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 04:38:11 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vincent Shih <vincent.sunplus@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [RESEND PATCH 1/3] nvmem: bcm-ocotp: mark ACPI device ID table as maybe unused
+Date:   Wed, 13 Apr 2022 13:38:07 +0200
+Message-Id: <20220413113809.243288-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ff186d65-2103-b796-79b9-3eb4a3e04380@tcl.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 13-04-22 19:20:06, Wu Yan wrote:
-> On 4/13/22 17:46, Michal Hocko wrote:
-> > On Wed 13-04-22 16:44:32, Rokudo Yan wrote:
-> > > There is a potential deadlock in gc thread may happen
-> > > under low memory as below:
-> > > 
-> > > gc_thread_func
-> > >   -f2fs_gc
-> > >    -do_garbage_collect
-> > >     -gc_data_segment
-> > >      -move_data_block
-> > >       -set_page_writeback(fio.encrypted_page);
-> > >       -f2fs_submit_page_write
-> > > as f2fs_submit_page_write try to do io merge when possible, so the
-> > > encrypted_page is marked PG_writeback but may not submit to block
-> > > layer immediately, if system enter low memory when gc thread try
-> > > to move next data block, it may do direct reclaim and enter fs layer
-> > > as below:
-> > >     -move_data_block
-> > >      -f2fs_grab_cache_page(index=?, for_write=false)
-> > >       -grab_cache_page
-> > >        -find_or_create_page
-> > >         -pagecache_get_page
-> > >          -__page_cache_alloc --  __GFP_FS is set
-> > >           -alloc_pages_node
-> > >            -__alloc_pages
-> > >             -__alloc_pages_slowpath
-> > >              -__alloc_pages_direct_reclaim
-> > >               -__perform_reclaim
-> > >                -try_to_free_pages
-> > >                 -do_try_to_free_pages
-> > >                  -shrink_zones
-> > >                   -mem_cgroup_soft_limit_reclaim
-> > >                    -mem_cgroup_soft_reclaim
-> > >                     -mem_cgroup_shrink_node
-> > >                      -shrink_node_memcg
-> > >                       -shrink_list
-> > >                        -shrink_inactive_list
-> > >                         -shrink_page_list
-> > >                          -wait_on_page_writeback -- the page is marked
-> > >                         writeback during previous move_data_block call
-> > 
-> > This is a memcg reclaim path and you would have to have __GFP_ACCOUNT in
-> > the gfp mask to hit it from the page allocator. I am not really familiar
-> > with f2fs but I doubt it is using this flag.
-> > 
-> > On the other hand the memory is charged to a memcg when the newly
-> > allocated page is added to the page cache. That wouldn't trigger the
-> > soft reclaim path but that is not really necessary because even the
-> > regular memcg reclaim would trigger wait_on_page_writeback for cgroup
-> > v1.
-> > 
-> > Also are you sure that the mapping's gfp mask has __GFP_FS set for this
-> > allocation? f2fs_iget uses GFP_NOFS like mask for some inode types.
-> > 
-> > All that being said, you will need to change the above call chain but it
-> > would be worth double checking the dead lock is real.
-> 
-> Hi, Michal
-> 
-> 1. The issue is occur when do monkey test in Android Device with 4GB RAM +
-> 3GB zram, and memory cgroup v1 enabled.
-> 
-> 2. full memory dump has caught when the issue occur and the dead lock has
-> confirmed from dump. We can see the mapping->gfp_mask is 0x14200ca,
-> so both __GFP_ACCOUNT(0x1000000) and __GFP_FS(0x80) set
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-This is rather surprising, I have to say because page cache is charged
-explicitly (__filemap_add_folio). Are you testing with the upstream
-kernel or could this be a non-upstream change possibly?
+"bcm_otpc_acpi_ids" is used with ACPI_PTR, so a build with !CONFIG_ACPI
+has a warning:
 
-> crash-arm64> struct inode.i_mapping 0xFFFFFFDFD578EEA0
->   i_mapping = 0xffffffdfd578f028,
-> crash-arm64> struct address_space.host,gfp_mask -x 0xffffffdfd578f028
->   host = 0xffffffdfd578eea0,
->   gfp_mask = 0x14200ca,
+  drivers/nvmem/bcm-ocotp.c:247:36: error:
+    ‘bcm_otpc_acpi_ids’ defined but not used [-Werror=unused-const-variable=]
 
-Anyway, if the __GFP_FS is set then the deadlock is possible even
-without __GFP_ACCOUNT.
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/nvmem/bcm-ocotp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/nvmem/bcm-ocotp.c b/drivers/nvmem/bcm-ocotp.c
+index a8097511582a..dfea96c52463 100644
+--- a/drivers/nvmem/bcm-ocotp.c
++++ b/drivers/nvmem/bcm-ocotp.c
+@@ -244,7 +244,7 @@ static const struct of_device_id bcm_otpc_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, bcm_otpc_dt_ids);
+ 
+-static const struct acpi_device_id bcm_otpc_acpi_ids[] = {
++static const struct acpi_device_id bcm_otpc_acpi_ids[] __maybe_unused = {
+ 	{ .id = "BRCM0700", .driver_data = (kernel_ulong_t)&otp_map },
+ 	{ .id = "BRCM0701", .driver_data = (kernel_ulong_t)&otp_map_v2 },
+ 	{ /* sentinel */ }
 -- 
-Michal Hocko
-SUSE Labs
+2.32.0
+
