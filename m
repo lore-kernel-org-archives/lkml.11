@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A19DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238932AbiDMWWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S238039AbiDMWWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236557AbiDMWWD (ORCPT
+        with ESMTP id S236972AbiDMWWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 18:22:03 -0400
+        Wed, 13 Apr 2022 18:22:04 -0400
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4222127A;
-        Wed, 13 Apr 2022 15:19:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED8322B14;
+        Wed, 13 Apr 2022 15:19:40 -0700 (PDT)
 Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2ED0C5C02A7;
-        Wed, 13 Apr 2022 18:19:36 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id E12FD5C0325;
+        Wed, 13 Apr 2022 18:19:39 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 13 Apr 2022 18:19:36 -0400
+  by compute5.internal (MEProxy); Wed, 13 Apr 2022 18:19:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649888376; x=1649974776; bh=l5
-        vU5WVwRKKm13piTZRihQEkEUzFfrdwYn8dVCn/ts4=; b=RhC4uciPnKD/nHp08D
-        rkLH3SIALFBBE73efUXxMXrQflRgBa2qt9+Seupl4Eb6Tg1iRzG7D/K5avrx02ja
-        CLvdHpaOC5ggGnL7APMAP4R23FPyhCHKB6Ry55ydGc7J0W5CDvkA5nAOI/leoBBs
-        b/MP9vnLdU9yUdSXO7+Pkc8YWe9Gide2gjosvr8UFrAXvVxyIGUWXGXBIX53WYyF
-        4RK74vG1OsORMiixKNyejncrlyI+mjYMXgwd8UFJZF+Oy+aH1kjmRU35Ngt64M/l
-        17LD3NXTE/xzKQiYGUrWS3U+bBn0cALMJxzt8kqXSNmdtCApUsy+VpGijI13XccI
-        YP8w==
+        :subject:subject:to:to; s=fm2; t=1649888379; x=1649974779; bh=Dm
+        EyWFCtmS1CP/NJfSjamUUamIi9FMNiWBV0XLSX5tI=; b=mk4goxXUJrAIBWW089
+        dPCf4FzqENNN0V90qnVFG3Nb+06XXWnUrXuZ+EZ6KlLvmQlaXV9aLyBEheUsB0ew
+        L5IA+VDexu9UDz6dGM6mmgxkKvzzLYGjP3cMHo+hVZIF9kC4V64sjU8qx/jOcs5L
+        jlN3BOhlSz0a0f8q0SsMtOtEcWU+yNnikHz1LQO4RRSxkHIRCE10BA5ek86yu7kT
+        YGh49nlDZ1paW0U8O6XzmoK5UGs8+a9UjY3n4SLqsWmX0JGaC9H0+lMli/eqGBVM
+        cVPioWFJsFXzAiGrvp8NspW1xYpvIJB3aadgENPWLfBujOblEA6ajcicj3TfRgLF
+        hqAA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1649888376; x=1649974776; bh=l5vU5WVwRKKm13piTZRihQEkEUzFfrdwYn8
-        dVCn/ts4=; b=ZP64vNZlztWAPDchOWL+nFnpNOVOIXM8fuw8FZxBiymWB5DwYdw
-        r2zR081fRDlGhYq9rOFaYdQCPDzCTVSlpJLvFbuMh5aA/ozx7F0s20fHe/+bxumT
-        Ox5wC3ZIf3ewo1ZmB90dlG0dmyKCzrw6yTzmGo37Vi/Er6L6+ubyVCjqRtNCesmS
-        6CDYk8yPZMXI7Ij+r2CPVZtZTqobBHQLONC5EhwyUOLY1Yhc4kRF9ZXO9Y9431WT
-        AcVx00xaaE+JsxaLk/Q5UVcE7XTPtFaUeh89KPed+UNJZRs91p/YgJu5u/hJpAdC
-        6U3bn5gGCMpH0fTZe3rhUvLuGEAT22+D3Zw==
-X-ME-Sender: <xms:eExXYvV2VPJvsKjnBZPTyg9sfVdpO5dTQ4hxALTgyXDRDi7NlKef3g>
-    <xme:eExXYnngqHiy45H_uKNL5sy7e2NiOCrFgHe6QhmBvTIAbuzo_v54RJgSkHIcgZ4t6
-    X72__k0kK4HNit5GQ>
-X-ME-Received: <xmr:eExXYrahgO7bLGI3SsZyssvPzFmUwu1AJzTIqqhQf4MKVfPmGoHcnTn575Xlyv1ZQ7OLnkrwAfYfuQE5ymL-I0RowVe0DSNS3T_kltSeK72dhkMeqJuO2e44qhW--5zCQrFETA>
+        1649888379; x=1649974779; bh=DmEyWFCtmS1CP/NJfSjamUUamIi9FMNiWBV
+        0XLSX5tI=; b=p2cP5wLcgSeBDjXtnvHzgbPSPk4yR/i4fCkA7ZcCtNYo63XOpfs
+        MCD6IQpVv1+Dvi4dKKDfk+b8QKvo5zbtk2n5xvgts/v2zX/asrYoVUsHHdKl9HFe
+        JMyLH2eL4Wed7wNTe/mHykvgiIexwOTkhsl1xC7ch91CbBfLRCmRojvmG3ULGkcE
+        81bnvhj5CVzIrQwrXEOlTtS2CmAek3tdrY1DYseSt/Qy+M/F9XzVk7cV+73LN0j7
+        LXhmz0c/y0R+OnY/q2gBsADIuhWFUhCq+nKEuOlqY/X61x3YGdggRtcCqiea/L4Y
+        VKkfy76tni9n76SXAE+h/l2bjLPG34bnGXw==
+X-ME-Sender: <xms:e0xXYpjNv2TLkCAN0ztJaT6sjH0fDjHeSWwRgq_8nje2n0E-4CXSeA>
+    <xme:e0xXYuA1d9jB5klSZr1FdEyHfvv309eMymxBGGDuXDDUVMl8Svxj6USb1PY_LOwnO
+    U9Nvh4-v13Mf3-zJQ>
+X-ME-Received: <xmr:e0xXYpGICScmidQ751I2zEVrgcmICfg6GMyBfWFVmwA4NSdG_SSJVW4ZF3YVPdqqVfbKCrk3Q3zrObvekNgB92Bf0ClBbd64y4eR_7JRVFpMsTYaJ8D4MXSGv7HkmLBXl7I9RQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddgtdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
@@ -55,12 +55,12 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddgtdelucetufdoteggod
     frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
     gfejheeuieenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:eExXYqXKuUreuZyDG-GMTlhysU2c6ZEmf0h-wMYNyiHNgtrZAkgS3Q>
-    <xmx:eExXYplKi99SZRYaMq8_5zC5oMloV6oLflQIQCGCm_trj_1HLUdL3g>
-    <xmx:eExXYnfVRkce8H0owgFN4ePKX-FEDMpHzK22bDlUdBXA2SzdYzz7rw>
-    <xmx:eExXYvGAbE2uXd7dfnpDyBX7_MKMTx_eotd6PvhOrrUBVMWEhQ2FDA>
+X-ME-Proxy: <xmx:e0xXYuTXUBj21HJUYOB-GkPGdH2BjGFLMzboDNKacR4CYk0gUm7Qvw>
+    <xmx:e0xXYmyI1vbSLz3zB_qRDsWiicF3jx1qmWkagTmuqc2TQMt7Hjvyfg>
+    <xmx:e0xXYk66X8RQzFm7TlNNA09AZOUb5UYkDxuG9gepNhfvI8YvI7bfeg>
+    <xmx:e0xXYtiVbAlbtckkQb7xm_dem_FoAspGpsqPLzLzjpUQX9jP50CS0w>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 18:19:35 -0400 (EDT)
+ 13 Apr 2022 18:19:38 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
         Sandy Huang <hjc@rock-chips.com>,
@@ -86,9 +86,9 @@ Cc:     linux-rockchip@lists.infradead.org,
         Thomas Zimmermann <tzimmermann@suse.de>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 07/16] drm/rockchip: ebc: Add CRTC buffer management
-Date:   Wed, 13 Apr 2022 17:19:07 -0500
-Message-Id: <20220413221916.50995-8-samuel@sholland.org>
+Subject: [RFC PATCH 09/16] drm/rockchip: ebc: Implement global refreshes
+Date:   Wed, 13 Apr 2022 17:19:09 -0500
+Message-Id: <20220413221916.50995-10-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413221916.50995-1-samuel@sholland.org>
 References: <20220413221916.50995-1-samuel@sholland.org>
@@ -98,300 +98,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds the "context" structure which holds all buffers needed
-to refresh the display. It is allocated separately from the CRTC state
-because it is reused as long as no mode change occurs.
-
-There are three buffers holding Y4 (grayscale 4 bits/pixel) pixel data:
-  - "prev" - contents of the display at the beginning of a refresh.
-  - "next" - contents of the display at the end of that refresh. When a
-    refresh finishes, the "next" buffer is copied into "prev".
-  - "final" - contents of the display at the end of the final refresh.
-    This buffer is necessary because a refresh waveform cannot be
-    modified or interrupted once it is started. If a pixel's value is
-    changed while it is already being refreshed, the "next" buffer
-    cannot be updated until the first waveform completes. At that time,
-    the "final" buffer is copied into "next", and another refresh is
-    started. The name "final" refers to the write-combining behavior of
-    this buffer; any number of plane updates can change this buffer
-    while waiting for the current refresh to complete.
-
-Then there are two buffers holding "phase" data. These are only used
-during partial refreshes. The phase represents the time component (the X
-coordinate) of the waveform. Since the EBC supports a maximum of 256
-phases in a waveform, the phase number requires one byte per pixel. The
-driver swaps between two buffers to minimize the delay between phases,
-as these buffers must be updated for every phase in the waveform.
+The global refresh mode is used to initialize and clear the screen.
+It is the most efficient refresh mode. It uses two pixel buffers (old
+and new) and a frame count. The frame count is set to the number of
+phases in the waveform. The hardware then looks up the combination of
+(old pixel value, new pixel value, frame number) in the LUT and sends
+the resulting polarity value to the display.
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- drivers/gpu/drm/rockchip/rockchip_ebc.c | 166 +++++++++++++++++++++++-
- 1 file changed, 163 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/rockchip/rockchip_ebc.c | 48 ++++++++++++++++++++++++-
+ 1 file changed, 47 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_ebc.c b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-index ebe60d5e011a..095d66e67c2f 100644
+index ca3173b28d1c..cb6dc567e94c 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_ebc.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-@@ -17,6 +17,7 @@
- #include <drm/drm_atomic_helper.h>
- #include <drm/drm_bridge.h>
- #include <drm/drm_drv.h>
-+#include <drm/drm_epd_helper.h>
- #include <drm/drm_fb_helper.h>
- #include <drm/drm_gem_atomic_helper.h>
- #include <drm/drm_gem_framebuffer_helper.h>
-@@ -141,6 +142,10 @@ struct rockchip_ebc {
- 	bool				reset_complete;
- };
+@@ -127,6 +127,7 @@
+ #define EBC_NUM_LUT_REGS		0x1000
+ #define EBC_NUM_SUPPLIES		3
  
-+static int default_waveform = DRM_EPD_WF_GC16;
-+module_param(default_waveform, int, 0644);
-+MODULE_PARM_DESC(default_waveform, "waveform to use for display updates");
-+
- static bool skip_reset;
- module_param(skip_reset, bool, 0444);
- MODULE_PARM_DESC(skip_reset, "skip the initial display reset");
-@@ -165,12 +170,86 @@ static const struct drm_mode_config_funcs rockchip_ebc_mode_config_funcs = {
- 	.atomic_commit		= drm_atomic_helper_commit,
- };
++#define EBC_REFRESH_TIMEOUT		msecs_to_jiffies(3000)
+ #define EBC_SUSPEND_DELAY_MS		2000
  
-+/**
-+ * struct rockchip_ebc_ctx - context for performing display refreshes
-+ *
-+ * @kref: Reference count, maintained as part of the CRTC's atomic state
-+ * @prev: Display contents (Y4) before this refresh
-+ * @next: Display contents (Y4) after this refresh
-+ * @final: Display contents (Y4) after all pending refreshes
-+ * @phase: Buffers for selecting a phase from the EBC's LUT, 1 byte/pixel
-+ * @gray4_pitch: Horizontal line length of a Y4 pixel buffer in bytes
-+ * @gray4_size: Size of a Y4 pixel buffer in bytes
-+ * @phase_pitch: Horizontal line length of a phase buffer in bytes
-+ * @phase_size: Size of a phase buffer in bytes
-+ */
-+struct rockchip_ebc_ctx {
-+	struct kref			kref;
-+	u8				*prev;
-+	u8				*next;
-+	u8				*final;
-+	u8				*phase[2];
-+	u32				gray4_pitch;
-+	u32				gray4_size;
-+	u32				phase_pitch;
-+	u32				phase_size;
-+};
-+
-+static void rockchip_ebc_ctx_free(struct rockchip_ebc_ctx *ctx)
-+{
-+	kfree(ctx->prev);
-+	kfree(ctx->next);
-+	kfree(ctx->final);
-+	kfree(ctx->phase[0]);
-+	kfree(ctx->phase[1]);
-+	kfree(ctx);
-+}
-+
-+static struct rockchip_ebc_ctx *rockchip_ebc_ctx_alloc(u32 width, u32 height)
-+{
-+	u32 gray4_size = width * height / 2;
-+	u32 phase_size = width * height;
-+	struct rockchip_ebc_ctx *ctx;
-+
-+	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return NULL;
-+
-+	ctx->prev = kmalloc(gray4_size, GFP_KERNEL);
-+	ctx->next = kmalloc(gray4_size, GFP_KERNEL);
-+	ctx->final = kmalloc(gray4_size, GFP_KERNEL);
-+	ctx->phase[0] = kmalloc(phase_size, GFP_KERNEL);
-+	ctx->phase[1] = kmalloc(phase_size, GFP_KERNEL);
-+	if (!ctx->prev || !ctx->next || !ctx->final ||
-+	    !ctx->phase[0] || !ctx->phase[1]) {
-+		rockchip_ebc_ctx_free(ctx);
-+		return NULL;
-+	}
-+
-+	kref_init(&ctx->kref);
-+	ctx->gray4_pitch = width / 2;
-+	ctx->gray4_size  = gray4_size;
-+	ctx->phase_pitch = width;
-+	ctx->phase_size  = phase_size;
-+
-+	return ctx;
-+}
-+
-+static void rockchip_ebc_ctx_release(struct kref *kref)
-+{
-+	struct rockchip_ebc_ctx *ctx =
-+		container_of(kref, struct rockchip_ebc_ctx, kref);
-+
-+	return rockchip_ebc_ctx_free(ctx);
-+}
-+
- /*
-  * CRTC
-  */
+ struct rockchip_ebc {
+@@ -269,8 +270,23 @@ static void rockchip_ebc_global_refresh(struct rockchip_ebc *ebc,
+ {
+ 	struct drm_device *drm = &ebc->drm;
+ 	u32 gray4_size = ctx->gray4_size;
++	struct device *dev = drm->dev;
  
- struct ebc_crtc_state {
- 	struct drm_crtc_state		base;
-+	struct rockchip_ebc_ctx		*ctx;
- };
+-	drm_dbg(drm, "global refresh\n");
++	dma_sync_single_for_device(dev, virt_to_phys(ctx->next),
++				   gray4_size, DMA_TO_DEVICE);
++	dma_sync_single_for_device(dev, virt_to_phys(ctx->prev),
++				   gray4_size, DMA_TO_DEVICE);
++
++	reinit_completion(&ebc->display_end);
++	regmap_write(ebc->regmap, EBC_CONFIG_DONE,
++		     EBC_CONFIG_DONE_REG_CONFIG_DONE);
++	regmap_write(ebc->regmap, EBC_DSP_START,
++		     ebc->dsp_start |
++		     EBC_DSP_START_DSP_FRM_TOTAL(ebc->lut.num_phases - 1) |
++		     EBC_DSP_START_DSP_FRM_START);
++	if (!wait_for_completion_timeout(&ebc->display_end,
++					 EBC_REFRESH_TIMEOUT))
++		drm_err(drm, "Refresh timed out!\n");
  
- static inline struct ebc_crtc_state *
-@@ -179,11 +258,70 @@ to_ebc_crtc_state(struct drm_crtc_state *crtc_state)
- 	return container_of(crtc_state, struct ebc_crtc_state, base);
+ 	memcpy(ctx->prev, ctx->next, gray4_size);
  }
- 
-+static void rockchip_ebc_global_refresh(struct rockchip_ebc *ebc,
-+					const struct rockchip_ebc_ctx *ctx)
-+{
-+	struct drm_device *drm = &ebc->drm;
-+	u32 gray4_size = ctx->gray4_size;
-+
-+	drm_dbg(drm, "global refresh\n");
-+
-+	memcpy(ctx->prev, ctx->next, gray4_size);
-+}
-+
-+static void rockchip_ebc_partial_refresh(struct rockchip_ebc *ebc,
-+					 struct rockchip_ebc_ctx *ctx)
-+{
-+	struct drm_device *drm = &ebc->drm;
-+
-+	drm_dbg(drm, "partial refresh\n");
-+}
-+
-+static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
-+				 struct rockchip_ebc_ctx *ctx,
-+				 bool global_refresh,
-+				 enum drm_epd_waveform waveform)
-+{
-+	if (global_refresh)
-+		rockchip_ebc_global_refresh(ebc, ctx);
-+	else
-+		rockchip_ebc_partial_refresh(ebc, ctx);
-+}
-+
- static int rockchip_ebc_refresh_thread(void *data)
+@@ -289,6 +305,7 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
+ 				 enum drm_epd_waveform waveform)
  {
- 	struct rockchip_ebc *ebc = data;
-+	struct rockchip_ebc_ctx *ctx;
+ 	struct drm_device *drm = &ebc->drm;
++	u32 dsp_ctrl = 0, epd_ctrl = 0;
+ 	struct device *dev = drm->dev;
+ 	int ret, temperature;
  
- 	while (!kthread_should_stop()) {
-+		/* The context will change each time the thread is unparked. */
-+		ctx = to_ebc_crtc_state(READ_ONCE(ebc->crtc.state))->ctx;
-+
-+		/*
-+		 * Initialize the buffers before use. This is deferred to the
-+		 * kthread to avoid slowing down atomic_check.
-+		 *
-+		 * ctx->prev and ctx->next are set to 0xff, all white, because:
-+		 *  1) the display is set to white by the reset waveform, and
-+		 *  2) the driver maintains the invariant that the display is
-+		 *     all white whenever the CRTC is disabled.
-+		 *
-+		 * ctx->final is initialized by the first plane update.
-+		 *
-+		 * ctx->phase is set to 0xff, the number of the last possible
-+		 * phase, because the LUT for that phase is known to be all
-+		 * zeroes. (The last real phase in a waveform is zero in order
-+		 * to discharge the display, and unused phases in the LUT are
-+		 * zeroed out.) This prevents undesired driving of the display
-+		 * in 3-window mode between when the framebuffer is blitted
-+		 * (and thus prev != next) and when the refresh thread starts
-+		 * counting phases for that region.
-+		 */
-+		memset(ctx->prev, 0xff, ctx->gray4_size);
-+		memset(ctx->next, 0xff, ctx->gray4_size);
-+		memset(ctx->phase[0], 0xff, ctx->phase_size);
-+		memset(ctx->phase[1], 0xff, ctx->phase_size);
-+
- 		/*
- 		 * LUTs use both the old and the new pixel values as inputs.
- 		 * However, the initial contents of the display are unknown.
-@@ -192,11 +330,11 @@ static int rockchip_ebc_refresh_thread(void *data)
- 		 */
- 		if (!ebc->reset_complete) {
- 			ebc->reset_complete = true;
--			drm_dbg(&ebc->drm, "display reset\n");
-+			rockchip_ebc_refresh(ebc, ctx, true, DRM_EPD_WF_RESET);
- 		}
- 
- 		while (!kthread_should_park()) {
--			drm_dbg(&ebc->drm, "display update\n");
-+			rockchip_ebc_refresh(ebc, ctx, false, default_waveform);
- 
- 			set_current_state(TASK_IDLE);
- 			schedule();
-@@ -207,7 +345,8 @@ static int rockchip_ebc_refresh_thread(void *data)
- 		 * Clear the display before disabling the CRTC. Use the
- 		 * highest-quality waveform to minimize visible artifacts.
- 		 */
--		drm_dbg(&ebc->drm, "display clear\n");
-+		memset(ctx->next, 0xff, ctx->gray4_size);
-+		rockchip_ebc_refresh(ebc, ctx, true, DRM_EPD_WF_GC16);
- 
- 		kthread_parkme();
+@@ -334,11 +351,40 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
+ 				  ebc->lut.buf, EBC_NUM_LUT_REGS);
  	}
-@@ -312,7 +451,9 @@ static int rockchip_ebc_crtc_atomic_check(struct drm_crtc *crtc,
- 					  struct drm_atomic_state *state)
- {
- 	struct rockchip_ebc *ebc = crtc_to_ebc(crtc);
-+	struct ebc_crtc_state *ebc_crtc_state;
- 	struct drm_crtc_state *crtc_state;
-+	struct rockchip_ebc_ctx *ctx;
  
- 	crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
- 	if (!crtc_state->mode_changed)
-@@ -320,14 +461,26 @@ static int rockchip_ebc_crtc_atomic_check(struct drm_crtc *crtc,
- 
- 	if (crtc_state->enable) {
- 		struct drm_display_mode *mode = &crtc_state->adjusted_mode;
++	regmap_write(ebc->regmap, EBC_DSP_START,
++		     ebc->dsp_start);
 +
- 		long rate = mode->clock * 1000;
- 
- 		rate = clk_round_rate(ebc->dclk, rate);
- 		if (rate < 0)
- 			return rate;
- 		mode->clock = rate / 1000;
-+
-+		ctx = rockchip_ebc_ctx_alloc(mode->hdisplay, mode->vdisplay);
-+		if (!ctx)
-+			return -ENOMEM;
++	/*
++	 * The hardware has a separate bit for each mode, with some priority
++	 * scheme between them. For clarity, only set one bit at a time.
++	 */
++	if (global_refresh) {
++		dsp_ctrl |= EBC_DSP_CTRL_DSP_LUT_MODE;
 +	} else {
-+		ctx = NULL;
- 	}
- 
-+	ebc_crtc_state = to_ebc_crtc_state(crtc_state);
-+	if (ebc_crtc_state->ctx)
-+		kref_put(&ebc_crtc_state->ctx->kref, rockchip_ebc_ctx_release);
-+	ebc_crtc_state->ctx = ctx;
++		epd_ctrl |= EBC_EPD_CTRL_DSP_THREE_WIN_MODE;
++	}
++	regmap_update_bits(ebc->regmap, EBC_EPD_CTRL,
++			   EBC_EPD_CTRL_DSP_THREE_WIN_MODE,
++			   epd_ctrl);
++	regmap_update_bits(ebc->regmap, EBC_DSP_CTRL,
++			   EBC_DSP_CTRL_DSP_LUT_MODE,
++			   dsp_ctrl);
 +
- 	return 0;
++	regmap_write(ebc->regmap, EBC_WIN_MST0,
++		     virt_to_phys(ctx->next));
++	regmap_write(ebc->regmap, EBC_WIN_MST1,
++		     virt_to_phys(ctx->prev));
++
+ 	if (global_refresh)
+ 		rockchip_ebc_global_refresh(ebc, ctx);
+ 	else
+ 		rockchip_ebc_partial_refresh(ebc, ctx);
+ 
++	/* Drive the output pins low once the refresh is complete. */
++	regmap_write(ebc->regmap, EBC_DSP_START,
++		     ebc->dsp_start |
++		     EBC_DSP_START_DSP_OUT_LOW);
++
+ 	pm_runtime_mark_last_busy(dev);
+ 	pm_runtime_put_autosuspend(dev);
  }
- 
-@@ -397,6 +550,10 @@ rockchip_ebc_crtc_duplicate_state(struct drm_crtc *crtc)
- 
- 	__drm_atomic_helper_crtc_duplicate_state(crtc, &ebc_crtc_state->base);
- 
-+	ebc_crtc_state->ctx = to_ebc_crtc_state(crtc->state)->ctx;
-+	if (ebc_crtc_state->ctx)
-+		kref_get(&ebc_crtc_state->ctx->kref);
-+
- 	return &ebc_crtc_state->base;
- }
- 
-@@ -405,6 +562,9 @@ static void rockchip_ebc_crtc_destroy_state(struct drm_crtc *crtc,
- {
- 	struct ebc_crtc_state *ebc_crtc_state = to_ebc_crtc_state(crtc_state);
- 
-+	if (ebc_crtc_state->ctx)
-+		kref_put(&ebc_crtc_state->ctx->kref, rockchip_ebc_ctx_release);
-+
- 	__drm_atomic_helper_crtc_destroy_state(&ebc_crtc_state->base);
- 
- 	kfree(ebc_crtc_state);
 -- 
 2.35.1
 
