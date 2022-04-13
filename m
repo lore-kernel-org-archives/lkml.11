@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98743C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B081C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235157AbiDMLch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
+        id S235168AbiDMLcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbiDMLcf (ORCPT
+        with ESMTP id S232440AbiDMLcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:32:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EE427B30;
+        Wed, 13 Apr 2022 07:32:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745F52AC6F;
         Wed, 13 Apr 2022 04:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34A0B61DBF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F6861DC6;
         Wed, 13 Apr 2022 11:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83276C385AB;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AB5E6C385B3;
         Wed, 13 Apr 2022 11:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649849412;
-        bh=IPP2s41zsMxw53oivmfRNFS5UURzk5PQzUEv8C9Jgxg=;
+        bh=dx7OUX8/yekR+5yZ3BY30eSyyVdl4N1P7VEeD7kiFeE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jOE6EDKt+5lxNZse2PKhrHOaPJjn1v0eGUZIW9B3uTHbVRUC/PoNZFfjIEsfzqkwD
-         gkhx4VE1D3Lc+3Z7dd3OZqU+8FCnzXTwzgLNNsj4iR+xC6kWdoe2/vstNtlLeV3VMB
-         DjwO5z52+Afvj7I8dvoK2hrbd1gTy0mA4jOXzEsiQpTWQvQ4pLIkZYjHndkgW/zF2R
-         0GU5uCaO9dMy+8TfwYQT/awulF6Cw5hJPD+6FWVnuoKrkY/Yo6lPijfiZWevJ49Yuq
-         ytFFr0CVT7DSHfuo4rInjKi5u2d6fJ4em+Um4uHhvToGXEV3tt00KtQ4MUtSwjnJi7
-         fODEIksE/WbXg==
+        b=gNiau/O2B3bWi89MNgvZK6Pg8+zNFYhixJtWOmqHdX1uyxz06R2KoiHgumx0sjt1/
+         YcnJddWnfp4FWVavEyzc1tzoXrtRKrn9mWphGDFxH2sfOdDlu6PvndSZFF4V9ET7j4
+         ArARo02UOSzSN0Y3+hQzy9CqJRyzZutOJi0Tse+G0fy7NLYHmYmfRsUSy2RRBalyA2
+         1AdSJcd5+Jv5QwLNjZAkYucJ/VODyDnxZQXSBnKoZw7V0wDs9rXRB+4A5aZg/sQIu+
+         zAZEaDSpMQ+OA93bFLDE0hyuBv1R/ecuCW05jOZDLuL1k99kRBuwfwUusav1lgcyt2
+         CumZKKx6RMhqA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6C6E6E8DD5E;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F4A1E8DD67;
         Wed, 13 Apr 2022 11:30:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: ethernet: ti: am65-cpsw-nuss: using
- pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Subject: Re: [PATCH] NFC: NULL out the dev->rfkill to prevent UAF
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164984941244.14313.3025406291776787942.git-patchwork-notify@kernel.org>
+Message-Id: <164984941258.14313.4753120813378621079.git-patchwork-notify@kernel.org>
 Date:   Wed, 13 Apr 2022 11:30:12 +0000
-References: <20220412090515.2533397-1-chi.minghao@zte.com.cn>
-In-Reply-To: <20220412090515.2533397-1-chi.minghao@zte.com.cn>
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        vladimir.oltean@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, chi.minghao@zte.com.cn,
-        zealci@zte.com.cn
+References: <20220412053208.28681-1-linma@zju.edu.cn>
+In-Reply-To: <20220412053208.28681-1-linma@zju.edu.cn>
+To:     Lin Ma <linma@zju.edu.cn>
+Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -59,20 +57,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 12 Apr 2022 09:05:15 +0000 you wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+On Tue, 12 Apr 2022 13:32:08 +0800 you wrote:
+> Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
+> assumes the device_is_registered() in function nfc_dev_up() will help
+> to check when the rfkill is unregistered. However, this check only
+> take effect when device_del(&dev->dev) is done in nfc_unregister_device().
+> Hence, the rfkill object is still possible be dereferenced.
 > 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> The crash trace in latest kernel (5.18-rc2):
 > 
 > [...]
 
 Here is the summary with links:
-  - net: ethernet: ti: am65-cpsw-nuss: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-    https://git.kernel.org/netdev/net-next/c/2240514cb644
+  - NFC: NULL out the dev->rfkill to prevent UAF
+    https://git.kernel.org/netdev/net-next/c/1b0e81416a24
 
 You are awesome, thank you!
 -- 
