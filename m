@@ -2,143 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D33BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1CA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235385AbiDMRLM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48632 "EHLO
+        id S235679AbiDMRLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiDMRLK (ORCPT
+        with ESMTP id S229521AbiDMRLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:11:10 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95406AA54
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:08:48 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id t13so2362019pgn.8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:08:48 -0700 (PDT)
+        Wed, 13 Apr 2022 13:11:51 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D1FEA6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:09:29 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id q3so2927526wrj.7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:09:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Gb2pwnJxQCeX1p5Gf89t6OOnZOca+zkoLeUQmGIHLHg=;
-        b=CPs3vqLTF09CMgTab8x9Ri+G24uOHBXWWWEAUkRO1S+OWraBkrJq2shwEm9GPg7RQp
-         8SpZhaUK+5lZROHq9Jucju2hEkLgBcW3G5Vbuyt9DLVRH+PjXVq8DsL7XoKIo1Lcc9Qn
-         1K7Hk+G232f2zSFp6O3WQ6xXFiYd1k8EIa1X8azyZZCMcC4P+3rfDVaHoeZrXBXBSM7v
-         yhgHkCKe0hV1xvZ8DIkS1+lNs5vPd979sU8m/1Wj/4MoycAgiiRL8pAcIzlLHHLj0HcZ
-         t6w2AWyS8gAbuL9gdsnH44PEZaHMXqwEmARFEgff+m8boc/1sys19LTAxZKNKS0NWSPh
-         LLsA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sCLiXto+N+uwNvwTzKfo+TPPGQjP4GFjpgB4ZdDzCwA=;
+        b=MkZiwQvVjG36q8ePnIhm0w66YSzngKvc5oJJvnJmsCef4T9vJ6aWRANmip/0NJLen6
+         Aia72rjrqEleWdmX6pp3m/yfvg73D3lay36uWX/HHWfiSGnP+w8muJCzanM0t1Qh3jXZ
+         B7t3CTpV0YGIj9DrkuSuoRO0bE8j0ISFDKY2BTME0vbFx7WaCjTtyA86PjVSCxdzkgsz
+         9OhxuHhJ4K0VnzzNd8GGbWSycQfaVMqKzkVa5HH8lzy3QWHJijb997UNs4tHZkCg28gm
+         gsiRN9GK5c5CV84U6usdPEGTUBYyFth1FY3xE7NHbPPRnFHJG03oKTQZoRA7eUea2rnF
+         YxQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Gb2pwnJxQCeX1p5Gf89t6OOnZOca+zkoLeUQmGIHLHg=;
-        b=USlpKSxgcjH3i2rwUX2IBxb7sxdkJBo6j9ET8D6iUiybxMnHWjRqMHb6QaukSpAVDf
-         OYEdFctL/6CsvHUWCSYjm+m7kvHitNlXg+/t4Wgtz8u8LiVfONoInLY279bxUQx7v0TO
-         RwyO4XaAU93HX9S1/2hJQg1g2IYT43nyloNETV+vcXGstLk4p6iRnxx8u/Qhh3EzqpiW
-         UgB7FUSDl5u/xALVfSbF6zQzOzs4fbWRt0E2xsLP2TMtMwOs47sQF1zHT41cGamirdk5
-         /NS19J0MB6Soav3IZkCwfbFZHHhU6YCHR+6fGRtStTepRaE9OxtLZgXpt6KYbs47F2V1
-         OltQ==
-X-Gm-Message-State: AOAM530ek73/3yg/4esw5xANC+btBqBoMX3X3LDYi8wPFaJUzvl1g2el
-        oZndSyrMUV9EyaVQY/SpNEFKumy7DzCeig==
-X-Google-Smtp-Source: ABdhPJzmyeNTjT8payfffo2e+zvZZNQy61/OLXQEWbtTcsIzOAYNKWCGTLx3Omt4qhWj92tC0Y7utw==
-X-Received: by 2002:a05:6a00:1a01:b0:505:b3e5:b5fc with SMTP id g1-20020a056a001a0100b00505b3e5b5fcmr18828315pfv.53.1649869728158;
-        Wed, 13 Apr 2022 10:08:48 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id rj13-20020a17090b3e8d00b001c77bc09541sm3618780pjb.51.2022.04.13.10.08.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 10:08:46 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 11:08:44 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     James Clark <james.clark@arm.com>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        mike.leach@linaro.org, anshuman.khandual@arm.com,
-        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/15] Make ETM register accesses consistent with
- sysreg.h
-Message-ID: <20220413170844.GA547134@p14s>
-References: <20220304171913.2292458-1-james.clark@arm.com>
- <20220323162257.GC3248686@p14s>
- <4ef77445-b58d-a71a-0ddc-70e308ea99c8@arm.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sCLiXto+N+uwNvwTzKfo+TPPGQjP4GFjpgB4ZdDzCwA=;
+        b=RzboyY1gHV6P3J6NZfiinbqLYulnosnK/p7bmjRpqNxRWEj3/od0hXmUc6bIC2+EyO
+         72sHlRLZL5TJWqNyY7StrHxoRm4yPePfkBbKpcrQvxv7Hvlou/Tvx/KrV0t1gS0Dej4Y
+         8JbFVN76nhJmvnMm36HHXaVfK32wEMQdXX44rbdrAwcYkol02zx03b+H/89wJahBZSlZ
+         xwOcJZJdLJq31B2B6ulM24TE+a6rUOqNz/PELgZIwU65Djaor0+TeykTuXLhHqcaKv6S
+         wIiY9VQ646lvSc3gOu6b6JZxBzWuQT48UqWtaa+c6phRyCwyrGbKDZHhaR82zoEFdY21
+         YBTg==
+X-Gm-Message-State: AOAM531T+XWWHWCnHtgX37/l5c1eYih+Db+EkATQi1/JlT65vOoA2sae
+        EICQvSNy1bcvmNCLuC51jKADMq84qSjxiPO+9zja7w==
+X-Google-Smtp-Source: ABdhPJyli41f+i1rwTLIV2MJwxxgzzWw7Zz26GHsP9cvbLAt8rnThx1uAQV/lOxtF/JQ0NQPCAtI5c8ohWYReiCK+hU=
+X-Received: by 2002:a5d:6241:0:b0:207:ac0e:3549 with SMTP id
+ m1-20020a5d6241000000b00207ac0e3549mr9032063wrv.343.1649869767586; Wed, 13
+ Apr 2022 10:09:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4ef77445-b58d-a71a-0ddc-70e308ea99c8@arm.com>
+References: <20220304083329.GC20556@xsang-OptiPlex-9020> <CAP-5=fVz=arWo19PQR_4UKY_PyywyXoyp+MUnfAJxCFZy5rhWg@mail.gmail.com>
+ <20220413070529.GA1320@linux.intel.com> <CAP-5=fXGqODZYGu781qjEEVtGFpCQJ=dCXi5shYOAbBSt5wQkw@mail.gmail.com>
+ <85eed89f-e4a8-2887-a0b3-579704304357@linux.intel.com>
+In-Reply-To: <85eed89f-e4a8-2887-a0b3-579704304357@linux.intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 13 Apr 2022 10:09:15 -0700
+Message-ID: <CAP-5=fXj+WT3ExNo-fL4d9b_Wm5swnKaCWd67rU85Q=QFg5KUw@mail.gmail.com>
+Subject: Re: [LKP] Re: [perf vendor events] 3f5f0df7bf: perf-sanity-tests.perf_all_metrics_test.fail
+To:     "Liang, Kan" <kan.liang@linux.intel.com>
+Cc:     Carel Si <beibei.si@intel.com>, acme@redhat.com,
+        alexander.shishkin@linux.intel.com, alexandre.torgue@foss.st.com,
+        ak@linux.intel.com, mingo@redhat.com, james.clark@arm.com,
+        jolsa@kernel.org, john.garry@huawei.com, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, namhyung@kernel.org,
+        peterz@infradead.org, eranian@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, lkp@lists.01.org,
+        lkp@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:41:48AM +0100, James Clark wrote:
-> 
-> 
-> On 23/03/2022 16:22, Mathieu Poirier wrote:
-> > On Fri, Mar 04, 2022 at 05:18:57PM +0000, James Clark wrote:
-> >> Changes since v2:
-> >>  * Implement Mike's suggestion of not having _SHIFT and using the existing
-> >>    FIELD_GET and FIELD_PREP methods.
-> >>  * Dropped the change to add the new REG_VAL macro because of the above.
-> >>  * FIELD_PREP could be used in some trivial cases, but in some cases the
-> >>    shift is still required but can be calculated with __bf_shf
-> >>  * Improved the commit messages.
-> >>  * The change is still binary equivalent, but requires an extra step 
-> >>    mentioned at the end of this cover letter.
-> >>
-> >> Applies to coresight/next 3619ee28488
-> >> Also available at https://gitlab.arm.com/linux-arm/linux-jc/-/tree/james-cs-register-refactor-v3
-> >>
-> >> To check for binary equivalence follow the same steps in the cover letter
-> >> of v2, but apply the following change to coresight-priv.h. This is because
-> >> the existing version of the macros wrap the expression in a new scope {}
-> >> that flips something in the compiler:
-> >>
-> >>   #undef FIELD_GET
-> >>   #define FIELD_GET(_mask, _reg) (((_reg) & (_mask)) >> __bf_shf(_mask))
-> >>   #undef FIELD_PREP
-> >>   #define FIELD_PREP(_mask, _val) (((_val) << __bf_shf(_mask)) & (_mask))
-> >>
-> >> Thanks
-> >> James
-> >>
-> >> James Clark (15):
-> >>   coresight: etm4x: Cleanup TRCIDR0 register accesses
-> >>   coresight: etm4x: Cleanup TRCIDR2 register accesses
-> >>   coresight: etm4x: Cleanup TRCIDR3 register accesses
-> >>   coresight: etm4x: Cleanup TRCIDR4 register accesses
-> >>   coresight: etm4x: Cleanup TRCIDR5 register accesses
-> >>   coresight: etm4x: Cleanup TRCCONFIGR register accesses
-> >>   coresight: etm4x: Cleanup TRCEVENTCTL1R register accesses
-> >>   coresight: etm4x: Cleanup TRCSTALLCTLR register accesses
-> >>   coresight: etm4x: Cleanup TRCVICTLR register accesses
-> >>   coresight: etm3x: Cleanup ETMTECR1 register accesses
-> >>   coresight: etm4x: Cleanup TRCACATRn register accesses
-> >>   coresight: etm4x: Cleanup TRCSSCCRn and TRCSSCSRn register accesses
-> >>   coresight: etm4x: Cleanup TRCSSPCICRn register accesses
-> >>   coresight: etm4x: Cleanup TRCBBCTLR register accesses
-> >>   coresight: etm4x: Cleanup TRCRSCTLRn register accesses
-> >>
-> >>  .../coresight/coresight-etm3x-core.c          |   2 +-
-> >>  .../coresight/coresight-etm3x-sysfs.c         |   2 +-
-> >>  .../coresight/coresight-etm4x-core.c          | 136 +++++--------
-> >>  .../coresight/coresight-etm4x-sysfs.c         | 180 +++++++++---------
-> >>  drivers/hwtracing/coresight/coresight-etm4x.h | 122 ++++++++++--
-> >>  5 files changed, 244 insertions(+), 198 deletions(-)
-> > 
-> > I am done reviewing this set.  I will wait until rc1 or rc2 before moving
-> > forward.  If there are other comments needing a respin then I will wait for the
-> > next revision.  Otherwise I will apply this one after correcting the extra lines
-> > at the end of patch 15.
-> >  
-> 
-> Thanks for the review!
+On Wed, Apr 13, 2022 at 9:37 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
 >
+>
+>
+> On 4/13/2022 12:03 PM, Ian Rogers wrote:
+> > 3) Weak group doesn't fall back to no group:
+>
+> That's because the group validation code doesn't take pinned events,
+> such as the NMI watchdog, into account.
+>
+> I proposed a kernel patch to fix it, but it's rejected. It should be
+> hard to find a generic way to fix it from the kernel side.
+> https://lore.kernel.org/lkml/1565977750-76693-1-git-send-email-kan.liang@linux.intel.com/
+>
+> Maybe we can workaround it from the perf tool side?
+> For example, for each weak group with cycles event and NMI watchdog is
+> enabled, add an extra cycles event when opening the group. If the open
+> fails with the extra cycles event, fall back to no group. After the
+> extra cycles event check, remove the extra cycles.
+>
+> What do you think?
 
-I have applied this set.
+Thanks Kan, it is a shame the kernel support is lacking here. I'm not
+sure what you are proposing for the perf tool to do. So:
 
-> > Thanks,
-> > Mathieu
-> > 
-> >>
-> >> -- 
-> >> 2.28.0
-> >>
+> for each weak group with cycles event and NMI watchdog
+
+Okay, let's try Branching_Overhead as mentioned in this report - but
+the event is CPU_CLK_UNHALTED.THREAD here :-/
+
+> add an extra cycles event when opening the group
+
+So the perf_event_open doesn't fail here for me:
+$ perf stat -e '{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,BR_INST_RETIRED.NOT_TAKEN,BR_INST_RETIRED.CONDITIONAL,CPU_CLK_UNHALTED.THREAD},cycles'
+-a sleep 1
+
+ Performance counter stats for 'system wide':
+
+     <not counted>      BR_INST_RETIRED.NEAR_CALL
+               (0.00%)
+     <not counted>      BR_INST_RETIRED.NEAR_TAKEN
+                (0.00%)
+     <not counted>      BR_INST_RETIRED.NOT_TAKEN
+               (0.00%)
+     <not counted>      BR_INST_RETIRED.CONDITIONAL
+                 (0.00%)
+     <not counted>      CPU_CLK_UNHALTED.THREAD
+               (0.00%)
+     4,071,908,022      cycles
+               (49.97%)
+
+       0.998134717 seconds time elapsed
+
+Some events weren't counted. Try disabling the NMI watchdog:
+echo 0 > /proc/sys/kernel/nmi_watchdog
+perf stat ...
+echo 1 > /proc/sys/kernel/nmi_watchdog
+The events in group usually have to be from the same PMU. Try
+reorganizing the group.
+
+I'm not sure what the cycles event is achieving here, but it seems the
+behavior will need a kernel change. I think I'm misunderstanding your
+proposal :-)
+
+Thanks,
+Ian
+
+> Thanks,
+> Kan
+> > $ perf stat -e '{BR_INST_RETIRED.NEAR_CALL,BR_INST_RETIRED.NEAR_TAKEN,BR_INST_RETIRED.NOT_TAKEN,BR_INST_RETIRED.CONDITIONAL,CPU_CLK_UNHALTED.THREAD}:W'
+> > -a sleep 1
+> >
+> >   Performance counter stats for 'system wide':
+> >
+> >       <not counted>      BR_INST_RETIRED.NEAR_CALL
+> >                 (0.00%)
+> >       <not counted>      BR_INST_RETIRED.NEAR_TAKEN
+> >                  (0.00%)
+> >       <not counted>      BR_INST_RETIRED.NOT_TAKEN
+> >                 (0.00%)
+> >       <not counted>      BR_INST_RETIRED.CONDITIONAL
+> >                   (0.00%)
+> >       <not counted>      CPU_CLK_UNHALTED.THREAD
+> >                 (0.00%)
+> >
+> >         1.001690318 seconds time elapsed
+> >
+> > Some events weren't counted. Try disabling the NMI watchdog:
+> > echo 0 > /proc/sys/kernel/nmi_watchdog
+> > perf stat ...
+> > echo 1 > /proc/sys/kernel/nmi_watchdog
