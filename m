@@ -2,294 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8815EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238226AbiDMTQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
+        id S233750AbiDMTRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238258AbiDMTPP (ORCPT
+        with ESMTP id S238301AbiDMTRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:15:15 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E854872E19
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:12:03 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id i20so3966391wrb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:12:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1RZL0XXsytYy5ZJKTr3LlYWtv8RryIBpNJlnFGby0uU=;
-        b=HxfpaGzEwtyGNC6inuNuf2hnna9AB7qyJmL0p/4brkAA7e2J8t/VvBO14rZjQ5d/0r
-         3SqWWbPXYn+IZbUe3c2YnxcuwCAc5KvyZ3K4vqcW9faBZv8nb1pYIzBicqt5rpGt4qSS
-         aA//A+FVr+5BEd8Tom/MkRim9AqNga/np+xHO+AlQ6ziAdk+wK85OHnH7UgPy615MjLN
-         7eEjXUHnY1tuDuKweiBnJsQvERoFBhVRWBoJjRMPZ1erYVJ8oJSWPCW3hBEzZ+1CqJxi
-         KdULBdTPsyeSDbPmK3azJRr04ClKZ2x0ych9NUPYYaraRdqQOtVhRsS+wCvjudmiVXJn
-         bHZg==
+        Wed, 13 Apr 2022 15:17:08 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0A471EED;
+        Wed, 13 Apr 2022 12:12:55 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id s1so3083095oie.6;
+        Wed, 13 Apr 2022 12:12:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1RZL0XXsytYy5ZJKTr3LlYWtv8RryIBpNJlnFGby0uU=;
-        b=X1ND8TtpA+1zDgRuvL2C831uOEFidNWRVLhiAP1NPGUlDcKXbdziapAzAWFMWfjtkU
-         3UJtqUCqi4FspZUQ5e3lx7IzpZNchLumus1m4z/eGHv4gzJI4aJt7Fp8ZONyGdz08Mlq
-         20yUD1tZ+jzt46wc1nSf4ycoaFZWZZiiFoXbSOGXGjwbr1PW4Fzoqz+a1WQtWqwabIeL
-         kHvuz3yL/En73We0CbI46dfNET8IKor7t8kZ6ED2439+tZXe1B+2vnKXbHA5WmmYAWD0
-         E/VDGSBkS4Bt+4QjrbDo+31ECxvd4wFk/ez6QqPzlfnyNPm7Yi1rVClaj7ad+8Fmht1S
-         bE5A==
-X-Gm-Message-State: AOAM530+Uyro9PQLlnWVwV5wtd/DNQYIJgAvfmhNm4x3dkfvpyl7v0uZ
-        CkrAmAxfgWL3L+4TofCyUkklvA==
-X-Google-Smtp-Source: ABdhPJzJMqQd4xcwB9Lk7IfWdm9xKXg5H4d0S7MZmu1Y6Rm8a0gSOFAhFfoRw3mVE0d5nEvCY8aePg==
-X-Received: by 2002:a5d:4cc8:0:b0:207:b601:3137 with SMTP id c8-20020a5d4cc8000000b00207b6013137mr245720wrt.652.1649877122170;
-        Wed, 13 Apr 2022 12:12:02 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id o6-20020a05600002c600b00207a389117csm11963336wry.53.2022.04.13.12.12.01
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Kx6X/hwl6jdNnDDQ52TpbqWRgcBx9sA8wo37ZQdrUfI=;
+        b=3jqA7Q1Aw628EWZsp5nvvptiujbAQkTGyWpTBcKd+hd5rIOPx1osrGktE0PEc0CI7t
+         FZ6fwWG+wUNokzdsYREOV2a0l935i9ig3DbV4KCK08jc+Hh+SwGP3cut/wgmqAEncTH/
+         1QJ5i2Ajf6jt2tEwe8ES1o/SgFWqKzfRa60S+uoHOFaZQeaKyXnEHOcztr1fPu1C7Ial
+         q9BXfEA/pRZvbyieDOeFQZYbtNaDSWIAWjxTe7Mo8b+WXlrXfXCTYhXaJ3NL+wK1O1Ur
+         2214fu4aBgw8WmliUokI2ZH/iYygxWlDAvXLLe73bIZV7Q4fydjXrwyydjuIHfse8ths
+         UJkg==
+X-Gm-Message-State: AOAM530SIEFaU7Qlzp0WdbPtxfbRMpEDU1gE/Bs7rPtoxKunj0B8Db6U
+        lSI39YyZC5XSJZtHl6qCGf1Gbw/NRg==
+X-Google-Smtp-Source: ABdhPJyOvJoKJyw2OaRPAhYndbNCWeL4sOOOM3ybEpVJ8dkuOflu8i3rs3akLnt7N7KhtGIzJb6eYw==
+X-Received: by 2002:a05:6808:e83:b0:2f7:3e70:fdc9 with SMTP id k3-20020a0568080e8300b002f73e70fdc9mr140601oil.172.1649877174137;
+        Wed, 13 Apr 2022 12:12:54 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r3-20020aca4403000000b002ecf4d70c83sm13780659oia.27.2022.04.13.12.12.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 12:12:01 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     arno@natisbad.org, bbrezillon@kernel.org,
-        herbert@gondor.apana.org.au, schalla@marvell.com
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 2/2] crypto: marvell: cesa: Add fallback for handling empty length case
-Date:   Wed, 13 Apr 2022 19:11:55 +0000
-Message-Id: <20220413191155.1429137-2-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220413191155.1429137-1-clabbe@baylibre.com>
-References: <20220413191155.1429137-1-clabbe@baylibre.com>
+        Wed, 13 Apr 2022 12:12:53 -0700 (PDT)
+Received: (nullmailer pid 3665385 invoked by uid 1000);
+        Wed, 13 Apr 2022 19:12:52 -0000
+Date:   Wed, 13 Apr 2022 14:12:52 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc
+ dt-binding
+Message-ID: <YlcgtLmXwc2s2+oJ@robh.at.kernel.org>
+References: <20220407082148.571442-1-gengcixi@gmail.com>
+ <20220407082148.571442-2-gengcixi@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407082148.571442-2-gengcixi@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver does not handle case where cryptlen is zero and fail crypto selftests.
-So let's add a fallback for this case.
+On Thu, Apr 07, 2022 at 04:21:42PM +0800, Cixi Geng wrote:
+> From: Cixi Geng <cixi.geng1@unisoc.com>
+> 
+> sprd,ump9620-adc is one variant of sc27xx series, add ump9620
+> description and sample in dt-bindings.
+> 
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> ---
+>  .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 57 +++++++++++++++++--
+>  1 file changed, 53 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> index caa3ee0b4b8c..0d0f317b75c5 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+> @@ -20,6 +20,7 @@ properties:
+>        - sprd,sc2723-adc
+>        - sprd,sc2730-adc
+>        - sprd,sc2731-adc
+> +      - sprd,ump9620-adc
+>  
+>    reg:
+>      maxItems: 1
+> @@ -34,12 +35,39 @@ properties:
+>      maxItems: 1
+>  
+>    nvmem-cells:
+> -    maxItems: 2
+> +    description: nvmem-cells.
+>  
+>    nvmem-cell-names:
+> -    items:
+> -      - const: big_scale_calib
+> -      - const: small_scale_calib
+> +    description: Names for each nvmem-cells specified.
 
-Fixes: f63601fd616ab ("crypto: marvell/cesa - add a new driver for Marvell's CESA")
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- drivers/crypto/marvell/Kconfig       |  4 ++
- drivers/crypto/marvell/cesa/cesa.h   | 12 +++--
- drivers/crypto/marvell/cesa/cipher.c | 69 ++++++++++++++++++++++++----
- 3 files changed, 72 insertions(+), 13 deletions(-)
+These descriptions of common properties are redundant. Just use 'true' 
+for the property values.
 
-diff --git a/drivers/crypto/marvell/Kconfig b/drivers/crypto/marvell/Kconfig
-index a48591af12d0..6d8a625e2208 100644
---- a/drivers/crypto/marvell/Kconfig
-+++ b/drivers/crypto/marvell/Kconfig
-@@ -13,6 +13,10 @@ config CRYPTO_DEV_MARVELL_CESA
- 	select CRYPTO_SKCIPHER
- 	select CRYPTO_HASH
- 	select SRAM
-+	select CRYPTO_ECB
-+	select CRYPTO_CBC
-+	select CRYPTO_DES
-+	select CRYPTO_AES
- 	select CRYPTO_DEV_MARVELL
- 	help
- 	  This driver allows you to utilize the Cryptographic Engines and
-diff --git a/drivers/crypto/marvell/cesa/cesa.h b/drivers/crypto/marvell/cesa/cesa.h
-index d215a6bed6bc..93736eed19f1 100644
---- a/drivers/crypto/marvell/cesa/cesa.h
-+++ b/drivers/crypto/marvell/cesa/cesa.h
-@@ -487,12 +487,14 @@ struct mv_cesa_req_ops {
- 
- /**
-  * struct mv_cesa_ctx - CESA operation context
-- * @ops:	crypto operations
-+ * @ops:		crypto operations
-+ * @fallback_tfm:	pointer to the fallback TFM
-  *
-  * Base context structure inherited by operation specific ones.
-  */
- struct mv_cesa_ctx {
- 	const struct mv_cesa_req_ops *ops;
-+	struct crypto_skcipher *fallback_tfm;
- };
- 
- /**
-@@ -563,15 +565,17 @@ struct mv_cesa_skcipher_std_req {
- 
- /**
-  * struct mv_cesa_skcipher_req - cipher request
-- * @req:	type specific request information
-- * @src_nents:	number of entries in the src sg list
-- * @dst_nents:	number of entries in the dest sg list
-+ * @req:		type specific request information
-+ * @src_nents:		number of entries in the src sg list
-+ * @dst_nents:		number of entries in the dest sg list
-+ * @fallback_req:	request struct for invoking the fallback skcipher TFM
-  */
- struct mv_cesa_skcipher_req {
- 	struct mv_cesa_req base;
- 	struct mv_cesa_skcipher_std_req std;
- 	int src_nents;
- 	int dst_nents;
-+	struct skcipher_request fallback_req;   // keep at the end
- };
- 
- /**
-diff --git a/drivers/crypto/marvell/cesa/cipher.c b/drivers/crypto/marvell/cesa/cipher.c
-index c6f2fa753b7c..6da44651635f 100644
---- a/drivers/crypto/marvell/cesa/cipher.c
-+++ b/drivers/crypto/marvell/cesa/cipher.c
-@@ -37,6 +37,26 @@ struct mv_cesa_skcipher_dma_iter {
- 	struct mv_cesa_sg_dma_iter dst;
- };
- 
-+static int cesa_skcipher_fallback(struct skcipher_request *areq,
-+				  struct mv_cesa_op_ctx *tmpl)
-+{
-+	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
-+	struct mv_cesa_ctx *op = crypto_skcipher_ctx(tfm);
-+	struct mv_cesa_skcipher_req *rctx = skcipher_request_ctx(areq);
-+	int err;
-+
-+	skcipher_request_set_tfm(&rctx->fallback_req, op->fallback_tfm);
-+	skcipher_request_set_callback(&rctx->fallback_req, areq->base.flags,
-+				      areq->base.complete, areq->base.data);
-+	skcipher_request_set_crypt(&rctx->fallback_req, areq->src, areq->dst,
-+				   areq->cryptlen, areq->iv);
-+	if (mv_cesa_get_op_cfg(tmpl) & CESA_SA_DESC_CFG_DIR_DEC)
-+		err = crypto_skcipher_decrypt(&rctx->fallback_req);
-+	else
-+		err = crypto_skcipher_encrypt(&rctx->fallback_req);
-+	return err;
-+}
-+
- static inline void
- mv_cesa_skcipher_req_iter_init(struct mv_cesa_skcipher_dma_iter *iter,
- 			       struct skcipher_request *req)
-@@ -240,15 +260,25 @@ static const struct mv_cesa_req_ops mv_cesa_skcipher_req_ops = {
- 
- static void mv_cesa_skcipher_cra_exit(struct crypto_tfm *tfm)
- {
--	void *ctx = crypto_tfm_ctx(tfm);
-+	struct mv_cesa_ctx *ctx = crypto_tfm_ctx(tfm);
- 
- 	memzero_explicit(ctx, tfm->__crt_alg->cra_ctxsize);
-+	crypto_free_skcipher(ctx->fallback_tfm);
- }
- 
- static int mv_cesa_skcipher_cra_init(struct crypto_tfm *tfm)
- {
- 	struct mv_cesa_ctx *ctx = crypto_tfm_ctx(tfm);
-+	struct crypto_skcipher *sktfm = __crypto_skcipher_cast(tfm);
-+	const char *name = crypto_tfm_alg_name(tfm);
-+
-+	ctx->fallback_tfm = crypto_alloc_skcipher(name, 0, CRYPTO_ALG_NEED_FALLBACK);
-+	if (IS_ERR(ctx->fallback_tfm)) {
-+		return PTR_ERR(ctx->fallback_tfm);
-+	}
- 
-+	sktfm->reqsize = sizeof(struct mv_cesa_ctx) +
-+		crypto_skcipher_reqsize(ctx->fallback_tfm);
- 	ctx->ops = &mv_cesa_skcipher_req_ops;
- 
- 	crypto_skcipher_set_reqsize(__crypto_skcipher_cast(tfm),
-@@ -276,7 +306,10 @@ static int mv_cesa_aes_setkey(struct crypto_skcipher *cipher, const u8 *key,
- 	for (i = 0; i < remaining; i++)
- 		ctx->aes.key_dec[4 + i] = ctx->aes.key_enc[offset + i];
- 
--	return 0;
-+	crypto_skcipher_clear_flags(ctx->base.fallback_tfm, CRYPTO_TFM_REQ_MASK);
-+	crypto_skcipher_set_flags(ctx->base.fallback_tfm, cipher->base.crt_flags & CRYPTO_TFM_REQ_MASK);
-+
-+	return crypto_skcipher_setkey(ctx->base.fallback_tfm, key, len);
- }
- 
- static int mv_cesa_des_setkey(struct crypto_skcipher *cipher, const u8 *key,
-@@ -291,7 +324,10 @@ static int mv_cesa_des_setkey(struct crypto_skcipher *cipher, const u8 *key,
- 
- 	memcpy(ctx->key, key, DES_KEY_SIZE);
- 
--	return 0;
-+	crypto_skcipher_clear_flags(ctx->base.fallback_tfm, CRYPTO_TFM_REQ_MASK);
-+	crypto_skcipher_set_flags(ctx->base.fallback_tfm, cipher->base.crt_flags & CRYPTO_TFM_REQ_MASK);
-+
-+	return crypto_skcipher_setkey(ctx->base.fallback_tfm, key, len);
- }
- 
- static int mv_cesa_des3_ede_setkey(struct crypto_skcipher *cipher,
-@@ -306,7 +342,10 @@ static int mv_cesa_des3_ede_setkey(struct crypto_skcipher *cipher,
- 
- 	memcpy(ctx->key, key, DES3_EDE_KEY_SIZE);
- 
--	return 0;
-+	crypto_skcipher_clear_flags(ctx->base.fallback_tfm, CRYPTO_TFM_REQ_MASK);
-+	crypto_skcipher_set_flags(ctx->base.fallback_tfm, cipher->base.crt_flags & CRYPTO_TFM_REQ_MASK);
-+
-+	return crypto_skcipher_setkey(ctx->base.fallback_tfm, key, len);
- }
- 
- static int mv_cesa_skcipher_dma_req_init(struct skcipher_request *req,
-@@ -458,6 +497,13 @@ static int mv_cesa_skcipher_queue_req(struct skcipher_request *req,
- 	int ret;
- 	struct mv_cesa_skcipher_req *creq = skcipher_request_ctx(req);
- 	struct mv_cesa_engine *engine;
-+	bool need_fallback = false;
-+
-+	if (!req->cryptlen)
-+		need_fallback = true;
-+
-+	if (need_fallback)
-+		return cesa_skcipher_fallback(req, tmpl);
- 
- 	ret = mv_cesa_skcipher_req_init(req, tmpl);
- 	if (ret)
-@@ -520,7 +566,8 @@ struct skcipher_alg mv_cesa_ecb_des_alg = {
- 		.cra_driver_name = "mv-ecb-des",
- 		.cra_priority = 300,
- 		.cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY | CRYPTO_ALG_ASYNC |
--			     CRYPTO_ALG_ALLOCATES_MEMORY,
-+			     CRYPTO_ALG_ALLOCATES_MEMORY |
-+			     CRYPTO_ALG_NEED_FALLBACK,
- 		.cra_blocksize = DES_BLOCK_SIZE,
- 		.cra_ctxsize = sizeof(struct mv_cesa_des_ctx),
- 		.cra_alignmask = 0,
-@@ -571,7 +618,8 @@ struct skcipher_alg mv_cesa_cbc_des_alg = {
- 		.cra_driver_name = "mv-cbc-des",
- 		.cra_priority = 300,
- 		.cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY | CRYPTO_ALG_ASYNC |
--			     CRYPTO_ALG_ALLOCATES_MEMORY,
-+			     CRYPTO_ALG_ALLOCATES_MEMORY |
-+			     CRYPTO_ALG_NEED_FALLBACK,
- 		.cra_blocksize = DES_BLOCK_SIZE,
- 		.cra_ctxsize = sizeof(struct mv_cesa_des_ctx),
- 		.cra_alignmask = 0,
-@@ -629,7 +677,8 @@ struct skcipher_alg mv_cesa_ecb_des3_ede_alg = {
- 		.cra_driver_name = "mv-ecb-des3-ede",
- 		.cra_priority = 300,
- 		.cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY | CRYPTO_ALG_ASYNC |
--			     CRYPTO_ALG_ALLOCATES_MEMORY,
-+			     CRYPTO_ALG_ALLOCATES_MEMORY |
-+			     CRYPTO_ALG_NEED_FALLBACK,
- 		.cra_blocksize = DES3_EDE_BLOCK_SIZE,
- 		.cra_ctxsize = sizeof(struct mv_cesa_des3_ctx),
- 		.cra_alignmask = 0,
-@@ -683,7 +732,8 @@ struct skcipher_alg mv_cesa_cbc_des3_ede_alg = {
- 		.cra_driver_name = "mv-cbc-des3-ede",
- 		.cra_priority = 300,
- 		.cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY | CRYPTO_ALG_ASYNC |
--			     CRYPTO_ALG_ALLOCATES_MEMORY,
-+			     CRYPTO_ALG_ALLOCATES_MEMORY |
-+			     CRYPTO_ALG_NEED_FALLBACK,
- 		.cra_blocksize = DES3_EDE_BLOCK_SIZE,
- 		.cra_ctxsize = sizeof(struct mv_cesa_des3_ctx),
- 		.cra_alignmask = 0,
-@@ -756,7 +806,8 @@ struct skcipher_alg mv_cesa_ecb_aes_alg = {
- 		.cra_driver_name = "mv-ecb-aes",
- 		.cra_priority = 300,
- 		.cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY | CRYPTO_ALG_ASYNC |
--			     CRYPTO_ALG_ALLOCATES_MEMORY,
-+			     CRYPTO_ALG_ALLOCATES_MEMORY |
-+			     CRYPTO_ALG_NEED_FALLBACK,
- 		.cra_blocksize = AES_BLOCK_SIZE,
- 		.cra_ctxsize = sizeof(struct mv_cesa_aes_ctx),
- 		.cra_alignmask = 0,
--- 
-2.35.1
+> +
+> +if:
+> +  not:
+> +    properties:
+> +      compatible:
+> +        contains:
+> +          enum:
+> +            - sprd,ump9620-adc
 
+Use 'const'
+
+> +then:
+> +  properties:
+> +    nvmem-cells:
+> +      maxItems: 2
+> +    nvmem-cell-names:
+> +      items:
+> +        - const: big_scale_calib
+> +        - const: small_scale_calib
+> +
+> +else:
+> +  properties:
+> +    nvmem-cells:
+> +      maxItems: 6
+> +    nvmem-cell-names:
+> +      items:
+> +        - const: big_scale_calib1
+> +        - const: big_scale_calib2
+> +        - const: small_scale_calib1
+> +        - const: small_scale_calib2
+> +        - const: vbat_det_cal1
+> +        - const: vbat_det_cal2
+>  
+>  required:
+>    - compatible
+> @@ -69,4 +97,25 @@ examples:
+>              nvmem-cell-names = "big_scale_calib", "small_scale_calib";
+>          };
+>      };
+> +
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    pmic {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        adc@504 {
+> +            compatible = "sprd,ump9620-adc";
+> +            reg = <0x504>;
+> +            interrupt-parent = <&ump9620_pmic>;
+> +            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
+> +            #io-channel-cells = <1>;
+> +            hwlocks = <&hwlock 4>;
+> +            nvmem-cells = <&adc_bcal1>, <&adc_bcal2>,
+> +                          <&adc_scal1>, <&adc_scal2>,
+> +                          <&vbat_det_cal1>, <&vbat_det_cal2>;
+> +            nvmem-cell-names = "big_scale_calib1", "big_scale_calib2",
+> +                               "small_scale_calib1", "small_scale_calib2",
+> +                               "vbat_det_cal1", "vbat_det_cal2";
+> +        };
+> +    };
+>  ...
+> -- 
+> 2.25.1
+> 
+> 
