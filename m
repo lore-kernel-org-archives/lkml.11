@@ -2,140 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C325C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00444C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235384AbiDMMAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
+        id S231151AbiDMMAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235371AbiDMMAM (ORCPT
+        with ESMTP id S235451AbiDMMAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:00:12 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36775EDED;
-        Wed, 13 Apr 2022 04:56:51 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Wed, 13 Apr 2022 08:00:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BC05C845;
+        Wed, 13 Apr 2022 04:57:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 9B8E11F858;
-        Wed, 13 Apr 2022 11:56:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649851010;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NFlo9ERvfunpKvRo2LCQmzu6wLB5gQzmSAw9ElrfagY=;
-        b=C0klZyMwNH2YwBKvQaU1K8skw0l3TsfQhyIEle7cw8Cy73qhEFNvt83Gi8NjSnd5Ff6xYN
-        4IH731T4Oj+mfJTk52SKqX5erJOnjjhWLfKrT0b2JzI8O2q1RLt+1HU0FTgLTAdNUHkuFx
-        /ldbnxYq63FpkXOZmCTPtOh7rkpru+A=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649851010;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NFlo9ERvfunpKvRo2LCQmzu6wLB5gQzmSAw9ElrfagY=;
-        b=lv0MbdD+I6RMoacMMHpo/mASJtmUdLvyq7ETJq6fN/TgDHnTxMtnO2xr75L/VRZHCNg+J2
-        KhcHJcn1gVZpmSDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 71ED513A91;
-        Wed, 13 Apr 2022 11:56:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 0U4cG4K6VmLpVwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Wed, 13 Apr 2022 11:56:50 +0000
-Date:   Wed, 13 Apr 2022 13:52:43 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [GIT PULL] Btrfs fixes for 5.18-rc3
-Message-ID: <20220413115243.GH15609@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, torvalds@linux-foundation.org,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1649705056.git.dsterba@suse.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02EBEB822A2;
+        Wed, 13 Apr 2022 11:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD47BC385A3;
+        Wed, 13 Apr 2022 11:57:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649851022;
+        bh=/28cBlZHS/9AS9L3mR/Qf4hSb2eXatBFtJPO4rc1wnM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=oMYdFttn45VkRrPzkoAkcyqwojs9pgADdtRbLPwxR04bSSVCbms1orrzbuvoPj5Wt
+         lEsn+thfEmx/Yjn5VsoZCmfnSbZHzY2UAy6ryMd0Z7PBkJdqe/fKIxD7JJz9H8/gHC
+         GDQfF3PkmWlF7vB8eawnnIk/8S+d5djg/OroRESeyxSgj+rbcaoqVoL6lW8kaNdQUM
+         qqYSZXf2yE4ZBSRNWfM/yiqSsM+gQjJCubxYa75EjvMoT0DZZP1MsmvcBWJ3x2ZSg1
+         zoKou0wFi3qdMcKekqA5+XSFr+ASf92v3tZgoaJxMpQFU7PXepkz/KgVqNnSePOE6f
+         QNlFvciDzaCIQ==
+Message-ID: <605268c7-9d0f-83d5-d7e6-850dabb380f0@kernel.org>
+Date:   Wed, 13 Apr 2022 14:56:58 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1649705056.git.dsterba@suse.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 0/2] memory: omap-gpmc: Allow module build
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-omap@vger.kernel.org, nm@ti.com,
+        linux-kernel@vger.kernel.org, kishon@ti.com, tony@atomide.com,
+        miquel.raynal@bootlin.com, vigneshr@ti.com
+References: <20220411095516.24754-1-rogerq@kernel.org>
+ <164984299612.34759.11981181842672620752.b4-ty@linaro.org>
+ <20428012-f164-c03b-fcc5-d3d8df812aff@linaro.org>
+ <ed2167af-fc9f-1f52-e8e2-c0881f5d53c6@linaro.org>
+ <7b38a717-ffce-0f06-1a77-6d2a114c7e11@kernel.org>
+ <68d16fbb-4250-73bd-b55e-a14db91abe8f@linaro.org>
+ <fdafb49b-9349-087b-f483-4da888193683@kernel.org>
+ <f2b7b48f-906e-3445-3861-dcdd4f6551e3@linaro.org>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <f2b7b48f-906e-3445-3861-dcdd4f6551e3@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 11:31:43PM +0200, David Sterba wrote:
-> Hi,
-> 
-> a few more code fixes and a warning fixes. There's one feature ioctl
-> removal patch slated for 5.18 that did not make it to the main pull
-> request.  It's just a one-liner and the ioctl has a v2 that's in use for
-> a long time, no point to postpone it to 5.19.
-> 
-> Please pull, thanks.
-> 
-> - fixes:
->   - add back cgroup attribution for compressed writes
->   - add super block write start/end annotations to asynchronous balance
->   - fix root reference count on an error handling path
->   - in zoned mode, activate zone at the chunk allocation time to avoid
->     ENOSPC due to timing issues
->   - fix delayed allocation accounting for direct IO
-> 
-> - remove balance v1 ioctl, superseded by v2 in 2012
-> 
-> - warning fixes:
->   - simplify assertion condition in zoned check
->   - remove an unused variable
 
-Has this ended up in your spam box again? The mail is in lore archives
-as https://lore.kernel.org/all/cover.1649705056.git.dsterba@suse.com/ .
 
-> ----------------------------------------------------------------
-> The following changes since commit 60021bd754c6ca0addc6817994f20290a321d8d6:
+On 13/04/2022 14:47, Krzysztof Kozlowski wrote:
+> On 13/04/2022 13:33, Roger Quadros wrote:
+>>> Previously it was building with COMPILE_TEST on sparc, so what else changed?
+>>>
+>> Previously it was like so
+>>
+>> 	bool "Texas Instruments OMAP SoC GPMC driver" if COMPILE_TEST
+>> 	depends on OF_ADDRESS
+>>
+>> Means it won't build if OF_ADDRESS is not set even if COMPILE_TEST is set.
+>>
+>> And OF_ADDRESS is not set for sparc
+>>
 > 
->   btrfs: prevent subvol with swapfile from being deleted (2022-03-24 17:50:57 +0100)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc2-tag
-> 
-> for you to fetch changes up to acee08aaf6d158d03668dc82b0a0eef41100531b:
-> 
->   btrfs: fix btrfs_submit_compressed_write cgroup attribution (2022-04-06 00:50:51 +0200)
-> 
-> ----------------------------------------------------------------
-> Dennis Zhou (1):
->       btrfs: fix btrfs_submit_compressed_write cgroup attribution
-> 
-> Haowen Bai (1):
->       btrfs: zoned: remove redundant condition in btrfs_run_delalloc_range
-> 
-> Jia-Ju Bai (1):
->       btrfs: fix root ref counts in error handling in btrfs_get_root_ref
-> 
-> Naohiro Aota (4):
->       btrfs: release correct delalloc amount in direct IO write path
->       btrfs: mark resumed async balance as writing
->       btrfs: return allocated block group from do_chunk_alloc()
->       btrfs: zoned: activate block group only for extent allocation
-> 
-> Nathan Chancellor (1):
->       btrfs: remove unused variable in btrfs_{start,write}_dirty_block_groups()
-> 
-> Nikolay Borisov (1):
->       btrfs: remove support of balance v1 ioctl
-> 
->  fs/btrfs/block-group.c | 40 +++++++++++++++++++++++++++-------------
->  fs/btrfs/block-group.h |  4 ++++
->  fs/btrfs/compression.c |  8 ++++++++
->  fs/btrfs/disk-io.c     |  5 +++--
->  fs/btrfs/extent-tree.c |  2 +-
->  fs/btrfs/inode.c       |  9 ++++-----
->  fs/btrfs/ioctl.c       |  2 --
->  fs/btrfs/volumes.c     |  2 ++
->  8 files changed, 49 insertions(+), 23 deletions(-)
-> 
+> Ah, yes, so dropping COMPILE_TEST seems the solution. There are no other
+> "depends" here.
+
+But the build failed at irq_domain_remove() which is only available if IRQ_DOMAIN
+is enabled.
+
+It could be possible that OF_ADDRESS is enabled but IRQ_DOMAIN is not right?
+
+cheers,
+-roger
