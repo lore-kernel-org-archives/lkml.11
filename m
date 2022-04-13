@@ -2,157 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A211CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236297AbiDMOvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40648 "EHLO
+        id S236307AbiDMOvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236283AbiDMOvC (ORCPT
+        with ESMTP id S236284AbiDMOvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 10:51:02 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6F4644F3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:48:40 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d15so2148941pll.10
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:48:40 -0700 (PDT)
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32012644FC;
+        Wed, 13 Apr 2022 07:48:41 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-d6ca46da48so2204348fac.12;
+        Wed, 13 Apr 2022 07:48:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0UA2E7Swg+iesG+ux9AwzGNddrfmiNsjUbQGq/dsMiM=;
-        b=qy9bm5h22bSwGRfwhbePUNdpcjM3mbKq7ygfInxMwnDotiXu2yFUlYBXkhCnlMwPOW
-         Lo2SdpeT//ZkMmHnrxy9LBo5B95Tlnt+22gl8vhDUY9E6Z7VmlJqtv4TQCKfIppDEkuA
-         n3OZ1/n5jMzs4/wXvQkg2zjrHNln5L/W2mIZPXdGC9gnqfOEcJjfpGUtXMrOAstS2drY
-         XD2xConyvFGywLEX099TYe/QaqPF5qS8isNoPOJt+c7hjXq6KTZNriLARnsksUWFqSoe
-         6+Zxaa/iEbJMLdAX3guDL3tWIpzNGg33TqEGTq0Fa3U0TzSo4hXMQmyOW3sbhipZXbtm
-         A2gw==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FxHwhdm9btSdYvaFRpF89WZ11d+DUJSyuwpXyhUrySg=;
+        b=ph+CLcb2D6lORM6IJIyfthmCeyks76RTfVxrWHNcwulXigGAcv6oo10iABgrk6Wx0U
+         6y+yK+Yxye7o07A9VjWY6yixw7XvrL1kMnBvAIzyzh/quWtmavCXmozqGbT2LJLsa3UH
+         TqVS2A2Fh3IQSIVu9pbOp/p8qw8nwtVyGs+ypYdjgKJc+SwLzLuzCuRowFj/LD/+Ab6M
+         KAa32cWZK0KazOyqnpd4cgi9dhgp5QOPRkdy5ByAbCYlU41ZEmHb0f8R6EVHg2IH6X8z
+         eY0etUQFEO+BrOXfV+HUnISWlPM45kODNGYo9CKkQl29CdNDVX886mUw5cl1TkxYbpvm
+         zFjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0UA2E7Swg+iesG+ux9AwzGNddrfmiNsjUbQGq/dsMiM=;
-        b=kRqXvZH1QpkvZFjnBYNDlbB8voI9WD+CwbyfQVMJTpg85vCgAW/FyU6w8r6czLp3Xh
-         DO5PQs1LezOCTcoZZhrrLnLOGz5xLs5QxH7roI/EoH8OLxoD9Eskh/tNim+TB/T07D1u
-         w7WguOxL/8OKDatENOpAEtNmFbqE1xoC15nFtxDrInj0uF+qg+DAdMlGuipBIYOhkYk7
-         8KdOQFTYHBHc2RAgB7V/PEy4roYbhgS6aPP0CYQazBCJEJ9OuCHikmS1zwpSJHPvYhZh
-         9DcR/DvUf0j74HUAvmQ4UyysMXVf1Gyj4BOAfClXUyZf2x9GllXud5JLJuIYLSJGiBsf
-         kXuA==
-X-Gm-Message-State: AOAM533HJXyge6ZJmEfNe0+2ioRTH42F8PUBFv73J2yCsghZM1mzevWO
-        h7wSgMtMn2knJopg43I2dWMNjw==
-X-Google-Smtp-Source: ABdhPJyX5qDb668ls6tZ6opY0Ql76EWScJCRk2AzqYp8TKQVr1l9ARVh218HOC97y2V1F7Wd/U1wCw==
-X-Received: by 2002:a17:90b:3e82:b0:1c7:2920:7c54 with SMTP id rj2-20020a17090b3e8200b001c729207c54mr11381401pjb.2.1649861320371;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=FxHwhdm9btSdYvaFRpF89WZ11d+DUJSyuwpXyhUrySg=;
+        b=v2e44qVWa0UInGl5KffpWq1Tn8nVTJK6b8Cq81QealIg8cFuhiTHrZwvXmmXn9VKYK
+         BR0thZzI5lGgb6JD1vfcmFneVNuR6j3H9zA27Md6TgADvwWmVu7Lj8CZFmo7DHRDvxMc
+         34DG04Q4GSmDqSyCnPKiunojVws/42nLinWLmDDLXyB7wbRndFwBWFxq7qjCX8zA7BOu
+         80gr1hT73m98ZN4PT4J5pm9z1mJnMU+TiSA3FFf8KaARPusXoXpvhh0ch2X/2TUZU02E
+         d/PoxwUDZhYowvcWeUGsT2vryx4r3QF+EqRofvy0F8ecEX3Fa6Vq190iD25Ncc72gGFT
+         nUgA==
+X-Gm-Message-State: AOAM533Ht1BFBBsOrK51noaC3H84OCpF49zLZKYiBLS7hC+JxuI5Ok1W
+        xOxubEXRWe5GYHhN3500pMAUHPnz4IY=
+X-Google-Smtp-Source: ABdhPJxxhlIyEawQLcU+LCbKgBzlX+AYJPer6EsJupaiTYA+lM8oT/PGy3PKD5ptIAM99efoX6njtA==
+X-Received: by 2002:a05:6870:5712:b0:de:2cbd:c39b with SMTP id k18-20020a056870571200b000de2cbdc39bmr4452829oap.180.1649861320527;
         Wed, 13 Apr 2022 07:48:40 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id p27-20020a056a000a1b00b004f3f63e3cf2sm47817257pfh.58.2022.04.13.07.48.34
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 190-20020a4a0dc7000000b003244ae0bbd5sm13715802oob.7.2022.04.13.07.48.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 07:48:40 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v8 2/4] mm: memory_hotplug: override memmap_on_memory when hugetlb_free_vmemmap=on
-Date:   Wed, 13 Apr 2022 22:47:46 +0800
-Message-Id: <20220413144748.84106-3-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220413144748.84106-1-songmuchun@bytedance.com>
-References: <20220413144748.84106-1-songmuchun@bytedance.com>
+        Wed, 13 Apr 2022 07:48:38 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 13 Apr 2022 07:48:37 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/277] 5.15.34-rc2 review
+Message-ID: <20220413144837.GA2401071@roeck-us.net>
+References: <20220412173836.126811734@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412173836.126811734@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When "hugetlb_free_vmemmap=on" and "memory_hotplug.memmap_on_memory"
-are both passed to boot cmdline, the variable of "memmap_on_memory"
-will be set to 1 even if the vmemmap pages will not be allocated from
-the hotadded memory since the former takes precedence over the latter.
-In the next patch, we want to enable or disable the feature of freeing
-vmemmap pages of HugeTLB via sysctl.  We need a way to know if the
-feature of memory_hotplug.memmap_on_memory is enabled when enabling
-the feature of freeing vmemmap pages since those two features are not
-compatible, however, the variable of "memmap_on_memory" cannot indicate
-this nowadays.  Do not set "memmap_on_memory" to 1 when both parameters
-are passed to cmdline, in this case, "memmap_on_memory" could indicate
-if this feature is enabled by the users.
+On Tue, Apr 12, 2022 at 07:47:07PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.34 release.
+> There are 277 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 14 Apr 2022 17:37:56 +0000.
+> Anything received after that time might be too late.
 
-Also introduce mhp_memmap_on_memory() helper to move the definition of
-"memmap_on_memory" to the scope of CONFIG_MHP_MEMMAP_ON_MEMORY.  In the
-next patch, mhp_memmap_on_memory() will also be exported to be used in
-hugetlb_vmemmap.c.
+Build results:
+	total: 156 pass: 155 fail: 1
+Failed builds:
+	nds32:allmodconfig
+Qemu test results:
+	total: 488 pass: 488 fail: 0
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- mm/memory_hotplug.c | 32 ++++++++++++++++++++++++++------
- 1 file changed, 26 insertions(+), 6 deletions(-)
+Building nds32:allmodconfig ... failed
+--------------
+Error log:
+net/core/lwtunnel.o: in function `lwtunnel_fill_encap':
+(.text+0x4d6): relocation truncated to fit: R_NDS32_9_PCREL_RELA against `.text'
 
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 74430f88853d..f6eab03397d3 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -42,14 +42,36 @@
- #include "internal.h"
- #include "shuffle.h"
- 
-+#ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
-+static int memmap_on_memory_set(const char *val, const struct kernel_param *kp)
-+{
-+	if (hugetlb_optimize_vmemmap_enabled())
-+		return 0;
-+	return param_set_bool(val, kp);
-+}
-+
-+static const struct kernel_param_ops memmap_on_memory_ops = {
-+	.flags	= KERNEL_PARAM_OPS_FL_NOARG,
-+	.set	= memmap_on_memory_set,
-+	.get	= param_get_bool,
-+};
- 
- /*
-  * memory_hotplug.memmap_on_memory parameter
-  */
- static bool memmap_on_memory __ro_after_init;
--#ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
--module_param(memmap_on_memory, bool, 0444);
-+module_param_cb(memmap_on_memory, &memmap_on_memory_ops, &memmap_on_memory, 0444);
- MODULE_PARM_DESC(memmap_on_memory, "Enable memmap on memory for memory hotplug");
-+
-+static inline bool mhp_memmap_on_memory(void)
-+{
-+	return memmap_on_memory;
-+}
-+#else
-+static inline bool mhp_memmap_on_memory(void)
-+{
-+	return false;
-+}
- #endif
- 
- enum {
-@@ -1272,9 +1294,7 @@ bool mhp_supports_memmap_on_memory(unsigned long size)
- 	 *       altmap as an alternative source of memory, and we do not exactly
- 	 *       populate a single PMD.
- 	 */
--	return memmap_on_memory &&
--	       !hugetlb_optimize_vmemmap_enabled() &&
--	       IS_ENABLED(CONFIG_MHP_MEMMAP_ON_MEMORY) &&
-+	return mhp_memmap_on_memory() &&
- 	       size == memory_block_size_bytes() &&
- 	       IS_ALIGNED(vmemmap_size, PMD_SIZE) &&
- 	       IS_ALIGNED(remaining_size, (pageblock_nr_pages << PAGE_SHIFT));
-@@ -2081,7 +2101,7 @@ static int __ref try_remove_memory(u64 start, u64 size)
- 	 * We only support removing memory added with MHP_MEMMAP_ON_MEMORY in
- 	 * the same granularity it was added - a single memory block.
- 	 */
--	if (memmap_on_memory) {
-+	if (mhp_memmap_on_memory()) {
- 		nr_vmemmap_pages = walk_memory_blocks(start, size, NULL,
- 						      get_nr_vmemmap_pages_cb);
- 		if (nr_vmemmap_pages) {
--- 
-2.11.0
+I have no idea what causes the problem. Given that nds32 has been removed
+from mainline, we should probably not bother. I may stop test building it
+if the problem is persistent over multiple stable releases. 
 
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+Guenter
