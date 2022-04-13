@@ -2,135 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E42BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 238ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236587AbiDMPh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 11:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        id S235043AbiDMPix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 11:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231339AbiDMPhY (ORCPT
+        with ESMTP id S231842AbiDMPiu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 11:37:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C06D4BFF7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 08:35:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649864102;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Sk1v32UTIyZH37LdAUzNEF5obtPm583SsWSiAI9jtSE=;
-        b=T47WVfK+S/0reqSNxLcifYv3PqD72x0HzVI/o/5p7TyXqHWsijt9+gFfEZM4/8+NbJrqAq
-        7dG1jc9u5tf4ty7kX5nvcabYE+ubtT9aMP6qlhCiyOtlce4H81UQ4GkGUsITFoPqz+Vzdr
-        hH5cUaDwZZJfp1xkBGtH4kEgA2C4tz8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-LhXBCQdeMm2JQunRUBAsEg-1; Wed, 13 Apr 2022 11:35:00 -0400
-X-MC-Unique: LhXBCQdeMm2JQunRUBAsEg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5040585A5BC;
-        Wed, 13 Apr 2022 15:35:00 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.37.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8ED7AC27E9D;
-        Wed, 13 Apr 2022 15:34:58 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-cc:     dhowells@redhat.com, Dave Wysochanski <dwysocha@redhat.com>,
-        Jeffle Xu <jefflexu@linux.alibaba.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Yue Hu <huyue2@coolpad.com>, Jeff Layton <jlayton@kernel.org>,
-        linux-cachefs@redhat.com, linux-erofs@lists.ozlabs.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] fscache: Miscellaneous fixes
+        Wed, 13 Apr 2022 11:38:50 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B2964713
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 08:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649864189; x=1681400189;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Iq4ltTTN69V9QzH/TlL8lL1lwJpSTAOC+133meFHn4o=;
+  b=Q7xtkVCk0onK6/n8+cL4NIOvuzowSgD9wNSEpLxnq1wECfRfA19TaoML
+   yE6Vp2mLAHeppJYPj+UoFsR0bAdzvUaMJ5ZJb39t2JDhgFVCsVw1JQCh9
+   yFtRRnAVGSELHtFqmSmT2S4wACqzht/x8urUD/+Wy0Mgq1CEu8KCbdM8v
+   sh5k3l8nB72lvKSAW+VGRtllwOE/adl583+t8V2eikSI+QTM9JwVnAPLo
+   J8DrRlNGRbwcruvFsD9T8FomeHAvfq1INSkkGz0GpVnkMfW5WrhZov3Zf
+   +9vYmnRH5CSewzlwKwUxp614CDKEnNBCZYW04RG9VSz3p+tUVWM14c5wB
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="249988009"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="249988009"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 08:36:28 -0700
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="526518653"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 08:36:28 -0700
+Date:   Wed, 13 Apr 2022 08:38:24 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: Remove the drivers for the Unisys s-Par
+Message-ID: <20220413153824.GA1241369@alison-desk>
+References: <20220412215901.31046-1-fmdefrancesco@gmail.com>
+ <YlZzP5ghZeR1AtIg@kroah.com>
+ <3988824.6PsWsQAL7t@leap>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2266867.1649864097.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 13 Apr 2022 16:34:57 +0100
-Message-ID: <2266868.1649864097@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3988824.6PsWsQAL7t@leap>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Wed, Apr 13, 2022 at 09:35:53AM +0200, Fabio M. De Francesco wrote:
+> On mercoled? 13 aprile 2022 08:52:47 CEST Greg Kroah-Hartman wrote:
+> > On Tue, Apr 12, 2022 at 11:59:01PM +0200, Fabio M. De Francesco wrote:
+> > > The Unisys sub-tree contains three drivers for the "Unisys Secure 
+> Partition"
+> > > (s-Par(R)): visorhba, visorinput, visornic.
+> > > 
+> > > They have no maintainers, in fact the only one that is listed in 
+> MAINTAINERS
+> > > has an unreacheable email address. During 2021 and 2022 several patches 
+> have
+> > > been submitted to these drivers but nobody at Unisys cared of reviewing 
+> the
+> > > changes. Probably, also the "sparmaintainer" internal list of 
+> unisys.com is
+> > > not anymore read by interested Unisys' engineers.
+> > > 
+> > > Therefore, remove the ./unisys subdirectory of staging and delete the 
+> related
+> > > entries in the MAINTAINERS, Kconfig, Makefile files.
+> > > 
+> > > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > > ---
+> > >  MAINTAINERS                                   |    8 -
+> > 
+> > You forgot to at least cc: the people/list on the MAINTAINERS entry that
+> > you are removing here, to give them a hint that this is happening in
+> > case they want to speak up here (and to give us the ability to point to
+> > that years later when they complain they were never notified...)
+> 
+> Yes, this is a good idea. I'll submit a v2 and add two "Cc:" lines, one to 
+> David Kershner and the other to the "sparmaintainer" list at unisys.com.
 
-Here's a collection of fscache and cachefiles fixes and misc small
-cleanups.  The two main fixes are:
+There is another contact in the TODO file (last updated 2015 though ;))
+Ken Cox <jkc@redhat.com>
 
- (1) Add a missing unmark of the inode in-use mark in an error path.
-
- (2) Fix a KASAN slab-out-of-bounds error when setting the xattr on a
-     cachefiles volume due to the wrong length being given to memcpy().
-
-In addition, there's the removal of an unused parameter, removal of an
-unused Kconfig option, conditionalising a bit of procfs-related stuff and
-some doc fixes.
-
-David
-
-Link: https://lore.kernel.org/r/164945915630.773423.14655306154231712324.s=
-tgit@warthog.procyon.org.uk/
-
----
-The following changes since commit 42e7a03d3badebd4e70aea5362d6914dfc7c220=
-b:
-
-  Merge tag 'hyperv-fixes-signed-20220407' of git://git.kernel.org/pub/scm=
-/linux/kernel/git/hyperv/linux (2022-04-07 06:35:34 -1000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags=
-/fscache-fixes-20220413
-
-for you to fetch changes up to 61132ceeda723d2c48cbc2610ca3213a7fcb083b:
-
-  fscache: remove FSCACHE_OLD_API Kconfig option (2022-04-08 23:54:37 +010=
-0)
-
-----------------------------------------------------------------
-fscache fixes
-
-----------------------------------------------------------------
-Dave Wysochanski (1):
-      cachefiles: Fix KASAN slab-out-of-bounds in cachefiles_set_volume_xa=
-ttr
-
-Jeffle Xu (1):
-      cachefiles: unmark inode in use in error path
-
-Yue Hu (6):
-      docs: filesystems: caching/backend-api.rst: correct two relinquish A=
-PIs use
-      docs: filesystems: caching/backend-api.rst: fix an object withdrawn =
-API
-      fscache: Remove the cookie parameter from fscache_clear_page_bits()
-      fscache: Move fscache_cookies_seq_ops specific code under CONFIG_PRO=
-C_FS
-      fscache: Use wrapper fscache_set_cache_state() directly when relinqu=
-ishing
-      fscache: remove FSCACHE_OLD_API Kconfig option
-
- Documentation/filesystems/caching/backend-api.rst |  8 +++---
- Documentation/filesystems/caching/netfs-api.rst   | 25 +++++++++--------
- fs/afs/write.c                                    |  3 +--
- fs/cachefiles/namei.c                             | 33 ++++++++++++++++--=
------
- fs/cachefiles/xattr.c                             |  2 +-
- fs/fscache/Kconfig                                |  3 ---
- fs/fscache/cache.c                                |  2 +-
- fs/fscache/cookie.c                               |  4 ++-
- fs/fscache/internal.h                             |  4 +++
- fs/fscache/io.c                                   |  5 ++--
- include/linux/fscache.h                           |  4 +--
- 11 files changed, 53 insertions(+), 40 deletions(-)
-
+> 
+> > Also, if you are in the "delete code" mood, I think drivers/staging/vme/
+> > and drivers/vme/ can probably also be deleted given that the maintainer
+> > for that has moved on to other jobs.  Ask them and see!
+> 
+> I can and will do exactly as you just suggested, but only after April 22nd 
+> (unless others want to do these tasks sooner, and in that case they are 
+> welcome :)).
+> 
+> Thanks,
+> 
+> Fabio M. De Francesco
+> 
+> 
+> 
