@@ -2,99 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD92C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7044C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237647AbiDMS2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46042 "EHLO
+        id S237663AbiDMS3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiDMS21 (ORCPT
+        with ESMTP id S231252AbiDMS3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 14:28:27 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530924D9F7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:26:05 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id a11so1967129qtb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 11:26:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=biwzMecONP16OJhQH/FKNOs+wHfPK7aPZRPUNGPrEJU=;
-        b=diwup2s1nEc9QdCOyhezJHV481K+c1mxaEwqI79kSgnAUQS+Natwz5NeIvppSXq8Q+
-         TpT9xw7Dy7hJw+AQY5JOTZ4TwbH/EzDKvhFPOtRvsUll8cdGP1n5LUFT9qacfCpm+TeP
-         ZJ2rM3PaxqeR3i+ZNKpITEGWjIR/1D8BmOB9cXLr2NLEM9T+LhasNjx8CIFBkPVv/rif
-         5VVtmVigRaBpg5SyUpFfgsnlLdJ+VBzokTC4vU0H51quRSjArD36MsW8/HQKAUoKCELn
-         BlVirzBTPdac3wzV95lZfxsahcZaD4TBskhKlrQOJgoeVU5fyOAUwpMtDaI46lFYl02/
-         HOpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=biwzMecONP16OJhQH/FKNOs+wHfPK7aPZRPUNGPrEJU=;
-        b=xUAkxh+vVUA7N7ipMyqYK8XEdJ2we1qI7xm/9JUZydxFZJrmhX7x0fcdJs1IXvaqoc
-         IY15V8/3gjA417oNlE93dzS5MXOOIzKCMgrEFEdfxB4bmqZ4NA67QAJvyLETQaeSMH1Q
-         v9twlxZfjnxltN44/eiRb/n3ymSPdW7oF+213QLwM30cefnMtiwW6WUS4nOzy45jydwF
-         7RvxGLmbzCuEIhqg7pVVLdqYG4zQ3AcPrWESecXVyTB9oETpvdQz72Z5PtOGAUj2mZho
-         PZczR+RIE7+Xd+gNcq07b/dT8IDI3JbUPi5C8cV8hmVvtcw6xz6Ydv0rfaaGGNLR4ID9
-         ABwA==
-X-Gm-Message-State: AOAM5331aEJykvboQYxjYQA72biPXc4qufU9OZCE61eOiJMIXcrYr/O0
-        47+NFKTshy2fbDoPPrRL3EL93A==
-X-Google-Smtp-Source: ABdhPJwJIylY/WIV9aIFAbhMxv2XyDSV7kK088FKGKPQh1xIhcgg95ObNESZZBUc0O0U2zlI3rVb/Q==
-X-Received: by 2002:a05:622a:1c12:b0:2ef:5061:b78e with SMTP id bq18-20020a05622a1c1200b002ef5061b78emr8368097qtb.361.1649874364491;
-        Wed, 13 Apr 2022 11:26:04 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (173-246-12-168.qc.cable.ebox.net. [173.246.12.168])
-        by smtp.gmail.com with ESMTPSA id a7-20020a05622a064700b002e238d6db02sm30335314qtb.54.2022.04.13.11.26.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 11:26:03 -0700 (PDT)
-Message-ID: <d0b796aee7c4f31643e73efe7c50fedd61c7bfef.camel@ndufresne.ca>
-Subject: Re: [PATCH v2] media: amphion: fix decoder's interlaced field
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Ming Qian <ming.qian@nxp.com>, mchehab@kernel.org,
-        shawnguo@kernel.org
-Cc:     hverkuil-cisco@xs4all.nl, robh+dt@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, aisheng.dong@nxp.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Date:   Wed, 13 Apr 2022 14:26:02 -0400
-In-Reply-To: <20220412110155.21427-1-ming.qian@nxp.com>
-References: <20220412110155.21427-1-ming.qian@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+        Wed, 13 Apr 2022 14:29:22 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4C84D9F7;
+        Wed, 13 Apr 2022 11:26:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649874419; x=1681410419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Qm2YltahQtD5BhZA01az8bEK9fLcMHdBo7nVBNQR/jI=;
+  b=Sh89F1VAOnaaO0i2OKT4X4hoMolm61vCf3AijOH1GHOD9ag7dubHn+Xa
+   4OGrpoacuD3pLdyPBT4/sBz4WzHhNfWZO5MXm4k9IEpT0AkLlYGq66HQ9
+   MG5BXBSD+Xoc4WqAqqYu3t9H32l2SG3vgV9mY9AJzkwL6Hpyl+s6vqq/i
+   TYcUvJFBDhISHv0eYJv0ODeacJGTTDC8WmBMLep+ziMjoy3CSXrAOlOBm
+   h+dd2FxPTa0gCeQpChDwImMW/9rSsBfJ/WmDNq73P5zSgyODc3tjWs0Av
+   HVDz/79m7VCDYIqGelQ2ClkLc5t7fKQI80LO1HqKI4QhKjAABMHeoI1fP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="250032461"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="250032461"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:26:59 -0700
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="661035861"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:26:56 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nehe9-001xgI-VP;
+        Wed, 13 Apr 2022 21:23:17 +0300
+Date:   Wed, 13 Apr 2022 21:23:17 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH v6 4/5] device property: Constify fwnode_handle_get()
+Message-ID: <YlcVFRQ9wJIH+sjI@smile.fi.intel.com>
+References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
+ <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
+ <CAJZ5v0jnyg6n-1QRmVg1tjzu3szsG3DYqYTXAbobbKwkFhTreg@mail.gmail.com>
+ <YlcUMNe5gDsEca4f@smile.fi.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlcUMNe5gDsEca4f@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le mardi 12 avril 2022 =C3=A0 19:01 +0800, Ming Qian a =C3=A9crit=C2=A0:
-> For interlaced frame, the amphion vpu will store the
-> two fields sequential into one buffer, top-bottom order
-> so the field should be set to V4L2_FIELD_SEQ_TB.
-> fix the previous bug that set it to V4L2_FIELD_SEQ_BT wrongly.
->=20
-> Signed-off-by: Ming Qian <ming.qian@nxp.com>
+On Wed, Apr 13, 2022 at 09:19:28PM +0300, Andy Shevchenko wrote:
+> On Wed, Apr 13, 2022 at 08:10:22PM +0200, Rafael J. Wysocki wrote:
+> > On Fri, Apr 8, 2022 at 8:49 PM Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
 
-Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+...
 
-> ---
->  drivers/media/platform/amphion/vdec.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platfo=
-rm/amphion/vdec.c
-> index 09628dd0c855..0a1976852b0d 100644
-> --- a/drivers/media/platform/amphion/vdec.c
-> +++ b/drivers/media/platform/amphion/vdec.c
-> @@ -804,7 +804,7 @@ static void vdec_init_fmt(struct vpu_inst *inst)
->  	if (vdec->codec_info.progressive)
->  		inst->cap_format.field =3D V4L2_FIELD_NONE;
->  	else
-> -		inst->cap_format.field =3D V4L2_FIELD_SEQ_BT;
-> +		inst->cap_format.field =3D V4L2_FIELD_SEQ_TB;
->  	if (vdec->codec_info.color_primaries =3D=3D V4L2_COLORSPACE_DEFAULT)
->  		vdec->codec_info.color_primaries =3D V4L2_COLORSPACE_REC709;
->  	if (vdec->codec_info.transfer_chars =3D=3D V4L2_XFER_FUNC_DEFAULT)
+> > > -struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode)
+> > > +struct fwnode_handle *fwnode_handle_get(const struct fwnode_handle *fwnode)
+> > >  {
+> 
+> > >         if (!fwnode_has_op(fwnode, get))
+> > >                 return fwnode;
+> 
+> ^^^^, so it needs a casting, but then we have to comment why is so.
+
+Note, it means that the fwnode parameter either invalid or has no given option.
+It's not a problem to drop casting in the first case, but the second one should
+be justified and Sakari wants to be sure that the initial container is not
+const, which seems can't be achieved even with the original code.
+
+> > Why is 0-day complaining about this one?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
