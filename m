@@ -2,110 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 00:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1607C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 00:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiDMAdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 20:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        id S231182AbiDMAh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 20:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbiDMAcz (ORCPT
+        with ESMTP id S229555AbiDMAhu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 20:32:55 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3D8140AA;
-        Tue, 12 Apr 2022 17:30:34 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id 2so353081pjw.2;
-        Tue, 12 Apr 2022 17:30:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rms/5X4c41PJ+vCUzdvr+lYt5qjjUA2FJHiAGsamMv4=;
-        b=S6XCaBPjXc3GITrLB6wojOr7rPVLDmmJUQsiahD7teXiZhvqxCSZ7OVk+9ygByedPy
-         UF0WEvZJ3Ob448+KULEgeD1DFcDWjFZUAa0WptkI1G76FddVVr9f1PoNyhuXSzX497UI
-         j88C//dJ6v/rXpLZ+HXgmf/kxeZ61CW8R6oAIE78kzu8Crq7qY4IdsMs6qljy4EJb9hl
-         O642GyRKWQncEc8GMgELZW5bVGwF45xNrRcBRJOjCpebxTho7jTAbJlFY/vOLEz7j4dK
-         aUkoZQQY03CfWE5E+IhuRRH7uwLKNHZodxFghOcFFjdffWdvd+gshlbZ0JeHlmklewWg
-         mdSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rms/5X4c41PJ+vCUzdvr+lYt5qjjUA2FJHiAGsamMv4=;
-        b=CNRTgOCKIi0US6I6YODCDSnaiqhShA/lWwHc/4ElWntWN89LFMvmMG2bRz4irIxWqZ
-         hVy2LkjtcGQogTNC1MJoGbX317Xk4Y9112b+78HhVuTkcZq1JvIliDS062mFxP3if9dx
-         MKV12/nOdBc0u6MgEIDsTH4+r9b1uTyCiCeuskr3Neei2Rt4BrQeYIGfBPyWhb0zpVkY
-         CRJeJ52sXFfEZ6vADbAjfu/5aO0j8K0A9hjVZ9gzo7sDjwfUOq95PvDjC1ukgTqFXJDf
-         qJmKvg5EsHxnpqwwAj2lzysVGoUyjBF9RkZlJPbof9aOWBQ/RZoV42IBlTm2Z2VAJ2EB
-         8LIQ==
-X-Gm-Message-State: AOAM530wS6pXAOlZVse+go8dycvnmkP/5ExdhsKnscNWBksz494luzON
-        JQZypRY4BtFLhqzwyAIKGXAxA0dzOc8K9GG8BYWv/o2OZ6s=
-X-Google-Smtp-Source: ABdhPJzkcGNCPR6N6YHDn+bUDXtmU0mqtP/6zbJ42XT8dKm/G3fJAXiY+ZBektmqaWPX5kAvARjgacv5siqV1LDppgA=
-X-Received: by 2002:a17:90b:1886:b0:1cb:8e79:8ebb with SMTP id
- mn6-20020a17090b188600b001cb8e798ebbmr7772932pjb.176.1649809834070; Tue, 12
- Apr 2022 17:30:34 -0700 (PDT)
+        Tue, 12 Apr 2022 20:37:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F1C5FD2;
+        Tue, 12 Apr 2022 17:35:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98D4EB82072;
+        Wed, 13 Apr 2022 00:35:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3886CC385B1;
+        Wed, 13 Apr 2022 00:35:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649810128;
+        bh=AmfvMR6B8qWiar02K5X7Z8KIhMvVMGBK0eqEnVrFYpI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=TxSzzlCOKE01p9I9UE5gYaWOCURLBMQJmIDI63cp2ILPaM5AZ/T9SPl3gGt7Pe99H
+         SoxXtP59LPHy1mdvTMTOEvEJbeTILyT0GJeTK9C42LX5qkNHjbiXLa7/KzmBGfEJAw
+         zUnY8CksJ6rKwIctIDPek8FU/OIXKLt2XZePPHzZlCIyZW5C9OuNVkZq9QO+9u30IR
+         srLq82ZNl4Ijrnf1nB0oEdZlrb0o6i2CGiCjoUiW3y+BsbNd20R726D/TTXZmpFYeT
+         6YFqnCAvixY4GGkla4N/uspLDXyzEmItxAyroL0wQkZ171htOphChzjaWOvy/OvwJ9
+         F6QUnERcd4aBg==
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2ebdf6ebd29so6039987b3.2;
+        Tue, 12 Apr 2022 17:35:28 -0700 (PDT)
+X-Gm-Message-State: AOAM532XN0L5G/YM+16Vvb0dVjg+HseOZTzrADneCwzLt3R+v/fd//g5
+        4wCI7NQ4eJH/Bu05KdqBOYack2PItqI73/24OKY=
+X-Google-Smtp-Source: ABdhPJxdJyCJBgAjK0m6B/QRCZoAaYow/4ZgPbqC+fgtzHksYWemDjn3nzAKx2oczPg0w5rKoB7gHE62aESus4w1jLQ=
+X-Received: by 2002:a0d:f6c6:0:b0:2e5:bf17:4dce with SMTP id
+ g189-20020a0df6c6000000b002e5bf174dcemr33657904ywf.130.1649810127216; Tue, 12
+ Apr 2022 17:35:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220412062951.095765152@linuxfoundation.org>
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-From:   Zan Aziz <zanaziz313@gmail.com>
-Date:   Tue, 12 Apr 2022 18:30:22 -0600
-Message-ID: <CAFU3qoa3DjYPHXCurQrCMPBDxUGZBLz=SdQTBevep5R3Cayq=w@mail.gmail.com>
-Subject: Re: [PATCH 5.17 000/343] 5.17.3-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
+References: <20220411231808.667073-1-song@kernel.org> <YlWc/yDjWbeSuVP4@bombadil.infradead.org>
+In-Reply-To: <YlWc/yDjWbeSuVP4@bombadil.infradead.org>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 12 Apr 2022 17:35:14 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW46YEP=uSvG3rgE4qfS8vJ3e-ZoSRYdCPLyEPmqugEXxA@mail.gmail.com>
+Message-ID: <CAPhsuW46YEP=uSvG3rgE4qfS8vJ3e-ZoSRYdCPLyEPmqugEXxA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf 0/3] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Christoph Hellwig <hch@infradead.org>, imbrenda@linux.ibm.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 8:49 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Hi Luis,
+
+On Tue, Apr 12, 2022 at 8:38 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
 >
-> This is the start of the stable review cycle for the 5.17.3 release.
-> There are 343 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> On Mon, Apr 11, 2022 at 04:18:05PM -0700, Song Liu wrote:
+> > Changes v1 => v2:
+> > 1. Add vmalloc_huge(). (Christoph Hellwig)
+> > 2. Add module_alloc_huge(). (Christoph Hellwig)
+> > 3. Add Fixes tag and Link tag. (Thorsten Leemhuis)
+> >
+> > Enabling HAVE_ARCH_HUGE_VMALLOC on x86_64 and use it for bpf_prog_pack has
+> > caused some issues [1], as many users of vmalloc are not yet ready to
+> > handle huge pages. To enable a more smooth transition to use huge page
+> > backed vmalloc memory, this set replaces VM_NO_HUGE_VMAP flag with an new
+> > opt-in flag, VM_ALLOW_HUGE_VMAP. More discussions about this topic can be
+> > found at [2].
+> >
+> > Patch 1 removes VM_NO_HUGE_VMAP and adds VM_ALLOW_HUGE_VMAP.
+> > Patch 2 uses VM_ALLOW_HUGE_VMAP in bpf_prog_pack.
+> >
+> > [1] https://lore.kernel.org/lkml/20220204185742.271030-1-song@kernel.org/
+> > [2] https://lore.kernel.org/linux-mm/20220330225642.1163897-1-song@kernel.org/
+> >
+> > Song Liu (3):
+> >   vmalloc: replace VM_NO_HUGE_VMAP with VM_ALLOW_HUGE_VMAP
+> >   module: introduce module_alloc_huge
+> >   bpf: use vmalloc with VM_ALLOW_HUGE_VMAP for bpf_prog_pack
+> >
+> >  arch/Kconfig                 |  6 ++----
+> >  arch/powerpc/kernel/module.c |  2 +-
+> >  arch/s390/kvm/pv.c           |  2 +-
+> >  arch/x86/kernel/module.c     | 21 +++++++++++++++++++
+> >  include/linux/moduleloader.h |  5 +++++
+> >  include/linux/vmalloc.h      |  4 ++--
+> >  kernel/bpf/core.c            |  9 +++++----
+> >  kernel/module.c              |  8 ++++++++
 >
-> Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
-> Anything received after that time might be too late.
+> Please use modules-next [0] as that has queued up changes which change
+> kernel/module.c quite a bit.
 >
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.3-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> [0] https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/log/?h=modules-next
 
-Hi Greg,
+We are hoping to ship this set to fix some issues with 5.18. So I guess it
+shouldn't go through modules-next branch? Would this work for you?
+We are adding a new API module_alloc_huge(), so it shouldn't break
+existing features.
 
-Compiled and booted on my test system Lenovo P50s: Intel Core i7
-No emergency and critical messages in the dmesg
-
-./perf bench sched all
-# Running sched/messaging benchmark...
-# 20 sender and receiver processes per group
-# 10 groups == 400 processes run
-
-     Total time: 0.447 [sec]
-
-# Running sched/pipe benchmark...
-# Executed 1000000 pipe operations between two processes
-
-     Total time: 11.259 [sec]
-
-      11.259176 usecs/op
-          88816 ops/sec
-
-Tested-by: Zan Aziz <zanaziz313@gmail.com>
-
-Thanks
--Zan
+Thanks,
+Song
