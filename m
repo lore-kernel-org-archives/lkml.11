@@ -2,113 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6BF4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:04:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F13C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234183AbiDMJHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
+        id S234190AbiDMJHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiDMJHL (ORCPT
+        with ESMTP id S229960AbiDMJHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:07:11 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B90729830
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:04:48 -0700 (PDT)
-X-UUID: bc5a4bb3d7a44c7285c44bf8a3cf1c40-20220413
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:9ae15bd7-0097-4408-9083-81255e80a1fb,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:53
-X-CID-INFO: VERSION:1.1.4,REQID:9ae15bd7-0097-4408-9083-81255e80a1fb,OB:0,LOB:
-        0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:53
-X-CID-META: VersionHash:faefae9,CLOUDID:f9a63f78-0afa-4dca-bdec-ca54c998425a,C
-        OID:216b4a1e69a2,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: bc5a4bb3d7a44c7285c44bf8a3cf1c40-20220413
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 766100894; Wed, 13 Apr 2022 17:04:42 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 13 Apr 2022 17:04:40 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 13 Apr
- 2022 17:04:40 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 13 Apr 2022 17:04:40 +0800
-Message-ID: <720c5ede369357fb40152588c441614456b0f96f.camel@mediatek.com>
-Subject: Re: [PATCH v4, 4/4] drm/mediatek: Add pull-down MIPI operation in
- mtk_dsi_poweroff function
-From:   CK Hu <ck.hu@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>, <rex-bc.chen@mediatek.com>
-CC:     <jitao.shi@mediatek.com>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Wed, 13 Apr 2022 17:04:40 +0800
-In-Reply-To: <1649644308-8455-5-git-send-email-xinlei.lee@mediatek.com>
-References: <1649644308-8455-1-git-send-email-xinlei.lee@mediatek.com>
-         <1649644308-8455-5-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 13 Apr 2022 05:07:50 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A802A273
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:05:30 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id l9-20020a05600c4f0900b0038ccd1b8642so2705728wmq.0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:05:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vrull.eu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9NDtSKId3t6dVkA8YfqUQPPECjRhEPlDuS/Z/pAcPWM=;
+        b=TuU29OnmVZBwDVSbKNjQMlspssMwQ0smsXVpvEekZAZYhMZ6rmcAtcUd71RRjOL277
+         u6oyzNzv/A4ja7FzUqeBmT7WN1zE8/44iI/RvZ7P8smd6U4gAXVE8TQL/19+8C3+KPUv
+         yBdRoUcWVJnyaqmXn/p5q9phVKTEcX9VLnba+gP/K4wx9g/FlU70zOXwqNnh5QQbNhqK
+         nDYMONLJMbgaADuYmicO3KSDVch4RAKY461SnjN+MOe/GOELjayUmzGF/V1/T2RM2Mnv
+         r/sGs1uE7Cvf9/P+VwBq0QFg4Qcavl40LxXI7JiXW34D5+6iGXS69QhIxsLs4kRvyi2f
+         KhSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9NDtSKId3t6dVkA8YfqUQPPECjRhEPlDuS/Z/pAcPWM=;
+        b=shFwbKghtCIzpwt0XWeuQd6eOG7GuDM8e9SWAYSu6W2LjYdrq3CQpIeVH5WxobI27M
+         puSfEFXw2jFxhCJHbg4Fz5e3idaq7yTx0xZlNK0BNk3pxCSEc86IvOlzdqMBU4GfJguG
+         75VEDNZU0fnXDNZc3g0X7mNKWF3YdBStId/RsEnM+GEB5gqTtUPccJr/p+jBkt9p60kh
+         cnwfKG9wrnK4BGgw0tweMO91VV8H1pd65u037Kceh/gCEQszYAunwAqz9B4yIKoBvkFD
+         80nxN+ySJaH6SuN5zb21b9UIacKwdSOAUKNv4A6OGCEj2VVAWYpHarI4UYnNCTm61i78
+         U2fQ==
+X-Gm-Message-State: AOAM532XRDrQ5UNpUuPHKGKePQ5NAKSDFODyYMcua8ckSIOKI2FQfjxo
+        j6c1TMXwVgRJGHvd8TQoFRZ/8+3DgvSj1b2njrAs4w==
+X-Google-Smtp-Source: ABdhPJylOEa/v15SyQPNZavNcci4UoiyZBtHsblEWuNg3HE6JBWlJPfFv0k6WcrfgqyGBjMmc+alxMQUkxaGdQ6vvWc=
+X-Received: by 2002:a1c:3bd6:0:b0:38f:4e30:6c2f with SMTP id
+ i205-20020a1c3bd6000000b0038f4e306c2fmr791293wma.66.1649840728817; Wed, 13
+ Apr 2022 02:05:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+References: <20220413030307.133807-1-heiko@sntech.de> <20220413030307.133807-2-heiko@sntech.de>
+In-Reply-To: <20220413030307.133807-2-heiko@sntech.de>
+From:   Philipp Tomsich <philipp.tomsich@vrull.eu>
+Date:   Wed, 13 Apr 2022 11:05:17 +0200
+Message-ID: <CAAeLtUBrmBg1E=AdAkOQwMPYu74WtL2YuEacLdNA69PqqkDnyg@mail.gmail.com>
+Subject: Re: [PATCH v9 01/12] riscv: integrate alternatives better into the
+ main architecture
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, wefu@redhat.com,
+        liush@allwinnertech.com, guoren@kernel.org, atishp@atishpatra.org,
+        anup@brainfault.org, drew@beagleboard.org, hch@lst.de,
+        arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
+        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
+        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
+        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
+        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Xinlei:
+On Wed, 13 Apr 2022 at 05:04, Heiko Stuebner <heiko@sntech.de> wrote:
+>
+> Right now the alternatives need to be explicitly enabled and
+> erratas are limited to SiFive ones.
+>
+> We want to use alternatives not only for patching soc erratas,
+> but in the future also for handling different behaviour depending
+> on the existence of future extensions.
+>
+> So move the core alternatives over to the kernel subdirectory
+> and move the CONFIG_RISCV_ALTERNATIVE to be a hidden symbol
+> which we expect relevant erratas and extensions to just select
+> if needed.
+>
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
-On Mon, 2022-04-11 at 10:31 +0800, xinlei.lee@mediatek.com wrote:
-> From: Xinlei Lee <xinlei.lee@mediatek.com>
-> 
-> In the dsi_enable function, mtk_dsi_rxtx_control is to
-> pull up the MIPI signal operation. Before dsi_disable,
-> MIPI should also be pulled down by writing a register 
-> instead of disabling dsi.
-> 
-> If disable dsi without pulling the mipi signal low, the value of
-> the register will still maintain the setting of the mipi signal being
-> pulled high.
-> After resume, even if the mipi signal is not pulled high, it will
-> still
-> be in the high state.
-
-After add Fixes tag for [1], then
-
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
-
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/gpu/drm/mediatek/mtk_dsi.c?h=v5.18-rc2&id=2e54c14e310f655bb0915413e8e4a3da67c78a66
-
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> index 9ad6f08c8bfe..e35343357f90 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -676,6 +676,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
->  	mtk_dsi_reset_engine(dsi);
->  	mtk_dsi_lane0_ulp_mode_enter(dsi);
->  	mtk_dsi_clk_ulp_mode_enter(dsi);
-> +	/* set the lane number as 0 to pull down mipi */
-> +	writel(0, dsi->regs + DSI_TXRX_CTRL);
->  
->  	mtk_dsi_disable(dsi);
->  
-
+Reviewed-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
