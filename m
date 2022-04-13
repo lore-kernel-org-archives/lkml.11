@@ -2,65 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C01EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235636AbiDMMyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55070 "EHLO
+        id S235639AbiDMMzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233328AbiDMMyB (ORCPT
+        with ESMTP id S232480AbiDMMzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:54:01 -0400
-Received: from iodev.co.uk (iodev.co.uk [46.30.189.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 768EC4E394;
-        Wed, 13 Apr 2022 05:51:40 -0700 (PDT)
-Received: from localhost (255.red-83-50-200.dynamicip.rima-tde.net [83.50.200.255])
-        by iodev.co.uk (Postfix) with ESMTPSA id 7FD0A9DDE8;
-        Wed, 13 Apr 2022 14:51:39 +0200 (CEST)
-From:   Ismael Luceno <ismael@iodev.co.uk>
-To:     linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Cc:     Ismael Luceno <ismael@iodev.co.uk>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: [PATCH] Bluetooth: btusb: Add 0x0bda:0x8771 Realtek 8761BUV devices
-Date:   Wed, 13 Apr 2022 14:54:15 +0200
-Message-Id: <20220413125415.20293-1-ismael@iodev.co.uk>
-X-Mailer: git-send-email 2.35.1
+        Wed, 13 Apr 2022 08:55:23 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02DC53B4C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:53:00 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id p15so3722856ejc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:53:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=citymesh-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=rFOS/YEtLTZTs3XK8yDit+vtofEO5aVtPZCCQ6IQw8I=;
+        b=G6mvPzPI+QdIOqo+VYv/p+nCyqq+tAdC/wMXqCeZncqy2ddvPeNP+6T37RdsQcK1A0
+         07yGip5Nu23NDeYdAL/sgPpoq2ZZOpZGm8vEYX1X22+4WPP8w8rMs5sHFDmguV7Ttu+j
+         Rg8swcismTypgyA2IqKcvu8yc8KEHLMM9gOjIF4OcFa7hfETv9eq9r8YB32/cKI4g6A3
+         /06tyyB9+m8wcSslUriQwO03ELxravLqBMrTpnvtIw9cvpGVObSFbiTYcJW2/D/ZKs36
+         re1fpPaY/CTYfcJN9mOmyOcoStPt/SA24PKVyRmQHAyWH+QpYQNk6dikipmoqPmT0ppX
+         AMyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=rFOS/YEtLTZTs3XK8yDit+vtofEO5aVtPZCCQ6IQw8I=;
+        b=qri45AmccBh+76mizEVVRp9XV5fYX5ZWzpR19cBtf9vEaVCl0QmwiK2eGHmTi71+mu
+         NHqAOEqcQVWq/aNoFPu7hiT5LtlRyudGLDCYGOpP9wf68SPxeeXpBPuFIFqHi/2iEQLG
+         kGrWhfEFoD4YHBF8FUVky50ooQD1ob8ilxbmOLfqzw9nRIdH6fkvJxtN8cJZw1gPBSoT
+         HjdAUxEmTZeju7KcFxo2qn5hONFL6Ddo7VJMvjmSVdgYClQ6pYhmryevS4XQ89cPOXlR
+         NT6hNmAVwilY8YGPAycWqjX578gW+rvIuMsgoPsGjKV1pSvumdfTyao8lrUc5rwDq/tv
+         x4/g==
+X-Gm-Message-State: AOAM5339naMsgpJnAkP6q6/5dXji3FmnVJZILakBw8IpxJrQ6/X2RRH7
+        RNRBAVvkrZZGIfwymyYChKlxvA==
+X-Google-Smtp-Source: ABdhPJza/BKaw96pPtHS6TkEzygBE95yc9sVcnWMfkYr0fvTC1gw4NlPK214LqNeY0A3srRlwLUMKQ==
+X-Received: by 2002:a17:907:8a15:b0:6e8:d28e:83d7 with SMTP id sc21-20020a1709078a1500b006e8d28e83d7mr1295827ejc.640.1649854379336;
+        Wed, 13 Apr 2022 05:52:59 -0700 (PDT)
+Received: from [10.202.0.7] ([31.31.140.89])
+        by smtp.gmail.com with ESMTPSA id m3-20020a17090679c300b006cf9ce53354sm14146420ejo.190.2022.04.13.05.52.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 05:52:58 -0700 (PDT)
+Message-ID: <1945c8da-99f8-8d87-343d-ff66c02df6de@citymesh.com>
+Date:   Wed, 13 Apr 2022 14:52:55 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: PCI: Race condition in pci_create_sysfs_dev_files (can't boot)
+Content-Language: en-US
+From:   Koen Vandeputte <koen.vandeputte@citymesh.com>
+To:     =?UTF-8?Q?Krzysztof_Ha=c5=82asa?= <khalasa@piap.pl>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Dexuan Cui <dexuan.linux@gmail.com>,
+        =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>,
+        Piotr Dymacz <pepe2k@gmail.com>
+References: <20220208234023.GA505306@bhelgaas> <m3czjovdqn.fsf@t19.piap.pl>
+ <46ae7788-dade-3ff4-a353-985544f12c19@citymesh.com>
+ <7873617a-b2ab-1f26-55ac-d98229aa4485@citymesh.com>
+In-Reply-To: <7873617a-b2ab-1f26-55ac-d98229aa4485@citymesh.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Identifies as just "Realtek Semiconductor Corp."; it's used in many
-adapters, e.g.:
 
-- UGREEN CM390
-- C-TECH BTD-01
-- Orico BTA-508
+On 06.04.22 16:08, Koen Vandeputte wrote:
+>
+> On 01.04.22 15:50, Koen Vandeputte wrote:
+>>
+>> On 15.02.22 07:35, Krzysztof Hałasa wrote:
+>>> Hi Bjorn,
+>>>
+>>> Bjorn Helgaas <helgaas@kernel.org> writes:
+>>>
+>>>> Koen collected some interesting logs at
+>>>> https://lore.kernel.org/all/cd4812f0-1de3-0582-936c-ba30906595af@citymesh.com/ 
+>>>>
+>>>> They're from v5.10, which was before all of Krzysztof W's nice work
+>>>> converting to static attributes, but Koen's log shows the error
+>>>> happening in the pci_sysfs_init() initcall, which is *after*
+>>>> imx6_pcie_probe():
+>>>>
+>>>>    imx6_pcie_probe                # probably device initcall (level 6)
+>>>>      ...
+>>>>        pci_create_sysfs_dev_files
+>>>>
+>>>>    pci_sysfs_init                 # late initcall (level 7)
+>>>>      pci_create_sysfs_dev_files
+>>>>        "sysfs: cannot create duplicate filename"
+>>> Well, imx6_pcie_probe() is called indirectly by
+>>> platform_driver_register(). I guess it doesn't know about the initcall
+>>> ordering, after it's registered.
+>>>
+>>> It looks like the problem is the imx6_pcie_probe() (via
+>>> dw_pcie_host_init() -> pci_host_probe()) is interfering with
+>>> pci_sysfs_init(). This may eventually cause some invalid memory access
+>>> as well.
+>>>
+>>> BTW I thought for a moment that maybe 5.14 is free from this. I was
+>>> wrong. The problem doesn't manifest itself on my custom i.MX6 device
+>>> (using Tinyrex CPU module from Voipac/Fedevel, perhaps because I don't
+>>> use any PCI devices there). It does on Ventana SBC from Gateworks,
+>>> though. BTW the above (and below) is v5.16.
+>>>
+>>> It goes like this:
+>>> [0.096212] do_initcall_level: 6
+>>> [0.105625] imx6_pcie_init
+>>> [0.106106] imx6_pcie_probe <<<<<<<<<<<<<<<<<<<<<
+>>> [0.106412] imx6q-pcie 1ffc000.pcie: host bridge /soc/pcie@1ffc000 
+>>> ranges:
+>>>
+>>> [0.322613] imx6q-pcie 1ffc000.pcie: Link up
+>>> [0.322776] imx6q-pcie 1ffc000.pcie: PCI host bridge to bus 0000:00
+>>> [0.322790] pci_bus 0000:00: root bus resource [bus 00-ff]
+>>>
+>>> [0.405251] do_initcall_level: 6 ENDs but imx6_pcie_probe() still active
+>>> [0.405262] do_initcall_level: 7
+>>>
+>>> [0.410393] pci_sysfs_init <<<<<<<<<<<<<<<<<<<<<
+>>> [0.410423] pci 0000:00:00.0: pci_create_sysfs_dev_files
+>>>
+>>> [0.410532] [<8068091c>] (pci_create_sysfs_dev_files)
+>>> [0.410551] [<80918710>] (pci_sysfs_init)
+>>> [0.410568] [<8010166c>] (do_one_initcall)
+>>>
+>>> [0.410717] pci_sysfs_init END <<<<<<<<<<<<<<<<<<<<<
+>>>
+>>> [0.533843] [<803f1c74>] (pci_bus_add_devices)
+>>> [0.533862] [<803f574c>] (pci_host_probe)
+>>> [0.533879] [<80414310>] (dw_pcie_host_init)
+>>> [0.533895] [<80681ac8>] (imx6_pcie_probe)
+>>> [0.533915] [<8045e9e4>] (platform_probe)
+>>> (Repeats multiple times, I guess for each PCI device)
+>>>
+>>> [0.543893] imx6_pcie_probe END <<<<<<<<<<<<<<<<<<<<<
+>>>
+>>> [0.692244] do_initcall_level: 7 END
+>>
+>>
+>> Hi all,
+>>
+>> Any update on this topic?
+>> I just tested kernel 5.15 on imx6 (gateworks Ventana 5200) and as 
+>> soon as I connect a pcie device on one of the ports,
+>>
+>> following happens:
+>>
+>> https://pastebin.com/raw/mgfSvTRB
+>>
+>> Any idea if this is related?
+>>
+>>
+>> Thanks,
+>>
+>> Koen
+>>
+> Hi all,
+>
+> I tested a bit more today and simply let the board reboot all day long.
+> After roughly 20 reboots, it suddenly booted once stable without any 
+> errors/warnings.
+>
+> Looks like a race condition ..
+>
+> Any idea?
+>
+> Thanks,
+>
+> Koen
+>
+As an additional addendum:
 
-Signed-off-by: Ismael Luceno <ismael@iodev.co.uk>
----
- drivers/bluetooth/btusb.c | 4 ++++
- 1 file changed, 4 insertions(+)
+This issue is seen on a Gateworks Ventana gw5200 which has a PLX bridge.
+I also have a GW5100 which is identical but without the PLX bridge, and 
+it works fine every time.
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 2afbd87d77c9..07db720baaa0 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -490,6 +490,10 @@ MODULE_DEVICE_TABLE(usb, btusb_table);
- 	{ USB_DEVICE(0x2550, 0x8761), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
- 
-+	/* Additional Realtek 8761BUV Bluetooth devices */
-+	{ USB_DEVICE(0x0bda, 0x8771), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
-+
- 	/* Additional Realtek 8821AE Bluetooth devices */
- 	{ USB_DEVICE(0x0b05, 0x17dc), .driver_info = BTUSB_REALTEK },
- 	{ USB_DEVICE(0x13d3, 0x3414), .driver_info = BTUSB_REALTEK },
--- 
-2.35.1
+So when a PCI device is sitting behind a bridge, the issue is triggered.
+
+
+Hope this helps to easily reproduce.
+
+Koen
 
