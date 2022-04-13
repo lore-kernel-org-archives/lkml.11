@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A19DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F87C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238039AbiDMWWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
+        id S238000AbiDMWW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:22:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236972AbiDMWWE (ORCPT
+        with ESMTP id S231311AbiDMWV6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 18:22:04 -0400
+        Wed, 13 Apr 2022 18:21:58 -0400
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED8322B14;
-        Wed, 13 Apr 2022 15:19:40 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id E12FD5C0325;
-        Wed, 13 Apr 2022 18:19:39 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4B920BC0;
+        Wed, 13 Apr 2022 15:19:34 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4C4035C0322;
+        Wed, 13 Apr 2022 18:19:34 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 13 Apr 2022 18:19:39 -0400
+  by compute2.internal (MEProxy); Wed, 13 Apr 2022 18:19:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649888379; x=1649974779; bh=Dm
-        EyWFCtmS1CP/NJfSjamUUamIi9FMNiWBV0XLSX5tI=; b=mk4goxXUJrAIBWW089
-        dPCf4FzqENNN0V90qnVFG3Nb+06XXWnUrXuZ+EZ6KlLvmQlaXV9aLyBEheUsB0ew
-        L5IA+VDexu9UDz6dGM6mmgxkKvzzLYGjP3cMHo+hVZIF9kC4V64sjU8qx/jOcs5L
-        jlN3BOhlSz0a0f8q0SsMtOtEcWU+yNnikHz1LQO4RRSxkHIRCE10BA5ek86yu7kT
-        YGh49nlDZ1paW0U8O6XzmoK5UGs8+a9UjY3n4SLqsWmX0JGaC9H0+lMli/eqGBVM
-        cVPioWFJsFXzAiGrvp8NspW1xYpvIJB3aadgENPWLfBujOblEA6ajcicj3TfRgLF
-        hqAA==
+        :subject:subject:to:to; s=fm2; t=1649888374; x=1649974774; bh=nV
+        Ty+l52zCL3CGPsMmkYpIgGpQIKDxR1HFzp1d9DKBM=; b=dVbHkFYEUIWKj3ST7L
+        IBX+AJR97Rtc0cw/qe/xx1IbNAWDzL7cJxz92447dAJ+2XEMH9GU5LnFkNHnneLG
+        SFhR4LUP/MXzeomdimp7OCR8XFDBurxwSK/quHj86LkjRORQYoS4hvfXFakfi8VE
+        CvqOK6ihp9rGtzdL4mkrHJtEZTTImSV8tEdThzKo9Yo7k+uB+DYWO0tw5NGiij6W
+        jif+GY0AaIlBqQX2sFudpXcaOPE752aKTneA6XMeMyMkS4TY3ZNYTKF/CZFfi1Qi
+        SFr40Chx1xag+xteKy77K0SbfqP3GdJQ+fYwazt/FQcS3fbjPdhvyUAqqIR1c2E7
+        GyMw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1649888379; x=1649974779; bh=DmEyWFCtmS1CP/NJfSjamUUamIi9FMNiWBV
-        0XLSX5tI=; b=p2cP5wLcgSeBDjXtnvHzgbPSPk4yR/i4fCkA7ZcCtNYo63XOpfs
-        MCD6IQpVv1+Dvi4dKKDfk+b8QKvo5zbtk2n5xvgts/v2zX/asrYoVUsHHdKl9HFe
-        JMyLH2eL4Wed7wNTe/mHykvgiIexwOTkhsl1xC7ch91CbBfLRCmRojvmG3ULGkcE
-        81bnvhj5CVzIrQwrXEOlTtS2CmAek3tdrY1DYseSt/Qy+M/F9XzVk7cV+73LN0j7
-        LXhmz0c/y0R+OnY/q2gBsADIuhWFUhCq+nKEuOlqY/X61x3YGdggRtcCqiea/L4Y
-        VKkfy76tni9n76SXAE+h/l2bjLPG34bnGXw==
-X-ME-Sender: <xms:e0xXYpjNv2TLkCAN0ztJaT6sjH0fDjHeSWwRgq_8nje2n0E-4CXSeA>
-    <xme:e0xXYuA1d9jB5klSZr1FdEyHfvv309eMymxBGGDuXDDUVMl8Svxj6USb1PY_LOwnO
-    U9Nvh4-v13Mf3-zJQ>
-X-ME-Received: <xmr:e0xXYpGICScmidQ751I2zEVrgcmICfg6GMyBfWFVmwA4NSdG_SSJVW4ZF3YVPdqqVfbKCrk3Q3zrObvekNgB92Bf0ClBbd64y4eR_7JRVFpMsTYaJ8D4MXSGv7HkmLBXl7I9RQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddgtdelucetufdoteggodetrfdotf
+        1649888374; x=1649974774; bh=nVTy+l52zCL3CGPsMmkYpIgGpQIKDxR1HFz
+        p1d9DKBM=; b=T5bbug34WLzjJT60oKKAjH1Uv5gPeFjPhVnLKH6/meLNcIczDt9
+        nSx/qeeOrXFwLv3M/oQKGA64u6ziulT4CyG79Fepyy0WaPk48PO65ZPo+svzfJ2D
+        Di2RzPO33aiXdNSS66Vi0Rxgi4dpH0j9p8N3v7UST129BFiB110/FQBCKos38aow
+        2YtT1RykvcUk0ZyloPOvXMTL4WFl57qBCJDJvKKU5FsRG+ncL2LrFtm0ZmCGG1qi
+        Do86lfvwo8tFbcAQ8I8Y7EDyYI5mnW/zsmlYaUPOdNuHEvGE4FHCIaz0pCpc5nbv
+        +zI85V/NHO+/5FRlF36zhvV7u4n34c+PpRw==
+X-ME-Sender: <xms:dkxXYln05wFKGiNOTZwnFM98eEjBT4e9Yr7nzt446a32fuYh1HIYLA>
+    <xme:dkxXYg0cTe0Q3BYMcVdVQRoGEvKNakHg25-7LcvIcLUlzo6YBIERJOGbzt0CZGtWs
+    f2Ti3JJAZHUKPMDgg>
+X-ME-Received: <xmr:dkxXYrr3ZGoLZBHXMIImhvMLxlg3niVjggvOsVsgUY_OKXJM-CwJe04XIUo9CfV9c1vGkRhOb4wzs7yo5eysYtvbyvCgqSSMaCiYJn8gaEAcsnJBDoxoV4uBncb5JXx7As949w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddguddtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
     lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
     frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
-    gfejheeuieenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhroh
+    gfejheeuieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:e0xXYuTXUBj21HJUYOB-GkPGdH2BjGFLMzboDNKacR4CYk0gUm7Qvw>
-    <xmx:e0xXYmyI1vbSLz3zB_qRDsWiicF3jx1qmWkagTmuqc2TQMt7Hjvyfg>
-    <xmx:e0xXYk66X8RQzFm7TlNNA09AZOUb5UYkDxuG9gepNhfvI8YvI7bfeg>
-    <xmx:e0xXYtiVbAlbtckkQb7xm_dem_FoAspGpsqPLzLzjpUQX9jP50CS0w>
+X-ME-Proxy: <xmx:dkxXYlkC6vMi22E5SAyji78ecuNLDcTRVNnAhMgj7M1tBA4R6LenIw>
+    <xmx:dkxXYj26Dq1ESX_ZkfiN5NC58NvITt7RtacqB01lvD_kN3EQl8zE1Q>
+    <xmx:dkxXYku2ugGhpWHCSA0dzLSU0GFUFScYEvPr_LCab_TR0-HwqeytxQ>
+    <xmx:dkxXYoUW2tiHyS3dHuYqZoSa8mLyi-_mYT5YtwthRt2vLvoQDTgXJg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 18:19:38 -0400 (EDT)
+ 13 Apr 2022 18:19:33 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
         Sandy Huang <hjc@rock-chips.com>,
@@ -86,9 +86,9 @@ Cc:     linux-rockchip@lists.infradead.org,
         Thomas Zimmermann <tzimmermann@suse.de>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 09/16] drm/rockchip: ebc: Implement global refreshes
-Date:   Wed, 13 Apr 2022 17:19:09 -0500
-Message-Id: <20220413221916.50995-10-samuel@sholland.org>
+Subject: [RFC PATCH 06/16] drm/rockchip: ebc: Add CRTC refresh thread
+Date:   Wed, 13 Apr 2022 17:19:06 -0500
+Message-Id: <20220413221916.50995-7-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413221916.50995-1-samuel@sholland.org>
 References: <20220413221916.50995-1-samuel@sholland.org>
@@ -98,105 +98,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The global refresh mode is used to initialize and clear the screen.
-It is the most efficient refresh mode. It uses two pixel buffers (old
-and new) and a frame count. The frame count is set to the number of
-phases in the waveform. The hardware then looks up the combination of
-(old pixel value, new pixel value, frame number) in the LUT and sends
-the resulting polarity value to the display.
+EPD refreshes are extremely slow; they take anywhere between hundreds of
+milliseconds and several seconds. To avoid blocking userspace, perform
+these refreshes on a separate thread. The thread will also take care of
+initializing the display before first use and clearing it when the CRTC
+is disabled.
 
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- drivers/gpu/drm/rockchip/rockchip_ebc.c | 48 ++++++++++++++++++++++++-
- 1 file changed, 47 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/rockchip/rockchip_ebc.c | 82 ++++++++++++++++++++++++-
+ 1 file changed, 81 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_ebc.c b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-index ca3173b28d1c..cb6dc567e94c 100644
+index 5f9502313657..ebe60d5e011a 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_ebc.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_ebc.c
-@@ -127,6 +127,7 @@
- #define EBC_NUM_LUT_REGS		0x1000
- #define EBC_NUM_SUPPLIES		3
+@@ -6,6 +6,7 @@
+ #include <linux/clk.h>
+ #include <linux/completion.h>
+ #include <linux/irq.h>
++#include <linux/kthread.h>
+ #include <linux/module.h>
+ #include <linux/of_platform.h>
+ #include <linux/pm_runtime.h>
+@@ -135,9 +136,15 @@ struct rockchip_ebc {
+ 	struct drm_plane		plane;
+ 	struct regmap			*regmap;
+ 	struct regulator_bulk_data	supplies[EBC_NUM_SUPPLIES];
++	struct task_struct		*refresh_thread;
+ 	u32				dsp_start;
++	bool				reset_complete;
+ };
  
-+#define EBC_REFRESH_TIMEOUT		msecs_to_jiffies(3000)
- #define EBC_SUSPEND_DELAY_MS		2000
- 
- struct rockchip_ebc {
-@@ -269,8 +270,23 @@ static void rockchip_ebc_global_refresh(struct rockchip_ebc *ebc,
- {
- 	struct drm_device *drm = &ebc->drm;
- 	u32 gray4_size = ctx->gray4_size;
-+	struct device *dev = drm->dev;
- 
--	drm_dbg(drm, "global refresh\n");
-+	dma_sync_single_for_device(dev, virt_to_phys(ctx->next),
-+				   gray4_size, DMA_TO_DEVICE);
-+	dma_sync_single_for_device(dev, virt_to_phys(ctx->prev),
-+				   gray4_size, DMA_TO_DEVICE);
++static bool skip_reset;
++module_param(skip_reset, bool, 0444);
++MODULE_PARM_DESC(skip_reset, "skip the initial display reset");
 +
-+	reinit_completion(&ebc->display_end);
-+	regmap_write(ebc->regmap, EBC_CONFIG_DONE,
-+		     EBC_CONFIG_DONE_REG_CONFIG_DONE);
-+	regmap_write(ebc->regmap, EBC_DSP_START,
-+		     ebc->dsp_start |
-+		     EBC_DSP_START_DSP_FRM_TOTAL(ebc->lut.num_phases - 1) |
-+		     EBC_DSP_START_DSP_FRM_START);
-+	if (!wait_for_completion_timeout(&ebc->display_end,
-+					 EBC_REFRESH_TIMEOUT))
-+		drm_err(drm, "Refresh timed out!\n");
+ DEFINE_DRM_GEM_FOPS(rockchip_ebc_fops);
  
- 	memcpy(ctx->prev, ctx->next, gray4_size);
+ static const struct drm_driver rockchip_ebc_drm_driver = {
+@@ -172,6 +179,42 @@ to_ebc_crtc_state(struct drm_crtc_state *crtc_state)
+ 	return container_of(crtc_state, struct ebc_crtc_state, base);
  }
-@@ -289,6 +305,7 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
- 				 enum drm_epd_waveform waveform)
- {
- 	struct drm_device *drm = &ebc->drm;
-+	u32 dsp_ctrl = 0, epd_ctrl = 0;
- 	struct device *dev = drm->dev;
- 	int ret, temperature;
  
-@@ -334,11 +351,40 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
- 				  ebc->lut.buf, EBC_NUM_LUT_REGS);
++static int rockchip_ebc_refresh_thread(void *data)
++{
++	struct rockchip_ebc *ebc = data;
++
++	while (!kthread_should_stop()) {
++		/*
++		 * LUTs use both the old and the new pixel values as inputs.
++		 * However, the initial contents of the display are unknown.
++		 * The special RESET waveform will initialize the display to
++		 * known contents (white) regardless of its current contents.
++		 */
++		if (!ebc->reset_complete) {
++			ebc->reset_complete = true;
++			drm_dbg(&ebc->drm, "display reset\n");
++		}
++
++		while (!kthread_should_park()) {
++			drm_dbg(&ebc->drm, "display update\n");
++
++			set_current_state(TASK_IDLE);
++			schedule();
++			__set_current_state(TASK_RUNNING);
++		}
++
++		/*
++		 * Clear the display before disabling the CRTC. Use the
++		 * highest-quality waveform to minimize visible artifacts.
++		 */
++		drm_dbg(&ebc->drm, "display clear\n");
++
++		kthread_parkme();
++	}
++
++	return 0;
++}
++
+ static inline struct rockchip_ebc *crtc_to_ebc(struct drm_crtc *crtc)
+ {
+ 	return container_of(crtc, struct rockchip_ebc, crtc);
+@@ -296,11 +339,23 @@ static void rockchip_ebc_crtc_atomic_flush(struct drm_crtc *crtc,
+ static void rockchip_ebc_crtc_atomic_enable(struct drm_crtc *crtc,
+ 					    struct drm_atomic_state *state)
+ {
++	struct rockchip_ebc *ebc = crtc_to_ebc(crtc);
++	struct drm_crtc_state *crtc_state;
++
++	crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
++	if (crtc_state->mode_changed)
++		kthread_unpark(ebc->refresh_thread);
+ }
+ 
+ static void rockchip_ebc_crtc_atomic_disable(struct drm_crtc *crtc,
+ 					     struct drm_atomic_state *state)
+ {
++	struct rockchip_ebc *ebc = crtc_to_ebc(crtc);
++	struct drm_crtc_state *crtc_state;
++
++	crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
++	if (crtc_state->mode_changed)
++		kthread_park(ebc->refresh_thread);
+ }
+ 
+ static const struct drm_crtc_helper_funcs rockchip_ebc_crtc_helper_funcs = {
+@@ -408,6 +463,14 @@ static int rockchip_ebc_plane_atomic_check(struct drm_plane *plane,
+ static void rockchip_ebc_plane_atomic_update(struct drm_plane *plane,
+ 					     struct drm_atomic_state *state)
+ {
++	struct rockchip_ebc *ebc = plane_to_ebc(plane);
++	struct drm_plane_state *plane_state;
++
++	plane_state = drm_atomic_get_new_plane_state(state, plane);
++	if (!plane_state->crtc)
++		return;
++
++	wake_up_process(ebc->refresh_thread);
+ }
+ 
+ static const struct drm_plane_helper_funcs rockchip_ebc_plane_helper_funcs = {
+@@ -673,6 +736,7 @@ static int rockchip_ebc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, ebc);
+ 	init_completion(&ebc->display_end);
++	ebc->reset_complete = skip_reset;
+ 
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+@@ -716,12 +780,26 @@ static int rockchip_ebc_probe(struct platform_device *pdev)
+ 			return ret;
  	}
  
-+	regmap_write(ebc->regmap, EBC_DSP_START,
-+		     ebc->dsp_start);
-+
-+	/*
-+	 * The hardware has a separate bit for each mode, with some priority
-+	 * scheme between them. For clarity, only set one bit at a time.
-+	 */
-+	if (global_refresh) {
-+		dsp_ctrl |= EBC_DSP_CTRL_DSP_LUT_MODE;
-+	} else {
-+		epd_ctrl |= EBC_EPD_CTRL_DSP_THREE_WIN_MODE;
++	ebc->refresh_thread = kthread_create(rockchip_ebc_refresh_thread,
++					     ebc, "ebc-refresh/%s",
++					     dev_name(dev));
++	if (IS_ERR(ebc->refresh_thread)) {
++		ret = dev_err_probe(dev, PTR_ERR(ebc->refresh_thread),
++				    "Failed to start refresh thread\n");
++		goto err_disable_pm;
 +	}
-+	regmap_update_bits(ebc->regmap, EBC_EPD_CTRL,
-+			   EBC_EPD_CTRL_DSP_THREE_WIN_MODE,
-+			   epd_ctrl);
-+	regmap_update_bits(ebc->regmap, EBC_DSP_CTRL,
-+			   EBC_DSP_CTRL_DSP_LUT_MODE,
-+			   dsp_ctrl);
 +
-+	regmap_write(ebc->regmap, EBC_WIN_MST0,
-+		     virt_to_phys(ctx->next));
-+	regmap_write(ebc->regmap, EBC_WIN_MST1,
-+		     virt_to_phys(ctx->prev));
++	kthread_park(ebc->refresh_thread);
++	sched_set_fifo(ebc->refresh_thread);
 +
- 	if (global_refresh)
- 		rockchip_ebc_global_refresh(ebc, ctx);
- 	else
- 		rockchip_ebc_partial_refresh(ebc, ctx);
+ 	ret = rockchip_ebc_drm_init(ebc);
+ 	if (ret)
+-		goto err_disable_pm;
++		goto err_stop_kthread;
  
-+	/* Drive the output pins low once the refresh is complete. */
-+	regmap_write(ebc->regmap, EBC_DSP_START,
-+		     ebc->dsp_start |
-+		     EBC_DSP_START_DSP_OUT_LOW);
+ 	return 0;
+ 
++err_stop_kthread:
++	kthread_stop(ebc->refresh_thread);
+ err_disable_pm:
+ 	pm_runtime_disable(dev);
+ 	if (!pm_runtime_status_suspended(dev))
+@@ -738,6 +816,8 @@ static int rockchip_ebc_remove(struct platform_device *pdev)
+ 	drm_dev_unregister(&ebc->drm);
+ 	drm_atomic_helper_shutdown(&ebc->drm);
+ 
++	kthread_stop(ebc->refresh_thread);
 +
- 	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_put_autosuspend(dev);
- }
+ 	pm_runtime_disable(dev);
+ 	if (!pm_runtime_status_suspended(dev))
+ 		rockchip_ebc_runtime_suspend(dev);
 -- 
 2.35.1
 
