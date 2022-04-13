@@ -2,249 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF34EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A52C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbiDMIpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 04:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
+        id S234011AbiDMIqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 04:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiDMIpo (ORCPT
+        with ESMTP id S229495AbiDMIqI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 04:45:44 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159AB4EF6E;
-        Wed, 13 Apr 2022 01:43:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=B9YkVN+zETpSpWU7cq4MarKPe7gLn1sjGxlryEkU3KY=; b=NMi8W15yKp4NbzUmRlKny8mtun
-        v5DgHy67mWCb95llT6faiT7MogK0iutOj78TgY3E3U71KyQijbZqXIChZwd5uJ0piWWZY+49xwEPf
-        dMJAfDEJqSpye3xK9gDP0MNO3VPYS3464lCe4aTyzMeLgIq4lO6oM/PtQ3cyRaOxHLG3lrLJLD5AA
-        0C1hC6LcDtUE4PW+XJwTSubkJgRlyjEfpjekfV4Eg8P5d5TLRdmo4qEgqdAFnb2BnU9mshakqKak+
-        7rvCsC7d+gygP4qmD/qmNJJOsUU2W/6kMp05Z9dEIqwHAlmk4kYQaM67BuFSkRGjenwrVxbs7/+QK
-        bdFW+PUw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neYal-004bFE-TQ; Wed, 13 Apr 2022 08:43:12 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id EFF959861CB; Wed, 13 Apr 2022 10:43:09 +0200 (CEST)
-Date:   Wed, 13 Apr 2022 10:43:09 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     linux-cxl@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Kevin Tian <kevin.tian@intel.com>, vishal.l.verma@intel.com,
-        alison.schofield@intel.com, linux-kernel@vger.kernel.org,
-        nvdimm@lists.linux.dev
-Subject: Re: [PATCH v2 02/12] device-core: Add dev->lock_class to enable
- device_lock() lockdep validation
-Message-ID: <20220413084309.GV2731@worktop.programming.kicks-ass.net>
-References: <164982968798.684294.15817853329823976469.stgit@dwillia2-desk3.amr.corp.intel.com>
- <164982969858.684294.17819743973041389492.stgit@dwillia2-desk3.amr.corp.intel.com>
+        Wed, 13 Apr 2022 04:46:08 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11EF4F458;
+        Wed, 13 Apr 2022 01:43:48 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id v12so1377498plv.4;
+        Wed, 13 Apr 2022 01:43:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WXJ0x6B6fscSnw3U9TyMu1fz6RdndgOIc6aGYEspekU=;
+        b=A5UEdlb2sTcqbwV2HtfB+uLhHQHyAFhwdjCN3Tz6+lBNarziZOCRVXV74sSQEzU870
+         RABQJbnF37Ny5JTuykqxg1FPJDsRi1Kdlu3PpB9ymjKIKb9luu+1y/9UgET8peOEpQTi
+         9IoyWfTRCG0F92lWWVucyTmXKaM0c3JAOMSVz/pB5ZenEalc8sFIVHNz3F7cXj+cV3fJ
+         3sjMmRZKutveDMEDQNuRgQr3RzXcRtjjjtnPNWCcjiZ3rAv2izQZYpShvX8T+qAv64ir
+         mnNkfxW4OkSnNCnxJdH+YjOUNFmk0z7Thuoop3Z6DG/qxQf8tVekgWbV2KM/mykI3Cus
+         Coow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WXJ0x6B6fscSnw3U9TyMu1fz6RdndgOIc6aGYEspekU=;
+        b=ZHIGzJNsfw9apsn21szXI+cKIG84lu4qrU+y8GYgUut67uheutDt9kfrdah1DJR/My
+         m+B5RbT5oad/et3il1EmY++Jnf/gDVW4jg7wzP0Lz/yXAht4DNUBOTh8l/pTYwU6xJtm
+         bSqqbMphUq+qKdAn+d3BP3zhIEwdFfShOQJoBfyQcQb4eLJgYVG6334Gcf5lj5tW5goW
+         XlyK+prGjbSRvMT23K9UVtFtbNNSPZ4p37U60IKEu/TQcE6H9YB4pBg6VaRAXlg8uPM2
+         hu0MFOOohhCX3HhtD9bTKqb8wfLFut6YyY1rD7jQGY41eCosmusZJW21zeTRL6m6Y4Nx
+         cT6A==
+X-Gm-Message-State: AOAM531oYKY5bgFz0SWGCa4Tfl7vq9BkKBYdch0wAC7B2UjPmXns8vQD
+        V2NzZEebA+1s7ptcasa8gYE=
+X-Google-Smtp-Source: ABdhPJzerT6Pr78YbDL8k6DjXS6/h7frfnlot8xyPo/lggGRdxCNVvR2digAkLVaqX1MtHe4TSWzDA==
+X-Received: by 2002:a17:90b:1c8e:b0:1bf:364c:dd7a with SMTP id oo14-20020a17090b1c8e00b001bf364cdd7amr9482472pjb.103.1649839428272;
+        Wed, 13 Apr 2022 01:43:48 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.119])
+        by smtp.gmail.com with ESMTPSA id l5-20020a63f305000000b0039daaa10a1fsm2410335pgh.65.2022.04.13.01.43.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 01:43:47 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
+        benbjiang@tencent.com, flyingpeng@tencent.com,
+        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        mengensun@tencent.com, dongli.zhang@oracle.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/9] net: ip: add skb drop reasons to ip ingress
+Date:   Wed, 13 Apr 2022 16:15:51 +0800
+Message-Id: <20220413081600.187339-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <164982969858.684294.17819743973041389492.stgit@dwillia2-desk3.amr.corp.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 11:01:38PM -0700, Dan Williams wrote:
-> The device_lock() is hidden from lockdep by default because, for
-> example, a device subsystem may do something like:
-> 
-> ---
-> device_add(dev1);
-> ...in driver core...
-> device_lock(dev1);
-> bus->probe(dev1); /* where bus->probe() calls driver1_probe() */
-> 
-> driver1_probe(struct device *dev)
-> {
-> 	...do some enumeration...
-> 	dev2->parent = dev;
-> 	/* this triggers probe under device_lock(dev2); */
-> 	device_add(dev2);
-> }
-> ---
-> 
-> To lockdep, that device_lock(dev2) looks like a deadlock because lockdep
+From: Menglong Dong <imagedong@tencent.com>
 
-Recursion, you're meaning to say it looks like same lock recursion.
+In the series "net: use kfree_skb_reason() for ip/udp packet receive",
+skb drop reasons are added to the basic ingress path of IPv4. And in
+the series "net: use kfree_skb_reason() for ip/neighbour", the egress
+paths of IPv4 and IPv6 are handled. Related links:
 
-> only sees lock classes, not individual lock instances. All device_lock()
-> instances across the entire kernel are the same class. However, this is
-> not a deadlock in practice because the locking is strictly hierarchical.
-> I.e. device_lock(dev1) is held over device_lock(dev2), but never the
-> reverse.
+https://lore.kernel.org/netdev/20220205074739.543606-1-imagedong@tencent.com/
+https://lore.kernel.org/netdev/20220226041831.2058437-1-imagedong@tencent.com/
 
-I have some very vague memories from a conversation with Alan Stern,
-some maybe 10 years ago, where I think he was explaining to me this was
-not in fact a simple hierarchy.
+Seems we still have a lot work to do with IP layer, including IPv6 basic
+ingress path, IPv4/IPv6 forwarding, IPv6 exthdrs, fragment and defrag,
+etc.
 
-> In order for lockdep to be satisfied and see that it is
-> hierarchical in practice the mutex_lock() call in device_lock() needs to
-> be moved to mutex_lock_nested() where the @subclass argument to
-> mutex_lock_nested() represents the nesting level, i.e.:
+In this series, skb drop reasons are added to the basic ingress path of
+IPv6 protocol and IPv4/IPv6 packet forwarding. Following functions, which
+are used for IPv6 packet receiving are handled:
 
-That's not an obvious conclusion; lockdep has lots of funny annotations,
-subclasses is just one.
+  ip6_pkt_drop()
+  ip6_rcv_core()
+  ip6_protocol_deliver_rcu()
 
-I think the big new development in lockdep since that time with Alan
-Stern is that lockdep now has support for dynamic keys; that is lock
-keys in heap memory (as opposed to static storage).
+And following functions that used for IPv6 TLV parse are handled:
 
-> s/device_lock(dev1)/mutex_lock_nested(&dev1->mutex, 1)/
-> 
-> s/device_lock(dev2)/mutex_lock_nested(&dev2->mutex, 2)/
-> 
-> Now, what if the internals of the device_lock() could be annotated with
-> the right @subclass argument to call mutex_lock_nested()?
-> 
-> With device_set_lock_class() a subsystem can optionally add that
-> metadata. The device_lock() still takes dev->mutex, but when
-> dev->lock_class is >= 0 it additionally takes dev->lockdep_mutex with
-> the proper nesting. Unlike dev->mutex, dev->lockdep_mutex is not marked
-> lockdep_set_novalidate_class() and lockdep will become useful... at
-> least for one subsystem at a time.
-> 
-> It is still the case that only one subsystem can be using lockdep with
-> lockdep_mutex at a time because different subsystems will collide class
-> numbers. You might say "well, how about subsystem1 gets class ids 0 to 9
-> and subsystem2 gets class ids 10 to 20?". MAX_LOCKDEP_SUBCLASSES is 8,
-> and 8 is just enough class ids for one subsystem of moderate complexity.
+  ip6_parse_tlv()
+  ipv6_hop_ra()
+  ipv6_hop_ioam()
+  ipv6_hop_jumbo()
+  ipv6_hop_calipso()
+  ipv6_dest_hao()
 
-Again, that doesn't seem like an obvious suggestion at all. Why not give
-each subsystem a different lock key?
+Besides, ip_forward() and ip6_forward(), which are used for IPv4/IPv6
+forwarding, are also handled. And following new drop reasons are added:
+
+  /* host unreachable, corresponding to IPSTATS_MIB_INADDRERRORS */
+  SKB_DROP_REASON_IP_INADDRERRORS
+  /* network unreachable, corresponding to IPSTATS_MIB_INADDRERRORS */
+  SKB_DROP_REASON_IP_INNOROUTES
+  /* packet size is too big, corresponding to
+   * IPSTATS_MIB_INTOOBIGERRORS
+   */
+  SKB_DROP_REASON_PKT_TOO_BIG
+
+In order to simply the definition and assignment for
+'enum skb_drop_reason', some helper functions are introduced in the 1th
+patch. I'm not such if this is necessary, but it makes the code simpler.
+For example, we can replace the code:
+
+  if (reason == SKB_DROP_REASON_NOT_SPECIFIED)
+          reason = SKB_DROP_REASON_IP_INHDR;
+
+with:
+
+  SKB_DR_OR(reason, IP_INHDR);
 
 
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index af2576ace130..6083e757e804 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -402,6 +402,7 @@ struct dev_msi_info {
->   * @mutex:	Mutex to synchronize calls to its driver.
->   * @lockdep_mutex: An optional debug lock that a subsystem can use as a
->   * 		peer lock to gain localized lockdep coverage of the device_lock.
-> + * @lock_class: per-subsystem annotated device lock class
->   * @bus:	Type of bus device is on.
->   * @driver:	Which driver has allocated this
->   * @platform_data: Platform data specific to the device.
-> @@ -501,6 +502,7 @@ struct device {
->  					   dev_set_drvdata/dev_get_drvdata */
->  #ifdef CONFIG_PROVE_LOCKING
->  	struct mutex		lockdep_mutex;
-> +	int			lock_class;
->  #endif
->  	struct mutex		mutex;	/* mutex to synchronize calls to
->  					 * its driver.
-> @@ -762,18 +764,100 @@ static inline bool dev_pm_test_driver_flags(struct device *dev, u32 flags)
->  	return !!(dev->power.driver_flags & flags);
->  }
->  
-> +static inline void device_lock_assert(struct device *dev)
-> +{
-> +	lockdep_assert_held(&dev->mutex);
-> +}
-> +
->  #ifdef CONFIG_PROVE_LOCKING
->  static inline void device_lockdep_init(struct device *dev)
->  {
->  	mutex_init(&dev->lockdep_mutex);
-> +	dev->lock_class = -1;
->  	lockdep_set_novalidate_class(&dev->mutex);
->  }
-> -#else
-> +
-> +static inline void device_lock(struct device *dev)
-> +{
-> +	/*
-> +	 * For double-lock programming errors the kernel will hang
-> +	 * trying to acquire @dev->mutex before lockdep can report the
-> +	 * problem acquiring @dev->lockdep_mutex, so manually assert
-> +	 * before that hang.
-> +	 */
-> +	lockdep_assert_not_held(&dev->lockdep_mutex);
-> +
-> +	mutex_lock(&dev->mutex);
-> +	if (dev->lock_class >= 0)
-> +		mutex_lock_nested(&dev->lockdep_mutex, dev->lock_class);
-> +}
-> +
-> +static inline int device_lock_interruptible(struct device *dev)
-> +{
-> +	int rc;
-> +
-> +	lockdep_assert_not_held(&dev->lockdep_mutex);
-> +
-> +	rc = mutex_lock_interruptible(&dev->mutex);
-> +	if (rc || dev->lock_class < 0)
-> +		return rc;
-> +
-> +	return mutex_lock_interruptible_nested(&dev->lockdep_mutex,
-> +					       dev->lock_class);
-> +}
-> +
-> +static inline int device_trylock(struct device *dev)
-> +{
-> +	if (mutex_trylock(&dev->mutex)) {
-> +		if (dev->lock_class >= 0)
-> +			mutex_lock_nested(&dev->lockdep_mutex, dev->lock_class);
+In the 6th patch, the statistics for skb in ipv6_hop_jum() is removed,
+as I think it is redundant. There are two call chains for
+ipv6_hop_jumbo(). The first one is:
 
-This must be the weirdest stuff I've seen in a while.
+  ipv6_destopt_rcv() -> ip6_parse_tlv() -> ipv6_hop_jumbo()
 
-> +		return 1;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static inline void device_unlock(struct device *dev)
-> +{
-> +	if (dev->lock_class >= 0)
-> +		mutex_unlock(&dev->lockdep_mutex);
-> +	mutex_unlock(&dev->mutex);
-> +}
-> +
-> +/*
-> + * Note: this routine expects that the state of @dev->mutex is stable
-> + * from entry to exit. There is no support for changing lockdep
-> + * validation classes, only enabling and disabling validation.
-> + */
-> +static inline void device_set_lock_class(struct device *dev, int lock_class)
-> +{
-> +	/*
-> +	 * Allow for setting or clearing the lock class while the
-> +	 * device_lock() is held, in which case the paired nested lock
-> +	 * might need to be acquired or released now to accommodate the
-> +	 * next device_unlock().
-> +	 */
-> +	if (dev->lock_class < 0 && lock_class >= 0) {
-> +		/* Enabling lockdep validation... */
-> +		if (mutex_is_locked(&dev->mutex))
-> +			mutex_lock_nested(&dev->lockdep_mutex, lock_class);
-> +	} else if (dev->lock_class >= 0 && lock_class < 0) {
-> +		/* Disabling lockdep validation... */
-> +		if (mutex_is_locked(&dev->mutex))
-> +			mutex_unlock(&dev->lockdep_mutex);
-> +	} else {
-> +		dev_warn(dev,
-> +			 "%s: failed to change lock_class from: %d to %d\n",
-> +			 __func__, dev->lock_class, lock_class);
-> +		return;
-> +	}
-> +	dev->lock_class = lock_class;
-> +}
-> +#else /* !CONFIG_PROVE_LOCKING */
+On this call chain, the drop statistics will be done in
+ipv6_destopt_rcv() with 'IPSTATS_MIB_INHDRERRORS' if ipv6_hop_jumbo()
+returns false.
 
-This all reads like something utterly surreal... *WHAT*!?!?
+The second call chain is:
 
-If you want lockdep validation for one (or more) dev->mutex instances,
-why not pull them out of the no_validate class and use the normal
-locking?
+  ip6_rcv_core() -> ipv6_parse_hopopts() -> ip6_parse_tlv()
 
-This is all quite insane.
+And the drop statistics will also be done in ip6_rcv_core() with
+'IPSTATS_MIB_INHDRERRORS' if ipv6_hop_jumbo() returns false.
+
+Therefore, the statistics in ipv6_hop_jumbo() is redundant, which
+means the drop is counted twice. The statistics in ipv6_hop_jumbo()
+is almost the same as the outside, except the
+'IPSTATS_MIB_INTRUNCATEDPKTS', which seems that we have to ignore it.
+
+
+======================================================================
+
+Here is a basic test for IPv6 forwarding packet drop that monitored by
+'dropwatch' tool:
+
+  drop at: ip6_forward+0x81a/0xb70 (0xffffffff86c73f8a)
+  origin: software
+  input port ifindex: 7
+  timestamp: Wed Apr 13 11:51:06 2022 130010176 nsec
+  protocol: 0x86dd
+  length: 94
+  original length: 94
+  drop reason: IP_INADDRERRORS
+
+The origin cause of this case is that IPv6 doesn't allow to forward the
+packet with LOCAL-LINK saddr, and results the 'IP_INADDRERRORS' drop
+reason.
+
+Menglong Dong (9):
+  skb: add some helpers for skb drop reasons
+  net: ipv4: add skb drop reasons to ip_error()
+  net: ipv6: add skb drop reasons to ip6_pkt_drop()
+  net: ip: add skb drop reasons to ip forwarding
+  net: icmp: introduce function icmpv6_param_prob_reason()
+  net: ipv6: remove redundant statistics in ipv6_hop_jumbo()
+  net: ipv6: add skb drop reasons to TLV parse
+  net: ipv6: add skb drop reasons to ip6_rcv_core()
+  net: ipv6: add skb drop reasons to ip6_protocol_deliver_rcu()
+
+ include/linux/icmpv6.h     | 11 +++++++++--
+ include/linux/skbuff.h     | 21 ++++++++++++++++++++
+ include/trace/events/skb.h |  3 +++
+ net/ipv4/ip_forward.c      | 13 ++++++++++---
+ net/ipv4/route.c           |  6 +++++-
+ net/ipv6/exthdrs.c         | 39 +++++++++++++++++++++----------------
+ net/ipv6/icmp.c            |  7 ++++---
+ net/ipv6/ip6_input.c       | 40 ++++++++++++++++++++++++++------------
+ net/ipv6/ip6_output.c      |  9 ++++++---
+ net/ipv6/route.c           |  6 +++++-
+ 10 files changed, 113 insertions(+), 42 deletions(-)
+
+-- 
+2.35.1
+
