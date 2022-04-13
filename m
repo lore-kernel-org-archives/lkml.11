@@ -2,87 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 491E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A584EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbiDMG7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 02:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
+        id S233235AbiDMHAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 03:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbiDMG7T (ORCPT
+        with ESMTP id S231911AbiDMHAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 02:59:19 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5C63123C;
-        Tue, 12 Apr 2022 23:56:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649833020; x=1681369020;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CGsGFVAO3PkKrHgaEIbaSVs6VoFj0oPvYPHnw+nPmPE=;
-  b=rO0gTD9xjYBwan9dfKzYlb01M9O/e1kpSLdLP9aQJdldhG4mmFvzJ59b
-   JDlhsaHbb6y57bb9LspAgOCGEkrAHsWfZNwZiIxErDq0KTKjlioMZOWUM
-   9oztoYTQJqLjPn7z/YUVV8yAwQpTXwWa529EVNRc+0BYRqs9t5//jlUWA
-   ISyP2Id7/kiFCD5j/qb+uqOcSXJ6Ma1/rcHtbQBNRr54EuWPFXPE/pL4H
-   s4xDmlCDkhRHy9TBZWqHOfT7lFcsdvRe5zuol2/zbR16hbTV3d51UZjHd
-   Is0tj0OAAgdQ0S3X1/aiLpdsHooDGJy6q9wE3L3eC435nZqAkD2p7Fzhw
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,256,1643698800"; 
-   d="scan'208";a="152483820"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Apr 2022 23:56:59 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 12 Apr 2022 23:56:58 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 12 Apr 2022 23:56:54 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>
-Subject: [Patch net-next v2 2/2] MAINTAINERS: Add maintainers for Microchip T1 Phy driver
-Date:   Wed, 13 Apr 2022 12:25:57 +0530
-Message-ID: <20220413065557.12914-3-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220413065557.12914-1-arun.ramadoss@microchip.com>
-References: <20220413065557.12914-1-arun.ramadoss@microchip.com>
+        Wed, 13 Apr 2022 03:00:16 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9030838BD2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:57:56 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id v4so1196942edl.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:57:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=Sp7hvnptI/W931YQG2jYIshQ4aGCuypBebE/tzGdpNE=;
+        b=DZYcVZPTG6D4QslsNYGDX5RqcCwCUafMJpigiGnSHDCSYV+q64FSGnHUfzJSPU5D4G
+         jnQnCkMgolBpdMgsGJin3kk5/6VDc+qWq5/fFWXKKGWBsdlmnNNAv39e9yBZubRip+zm
+         FpwkvHMP64vP8AceHhRoZhsU0FYAranP54kaRvkCODgfTKH/xcWem/Vsz8VBPRZQx6p9
+         MomQ1FxYys+vUb0r4xGI+EqR48oCje0smOtK6b61DQoJubTvo7ha61G62MeiRuO1ETD2
+         5rU9aubI/ZkSDGdFmU9QE5W0uE29o8cn8LeeX97Sa0NI0CLXy19vzzgyWrviBVqFFyNE
+         mOJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Sp7hvnptI/W931YQG2jYIshQ4aGCuypBebE/tzGdpNE=;
+        b=cSVKU+QlutxBtgul/zCG7ZfL3YMftAeYvyc3WmckBftx0AoEMZEVLsD4Wr3zRYBmUK
+         UEoiCNGYU31HWJ3U54WP0l7bH/VwbJ/bjrReJRFJDYU//iuxdksOioUljKwUUOrN4AHI
+         CsTqWItnRDWKd4hq3iGx+/EhjA8/vrerMIEic8uRQ5dy5I2wX2LI9h6R94dARWtcVotf
+         qJGq1m9JCk0LrTcPSOTE4RoDK4AHltCE6551sziDjgPJnkjXnNUOr0r+P+m+HfJtY2X/
+         xrSGxZ1dRHEzfn0Cj4gzGnlZzozzo6X5njCp2YGfrcG2zawZ+X0XqnRsjY6nSVKlz/uz
+         96zA==
+X-Gm-Message-State: AOAM533eEGuuY5+RO/r1ASlWXhbg9sMH6drjzBMqq2w/N0bB8Pk8GuNB
+        gVqa7sECgi40azxR6N8ImaP4Yw==
+X-Google-Smtp-Source: ABdhPJzbzMuM4BvHhngh/VtLKxfaJL42ZAWCd0mGa6jKe4PYZJ7XnE4R/OnhhLTYyv2aEzA90bOaxA==
+X-Received: by 2002:a05:6402:515b:b0:41d:82c2:2749 with SMTP id n27-20020a056402515b00b0041d82c22749mr11624701edd.38.1649833075220;
+        Tue, 12 Apr 2022 23:57:55 -0700 (PDT)
+Received: from [192.168.0.201] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id fq6-20020a1709069d8600b006e891c0b7e0sm3212170ejc.129.2022.04.12.23.57.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 23:57:54 -0700 (PDT)
+Message-ID: <86da471e-b18f-94e2-64a9-e0f3417ade60@linaro.org>
+Date:   Wed, 13 Apr 2022 08:57:53 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
+Content-Language: en-US
+To:     Lin Ma <linma@zju.edu.cn>, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
+References: <20220412160430.11581-1-linma@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220412160430.11581-1-linma@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+On 12/04/2022 18:04, Lin Ma wrote:
+> Our detector found a concurrent use-after-free bug when detaching an
+> NCI device. The main reason for this bug is the unexpected scheduling
+> between the used delayed mechanism (timer and workqueue).
+> 
+> The race can be demonstrated below:
+> 
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fd768d43e048..0363c8e70432 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12903,6 +12903,13 @@ F:	drivers/net/dsa/microchip/*
- F:	include/linux/platform_data/microchip-ksz.h
- F:	net/dsa/tag_ksz.c
- 
-+MICROCHIP LAN87xx/LAN937x T1 PHY DRIVER
-+M:	Arun Ramadoss <arun.ramadoss@microchip.com>
-+R:	UNGLinuxDriver@microchip.com
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	drivers/net/phy/microchip_t1.c
-+
- MICROCHIP LAN743X ETHERNET DRIVER
- M:	Bryan Whitehead <bryan.whitehead@microchip.com>
- M:	UNGLinuxDriver@microchip.com
--- 
-2.33.0
+Thanks!
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
