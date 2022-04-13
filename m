@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB182C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236334AbiDMO6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
+        id S236348AbiDMO6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235966AbiDMO6M (ORCPT
+        with ESMTP id S234367AbiDMO6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:58:12 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD37E0DD;
-        Wed, 13 Apr 2022 07:55:49 -0700 (PDT)
-Received: from relay2-d.mail.gandi.net (unknown [217.70.183.194])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id C6935CE5A8;
-        Wed, 13 Apr 2022 14:50:05 +0000 (UTC)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 716D240009;
-        Wed, 13 Apr 2022 14:49:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649861397;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l7gqjjhj0XbhASsT9yx1167D/NkqUVY3vj/OxIB/ROU=;
-        b=nhhCNspC0kHQKc6yGBP+mIyCoLG+cWyi075dvuNNmJpNn0lfozq6KB5nskGwe5Gi5QlQ+n
-        Unaeh9evR+5dHfSfUUrakEV1DZSrmcPDliXM4RF0pysUogHcq55xIPO+TD+48mJoii0RvE
-        vSb6C6jC3Di1zsaw31MZPHh0or52spHX8ICd0XYqd1CAZc4qphhWIrryj4udfFeFtEuSTv
-        KRq8EgccyQtQyViaPjWMA8UBDAj6zHrtdj12XHJDLXR35VU2kDHxp1lSc1i5iq/fuu5lr5
-        nLCU7DbxLoKBhNe+YlrLIDC06rxVDQDaqT6mqcONpqpFWY2J+7wiI5k9k9DzEg==
-Date:   Wed, 13 Apr 2022 16:49:54 +0200
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?UTF-8?B?V2lsY3p5xYRz?= =?UTF-8?B?a2k=?= 
-        <kw@linux.com>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH 1/6] PCI: rcar-gen2: Add support for clocks
-Message-ID: <20220413164954.32365292@bootlin.com>
-In-Reply-To: <YlWfslEOdrf62KiP@robh.at.kernel.org>
-References: <20220412094029.287562-1-herve.codina@bootlin.com>
-        <20220412094029.287562-2-herve.codina@bootlin.com>
-        <YlWfslEOdrf62KiP@robh.at.kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Wed, 13 Apr 2022 10:58:32 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998CEE0DD;
+        Wed, 13 Apr 2022 07:56:10 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id lc2so4454796ejb.12;
+        Wed, 13 Apr 2022 07:56:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MXDRi2nnaXpmTvbxw2dgQTuBsMOOy1/I/di9bKsVPUE=;
+        b=aNT4a0hgVXfh34wZO4AZcl1QySQWNDk20i5GSbAIzd2DwalGkhx9rNpgQcY2d5X/Es
+         YH7KJkEKSwa8QSOIOJZ2KTBGsURATGKY+3c8Wlr4686FygRAdCrBO+/wtuUoAn6FLLzC
+         bgpnPRHuWU9oRCSpR3JE9aIgeGO/2lFWdzaNQHwy+9oxHZ3QKCsRs+Qu+7d8STG+ForU
+         VQi++3nMWQkfT4ldLBdkkWSohKGnj67yA2y1MJ5TlpY4Tk2LmuS3KVPSwCHtxcn/Moth
+         dY+FTaeqQxIGkOoJLGchWgxgjMGRT4eUN0MNF2a00uL5nMLLUrZoy7Fx7JABHMlxyJ1v
+         JWzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MXDRi2nnaXpmTvbxw2dgQTuBsMOOy1/I/di9bKsVPUE=;
+        b=JMWgBjXu51DlrRJ5s7NnjAQWPhH6f1Bz+w3mN9IAahfJ+/iaqkaj5jte0554wM3Nd2
+         FQSQVYAK3+L6RnS/G3AZHpRJG7lZdPbc7rKt9SJhDq6r23NqkiqfaaLlbdtt7fR1K0R4
+         GdT5IUF01PYFRk083nJhY0pON9VW8Xgojm7WLvTCimDdhDFTeIaizHhqy06aY481jn+j
+         dhQPmHm8yFm+65dO9kK5rtLzob0WplICXjeN7FG9xEjdG2A5qt+ej9kILEJ3vVb1Ok2a
+         sYWhsjgCLyWdVsXlM9Ca30Cb3eJGt5K7GqctaHq8HlEjlkxRwnqy+dxqrEckNeZZYfMB
+         /1tw==
+X-Gm-Message-State: AOAM533PN0en3Ju+C8JMbDA+WwquoF2SjYBDQjM4sqkRtuPBqnu4ah8W
+        Zlw7L7oyLEqq4daH9uOZtxVfkNlnPYXuXa2cgf0=
+X-Google-Smtp-Source: ABdhPJw/adFhHAFsrTBlvFb8K2Wp4aBtafuEsINtvoCqxDo4Bqx/NK9WXjmFzlIXM+HAr6LfzmtFTxoLfgW1ulNTuj8=
+X-Received: by 2002:a17:907:e8d:b0:6e0:19e7:9549 with SMTP id
+ ho13-20020a1709070e8d00b006e019e79549mr39432086ejc.44.1649861769049; Wed, 13
+ Apr 2022 07:56:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220413094011.185269-1-cosmin.tanislav@analog.com> <20220413094011.185269-2-cosmin.tanislav@analog.com>
+In-Reply-To: <20220413094011.185269-2-cosmin.tanislav@analog.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 13 Apr 2022 17:51:57 +0300
+Message-ID: <CAHp75VexJBnAqoQ53=_nif=bso0-cNj4EsTbUwKGKxfNq_Fvyw@mail.gmail.com>
+Subject: Re: [PATCH v1 2/3] iio: ABI: adc: ad4130: document filter_mode{,_available}
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+On Wed, Apr 13, 2022 at 4:17 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
 
-On Tue, 12 Apr 2022 10:50:10 -0500
-Rob Herring <robh@kernel.org> wrote:
+It's good you provided documentation, but I think the part "ABI:" is
+not needed in the Subject.
 
-> On Tue, Apr 12, 2022 at 11:40:24AM +0200, Herve Codina wrote:
-> > The PCI rcar-gen2 does not call any clk_prepare_enable().
-> > This lead to an access failure when the driver tries to access
-> > the IP (at least on a RZ/N1D platform).
-> >=20
-> > Prepare and enable clocks using the bulk version of
-> > clk_prepare_enable() in order to prepare and enable all clocks
-> > attached to this device. =20
->=20
-> The binding says there is only a single clock, so it needs an update if=20
-> there are multiple clocks. (And ideally converted to DT schema format.)
+> AD4130-8 is an ultra-low power, high precision,
+> measurement solution for low bandwidth battery
+> operated applications.
+>
+> The fully integrated AFE (Analog Front-End)
+> includes a multiplexer for up to 16 single-ended
+> or 8 differential inputs, PGA (Programmable Gain
+> Amplifier), 24-bit Sigma-Delta ADC, on-chip
+> reference and oscillator, selectable filter
+> options, smart sequencer, sensor biasing and
+> excitation options, diagnostics, and a FIFO
+> buffer.
 
-Indeed, I will convert to DT schema format and update the clocks property
-description.
+Indentation issue as per patch 1.
 
-Regards,
-Herv=C3=A9
+...
+
+> +               Set the filter mode of the differential channel. When the filter
+> +               mode changes, the in_voltageY-voltageZ_sampling_frequency and
+> +               in_voltageY-voltageZ_sampling_frequency_available attributes
+> +               might also change to accomodate the new filter mode.
+
+accommodate
+
+> +               If the current sampling frequency is out of range for the new
+> +               filter mode, the sampling frequency will be changed to the
+> +               closest valid one.
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
