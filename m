@@ -2,98 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2291C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238026AbiDMUKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 16:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        id S236839AbiDMUKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 16:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235385AbiDMUKL (ORCPT
+        with ESMTP id S235385AbiDMUKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 16:10:11 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459137B10B;
-        Wed, 13 Apr 2022 13:07:49 -0700 (PDT)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nej10-000FtR-Vy; Wed, 13 Apr 2022 21:50:59 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nej10-000PG8-EN; Wed, 13 Apr 2022 21:50:58 +0200
-Subject: Re: [PATCH v4 sysctl-next] bpf: move bpf sysctls from kernel/sysctl.c
- to bpf module
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Yan Zhu <zhuyan34@huawei.com>, andrii@kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        keescook@chromium.org, kpsingh@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liucheng32@huawei.com, netdev@vger.kernel.org,
-        nixiaoming@huawei.com, songliubraving@fb.com,
-        xiechengliang1@huawei.com, yhs@fb.com, yzaikin@google.com,
-        zengweilin@huawei.com, leeyou.li@huawei.com,
-        laiyuanyuan.lai@huawei.com
-References: <Yk4XE/hKGOQs5oq0@bombadil.infradead.org>
- <20220407070759.29506-1-zhuyan34@huawei.com>
- <3a82460b-6f58-6e7e-a3d9-141f42069eda@iogearbox.net>
- <Ylcd0zvHhi96zVi+@bombadil.infradead.org>
- <b615bd44-6bd1-a958-7e3f-dd2ff58931a1@iogearbox.net>
- <YlcoevXO2t1pn3Pu@bombadil.infradead.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <86460c31-f25a-445a-b58c-0e90eb60a95f@iogearbox.net>
-Date:   Wed, 13 Apr 2022 21:50:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Wed, 13 Apr 2022 16:10:15 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0647B54E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:07:53 -0700 (PDT)
+Received: from dslb-178-004-174-121.178.004.pools.vodafone-ip.de ([178.4.174.121] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nejHJ-0005wN-OK; Wed, 13 Apr 2022 22:07:49 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 1/4] staging: r8188eu: use ieee80211 helper to read the qos tid
+Date:   Wed, 13 Apr 2022 22:07:39 +0200
+Message-Id: <20220413200742.276806-2-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220413200742.276806-1-martin@kaiser.cx>
+References: <20220413200742.276806-1-martin@kaiser.cx>
 MIME-Version: 1.0
-In-Reply-To: <YlcoevXO2t1pn3Pu@bombadil.infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26511/Wed Apr 13 10:22:45 2022)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/13/22 9:46 PM, Luis Chamberlain wrote:
-> On Wed, Apr 13, 2022 at 09:40:58PM +0200, Daniel Borkmann wrote:
->> On 4/13/22 9:00 PM, Luis Chamberlain wrote:
->>> On Wed, Apr 13, 2022 at 04:45:00PM +0200, Daniel Borkmann wrote:
->>>> On 4/7/22 9:07 AM, Yan Zhu wrote:
->>>>> We're moving sysctls out of kernel/sysctl.c as its a mess. We
->>>>> already moved all filesystem sysctls out. And with time the goal is
->>>>> to move all sysctls out to their own subsystem/actual user.
->>>>>
->>>>> kernel/sysctl.c has grown to an insane mess and its easy to run
->>>>> into conflicts with it. The effort to move them out is part of this.
->>>>>
->>>>> Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
->>>>
->>>> Acked-by: Daniel Borkmann <daniel@iogearbox.net>
->>>>
->>>> Given the desire is to route this via sysctl-next and we're not shortly
->>>> before but after the merge win, could we get a feature branch for bpf-next
->>>> to pull from to avoid conflicts with ongoing development cycle?
->>>
->>> Sure thing. So I've never done this sort of thing, so forgive me for
->>> being new at it. Would it make sense to merge this change to sysctl-next
->>> as-is today and put a frozen branch sysclt-next-bpf to reflect this,
->>> which bpf-next can merge. And then sysctl-next just continues to chug on
->>> its own? As-is my goal is to keep sysctl-next as immutable as well.
->>>
->>> Or is there a better approach you can recommend?
->>
->> Are you able to merge the pr/bpf-sysctl branch into your sysctl-next tree?
->>
->>    https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/log/?h=pr/bpf-sysctl
->>
->> This is based off common base for both trees (3123109284176b1532874591f7c81f3837bbdc17)
->> so should only pull in the single commit then.
-> 
-> Yup. That worked just fine. I pushed it.
+Replace the driver-specific GetPriority macro with ieee80211_get_tid,
+which does exactly the same thing.
 
-Great, thanks!
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/core/rtw_recv.c | 2 +-
+ drivers/staging/r8188eu/include/wifi.h  | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
+index 91a6e0f035f4..16224476d18a 100644
+--- a/drivers/staging/r8188eu/core/rtw_recv.c
++++ b/drivers/staging/r8188eu/core/rtw_recv.c
+@@ -978,7 +978,7 @@ static int validate_recv_data_frame(struct adapter *adapter,
+ 	pattrib->ack_policy = 0;
+ 	/* parsing QC field */
+ 	if (pattrib->qos) {
+-		pattrib->priority = GetPriority((ptr + 24));
++		pattrib->priority = ieee80211_get_tid(hdr);
+ 		pattrib->ack_policy = GetAckpolicy((ptr + 24));
+ 		pattrib->amsdu = GetAMsdu((ptr + 24));
+ 		pattrib->hdrlen = 26;
+diff --git a/drivers/staging/r8188eu/include/wifi.h b/drivers/staging/r8188eu/include/wifi.h
+index b26770e91fc0..0254310bdf44 100644
+--- a/drivers/staging/r8188eu/include/wifi.h
++++ b/drivers/staging/r8188eu/include/wifi.h
+@@ -211,8 +211,6 @@ enum WIFI_REG_DOMAIN {
+ #define SetPriority(pbuf, tid)	\
+ 	*(__le16 *)(pbuf) |= cpu_to_le16(tid & 0xf)
+ 
+-#define GetPriority(pbuf)	((le16_to_cpu(*(__le16 *)(pbuf))) & 0xf)
+-
+ #define SetEOSP(pbuf, eosp)	\
+ 		*(__le16 *)(pbuf) |= cpu_to_le16((eosp & 1) << 4)
+ 
+-- 
+2.30.2
+
