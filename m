@@ -2,64 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6812C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00373C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232422AbiDMK71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 06:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41452 "EHLO
+        id S235069AbiDMK7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 06:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232020AbiDMK7Z (ORCPT
+        with ESMTP id S232020AbiDMK7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 06:59:25 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 86D1C5A163;
-        Wed, 13 Apr 2022 03:57:04 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 527B51595;
-        Wed, 13 Apr 2022 03:57:04 -0700 (PDT)
-Received: from e123427-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C11093F73B;
-        Wed, 13 Apr 2022 03:57:02 -0700 (PDT)
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2] PCI: qcom: Fix pipe clock imbalance
-Date:   Wed, 13 Apr 2022 11:57:01 +0100
-Message-Id: <164984714583.9020.940270907096326400.b4-ty@arm.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220401133351.10113-1-johan+linaro@kernel.org>
-References: <20220401133351.10113-1-johan+linaro@kernel.org>
+        Wed, 13 Apr 2022 06:59:44 -0400
+X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Apr 2022 03:57:20 PDT
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADCB5A17B
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:57:19 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id IGR00011;
+        Wed, 13 Apr 2022 18:55:11 +0800
+Received: from localhost.localdomain (10.200.104.82) by
+ jtjnmail201609.home.langchao.com (10.100.2.9) with Microsoft SMTP Server id
+ 15.1.2308.21; Wed, 13 Apr 2022 18:55:12 +0800
+From:   Deming <wangdeming@inspur.com>
+To:     <mpe@ellerman.id.au>, <benh@kernel.crashing.org>,
+        <paulus@samba.org>
+CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        Deming Wang <wangdeming@inspur.com>
+Subject: [PATCH] powerpc/xive: remove unused parameter
+Date:   Wed, 13 Apr 2022 06:55:07 -0400
+Message-ID: <20220413105507.1729-1-wangdeming@inspur.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.200.104.82]
+tUid:   202241318551125e62aa8a26dedd8ece4937ffc9f6d7d
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 15:33:51 +0200, Johan Hovold wrote:
-> Commit ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe
-> controller") introduced a clock imbalance by enabling the pipe clock
-> both in init() and in post_init() but only disabling in post_deinit().
-> 
-> Note that the pipe clock was also never disabled in the init() error
-> paths and that enabling the clock before powering up the PHY looks
-> questionable.
-> 
-> [...]
+From: Deming Wang <wangdeming@inspur.com>
 
-Applied to pci/qcom, thanks!
+the parameter xc balongng to xive_cleanup_single_escalation is unused,so we
+need to remove it.
 
-[1/1] PCI: qcom: Fix pipe clock imbalance
-      https://git.kernel.org/lpieralisi/pci/c/dcd9011f59
+Signed-off-by: Deming Wang <wangdeming@inspur.com>
+---
+ arch/powerpc/kvm/book3s_xive.c        | 5 ++---
+ arch/powerpc/kvm/book3s_xive.h        | 3 +--
+ arch/powerpc/kvm/book3s_xive_native.c | 2 +-
+ 3 files changed, 4 insertions(+), 6 deletions(-)
 
-Thanks,
-Lorenzo
+diff --git a/arch/powerpc/kvm/book3s_xive.c b/arch/powerpc/kvm/book3s_xive.c
+index c0ce553..12693db 100644
+--- a/arch/powerpc/kvm/book3s_xive.c
++++ b/arch/powerpc/kvm/book3s_xive.c
+@@ -1180,8 +1180,7 @@ void kvmppc_xive_disable_vcpu_interrupts(struct kvm_vcpu *vcpu)
+  * stale_p (because it has no easy way to address it).  Hence we have
+  * to adjust stale_p before shutting down the interrupt.
+  */
+-void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu,
+-				    struct kvmppc_xive_vcpu *xc, int irq)
++void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu, int irq)
+ {
+ 	struct irq_data *d = irq_get_irq_data(irq);
+ 	struct xive_irq_data *xd = irq_data_get_irq_handler_data(d);
+@@ -1222,7 +1221,7 @@ void kvmppc_xive_cleanup_vcpu(struct kvm_vcpu *vcpu)
+ 	for (i = 0; i < KVMPPC_XIVE_Q_COUNT; i++) {
+ 		if (xc->esc_virq[i]) {
+ 			if (kvmppc_xive_has_single_escalation(xc->xive))
+-				xive_cleanup_single_escalation(vcpu, xc,
++				xive_cleanup_single_escalation(vcpu,
+ 							xc->esc_virq[i]);
+ 			free_irq(xc->esc_virq[i], vcpu);
+ 			irq_dispose_mapping(xc->esc_virq[i]);
+diff --git a/arch/powerpc/kvm/book3s_xive.h b/arch/powerpc/kvm/book3s_xive.h
+index 09d0657..f779ebb 100644
+--- a/arch/powerpc/kvm/book3s_xive.h
++++ b/arch/powerpc/kvm/book3s_xive.h
+@@ -306,8 +306,7 @@ struct kvmppc_xive_src_block *kvmppc_xive_create_src_block(
+ int kvmppc_xive_attach_escalation(struct kvm_vcpu *vcpu, u8 prio,
+ 				  bool single_escalation);
+ struct kvmppc_xive *kvmppc_xive_get_device(struct kvm *kvm, u32 type);
+-void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu,
+-				    struct kvmppc_xive_vcpu *xc, int irq);
++void xive_cleanup_single_escalation(struct kvm_vcpu *vcpu, int irq);
+ int kvmppc_xive_compute_vp_id(struct kvmppc_xive *xive, u32 cpu, u32 *vp);
+ int kvmppc_xive_set_nr_servers(struct kvmppc_xive *xive, u64 addr);
+ bool kvmppc_xive_check_save_restore(struct kvm_vcpu *vcpu);
+diff --git a/arch/powerpc/kvm/book3s_xive_native.c b/arch/powerpc/kvm/book3s_xive_native.c
+index f81ba6f..99c23a4 100644
+--- a/arch/powerpc/kvm/book3s_xive_native.c
++++ b/arch/powerpc/kvm/book3s_xive_native.c
+@@ -93,7 +93,7 @@ void kvmppc_xive_native_cleanup_vcpu(struct kvm_vcpu *vcpu)
+ 		/* Free the escalation irq */
+ 		if (xc->esc_virq[i]) {
+ 			if (kvmppc_xive_has_single_escalation(xc->xive))
+-				xive_cleanup_single_escalation(vcpu, xc,
++				xive_cleanup_single_escalation(vcpu,
+ 							xc->esc_virq[i]);
+ 			free_irq(xc->esc_virq[i], vcpu);
+ 			irq_dispose_mapping(xc->esc_virq[i]);
+-- 
+1.8.3.1
+
