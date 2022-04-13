@@ -2,117 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 142CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235798AbiDMNj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 09:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47386 "EHLO
+        id S235804AbiDMNjz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 09:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231599AbiDMNjX (ORCPT
+        with ESMTP id S233742AbiDMNjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 09:39:23 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC0C5F240;
-        Wed, 13 Apr 2022 06:37:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649857021; x=1681393021;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Vl6SQiy5vu9EZTWkVBhNnZBEyiT+stKz3fv32aZTWs0=;
-  b=bxlBvB6nfaS2ovpRpaIxWlnyRshBBWJ/KzHkAUPjJYrxr55A6b8yhfX/
-   QFQDXuFBjkTGEqpSEgbC+j9t2q9GvUsjzX+1cvfMS9dmgluqxb9CvM5W0
-   PHiWu+Vi4zoZDgrthNFqyvaytqB3DDlf/5EPkTARUV5bxGXtu412oC4Qp
-   I=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Apr 2022 06:37:01 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 06:37:01 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Apr 2022 06:36:40 -0700
-Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Apr 2022 06:36:39 -0700
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-To:     <kys@microsoft.com>, <haiyangz@microsoft.com>,
-        <sthemmin@microsoft.com>, <wei.liu@kernel.org>,
-        <decui@microsoft.com>, <lorenzo.pieralisi@arm.com>,
-        <robh@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>,
-        <jakeo@microsoft.com>
-CC:     <bjorn.andersson@linaro.org>, <linux-hyperv@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [PATCH v2] PCI: hv: Fix multi-MSI to allow more than one MSI vector
-Date:   Wed, 13 Apr 2022 07:36:21 -0600
-Message-ID: <1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 13 Apr 2022 09:39:51 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210EA5F240;
+        Wed, 13 Apr 2022 06:37:30 -0700 (PDT)
+Received: by mail-ot1-f48.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso1165458otf.12;
+        Wed, 13 Apr 2022 06:37:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vVwMNhUUHsY7dc6d0f9n1lAM7yT9lwBnJKe7WLSKID0=;
+        b=x/FHyw0rE/htNaw3RQlQCoPAzoDMtxpVc5uAjzxUIQiOTXqoHujV0vSnZYK8ztgJr2
+         klWAZcitRCJy2WBdlPT4DjwMGicqxI80O/z++Yk9p2JCvpwAw1BptZtnwcbaJnLl020a
+         xxXwTRJfsP7cP3u2CwOWfkIPbxGUKAxwdVSXRVperDSboNqMnF0otbgB+zoGFQ7uuY2Y
+         9p/W4VOn08ovMO2e+Dd6HsQFsC+CcrTvvKdFuTHqxQGWeau5K835Li1MDFSu7Kszq1fy
+         55DIfnxPGlIEy608ca/v1MtMXzsB5+n0HvswMP3DKyryMuPVIkBJvYNRqDaeUKWAQORz
+         iZ4Q==
+X-Gm-Message-State: AOAM531m007qZPzwZR65lFPp9fE59oAylJeqVqhYSIL/Xap0qPyJ6MXY
+        aDXofbVpjQ7CDC2FLvOBAA==
+X-Google-Smtp-Source: ABdhPJzRayVPW0NrvFDebGFBcCiJJloeTKmG0BgRIxF3CbY/VeL30ky6BKkSiYuxU0EUXIqIZeSAWA==
+X-Received: by 2002:a05:6830:2055:b0:5b2:5659:542f with SMTP id f21-20020a056830205500b005b25659542fmr15031191otp.189.1649857049323;
+        Wed, 13 Apr 2022 06:37:29 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id h8-20020a056830400800b005cdceb42261sm14584614ots.66.2022.04.13.06.37.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 06:37:29 -0700 (PDT)
+Received: (nullmailer pid 3097465 invoked by uid 1000);
+        Wed, 13 Apr 2022 13:37:28 -0000
+Date:   Wed, 13 Apr 2022 08:37:28 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Ashish Mhetre <amhetre@nvidia.com>
+Cc:     dmitry.osipenko@collabora.com, digetx@gmail.com,
+        krzysztof.kozlowski@linaro.org, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vdumpa@nvidia.com,
+        Snikam@nvidia.com
+Subject: Re: [Patch v7 3/4] dt-bindings: memory: Update reg/reg-names
+ validation
+Message-ID: <YlbSGEBKgpVC51dZ@robh.at.kernel.org>
+References: <20220413094012.13589-1-amhetre@nvidia.com>
+ <20220413094012.13589-4-amhetre@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413094012.13589-4-amhetre@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the allocation of multiple MSI vectors for multi-MSI fails in the core
-PCI framework, the framework will retry the allocation as a single MSI
-vector, assuming that meets the min_vecs specified by the requesting
-driver.
+On Wed, Apr 13, 2022 at 03:10:11PM +0530, Ashish Mhetre wrote:
+> From tegra186 onwards, memory controller support multiple channels.
+> Reg items are updated with address and size of these channels.
+> Tegra186 has overall 5 memory controller channels. Tegra194 and tegra234
+> have overall 17 memory controller channels each.
+> There is 1 reg item for memory controller stream-id registers.
+> So update the reg maxItems to 18 in tegra186 devicetree documentation.
+> Also update validation for reg-names added for these corresponding reg
+> items.
 
-Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
-domain to implement that for x86.  The VECTOR domain does not support
-multi-MSI, so the alloc will always fail and fallback to a single MSI
-allocation.
+Somehow your subject should indicate this is for Tegra.
 
-In short, Hyper-V advertises a capability it does not implement.
+> 
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>  .../nvidia,tegra186-mc.yaml                   | 80 +++++++++++++++++--
+>  1 file changed, 74 insertions(+), 6 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+> index 13c4c82fd0d3..c7cfa6c2cd81 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra186-mc.yaml
+> @@ -34,8 +34,12 @@ properties:
+>            - nvidia,tegra234-mc
+>  
+>    reg:
+> -    minItems: 1
+> -    maxItems: 3
+> +    minItems: 6
 
-Hyper-V can support multi-MSI because it coordinates with the hypervisor
-to map the MSIs in the IOMMU's interrupt remapper, which is something the
-VECTOR domain does not have.  Therefore the fix is simple - copy what the
-x86 IOMMU drivers (AMD/Intel-IR) do by removing
-X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
-pci_msi_prepare().
+You just broke current users.
 
-Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
----
+> +    maxItems: 18
+> +
+> +  reg-names:
+> +    minItems: 6
+> +    maxItems: 18
+>  
+>    interrupts:
+>      items:
+> @@ -142,7 +146,18 @@ allOf:
+>      then:
+>        properties:
+>          reg:
+> -          maxItems: 1
+> +          maxItems: 6
+> +          description: 5 memory controller channels and 1 for stream-id registers
+> +
+> +        reg-names:
+> +          maxItems: 6
+> +          items:
+> +            - const: sid
+> +            - const: broadcast
+> +            - const: ch0
+> +            - const: ch1
+> +            - const: ch2
+> +            - const: ch3
+>  
+>    - if:
+>        properties:
+> @@ -151,7 +166,30 @@ allOf:
+>      then:
+>        properties:
+>          reg:
+> -          minItems: 3
+> +          minItems: 18
+> +          description: 17 memory controller channels and 1 for stream-id registers
+> +
+> +        reg-names:
+> +          minItems: 18
+> +          items:
+> +            - const: sid
+> +            - const: broadcast
+> +            - const: ch0
+> +            - const: ch1
+> +            - const: ch2
+> +            - const: ch3
+> +            - const: ch4
+> +            - const: ch5
+> +            - const: ch6
+> +            - const: ch7
+> +            - const: ch8
+> +            - const: ch9
+> +            - const: ch10
+> +            - const: ch11
+> +            - const: ch12
+> +            - const: ch13
+> +            - const: ch14
+> +            - const: ch15
+>  
+>    - if:
+>        properties:
+> @@ -160,13 +198,37 @@ allOf:
+>      then:
+>        properties:
+>          reg:
+> -          minItems: 3
+> +          minItems: 18
+> +          description: 17 memory controller channels and 1 for stream-id registers
+> +
+> +        reg-names:
+> +          minItems: 18
+> +          items:
+> +            - const: sid
+> +            - const: broadcast
+> +            - const: ch0
+> +            - const: ch1
+> +            - const: ch2
+> +            - const: ch3
+> +            - const: ch4
+> +            - const: ch5
+> +            - const: ch6
+> +            - const: ch7
+> +            - const: ch8
+> +            - const: ch9
+> +            - const: ch10
+> +            - const: ch11
+> +            - const: ch12
+> +            - const: ch13
+> +            - const: ch14
+> +            - const: ch15
+>  
+>  additionalProperties: false
+>  
+>  required:
+>    - compatible
+>    - reg
+> +  - reg-names
 
-v2:
--Fix grammatical mistake in added comment
+New, added properties cannot be required. That's an ABI break.
 
- drivers/pci/controller/pci-hyperv.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index d270a204..1cbe24b 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -614,7 +614,16 @@ static void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
- {
--	return pci_msi_prepare(domain, dev, nvec, info);
-+	int ret = pci_msi_prepare(domain, dev, nvec, info);
-+
-+	/*
-+	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
-+	 * CPU vectors is not needed for multi-MSI
-+	 */
-+	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
-+		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
-+
-+	return ret;
- }
- 
- /**
--- 
-2.7.4
-
+>    - interrupts
+>    - "#address-cells"
+>    - "#size-cells"
+> @@ -182,7 +244,13 @@ examples:
+>  
+>          memory-controller@2c00000 {
+>              compatible = "nvidia,tegra186-mc";
+> -            reg = <0x0 0x02c00000 0x0 0xb0000>;
+> +            reg = <0x0 0x02c00000 0x0 0x10000>,    /* MC-SID */
+> +                  <0x0 0x02c10000 0x0 0x10000>,    /* Broadcast channel */
+> +                  <0x0 0x02c20000 0x0 0x10000>,    /* MC0 */
+> +                  <0x0 0x02c30000 0x0 0x10000>,    /* MC1 */
+> +                  <0x0 0x02c40000 0x0 0x10000>,    /* MC2 */
+> +                  <0x0 0x02c50000 0x0 0x10000>;    /* MC3 */
+> +            reg-names = "sid", "broadcast", "ch0", "ch1", "ch2", "ch3";
+>              interrupts = <GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>;
+>  
+>              #address-cells = <2>;
+> -- 
+> 2.17.1
+> 
