@@ -2,119 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E517C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3460AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233438AbiDMHm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 03:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
+        id S233443AbiDMHqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 03:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiDMHmn (ORCPT
+        with ESMTP id S229582AbiDMHqJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 03:42:43 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52FE1EAC7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 00:40:20 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id u19so2005315lff.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 00:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DJLJUZ5W5QrQNorPuhVBZk31ozNDYTlIXuspQU8iTXA=;
-        b=lpbBMv0P981hAOP4gANFVsX43x8TW44Se82vUrOBqgL5z36JtJ8CNvu5vOZz5bqiFQ
-         WO/IUpslAiW5L1Dm49lyUsDhrGZGFgLh8EGT46ILedjwhwDFolRubfSBsuIUuuTzZCLW
-         YreS6pnwkg60z772Ovpg+sYUniUoak5squK0d2lS27l+95uI/YkzgQDLTknOExNC5ChY
-         a1AdbIIXjPT9wBkt+Et3uVbREvxs9Yq28nZMtpD/XlWA1dddvAmWPkHDdiMREcG6gG2+
-         X43htRTk9DIdy4Xitb5NpGnXv45quT+wa5VR+J5xPycFoiO1pz6q+7hi404+a16ULSN1
-         QG5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DJLJUZ5W5QrQNorPuhVBZk31ozNDYTlIXuspQU8iTXA=;
-        b=N5zE9sumS43a6yyJAvNQLn3OX5YR03847FueUyrQ82u4eaggwqbl2XFcJxGgo5QhQk
-         bdbQ93M9SXQmyQIyH39OtXhw533uYra+e9tziGhDz1LFI5vuc/Lpj/nBEEixYrgYEv37
-         Jycorij/s04xArWXUvYAOuU8x7QTwaQClRgkPGi+Uq5ID1cd8pFjuRvDhk/h/zsB4R5p
-         NEUqOvWiw2Wj47Z7i29T2AmUrirgEjAFPFmgVyI4YH6aQ/qhP+YMBElTOFXeZdyZnp2P
-         z+5KTjWBYStqoxfBR+g2Ol8b8OBe64BG/6ymR0YG8VoBUhjiUXzAjyuoopBdRZuMICQF
-         h5nw==
-X-Gm-Message-State: AOAM532LrD9NqVYe2J/V5OByP0VsGpHlEp1DDF66YOZFI8hNJh3RKrdr
-        aR/3T1O/j/3CCYQKF7N6ssr4YQ==
-X-Google-Smtp-Source: ABdhPJyHYuYoE8j30RTzyjwkaVAvL/uPJ0wNi72TAqvVSPv18ZSqs7v78jwe5jwWyIItaFk1NmH7Mw==
-X-Received: by 2002:a05:6512:262a:b0:45d:b42d:3e46 with SMTP id bt42-20020a056512262a00b0045db42d3e46mr27259650lfb.22.1649835619138;
-        Wed, 13 Apr 2022 00:40:19 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id y37-20020a0565123f2500b0044a1e1c6b37sm4010722lfa.53.2022.04.13.00.40.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 00:40:18 -0700 (PDT)
-Message-ID: <32df5270-9df8-c5be-a9d2-9764409a2711@linaro.org>
-Date:   Wed, 13 Apr 2022 10:40:16 +0300
+        Wed, 13 Apr 2022 03:46:09 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03932E69C;
+        Wed, 13 Apr 2022 00:43:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649835829; x=1681371829;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9LnT73jUESFVZOk+Ffoh5evZ5ZtPW8CwyMo+B2FIm2w=;
+  b=av3yyfp1BfjByYv/XvOuhIrXsZ/hb/C9DvCo/CTt/acArZAlMF9Uuczj
+   isOBV1vImuXI4ggs3aLzy1RCrRdX2TcCylqEuA36ro3qdvDvTuX/wiThh
+   Y6KVZ5ydBccTJSp+/rEXbA266Y/qYegF+Y3vp1Jlajyl7MfyDL+4cnp4U
+   Lv4i2GfW7kNnuWEszeAgF9V5ghcJiheVhCZSlcsQC0/Vih1WogRSGUowN
+   HBhpeqCG8z945BuDyTGdl7gJpYE9Ad3WK4oUA7m3wrYd6GM+RJq/4SGKE
+   w+ajfBeiNYip7wh3qx0m67qw0m+6hu67gWZb7LFA3kxrdRnjOJfbmhe9q
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="323044265"
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="323044265"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 00:43:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="573159281"
+Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 00:43:47 -0700
+From:   Zqiang <qiang1.zhang@intel.com>
+To:     paulmck@kernel.org, frederic@kernel.org
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rcu: Dump all rcuc kthreads status for CPUs that not report quiescent state
+Date:   Wed, 13 Apr 2022 15:44:11 +0800
+Message-Id: <20220413074411.2369623-1-qiang1.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 06/18] ARM: dts: qcom: enable usb phy by default for
- ipq8064
-Content-Language: en-GB
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jonathan McDowell <noodles@earth.li>
-References: <20220309190152.7998-1-ansuelsmth@gmail.com>
- <20220309190152.7998-7-ansuelsmth@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220309190152.7998-7-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/03/2022 22:01, Ansuel Smith wrote:
-> Enable usb phy by default. When the usb phy were pushed, half of them
-> were flagged as disabled by mistake. Fix this to correctly init dwc3
-> node on any ipq8064 based SoC.
+If the rcutree.use_softirq is configured, when RCU Stall event
+happened, dump status of all rcuc kthreads who due to starvation
+prevented grace period ends on CPUs that not report quiescent
+state.
 
-Typically they would be disabled in the platform dtsi file and would be 
-enabled one-by-one in the board dts file. So, if half of usb phys are 
-enabled by default, I'd kindly ask to perform the opposite change: 
-disable all of them by default and enable in board dts files.
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+---
+ kernel/rcu/tree_stall.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> Tested-by: Jonathan McDowell <noodles@earth.li>
-> ---
->   arch/arm/boot/dts/qcom-ipq8064.dtsi | 4 ----
->   1 file changed, 4 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> index 9d658fcc1f12..e247bf51df01 100644
-> --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-> @@ -1175,8 +1175,6 @@ hs_phy_0: phy@100f8800 {
->   			clocks = <&gcc USB30_0_UTMI_CLK>;
->   			clock-names = "ref";
->   			#phy-cells = <0>;
-> -
-> -			status = "disabled";
->   		};
->   
->   		ss_phy_0: phy@100f8830 {
-> @@ -1185,8 +1183,6 @@ ss_phy_0: phy@100f8830 {
->   			clocks = <&gcc USB30_0_MASTER_CLK>;
->   			clock-names = "ref";
->   			#phy-cells = <0>;
-> -
-> -			status = "disabled";
->   		};
->   
->   		usb3_0: usb3@100f8800 {
-
-
+diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+index d7956c03edbd..e6ecc32cfe23 100644
+--- a/kernel/rcu/tree_stall.h
++++ b/kernel/rcu/tree_stall.h
+@@ -348,6 +348,7 @@ static int rcu_print_task_stall(struct rcu_node *rnp, unsigned long flags)
+ }
+ #endif /* #else #ifdef CONFIG_PREEMPT_RCU */
+ 
++static void rcuc_kthread_dump(struct rcu_data *rdp);
+ /*
+  * Dump stacks of all tasks running on stalled CPUs.  First try using
+  * NMIs, but fall back to manual remote stack tracing on architectures
+@@ -368,6 +369,7 @@ static void rcu_dump_cpu_stacks(void)
+ 					pr_err("Offline CPU %d blocking current GP.\n", cpu);
+ 				else if (!trigger_single_cpu_backtrace(cpu))
+ 					dump_cpu_task(cpu);
++				rcuc_kthread_dump(per_cpu_ptr(&rcu_data, cpu));
+ 			}
+ 		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 	}
+@@ -471,6 +473,9 @@ static void rcuc_kthread_dump(struct rcu_data *rdp)
+ 	unsigned long j;
+ 	struct task_struct *rcuc;
+ 
++	if (use_softirq)
++		return;
++
+ 	rcuc = rdp->rcu_cpu_kthread_task;
+ 	if (!rcuc)
+ 		return;
+@@ -659,9 +664,6 @@ static void print_cpu_stall(unsigned long gps)
+ 	rcu_check_gp_kthread_expired_fqs_timer();
+ 	rcu_check_gp_kthread_starvation();
+ 
+-	if (!use_softirq)
+-		rcuc_kthread_dump(rdp);
+-
+ 	rcu_dump_cpu_stacks();
+ 
+ 	raw_spin_lock_irqsave_rcu_node(rnp, flags);
 -- 
-With best wishes
-Dmitry
+2.25.1
+
