@@ -2,422 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33377C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C77C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 06:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232892AbiDMGFW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 02:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36878 "EHLO
+        id S232913AbiDMGIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 02:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232866AbiDMGEy (ORCPT
+        with ESMTP id S232973AbiDMGHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 02:04:54 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE85B517FA;
-        Tue, 12 Apr 2022 23:02:32 -0700 (PDT)
+        Wed, 13 Apr 2022 02:07:51 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EE335879
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 23:05:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649829752; x=1681365752;
-  h=subject:from:to:cc:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0j1hA1fWHoFpMRJXA9DIC9aEvgsqA/8Z+smjBQbu3OM=;
-  b=dN/FD7pf0u6FUei8E8yEZLuEA6Myijntxo0czz8MI3ZhXEhMKCFUGzPD
-   kfRum4LtzqLMUyaWBfKrLt4P2YLtW5Le+9f/1CiIYhTQKj9cyGVZ9q1UQ
-   jyNE3MyENBh2qfmf6qYaJyxnvy9ZTtj3Z+6jKC+NTXJP7xFb2RntNriI9
-   h5lxdC43oJcuTMb1AiowmA4vBceWve4DtySShD2CqGjaoDIyNrUkDphb/
-   wDKSJvc6SSEU6GhobZjYO3bXfRAdMEunLtPLDz1awgat0Puxz9xbvwcec
-   IUa8CDCYWGEGMWbNOGb3jr3i0LPsVLahuYZ7r+8JFsyXqAGBmkpXxPj3x
+  t=1649829931; x=1681365931;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7J159Gh9HkMijLSs1cF0rPxuBSczFLJZo1h/cJRFq6E=;
+  b=fIgryeKWt5UlXbW2k2blBNARX8ZToe9LoRKBnoWnc8X7j5+ORLUf6Oak
+   i55MtmmM3nMdvh75AKvWnOcXZFhCApplonJ89a7SNoe4PUe84pCYkRo+K
+   ZIJ6oQWn9F6s/3AgnJ2q9k1GcUEhy3PwxXY5l9B4LIJHhy2/GJ4iylEvB
+   M9RkZjJZeGlfSH8KywMuhp7SnyWT87YJuiNY9niUb4AL07uctH1TnnOWZ
+   aSnBLO7m67nhJPa+R5iH+XN/YedvLQoy6Apv718p+Y3JiYsS4C7AV6Glh
+   TsslDVm8VSVhRkhK3q94FYzl2udM6B2p+VmzWqXEQUsNEV+Q1wWl8b8si
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242519932"
-X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
-   d="scan'208";a="242519932"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 23:02:32 -0700
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="262026484"
 X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="611754268"
-Received: from dwillia2-desk3.jf.intel.com (HELO dwillia2-desk3.amr.corp.intel.com) ([10.54.39.25])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 23:02:32 -0700
-Subject: [PATCH v2 12/12] device-core: Enable multi-subsystem device_lock()
- lockdep validation
-From:   Dan Williams <dan.j.williams@intel.com>
-To:     linux-cxl@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Kevin Tian <kevin.tian@intel.com>, vishal.l.verma@intel.com,
-        alison.schofield@intel.com, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev
-Date:   Tue, 12 Apr 2022 23:02:31 -0700
-Message-ID: <164982975184.684294.8587689380766181427.stgit@dwillia2-desk3.amr.corp.intel.com>
-In-Reply-To: <164982968798.684294.15817853329823976469.stgit@dwillia2-desk3.amr.corp.intel.com>
-References: <164982968798.684294.15817853329823976469.stgit@dwillia2-desk3.amr.corp.intel.com>
-User-Agent: StGit/0.18-3-g996c
+   d="scan'208";a="262026484"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 23:05:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="724769585"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 23:05:30 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neW89-00005k-G5;
+        Wed, 13 Apr 2022 06:05:29 +0000
+Date:   Wed, 13 Apr 2022 14:02:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Pirko <jiri@nvidia.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jpirko-mlxsw:jiri_devel_linecards 92/94]
+ drivers/net/netdevsim/dev.c:119:25: error: too few arguments to function
+ call, expected 5, have 4
+Message-ID: <202204131305.23NkbTFh-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While device_set_lock_class() allows device_lock() to take a nested lock
-per the requirements of a given subsystem, it does not allow multiple
-subsystems to enable lockdep validation at the same time. For example if
-CXL does:
+tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_linecards
+head:   ca9bd759ed5f4422d41446de7c31c6a189ac87df
+commit: f39238e4c9d54b5f8d9ebe9c333b83509a644803 [92/94] TMP: devlink device type
+config: x86_64-randconfig-a001-20220411 (https://download.01.org/0day-ci/archive/20220413/202204131305.23NkbTFh-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jpirko/linux_mlxsw/commit/f39238e4c9d54b5f8d9ebe9c333b83509a644803
+        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
+        git fetch --no-tags jpirko-mlxsw jiri_devel_linecards
+        git checkout f39238e4c9d54b5f8d9ebe9c333b83509a644803
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/netdevsim/
 
-device_set_lock_class(&cxlmd->dev, 1);
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-...and LIBNVDIMM does:
+All errors (new ones prefixed by >>):
 
-device_set_lock_class(&nvdimm->dev, 1);
+>> drivers/net/netdevsim/dev.c:119:25: error: too few arguments to function call, expected 5, have 4
+                                                           nsim_dev_linecard);
+                                                                            ^
+   include/net/devlink.h:1607:1: note: 'devlink_linecard_device_create' declared here
+   devlink_linecard_device_create(struct devlink_linecard *linecard,
+   ^
+   drivers/net/netdevsim/dev.c:870:14: error: too many arguments to function call, expected 3, have 4
+                                             NULL, i);
+                                                   ^
+   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   drivers/net/netdevsim/dev.c:883:39: error: too many arguments to function call, expected single argument 'nsim_dev_port', have 3 arguments
+                           __nsim_dev_port_del(nsim_dev_port, NULL, i);
+                           ~~~~~~~~~~~~~~~~~~~                ^~~~~~~
+   include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+   #define NULL ((void *)0)
+                ^
+   drivers/net/netdevsim/dev.c:846:13: note: '__nsim_dev_port_del' declared here
+   static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port);
+               ^
+   drivers/net/netdevsim/dev.c:1625:12: error: conflicting types for '__nsim_dev_port_add'
+   static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+              ^
+   drivers/net/netdevsim/dev.c:844:1: note: previous declaration is here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   drivers/net/netdevsim/dev.c:1738:14: error: too many arguments to function call, expected 3, have 4
+                                             NULL, i);
+                                                   ^
+   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   drivers/net/netdevsim/dev.c:2213:27: error: too many arguments to function call, expected 3, have 4
+                                             nsim_dev_linecard, port_index);
+                                                                ^~~~~~~~~~
+   drivers/net/netdevsim/dev.c:844:1: note: '__nsim_dev_port_add' declared here
+   __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_type type,
+   ^
+   6 errors generated.
 
-...lockdep will treat those as identical locks and flag false positive
-reports depending on how those 2 subsystems interact. Given that there
-are not enough available lock class ids for each subsystem to own a
-slice of the number space, the only other way for lockdep to see that
-those are different locks is to literally make them different locks.
 
-Update device_set_lock_class() to also take a subsystem id which also
-acts as an index into a new array of lockdep_mutex instances. So now CXL
-and NVDIMM can do:
+vim +119 drivers/net/netdevsim/dev.c
 
-device_set_lock_class(&cxlmd->dev, DEVICE_LOCK_CXL, 1);
-device_set_lock_class(&nvdimm->dev, DEVICE_LOCK_NVDIMM, 1);
+f516d881f25d5ec Jiri Pirko 2021-05-05  100  
+f516d881f25d5ec Jiri Pirko 2021-05-05  101  static int
+f516d881f25d5ec Jiri Pirko 2021-05-05  102  nsim_dev_linecard_devices_create(struct nsim_dev_linecard *nsim_dev_linecard)
+f516d881f25d5ec Jiri Pirko 2021-05-05  103  {
+f516d881f25d5ec Jiri Pirko 2021-05-05  104  	struct devlink_linecard_device *device;
+f516d881f25d5ec Jiri Pirko 2021-05-05  105  	char *component_name;
+f516d881f25d5ec Jiri Pirko 2021-05-05  106  	int err;
+f516d881f25d5ec Jiri Pirko 2021-05-05  107  	int i;
+f516d881f25d5ec Jiri Pirko 2021-05-05  108  
+f516d881f25d5ec Jiri Pirko 2021-05-05  109  	snprintf(nsim_dev_linecard->device_component_name,
+f516d881f25d5ec Jiri Pirko 2021-05-05  110  		 sizeof(nsim_dev_linecard->device_component_name), "lc%u_dev0",
+f516d881f25d5ec Jiri Pirko 2021-05-05  111  		 nsim_dev_linecard->linecard_index);
+f516d881f25d5ec Jiri Pirko 2021-05-05  112  	component_name = nsim_dev_linecard->device_component_name;
+f516d881f25d5ec Jiri Pirko 2021-05-05  113  
+f516d881f25d5ec Jiri Pirko 2021-05-05  114  	for (i = 0; i < NSIM_DEV_LINECARD_DEVICE_COUNT; i++) {
+f516d881f25d5ec Jiri Pirko 2021-05-05  115  		if (i > 0)
+f516d881f25d5ec Jiri Pirko 2021-05-05  116  			component_name = NULL;
+f516d881f25d5ec Jiri Pirko 2021-05-05  117  		device = devlink_linecard_device_create(nsim_dev_linecard->devlink_linecard,
+f516d881f25d5ec Jiri Pirko 2021-05-05  118  							i, component_name,
+f516d881f25d5ec Jiri Pirko 2021-05-05 @119  							nsim_dev_linecard);
+f516d881f25d5ec Jiri Pirko 2021-05-05  120  		if (IS_ERR(device)) {
+f516d881f25d5ec Jiri Pirko 2021-05-05  121  			err = PTR_ERR(device);
+f516d881f25d5ec Jiri Pirko 2021-05-05  122  			goto rollback;
+f516d881f25d5ec Jiri Pirko 2021-05-05  123  		}
+f516d881f25d5ec Jiri Pirko 2021-05-05  124  		nsim_dev_linecard->devlink_device[i] = device;
+f516d881f25d5ec Jiri Pirko 2021-05-05  125  	}
+f516d881f25d5ec Jiri Pirko 2021-05-05  126  	return 0;
+f516d881f25d5ec Jiri Pirko 2021-05-05  127  
+f516d881f25d5ec Jiri Pirko 2021-05-05  128  rollback:
+f516d881f25d5ec Jiri Pirko 2021-05-05  129  	for (i--; i >= 0; i--) {
+f516d881f25d5ec Jiri Pirko 2021-05-05  130  		device = nsim_dev_linecard->devlink_device[i];
+f516d881f25d5ec Jiri Pirko 2021-05-05  131  		devlink_linecard_device_destroy(nsim_dev_linecard->devlink_linecard,
+f516d881f25d5ec Jiri Pirko 2021-05-05  132  						device);
+f516d881f25d5ec Jiri Pirko 2021-05-05  133  	}
+f516d881f25d5ec Jiri Pirko 2021-05-05  134  	return err;
+f516d881f25d5ec Jiri Pirko 2021-05-05  135  }
+f516d881f25d5ec Jiri Pirko 2021-05-05  136  
 
-...and lockdep will manage their dependency chains individually per
-expectations.
+:::::: The code at line 119 was first introduced by commit
+:::::: f516d881f25d5ec76a01608f6b13e88d91687f6c netdevsim: create couple of devices on each linecard
 
-Note that the reason the mutex_init() for the various subsystem
-device-locks is unrolled in device_lockdep_init(), vs a loop over [0 ..
-DEVICE_LOCK_MAX], is to give each lock a unique @lock_class_key and name
-in reports. While the approach is not elegant, and requires manual
-enabling, it seems the best that can be done given lockdep's
-expectations. Otherwise this validation has already proven useful in
-keeping device_lock() deadlocks from landing upstream.
+:::::: TO: Jiri Pirko <jiri@nvidia.com>
+:::::: CC: Jiri Pirko <jiri@nvidia.com>
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Waiman Long <longman@redhat.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Reviewed-by: Dave Jiang <dave.jiang@intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
----
- drivers/cxl/acpi.c       |    2 -
- drivers/cxl/cxl.h        |    4 +-
- drivers/cxl/port.c       |    2 -
- drivers/nvdimm/nd-core.h |    5 +-
- include/linux/device.h   |   95 ++++++++++++++++++++++++++++++++++++----------
- lib/Kconfig.debug        |   24 ------------
- 6 files changed, 82 insertions(+), 50 deletions(-)
-
-diff --git a/drivers/cxl/acpi.c b/drivers/cxl/acpi.c
-index ef5c3252bdb2..ed2fdb45b424 100644
---- a/drivers/cxl/acpi.c
-+++ b/drivers/cxl/acpi.c
-@@ -283,7 +283,7 @@ static int cxl_acpi_probe(struct platform_device *pdev)
- 	struct acpi_device *adev = ACPI_COMPANION(host);
- 	struct cxl_cfmws_context ctx;
- 
--	device_set_lock_class(&pdev->dev, CXL_ROOT_LOCK);
-+	device_set_lock_class(&pdev->dev, DEVICE_LOCK_CXL, CXL_ROOT_LOCK);
- 	root_port = devm_cxl_add_port(host, host, CXL_RESOURCE_NONE, NULL);
- 	if (IS_ERR(root_port))
- 		return PTR_ERR(root_port);
-diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-index 05dc4c081ad2..2528d4ab2e74 100644
---- a/drivers/cxl/cxl.h
-+++ b/drivers/cxl/cxl.h
-@@ -423,7 +423,7 @@ enum cxl_lock_class {
- 	 */
- };
- 
--#ifdef CONFIG_PROVE_CXL_LOCKING
-+#ifdef CONFIG_PROVE_LOCKING
- static inline int clamp_lock_class(struct device *dev, int lock_class)
- {
- 	if (lock_class >= MAX_LOCKDEP_SUBCLASSES) {
-@@ -460,7 +460,7 @@ static inline int cxl_lock_class(struct device *dev)
- 
- static inline void cxl_set_lock_class(struct device *dev)
- {
--	device_set_lock_class(dev, cxl_lock_class(dev));
-+	device_set_lock_class(dev, DEVICE_LOCK_CXL, cxl_lock_class(dev));
- }
- #else
- static inline void cxl_set_lock_class(struct device *dev)
-diff --git a/drivers/cxl/port.c b/drivers/cxl/port.c
-index d420da5fc39c..493a195a9f5a 100644
---- a/drivers/cxl/port.c
-+++ b/drivers/cxl/port.c
-@@ -17,7 +17,7 @@
-  * firmware) are managed in this drivers context. Each driver instance
-  * is responsible for tearing down the driver context of immediate
-  * descendant ports. The locking for this is validated by
-- * CONFIG_PROVE_CXL_LOCKING.
-+ * CONFIG_PROVE_LOCKING.
-  *
-  * The primary service this driver provides is presenting APIs to other
-  * drivers to utilize the decoders, and indicating to userspace (via bind
-diff --git a/drivers/nvdimm/nd-core.h b/drivers/nvdimm/nd-core.h
-index 75892e43b2c9..56a2e56e552b 100644
---- a/drivers/nvdimm/nd-core.h
-+++ b/drivers/nvdimm/nd-core.h
-@@ -162,7 +162,7 @@ static inline void devm_nsio_disable(struct device *dev,
- }
- #endif
- 
--#ifdef CONFIG_PROVE_NVDIMM_LOCKING
-+#ifdef CONFIG_PROVE_LOCKING
- extern struct class *nd_class;
- 
- enum {
-@@ -194,7 +194,8 @@ static inline int nvdimm_lock_class(struct device *dev)
- 
- static inline void nvdimm_set_lock_class(struct device *dev)
- {
--	device_set_lock_class(dev, nvdimm_lock_class(dev));
-+	device_set_lock_class(dev, DEVICE_LOCK_NVDIMM,
-+			      nvdimm_lock_class(dev));
- }
- #else
- static inline void nvdimm_set_lock_class(struct device *dev)
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 6083e757e804..12c675edb28d 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -386,6 +386,17 @@ struct dev_msi_info {
- #endif
- };
- 
-+enum device_lock_subsys {
-+	DEVICE_LOCK_NONE = -1,
-+#if IS_ENABLED(CONFIG_LIBNVDIMM)
-+	DEVICE_LOCK_NVDIMM,
-+#endif
-+#if IS_ENABLED(CONFIG_CXL_BUS)
-+	DEVICE_LOCK_CXL,
-+#endif
-+	DEVICE_LOCK_MAX,
-+};
-+
- /**
-  * struct device - The basic device structure
-  * @parent:	The device's "parent" device, the device to which it is attached.
-@@ -400,8 +411,8 @@ struct dev_msi_info {
-  * 		This identifies the device type and carries type-specific
-  * 		information.
-  * @mutex:	Mutex to synchronize calls to its driver.
-- * @lockdep_mutex: An optional debug lock that a subsystem can use as a
-- * 		peer lock to gain localized lockdep coverage of the device_lock.
-+ * @lockdep_mutex: A set of optional debug locks that subsystems can use as a
-+ *		peer lock to @mutex to gain lockdep coverage of device_lock().
-  * @lock_class: per-subsystem annotated device lock class
-  * @bus:	Type of bus device is on.
-  * @driver:	Which driver has allocated this
-@@ -501,8 +512,9 @@ struct device {
- 	void		*driver_data;	/* Driver data, set and get with
- 					   dev_set_drvdata/dev_get_drvdata */
- #ifdef CONFIG_PROVE_LOCKING
--	struct mutex		lockdep_mutex;
-+	struct mutex		lockdep_mutex[DEVICE_LOCK_MAX];
- 	int			lock_class;
-+	enum device_lock_subsys	lock_subsys;
- #endif
- 	struct mutex		mutex;	/* mutex to synchronize calls to
- 					 * its driver.
-@@ -772,45 +784,77 @@ static inline void device_lock_assert(struct device *dev)
- #ifdef CONFIG_PROVE_LOCKING
- static inline void device_lockdep_init(struct device *dev)
- {
--	mutex_init(&dev->lockdep_mutex);
-+#if IS_ENABLED(CONFIG_CXL_BUS)
-+	mutex_init(&dev->lockdep_mutex[DEVICE_LOCK_CXL]);
-+#endif
-+#if IS_ENABLED(CONFIG_LIBNVDIMM)
-+	mutex_init(&dev->lockdep_mutex[DEVICE_LOCK_NVDIMM]);
-+#endif
-+	dev->lock_subsys = DEVICE_LOCK_NONE;
- 	dev->lock_class = -1;
- 	lockdep_set_novalidate_class(&dev->mutex);
- }
- 
-+static inline bool subsys_valid(enum device_lock_subsys subsys)
-+{
-+	if (DEVICE_LOCK_MAX == 0)
-+		return false;
-+	if (subsys <= DEVICE_LOCK_NONE)
-+		return false;
-+	if (subsys >= DEVICE_LOCK_MAX)
-+		return false;
-+	return true;
-+}
-+
-+static inline struct mutex *device_lockdep_mutex(struct device *dev)
-+{
-+	if (!subsys_valid(dev->lock_subsys))
-+		return NULL;
-+	if (dev->lock_class < 0)
-+		return NULL;
-+	return &dev->lockdep_mutex[dev->lock_subsys];
-+}
-+
- static inline void device_lock(struct device *dev)
- {
-+	struct mutex *lockdep_mutex = device_lockdep_mutex(dev);
-+
- 	/*
- 	 * For double-lock programming errors the kernel will hang
- 	 * trying to acquire @dev->mutex before lockdep can report the
--	 * problem acquiring @dev->lockdep_mutex, so manually assert
--	 * before that hang.
-+	 * problem acquiring @lockdep_mutex, so manually assert before
-+	 * that hang.
- 	 */
--	lockdep_assert_not_held(&dev->lockdep_mutex);
-+	if (lockdep_mutex)
-+		lockdep_assert_not_held(lockdep_mutex);
- 
- 	mutex_lock(&dev->mutex);
--	if (dev->lock_class >= 0)
--		mutex_lock_nested(&dev->lockdep_mutex, dev->lock_class);
-+	if (lockdep_mutex)
-+		mutex_lock_nested(lockdep_mutex, dev->lock_class);
- }
- 
- static inline int device_lock_interruptible(struct device *dev)
- {
-+	struct mutex *lockdep_mutex = device_lockdep_mutex(dev);
- 	int rc;
- 
--	lockdep_assert_not_held(&dev->lockdep_mutex);
-+	if (lockdep_mutex)
-+		lockdep_assert_not_held(lockdep_mutex);
- 
- 	rc = mutex_lock_interruptible(&dev->mutex);
--	if (rc || dev->lock_class < 0)
-+	if (rc || !lockdep_mutex)
- 		return rc;
- 
--	return mutex_lock_interruptible_nested(&dev->lockdep_mutex,
--					       dev->lock_class);
-+	return mutex_lock_interruptible_nested(lockdep_mutex, dev->lock_class);
- }
- 
- static inline int device_trylock(struct device *dev)
- {
-+	struct mutex *lockdep_mutex = device_lockdep_mutex(dev);
-+
- 	if (mutex_trylock(&dev->mutex)) {
--		if (dev->lock_class >= 0)
--			mutex_lock_nested(&dev->lockdep_mutex, dev->lock_class);
-+		if (lockdep_mutex)
-+			mutex_lock_nested(lockdep_mutex, dev->lock_class);
- 		return 1;
- 	}
- 
-@@ -819,8 +863,10 @@ static inline int device_trylock(struct device *dev)
- 
- static inline void device_unlock(struct device *dev)
- {
-+	struct mutex *lockdep_mutex = device_lockdep_mutex(dev);
-+
- 	if (dev->lock_class >= 0)
--		mutex_unlock(&dev->lockdep_mutex);
-+		mutex_unlock(lockdep_mutex);
- 	mutex_unlock(&dev->mutex);
- }
- 
-@@ -829,8 +875,13 @@ static inline void device_unlock(struct device *dev)
-  * from entry to exit. There is no support for changing lockdep
-  * validation classes, only enabling and disabling validation.
-  */
--static inline void device_set_lock_class(struct device *dev, int lock_class)
-+static inline void device_set_lock_class(struct device *dev,
-+					 enum device_lock_subsys subsys,
-+					 int lock_class)
- {
-+	if (!subsys_valid(subsys))
-+		return;
-+
- 	/*
- 	 * Allow for setting or clearing the lock class while the
- 	 * device_lock() is held, in which case the paired nested lock
-@@ -840,11 +891,12 @@ static inline void device_set_lock_class(struct device *dev, int lock_class)
- 	if (dev->lock_class < 0 && lock_class >= 0) {
- 		/* Enabling lockdep validation... */
- 		if (mutex_is_locked(&dev->mutex))
--			mutex_lock_nested(&dev->lockdep_mutex, lock_class);
-+			mutex_lock_nested(&dev->lockdep_mutex[subsys],
-+					  lock_class);
- 	} else if (dev->lock_class >= 0 && lock_class < 0) {
- 		/* Disabling lockdep validation... */
- 		if (mutex_is_locked(&dev->mutex))
--			mutex_unlock(&dev->lockdep_mutex);
-+			mutex_unlock(&dev->lockdep_mutex[subsys]);
- 	} else {
- 		dev_warn(dev,
- 			 "%s: failed to change lock_class from: %d to %d\n",
-@@ -852,6 +904,7 @@ static inline void device_set_lock_class(struct device *dev, int lock_class)
- 		return;
- 	}
- 	dev->lock_class = lock_class;
-+	dev->lock_subsys = subsys;
- }
- #else /* !CONFIG_PROVE_LOCKING */
- static inline void device_lockdep_init(struct device *dev)
-@@ -879,7 +932,9 @@ static inline void device_unlock(struct device *dev)
- 	mutex_unlock(&dev->mutex);
- }
- 
--static inline void device_set_lock_class(struct device *dev, int lock_class)
-+static inline void device_set_lock_class(struct device *dev,
-+					 enum device_lock_subsys subssys,
-+					 int lock_class)
- {
- }
- #endif /* CONFIG_PROVE_LOCKING */
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 1f8db59bdddd..cfe3b092c31d 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1544,30 +1544,6 @@ config CSD_LOCK_WAIT_DEBUG
- 	  include the IPI handler function currently executing (if any)
- 	  and relevant stack traces.
- 
--choice
--	prompt "Lock debugging: prove subsystem device_lock() correctness"
--	depends on PROVE_LOCKING
--	help
--	  For subsystems that have instrumented their usage of the device_lock()
--	  with nested annotations, enable lock dependency checking. The locking
--	  hierarchy 'subclass' identifiers are not compatible across
--	  sub-systems, so only one can be enabled at a time.
--
--config PROVE_NVDIMM_LOCKING
--	bool "NVDIMM"
--	depends on LIBNVDIMM
--	help
--	  Enable lockdep to validate libnvdimm subsystem usage of the
--	  device lock.
--
--config PROVE_CXL_LOCKING
--	bool "CXL"
--	depends on CXL_BUS
--	help
--	  Enable lockdep to validate CXL subsystem usage of the device lock.
--
--endchoice
--
- endmenu # lock debugging
- 
- config TRACE_IRQFLAGS
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
