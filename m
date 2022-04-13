@@ -2,145 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BACEC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA60C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:11:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237483AbiDMSNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
+        id S237600AbiDMSN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237698AbiDMSMz (ORCPT
+        with ESMTP id S237598AbiDMSNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 14:12:55 -0400
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABA526AF7;
-        Wed, 13 Apr 2022 11:10:34 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id g34so5266240ybj.1;
-        Wed, 13 Apr 2022 11:10:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QWnLw7pcgFg7OO/Mp5u2CJgjWXHz+s+DaK73ibuVFlU=;
-        b=55DySKyrYv/fNb5oDcmg1V44RYLhlz8LvWDgTlx7nTkQ+FFlkvOSpUHJgGSO++XAFf
-         /cMfVfOhhexjpTjbW4QCL36nX7JQmairVfqE2+tZVFXdjAYQqPG7goW5Zm6KQWVBD2UV
-         uYjXYAR/e8XNwsjlFy6mESrk4bwaoKCJQGX+sCL1A9qBU+W73Xmzwwzj/BI8WLwOoxez
-         CSWVWEsK0xcg6lHAUfzNMz9rM13TZsN5HDW+3eCuHtFWl4pF4irpteUpVLLbRndO9sgB
-         7d7EGH5Y0r6FCLpYJCdIS5jgu9kyUTdXwuSHFIaX2JU/tNjg8OIyO17Cf2gxH4RSY4z5
-         X3Fg==
-X-Gm-Message-State: AOAM5315e634pQ/H/HnJtSGe6kRVF1vFIfX2neZNA9JQSlVaPaI9h2ts
-        cIHD+UaW6fyatRtSsJ4vFQcm79u9UCNbYV/acic=
-X-Google-Smtp-Source: ABdhPJzhrYFwc77slRKKGPSvgQKp3I24ZGfcYuYi9ZzAPo/jWfp3TjnJB9dQmBb7nWtQDG5MRNl7xRiOK+ISKc8OtXE=
-X-Received: by 2002:a25:3cc3:0:b0:63e:6ee9:4840 with SMTP id
- j186-20020a253cc3000000b0063e6ee94840mr112067yba.153.1649873433436; Wed, 13
- Apr 2022 11:10:33 -0700 (PDT)
+        Wed, 13 Apr 2022 14:13:23 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F2742A1D;
+        Wed, 13 Apr 2022 11:11:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649873461; x=1681409461;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0k/x2QWhXcod6LrpeYd8pZ6GKq7UkjSZY6p5v6Jf2zs=;
+  b=BgHtpMjB8yk//QBs3MyTRVDyLOdmlmTDDFUTLjEAkay06CbOZRJO6lEj
+   9+5T2oBoBsPmqtZOf3JyF8xkqftQcFpYF3icVSBCXU/1G5RH5msl6hnCO
+   Az0yIziUBOybLV6CLe9dRjE47v/P14nK6GDLJ7w7+gQzMkpooTAxLjhMk
+   Ki52GvCIfrXlrKGjBfxlthan9O+/Ez6Pi0QURd1Uo1vRoReHpsTQEY/FS
+   jZmADCcUAclHV42O9EU3PTmNrsccja1F68lxhf7+PntD7mXJMgbpVJtx3
+   FW1NRSNEBdQZOTq9LQhbKA7836zn60OvvS4gA9g/eQZ1ioOfDNquOrWxB
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262491549"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="262491549"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:10:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="661029240"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:10:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nehOX-001xLb-0j;
+        Wed, 13 Apr 2022 21:07:09 +0300
+Date:   Wed, 13 Apr 2022 21:07:08 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: core: Convert to use firmware node handle
+ instead of OF node
+Message-ID: <YlcRTB9W6Ggzt7vp@smile.fi.intel.com>
+References: <20220413180202.19220-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com> <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 13 Apr 2022 20:10:22 +0200
-Message-ID: <CAJZ5v0jnyg6n-1QRmVg1tjzu3szsG3DYqYTXAbobbKwkFhTreg@mail.gmail.com>
-Subject: Re: [PATCH v6 4/5] device property: Constify fwnode_handle_get()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413180202.19220-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 8:49 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> As to_of_node() suggests and the way the code in the OF and software node
-> back ends actually uses the fwnode handle, it may be constified. Do this
-> for good.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
-> v6: new patch
->  drivers/base/property.c  | 2 +-
->  drivers/base/swnode.c    | 2 +-
->  drivers/of/property.c    | 2 +-
->  include/linux/fwnode.h   | 2 +-
->  include/linux/property.h | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/base/property.c b/drivers/base/property.c
-> index 36401cfe432c..1ad4b37cd312 100644
-> --- a/drivers/base/property.c
-> +++ b/drivers/base/property.c
-> @@ -776,7 +776,7 @@ EXPORT_SYMBOL_GPL(device_get_named_child_node);
->   *
->   * Returns the fwnode handle.
->   */
-> -struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode)
-> +struct fwnode_handle *fwnode_handle_get(const struct fwnode_handle *fwnode)
->  {
->         if (!fwnode_has_op(fwnode, get))
->                 return fwnode;
-> diff --git a/drivers/base/swnode.c b/drivers/base/swnode.c
-> index b0bbd1805970..84a11008ffb8 100644
-> --- a/drivers/base/swnode.c
-> +++ b/drivers/base/swnode.c
-> @@ -363,7 +363,7 @@ EXPORT_SYMBOL_GPL(property_entries_free);
->  /* -------------------------------------------------------------------------- */
->  /* fwnode operations */
->
-> -static struct fwnode_handle *software_node_get(struct fwnode_handle *fwnode)
-> +static struct fwnode_handle *software_node_get(const struct fwnode_handle *fwnode)
->  {
->         struct swnode *swnode = to_swnode(fwnode);
->
-> diff --git a/drivers/of/property.c b/drivers/of/property.c
-> index 9a50ad25906e..8d06282af8e4 100644
-> --- a/drivers/of/property.c
-> +++ b/drivers/of/property.c
-> @@ -858,7 +858,7 @@ struct device_node *of_graph_get_remote_node(const struct device_node *node,
->  }
->  EXPORT_SYMBOL(of_graph_get_remote_node);
->
-> -static struct fwnode_handle *of_fwnode_get(struct fwnode_handle *fwnode)
-> +static struct fwnode_handle *of_fwnode_get(const struct fwnode_handle *fwnode)
->  {
->         return of_fwnode_handle(of_node_get(to_of_node(fwnode)));
->  }
-> diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-> index 9a81c4410b9f..a94bd47192a3 100644
-> --- a/include/linux/fwnode.h
-> +++ b/include/linux/fwnode.h
-> @@ -108,7 +108,7 @@ struct fwnode_reference_args {
->   *             zero on success, a negative error code otherwise.
->   */
->  struct fwnode_operations {
-> -       struct fwnode_handle *(*get)(struct fwnode_handle *fwnode);
-> +       struct fwnode_handle *(*get)(const struct fwnode_handle *fwnode);
->         void (*put)(struct fwnode_handle *fwnode);
->         bool (*device_is_available)(const struct fwnode_handle *fwnode);
->         const void *(*device_get_match_data)(const struct fwnode_handle *fwnode,
-> diff --git a/include/linux/property.h b/include/linux/property.h
-> index fc24d45632eb..c631ee7fd161 100644
-> --- a/include/linux/property.h
-> +++ b/include/linux/property.h
-> @@ -121,7 +121,7 @@ struct fwnode_handle *fwnode_get_named_child_node(
->  struct fwnode_handle *device_get_named_child_node(struct device *dev,
->                                                   const char *childname);
->
-> -struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode);
-> +struct fwnode_handle *fwnode_handle_get(const struct fwnode_handle *fwnode);
->  void fwnode_handle_put(struct fwnode_handle *fwnode);
->
->  int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index);
-> --
+On Wed, Apr 13, 2022 at 09:02:02PM +0300, Andy Shevchenko wrote:
 
-Why is 0-day complaining about this one?
+...
+
+> +	/* If the calling driver did not initialize firmware node, do it here */
+> +	if (dev_fwnode(&indio_dev->dev))
+> +		fwnode = dev_fwnode(&indio_dev->dev);
+> +	else
+> +		fwnode = dev_fwnode(indio_dev->dev.parent);
+
+Can be also done as
+
+	fwnode = dev_fwnode(&indio_dev->dev) ?: dev_fwnode(indio_dev->dev.parent);
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
