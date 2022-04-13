@@ -2,107 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E595C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235580AbiDMMlb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
+        id S235587AbiDMMmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233208AbiDMMlS (ORCPT
+        with ESMTP id S232981AbiDMMmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:41:18 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F11550E35;
-        Wed, 13 Apr 2022 05:38:56 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kdhqc1xJgzBsKf;
-        Wed, 13 Apr 2022 20:34:36 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Apr 2022 20:38:54 +0800
-Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
- (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Apr
- 2022 20:38:53 +0800
-From:   Wenchao Hao <haowenchao@huawei.com>
-To:     Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        <open-iscsi@googlegroups.com>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
-Subject: [PATCH 2/2] iscsi: set session to FREE state after unbind session in remove session
-Date:   Wed, 13 Apr 2022 21:49:47 -0400
-Message-ID: <20220414014947.4168447-3-haowenchao@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220414014947.4168447-1-haowenchao@huawei.com>
-References: <20220414014947.4168447-1-haowenchao@huawei.com>
+        Wed, 13 Apr 2022 08:42:19 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79775FD7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:39:57 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 7EE451F856;
+        Wed, 13 Apr 2022 12:39:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649853596; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oHveYnTR4O71wsHS4RHblj+dtZiwY1YycG/UmcBzgWE=;
+        b=d9PRZucw/+GHfElRTeUb3qeZKy/B31oTOTTEXb92DW6lBJhCaMoUjJuCrY5bCeVxbM1cMT
+        v7IgJRdKfqaeJ++OZm/EGFLxFt6cZqQbpFcyXterl0ehs2bU8qDQXMY3y94H6RF0sqoJRM
+        CE8zoniFt2ivu5mqxCSaFv3PPLJEs9A=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 207F0A3B88;
+        Wed, 13 Apr 2022 12:39:56 +0000 (UTC)
+Date:   Wed, 13 Apr 2022 14:39:53 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Chris Down <chris@chrisdown.name>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Dave Chinner <david@fromorbit.com>,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] printk/index: Printk index feature documentation
+Message-ID: <YlbEmZiGXZmhRvQs@alley>
+References: <20220405114829.31837-1-pmladek@suse.com>
+ <Ykw0mdX0GXZWJohH@chrisdown.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykw0mdX0GXZWJohH@chrisdown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__iscsi_unbind_session() set session state to ISCSI_SESSION_UNBOUND, which
-would overwrite the ISCSI_SESSION_FREE state.
+On Tue 2022-04-05 13:22:49, Chris Down wrote:
+> Petr Mladek writes:
+> > Document the printk index feature. The primary motivation is to
+> > explain that it is not creating KABI from particular printk() calls.
+> > 
+> > Signed-off-by: Petr Mladek <pmladek@suse.com>
+> > Acked-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+> 
+> This looks great, thanks a lot for spending the time to write this up. Just
+> some very minor comments.
 
-Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
----
- drivers/scsi/scsi_transport_iscsi.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
+Ah, I forgot to do the small fixup when pushing. So, I did it now are rebased.
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 97a9fee02efa..d8dd9279cea8 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2173,6 +2173,22 @@ void iscsi_remove_session(struct iscsi_cls_session *session)
- 	if (!cancel_work_sync(&session->block_work))
- 		cancel_delayed_work_sync(&session->recovery_work);
- 	cancel_work_sync(&session->unblock_work);
-+
-+	scsi_target_unblock(&session->dev, SDEV_TRANSPORT_OFFLINE);
-+	/*
-+	 * qla4xxx can perform it's own scans when it runs in kernel only
-+	 * mode. Make sure to flush those scans.
-+	 */
-+	flush_work(&session->scan_work);
-+
-+	/*
-+	 * flush running unbind operations
-+	 * if unbind work did not queued, call __iscsi_unbind_session
-+	 * directly to perform target remove
-+	 */
-+	if (!flush_work(&session->unbind_work))
-+		__iscsi_unbind_session(&session->unbind_work);
-+
- 	/*
- 	 * If we are blocked let commands flow again. The lld or iscsi
- 	 * layer should set up the queuecommand to fail commands.
-@@ -2183,16 +2199,6 @@ void iscsi_remove_session(struct iscsi_cls_session *session)
- 	session->state = ISCSI_SESSION_FREE;
- 	spin_unlock_irqrestore(&session->lock, flags);
- 
--	scsi_target_unblock(&session->dev, SDEV_TRANSPORT_OFFLINE);
--	/*
--	 * qla4xxx can perform it's own scans when it runs in kernel only
--	 * mode. Make sure to flush those scans.
--	 */
--	flush_work(&session->scan_work);
--	/* flush running unbind operations */
--	flush_work(&session->unbind_work);
--	__iscsi_unbind_session(&session->unbind_work);
--
- 	/* hw iscsi may not have removed all connections from session */
- 	err = device_for_each_child(&session->dev, NULL,
- 				    iscsi_iter_destroy_conn_fn);
--- 
-2.32.0
+> > --- /dev/null
+> > +++ b/Documentation/core-api/printk-index.rst
+> > +User Interface
+> > +==============
+> > +
+> > +The index of printk formats are split in into separate files. The files are
+> > +named according to the binaries where the printk formats are built-in. There
+> > +is always "vmlinux" and optionally also modules, for example::
+> > +
+> > +   /sys/kernel/debug/printk/index/vmlinux
+> > +   /sys/kernel/debug/printk/index/ext4
+> > +   /sys/kernel/debug/printk/index/scsi_mod
+> > +
+> > +Note that only loaded modules are shown. Also printk formats from a module
+> > +might appear in "vmlinux" when the module is built-in.
+> > +
+> > +The content is inspired by the dynamic debug interface and looks like::
+> 
+> s/::/:/
 
+The double double dots '::' cause that the following paragraph will be
+block quoting. There is only single ':' in the generated html.
+
+> > +   $> head -1 /sys/kernel/debug/printk/index/vmlinux; shuf -n 5 vmlinux
+> > +   # <level[,flags]> filename:line function "format"
+> > +   <5> block/blk-settings.c:661 disk_stack_limits "%s: Warning: Device %s is misaligned\n"
+> > +   <4> kernel/trace/trace.c:8296 trace_create_file "Could not create tracefs '%s' entry\n"
+> > +   <6> arch/x86/kernel/hpet.c:144 _hpet_print_config "hpet: %s(%d):\n"
+> > +   <6> init/do_mounts.c:605 prepare_namespace "Waiting for root device %s...\n"
+> > +   <6> drivers/acpi/osl.c:1410 acpi_no_auto_serialize_setup "ACPI: auto-serialization disabled\n"
+> > +
+> > +, where the meaning is::
+
+I uses only single double dot here.
+
+> > +   - level: log level
+> 
+> Maybe worth noting that level may not be there if we have a KERN_CONT.
+
+I added:
+
+   - :level: log level value: 0-7 for particular severity, -1 as default,
+	'c' as continuous line without an explicit log level
+
+> > +   - flags: optional flags: currently only 'c' for KERN_CONT
+ > +   - filename:line: source filename and line number of the related
+> > +	printk() call. Note that there are many wrappers, for example,
+> > +	pr_warn(), pr_warn_once(), dev_warn().
+> > +   - function: function name where the printk() call is used.
+> > +   - format: format string
+
+I added few more double dots to generate bold: 'level', 'flags',
+'filename:line', etc.
+
+See the updated commit at
+https://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git/commit/?h=for-5.19&id=a5c7a39f508ae1fd3288493b96dd26079bae41bf
+
+Best Regards,
+Petr
