@@ -2,186 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC22C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99781C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbiDMKwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 06:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
+        id S234981AbiDMKwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 06:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiDMKwF (ORCPT
+        with ESMTP id S231622AbiDMKwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 06:52:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF3035858;
-        Wed, 13 Apr 2022 03:49:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A7BA61D6F;
-        Wed, 13 Apr 2022 10:49:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 123A0C385A3;
-        Wed, 13 Apr 2022 10:49:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649846983;
-        bh=VDGB/KJSlTMibmr2TQXtFBBBCfJ+ZcdIshcLLBSAR5o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cv1SACWWU4qnSElLqbRyqTd9sqZZoC8tL3tevlnNSQ8NF0+HQs10pOYjdO7d+0GnK
-         zEezfyQLCpaWR5cr5SDc+gy8U5OWT6KJMhyvPCocpylJZB7ZoevuiErxb7fFqxvt9G
-         j2p/Szm2ihMjJ8lkHXScuLdnwdKkD4NJC77tW+wdV53FLIcSiqu9GqbxTWZrP+ILru
-         7bFgECFlLh7IAxF3+Bj5M92HZHlOcaR+EIdVdZ6uroq5oeOIVI+9NvVzLnaIHyD7cc
-         8LMzXVxrX7LrhD7aVHY0NkgtnwdEEU1D4l3cJpDiU+iTfjYRGZPlOXRprg9QRYVlRT
-         a16Pxf3i5g4+g==
-Date:   Wed, 13 Apr 2022 16:19:38 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Liu Ying <victor.liu@nxp.com>
-Cc:     linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, kishon@ti.com,
-        robh+dt@kernel.org, andrzej.hajda@intel.com,
-        narmstrong@baylibre.com, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        agx@sigxcpu.org, robert.chiras@nxp.com, martin.kepplinger@puri.sm,
-        robert.foss@linaro.org
-Subject: Re: [PATCH v6 resend 2/5] phy: Add LVDS configuration options
-Message-ID: <YlaqwoFCfusFgIIe@matsya>
-References: <20220402052451.2517469-1-victor.liu@nxp.com>
- <20220402052451.2517469-3-victor.liu@nxp.com>
- <YlZpnrKt9NbHZv26@matsya>
- <d77b41d911e126331138ddaca146a581d316bd09.camel@nxp.com>
+        Wed, 13 Apr 2022 06:52:14 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B403C35858
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649846992; x=1681382992;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=24MmeEn2Cbl39Z9DZndnyl+5AVJ6TfhTumGasuy47do=;
+  b=Z94uTTS3c7NoBUaIgInaSWig6IrAgRICXK/y5gWDlv/nKpqcoV+Oq03B
+   xYLFJRF1gb8JV7ytwBKOeJAB2AYH1aEeHfRTx4wqXaMIgVx5sUHgbXi7E
+   XPjwDIcdPtaMY5yYFWmIjiWnoGLHSyYicCKTOF6jtqG54kf0xNg3jDxcS
+   9Gp3r1dGX1BsPNm6d9GIedlOw7Z4BMN5Ypuib6itbGWgRSZdnMIeoOz5R
+   eUhx9Jtu4JvV/VaWP+9Ul6CMbvpYQqmbr687bMBMSAHo+DPzir5Zaqe3f
+   08TXPj98G0uY/kDP1/5BduLHxaZcTwhnlzvo97rSz15KCNa6JImy13Vt/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="262077085"
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="262077085"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 03:49:52 -0700
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="660883901"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 03:49:49 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1neaVm-001nR0-8j;
+        Wed, 13 Apr 2022 13:46:10 +0300
+Date:   Wed, 13 Apr 2022 13:46:10 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org,
+        Mark Brown <broonie@kernel.org>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: Re: [PATCH v3 4/5] drm/solomon: Move device info from ssd130x-i2c to
+ the core driver
+Message-ID: <Ylap8rTKbXp80Woc@smile.fi.intel.com>
+References: <20220412162729.184783-1-javierm@redhat.com>
+ <20220412162729.184783-5-javierm@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d77b41d911e126331138ddaca146a581d316bd09.camel@nxp.com>
+In-Reply-To: <20220412162729.184783-5-javierm@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13-04-22, 18:04, Liu Ying wrote:
-> Hi Vinod,
+On Tue, Apr 12, 2022 at 06:27:28PM +0200, Javier Martinez Canillas wrote:
+> These are declared in the ssd130x-i2c transport driver but the information
+> is not I2C specific, and could be used by other SSD130x transport drivers.
 > 
-> On Wed, 2022-04-13 at 11:41 +0530, Vinod Koul wrote:
-> > On 02-04-22, 13:24, Liu Ying wrote:
-> > > This patch allows LVDS PHYs to be configured through
-> > > the generic functions and through a custom structure
-> > > added to the generic union.
-> > > 
-> > > The parameters added here are based on common LVDS PHY
-> > > implementation practices.  The set of parameters
-> > > should cover all potential users.
-> > > 
-> > > Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> > > Cc: Vinod Koul <vkoul@kernel.org>
-> > > Cc: NXP Linux Team <linux-imx@nxp.com>
-> > > Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> > > ---
-> > > v5->v6:
-> > > * Rebase upon v5.17-rc1.
-> > > 
-> > > v4->v5:
-> > > * Align kernel-doc style to include/linux/phy/phy.h. (Vinod)
-> > > * Trivial tweaks.
-> > > * Drop Robert's R-b tag.
-> > > 
-> > > v3->v4:
-> > > * Add Robert's R-b tag.
-> > > 
-> > > v2->v3:
-> > > * No change.
-> > > 
-> > > v1->v2:
-> > > * No change.
-> > > 
-> > >  include/linux/phy/phy-lvds.h | 32 ++++++++++++++++++++++++++++++++
-> > >  include/linux/phy/phy.h      |  4 ++++
-> > >  2 files changed, 36 insertions(+)
-> > >  create mode 100644 include/linux/phy/phy-lvds.h
-> > > 
-> > > diff --git a/include/linux/phy/phy-lvds.h b/include/linux/phy/phy-
-> > > lvds.h
-> > > new file mode 100644
-> > > index 000000000000..7a2f4747f624
-> > > --- /dev/null
-> > > +++ b/include/linux/phy/phy-lvds.h
-> > > @@ -0,0 +1,32 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > > +/*
-> > > + * Copyright 2020 NXP
-> > 
-> > 2022 now
+> Move them to the ssd130x core driver and just set the OF device entries to
+> an ID that could be used to lookup the correct device info from an array.
 > 
-> I may change it to 'Copyright 2020,2022 NXP'.
-> 
-> > 
-> > > + */
-> > > +
-> > > +#ifndef __PHY_LVDS_H_
-> > > +#define __PHY_LVDS_H_
-> > > +
-> > > +/**
-> > > + * struct phy_configure_opts_lvds - LVDS configuration set
-> > > + * @bits_per_lane_and_dclk_cycle:	Number of bits per data lane
-> > > and
-> > > + *					differential clock cycle.
-> > 
-> > What does it mean by bits per data lane and differential clock cycle?
-> 
-> Please check Documentation/devicetree/bindings/display/panel/lvds.yaml.
-> lvds.yaml metions slot.  'bits_per_lane_and_dclk_cycle' means the
-> number of slots.  But, I don't find the word 'slot' in my lvds relevant
-> specs which mentioned in lvds.yaml, so 'slots' is probably not a
-> generic name(lvds.yaml is for display panel).  So, I use
-> 'bits_per_lane_and_dclk_cycle' as the name tells what it means.
+> While being there, also move the SSD130X_DATA and SSD130X_COMMAND control
+> bytes. Since even though they are used by the I2C interface, they could
+> also be useful for other transport protocols such as SPI.
 
-variable name is fine, explanation for bit per lane and differential
-clock cycle didnt help, maybe add better explanation of what this
-variable means
+...
 
-> 
-> > 
-> > > + * @differential_clk_rate:		Clock rate, in Hertz, of the
-> > > LVDS
-> > > + *					differential clock.
-> > > + * @lanes:				Number of active, consecutive,
-> > > + *					data lanes, starting from lane
-> > > 0,
-> > > + *					used for the transmissions.
-> > > + * @is_slave:				Boolean, true if the
-> > > phy is a slave
-> > > + *					which works together with a
-> > > master
-> > > + *					phy to support dual link
-> > > transmission,
-> > > + *					otherwise a regular phy or a
-> > > master phy.
-> > > + *
-> > > + * This structure is used to represent the configuration state of
-> > > a LVDS phy.
-> > > + */
-> > > +struct phy_configure_opts_lvds {
-> > > +	unsigned int	bits_per_lane_and_dclk_cycle;
-> > > +	unsigned long	differential_clk_rate;
-> > > +	unsigned int	lanes;
-> > > +	bool		is_slave;
-> > > +};
-> > 
-> > Where is the user of this new configuration? Can you post that patch
-> > for
-> > reference as well please
-> 
-> Patch 5/5 uses it. Also, I posted two drm bridge drivers[1][2] which
-> use it.
+> +EXPORT_SYMBOL_GPL(ssd130x_variants);
 
-That is phy driver not the user
-> 
-> [1] 
-> https://patchwork.kernel.org/project/dri-devel/patch/1617172405-12962-13-git-send-email-victor.liu@nxp.com/
-> [2] 
-> https://patchwork.kernel.org/project/dri-devel/patch/1617172405-12962-14-git-send-email-victor.liu@nxp.com/
-
-this is helpful, thanks
+What I meant is to use EXPORT_SYMBOL_NS_GPL() here. It might require a separate
+patch to move other exports to that namespace first.
 
 -- 
-~Vinod
+With Best Regards,
+Andy Shevchenko
+
+
