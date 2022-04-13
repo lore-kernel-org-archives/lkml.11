@@ -2,90 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3029C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbiDMDgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
+        id S232020AbiDMDg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbiDMDf7 (ORCPT
+        with ESMTP id S230311AbiDMDgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 23:35:59 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E43D58
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:33:37 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id u2so591130pgq.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GFDMYEJJJV4Dm4yq2iSPTcjmX9mNaLzAYx2JFyM8cxU=;
-        b=UQYAdhGry+SuSzcGGY9z2ZyE0Fmpw7Zl5XqiQsCx1LE+kdYD7uNE/J+kjhveH3HQAV
-         wGoUNxLBXw1pQjCyPJnbNrY/2J9tDkjLEkg7sQABZVTX8zm1JU29wTf3AP2isq2wnuX6
-         Fsen15PJeUG5cP5g/ckjxlFriKKe1viowIJrg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GFDMYEJJJV4Dm4yq2iSPTcjmX9mNaLzAYx2JFyM8cxU=;
-        b=NZS/GNFd+F5cBZKfbQcxfHIgQVOKStnsQtEcPwSpeKNqF/SbrqhwDUpCGwzeiFRD3H
-         mGok1UkoFWxIxde2IHfck4YieWNXT+Pt0yxCZ2FjXLH4g7fRt01IrROAxblBfrNNa/K6
-         Lonlj5AHug7o5W+n4lKsA+iF7xWEJCGgGA74/5AHbuhcoysQgKZgQaaLZWf3zRc5f6mr
-         s41cQDnBJpAWo0IKxjd94LPtQ7OgRSDvVvlFI2nta4vVGR44Zl9LFxPJeV3ELOPXvuFn
-         lKdyVxZTCFGVCxj9ocBqAO38nkU+GSU0FHaiohWO1wdWMyZeSLapaSy8rJMytZE8Jg8z
-         SONg==
-X-Gm-Message-State: AOAM532TFuZ1Euk7Xt/i0klb42KE7KqGOM9F/Y7scKQ58H+pmHJUvbNf
-        FGGTf20kfnhASJc0dJk4jwkk5A==
-X-Google-Smtp-Source: ABdhPJxo/Vu7AljpfVLohpoNHB6gSDViR/XOVE6fP0sezT0TZemgRYmKXJC1JNokbplnSB6Im1W5LQ==
-X-Received: by 2002:a63:770c:0:b0:39d:adf2:ba83 with SMTP id s12-20020a63770c000000b0039dadf2ba83mr1811498pgc.184.1649820817164;
-        Tue, 12 Apr 2022 20:33:37 -0700 (PDT)
-Received: from smtp.gmail.com ([2620:15c:202:201:87b3:e0ea:c924:6d1f])
-        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm39788276pfh.23.2022.04.12.20.33.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 20:33:36 -0700 (PDT)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-Subject: [PATCH 0/2] Input: cros-ec-keyb: Don't register keyboard if doesn't exist
-Date:   Tue, 12 Apr 2022 20:33:32 -0700
-Message-Id: <20220413033334.1514008-1-swboyd@chromium.org>
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+        Tue, 12 Apr 2022 23:36:53 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3728B0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:34:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649820872; x=1681356872;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nnpBGMaA634MUkOuD/3RJmlH+ANNdGClFShNfoaQxxo=;
+  b=iV7W4HHen2FKYm7C2fe7vpH+/nz8GYbNCj0DDlHNqe1yMm2uVgiOpLs0
+   1LTgWbffCWueVoG0F3hSLQDDCWhYW/JgVdr6GIfJbVyUUXZDF9ahBJYN6
+   4pSIXDnHNOdN4A1NqZTb5LLPXFcWzXC4fJAhuy9eUyZWjzlGl4stcHCby
+   9sMPg9khvwjTpBxQ0nUVtdT2+QrYTJjt3b8YlaP7nW09GxO0dfmiShqza
+   bsgkI167zELhJ5s8D565B5wUQa0cCK6hNI8TZDUyY0+BAE+Pa4vl2XZE1
+   TKa1FotMB0ePqMaX8GPmb/leSgwZFpVerpdb5WovBVnxX9mZeojBRaLTB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="323005834"
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="323005834"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 20:34:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="507812806"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 12 Apr 2022 20:34:30 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neTm1-0003Os-MB;
+        Wed, 13 Apr 2022 03:34:29 +0000
+Date:   Wed, 13 Apr 2022 11:33:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dominik Behr <dbehr@chromium.org>,
+        =?iso-8859-1?Q?St=E9phane?= Marchesin <marcheu@chromium.org>
+Subject: [jsarha:topic/cros-sof-v4.14 835/9354]
+ drivers/gpu/drm/i915/intel_display.c:5249:24: error: variable 'conn' set but
+ not used
+Message-ID: <202204131116.AR9J6kE7-lkp@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We're registering a keyboard input device on detachable chromebooks when
-that input device doesn't generate any events. This patch series stops
-doing that to save some runtime memory and to help userspace understand
-that there really isn't a keyboard present when the keyboard is
-detached. The second patch is an RFC because it should be picked up
-through arm-soc tree, not input tree.
+Hi Maarten,
 
-Stephen Boyd (2):
-  Input: cros-ec-keyb: Only register keyboard if rows/columns exist
-  arm64: dts: qcom: sc7180-trogdor: Remove cros-ec keyboard from
-    detachables
+FYI, the error/warning still remains.
 
- arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz.dtsi   | 5 +++++
- arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi | 5 +++++
- drivers/input/keyboard/cros_ec_keyb.c                 | 9 +++++++++
- 3 files changed, 19 insertions(+)
+tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14
+head:   6f750b16c322c9191168a3a97c427c90581d9144
+commit: 17de7cbd45ef192faed9f7f17ddc8fe9155645b4 [835/9354] UPSTREAM: drm/atomic: Make atomic iterators less surprising
+config: i386-randconfig-a011-20220411 (https://download.01.org/0day-ci/archive/20220413/202204131116.AR9J6kE7-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce (this is a W=1 build):
+        # https://github.com/jsarha/linux/commit/17de7cbd45ef192faed9f7f17ddc8fe9155645b4
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha topic/cros-sof-v4.14
+        git checkout 17de7cbd45ef192faed9f7f17ddc8fe9155645b4
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/i915/
 
-Cc: Benson Leung <bleung@chromium.org>
-Cc: Guenter Roeck <groeck@chromium.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Hsin-Yi Wang <hsinyi@chromium.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+All errors (new ones prefixed by >>):
+
+   drivers/gpu/drm/i915/intel_display.c: In function '__intel_display_resume':
+   drivers/gpu/drm/i915/intel_display.c:3656:19: error: variable 'crtc' set but not used [-Werror=unused-but-set-variable]
+     struct drm_crtc *crtc;
+                      ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'intel_encoders_pre_pll_enable':
+>> drivers/gpu/drm/i915/intel_display.c:5249:24: error: variable 'conn' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *conn;
+                           ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'intel_encoders_pre_enable':
+   drivers/gpu/drm/i915/intel_display.c:5269:24: error: variable 'conn' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *conn;
+                           ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'intel_encoders_enable':
+   drivers/gpu/drm/i915/intel_display.c:5289:24: error: variable 'conn' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *conn;
+                           ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'intel_encoders_disable':
+   drivers/gpu/drm/i915/intel_display.c:5309:24: error: variable 'conn' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *conn;
+                           ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'intel_encoders_post_disable':
+   drivers/gpu/drm/i915/intel_display.c:5329:24: error: variable 'conn' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *conn;
+                           ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'intel_encoders_post_pll_disable':
+   drivers/gpu/drm/i915/intel_display.c:5349:24: error: variable 'conn' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *conn;
+                           ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'chv_prepare_pll':
+   drivers/gpu/drm/i915/intel_display.c:6776:13: error: variable 'bestm1' set but not used [-Werror=unused-but-set-variable]
+     u32 bestn, bestm1, bestm2, bestp1, bestp2, bestm2_frac;
+                ^~~~~~
+   drivers/gpu/drm/i915/intel_display.c:6776:6: error: variable 'bestn' set but not used [-Werror=unused-but-set-variable]
+     u32 bestn, bestm1, bestm2, bestp1, bestp2, bestm2_frac;
+         ^~~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'i9xx_get_initial_plane_config':
+   drivers/gpu/drm/i915/intel_display.c:7500:17: error: variable 'offset' set but not used [-Werror=unused-but-set-variable]
+     u32 val, base, offset;
+                    ^~~~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'skylake_get_initial_plane_config':
+   drivers/gpu/drm/i915/intel_display.c:8526:17: error: variable 'offset' set but not used [-Werror=unused-but-set-variable]
+     u32 val, base, offset, stride_mult, tiling;
+                    ^~~~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'ironlake_get_initial_plane_config':
+   drivers/gpu/drm/i915/intel_display.c:8638:17: error: variable 'offset' set but not used [-Werror=unused-but-set-variable]
+     u32 val, base, offset;
+                    ^~~~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'check_single_encoder_cloning':
+>> drivers/gpu/drm/i915/intel_display.c:10472:24: error: variable 'connector' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *connector;
+                           ^~~~~~~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'intel_modeset_pipe_config':
+   drivers/gpu/drm/i915/intel_display.c:10892:24: error: variable 'connector' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *connector;
+                           ^~~~~~~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'verify_encoder_state':
+   drivers/gpu/drm/i915/intel_display.c:11520:24: error: variable 'connector' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *connector;
+                           ^~~~~~~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'sanitize_watermarks':
+   drivers/gpu/drm/i915/intel_display.c:14419:19: error: variable 'crtc' set but not used [-Werror=unused-but-set-variable]
+     struct drm_crtc *crtc;
+                      ^~~~
+   In file included from include/uapi/linux/stddef.h:2:0,
+                    from include/linux/stddef.h:5,
+                    from include/uapi/linux/posix_types.h:5,
+                    from include/uapi/linux/types.h:14,
+                    from include/linux/types.h:6,
+                    from include/linux/list.h:5,
+                    from include/linux/dmi.h:5,
+                    from drivers/gpu/drm/i915/intel_display.c:27:
+   drivers/gpu/drm/i915/intel_drv.h: In function 'enc_to_dig_port':
+   include/linux/compiler.h:176:22: error: this statement may fall through [-Werror=implicit-fallthrough=]
+    # define unlikely(x) __builtin_expect(!!(x), 0)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/asm-generic/bug.h:120:2: note: in expansion of macro 'unlikely'
+     unlikely(__ret_warn_on);     \
+     ^~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:37:20: note: in expansion of macro 'WARN'
+    #define WARN_ON(x) WARN((x), "%s", "WARN_ON(" __stringify(x) ")")
+                       ^~~~
+   drivers/gpu/drm/i915/intel_drv.h:1151:3: note: in expansion of macro 'WARN_ON'
+      WARN_ON(!HAS_DDI(to_i915(encoder->dev)));
+      ^~~~~~~
+   In file included from drivers/gpu/drm/i915/intel_display.c:36:0:
+   drivers/gpu/drm/i915/intel_drv.h:1152:2: note: here
+     case INTEL_OUTPUT_DP:
+     ^~~~
+   In file included from include/uapi/linux/stddef.h:2:0,
+                    from include/linux/stddef.h:5,
+                    from include/uapi/linux/posix_types.h:5,
+                    from include/uapi/linux/types.h:14,
+                    from include/linux/types.h:6,
+                    from include/linux/list.h:5,
+                    from include/linux/dmi.h:5,
+                    from drivers/gpu/drm/i915/intel_display.c:27:
+   drivers/gpu/drm/i915/intel_display.c: In function 'hsw_get_transcoder_state':
+   include/linux/compiler.h:176:22: error: this statement may fall through [-Werror=implicit-fallthrough=]
+    # define unlikely(x) __builtin_expect(!!(x), 0)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/asm-generic/bug.h:120:2: note: in expansion of macro 'unlikely'
+     unlikely(__ret_warn_on);     \
+     ^~~~~~~~
+   drivers/gpu/drm/i915/intel_display.c:9150:4: note: in expansion of macro 'WARN'
+       WARN(1, "unknown pipe linked to edp transcoder\n");
+       ^~~~
+   drivers/gpu/drm/i915/intel_display.c:9151:3: note: here
+      case TRANS_DDI_EDP_INPUT_A_ONOFF:
+      ^~~~
+   drivers/gpu/drm/i915/intel_display.c: In function 'check_digital_port_conflicts':
+   drivers/gpu/drm/i915/intel_display.c:10818:7: error: this statement may fall through [-Werror=implicit-fallthrough=]
+       if (WARN_ON(!HAS_DDI(to_i915(dev))))
+          ^
+   drivers/gpu/drm/i915/intel_display.c:10820:3: note: here
+      case INTEL_OUTPUT_DP:
+      ^~~~
+   cc1: all warnings being treated as errors
+--
+   drivers/gpu/drm/i915/intel_ddi.c: In function 'intel_ddi_get_crtc_new_encoder':
+>> drivers/gpu/drm/i915/intel_ddi.c:988:24: error: variable 'connector' set but not used [-Werror=unused-but-set-variable]
+     struct drm_connector *connector;
+                           ^~~~~~~~~
+   In file included from include/uapi/linux/stddef.h:2:0,
+                    from include/linux/stddef.h:5,
+                    from include/uapi/linux/posix_types.h:5,
+                    from include/uapi/linux/types.h:14,
+                    from include/linux/types.h:6,
+                    from include/uapi/drm/drm.h:41,
+                    from include/uapi/drm/i915_drm.h:30,
+                    from drivers/gpu/drm/i915/i915_drv.h:33,
+                    from drivers/gpu/drm/i915/intel_ddi.c:28:
+   drivers/gpu/drm/i915/intel_drv.h: In function 'enc_to_dig_port':
+   include/linux/compiler.h:176:22: error: this statement may fall through [-Werror=implicit-fallthrough=]
+    # define unlikely(x) __builtin_expect(!!(x), 0)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/asm-generic/bug.h:120:2: note: in expansion of macro 'unlikely'
+     unlikely(__ret_warn_on);     \
+     ^~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:37:20: note: in expansion of macro 'WARN'
+    #define WARN_ON(x) WARN((x), "%s", "WARN_ON(" __stringify(x) ")")
+                       ^~~~
+   drivers/gpu/drm/i915/intel_drv.h:1151:3: note: in expansion of macro 'WARN_ON'
+      WARN_ON(!HAS_DDI(to_i915(encoder->dev)));
+      ^~~~~~~
+   In file included from drivers/gpu/drm/i915/i915_trace.h:11:0,
+                    from drivers/gpu/drm/i915/i915_drv.h:3130,
+                    from drivers/gpu/drm/i915/intel_ddi.c:28:
+   drivers/gpu/drm/i915/intel_drv.h:1152:2: note: here
+     case INTEL_OUTPUT_DP:
+     ^~~~
+   cc1: all warnings being treated as errors
+
+
+vim +/conn +5249 drivers/gpu/drm/i915/intel_display.c
+
+a5c4d7bc187bd13 Ville Syrjälä     2014-03-07  5243  
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5244  static void intel_encoders_pre_pll_enable(struct drm_crtc *crtc,
+fd6bbda9c7a46be Maarten Lankhorst 2016-08-09  5245  					  struct intel_crtc_state *crtc_state,
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5246  					  struct drm_atomic_state *old_state)
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5247  {
+aa5e9b47b90156f Maarten Lankhorst 2017-03-09  5248  	struct drm_connector_state *conn_state;
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09 @5249  	struct drm_connector *conn;
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5250  	int i;
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5251  
+aa5e9b47b90156f Maarten Lankhorst 2017-03-09  5252  	for_each_new_connector_in_state(old_state, conn, conn_state, i) {
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5253  		struct intel_encoder *encoder =
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5254  			to_intel_encoder(conn_state->best_encoder);
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5255  
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5256  		if (conn_state->crtc != crtc)
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5257  			continue;
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5258  
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5259  		if (encoder->pre_pll_enable)
+fd6bbda9c7a46be Maarten Lankhorst 2016-08-09  5260  			encoder->pre_pll_enable(encoder, crtc_state, conn_state);
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5261  	}
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5262  }
+fb1c98b181ae139 Maarten Lankhorst 2016-08-09  5263  
+
+:::::: The code at line 5249 was first introduced by commit
+:::::: fb1c98b181ae139412eca6b7ef727b655b6125da drm/i915: Walk over encoders in crtc enable/disable using atomic state.
+
+:::::: TO: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+:::::: CC: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+
 -- 
-https://chromeos.dev
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
