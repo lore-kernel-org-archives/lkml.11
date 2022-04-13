@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA60C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231875AbiDMDGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
+        id S231477AbiDMDGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:06:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231477AbiDMDFp (ORCPT
+        with ESMTP id S229842AbiDMDFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 23:05:45 -0400
+        Tue, 12 Apr 2022 23:05:48 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A8554BE5
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C3E54BED
         for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:03:21 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.fritz.box)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1neTHq-0006sN-2u; Wed, 13 Apr 2022 05:03:18 +0200
+        id 1neTHm-0006sN-QI; Wed, 13 Apr 2022 05:03:14 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -31,9 +31,9 @@ Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
         philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v9 05/12] riscv: extend concatenated alternatives-lines to the same length
-Date:   Wed, 13 Apr 2022 05:03:00 +0200
-Message-Id: <20220413030307.133807-6-heiko@sntech.de>
+Subject: [PATCH v9 01/12] riscv: integrate alternatives better into the main architecture
+Date:   Wed, 13 Apr 2022 05:02:56 +0200
+Message-Id: <20220413030307.133807-2-heiko@sntech.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413030307.133807-1-heiko@sntech.de>
 References: <20220413030307.133807-1-heiko@sntech.de>
@@ -43,57 +43,211 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ALT_NEW_CONTENT already uses same-length assembler lines, so
-extend this to the other elements as well.
+Right now the alternatives need to be explicitly enabled and
+erratas are limited to SiFive ones.
 
-This makes it more readable when these elements need to be extended
-in the future.
+We want to use alternatives not only for patching soc erratas,
+but in the future also for handling different behaviour depending
+on the existence of future extensions.
+
+So move the core alternatives over to the kernel subdirectory
+and move the CONFIG_RISCV_ALTERNATIVE to be a hidden symbol
+which we expect relevant erratas and extensions to just select
+if needed.
 
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/riscv/include/asm/alternative-macros.h | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ arch/riscv/Kconfig                          |  9 +++++++++
+ arch/riscv/Kconfig.erratas                  | 13 ++-----------
+ arch/riscv/Kconfig.socs                     |  1 -
+ arch/riscv/Makefile                         |  2 +-
+ arch/riscv/errata/Makefile                  |  1 -
+ arch/riscv/include/asm/alternative-macros.h |  7 ++++---
+ arch/riscv/include/asm/alternative.h        |  8 ++++++++
+ arch/riscv/kernel/Makefile                  |  1 +
+ arch/riscv/{errata => kernel}/alternative.c |  0
+ arch/riscv/kernel/smpboot.c                 |  2 --
+ arch/riscv/kernel/traps.c                   |  2 +-
+ 11 files changed, 26 insertions(+), 20 deletions(-)
+ rename arch/riscv/{errata => kernel}/alternative.c (100%)
 
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 00fd9c548f26..26464dae8ab7 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -324,6 +324,15 @@ config NODES_SHIFT
+ 	  Specify the maximum number of NUMA Nodes available on the target
+ 	  system.  Increases memory reserved to accommodate various tables.
+ 
++config RISCV_ALTERNATIVE
++	bool
++	depends on !XIP_KERNEL
++	help
++	  This Kconfig allows the kernel to automatically patch the
++	  errata required by the execution platform at run time. The
++	  code patching is performed once in the boot stages. It means
++	  that the overhead from this mechanism is just taken once.
++
+ config RISCV_ISA_C
+ 	bool "Emit compressed instructions when building Linux"
+ 	default y
+diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
+index 0aacd7052585..c521c2ae2de2 100644
+--- a/arch/riscv/Kconfig.erratas
++++ b/arch/riscv/Kconfig.erratas
+@@ -1,18 +1,9 @@
+ menu "CPU errata selection"
+ 
+-config RISCV_ERRATA_ALTERNATIVE
+-	bool "RISC-V alternative scheme"
+-	depends on !XIP_KERNEL
+-	default y
+-	help
+-	  This Kconfig allows the kernel to automatically patch the
+-	  errata required by the execution platform at run time. The
+-	  code patching is performed once in the boot stages. It means
+-	  that the overhead from this mechanism is just taken once.
+-
+ config ERRATA_SIFIVE
+ 	bool "SiFive errata"
+-	depends on RISCV_ERRATA_ALTERNATIVE
++	depends on !XIP_KERNEL
++	select RISCV_ALTERNATIVE
+ 	help
+ 	  All SiFive errata Kconfig depend on this Kconfig. Disabling
+ 	  this Kconfig will disable all SiFive errata. Please say "Y"
+diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+index 34592d00dde8..41c0a6e9b0bf 100644
+--- a/arch/riscv/Kconfig.socs
++++ b/arch/riscv/Kconfig.socs
+@@ -14,7 +14,6 @@ config SOC_SIFIVE
+ 	select CLK_SIFIVE
+ 	select CLK_SIFIVE_PRCI
+ 	select SIFIVE_PLIC
+-	select RISCV_ERRATA_ALTERNATIVE if !XIP_KERNEL
+ 	select ERRATA_SIFIVE if !XIP_KERNEL
+ 	help
+ 	  This enables support for SiFive SoC platform hardware.
+diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+index 7d81102cffd4..a7ed47ce9311 100644
+--- a/arch/riscv/Makefile
++++ b/arch/riscv/Makefile
+@@ -103,7 +103,7 @@ endif
+ 
+ head-y := arch/riscv/kernel/head.o
+ 
+-core-$(CONFIG_RISCV_ERRATA_ALTERNATIVE) += arch/riscv/errata/
++core-y += arch/riscv/errata/
+ core-$(CONFIG_KVM) += arch/riscv/kvm/
+ 
+ libs-y += arch/riscv/lib/
+diff --git a/arch/riscv/errata/Makefile b/arch/riscv/errata/Makefile
+index b8f8740a3e44..0ca1c5281a2d 100644
+--- a/arch/riscv/errata/Makefile
++++ b/arch/riscv/errata/Makefile
+@@ -1,2 +1 @@
+-obj-y	+= alternative.o
+ obj-$(CONFIG_ERRATA_SIFIVE) += sifive/
 diff --git a/arch/riscv/include/asm/alternative-macros.h b/arch/riscv/include/asm/alternative-macros.h
-index 9e04cd53afc8..8c2bbc7bbe50 100644
+index 67406c376389..5dd8d03a13da 100644
 --- a/arch/riscv/include/asm/alternative-macros.h
 +++ b/arch/riscv/include/asm/alternative-macros.h
-@@ -62,14 +62,14 @@
- #include <asm/asm.h>
- #include <linux/stringify.h>
+@@ -2,7 +2,7 @@
+ #ifndef __ASM_ALTERNATIVE_MACROS_H
+ #define __ASM_ALTERNATIVE_MACROS_H
  
--#define ALT_ENTRY(oldptr, newptr, vendor_id, errata_id, newlen) \
--	RISCV_PTR " " oldptr "\n" \
--	RISCV_PTR " " newptr "\n" \
--	REG_ASM " " vendor_id "\n" \
--	REG_ASM " " newlen "\n" \
-+#define ALT_ENTRY(oldptr, newptr, vendor_id, errata_id, newlen)		\
-+	RISCV_PTR " " oldptr "\n"					\
-+	RISCV_PTR " " newptr "\n"					\
-+	REG_ASM " " vendor_id "\n"					\
-+	REG_ASM " " newlen "\n"						\
- 	".word " errata_id "\n"
+-#ifdef CONFIG_RISCV_ERRATA_ALTERNATIVE
++#ifdef CONFIG_RISCV_ALTERNATIVE
  
--#define ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c) \
-+#define ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)		\
- 	".if " __stringify(enable) " == 1\n"				\
- 	".pushsection .alternative, \"a\"\n"				\
- 	ALT_ENTRY("886b", "888f", __stringify(vendor_id), __stringify(errata_id), "889f - 888f") \
-@@ -83,10 +83,10 @@
- 	".org	. - (889b - 888b) + (887b - 886b)\n"			\
- 	".endif\n"
+ #ifdef __ASSEMBLY__
  
--#define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable) \
--	"886 :\n"	\
--	old_c "\n"	\
--	"887 :\n"	\
-+#define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable)	\
-+	"886 :\n"							\
-+	old_c "\n"							\
-+	"887 :\n"							\
- 	ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+@@ -76,7 +76,7 @@
  
- #define _ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, CONFIG_k)	\
+ #endif /* __ASSEMBLY__ */
+ 
+-#else /* !CONFIG_RISCV_ERRATA_ALTERNATIVE*/
++#else /* CONFIG_RISCV_ALTERNATIVE */
+ #ifdef __ASSEMBLY__
+ 
+ .macro __ALTERNATIVE_CFG old_c
+@@ -95,7 +95,8 @@
+ 	__ALTERNATIVE_CFG(old_c)
+ 
+ #endif /* __ASSEMBLY__ */
+-#endif /* CONFIG_RISCV_ERRATA_ALTERNATIVE */
++#endif /* CONFIG_RISCV_ALTERNATIVE */
++
+ /*
+  * Usage:
+  *   ALTERNATIVE(old_content, new_content, vendor_id, errata_id, CONFIG_k)
+diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
+index e625d3cafbed..7b42bcef0ecf 100644
+--- a/arch/riscv/include/asm/alternative.h
++++ b/arch/riscv/include/asm/alternative.h
+@@ -12,6 +12,8 @@
+ 
+ #ifndef __ASSEMBLY__
+ 
++#ifdef CONFIG_RISCV_ALTERNATIVE
++
+ #include <linux/init.h>
+ #include <linux/types.h>
+ #include <linux/stddef.h>
+@@ -35,5 +37,11 @@ struct errata_checkfunc_id {
+ void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
+ 			      unsigned long archid, unsigned long impid);
+ 
++#else /* CONFIG_RISCV_ALTERNATIVE */
++
++static inline void apply_boot_alternatives(void) { }
++
++#endif /* CONFIG_RISCV_ALTERNATIVE */
++
+ #endif
+ #endif
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index 87adbe47bc15..0f8348ac30f1 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -18,6 +18,7 @@ extra-y += head.o
+ extra-y += vmlinux.lds
+ 
+ obj-y	+= soc.o
++obj-$(CONFIG_RISCV_ALTERNATIVE) += alternative.o
+ obj-y	+= cpu.o
+ obj-y	+= cpufeature.o
+ obj-y	+= entry.o
+diff --git a/arch/riscv/errata/alternative.c b/arch/riscv/kernel/alternative.c
+similarity index 100%
+rename from arch/riscv/errata/alternative.c
+rename to arch/riscv/kernel/alternative.c
+diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
+index 622f226454d5..a6d13dca1403 100644
+--- a/arch/riscv/kernel/smpboot.c
++++ b/arch/riscv/kernel/smpboot.c
+@@ -41,9 +41,7 @@ static DECLARE_COMPLETION(cpu_running);
+ void __init smp_prepare_boot_cpu(void)
+ {
+ 	init_cpu_topology();
+-#ifdef CONFIG_RISCV_ERRATA_ALTERNATIVE
+ 	apply_boot_alternatives();
+-#endif
+ }
+ 
+ void __init smp_prepare_cpus(unsigned int max_cpus)
+diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+index fe92e119e6a3..efa693b325a1 100644
+--- a/arch/riscv/kernel/traps.c
++++ b/arch/riscv/kernel/traps.c
+@@ -86,7 +86,7 @@ static void do_trap_error(struct pt_regs *regs, int signo, int code,
+ 	}
+ }
+ 
+-#if defined (CONFIG_XIP_KERNEL) && defined (CONFIG_RISCV_ERRATA_ALTERNATIVE)
++#if defined (CONFIG_XIP_KERNEL) && defined (CONFIG_RISCV_ALTERNATIVE)
+ #define __trap_section		__section(".xip.traps")
+ #else
+ #define __trap_section
 -- 
 2.35.1
 
