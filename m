@@ -2,54 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F29C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F002C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232613AbiDMFwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 01:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S232608AbiDMFxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 01:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232604AbiDMFv5 (ORCPT
+        with ESMTP id S232726AbiDMFxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 01:51:57 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AD51160
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:49:37 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id AD46968B05; Wed, 13 Apr 2022 07:49:33 +0200 (CEST)
-Date:   Wed, 13 Apr 2022 07:49:33 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        m.szyprowski@samsung.com,
-        Wang Zhaoyang1 <zhaoyang1.wang@intel.com>,
-        Gao Liang <liang.gao@intel.com>,
-        Kevin Tian <kevin.tian@intel.com>
-Subject: Re: [PATCH] dma-direct: avoid redundant memory sync for swiotlb
-Message-ID: <20220413054933.GA32020@lst.de>
-References: <20220412113805.3210-1-chao.gao@intel.com> <e25fbb7e-a67e-5421-b7be-700fd0209b0d@arm.com> <20220413010157.GA10502@gao-cwp> <20220413045958.GA31209@lst.de> <20220413054600.GA23023@gao-cwp>
+        Wed, 13 Apr 2022 01:53:01 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0AC33E3F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:50:40 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id bo5so1079365pfb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:50:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kNZH8JLskElmbbqOhNacsLoH+eyKrEmSm/CudD5ltRg=;
+        b=c/tFUWeWQ+OUvnBeDb63S51e335WKI6Ga6wJwHZ1rHkKqFbewV5q6QItyKlLXVjQ5j
+         DD+V4qtKKkPRT+5D83l+0LZ5ETOZ5Ol0GCBjDpSJtK1WaOKrLkiuj4bIyfgycci6FJMh
+         4PR0TWk2159+ARCnLns4VgSogODE8cUHex3NRUdKevlWr9M4cYDV8W+d9FpbzbPsHA6N
+         hEO+14OF9ilgUErDuPued5nrr/j9C/N2b7fezOzSaQ9CNhOt7scvg/Or9nC+JqWQzedi
+         +E8UMEbrFvSQ9CcnAc9rFlkmbj0CVbdLNAppgE1lw8XZOSNVJVCbuRCrRDal+NRJt0iz
+         CP8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kNZH8JLskElmbbqOhNacsLoH+eyKrEmSm/CudD5ltRg=;
+        b=MKmwLj19tcWIKA9WuzJtKTDRz07RfDHit95AgrBTilKAemBa7EGgpRzJc+8nfj/bSa
+         ylnt3XNq8OCAGYI3g/i91wajP0GOXDXA4KYfB9N0xEoCN24p5gkc7mhrCulk6g1AtIRx
+         qmHCs3vNgHDMM8uMoz09XuPTZO34qeJklP6MSaiL7Sw2Zw9Nc1OfzJdtp//+0zqTPrBl
+         9NdFT3s9WBzsBVAi5eQc2VHf5ng2S1zI4nvLuS9AKUMCTNVxEUFEoIdhwNMx7YPmMvb0
+         1oz6mu2HAOJE4q8zeeySLL4r76Ev/lxyIv8MM4rG9Flz2z0IKVWjSDRBJulEK4egx22a
+         yjVw==
+X-Gm-Message-State: AOAM53090AN48rgSIWLwIDQHlsHXEE6g3OkMaaWnXOS39SM4gRGpXjli
+        TxAXcI8RVgPcXL64gULLddrzHg==
+X-Google-Smtp-Source: ABdhPJxQlZDrONRT84xUQMaKToMO+Su+pgvxEEaYIcoGnOEvmJ1XOPmQDi8yiF/UYjSdWVzdr+Opqg==
+X-Received: by 2002:a05:6a00:852:b0:4fb:2cf4:a238 with SMTP id q18-20020a056a00085200b004fb2cf4a238mr8058324pfk.51.1649829040188;
+        Tue, 12 Apr 2022 22:50:40 -0700 (PDT)
+Received: from localhost ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id c17-20020a62e811000000b005058e80c604sm15807452pfi.53.2022.04.12.22.50.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 22:50:39 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 13:50:36 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Peng Liu <liupeng256@huawei.com>
+Cc:     mike.kravetz@oracle.com, david@redhat.com,
+        akpm@linux-foundation.org, yaozhenguo1@gmail.com,
+        baolin.wang@linux.alibaba.com, liuyuntao10@huawei.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] hugetlb: Clean up hugetlb_cma_reserve
+Message-ID: <YlZkrOz8400dFqwq@FVFYT0MHHV2J.usts.net>
+References: <20220413032915.251254-1-liupeng256@huawei.com>
+ <20220413032915.251254-5-liupeng256@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220413054600.GA23023@gao-cwp>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20220413032915.251254-5-liupeng256@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 01:46:06PM +0800, Chao Gao wrote:
-> On Wed, Apr 13, 2022 at 06:59:58AM +0200, Christoph Hellwig wrote:
-> >So for now I'd be happy with the one liner presented here, but
-> >eventually the whole area could use an overhaul.
+On Wed, Apr 13, 2022 at 03:29:15AM +0000, Peng Liu wrote:
+> Use more generic functions to deal with issues related to online
+> nodes. The changes will make the code simplified.
 > 
-> Thanks. Do you want me to post a new version with the Fixes tag or you
-> will take care of it?
+> Signed-off-by: Peng Liu <liupeng256@huawei.com>
 
-I can add the fixes tag.  I'll wait another day or two for more feedback,
-though.
+LGTM.
 
-> 
-> Fixes: 55897af63091 ("dma-direct: merge swiotlb_dma_ops into the dma_direct code")
----end quoted text---
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+
+Thanks.
