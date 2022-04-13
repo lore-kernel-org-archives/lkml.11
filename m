@@ -2,90 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EB9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237124AbiDMRBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        id S237129AbiDMRBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237115AbiDMRBD (ORCPT
+        with ESMTP id S233651AbiDMRBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:01:03 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EDE6A044;
-        Wed, 13 Apr 2022 09:58:41 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="243306417"
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="243306417"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:58:40 -0700
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="573354935"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:58:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1negGh-001vzG-3X;
-        Wed, 13 Apr 2022 19:54:59 +0300
-Date:   Wed, 13 Apr 2022 19:54:58 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH v6 4/5] device property: Constify fwnode_handle_get()
-Message-ID: <YlcAYpZ0yB6wh1uA@smile.fi.intel.com>
-References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
- <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
- <YlCq79KveByePxe9@paasikivi.fi.intel.com>
- <CAHp75Ve-5=6bsF1mMQ4RceobV=OsR6VwZeP==iFGQJLEbt0-yg@mail.gmail.com>
- <YlbfwjQcxj6fK7re@paasikivi.fi.intel.com>
+        Wed, 13 Apr 2022 13:01:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F916A047;
+        Wed, 13 Apr 2022 09:59:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5690EB825F0;
+        Wed, 13 Apr 2022 16:59:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3B12C385A3;
+        Wed, 13 Apr 2022 16:59:07 +0000 (UTC)
+Date:   Wed, 13 Apr 2022 12:59:06 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-ID: <20220413125906.1689c3e2@rorschach.local.home>
+In-Reply-To: <CAEf4BzaA+vr6V24dG7JCHHmedp2TcJv4ZnuKB=zXzuOpi-QYFg@mail.gmail.com>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+        <20220407125224.310255-5-jolsa@kernel.org>
+        <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+        <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+        <20220413124419.002abd87@rorschach.local.home>
+        <CAEf4BzaA+vr6V24dG7JCHHmedp2TcJv4ZnuKB=zXzuOpi-QYFg@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlbfwjQcxj6fK7re@paasikivi.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 05:35:46PM +0300, Sakari Ailus wrote:
-> On Sun, Apr 10, 2022 at 05:10:23PM +0300, Andy Shevchenko wrote:
-> > On Sat, Apr 9, 2022 at 2:35 AM Sakari Ailus
-> > <sakari.ailus@linux.intel.com> wrote:
-> > > On Fri, Apr 08, 2022 at 09:48:43PM +0300, Andy Shevchenko wrote:
-> > > > As to_of_node() suggests and the way the code in the OF and software node
-> > > > back ends actually uses the fwnode handle, it may be constified. Do this
-> > > > for good.
-> > >
-> > > How?
-> > >
-> > > If the fwnode is const, then the struct it contains must be presumed to be
-> > > const, too.
-> > 
-> > Why? The idea is that we are not updating the fwnode, but the container.
-> > The container may or may not be const. It's orthogonal, no?
+On Wed, 13 Apr 2022 09:45:52 -0700
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+
+> > Did you only use the "notrace" on the prototype? I see the semicolon at
+> > the end of your comment. It only affects the actual function itself,
+> > not the prototype.  
 > 
-> As you wrote: may or may not. The stricter requirement, i.e. const, must be
-> thus followed. I think it would be fine (after adding a comment on what is
-> being done) if you *know* the container struct is not const. But that is
-> not the case here.
+> notrace is both on declaration and on definition, see kernel/bpf/trampoline.c:
 
-But even with the original code one may not guarantee that. How the original
-code works or prevents of using a const container against non-const fwnode
-pointer?
+OK. Note, it only needs to be on the function, the prototype doesn't do
+anything. But that shouldn't be the issue.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr)
+> {
+>         percpu_ref_put(&tr->pcref);
+> }
+> 
+
+What compiler are you using? as this seems to be a compiler bug.
+Because it's not ftrace that picks what functions to trace, but the
+compiler itself.
+
+-- Steve
 
 
