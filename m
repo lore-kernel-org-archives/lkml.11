@@ -2,186 +2,483 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A3AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238249AbiDMT0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
+        id S238266AbiDMT0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiDMT0C (ORCPT
+        with ESMTP id S238255AbiDMT0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:26:02 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B842B66C94;
-        Wed, 13 Apr 2022 12:23:40 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-deb9295679so3036305fac.6;
-        Wed, 13 Apr 2022 12:23:40 -0700 (PDT)
+        Wed, 13 Apr 2022 15:26:45 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A457821270;
+        Wed, 13 Apr 2022 12:24:22 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id 12so3093811oix.12;
+        Wed, 13 Apr 2022 12:24:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Nw71/WQRUhg0t6rL1I9s4rl1al7MOSJ4hA/po68c59c=;
-        b=Hi9NgTHV+W9qd1x2p122OKMVrkDAePSIymyNt+TFv7lXxtUzUsQ4/xB0bECDR3P/fc
-         kmqNCUs1IhtmxbOz1o9i4orRfKdJPfn06KnMDQyZIWcyrz1YDf7QwP1QdXtOrFTeeAZY
-         zepxO+JbgdPB9g6SFSAWfPXpI4hYxBg+xfF7+9RiVpRWAHzSbau+5YVEdvarEMwn6bEv
-         VDM3n3gvWqJp5ztkR6ODk2xkdujplTRVetCf3mCoXD7H6S0TzrZlGULoWkUR504F0LCo
-         Jb8lnnD6PPn1xtrDML6rexLKYqUMl/kFkkLgsHL/3a+JSJiJKU50Xki/FwrKsJO05fYJ
-         lQcQ==
-X-Gm-Message-State: AOAM531W2XscTsccCI0bF8PAPNe6t2ui6aVK73054WRP3bcVcXy+0/1y
-        w3Wmd9kO8VyXnnzd1A70FQ==
-X-Google-Smtp-Source: ABdhPJxP64aD70NQFPYD4OZ1flPgBgyxec0fISdcdAOFAJz1bEO3+F98ejSye1fVUWMJpuCrR0ZnZg==
-X-Received: by 2002:a05:6870:208:b0:e2:a000:d65f with SMTP id j8-20020a056870020800b000e2a000d65fmr100270oad.265.1649877819991;
-        Wed, 13 Apr 2022 12:23:39 -0700 (PDT)
+        bh=uu2f7x6jJJFUM9jpeBhZFHGmISerd4DsBMM9TZSiOmQ=;
+        b=77TlW1ji0rQTOxVHcz0h8ZQXAC5Xaz7/j1Hvkv4io16ihFAuMAzD5ZiE9pp/giwEON
+         o4vLirPeQnGwPA941/Q1WQgCPOL22ll6b+fJMvOioInyq0iWrRskhsahJH9weN4+rnRh
+         STA/3BcToFFspUWOPw6mIUWXyj1gJRG1ymZJrExYx59p0wSedhvy6aUVI1uWPue6+Wl+
+         gsyssTFmeCTst6PJFyBhuUYSPvBVQcgk7h+d9ZkkIanyarScTvbgureGnYHwTXVkQ3ZX
+         ZhJLHH5ueoap8SxCiSNE3Ge5dEjG4kdDMFBwcOc0RFdhIs6P0q41CzFwAXllFwvZzu96
+         9pXg==
+X-Gm-Message-State: AOAM532E6x0EOhK4pnU7mzdQQ1EybfF+EvlSsACjJNuJrAfovmDRts9f
+        UC0a+GJxCw6EG7FfSif7q2L1sUFPBg==
+X-Google-Smtp-Source: ABdhPJxfV7f2GWz8dkNP8JM7g4bJvejMxVuqqZZzXMiYISfjRuKAosfMrYVvfecqjF3iXCt5SmeZhA==
+X-Received: by 2002:a05:6808:1150:b0:2f9:48a3:504a with SMTP id u16-20020a056808115000b002f948a3504amr159357oiu.252.1649877861750;
+        Wed, 13 Apr 2022 12:24:21 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id e8-20020a9d63c8000000b005b235a56831sm15240880otl.49.2022.04.13.12.23.39
+        by smtp.gmail.com with ESMTPSA id u20-20020a4a9e94000000b003291f6ac4b2sm13603996ook.28.2022.04.13.12.24.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 12:23:39 -0700 (PDT)
-Received: (nullmailer pid 3681503 invoked by uid 1000);
-        Wed, 13 Apr 2022 19:23:38 -0000
-Date:   Wed, 13 Apr 2022 14:23:38 -0500
+        Wed, 13 Apr 2022 12:24:21 -0700 (PDT)
+Received: (nullmailer pid 3682497 invoked by uid 1000);
+        Wed, 13 Apr 2022 19:24:20 -0000
+Date:   Wed, 13 Apr 2022 14:24:20 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Cixi Geng <gengcixi@gmail.com>
 Cc:     mturquette@baylibre.com, sboyd@kernel.org, orsonzhai@gmail.com,
         baolin.wang7@gmail.com, zhang.lyra@gmail.com,
         linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: clk: sprd: add bindings for ums512
- clock controller
-Message-ID: <YlcjOmDAx6OAl+s0@robh.at.kernel.org>
+Subject: Re: [PATCH 2/3] clk: sprd: Add dt-bindings include file for UMS512
+Message-ID: <YlcjZIMQETIF51Y4@robh.at.kernel.org>
 References: <20220408104520.1896568-1-gengcixi@gmail.com>
- <20220408104520.1896568-2-gengcixi@gmail.com>
+ <20220408104520.1896568-3-gengcixi@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220408104520.1896568-2-gengcixi@gmail.com>
+In-Reply-To: <20220408104520.1896568-3-gengcixi@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 06:45:18PM +0800, Cixi Geng wrote:
+On Fri, Apr 08, 2022 at 06:45:19PM +0800, Cixi Geng wrote:
 > From: Cixi Geng <cixi.geng1@unisoc.com>
 > 
-> add a new bindings to describe ums512 clock compatible string.
-
-s/add a/Add/
-
+> This file defines all UMS512 clock indexes, it should be included in the
+> device tree in which there's device using the clocks.
 > 
 > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
 > ---
->  .../bindings/clock/sprd,ums512-clk.yaml       | 100 ++++++++++++++++++
->  1 file changed, 100 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
+>  include/dt-bindings/clock/sprd,ums512-clk.h | 397 ++++++++++++++++++++
+>  1 file changed, 397 insertions(+)
+>  create mode 100644 include/dt-bindings/clock/sprd,ums512-clk.h
 > 
-> diff --git a/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml b/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
+> diff --git a/include/dt-bindings/clock/sprd,ums512-clk.h b/include/dt-bindings/clock/sprd,ums512-clk.h
 > new file mode 100644
-> index 000000000000..a80bd6ca4a7a
+> index 000000000000..69009a93de4f
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
-> @@ -0,0 +1,100 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright 2022 Unisoc Inc.
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/clock/sprd,ums512-clk.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: UMS512 Clock Control Unit Device Tree Bindings
-> +
-> +maintainers:
-> +  - Orson Zhai <orsonzhai@gmail.com>
-> +  - Baolin Wang <baolin.wang7@gmail.com>
-> +  - Chunyan Zhang <zhang.lyra@gmail.com>
-> +
-> +properties:
-> +  "#clock-cells":
-> +    const: 1
-> +
-> +  compatible:
-> +    enum:
-> +      - sprd,ums512-aon-gate
-> +      - sprd,ums512-apahb-gate
-> +      - sprd,ums512-apapb-gate
-> +      - sprd,ums512-audcpahb-gate
-> +      - sprd,ums512-audcpapb-gate
-> +      - sprd,ums512-g0-pll
-> +      - sprd,ums512-g2-pll
-> +      - sprd,ums512-g3-pll
-> +      - sprd,ums512-gc-pll
-> +      - sprd,ums512-gpu-clk
-> +      - sprd,ums512-mm-clk
-> +      - sprd,ums512-mm-gate-clk
-> +      - sprd,ums512-pmu-gate
-> +
-> +  clocks:
-> +    minItems: 1
-> +    maxItems: 4
-> +    description: |
-> +      The input parent clock(s) phandle for this clock, only list fixed
-> +      clocks which are declared in devicetree.
-> +
-> +  clock-names:
-> +    minItems: 1
-> +    items:
-> +      - const: ext-26m
-> +      - const: ext-32k
-> +      - const: ext-4m
-> +      - const: rco-100m
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - '#clock-cells'
-> +
-> +if:
-> +  properties:
-> +    compatible:
-> +      enum:
-> +        - sprd,ums512-ap-clk
-> +        - sprd,ums512-aonapb-clk
-> +then:
-> +  required:
-> +    - reg
-> +
-> +else:
-> +  description: |
-> +    Other UMS512 clock nodes should be the child of a syscon node in
-> +    which compatible string should be:
-> +            "sprd,ums512-glbregs", "syscon", "simple-mfd"
+> +++ b/include/dt-bindings/clock/sprd,ums512-clk.h
+> @@ -0,0 +1,397 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
 
-This doesn't match your example.
+Dual license please.
 
+> +/*
+> + * Unisoc UMS512 SoC DTS file
+> + *
+> + * Copyright (C) 2019, Unisoc Inc.
+
+It's 2022.
+
+> + */
 > +
-> +    The 'reg' property for the clock node is also required if there is a sub
-> +    range of registers for the clocks.
+> +#ifndef _DT_BINDINGS_CLK_UMS512_H_
+> +#define _DT_BINDINGS_CLK_UMS512_H_
 > +
-> +additionalProperties: false
+> +#define CLK_26M_AUD			0
+> +#define CLK_13M				1
+> +#define CLK_6M5				2
+> +#define CLK_4M3				3
+> +#define CLK_2M				4
+> +#define CLK_1M				5
+> +#define CLK_250K			6
+> +#define CLK_RCO_25M			7
+> +#define CLK_RCO_4M			8
+> +#define CLK_RCO_2M			9
+> +#define CLK_ISPPLL_GATE			10
+> +#define CLK_DPLL0_GATE			11
+> +#define CLK_DPLL1_GATE			12
+> +#define CLK_LPLL_GATE			13
+> +#define CLK_TWPLL_GATE			14
+> +#define CLK_GPLL_GATE			15
+> +#define CLK_RPLL_GATE			16
+> +#define CLK_CPPLL_GATE			17
+> +#define CLK_MPLL0_GATE			18
+> +#define CLK_MPLL1_GATE			19
+> +#define CLK_MPLL2_GATE			20
+> +#define CLK_PMU_GATE_NUM		(CLK_MPLL2_GATE + 1)
 > +
-> +examples:
-> +  - |
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
+> +#define CLK_DPLL0			0
+> +#define CLK_DPLL0_58M31			1
+> +#define CLK_ANLG_PHY_G0_NUM		(CLK_DPLL0_58M31 + 1)
 > +
-> +        ap_clk: clock-controller@20200000 {
-> +                compatible = "sprd,ums512-ap-clk";
-> +                reg = <0 0x20200000 0 0x1000>;
-> +                clocks = <&ext_26m>;
-> +                clock-names = "ext-26m";
-> +                #clock-cells = <1>;
-> +        };
+> +#define CLK_MPLL1			0
+> +#define CLK_MPLL1_63M38			1
+> +#define CLK_ANLG_PHY_G2_NUM		(CLK_MPLL1_63M38 + 1)
 > +
-> +        syscon@20100000{
-> +               compatible = "sprd,ums512-glbregs", "syscon","simple-mfd";
-> +               reg = <0 0x20100000 0 0x4000>;
-> +               clocks = <&ext_32k>, <&ext_26m>;
-> +               clock-names = "ext-32k", "ext-26m";
-> +               #clock-cells = <1>;
-> +        };
-> +    };
-> +...
+> +#define CLK_RPLL			0
+> +#define CLK_AUDIO_GATE			1
+> +#define CLK_MPLL0			2
+> +#define CLK_MPLL0_56M88			3
+> +#define CLK_MPLL2			4
+> +#define CLK_MPLL2_47M13			5
+> +#define CLK_ANLG_PHY_G3_NUM		(CLK_MPLL2_47M13 + 1)
+> +
+> +#define CLK_TWPLL			0
+> +#define CLK_TWPLL_768M			1
+> +#define CLK_TWPLL_384M			2
+> +#define CLK_TWPLL_192M			3
+> +#define CLK_TWPLL_96M			4
+> +#define CLK_TWPLL_48M			5
+> +#define CLK_TWPLL_24M			6
+> +#define CLK_TWPLL_12M			7
+> +#define CLK_TWPLL_512M			8
+> +#define CLK_TWPLL_256M			9
+> +#define CLK_TWPLL_128M			10
+> +#define CLK_TWPLL_64M			11
+> +#define CLK_TWPLL_307M2			12
+> +#define CLK_TWPLL_219M4			13
+> +#define CLK_TWPLL_170M6			14
+> +#define CLK_TWPLL_153M6			15
+> +#define CLK_TWPLL_76M8			16
+> +#define CLK_TWPLL_51M2			17
+> +#define CLK_TWPLL_38M4			18
+> +#define CLK_TWPLL_19M2			19
+> +#define CLK_TWPLL_12M29			20
+> +#define CLK_LPLL			21
+> +#define CLK_LPLL_614M4			22
+> +#define CLK_LPLL_409M6			23
+> +#define CLK_LPLL_245M76			24
+> +#define CLK_LPLL_30M72			25
+> +#define CLK_ISPPLL			26
+> +#define CLK_ISPPLL_468M			27
+> +#define CLK_ISPPLL_78M			28
+> +#define CLK_GPLL			29
+> +#define CLK_GPLL_40M			30
+> +#define CLK_CPPLL			31
+> +#define CLK_CPPLL_39M32			32
+> +#define CLK_ANLG_PHY_GC_NUM		(CLK_CPPLL_39M32 + 1)
+> +
+> +#define CLK_AP_APB			0
+> +#define CLK_IPI			        1
+> +#define CLK_AP_UART0			2
+> +#define CLK_AP_UART1			3
+> +#define CLK_AP_UART2			4
+> +#define CLK_AP_I2C0			5
+> +#define CLK_AP_I2C1			6
+> +#define CLK_AP_I2C2			7
+> +#define CLK_AP_I2C3			8
+> +#define CLK_AP_I2C4			9
+> +#define CLK_AP_SPI0			10
+> +#define CLK_AP_SPI1			11
+> +#define CLK_AP_SPI2			12
+> +#define CLK_AP_SPI3			13
+> +#define CLK_AP_IIS0			14
+> +#define CLK_AP_IIS1			15
+> +#define CLK_AP_IIS2			16
+> +#define CLK_AP_SIM			17
+> +#define CLK_AP_CE			18
+> +#define CLK_SDIO0_2X			19
+> +#define CLK_SDIO1_2X			20
+> +#define CLK_EMMC_2X			21
+> +#define CLK_VSP				22
+> +#define CLK_DISPC0			23
+> +#define CLK_DISPC0_DPI			24
+> +#define CLK_DSI_APB			25
+> +#define CLK_DSI_RXESC			26
+> +#define CLK_DSI_LANEBYTE		27
+> +#define CLK_VDSP		        28
+> +#define CLK_VDSP_M		        29
+> +#define CLK_AP_CLK_NUM			(CLK_VDSP_M + 1)
+> +
+> +#define CLK_DSI_EB			0
+> +#define CLK_DISPC_EB			1
+> +#define CLK_VSP_EB			2
+> +#define CLK_VDMA_EB			3
+> +#define CLK_DMA_PUB_EB			4
+> +#define CLK_DMA_SEC_EB			5
+> +#define CLK_IPI_EB			6
+> +#define CLK_AHB_CKG_EB			7
+> +#define CLK_BM_CLK_EB			8
+> +#define CLK_AP_AHB_GATE_NUM		(CLK_BM_CLK_EB + 1)
+> +
+> +#define CLK_AON_APB			0
+> +#define CLK_ADI				1
+> +#define CLK_AUX0			2
+> +#define CLK_AUX1			3
+> +#define CLK_AUX2			4
+> +#define CLK_PROBE			5
+> +#define CLK_PWM0			6
+> +#define CLK_PWM1			7
+> +#define CLK_PWM2			8
+> +#define CLK_PWM3			9
+> +#define CLK_EFUSE			10
+> +#define CLK_UART0			11
+> +#define CLK_UART1			12
+> +#define CLK_THM0			13
+> +#define CLK_THM1			14
+> +#define CLK_THM2			15
+> +#define CLK_THM3			16
+> +#define CLK_AON_I2C			17
+> +#define CLK_AON_IIS			18
+> +#define CLK_SCC				19
+> +#define CLK_APCPU_DAP			20
+> +#define CLK_APCPU_DAP_MTCK		21
+> +#define CLK_APCPU_TS			22
+> +#define CLK_DEBUG_TS			23
+> +#define CLK_DSI_TEST_S			24
+> +#define CLK_DJTAG_TCK			25
+> +#define CLK_DJTAG_TCK_HW		26
+> +#define CLK_AON_TMR			27
+> +#define CLK_AON_PMU			28
+> +#define CLK_DEBOUNCE			29
+> +#define CLK_APCPU_PMU			30
+> +#define CLK_TOP_DVFS			31
+> +#define CLK_OTG_UTMI			32
+> +#define CLK_OTG_REF			33
+> +#define CLK_CSSYS			34
+> +#define CLK_CSSYS_PUB			35
+> +#define CLK_CSSYS_APB			36
+> +#define CLK_AP_AXI			37
+> +#define CLK_AP_MM			38
+> +#define CLK_SDIO2_2X			39
+> +#define CLK_ANALOG_IO_APB		40
+> +#define CLK_DMC_REF_CLK			41
+> +#define CLK_EMC				42
+> +#define CLK_USB				43
+> +#define CLK_26M_PMU			44
+> +#define CLK_AON_APB_NUM			(CLK_26M_PMU + 1)
+> +
+> +#define CLK_MM_AHB			0
+> +#define CLK_MM_MTX			1
+> +#define CLK_SENSOR0			2
+> +#define CLK_SENSOR1			3
+> +#define CLK_SENSOR2			4
+> +#define CLK_CPP				5
+> +#define CLK_JPG				6
+> +#define CLK_FD				7
+> +#define CLK_DCAM_IF			8
+> +#define CLK_DCAM_AXI			9
+> +#define CLK_ISP				10
+> +#define CLK_MIPI_CSI0			11
+> +#define CLK_MIPI_CSI1			12
+> +#define CLK_MIPI_CSI2			13
+> +#define CLK_MM_CLK_NUM			(CLK_MIPI_CSI2 + 1)
+> +
+> +#define CLK_RC100M_CAL_EB		0
+> +#define CLK_DJTAG_TCK_EB		1
+> +#define CLK_DJTAG_EB			2
+> +#define CLK_AUX0_EB			3
+> +#define CLK_AUX1_EB			4
+> +#define CLK_AUX2_EB			5
+> +#define CLK_PROBE_EB			6
+> +#define CLK_MM_EB			7
+> +#define CLK_GPU_EB			8
+> +#define CLK_MSPI_EB			9
+> +#define CLK_APCPU_DAP_EB		10
+> +#define CLK_AON_CSSYS_EB		11
+> +#define CLK_CSSYS_APB_EB		12
+> +#define CLK_CSSYS_PUB_EB		13
+> +#define CLK_SDPHY_CFG_EB		14
+> +#define CLK_SDPHY_REF_EB		15
+> +#define CLK_EFUSE_EB			16
+> +#define CLK_GPIO_EB			17
+> +#define CLK_MBOX_EB			18
+> +#define CLK_KPD_EB			19
+> +#define CLK_AON_SYST_EB			20
+> +#define CLK_AP_SYST_EB			21
+> +#define CLK_AON_TMR_EB			22
+> +#define CLK_OTG_UTMI_EB			23
+> +#define CLK_OTG_PHY_EB			24
+> +#define CLK_SPLK_EB			25
+> +#define CLK_PIN_EB			26
+> +#define CLK_ANA_EB			27
+> +#define CLK_APCPU_TS0_EB		28
+> +#define CLK_APB_BUSMON_EB		29
+> +#define CLK_AON_IIS_EB			30
+> +#define CLK_SCC_EB			31
+> +#define CLK_THM0_EB			32
+> +#define CLK_THM1_EB			33
+> +#define CLK_THM2_EB			34
+> +#define CLK_ASIM_TOP_EB			35
+> +#define CLK_I2C_EB			36
+> +#define CLK_PMU_EB			37
+> +#define CLK_ADI_EB			38
+> +#define CLK_EIC_EB			39
+> +#define CLK_AP_INTC0_EB			40
+> +#define CLK_AP_INTC1_EB			41
+> +#define CLK_AP_INTC2_EB			42
+> +#define CLK_AP_INTC3_EB			43
+> +#define CLK_AP_INTC4_EB			44
+> +#define CLK_AP_INTC5_EB			45
+> +#define CLK_AUDCP_INTC_EB		46
+> +#define CLK_AP_TMR0_EB			47
+> +#define CLK_AP_TMR1_EB			48
+> +#define CLK_AP_TMR2_EB			49
+> +#define CLK_PWM0_EB			50
+> +#define CLK_PWM1_EB			51
+> +#define CLK_PWM2_EB			52
+> +#define CLK_PWM3_EB			53
+> +#define CLK_AP_WDG_EB			54
+> +#define CLK_APCPU_WDG_EB		55
+> +#define CLK_SERDES_EB			56
+> +#define CLK_ARCH_RTC_EB			57
+> +#define CLK_KPD_RTC_EB			58
+> +#define CLK_AON_SYST_RTC_EB		59
+> +#define CLK_AP_SYST_RTC_EB		60
+> +#define CLK_AON_TMR_RTC_EB		61
+> +#define CLK_EIC_RTC_EB			62
+> +#define CLK_EIC_RTCDV5_EB		63
+> +#define CLK_AP_WDG_RTC_EB		64
+> +#define CLK_AC_WDG_RTC_EB		65
+> +#define CLK_AP_TMR0_RTC_EB		66
+> +#define CLK_AP_TMR1_RTC_EB		67
+> +#define CLK_AP_TMR2_RTC_EB		68
+> +#define CLK_DCXO_LC_RTC_EB		69
+> +#define CLK_BB_CAL_RTC_EB		70
+> +#define CLK_AP_EMMC_RTC_EB		71
+> +#define CLK_AP_SDIO0_RTC_EB		72
+> +#define CLK_AP_SDIO1_RTC_EB		73
+> +#define CLK_AP_SDIO2_RTC_EB		74
+> +#define CLK_DSI_CSI_TEST_EB		75
+> +#define CLK_DJTAG_TCK_EN		76
+> +#define CLK_DPHY_REF_EB			77
+> +#define CLK_DMC_REF_EB			78
+> +#define CLK_OTG_REF_EB			79
+> +#define CLK_TSEN_EB			80
+> +#define CLK_TMR_EB			81
+> +#define CLK_RC100M_REF_EB		82
+> +#define CLK_RC100M_FDK_EB		83
+> +#define CLK_DEBOUNCE_EB			84
+> +#define CLK_DET_32K_EB			85
+> +#define CLK_TOP_CSSYS_EB		86
+> +#define CLK_AP_AXI_EN			87
+> +#define CLK_SDIO0_2X_EN			88
+> +#define CLK_SDIO0_1X_EN			89
+> +#define CLK_SDIO1_2X_EN			90
+> +#define CLK_SDIO1_1X_EN			91
+> +#define CLK_SDIO2_2X_EN			92
+> +#define CLK_SDIO2_1X_EN			93
+> +#define CLK_EMMC_2X_EN			94
+> +#define CLK_EMMC_1X_EN			95
+> +#define CLK_PLL_TEST_EN			96
+> +#define CLK_CPHY_CFG_EN			97
+> +#define CLK_DEBUG_TS_EN			98
+> +#define CLK_ACCESS_AUD_EN		99
+> +#define CLK_AON_APB_GATE_NUM		(CLK_ACCESS_AUD_EN + 1)
+> +
+> +#define CLK_MM_CPP_EB			0
+> +#define CLK_MM_JPG_EB			1
+> +#define CLK_MM_DCAM_EB			2
+> +#define CLK_MM_ISP_EB			3
+> +#define CLK_MM_CSI2_EB			4
+> +#define CLK_MM_CSI1_EB			5
+> +#define CLK_MM_CSI0_EB			6
+> +#define CLK_MM_CKG_EB			7
+> +#define CLK_ISP_AHB_EB			8
+> +#define CLK_MM_DVFS_EB			9
+> +#define CLK_MM_FD_EB			10
+> +#define CLK_MM_SENSOR2_EB		11
+> +#define CLK_MM_SENSOR1_EB		12
+> +#define CLK_MM_SENSOR0_EB		13
+> +#define CLK_MM_MIPI_CSI2_EB		14
+> +#define CLK_MM_MIPI_CSI1_EB		15
+> +#define CLK_MM_MIPI_CSI0_EB		16
+> +#define CLK_DCAM_AXI_EB			17
+> +#define CLK_ISP_AXI_EB			18
+> +#define CLK_MM_CPHY_EB			19
+> +#define CLK_MM_GATE_CLK_NUM		(CLK_MM_CPHY_EB + 1)
+> +
+> +#define CLK_SIM0_EB			0
+> +#define CLK_IIS0_EB			1
+> +#define CLK_IIS1_EB			2
+> +#define CLK_IIS2_EB			3
+> +#define CLK_APB_REG_EB			4
+> +#define CLK_SPI0_EB			5
+> +#define CLK_SPI1_EB			6
+> +#define CLK_SPI2_EB			7
+> +#define CLK_SPI3_EB			8
+> +#define CLK_I2C0_EB			9
+> +#define CLK_I2C1_EB			10
+> +#define CLK_I2C2_EB			11
+> +#define CLK_I2C3_EB			12
+> +#define CLK_I2C4_EB			13
+> +#define CLK_UART0_EB			14
+> +#define CLK_UART1_EB			15
+> +#define CLK_UART2_EB			16
+> +#define CLK_SIM0_32K_EB			17
+> +#define CLK_SPI0_LFIN_EB		18
+> +#define CLK_SPI1_LFIN_EB		19
+> +#define CLK_SPI2_LFIN_EB		20
+> +#define CLK_SPI3_LFIN_EB		21
+> +#define CLK_SDIO0_EB			22
+> +#define CLK_SDIO1_EB			23
+> +#define CLK_SDIO2_EB			24
+> +#define CLK_EMMC_EB			25
+> +#define CLK_SDIO0_32K_EB		26
+> +#define CLK_SDIO1_32K_EB		27
+> +#define CLK_SDIO2_32K_EB		28
+> +#define CLK_EMMC_32K_EB			29
+> +#define CLK_AP_APB_GATE_NUM		(CLK_EMMC_32K_EB + 1)
+> +
+> +#define CLK_GPU_CORE_EB			0
+> +#define CLK_GPU_CORE			1
+> +#define CLK_GPU_MEM_EB			2
+> +#define CLK_GPU_MEM			3
+> +#define CLK_GPU_SYS_EB			4
+> +#define CLK_GPU_SYS			5
+> +#define CLK_GPU_CLK_NUM			(CLK_GPU_SYS + 1)
+> +
+> +#define CLK_AUDCP_IIS0_EB		0
+> +#define CLK_AUDCP_IIS1_EB		1
+> +#define CLK_AUDCP_IIS2_EB		2
+> +#define CLK_AUDCP_UART_EB		3
+> +#define CLK_AUDCP_DMA_CP_EB		4
+> +#define CLK_AUDCP_DMA_AP_EB		5
+> +#define CLK_AUDCP_SRC48K_EB		6
+> +#define CLK_AUDCP_MCDT_EB		7
+> +#define CLK_AUDCP_VBCIFD_EB		8
+> +#define CLK_AUDCP_VBC_EB		9
+> +#define CLK_AUDCP_SPLK_EB		10
+> +#define CLK_AUDCP_ICU_EB		11
+> +#define CLK_AUDCP_DMA_AP_ASHB_EB	12
+> +#define CLK_AUDCP_DMA_CP_ASHB_EB	13
+> +#define CLK_AUDCP_AUD_EB		14
+> +#define CLK_AUDCP_VBC_24M_EB		15
+> +#define CLK_AUDCP_TMR_26M_EB		16
+> +#define CLK_AUDCP_DVFS_ASHB_EB		17
+> +#define CLK_AUDCP_AHB_GATE_NUM		(CLK_AUDCP_DVFS_ASHB_EB + 1)
+> +
+> +#define CLK_AUDCP_WDG_EB		0
+> +#define CLK_AUDCP_RTC_WDG_EB		1
+> +#define CLK_AUDCP_TMR0_EB		2
+> +#define CLK_AUDCP_TMR1_EB		3
+> +#define CLK_AUDCP_APB_GATE_NUM		(CLK_AUDCP_TMR1_EB + 1)
+> +
+> +#define CLK_ACORE0			0
+> +#define CLK_ACORE1			1
+> +#define CLK_ACORE2			2
+> +#define CLK_ACORE3			3
+> +#define CLK_ACORE4			4
+> +#define CLK_ACORE5			5
+> +#define CLK_PCORE0			6
+> +#define CLK_PCORE1			7
+> +#define CLK_SCU				8
+> +#define CLK_ACE				9
+> +#define CLK_PERIPH			10
+> +#define CLK_GIC				11
+> +#define CLK_ATB				12
+> +#define CLK_DEBUG_APB			13
+> +#define CLK_APCPU_SEC_NUM		(CLK_DEBUG_APB + 1)
+> +
+> +#endif /* _DT_BINDINGS_CLK_UMS512_H_ */
 > -- 
 > 2.25.1
 > 
