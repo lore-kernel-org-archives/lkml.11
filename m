@@ -2,212 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A56C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B688C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233348AbiDMKsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 06:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
+        id S231967AbiDMKuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 06:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbiDMKs3 (ORCPT
+        with ESMTP id S229875AbiDMKuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 06:48:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C1444CD6B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:46:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649846767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rMrQzeHJx65ULsPidB1Cy7egdCXwBqVKyaotDwys9D8=;
-        b=JwMtCvUH8mQ0bCf+4oT39jebtcN60PX83I9uBLnCfu+AMpo86Azl4ZZiUxhTxmmwiDVDGX
-        QtGyCs+iVoEuY9U+dDW977JRpyDelgoU/cBen/RLPd17hXGrLbs+/il/+d//uNFCoZ5yHN
-        +oliUwzImcl5Gr6wGHXhf6i1Q0B8xRo=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-550-I1B33PXBMC2-3UfTqW76_Q-1; Wed, 13 Apr 2022 06:46:05 -0400
-X-MC-Unique: I1B33PXBMC2-3UfTqW76_Q-1
-Received: by mail-wm1-f69.google.com with SMTP id o35-20020a05600c512300b0038e83a52c71so729497wms.7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:46:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=rMrQzeHJx65ULsPidB1Cy7egdCXwBqVKyaotDwys9D8=;
-        b=pjXf7rspPnoUfxnbiBdWkefAZwotRQiLRzQQa1DK6bJqUeJZrcXhLjpBxnAg/2VTDc
-         baGhRhAteykVY7QlHOmOMMpRYycZwPIuhq2Gb5YPED7IOLbz9cFGmFQsk+ishuu0rlJt
-         mR4wFfIWQIGjxG391a3DwMRjEPiGx+6Rpwaa5PwFgDy9h2/zf0y0WS3JKXDZpfQOEPgM
-         APCGFZ14PVGhsbEE2bNiuixicMDuA4U6GQpPH9X6uRkdOLNN8qJkgYF0nF3RACXDGgna
-         JQSj28wpcnAbCTG6ZZLJx3xAhOgznUDBM7xYz4YmsVr9LNitbW7KGUQBCGgOs6uQaF4e
-         vSPA==
-X-Gm-Message-State: AOAM533/Ve1196UzU4Es1d0SXA1mqAk7txFR3iu6jOk5HLYrb2HElk11
-        fw9cZpFgZD0GphsigktjiED8PuYgNo6kUrU8AZKnk23WYCrMdGR3bxmGx45N7vYHMA4DYKlYVg4
-        0QQR+EgzoRCfb3jvCSVVYaLX7
-X-Received: by 2002:a5d:64e3:0:b0:204:1a79:f1b9 with SMTP id g3-20020a5d64e3000000b002041a79f1b9mr31493935wri.330.1649846764476;
-        Wed, 13 Apr 2022 03:46:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwEgLTvJmgrjkbK02uLgII+/AmFmuSpAgxgKBasTqf2hkbHQN6DeKq8Ko3tGGIQPNDjLXqeBg==
-X-Received: by 2002:a5d:64e3:0:b0:204:1a79:f1b9 with SMTP id g3-20020a5d64e3000000b002041a79f1b9mr31493915wri.330.1649846764163;
-        Wed, 13 Apr 2022 03:46:04 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:5800:1078:ebb9:e2c3:ea8c? (p200300cbc70458001078ebb9e2c3ea8c.dip0.t-ipconnect.de. [2003:cb:c704:5800:1078:ebb9:e2c3:ea8c])
-        by smtp.gmail.com with ESMTPSA id t4-20020adfe104000000b00205b50f04f0sm30804760wrz.86.2022.04.13.03.46.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 03:46:03 -0700 (PDT)
-Message-ID: <ac725bcb-313a-4fff-250a-68ba9a8f85fb@redhat.com>
-Date:   Wed, 13 Apr 2022 12:46:02 +0200
+        Wed, 13 Apr 2022 06:50:35 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5164D58823;
+        Wed, 13 Apr 2022 03:48:15 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23DAm2wA021355;
+        Wed, 13 Apr 2022 05:48:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649846882;
+        bh=O+86ub9Rq04Lr287UmBX3aEvJAug5Lag0f/aY757xB0=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=yF/m8g9Geh0XYqYAtaSSjFLMfZ9zL+2AAuc/UbSnnzDdLFX4sNOrnfnl/V4YMiIpm
+         eYCsMBKbcU1m8TVeSt2W+HDkDmf1o8MnEAhXCbTMZxFzz37/CusGic9Q7DE7rVZRKy
+         sGHpW0nqSPQ2TZKW3tGNCTVxx7vzvLN+Z2iq69EU=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23DAm2jm101447
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 13 Apr 2022 05:48:02 -0500
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 13
+ Apr 2022 05:48:02 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 13 Apr 2022 05:48:01 -0500
+Received: from [10.24.69.236] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23DAlvJS128379;
+        Wed, 13 Apr 2022 05:47:58 -0500
+Message-ID: <09dde54e-de77-4f53-b674-8253069c6b05@ti.com>
+Date:   Wed, 13 Apr 2022 16:17:57 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v2 1/8] mm/swap: remember PG_anon_exclusive via a swp pte
- bit
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RFC] usb: typec: tipd: Add support for polling interrupts
+ status when interrupt line is not connected
 Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220329164329.208407-1-david@redhat.com>
- <20220329164329.208407-2-david@redhat.com>
- <28142e3e-2556-0ca2-7ac5-7420ef862259@huawei.com>
- <374d2be1-e13d-e605-ff80-b9d5eee4c40e@redhat.com>
- <3b9c6cc6-c5f5-8a8d-0b0f-9ca903cfab20@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <3b9c6cc6-c5f5-8a8d-0b0f-9ca903cfab20@huawei.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Hector Martin <marcan@marcan.st>,
+        Saranya Gopal <saranya.gopal@intel.com>,
+        Jens Axboe <axboe@kernel.dk>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220412145059.4717-1-a-govindraju@ti.com>
+ <YlaZIual4Fa/a81I@kuha.fi.intel.com>
+ <5672af5d-d4a9-08ab-0594-7da57cd0972b@ti.com>
+ <Ylan/MzWWTeE8hDh@kuha.fi.intel.com>
+From:   Aswath Govindraju <a-govindraju@ti.com>
+In-Reply-To: <Ylan/MzWWTeE8hDh@kuha.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.04.22 11:38, Miaohe Lin wrote:
-> On 2022/4/13 17:30, David Hildenbrand wrote:
->> On 13.04.22 10:58, Miaohe Lin wrote:
->>> On 2022/3/30 0:43, David Hildenbrand wrote:
->>>> Currently, we clear PG_anon_exclusive in try_to_unmap() and forget about
->>> ...
->>>> diff --git a/mm/memory.c b/mm/memory.c
->>>> index 14618f446139..9060cc7f2123 100644
->>>> --- a/mm/memory.c
->>>> +++ b/mm/memory.c
->>>> @@ -792,6 +792,11 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
->>>>  						&src_mm->mmlist);
->>>>  			spin_unlock(&mmlist_lock);
->>>>  		}
->>>> +		/* Mark the swap entry as shared. */
->>>> +		if (pte_swp_exclusive(*src_pte)) {
->>>> +			pte = pte_swp_clear_exclusive(*src_pte);
->>>> +			set_pte_at(src_mm, addr, src_pte, pte);
->>>> +		}
->>>>  		rss[MM_SWAPENTS]++;
->>>>  	} else if (is_migration_entry(entry)) {
->>>>  		page = pfn_swap_entry_to_page(entry);
->>>> @@ -3559,6 +3564,7 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
->>>>  	struct page *page = NULL, *swapcache;
->>>>  	struct swap_info_struct *si = NULL;
->>>>  	rmap_t rmap_flags = RMAP_NONE;
->>>> +	bool exclusive = false;
->>>>  	swp_entry_t entry;
->>>>  	pte_t pte;
->>>>  	int locked;
->>>> @@ -3724,6 +3730,46 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
->>>>  	BUG_ON(!PageAnon(page) && PageMappedToDisk(page));
->>>>  	BUG_ON(PageAnon(page) && PageAnonExclusive(page));
->>>>  
->>>> +	/*
->>>> +	 * Check under PT lock (to protect against concurrent fork() sharing
->>>> +	 * the swap entry concurrently) for certainly exclusive pages.
->>>> +	 */
->>>> +	if (!PageKsm(page)) {
->>>> +		/*
->>>> +		 * Note that pte_swp_exclusive() == false for architectures
->>>> +		 * without __HAVE_ARCH_PTE_SWP_EXCLUSIVE.
->>>> +		 */
->>>> +		exclusive = pte_swp_exclusive(vmf->orig_pte);
->>>> +		if (page != swapcache) {
->>>> +			/*
->>>> +			 * We have a fresh page that is not exposed to the
->>>> +			 * swapcache -> certainly exclusive.
->>>> +			 */
->>>> +			exclusive = true;
->>>> +		} else if (exclusive && PageWriteback(page) &&
->>>> +			   !(swp_swap_info(entry)->flags & SWP_STABLE_WRITES)) {
+Hi Heikki,
+
+On 13/04/22 16:07, Heikki Krogerus wrote:
+> On Wed, Apr 13, 2022 at 03:32:50PM +0530, Aswath Govindraju wrote:
+>> Hi Heikki,
+>>
+>> On 13/04/22 15:04, Heikki Krogerus wrote:
+>>> Hi Aswath,
 >>>
->>> Really sorry for late respond and a newbie question. IIUC, if SWP_STABLE_WRITES is set,
->>> it means concurrent page modifications while under writeback is not supported. For these
->>> problematic swap backends, exclusive marker is dropped. So the above if statement is to
->>> filter out these problematic swap backends which have SWP_STABLE_WRITES set. If so, the
->>> above check should be && (swp_swap_info(entry)->flags & SWP_STABLE_WRITES)), i.e. no "!".
->>> Or am I miss something?
+>>> On Tue, Apr 12, 2022 at 08:20:58PM +0530, Aswath Govindraju wrote:
+>>>> In some cases the interrupt line from the pd controller may not be
+>>>> connected. In these cases, poll the status of various events.
+>>>
+>>> Well, if the alert/interrupt line is not connected anywhere, then
+>>> polling is the only way to go. I'm fine with that, but the driver
+>>> really should be told that there is no interrupt. Using polling
+>>> whenever request_threaded_irq() returns -EINVAL is wrong. We really
+>>> should not even attempt to request the interrupt if there is no
+>>> interrupt for the device.
+>>>
+>>> Isn't there any way you can get that information from DT? Or how is
+>>> the device enumerated in your case?
+>>>
 >>
->> Oh, thanks for your careful eyes!
+>> Would checking if (client->irq) field is populated, to decide between
+>> polling and interrupts be a good approach?
 >>
->> Indeed, SWP_STABLE_WRITES indicates that the backend *requires* stable
->> writes, meaning, we must not modify the page while writeback is active.
->>
->> So if and only if that is set, we must drop the exclusive marker.
->>
->> This essentially corresponds to previous reuse_swap_page() logic:
->>
->> bool reuse_swap_page(struct page *page)
->> {
->> ...
->> 	if (!PageWriteback(page)) {
->> 		...
->> 	} else {
->> 		...
->> 		if (p->flags & SWP_STABLE_WRITES) {
->> 			spin_unlock(&p->lock);
->> 			return false;
->> 		}
->> ...
->> }
->>
->> Fortunately, this only affects such backends. For backends without
->> SWP_STABLE_WRITES, the current code is simply sub-optimal.
->>
->>
->> So yes, this has to be
->>
->> } else if (exclusive && PageWriteback(page) &&
->> 	   (swp_swap_info(entry)->flags & SWP_STABLE_WRITES)) {
->>
+>> I am sorry but I did not understand what you meant by device getting
+>> enumerated. The device is on an I2C bus and gets enumerated based on the
+>> I2C address provided. The device does not have I2C_IRQ line connected,
+>> in my case.
 > 
-> I am glad that my question helps. :)
+> "I2C devices are not enumerated at hardware level":
+> https://www.kernel.org/doc/html/latest/i2c/instantiating-devices.html
+> 
+> So your PD controller I2C slave device has to be either described in
+> Devicetree or ACPI tables, or there is a board file or platform driver
+> that actually populates the device for it.
+> 
+> Can you tell a little bit about the platform you are running? Is it
+> ARM, x86, or what, and is it ACPI or DT platform?
 > 
 
-This is the kind of review I was hoping for :)
+Got it. Currently I am testing on a ARM platform and the I2C device tree
+nodes are populated in the device tree. This is how the PD controller
+gets enumerated.
 
 
-@Andrew, the following change is necessary:
+> thanks,
+> 
 
-diff --git a/mm/memory.c b/mm/memory.c
-index 3ad39bd66203..8b3cb73f5e44 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3747,7 +3747,7 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
-                         */
-                        exclusive = true;
-                } else if (exclusive && PageWriteback(page) &&
--                          !(swp_swap_info(entry)->flags & SWP_STABLE_WRITES)) {
-+                          (swp_swap_info(entry)->flags & SWP_STABLE_WRITES)) {
-                        /*
-                         * This is tricky: not all swap backends support
-                         * concurrent page modifications while under writeback.
-
-
-Do you:
-
-a) Want to squash it
-b) Want me to resend a new version of this patch only
-c) Want me to resend a new version of the patch set
-
-In the meantime, I'll try testing with a suitable backend. IIRC, zram should do the trick.
 
 -- 
 Thanks,
-
-David / dhildenb
-
+Aswath
