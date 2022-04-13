@@ -2,66 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD55C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE99C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 22:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236770AbiDMWXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 18:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
+        id S238007AbiDMWXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 18:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238145AbiDMWW3 (ORCPT
+        with ESMTP id S238062AbiDMWW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 18:22:29 -0400
 Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9A224F36;
-        Wed, 13 Apr 2022 15:19:50 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C2EC85C0347;
-        Wed, 13 Apr 2022 18:19:49 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B633B240BB;
+        Wed, 13 Apr 2022 15:19:46 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id D15815C033E;
+        Wed, 13 Apr 2022 18:19:45 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 13 Apr 2022 18:19:49 -0400
+  by compute5.internal (MEProxy); Wed, 13 Apr 2022 18:19:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649888389; x=1649974789; bh=Ix
-        LBprYD2crzgvrunvWymMhkE+BNBrBvN21E3wbwSFs=; b=F0pVSeeJEeN1Z2J7WT
-        2sMD/Ww3ziFwKcYXwvLoicHMtLPYxUv98wFKu8AoOtsK00YNmglvA8b++NZ/DxLg
-        OtcCt2AZjZfa/qVRgVDqwPyCOFuKEeKof/AiOp8kgUnZof16PdUbH+X/t5gmHLuv
-        s6p7OrBqffK+IT8QVY32iD+oyVNWFnkma9/q9mLy4sZq/IuukJmv7IhPS09/j/Mq
-        cJbaT3w2lH9pQPmThQhf4ir3Ka5IL0rK+uc7DQkx7n/8OajV8Y4TAOzEFPjheBdo
-        G0Tum5uKE+RSsr3yr/OAFoKtlSMeiGpTqvndwMHSWzGURbvbT2OKxGRzhQottMaF
-        2IBg==
+        :subject:subject:to:to; s=fm2; t=1649888385; x=1649974785; bh=yM
+        jDNZk22ts1QSeZuHA3iHwk+1FDAWv58BJ1pfqsy94=; b=whdq+uqQW2un1gyfjq
+        QH/YN4888u9WajBX6vFAnjzIXIm/0H3dnT7DmqEnv87XNVxuQAICx/F0JRuxFrvd
+        jBoSJYdsPUeZ3VtIuzLd7+W5IC2xlLLWIDR30BHtuL6zjv5ydSTpOzE7Czl3L/QH
+        V90CyPj8z5UYaSPfAHCySnGFxjtfxBrHaXUv74TwKHQmynfgrlCWE4JZHynJbUeH
+        gifbwQA52NroLRoKZqU+rCtB6va60KonAfmTE3ohwg36qb3Xsjjt90XwmMRFpdIJ
+        88yXZ8u57UFZnxNQhEwLraXeT4/bjSA3xsXeV3gyVMvB7ttGj7bse4a9xYVKWaRR
+        hy5g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1649888389; x=1649974789; bh=IxLBprYD2crzgvrunvWymMhkE+BNBrBvN21
-        E3wbwSFs=; b=WHBYwoeJdEcfsRY7exrnwpuzazuw+st4toSxu0pPTvq2UaKL/+a
-        hyzHJM1H4mohKKXkkyM0NOygsRl1XqqIGjwSX7Jj5s7F8R58wWbVSQye0psNMAnd
-        +U7TZYi053Tk13RPWLCP/EqiahCyQteZk+dB3FMgOhzQ3nfTI1DHcjEUndB7tbza
-        reNqUjwq8EmnHJpDPGZYg04pAnFYH8oBlvJACrrlB3eoDI8RjURVYckVxKwQPe1H
-        ziPmtc1FZTC5exk5RP9I7iiW2VzYsW4Q40QH4pm7wii4LsJdUuXTsPJY5PiYVNAZ
-        vtj8D14l++mzYOgkQ6DYfgEK22Qc3O3sphQ==
-X-ME-Sender: <xms:hUxXYpviu3SplvEBuzVQzCxj24wSzkkb3cPrkmcMqquTXkZzBm2N2Q>
-    <xme:hUxXYifacBrxLBK_zklbk_BlLX8F6du3M0-ha3STfxLuffbb80Wrkws23DwXeIsRv
-    JTm9x19gI6E254Scg>
-X-ME-Received: <xmr:hUxXYsxEYIs_KwvGV7BKkf5udtjZFV8QOkleoGfeKBalk-OqfXFOjVM76Te_-kWXcVM5apxcizGh9ybnUlOpj86p4n73TQF5GMCmMy0gmNpVoYZN-j0RH7x0DK-y2HuAkG2Scg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddguddtucetufdoteggodetrfdotf
+        1649888385; x=1649974785; bh=yMjDNZk22ts1QSeZuHA3iHwk+1FDAWv58BJ
+        1pfqsy94=; b=o/8Pde0ihVf9vakWSJ1n68tyevicS+zcAaZm7XMY10IOCxXE/3k
+        po4pyR51AAUrVHwYmXCbHsyrMxJOQfmkwukTuGlIo6QbPXPrceg0K3/VD5R5H1oW
+        A9fkmmqGST3jlFXnqfEtq9CWDhz0FHG/0KtkRZsokjhNbKCxKxlN029jZyTJcPO4
+        L1XuIOZkPtNTI9GGBy2OtRtu6NaOhDu051UnsDAmJzfP6O2BIARGPw9REoFYlT2Q
+        Rg9GZ3+KiK0YlR5BhYR96LwzxvRzMNvyF3KBEviqET3TYoEbDqL5ZUTi4Zjymd7g
+        IpXOgxYuYM1gt4Zw43gmmnfJkpaRF+sfC8A==
+X-ME-Sender: <xms:gUxXYmlzzmd5E_pGapCyclHwlRi7EyOIlSvSfpgd4DO0QWEmUfjsIg>
+    <xme:gUxXYt2VWWmV0BCM14pETKtdijxEicp53B9w1vINterkFgexd_4a12NKPODrzHR-U
+    MQH3Xztx02q0jCWaA>
+X-ME-Received: <xmr:gUxXYkq15RwDtSiJ4r7PhexTbsaPKnXpKpMfuJBNsi60wJTPKPNsW8L48QZTsnkfmGXlMcjGPrZfsxt7Zv7TIwe4rYV_sAkWfqvaO8bVk2qrxe1pZRUAU1E1PCrivsDogpss0g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelvddgtdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
     lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpefhvddvjeevleduteevveeiieetudejheetgeevgefhveehtdegieet
-    jeevgeduveenucffohhmrghinhepphhinhgvieegrdhorhhgnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
-    ugdrohhrgh
-X-ME-Proxy: <xmx:hUxXYgP_v27Gd3MKzFtDqt2kVC3JGeqelAOByojBEsBMJoSpO9ibXQ>
-    <xmx:hUxXYp8K5JPfkOl_4YkzTZKl4Cd_UvJ8PGSXBD5eSAyMR-G6JSj4dQ>
-    <xmx:hUxXYgX8HQdle_OqA-eBsXLQqvGcAfEgQJ9OIR6qsKmz0rNZ6C9s8A>
-    <xmx:hUxXYp_pyOQeLmYo3hEfuOCGDXR-rM59OZmdIQ4to7qpz5SM2bT-xw>
+    frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
+    gfejheeuieenucevlhhushhtvghrufhiiigvpeehnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:gUxXYqkYyj82kfXzZO_ipJbVaQadtaZuhrgheaTCrSJm0ZtWQEQiKA>
+    <xmx:gUxXYk0aREGZQ7JjmQeIqQZo7Yc5aauSviaP2xNvGiVMq-N2tnz0pA>
+    <xmx:gUxXYhv9gn-xAXk8Zcb5b1UfIM5ilXUky45x4-IbTBxp3i1GKxqLcw>
+    <xmx:gUxXYlW4NzoEqoBeR7b5ZHajiF0QBmyXDrOU_oYAI4K101oDvC1BTg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 18:19:48 -0400 (EDT)
+ 13 Apr 2022 18:19:44 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
         Sandy Huang <hjc@rock-chips.com>,
@@ -87,9 +86,9 @@ Cc:     linux-rockchip@lists.infradead.org,
         Thomas Zimmermann <tzimmermann@suse.de>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 14/16] drm/panel-simple: Add eInk ED103TC2
-Date:   Wed, 13 Apr 2022 17:19:14 -0500
-Message-Id: <20220413221916.50995-15-samuel@sholland.org>
+Subject: [RFC PATCH 12/16] drm/rockchip: ebc: Add support for direct mode
+Date:   Wed, 13 Apr 2022 17:19:12 -0500
+Message-Id: <20220413221916.50995-13-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413221916.50995-1-samuel@sholland.org>
 References: <20220413221916.50995-1-samuel@sholland.org>
@@ -99,86 +98,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ED103TC2 is a 10.3" 1872x1404 eInk panel which supports up to 16 levels
-of grayscale and an 85 Hz frame rate. The timings and polarities here
-were taken from the manufacturer's datasheet.
+Currently, 3-window mode causes some artifacting. Until the cause is
+determined, provide an option to use direct mode instead. Direct mode
+does the waveform lookups in software, so it has much higher CPU usage.
+This limits the frame rate below the panel's ideal 85 Hz, so it leads to
+slightly lower brightness accuracy. On the other hand, it doesn't leave
+random lines all over the screen.
 
-Since this panel is an electrophoretic display (EPD), the color depth is
-independent from the bus width. Instead, it is largely determined by the
-number of frames in the selected waveform. Each pixel uses two parallel
-data lines to specify one of only three states each frame: positive,
-negative, or no voltage.
-
-This specific panel has a 16-bit data bus, allowing it to update 8
-pixels during each source driver (horizontal) clock cycle. As a result,
-the horizontal timings given in the datasheet were all multiplied by 8
-to convert the units from clock cycles to pixels.
-
-Since the 16-bit data bus is double the width of the usual 8-bit bus
-used by eInk panels, the source driver clock will be half the usual
-frequency. This is signified by the DRM_MODE_FLAG_CLKDIV2 flag.
-
-The hskew parameter provides the spacing between the horizontal sync
-puls and the gate driver (vertical) clock pulse. This spacing is
-symmetrical on both sides, so it can be used to compute the gate
-driver clock pulse width.
-
-Datasheet: https://files.pine64.org/doc/quartz64/Eink%20P-511-828-V1_ED103TC2%20Formal%20Spec%20V1.0_20190514.pdf
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
- drivers/gpu/drm/panel/panel-simple.c | 31 ++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/gpu/drm/rockchip/rockchip_ebc.c | 97 ++++++++++++++++++++++---
+ 1 file changed, 88 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index a34f4198a534..c6b104ba01ee 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -1686,6 +1686,34 @@ static const struct panel_desc edt_etmv570g2dhu = {
- 	.connector_type = DRM_MODE_CONNECTOR_DPI,
- };
+diff --git a/drivers/gpu/drm/rockchip/rockchip_ebc.c b/drivers/gpu/drm/rockchip/rockchip_ebc.c
+index dcd8c8e8208e..93d689ff0933 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_ebc.c
++++ b/drivers/gpu/drm/rockchip/rockchip_ebc.c
+@@ -162,6 +162,10 @@ static bool diff_mode = true;
+ module_param(diff_mode, bool, 0644);
+ MODULE_PARM_DESC(diff_mode, "only compute waveforms for changed pixels");
  
-+static const struct drm_display_mode eink_ed103tc2_mode = {
-+	.clock = 266693,
-+	.hdisplay = 1872,
-+	.hsync_start = 1872 + 184,
-+	.hsync_end = 1872 + 184 + 88,
-+	.htotal = 1872 + 184 + 88 + 64,
-+	.hskew = 136,
-+	.vdisplay = 1404,
-+	.vsync_start = 1404 + 12,
-+	.vsync_end = 1404 + 12 + 1,
-+	.vtotal = 1404 + 12 + 1 + 4,
-+	.flags = DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_NVSYNC |
-+		 DRM_MODE_FLAG_HSKEW | DRM_MODE_FLAG_CLKDIV2,
-+};
++static bool direct_mode = true;
++module_param(direct_mode, bool, 0444);
++MODULE_PARM_DESC(direct_mode, "compute waveforms in software (software LUT)");
 +
-+static const struct panel_desc eink_ed103tc2 = {
-+	.modes = &eink_ed103tc2_mode,
-+	.num_modes = 1,
-+	.bpc = 4,
-+	.size = {
-+		.width = 210,
-+		.height = 157,
-+	},
-+	.bus_format = MEDIA_BUS_FMT_FIXED,
-+	.bus_flags = DRM_BUS_FLAG_DE_LOW | DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE,
-+	.connector_type = DRM_MODE_CONNECTOR_DPI,
-+};
+ static bool skip_reset;
+ module_param(skip_reset, bool, 0444);
+ MODULE_PARM_DESC(skip_reset, "skip the initial display reset");
+@@ -370,6 +374,59 @@ static bool rockchip_ebc_schedule_area(struct list_head *areas,
+ 	return true;
+ }
+ 
++static void rockchip_ebc_blit_direct(const struct rockchip_ebc_ctx *ctx,
++				     u8 *dst, u8 phase,
++				     const struct drm_epd_lut *lut,
++				     const struct drm_rect *clip)
++{
++	const u32 *phase_lut = (const u32 *)lut->buf + 16 * phase;
++	unsigned int dst_pitch = ctx->phase_pitch / 4;
++	unsigned int src_pitch = ctx->gray4_pitch;
++	unsigned int x, y;
++	u8 *dst_line;
++	u32 src_line;
 +
- static const struct display_timing eink_vb3300_kca_timing = {
- 	.pixelclock = { 40000000, 40000000, 40000000 },
- 	.hactive = { 334, 334, 334 },
-@@ -3807,6 +3835,9 @@ static const struct of_device_id platform_of_match[] = {
- 	}, {
- 		.compatible = "edt,etmv570g2dhu",
- 		.data = &edt_etmv570g2dhu,
-+	}, {
-+		.compatible = "eink,ed103tc2",
-+		.data = &eink_ed103tc2,
- 	}, {
- 		.compatible = "eink,vb3300-kca",
- 		.data = &eink_vb3300_kca,
++	dst_line = dst + clip->y1 * dst_pitch + clip->x1 / 4;
++	src_line = clip->y1 * src_pitch + clip->x1 / 2;
++
++	for (y = clip->y1; y < clip->y2; y++) {
++		u32 src_offset = src_line;
++		u8 *dbuf = dst_line;
++
++		for (x = clip->x1; x < clip->x2; x += 4) {
++			u8 prev0 = ctx->prev[src_offset];
++			u8 next0 = ctx->next[src_offset++];
++			u8 prev1 = ctx->prev[src_offset];
++			u8 next1 = ctx->next[src_offset++];
++
++			/*
++			 * The LUT is 256 phases * 16 next * 16 previous levels.
++			 * Each value is two bits, so the last dimension neatly
++			 * fits in a 32-bit word.
++			 */
++			u8 data = ((phase_lut[next0 & 0xf] >> ((prev0 & 0xf) << 1)) & 0x3) << 0 |
++				  ((phase_lut[next0 >>  4] >> ((prev0 >>  4) << 1)) & 0x3) << 2 |
++				  ((phase_lut[next1 & 0xf] >> ((prev1 & 0xf) << 1)) & 0x3) << 4 |
++				  ((phase_lut[next1 >>  4] >> ((prev1 >>  4) << 1)) & 0x3) << 6;
++
++			/* Diff mode ignores pixels that did not change brightness. */
++			if (diff_mode) {
++				u8 mask = ((next0 ^ prev0) & 0x0f ? 0x03 : 0) |
++					  ((next0 ^ prev0) & 0xf0 ? 0x0c : 0) |
++					  ((next1 ^ prev1) & 0x0f ? 0x30 : 0) |
++					  ((next1 ^ prev1) & 0xf0 ? 0xc0 : 0);
++
++				data &= mask;
++			}
++
++			*dbuf++ = data;
++		}
++
++		dst_line += dst_pitch;
++		src_line += src_pitch;
++	}
++}
++
+ static void rockchip_ebc_blit_phase(const struct rockchip_ebc_ctx *ctx,
+ 				    u8 *dst, u8 phase,
+ 				    const struct drm_rect *clip)
+@@ -472,8 +529,13 @@ static void rockchip_ebc_partial_refresh(struct rockchip_ebc *ebc,
+ 			 * be neutral for every waveform.
+ 			 */
+ 			phase = frame_delta >= last_phase ? 0xff : frame_delta;
+-			rockchip_ebc_blit_phase(ctx, phase_buffer, phase,
+-						&area->clip);
++			if (direct_mode)
++				rockchip_ebc_blit_direct(ctx, phase_buffer,
++							 phase, &ebc->lut,
++							 &area->clip);
++			else
++				rockchip_ebc_blit_phase(ctx, phase_buffer,
++							phase, &area->clip);
+ 
+ 			/*
+ 			 * Copy ctx->next to ctx->prev after the last phase.
+@@ -513,7 +575,8 @@ static void rockchip_ebc_partial_refresh(struct rockchip_ebc *ebc,
+ 		if (list_empty(&areas))
+ 			break;
+ 
+-		regmap_write(ebc->regmap, EBC_WIN_MST2,
++		regmap_write(ebc->regmap,
++			     direct_mode ? EBC_WIN_MST0 : EBC_WIN_MST2,
+ 			     phase_handle);
+ 		regmap_write(ebc->regmap, EBC_CONFIG_DONE,
+ 			     EBC_CONFIG_DONE_REG_CONFIG_DONE);
+@@ -581,10 +644,12 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
+ 	/*
+ 	 * The hardware has a separate bit for each mode, with some priority
+ 	 * scheme between them. For clarity, only set one bit at a time.
++	 *
++	 * NOTE: In direct mode, no mode bits are set.
+ 	 */
+ 	if (global_refresh) {
+ 		dsp_ctrl |= EBC_DSP_CTRL_DSP_LUT_MODE;
+-	} else {
++	} else if (!direct_mode) {
+ 		epd_ctrl |= EBC_EPD_CTRL_DSP_THREE_WIN_MODE;
+ 		if (diff_mode)
+ 			dsp_ctrl |= EBC_DSP_CTRL_DSP_DIFF_MODE;
+@@ -647,8 +712,12 @@ static int rockchip_ebc_refresh_thread(void *data)
+ 		 */
+ 		memset(ctx->prev, 0xff, ctx->gray4_size);
+ 		memset(ctx->next, 0xff, ctx->gray4_size);
+-		memset(ctx->phase[0], 0xff, ctx->phase_size);
+-		memset(ctx->phase[1], 0xff, ctx->phase_size);
++		/*
++		 * NOTE: In direct mode, the phase buffers are repurposed for
++		 * source driver polarity data, where the no-op value is 0.
++		 */
++		memset(ctx->phase[0], direct_mode ? 0 : 0xff, ctx->phase_size);
++		memset(ctx->phase[1], direct_mode ? 0 : 0xff, ctx->phase_size);
+ 
+ 		/*
+ 		 * LUTs use both the old and the new pixel values as inputs.
+@@ -1048,12 +1117,22 @@ static void rockchip_ebc_plane_atomic_update(struct drm_plane *plane,
+ 		/* Convert from plane coordinates to CRTC coordinates. */
+ 		drm_rect_translate(dst_clip, translate_x, translate_y);
+ 
+-		/* Adjust the clips to always process full bytes (2 pixels). */
+-		adjust = dst_clip->x1 & 1;
++		/*
++		 * Adjust the clips to always process full bytes (2 pixels).
++		 *
++		 * NOTE: in direct mode, the minimum block size is 4 pixels.
++		 */
++		if (direct_mode)
++			adjust = dst_clip->x1 & 3;
++		else
++			adjust = dst_clip->x1 & 1;
+ 		dst_clip->x1 -= adjust;
+ 		src_clip.x1  -= adjust;
+ 
+-		adjust = dst_clip->x2 & 1;
++		if (direct_mode)
++			adjust = ((dst_clip->x2 + 3) ^ 3) & 3;
++		else
++			adjust = dst_clip->x2 & 1;
+ 		dst_clip->x2 += adjust;
+ 		src_clip.x2  += adjust;
+ 
 -- 
 2.35.1
 
