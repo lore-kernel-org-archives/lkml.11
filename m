@@ -2,172 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BAA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2284EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 05:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232553AbiDMFkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 01:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
+        id S232072AbiDMFnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 01:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232470AbiDMFkD (ORCPT
+        with ESMTP id S229519AbiDMFnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 01:40:03 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03CF3134B;
-        Tue, 12 Apr 2022 22:37:43 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KdWX949fMzgYbZ;
-        Wed, 13 Apr 2022 13:35:37 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Apr
- 2022 13:37:26 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-Subject: [PATCH bpf-next 1/5] arm64: ftrace: Add ftrace direct call support
-Date:   Wed, 13 Apr 2022 01:49:55 -0400
-Message-ID: <20220413054959.1053668-2-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220413054959.1053668-1-xukuohai@huawei.com>
-References: <20220413054959.1053668-1-xukuohai@huawei.com>
+        Wed, 13 Apr 2022 01:43:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382C6205F9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:41:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C619A61BFE
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:41:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 300C1C385AB
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:41:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649828490;
+        bh=6fyXgGmnncP9RnqtMEVqhcHnnTV4ib2I9cy9gPtxqnU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=UP8035ibOxc8zEcw0pPcAIIY+p1XKSIkPB4Y336Y0Dz0pFAikXra/CRVL2hha5Qbn
+         AFSrPEZOT4kxqEcpkKwBH1tQ7WnJ8eADILuwh4QBtUNPDyk/+Kx3ok+ijop4kf8Ibp
+         uJA19ExlQLMFwt/oYsQoo2G4QW2CtpYpmScKu/CIXyKjEOkWRyRc+2BC5f13i8FfBZ
+         WN7OYLgBi1Kch2JJ8OIbE0Ax+LXB8XBb5ZG3nCWHKmhHx+JvtHKrD4vKIzexsKet7D
+         DtgLXCr2AUY1aJsk3nlAIcI3mZgu4HCzw5vyk7z1RyJQky+XiqOoTohhrudI0V0adE
+         SEBrlkUGlTV6g==
+Received: by mail-vs1-f53.google.com with SMTP id f32so635206vsv.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 22:41:30 -0700 (PDT)
+X-Gm-Message-State: AOAM532NxTbZYwxKekmvhkhFccjRMv2aWJN7v95jx958/1K+ALu120GD
+        3NLIPNUpvQTULKEiJtO2wv0FR9EcnSTv9hHwQNc=
+X-Google-Smtp-Source: ABdhPJzpwykgp0eknHlnFcTmKfeIedOUwl0K6MIZjruWMpZxjRLZgyIMm3a18FZ2AyDQBAOoFJrUtGGyWiQ3aXs8A/8=
+X-Received: by 2002:a05:6102:1241:b0:325:6bfb:ab75 with SMTP id
+ p1-20020a056102124100b003256bfbab75mr13574254vsg.2.1649828489116; Tue, 12 Apr
+ 2022 22:41:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+References: <20220413030307.133807-1-heiko@sntech.de> <20220413030307.133807-11-heiko@sntech.de>
+In-Reply-To: <20220413030307.133807-11-heiko@sntech.de>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Wed, 13 Apr 2022 13:41:18 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQOEQ3ukNT8+3uL_wM82xobLedJHrNk4DGTRzB3d_Ui8g@mail.gmail.com>
+Message-ID: <CAJF2gTQOEQ3ukNT8+3uL_wM82xobLedJHrNk4DGTRzB3d_Ui8g@mail.gmail.com>
+Subject: Re: [PATCH v9 10/12] riscv: remove FIXMAP_PAGE_IO and fall back to
+ its default value
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Wei Fu <wefu@redhat.com>, liush <liush@allwinnertech.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Drew Fustini <drew@beagleboard.org>,
+        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Greg Favor <gfavor@ventanamicro.com>,
+        Andrea Mondelli <andrea.mondelli@huawei.com>,
+        Jonathan Behrens <behrensj@mit.edu>,
+        "Xinhaoqu (Freddie)" <xinhaoqu@huawei.com>,
+        Nick Kossifidis <mick@ics.forth.gr>,
+        Allen Baum <allen.baum@esperantotech.com>,
+        Josh Scheid <jscheid@ventanamicro.com>,
+        Richard Trauben <rtrauben@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Christoph Muellner <cmuellner@linux.com>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ftrace direct support for arm64.
+Reviewed-by: Guo Ren <guoren@kernel.org>
 
-1. When there is custom trampoline only, replace the fentry nop to a
-   jump instruction that jumps directly to the custom trampoline.
+On Wed, Apr 13, 2022 at 11:05 AM Heiko Stuebner <heiko@sntech.de> wrote:
+>
+> If not defined in the arch, FIXMAP_PAGE_IO defaults to PAGE_KERNEL_IO,
+> which we defined when adding the svpbmt implementation.
+>
+> So drop the FIXMAP_PAGE_IO riscv define.
+>
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/riscv/include/asm/fixmap.h | 2 --
+>  1 file changed, 2 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/fixmap.h b/arch/riscv/include/asm/fixmap.h
+> index 3cfece8b6568..5c3e7b97fcc6 100644
+> --- a/arch/riscv/include/asm/fixmap.h
+> +++ b/arch/riscv/include/asm/fixmap.h
+> @@ -45,8 +45,6 @@ enum fixed_addresses {
+>         __end_of_fixed_addresses
+>  };
+>
+> -#define FIXMAP_PAGE_IO         PAGE_KERNEL
+> -
+>  #define __early_set_fixmap     __set_fixmap
+>
+>  #define __late_set_fixmap      __set_fixmap
+> --
+> 2.35.1
+>
 
-2. When ftrace trampoline and custome coexist, jump from fentry to
-   ftrace trampoline first, then jump to custom trampoline when ftrace
-   trampoline exits. The currently unused register pt_regs->x0 is used
-   as an intermediary for jumping from ftrace trampoline to custom
-   trampoline.
 
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
----
- arch/arm64/Kconfig               |  2 ++
- arch/arm64/include/asm/ftrace.h  | 10 ++++++++++
- arch/arm64/kernel/asm-offsets.c  |  1 +
- arch/arm64/kernel/entry-ftrace.S | 18 +++++++++++++++---
- 4 files changed, 28 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 57c4c995965f..81cc330daafc 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -177,6 +177,8 @@ config ARM64
- 	select HAVE_DYNAMIC_FTRACE
- 	select HAVE_DYNAMIC_FTRACE_WITH_REGS \
- 		if $(cc-option,-fpatchable-function-entry=2)
-+	select HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS \
-+		if DYNAMIC_FTRACE_WITH_REGS
- 	select FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY \
- 		if DYNAMIC_FTRACE_WITH_REGS
- 	select HAVE_EFFICIENT_UNALIGNED_ACCESS
-diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
-index 1494cfa8639b..3a363d6a3bd0 100644
---- a/arch/arm64/include/asm/ftrace.h
-+++ b/arch/arm64/include/asm/ftrace.h
-@@ -78,6 +78,16 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
- 	return addr;
- }
- 
-+static inline void arch_ftrace_set_direct_caller(struct pt_regs *regs,
-+						 unsigned long addr)
-+{
-+	/*
-+	 * Place custom trampoline address in regs->orig_x0 to let ftrace
-+	 * trampoline jump to it.
-+	 */
-+	regs->orig_x0 = addr;
-+}
-+
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
- struct dyn_ftrace;
- int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
-diff --git a/arch/arm64/kernel/asm-offsets.c b/arch/arm64/kernel/asm-offsets.c
-index 1197e7679882..b1ed0bf01c59 100644
---- a/arch/arm64/kernel/asm-offsets.c
-+++ b/arch/arm64/kernel/asm-offsets.c
-@@ -80,6 +80,7 @@ int main(void)
-   DEFINE(S_SDEI_TTBR1,		offsetof(struct pt_regs, sdei_ttbr1));
-   DEFINE(S_PMR_SAVE,		offsetof(struct pt_regs, pmr_save));
-   DEFINE(S_STACKFRAME,		offsetof(struct pt_regs, stackframe));
-+  DEFINE(S_ORIG_X0,		offsetof(struct pt_regs, orig_x0));
-   DEFINE(PT_REGS_SIZE,		sizeof(struct pt_regs));
-   BLANK();
- #ifdef CONFIG_COMPAT
-diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
-index e535480a4069..b1bd6576f205 100644
---- a/arch/arm64/kernel/entry-ftrace.S
-+++ b/arch/arm64/kernel/entry-ftrace.S
-@@ -60,6 +60,9 @@
- 	str	x29, [sp, #S_FP]
- 	.endif
- 
-+	/* Set orig_x0 to zero  */
-+	str     xzr, [sp, #S_ORIG_X0]
-+
- 	/* Save the callsite's SP and LR */
- 	add	x10, sp, #(PT_REGS_SIZE + 16)
- 	stp	x9, x10, [sp, #S_LR]
-@@ -119,12 +122,21 @@ ftrace_common_return:
- 	/* Restore the callsite's FP, LR, PC */
- 	ldr	x29, [sp, #S_FP]
- 	ldr	x30, [sp, #S_LR]
--	ldr	x9, [sp, #S_PC]
--
-+	ldr	x10, [sp, #S_PC]
-+
-+	ldr	x11, [sp, #S_ORIG_X0]
-+	cbz	x11, 1f
-+	/* Set x9 to parent ip before jump to bpf trampoline */
-+	mov	x9,  x30
-+	/* Set lr to self ip */
-+	ldr	x30, [sp, #S_PC]
-+	/* Set x10 (used for return address) to bpf trampoline */
-+	mov	x10, x11
-+1:
- 	/* Restore the callsite's SP */
- 	add	sp, sp, #PT_REGS_SIZE + 16
- 
--	ret	x9
-+	ret	x10
- SYM_CODE_END(ftrace_common)
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 -- 
-2.30.2
+Best Regards
+ Guo Ren
 
+ML: https://lore.kernel.org/linux-csky/
