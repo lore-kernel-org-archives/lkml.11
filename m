@@ -2,206 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E974C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236858AbiDMQal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53036 "EHLO
+        id S236909AbiDMQcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231166AbiDMQae (ORCPT
+        with ESMTP id S236905AbiDMQcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:30:34 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C722457AB
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:28:12 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 3C69C1F85F;
-        Wed, 13 Apr 2022 16:28:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649867291; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6KBdb4VmTn/pYFWt/6bB7of9YM7bDMO/GcHFky/8y9I=;
-        b=DU+HQ89UjD06b24wlLrKpJV2S6O8fTX7sPiiaDe1a88vFba0Ms6yfuO3re5jmtDgOj3Fok
-        TxxBs5fTagnMfwnHoiBSDHhfRZhznpIvy35DjGH3HU5ckmGdyBWb9jHu1DQePI4tCGP79t
-        QlXEAy0XjyrWhhrp9vCnI1yRQyQ7Zmg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649867291;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6KBdb4VmTn/pYFWt/6bB7of9YM7bDMO/GcHFky/8y9I=;
-        b=2IMJ7dl+hMr8y+/nt+9WGKZAjpxH6qSdvNoKeRJrh7N5ThCMt47NVXICG7kGUnHzGkW9li
-        Z2V4y9x4Vs1Nm/Bw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B7A8113A91;
-        Wed, 13 Apr 2022 16:28:10 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 0okTLBr6VmJKSgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 13 Apr 2022 16:28:10 +0000
-Message-ID: <012e3889-563b-e7fc-c2e3-e7a6373a55ac@suse.cz>
-Date:   Wed, 13 Apr 2022 18:28:10 +0200
+        Wed, 13 Apr 2022 12:32:35 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9763540E77;
+        Wed, 13 Apr 2022 09:30:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649867413; x=1681403413;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qDkbU8XSNk1eujhrIWUtPP6zepSDfhWBReA8xRFeVB8=;
+  b=dxcFuf8zG5CI9waPPbK/mqPOqdcYDiEAqN8oHs5PK4gCzEwlgOcxVVQB
+   l9idX0amCIk3cZweIuvDJ0OENVMRlPpAnFm8VNaPyf5JAiRdUi6Rov8gv
+   qUmrU9mTU/J+Y7a3hr58M6Jp53ycT/dY54eoYT13jBj5dx/vfJMurBGzD
+   TEOQw1aOg7hPzgohBDIDXVORUCDmLRNjZd9g7GVhEXu1nGtPpn6LGn+bn
+   ZV1VyvmXjSeF8CPtVRvkt+jwqugOMA8ybCqRYea/t3ogqR4+WMRoRZQ4Q
+   AGFglmLKIZ4AJS88ujsKXT1y/deCN3QgmR2KagV/obk6cPCMko+/hpsks
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="243299923"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="243299923"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:30:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="724965935"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 13 Apr 2022 09:30:09 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 260B412C; Wed, 13 Apr 2022 19:30:08 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] iio: gyro: mpu3050: Make use of device properties
+Date:   Wed, 13 Apr 2022 19:30:04 +0300
+Message-Id: <20220413163004.84789-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-13-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v3 12/16] mm: remember exclusively mapped anonymous pages
- with PG_anon_exclusive
-In-Reply-To: <20220329160440.193848-13-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 18:04, David Hildenbrand wrote:
-> Let's mark exclusively mapped anonymous pages with PG_anon_exclusive as
-> exclusive, and use that information to make GUP pins reliable and stay
-> consistent with the page mapped into the page table even if the
-> page table entry gets write-protected.
-> 
-> With that information at hand, we can extend our COW logic to always
-> reuse anonymous pages that are exclusive. For anonymous pages that
-> might be shared, the existing logic applies.
-> 
-> As already documented, PG_anon_exclusive is usually only expressive in
-> combination with a page table entry. Especially PTE vs. PMD-mapped
-> anonymous pages require more thought, some examples: due to mremap() we
-> can easily have a single compound page PTE-mapped into multiple page tables
-> exclusively in a single process -- multiple page table locks apply.
-> Further, due to MADV_WIPEONFORK we might not necessarily write-protect
-> all PTEs, and only some subpages might be pinned. Long story short: once
-> PTE-mapped, we have to track information about exclusivity per sub-page,
-> but until then, we can just track it for the compound page in the head
-> page and not having to update a whole bunch of subpages all of the time
-> for a simple PMD mapping of a THP.
-> 
-> For simplicity, this commit mostly talks about "anonymous pages", while
-> it's for THP actually "the part of an anonymous folio referenced via
-> a page table entry".
-> 
-> To not spill PG_anon_exclusive code all over the mm code-base, we let
-> the anon rmap code to handle all PG_anon_exclusive logic it can easily
-> handle.
-> 
-> If a writable, present page table entry points at an anonymous (sub)page,
-> that (sub)page must be PG_anon_exclusive. If GUP wants to take a reliably
-> pin (FOLL_PIN) on an anonymous page references via a present
-> page table entry, it must only pin if PG_anon_exclusive is set for the
-> mapped (sub)page.
-> 
-> This commit doesn't adjust GUP, so this is only implicitly handled for
-> FOLL_WRITE, follow-up commits will teach GUP to also respect it for
-> FOLL_PIN without !FOLL_WRITE, to make all GUP pins of anonymous pages
+Convert the module to be property provider agnostic and allow
+it to be used on non-OF platforms.
 
-	   without FOLL_WRITE ?
+While at it, reuse temporary device pointer in the same function.
 
-> fully reliable.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/gyro/mpu3050-core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-<snip>
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index ea387efab62d..a2dafdb64692 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -26,6 +26,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
++#include <linux/property.h>
+ #include <linux/random.h>
+ #include <linux/slab.h>
+ 
+@@ -1050,6 +1051,7 @@ static const struct iio_trigger_ops mpu3050_trigger_ops = {
+ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+ {
+ 	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
++	struct device *dev = mpu3050->dev;
+ 	unsigned long irq_trig;
+ 	int ret;
+ 
+@@ -1061,8 +1063,7 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+ 		return -ENOMEM;
+ 
+ 	/* Check if IRQ is open drain */
+-	if (of_property_read_bool(mpu3050->dev->of_node, "drive-open-drain"))
+-		mpu3050->irq_opendrain = true;
++	mpu3050->irq_opendrain = device_property_read_bool(dev, "drive-open-drain");
+ 
+ 	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
+ 	/*
+@@ -1118,13 +1119,12 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+ 				   mpu3050->trig->name,
+ 				   mpu3050->trig);
+ 	if (ret) {
+-		dev_err(mpu3050->dev,
+-			"can't get IRQ %d, error %d\n", irq, ret);
++		dev_err(dev, "can't get IRQ %d, error %d\n", irq, ret);
+ 		return ret;
+ 	}
+ 
+ 	mpu3050->irq = irq;
+-	mpu3050->trig->dev.parent = mpu3050->dev;
++	mpu3050->trig->dev.parent = dev;
+ 	mpu3050->trig->ops = &mpu3050_trigger_ops;
+ 	iio_trigger_set_drvdata(mpu3050->trig, indio_dev);
+ 
+-- 
+2.35.1
 
-> @@ -202,11 +203,26 @@ static inline int is_writable_migration_entry(swp_entry_t entry)
->  	return unlikely(swp_type(entry) == SWP_MIGRATION_WRITE);
->  }
->  
-> +static inline int is_readable_migration_entry(swp_entry_t entry)
-> +{
-> +	return unlikely(swp_type(entry) == SWP_MIGRATION_READ);
-> +}
-> +
-> +static inline int is_readable_exclusive_migration_entry(swp_entry_t entry)
-> +{
-> +	return unlikely(swp_type(entry) == SWP_MIGRATION_READ_EXCLUSIVE);
-> +}
-
-This one seems to be missing a !CONFIG_MIGRATION counterpart. Although the
-only caller __split_huge_pmd_locked() probably indirectly only exists with
-CONFIG_MIGRATION so it's not an immediate issue.  (THP selects COMPACTION
-selects MIGRATION)
-
-<snip>
-
-> @@ -3035,10 +3083,19 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
->  
->  	flush_cache_range(vma, address, address + HPAGE_PMD_SIZE);
->  	pmdval = pmdp_invalidate(vma, address, pvmw->pmd);
-> +
-> +	anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
-> +	if (anon_exclusive && page_try_share_anon_rmap(page)) {
-> +		set_pmd_at(mm, address, pvmw->pmd, pmdval);
-> +		return;
-
-I am admittedly not too familiar with this code, but looks like this means
-we fail to migrate the THP, right? But we don't seem to be telling the
-caller, which is try_to_migrate_one(), so it will continue and not terminate
-the walk and return false?
-
-> +	}
-> +
->  	if (pmd_dirty(pmdval))
->  		set_page_dirty(page);
->  	if (pmd_write(pmdval))
->  		entry = make_writable_migration_entry(page_to_pfn(page));
-> +	else if (anon_exclusive)
-> +		entry = make_readable_exclusive_migration_entry(page_to_pfn(page));
->  	else
->  		entry = make_readable_migration_entry(page_to_pfn(page));
->  	pmdswp = swp_entry_to_pmd(entry);
-
-<snip>
-
-> @@ -1918,6 +1955,15 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
->  				page_vma_mapped_walk_done(&pvmw);
->  				break;
->  			}
-> +			VM_BUG_ON_PAGE(pte_write(pteval) && folio_test_anon(folio) &&
-> +				       !anon_exclusive, subpage);
-> +			if (anon_exclusive &&
-> +			    page_try_share_anon_rmap(subpage)) {
-> +				set_pte_at(mm, address, pvmw.pte, pteval);
-> +				ret = false;
-> +				page_vma_mapped_walk_done(&pvmw);
-> +				break;
-> +			}
-
-Yeah for the PTE version it seems to do what I'd expect.
-
->  			/*
->  			 * Store the pfn of the page in a special migration
