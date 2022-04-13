@@ -2,232 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E699C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D65C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235282AbiDMLtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        id S232719AbiDMLuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiDMLtc (ORCPT
+        with ESMTP id S232702AbiDMLuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:49:32 -0400
-X-Greylist: delayed 566 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Apr 2022 04:47:11 PDT
-Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0C853B42;
-        Wed, 13 Apr 2022 04:47:11 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 1FA2F454CF;
-        Wed, 13 Apr 2022 11:37:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-type:content-type:content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mta-01; t=1649849861; x=
-        1651664262; bh=nt+H8nVF77Sn8FWBw2z4vHK5Yf8N/vEddSQZADOz7cI=; b=g
-        wSfw8944Ohmpty+OhSWeCRQ00owtwkGboucBHqPVydB2BEGYwfi/nhj1j9GxFPTE
-        m53YgW3+0BH3ZivTH8WxxC/1Y7wiQsvxBby0vZt696ZWrT0UfB0dIAv4T5DYgsmg
-        mDcSSNURm6C4T3U/n6aPfdcfh3x5K2gBNuiInR66jQ=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id WC27he5aZ9y8; Wed, 13 Apr 2022 14:37:41 +0300 (MSK)
-Received: from T-EXCH-04.corp.yadro.com (t-exch-04.corp.yadro.com [172.17.100.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 3B3E645490;
-        Wed, 13 Apr 2022 14:37:41 +0300 (MSK)
-Received: from ubuntu.yadro.com (10.199.0.41) by T-EXCH-04.corp.yadro.com
- (172.17.100.104) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Wed, 13
- Apr 2022 14:37:39 +0300
-From:   <i.m.novikov@yadro.com>
-To:     <sanju.mehta@amd.com>
-CC:     <i.m.novikov@yadro.com>, <vkoul@kernel.org>,
-        <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux@yadro.com>
-Subject: [PATCH] dmaengine: PTDMA: support polled mode
-Date:   Wed, 13 Apr 2022 14:37:33 +0300
-Message-ID: <20220413113733.59041-1-i.m.novikov@yadro.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 13 Apr 2022 07:50:20 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6FAA5AEE3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:47:57 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id t11so3332032eju.13
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 04:47:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jjQ3FZFjqfTD+VcguZaZmmSb5AFyfO4JHpKuzAYkDRc=;
+        b=smonsKckFHLLyesrgqtRISOQeUkyq2vvw0W0wHsj/jkZq2wR1tvbAV1CYBZ8SJf8SX
+         NQe3XfBwwuOFEYEhZGVJ48KSOul2kQp65pwzHWIqlMA1CD9BeNwbXgUxXqiuXJTZHQgi
+         svPuKVbgKc4aOGxjdL/wcDYZoVsGlQzAkkPoeG/VOyY6ElHTXlmBI9mGw6I++l2cEKnl
+         OnhJUX3GZW2zSwPsjzgUbK7u6K1t1Yajvtv0uA8mmaU27klXr0+/I2yuda2bqyIU6kVe
+         4k4HFn0MsibdAhRU3mXTDy2IcB4CaOKyKhu+umRJoTX7gMDRW0izhATV/Yu0o5xJg/ID
+         jP6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jjQ3FZFjqfTD+VcguZaZmmSb5AFyfO4JHpKuzAYkDRc=;
+        b=xehqmbHnJQV9641prV8TUhZ0dPKRtwAgWMDeUOOe9r2xpNEqXNA/E203MOm5rk+r66
+         KJuume9OCJNO/MgflDe7MaP5z3koElNKMhDhUZ2Pf7xq6QBZdLsJFL77Xjz0PxaRj76t
+         viLEOaDLBc9tc0SoZQgbo6WHvKUdaL2qffc4VXEktf/2nS4p9tLnC2U94yCmYkdg11Bn
+         8U5zdGL8TAPgXbfoJ/j5oV3mOBx1yEAQUTgurPNT1Ut4EU9Y2Z7pVuInaAGR3onNP+0c
+         kfuC0dumhrIU8GQjgl1Dgab2MvMr9fHQQ5yTVtbdHYUvDM1zBWRgyL+bRV4Z36BuM74O
+         THbg==
+X-Gm-Message-State: AOAM532oII3BNptDxR5/5TtIjJiQPlmby1F2qV89//YulzjtOnugr6ec
+        yC6ZJePFr9T7PP4KL3T/ingbHg==
+X-Google-Smtp-Source: ABdhPJyApblQcAcJdPCK6ZBEj71QO5kAJT3zJbnR77XyGsP/tSZCqTKzzQ1fYTsK4ZIiUXyX/TyyXw==
+X-Received: by 2002:a17:906:a005:b0:6e8:947b:7530 with SMTP id p5-20020a170906a00500b006e8947b7530mr12643170ejy.320.1649850476500;
+        Wed, 13 Apr 2022 04:47:56 -0700 (PDT)
+Received: from [192.168.0.203] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id ay17-20020a170906d29100b006e88f246fdbsm3595139ejb.152.2022.04.13.04.47.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 04:47:56 -0700 (PDT)
+Message-ID: <f2b7b48f-906e-3445-3861-dcdd4f6551e3@linaro.org>
+Date:   Wed, 13 Apr 2022 13:47:55 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.199.0.41]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-04.corp.yadro.com (172.17.100.104)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 0/2] memory: omap-gpmc: Allow module build
+Content-Language: en-US
+To:     Roger Quadros <rogerq@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-omap@vger.kernel.org, nm@ti.com,
+        linux-kernel@vger.kernel.org, kishon@ti.com, tony@atomide.com,
+        miquel.raynal@bootlin.com, vigneshr@ti.com
+References: <20220411095516.24754-1-rogerq@kernel.org>
+ <164984299612.34759.11981181842672620752.b4-ty@linaro.org>
+ <20428012-f164-c03b-fcc5-d3d8df812aff@linaro.org>
+ <ed2167af-fc9f-1f52-e8e2-c0881f5d53c6@linaro.org>
+ <7b38a717-ffce-0f06-1a77-6d2a114c7e11@kernel.org>
+ <68d16fbb-4250-73bd-b55e-a14db91abe8f@linaro.org>
+ <fdafb49b-9349-087b-f483-4da888193683@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <fdafb49b-9349-087b-f483-4da888193683@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Novikov <i.m.novikov@yadro.com>
+On 13/04/2022 13:33, Roger Quadros wrote:
+>> Previously it was building with COMPILE_TEST on sparc, so what else changed?
+>>
+> Previously it was like so
+> 
+> 	bool "Texas Instruments OMAP SoC GPMC driver" if COMPILE_TEST
+> 	depends on OF_ADDRESS
+> 
+> Means it won't build if OF_ADDRESS is not set even if COMPILE_TEST is set.
+> 
+> And OF_ADDRESS is not set for sparc
+> 
 
-If the DMA_PREP_INTERRUPT flag is not provided, run in polled mode,
-which significantly improves IOPS: more than twice on chunks < 4K.
+Ah, yes, so dropping COMPILE_TEST seems the solution. There are no other
+"depends" here.
 
-Signed-off-by: Ilya Novikov <i.m.novikov@yadro.com>
----
- drivers/dma/ptdma/ptdma-dev.c       | 36 +++++++++++++++--------------
- drivers/dma/ptdma/ptdma-dmaengine.c | 16 ++++++++++++-
- drivers/dma/ptdma/ptdma.h           | 13 +++++++++++
- 3 files changed, 47 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/dma/ptdma/ptdma-dev.c b/drivers/dma/ptdma/ptdma-dev.c
-index daafea5bc35d..377da23012ac 100644
---- a/drivers/dma/ptdma/ptdma-dev.c
-+++ b/drivers/dma/ptdma/ptdma-dev.c
-@@ -100,6 +100,7 @@ int pt_core_perform_passthru(struct pt_cmd_queue *cmd_q,
- 			     struct pt_passthru_engine *pt_engine)
- {
- 	struct ptdma_desc desc;
-+	struct pt_device *pt = container_of(cmd_q, struct pt_device, cmd_q);
- 
- 	cmd_q->cmd_error = 0;
- 	cmd_q->total_pt_ops++;
-@@ -111,17 +112,12 @@ int pt_core_perform_passthru(struct pt_cmd_queue *cmd_q,
- 	desc.dst_lo = lower_32_bits(pt_engine->dst_dma);
- 	desc.dw5.dst_hi = upper_32_bits(pt_engine->dst_dma);
- 
--	return pt_core_execute_cmd(&desc, cmd_q);
--}
--
--static inline void pt_core_disable_queue_interrupts(struct pt_device *pt)
--{
--	iowrite32(0, pt->cmd_q.reg_control + 0x000C);
--}
-+	if (cmd_q->int_en)
-+		pt_core_enable_queue_interrupts(pt);
-+	else
-+		pt_core_disable_queue_interrupts(pt);
- 
--static inline void pt_core_enable_queue_interrupts(struct pt_device *pt)
--{
--	iowrite32(SUPPORTED_INTERRUPTS, pt->cmd_q.reg_control + 0x000C);
-+	return pt_core_execute_cmd(&desc, cmd_q);
- }
- 
- static void pt_do_cmd_complete(unsigned long data)
-@@ -144,14 +140,10 @@ static void pt_do_cmd_complete(unsigned long data)
- 	cmd->pt_cmd_callback(cmd->data, cmd->ret);
- }
- 
--static irqreturn_t pt_core_irq_handler(int irq, void *data)
-+void pt_check_status_trans(struct pt_device *pt, struct pt_cmd_queue *cmd_q)
- {
--	struct pt_device *pt = data;
--	struct pt_cmd_queue *cmd_q = &pt->cmd_q;
- 	u32 status;
- 
--	pt_core_disable_queue_interrupts(pt);
--	pt->total_interrupts++;
- 	status = ioread32(cmd_q->reg_control + 0x0010);
- 	if (status) {
- 		cmd_q->int_status = status;
-@@ -162,11 +154,21 @@ static irqreturn_t pt_core_irq_handler(int irq, void *data)
- 		if ((status & INT_ERROR) && !cmd_q->cmd_error)
- 			cmd_q->cmd_error = CMD_Q_ERROR(cmd_q->q_status);
- 
--		/* Acknowledge the interrupt */
-+		/* Acknowledge the completion */
- 		iowrite32(status, cmd_q->reg_control + 0x0010);
--		pt_core_enable_queue_interrupts(pt);
- 		pt_do_cmd_complete((ulong)&pt->tdata);
- 	}
-+}
-+
-+static irqreturn_t pt_core_irq_handler(int irq, void *data)
-+{
-+	struct pt_device *pt = data;
-+	struct pt_cmd_queue *cmd_q = &pt->cmd_q;
-+
-+	pt_core_disable_queue_interrupts(pt);
-+	pt->total_interrupts++;
-+	pt_check_status_trans(pt, cmd_q);
-+	pt_core_enable_queue_interrupts(pt);
- 	return IRQ_HANDLED;
- }
- 
-diff --git a/drivers/dma/ptdma/ptdma-dmaengine.c b/drivers/dma/ptdma/ptdma-dmaengine.c
-index 91b93e8d9779..ea07cc42f4d0 100644
---- a/drivers/dma/ptdma/ptdma-dmaengine.c
-+++ b/drivers/dma/ptdma/ptdma-dmaengine.c
-@@ -171,6 +171,7 @@ static struct pt_dma_desc *pt_alloc_dma_desc(struct pt_dma_chan *chan,
- 	vchan_tx_prep(&chan->vc, &desc->vd, flags);
- 
- 	desc->pt = chan->pt;
-+	desc->pt->cmd_q.int_en = !!(flags & DMA_PREP_INTERRUPT);
- 	desc->issued_to_hw = 0;
- 	desc->status = DMA_IN_PROGRESS;
- 
-@@ -257,6 +258,17 @@ static void pt_issue_pending(struct dma_chan *dma_chan)
- 		pt_cmd_callback(desc, 0);
- }
- 
-+enum dma_status
-+pt_tx_status(struct dma_chan *c, dma_cookie_t cookie,
-+		struct dma_tx_state *txstate)
-+{
-+	struct pt_device *pt = to_pt_chan(c)->pt;
-+	struct pt_cmd_queue *cmd_q = &pt->cmd_q;
-+
-+	pt_check_status_trans(pt, cmd_q);
-+	return dma_cookie_status(c, cookie, txstate);
-+}
-+
- static int pt_pause(struct dma_chan *dma_chan)
- {
- 	struct pt_dma_chan *chan = to_pt_chan(dma_chan);
-@@ -291,8 +303,10 @@ static int pt_terminate_all(struct dma_chan *dma_chan)
- {
- 	struct pt_dma_chan *chan = to_pt_chan(dma_chan);
- 	unsigned long flags;
-+	struct pt_cmd_queue *cmd_q = &chan->pt->cmd_q;
- 	LIST_HEAD(head);
- 
-+	iowrite32(SUPPORTED_INTERRUPTS, cmd_q->reg_control + 0x0010);
- 	spin_lock_irqsave(&chan->vc.lock, flags);
- 	vchan_get_all_descriptors(&chan->vc, &head);
- 	spin_unlock_irqrestore(&chan->vc.lock, flags);
-@@ -362,7 +376,7 @@ int pt_dmaengine_register(struct pt_device *pt)
- 	dma_dev->device_prep_dma_memcpy = pt_prep_dma_memcpy;
- 	dma_dev->device_prep_dma_interrupt = pt_prep_dma_interrupt;
- 	dma_dev->device_issue_pending = pt_issue_pending;
--	dma_dev->device_tx_status = dma_cookie_status;
-+	dma_dev->device_tx_status = pt_tx_status;
- 	dma_dev->device_pause = pt_pause;
- 	dma_dev->device_resume = pt_resume;
- 	dma_dev->device_terminate_all = pt_terminate_all;
-diff --git a/drivers/dma/ptdma/ptdma.h b/drivers/dma/ptdma/ptdma.h
-index afbf192c9230..d093c43b7d13 100644
---- a/drivers/dma/ptdma/ptdma.h
-+++ b/drivers/dma/ptdma/ptdma.h
-@@ -206,6 +206,9 @@ struct pt_cmd_queue {
- 	unsigned int active;
- 	unsigned int suspended;
- 
-+	/* Interrupt flag */
-+	bool int_en;
-+
- 	/* Register addresses for queue */
- 	void __iomem *reg_control;
- 	u32 qcontrol; /* Cached control register */
-@@ -318,7 +321,17 @@ void pt_core_destroy(struct pt_device *pt);
- int pt_core_perform_passthru(struct pt_cmd_queue *cmd_q,
- 			     struct pt_passthru_engine *pt_engine);
- 
-+void pt_check_status_trans(struct pt_device *pt, struct pt_cmd_queue *cmd_q);
- void pt_start_queue(struct pt_cmd_queue *cmd_q);
- void pt_stop_queue(struct pt_cmd_queue *cmd_q);
- 
-+static inline void pt_core_disable_queue_interrupts(struct pt_device *pt)
-+{
-+	iowrite32(0, pt->cmd_q.reg_control + 0x000C);
-+}
-+
-+static inline void pt_core_enable_queue_interrupts(struct pt_device *pt)
-+{
-+	iowrite32(SUPPORTED_INTERRUPTS, pt->cmd_q.reg_control + 0x000C);
-+}
- #endif
--- 
-2.25.1
-
+Best regards,
+Krzysztof
