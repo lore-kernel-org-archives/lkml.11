@@ -2,209 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6270BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B707C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236140AbiDMOfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
+        id S231587AbiDMOhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233994AbiDMOfi (ORCPT
+        with ESMTP id S232591AbiDMOhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:35:38 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF7556C00;
-        Wed, 13 Apr 2022 07:33:16 -0700 (PDT)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KdlMW1PQDzCqwJ;
-        Wed, 13 Apr 2022 22:28:55 +0800 (CST)
-Received: from [10.174.176.117] (10.174.176.117) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+        Wed, 13 Apr 2022 10:37:03 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D95F4BBB7;
+        Wed, 13 Apr 2022 07:34:41 -0700 (PDT)
+Received: from kwepemi500025.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KdlS16SF1zgYKd;
+        Wed, 13 Apr 2022 22:32:49 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ kwepemi500025.china.huawei.com (7.221.188.170) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Apr 2022 22:33:12 +0800
-Subject: Re: [PATCH] bpf/benchs: fix error check return value of
- bpf_program__attach()
-To:     <cgel.zte@gmail.com>, <shuah@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <joannekoong@fb.com>, <lv.ruyi@zte.com.cn>, <toke@redhat.com>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220413093123.2538001-1-lv.ruyi@zte.com.cn>
-From:   Hou Tao <houtao1@huawei.com>
-Message-ID: <3dab1e4b-2317-4730-f699-627583ff759d@huawei.com>
-Date:   Wed, 13 Apr 2022 22:33:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2375.24; Wed, 13 Apr 2022 22:34:39 +0800
+Received: from [10.174.176.52] (10.174.176.52) by
+ kwepemm600015.china.huawei.com (7.193.23.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 22:34:38 +0800
+Message-ID: <9b879bf5-53f1-663f-97ad-aeb91055bb05@huawei.com>
+Date:   Wed, 13 Apr 2022 22:34:37 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220413093123.2538001-1-lv.ruyi@zte.com.cn>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH -next 0/2] fix nfsv4 bugs of opening with O_ACCMODE flag
+From:   "chenxiaosong (A)" <chenxiaosong2@huawei.com>
+To:     Lyu Tao <tao.lyu@epfl.ch>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        "anna@kernel.org" <anna@kernel.org>,
+        "bjschuma@netapp.com" <bjschuma@netapp.com>
+CC:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "liuyongqiang13@huawei.com" <liuyongqiang13@huawei.com>,
+        "yi.zhang@huawei.com" <yi.zhang@huawei.com>,
+        "zhangxiaoxu5@huawei.com" <zhangxiaoxu5@huawei.com>
+References: <20220329113208.2466000-1-chenxiaosong2@huawei.com>
+ <68b65889-3b2c-fb72-a0a8-d0afc15a03e0@huawei.com>
+ <e0c2d7ec62b447cabddbc8a9274be955@epfl.ch>
+ <0b6546f7-8a04-9d6e-50c3-483c8a1a6591@huawei.com>
+ <d73a51a2-6b63-b536-61e6-3d18563f027d@huawei.com>
+In-Reply-To: <d73a51a2-6b63-b536-61e6-3d18563f027d@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.176.117]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500025.china.huawei.com (7.185.36.35)
+X-Originating-IP: [10.174.176.52]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+I will give some detailed code process.
 
-On 4/13/2022 5:31 PM, cgel.zte@gmail.com wrote:
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
->
-> bpf_program__attach() returns error ptr when it fails, so we should use
-> IS_ERR() to check it in error handling path. The patch fix all the same
-> problems in the bpf/benchs/*.
-The fix is unnecessary. Because libbpf has been setup as  LIBBPF_STRICT_ALL mode
-in setup_libbpf() of bench.c, so when bpf_program__attach() fails, it will
-return NULL instead of ERR_PTR(err).
+firstly open():
 
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-> ---
->  .../selftests/bpf/benchs/bench_bloom_filter_map.c      | 10 +++++-----
->  tools/testing/selftests/bpf/benchs/bench_bpf_loop.c    |  2 +-
->  tools/testing/selftests/bpf/benchs/bench_rename.c      |  2 +-
->  tools/testing/selftests/bpf/benchs/bench_ringbufs.c    |  6 +++---
->  tools/testing/selftests/bpf/benchs/bench_strncmp.c     |  2 +-
->  tools/testing/selftests/bpf/benchs/bench_trigger.c     |  2 +-
->  6 files changed, 12 insertions(+), 12 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
-> index 5bcb8a8cdeb2..fd1be1042516 100644
-> --- a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
-> +++ b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
-> @@ -309,7 +309,7 @@ static void bloom_lookup_setup(void)
->  	populate_maps();
->  
->  	link = bpf_program__attach(ctx.skel->progs.bloom_lookup);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> @@ -326,7 +326,7 @@ static void bloom_update_setup(void)
->  	populate_maps();
->  
->  	link = bpf_program__attach(ctx.skel->progs.bloom_update);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> @@ -345,7 +345,7 @@ static void false_positive_setup(void)
->  	populate_maps();
->  
->  	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> @@ -363,7 +363,7 @@ static void hashmap_with_bloom_setup(void)
->  	populate_maps();
->  
->  	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> @@ -380,7 +380,7 @@ static void hashmap_no_bloom_setup(void)
->  	populate_maps();
->  
->  	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> diff --git a/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c b/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
-> index d0a6572bfab6..8dbdc28d26c8 100644
-> --- a/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
-> +++ b/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
-> @@ -85,7 +85,7 @@ static void setup(void)
->  	}
->  
->  	link = bpf_program__attach(ctx.skel->progs.benchmark);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> diff --git a/tools/testing/selftests/bpf/benchs/bench_rename.c b/tools/testing/selftests/bpf/benchs/bench_rename.c
-> index 3c203b6d6a6e..66d63b92a28a 100644
-> --- a/tools/testing/selftests/bpf/benchs/bench_rename.c
-> +++ b/tools/testing/selftests/bpf/benchs/bench_rename.c
-> @@ -65,7 +65,7 @@ static void attach_bpf(struct bpf_program *prog)
->  	struct bpf_link *link;
->  
->  	link = bpf_program__attach(prog);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> diff --git a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-> index c2554f9695ff..fff24ca82dc0 100644
-> --- a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-> +++ b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-> @@ -181,7 +181,7 @@ static void ringbuf_libbpf_setup(void)
->  	}
->  
->  	link = bpf_program__attach(ctx->skel->progs.bench_ringbuf);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> @@ -271,7 +271,7 @@ static void ringbuf_custom_setup(void)
->  	}
->  
->  	link = bpf_program__attach(ctx->skel->progs.bench_ringbuf);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program\n");
->  		exit(1);
->  	}
-> @@ -426,7 +426,7 @@ static void perfbuf_libbpf_setup(void)
->  	}
->  
->  	link = bpf_program__attach(ctx->skel->progs.bench_perfbuf);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program\n");
->  		exit(1);
->  	}
-> diff --git a/tools/testing/selftests/bpf/benchs/bench_strncmp.c b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
-> index 494b591c0289..dcb9ce5ffcb0 100644
-> --- a/tools/testing/selftests/bpf/benchs/bench_strncmp.c
-> +++ b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
-> @@ -103,7 +103,7 @@ static void strncmp_attach_prog(struct bpf_program *prog)
->  	struct bpf_link *link;
->  
->  	link = bpf_program__attach(prog);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
-> diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-> index 0c481de2833d..bda930a8153c 100644
-> --- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
-> +++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-> @@ -61,7 +61,7 @@ static void attach_bpf(struct bpf_program *prog)
->  	struct bpf_link *link;
->  
->  	link = bpf_program__attach(prog);
-> -	if (!link) {
-> +	if (IS_ERR(link)) {
->  		fprintf(stderr, "failed to attach program!\n");
->  		exit(1);
->  	}
+```c
+open
+   do_sys_open
+     do_sys_openat2
+       do_filp_open
+         path_openat
+           open_last_lookups
+             lookup_open
+               atomic_open
+                 nfs_atomic_open
+                   create_nfs_open_context
+                     flags_to_mode() = FMODE_READ|FMODE_WRITE
+                     alloc_nfs_open_context
+                       ctx->mode = f_mode // FMODE_READ|FMODE_WRITE
+                   // NFS_PROTO(dir)->open_context
+                   nfs4_atomic_open
+                     nfs4_do_open
+                       _nfs4_do_open
+                         fmode = _nfs4_ctx_to_openmode(ctx) = 3
+                           ret = ctx->mode & (FMODE_READ|FMODE_WRITE) // 
+ctx->mode = 3
+                         nfs4_opendata_alloc
+                           nfs4_map_atomic_open_share
+                             return NFS4_SHARE_ACCESS_BOTH
+```
 
+secondly open():
+```c
+open
+   do_sys_open
+     do_sys_openat2
+       do_filp_open
+         path_openat
+           open_last_lookups
+             lookup_open
+               return dentry // if (dentry->d_inode) {
+           do_open
+             vfs_open
+               do_dentry_open
+                 // f->f_op->open
+                 nfs4_file_open
+                   if ((openflags & O_ACCMODE) == 3)
+                   nfs_open // without sunrpc request
+                     alloc_nfs_open_context
+                       ctx->state = NULL; // this is point
+```
+
+lseek() after secondly open():
+```c
+lseek
+   ksys_lseek
+     vfs_llseek
+       // file->f_op->llseek
+       nfs4_file_llseek
+         nfs42_proc_llseek
+           _nfs42_proc_llseek(lock)
+             nfs4_set_rw_stateid(ctx=lock->open_context)
+               nfs4_select_rw_stateid(state=ctx->state)
+                 nfs4_valid_open_stateid(state)
+                   state->flags // dereference NULL state
+```
+
+在 2022/4/13 22:05, chenxiaosong (A) 写道:
+> 在 2022/4/13 21:42, chenxiaosong (A) 写道:
+>>
+>> 在 2022/4/13 20:07, Lyu Tao 写道:
+>>>
+>>> Hi Xiaosong,
+>>>
+>>>
+>>> Thanks for keeping focusing on this bug.
+>>>
+>>>
+>>> I applied this CVE for the NULL dereference bug at 
+>>> nfs4_valid_open_stateid() and added the following description to this 
+>>> CVE due to the NFS maintainers replied that to me.
+>>>
+>>> "An issue was discovered in fs/nfs/dir.c in the Linux kernel before 
+>>> 5.16.5. If an application sets the O_DIRECTORY flag, and tries to 
+>>> open a regular file, nfs_atomic_open() performs a regular lookup. If 
+>>> a regular file is found, ENOTDIR should occur, but the server instead 
+>>> returns uninitialized data in the file descriptor.
+>>>
+>>>
+>>> Actually I'm still confused with the root cause of this bug. In the 
+>>> original PoC, there is no O_DIRECTORY flag but commit ac795161c936 
+>>> mentioned.
+>>>
+>>> Moreover, in your latest commit ab0fc21bc710, it said "After secondly 
+>>> opening a file with O_ACCMODE|O_DIRECT flags, 
+>>> nfs4_valid_open_stateid() will dereference NULL nfs4_state when 
+>>> lseek()." However, the original PoC opens the file only with 
+>>> O_RDWR|O_CREAT for the first time.
+>>>
+>>>
+>>> Original PoC:
+>>>
+>>> fd = openat("./file1", o_RDWR|O_CREAT, 000);
+>>>
+>>> open("./file1", 
+>>> O_ACCMODE|O_CREAT|O_DIRECT|O_LARGEFILE|O_NOFOLLOW|O_NOATIME|O_CLOEXEC|FASYNC|0xb3000008, 
+>>> 001);
+>>>
+>>> lseek(fd, 9, SEEK_HOLE);
+>>>
+>>>
+>>> I'll update this CVE's description after I figure out these.
+>>>
+>>>
+>>> Best Regards,
+>>>
+>>> Tao
+>>>
+>>
+>> Hi Tao:
+>>
+>> Yes, O_ACCEMODE is _not_ necessary when fistly open() file.
+>>
+>> When open() the file secondly, O_ACCEMODE is necessary if we want to 
+>> reproduce the bug.
+>>
+>> Waiting for your modification of the CVE's description.
+>>
+>> Best Regards.
+>> .
+> 
+> My reproducer:
+>    1. mount -t nfs -o vers=4.2 $server_ip:/ /mnt/
+>    2. fd = open("/mnt/file", O_ACCMODE|O_DIRECT|O_CREAT)
+>    3. close(fd)
+>    4. fd = open("/mnt/file", O_ACCMODE|O_DIRECT)
+>    5. lseek(fd)
+> 
+> When firstly open() file, O_ACCMODE|O_DIRECT is _not_ necessary, we just 
+> use O_CREAT to create new file.
+> 
+> When secondly open() file, only O_ACCMODE|O_DIRECT is necessary, 
+> O_CREAT|O_LARGEFILE|O_NOFOLLOW|O_NOATIME|O_CLOEXEC|FASYNC|0xb3000008 in 
+> your original PoC is not necessary (however, they are harmless).
