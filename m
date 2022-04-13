@@ -2,178 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2867BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235743AbiDMN2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 09:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
+        id S235750AbiDMN3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 09:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231221AbiDMN2V (ORCPT
+        with ESMTP id S232618AbiDMN3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 09:28:21 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D82D4EF6E
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 06:26:00 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52FBB1595;
-        Wed, 13 Apr 2022 06:26:00 -0700 (PDT)
-Received: from [10.57.8.248] (unknown [10.57.8.248])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 744CA3F73B;
-        Wed, 13 Apr 2022 06:25:58 -0700 (PDT)
-Message-ID: <f100bd49-7a1d-5265-29ce-1092195bb2dd@arm.com>
-Date:   Wed, 13 Apr 2022 14:25:56 +0100
+        Wed, 13 Apr 2022 09:29:03 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8443C5D198;
+        Wed, 13 Apr 2022 06:26:41 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id k23so3965001ejd.3;
+        Wed, 13 Apr 2022 06:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CSb8eXfi4X28YB6JnZMBoT5Zw178Jb3u+JBDfRQAguM=;
+        b=JUiSoH3Sh7ufvAtp/1YhMcSgW+hKbCmq8VOb/r+qBA5GY4IE3vpkQpSisdMgsA6pis
+         +R+mCjhrwG1l7GaUdhQusG3EhPM9Jy0obDLxSs6USKzUq+z/b1Z6uuz9q+tE39igYHuy
+         UJSVY1kVhGXESKjve3OpGaeG0lJHVVAwflPCTOzY4/cuQbWBuFrllJ5ug5jgYmF8TBbk
+         rSDwkMGpIF008ynIi+tm9eIJ02+cZKMiI8ax/iMbMfu2VFpStk/rKA7LYax5i4g+zKIF
+         syuDuqnpozsWDuV9mM6nDGXL5Bx7pEfzSrV+/FBx7NvLpnAa+oXH8hqCHv+5B+TSxKhT
+         IkAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CSb8eXfi4X28YB6JnZMBoT5Zw178Jb3u+JBDfRQAguM=;
+        b=yX4vepMriUNSj0laq9OeMyCnrKz82dKcEEMlMCcdJNQn/vTxHcU6Q1NNzMwZBIpxWh
+         g+a71/MeAi0k4OEEDhrwUC8Q0eq/j2lvVGN4dqk93JPVlL3uCTcax09RYIyQg9pWxJWz
+         KOr9Toox1Nx0lIkJpIBtoU6QI5keEtUZwCDs0YpL6wACAAqOEwnCSLoMY28v+hsOOe4C
+         T3kzvs0PdXqgnB1Gbl3/PTvihdYs2x6K+UExjiQGz5XdNJPAqxfZoiIhBF5maj3aHnf3
+         XQyuIH0zJgNTUzWypSnWeCLGXqxdeviO59fIhZNDn127SFEDIaLr2hnGF0cdCoFPH37S
+         DdQw==
+X-Gm-Message-State: AOAM530FI92FeeGLO6GcTTqbmhig7xbkY948qCXFphVBQ7YAhTWXuFkL
+        7WfMq2cPZAcFS6amMwoaVao=
+X-Google-Smtp-Source: ABdhPJzSGApHRcC/6JIo3Z18BaToM/wyEJaY3ofsmWRsGW0EF896BAKDZCye8IsWf5NtXqaEsGTO9Q==
+X-Received: by 2002:a17:907:868c:b0:6e8:d608:bcc7 with SMTP id qa12-20020a170907868c00b006e8d608bcc7mr777827ejc.148.1649856399891;
+        Wed, 13 Apr 2022 06:26:39 -0700 (PDT)
+Received: from Ansuel-xps. (host-80-182-176-248.retail.telecomitalia.it. [80.182.176.248])
+        by smtp.gmail.com with ESMTPSA id s12-20020a1709062ecc00b006e8558c9a5csm6027235eji.94.2022.04.13.06.26.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 06:26:38 -0700 (PDT)
+Message-ID: <6256cf8e.1c69fb81.b313c.dd8b@mx.google.com>
+X-Google-Original-Message-ID: <YlbOXhL/Ni1R6kUu@Ansuel-xps.>
+Date:   Wed, 13 Apr 2022 15:21:34 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCH v3 07/18] ARM: dts: qcom: reduce pci IO size to 64K for
+ ipq8064
+References: <20220309190152.7998-1-ansuelsmth@gmail.com>
+ <20220309190152.7998-8-ansuelsmth@gmail.com>
+ <a7034b5e-24de-ef17-ae93-c626beb35a41@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
- rt fits capacity
-Content-Language: en-US
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Xuewen Yan <xuewen.yan94@gmail.com>
-Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, rafael@kernel.org,
-        viresh.kumar@linaro.org, mingo@redhat.com, peterz@infradead.org,
-        vincent.guittot@linaro.org, rostedt@goodmis.org,
-        linux-kernel@vger.kernel.org, di.shen@unisoc.com
-References: <20220407051932.4071-1-xuewen.yan@unisoc.com>
- <02350916-aa36-ea53-2c98-91b97f49d27e@arm.com>
- <CAB8ipk-KenZaVWQwWqVMksQXLP5r19BQ1OGAdmwHRbjwv3qFHg@mail.gmail.com>
- <9bb00bcb-f984-1cf6-39aa-c11dcf7f07cb@arm.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <9bb00bcb-f984-1cf6-39aa-c11dcf7f07cb@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a7034b5e-24de-ef17-ae93-c626beb35a41@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 4/11/22 15:07, Dietmar Eggemann wrote:
-> On 11/04/2022 10:52, Xuewen Yan wrote:
->> HI Dietmar
->>
->> On Mon, Apr 11, 2022 at 4:21 PM Dietmar Eggemann
->> <dietmar.eggemann@arm.com> wrote:
->>>
->>> On 07/04/2022 07:19, Xuewen Yan wrote:
->>>> There are cases when the cpu max capacity might be reduced due to thermal.
->>>> Take into the thermal pressure into account when judge whether the rt task
->>>> fits the cpu. And when schedutil govnor get cpu util, the thermal pressure
->>>> also should be considered.
->>>>
->>>> Signed-off-by: Xuewen Yan <xuewen.yan@unisoc.com>
->>>> ---
->>>>   kernel/sched/cpufreq_schedutil.c | 1 +
->>>>   kernel/sched/rt.c                | 1 +
->>>>   2 files changed, 2 insertions(+)
->>>>
->>>> diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
->>>> index 3dbf351d12d5..285ad51caf0f 100644
->>>> --- a/kernel/sched/cpufreq_schedutil.c
->>>> +++ b/kernel/sched/cpufreq_schedutil.c
->>>> @@ -159,6 +159,7 @@ static void sugov_get_util(struct sugov_cpu *sg_cpu)
->>>>        struct rq *rq = cpu_rq(sg_cpu->cpu);
->>>>        unsigned long max = arch_scale_cpu_capacity(sg_cpu->cpu);
->>>>
->>>> +     max -= arch_scale_thermal_pressure(sg_cpu->cpu);
->>>
->>> max' = arch_scale_cpu_capacity() - arch_scale_thermal_pressure()
->>>
->>> For the energy part (A) we use max' in compute_energy() to cap sum_util
->>> and max_util at max' and to call em_cpu_energy(..., max_util, sum_util,
->>> max'). This was done to match (B)'s `policy->max` capping.
->>>
->>> For the frequency part (B) we have freq_qos_update_request() in:
->>>
->>> power_actor_set_power()
->>>    ...
->>>    cdev->ops->set_cur_state()
->>>
->>>      cpufreq_set_cur_state()
->>>        freq_qos_update_request()      <-- !
->>>        arch_update_thermal_pressure()
->>>
->>> restricting `policy->max` which then clamps `target_freq` in:
->>>
->>>    cpufreq_update_util()
->>>      ...
->>>      get_next_freq()
->>>        cpufreq_driver_resolve_freq()
->>>          __resolve_freq()
->>>
->>
->> Do you mean that the "max" here will not affect the frequency
->> conversion, so there is no need to change it?
->> But is it better to reflect the influence of thermal here?
+On Wed, Apr 13, 2022 at 04:19:42PM +0300, Dmitry Baryshkov wrote:
+> On 09/03/2022 22:01, Ansuel Smith wrote:
+> > The current value for pci IO is problematic for ath10k wifi card
+> > commonly connected to ipq8064 SoC.
+> > The current value is probably a typo and is actually uncommon to find
+> > 1MB IO space even on a x86 arch.
 > 
-> I guess your point is that even though max' has no effect on frequency
-> since QOS caps policy->max anyway, it is still easier to understand the
-> dependency between schedutil and EAS/EM when it comes to the use of
-> thermal pressure.
+> I checked other Qualcomm platforms (including downstream apq8084.dtsi). All
+> of them list 1MB region as IO space.
 > 
-> I agree. The way how the "hidden" policy->max capping guarantees that
-> schedutil and EAS/EM are doing the same even when only the latter uses
-> max' is not obvious.
+> Interesting enough I couldn't get PCI to work on my IFC6410 (apq8064). It
+> has an ethernet adapter AR8151 sitting on the PCIe bus. The driver probes,
+> transmits packets successfully, but receives only garbage. I'm not sure if
+> it is the hardware or a software problem. Same adapter works fine on db820c.
+>
 
-+1 here, IMO we shouldn't rely on hidden stuff. There are two which set
-the thermal pressure, but one is not setting the freq_qos which causes
-the update of the 'policy->max'. So the schedutil will send that high
-frequency but that driver would just ignore and clamp internally. In the
-end we might argue it still works, but is it clean and visible from the
-code? Funny thing might start to happen then the driver, which might be
-the last safety net cannot capture this.
+I didn't understand if device works correctly without this change. 
+The alternative to this, is to change the io space globally for every arm
+target and it was pointed out that it was a strange change to do. 99%
+the 1mb region present on every qcom platform is a copy past error but
+still a region that big worked before some kernel version just because
+the kernel didn't check them.
+So it's both reduce IO in dtsi or extend IO_SPACE_LIMIT for every arm
+target.
 
-We also should be OK with energy estimation and the CPU capacity vs.
-task utilization comparisons, since the thermal pressure is accounted
-there* (until the thermal is controlled in kernel not in FW, which is
-something where we are heading with scmi-cpufreq mentioned in this
-cover letter [1]).
-
+> > Also with recent changes to the pci
+> > driver, pci1 and pci2 now fails to function as any connected device
+> > fails any reg read/write. Reduce this to 64K as it should be more than
+> > enough and 3 * 64K of total IO space doesn't exceed the IO_SPACE_LIMIT
+> > hardcoded for the ARM arch.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > Tested-by: Jonathan McDowell <noodles@earth.li>
+> > ---
+> >   arch/arm/boot/dts/qcom-ipq8064.dtsi | 6 +++---
+> >   1 file changed, 3 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > index e247bf51df01..36bdfc8db3f0 100644
+> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > @@ -918,7 +918,7 @@ pcie0: pci@1b500000 {
+> >   			#address-cells = <3>;
+> >   			#size-cells = <2>;
+> > -			ranges = <0x81000000 0 0x0fe00000 0x0fe00000 0 0x00100000   /* downstream I/O */
+> > +			ranges = <0x81000000 0 0x0fe00000 0x0fe00000 0 0x00010000   /* downstream I/O */
+> >   				  0x82000000 0 0x08000000 0x08000000 0 0x07e00000>; /* non-prefetchable memory */
+> >   			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+> > @@ -969,7 +969,7 @@ pcie1: pci@1b700000 {
+> >   			#address-cells = <3>;
+> >   			#size-cells = <2>;
+> > -			ranges = <0x81000000 0 0x31e00000 0x31e00000 0 0x00100000   /* downstream I/O */
+> > +			ranges = <0x81000000 0 0x31e00000 0x31e00000 0 0x00010000   /* downstream I/O */
+> >   				  0x82000000 0 0x2e000000 0x2e000000 0 0x03e00000>; /* non-prefetchable memory */
+> >   			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
+> > @@ -1020,7 +1020,7 @@ pcie2: pci@1b900000 {
+> >   			#address-cells = <3>;
+> >   			#size-cells = <2>;
+> > -			ranges = <0x81000000 0 0x35e00000 0x35e00000 0 0x00100000   /* downstream I/O */
+> > +			ranges = <0x81000000 0 0x35e00000 0x35e00000 0 0x00010000   /* downstream I/O */
+> >   				  0x82000000 0 0x32000000 0x32000000 0 0x03e00000>; /* non-prefetchable memory */
+> >   			interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
 > 
-> I just wanted to mention the historical reason why the code looks like
-> it does today.
 > 
->>> [...]
->>>
->>>> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
->>>> index a32c46889af8..d9982ebd4821 100644
->>>> --- a/kernel/sched/rt.c
->>>> +++ b/kernel/sched/rt.c
->>>> @@ -466,6 +466,7 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
->>>>        max_cap = uclamp_eff_value(p, UCLAMP_MAX);
->>>>
->>>>        cpu_cap = capacity_orig_of(cpu);
->>>> +     cpu_cap -= arch_scale_thermal_pressure(cpu);
->>>>
->>>>        return cpu_cap >= min(min_cap, max_cap);
->>>>   }
->>>
->>> IMHO, this should follow what we do with rq->cpu_capacity
->>> (capacity_of(), the remaining capacity for CFS). E.g. we use
->>> capacity_of() in find_energy_efficient_cpu() and select_idle_capacity()
->>> to compare capacities. So we would need a function like
->>> scale_rt_capacity() for RT (minus the rq->avg_rt.util_avg) but then also
->>> one for DL (minus rq->avg_dl.util_avg and rq->avg_rt.util_avg).
->>
->> It's a really good idea. And do you already have the corresponding patch?
->> If there is, can you tell me the corresponding link?
-> 
-> No, I don't have any code for this. Should be trivial though. But the
-> issue is that the update would probably have to be decoupled from CFS
-> load_balance (update_group_capacity()) and the use cases in RT/DL are
-> only valid for asymmetric CPU capacity systems.
+> -- 
+> With best wishes
+> Dmitry
 
-Having in mind those I would vote for fixing it incrementally.
-Thus, IMHO this patch is good for taking it. Later we might think how
-to better estimate the real CPU capacity visible from RT and DL classes.
-In this shape it is good for many systems which only use RT,
-but not DL class. Those systems w/ RT and w/o DL might suffer on some
-asymmetric CPU platforms where medium cores have capacity e.g. 850 and
-thermal pressure reduced the big cores capacity by 250 making them 774.
-
-Regards,
-Lukasz
-
-[1] 
-https://lore.kernel.org/linux-pm/20211007080729.8262-1-lukasz.luba@arm.com/
+-- 
+	Ansuel
