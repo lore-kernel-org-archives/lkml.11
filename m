@@ -2,59 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:11:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F17D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbiDMDNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        id S231624AbiDMDN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:13:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231570AbiDMDNg (ORCPT
+        with ESMTP id S229925AbiDMDNx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 23:13:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0D435AB2;
-        Tue, 12 Apr 2022 20:11:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B6CCB81F2B;
-        Wed, 13 Apr 2022 03:11:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 706B6C385A5;
-        Wed, 13 Apr 2022 03:11:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649819474;
-        bh=5wbjog1eFuKCDoIWisV4RmXaSCT8O+j+FcTQSCSsAls=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fxedCoL6SLHm/zFLDUO7AJlj5xLD6Pd3rqcNpzKTaRdtrR1cY9RrLDbbEPTvb1eob
-         30I4jmaYd6Fg8KX7jEn0wKc7m1KH2vncPc/BkkOCC44niIBrtW6hM7EKTSGq+ooJup
-         /2crW2JSf7w+y5YvGdlKDguGPVr/kSt6ePU3AEUq37U0hQlUGXZri/kWjnluu5XSzi
-         OuDnd/YMS25ueIdQc/IKI9hQWQVUDoC3aq7e2uFtnmC4tmaKtUSwhXjoh6dswtXnoM
-         DxONCMyZotmTRQVLFHxYo2sR4TlPo/pnH2IvWKck1LnQwd1sZEhSxEbwfB2fWLbvBV
-         cVZekApyBHryw==
-Date:   Wed, 13 Apr 2022 08:41:09 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] i2c: qcom-geni: Use dev_err_probe() for GPI DMA error
-Message-ID: <YlY/TbqHk0N3KXhl@matsya>
-References: <20220412212601.2384274-1-bjorn.andersson@linaro.org>
+        Tue, 12 Apr 2022 23:13:53 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0E651594
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:11:33 -0700 (PDT)
+Received: from kwepemi100002.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KdSH64NbhzFprC;
+        Wed, 13 Apr 2022 11:09:06 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100002.china.huawei.com (7.221.188.188) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 11:11:31 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 11:11:30 +0800
+From:   Peng Liu <liupeng256@huawei.com>
+To:     <mike.kravetz@oracle.com>, <david@redhat.com>,
+        <akpm@linux-foundation.org>, <yaozhenguo1@gmail.com>,
+        <baolin.wang@linux.alibaba.com>, <songmuchun@bytedance.com>,
+        <liuyuntao10@huawei.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <liupeng256@huawei.com>
+Subject: [PATCH v3 0/4] hugetlb: Fix some incorrect behavior
+Date:   Wed, 13 Apr 2022 03:29:11 +0000
+Message-ID: <20220413032915.251254-1-liupeng256@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412212601.2384274-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12-04-22, 14:26, Bjorn Andersson wrote:
-> The GPI DMA engine driver can be compiled as a module, in which case the
-> likely probe deferral "error" shows up in the kernel log. Switch to
-> using dev_err_probe() to silence this warning and to ensure that
-> "devices_deferred" in debugfs carries this information.
+This series fix three bugs of hugetlb:
+1) Invalid use of nr_online_nodes;
+2) Inconsistency between 1G hugepage and 2M hugepage;
+3) Useless information in dmesg.
 
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
+v1->v2:
+  Split "return 1" into a single patch as suggested by Mike.
+v2->v3:
+  Fix invalid use of nr_online_nodes as suggested by David.
+
+Peng Liu (4):
+  hugetlb: Fix wrong use of nr_online_nodes
+  hugetlb: Fix hugepages_setup when deal with pernode
+  hugetlb: Fix return value of __setup handlers
+  hugetlb: Clean up hugetlb_cma_reserve
+
+ mm/hugetlb.c | 47 +++++++++++++++++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 16 deletions(-)
 
 -- 
-~Vinod
+2.18.0.huawei.25
+
