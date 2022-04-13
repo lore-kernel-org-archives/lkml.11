@@ -2,128 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4408C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234631AbiDMM3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
+        id S235538AbiDMM3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbiDMM31 (ORCPT
+        with ESMTP id S235525AbiDMM3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:29:27 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BB45DA4E
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:27:03 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id g20so2148324edw.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:27:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UWf3WD8etSo1FUiV/Va7759QYZ2hF4d/jpBeQeYNuh0=;
-        b=V1YebfM3uL4q1jK8/PspIru7Nkbh7M2BcwDi8WKctQcIrkCwf4tddAevvUJ7NJX9th
-         NhUhIzyxqZ4HdW6OlwRxDPZFiTYztI9/qL97vT/L5AQmRyuUyUt27IAH/kBY0L7AcrGv
-         5oJNVQdIPIZtkLwHWZMG2ZVRqAI7o+ffiPYPNFL7GKqPdroRvFIdsyPXuRi0f4eTjC9S
-         ojoCIuHQnE20+96uU/aud0d6tlxB7+rbNJjg5yK46MAIcJRTXG1KZSSvmiMm6BG6KL5+
-         jE7T+kRwq+ZjSc23P1MhTe4AMzDn2Bw0EXwbiCs5C3vhtcXmdKfYO5I3mlRQNHq/Mc0f
-         ZiZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UWf3WD8etSo1FUiV/Va7759QYZ2hF4d/jpBeQeYNuh0=;
-        b=T7no2yAOFezQPRF7K5Ef17CLBvnypssMTJ2TUEWcmjktz5jtl5BrxBTeXyuaI+dWJ7
-         E+ucGOx22vZ9anLre8cbcJ3MKPzpRTqX/y25kliQawwbQfExYJux2zUQ7YKQTIP4cjVH
-         yGW5a6vsKCCioV8f8PmwjOATOez3r1iIKmc5q0kGJOjhps3VRjXlielU8yo5Sf8eNpnn
-         S1cNAQVAkrptg8ZDWXSvaMgvF6BFBLhYxeVb8hdhQ4/X2MFE4f61daUyycJ3Q1sriepy
-         hEFcqjMaqIK1WvP1MFbHLHW6RvjKU/2euH/uWSWLT4Guohle09slTXJK3aLwO9QoayZX
-         Zmew==
-X-Gm-Message-State: AOAM533AvhGWeuOpsl80fgLlK197JOwbR/GfYepLBDwq8gA6fptOoiZa
-        OsGU7GG1lDBeZ0feMsxJRzC02A==
-X-Google-Smtp-Source: ABdhPJxFkgSsSbyre3Mhq9/5vpL/TcAtBritChJHV6hHs0Thrw4NNs9uIjp2WHOlI6cLIlMu4LSdIg==
-X-Received: by 2002:a05:6402:1941:b0:413:2b5f:9074 with SMTP id f1-20020a056402194100b004132b5f9074mr42989674edz.414.1649852821599;
-        Wed, 13 Apr 2022 05:27:01 -0700 (PDT)
-Received: from [192.168.0.204] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id s4-20020a170906a18400b006db0a78bde8sm14177221ejy.87.2022.04.13.05.27.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 05:27:01 -0700 (PDT)
-Message-ID: <a4b6c158-da56-7879-04a4-558f751cb372@linaro.org>
-Date:   Wed, 13 Apr 2022 14:27:00 +0200
+        Wed, 13 Apr 2022 08:29:43 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6911F5DA67;
+        Wed, 13 Apr 2022 05:27:20 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nec5a-0004a6-00; Wed, 13 Apr 2022 14:27:14 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 1A3DEC0183; Wed, 13 Apr 2022 14:25:46 +0200 (CEST)
+Date:   Wed, 13 Apr 2022 14:25:46 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        tglx@linutronix.de, arnd@arndb.de, Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, x86@kernel.org,
+        linux-xtensa@linux-xtensa.org
+Subject: Re: [PATCH v4 04/11] mips: use fallback for random_get_entropy()
+ instead of zero
+Message-ID: <20220413122546.GA11860@alpha.franken.de>
+References: <20220413115411.21489-1-Jason@zx2c4.com>
+ <20220413115411.21489-5-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] arm64: dts: imx8mm-evk: add pwm1/backlight support
-Content-Language: en-US
-To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Cc:     linux-amarula@amarulasolutions.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Richard Zhu <hongxing.zhu@nxp.com>, Li Jun <jun.li@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220413102052.20207-1-tommaso.merciai@amarulasolutions.com>
- <c6fe3895-29b2-a371-ccae-c5a12c45d4f1@linaro.org>
- <20220413115810.GA4713@tom-ThinkPad-T14s-Gen-2i>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220413115810.GA4713@tom-ThinkPad-T14s-Gen-2i>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413115411.21489-5-Jason@zx2c4.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/04/2022 13:58, Tommaso Merciai wrote:
->>> +	backlight: backlight {
->>> +		status = "disabled";
->>
->> Why disabled?
->>
->>> +		compatible = "pwm-backlight";
->>> +		pwms = <&pwm1 0 5000000>;
->>> +		brightness-levels = <0 255>;
->>> +		num-interpolated-steps = <255>;
->>> +		default-brightness-level = <250>;
->>> +	};
->>> +
->>>  	ir-receiver {
->>>  		compatible = "gpio-ir-receiver";
->>>  		gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
->>> @@ -395,6 +404,12 @@ &wdog1 {
->>>  	status = "okay";
->>>  };
->>>  
->>> +&pwm1 {
->>> +	pinctrl-names = "default";
->>> +	pinctrl-0 = <&pinctrl_backlight>;
->>> +	status = "disabled";
->>
->> Same here.
->>
->>
->> Best regards,
->> Krzysztof
+On Wed, Apr 13, 2022 at 01:54:04PM +0200, Jason A. Donenfeld wrote:
+> In the event that random_get_entropy() can't access a cycle counter or
+> similar, falling back to returning 0 is really not the best we can do.
+> Instead, at least calling random_get_entropy_fallback() would be
+> preferable, because that always needs to return _something_, even
+> falling back to jiffies eventually. It's not as though
+> random_get_entropy_fallback() is super high precision or guaranteed to
+> be entropic, but basically anything that's not zero all the time is
+> better than returning zero all the time.
 > 
-> Hi Krzysztof,
-> I think is better to keep disable into .dtsi and enable it at .dts
-> level.
-> What do you think about?
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  arch/mips/include/asm/timex.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/mips/include/asm/timex.h b/arch/mips/include/asm/timex.h
+> index b05bb70a2e46..abc60a6395e3 100644
+> --- a/arch/mips/include/asm/timex.h
+> +++ b/arch/mips/include/asm/timex.h
+> @@ -94,7 +94,7 @@ static inline unsigned long random_get_entropy(void)
+>  	else if (likely(imp != PRID_IMP_R6000 && imp != PRID_IMP_R6000A))
+>  		return read_c0_random();
+>  	else
+> -		return 0;	/* no usable register */
+> +		return random_get_entropy_fallback();	/* no usable register */
+>  }
+>  #define random_get_entropy random_get_entropy
+>  
+> -- 
+> 2.35.1
 
-Why better? This is already board DTSI, not a SoC DTSI. All boards using
-it are supposed to have it available, aren't they?
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-Usually nodes should be disabled in a DTSI if they need some resources
-not available in that DTSI. For example if they need some supply. It's
-not the case here, right?
-
-
-Best regards,
-Krzysztof
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
