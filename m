@@ -2,199 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62149C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:44:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 330C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235911AbiDMNqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 09:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
+        id S235917AbiDMNqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 09:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiDMNqd (ORCPT
+        with ESMTP id S235707AbiDMNqs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 09:46:33 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A965FF0F;
-        Wed, 13 Apr 2022 06:44:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hc0gx4SsbMqSP4fkKFOlE774+rOzwZCL2j49V5/iQg685FNRrBy8/N4pBe8uQayRfmNCOS7y0iOyT5TMlL0qxHpc7lDpWBR7U7sSHYjPPr4m5JVfSiWM5wVg/zQQEIhVO70eHIJIqIwsahSzayRcBnD3/XPosy5OI6go3lrUVDytQPy0ifzU2kh7q1vV/FFR0G/mfn4PHeyxavXRiTt0N6Hg3/XtnF7kPb2mafSFxJbHAw431ClYsVl2a7Ma4SsvtSZMij22CtCYcJTE/FDWaaM3jg+VBDS9Ln7X2VQWfEt4XTrg07NBh4vfjKfElsMMRCD9GXYIsNFzPaB2G1Wsww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uUgyCqf9jjQVsK6031CBO3ppBfaESuzFT6nqxW2dt2M=;
- b=ll7FNcjX+/Uo6Ih46WRZoTRQK6wuTfX47iVvQqYgCrgtKZ830bhqATfxKSGpZI5a0k5cjlOZmO/n60h7fey920+nRQVLl9Y/LxDiLSKZj+I5q1SK6XD4MRDxpbDFNFz6wT+KcJ9XB4j032HhDfA93brKHSvhfF78PZ1kFFroDzn/F7lRhtclVXH2H9Jr9t1/NDULRUr4cMca7BvNTZfN/JZEEOwUA6LzsAZVU2C7Ujk1EbHqQTPuuu0HNirRBzALQ6vBGrsGxDkbEbfcXm+2791gygWBQBcLV8e1dABGJVNLRbANHccYSDgvb5Mau94I6sGKT1rhdJYcc1Lhhm5qOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uUgyCqf9jjQVsK6031CBO3ppBfaESuzFT6nqxW2dt2M=;
- b=3wf5qAtBY1v1p+/K1Sabge/qSYXYW8Q1RCjKePKlt6MYfD7X7ztdYHQnf7wGY46y5rrcqeA0e5NWpmReQxraTsegz1W/uQwTbmyMQDTrzOrZ1y0Vg4rvqGGXDBubm+VuUdOeG/XZkGMMJRkfqHMvys6EHK+O1+IKia8kFQ8dj6o=
-Received: from BN9PR03CA0662.namprd03.prod.outlook.com (2603:10b6:408:10e::7)
- by BY5PR12MB4002.namprd12.prod.outlook.com (2603:10b6:a03:1ad::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Wed, 13 Apr
- 2022 13:44:08 +0000
-Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10e:cafe::3) by BN9PR03CA0662.outlook.office365.com
- (2603:10b6:408:10e::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18 via Frontend
- Transport; Wed, 13 Apr 2022 13:44:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5164.19 via Frontend Transport; Wed, 13 Apr 2022 13:44:07 +0000
-Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Apr
- 2022 08:44:06 -0500
-Date:   Wed, 13 Apr 2022 08:42:00 -0500
-From:   Michael Roth <michael.roth@amd.com>
-To:     Andy Lutomirski <luto@kernel.org>
-CC:     Vishal Annapurve <vannapurve@google.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, <shauh@kernel.org>,
-        <yang.zhong@intel.com>, <drjones@redhat.com>,
-        <ricarkol@google.com>, <aaronlewis@google.com>,
-        <wei.w.wang@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
+        Wed, 13 Apr 2022 09:46:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D17EE2018B
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 06:44:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649857465;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LhTw9F9UDchErjlX1iEf9dQ5QBg67b/AFMenqWnDONU=;
+        b=PIpOq8iChqGPj9XE/cNJOZcBdHXTtgFHAEFFo5LCCy6DrnRZnQC04Ow8Tj8DcTJ+RMn2LM
+        RsU+bcqhIhPV2ImwyQNUPWnZoLdeK+sfXZDCwB35pi697b0pBpU6WrgAQ/su/q2TAmfJhG
+        CfiZdHFkN8qw6hWEa3yUJzvuwBsAQyo=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-227-Z4zkpSHsO4megauwekuySg-1; Wed, 13 Apr 2022 09:44:24 -0400
+X-MC-Unique: Z4zkpSHsO4megauwekuySg-1
+Received: by mail-il1-f197.google.com with SMTP id j5-20020a056e020ee500b002cbc90840ecso1112875ilk.23
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 06:44:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LhTw9F9UDchErjlX1iEf9dQ5QBg67b/AFMenqWnDONU=;
+        b=UhKifCKSRNpcXruIZ2GlFmnhsrSnOcOErIcNnSZNElcZp5XoeLvWvESnMsuSlbMI7Y
+         zz2dq6C9EJQNlASXUUl9wVf0Dn8B6ZB7iylZx1e6uPQAxOLB8B9fjkS9/NJRznoQgttN
+         10R58EUpmMzUna12o3f5LqwO6LfByAsOp/mC9v9mGbcVGnVx/h/S4h2l9SIAxo2WXWqT
+         rb9iA11OEC3pXUmovEh9KQpb35MDTrENw6YitkBrRwE2g3amh7IaYNI8SX/yO7Hyc0MW
+         x17cKyHK7xfi2iSZoM2zMHJCccV/6JtGUiGBNb0h5lUL3xHACNMtc2oynw5XzOQDcqZ2
+         omMQ==
+X-Gm-Message-State: AOAM530RpySPlFGep5MuMeVLDvCgcDbh64DyztQgsmuI6ZrfjLpU3qxA
+        6M1OhZ4rtkPT06snJNf3cCJTpD5wlR9JW9JRI2gdJ2U0Nn017oTxTFHuzJxU/czKU5I2txhU5nZ
+        EbDbBuQU6qEHej27ym9mETBCa
+X-Received: by 2002:a05:6638:2587:b0:323:bc9f:9230 with SMTP id s7-20020a056638258700b00323bc9f9230mr19657054jat.216.1649857464178;
+        Wed, 13 Apr 2022 06:44:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJziFlvv7OvSg+9WwNOlAr419a4UYKWbNEeCzGwsPZS9ePMKd3bDn+XBMGy9rVOnJXBw3bnJPg==
+X-Received: by 2002:a05:6638:2587:b0:323:bc9f:9230 with SMTP id s7-20020a056638258700b00323bc9f9230mr19657044jat.216.1649857463928;
+        Wed, 13 Apr 2022 06:44:23 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id a9-20020a926609000000b002ca50234d00sm23633ilc.2.2022.04.13.06.44.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 06:44:23 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 09:44:21 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Alistair Popple <apopple@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Quentin Perret <qperret@google.com>,
-        Steven Price <steven.price@arm.com>,
-        Andi Kleen <ak@linux.intel.com>,
         David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Marc Orr <marcorr@google.com>,
-        Erdem Aktas <erdemaktas@google.com>,
-        Peter Gonda <pgonda@google.com>,
-        Sean Christopherson <seanjc@google.com>, <diviness@google.com>
-Subject: Re: [RFC V1 PATCH 0/5] selftests: KVM: selftests for fd-based
- approach of supporting private memory
-Message-ID: <20220413134200.ms5lscs7lvvih7a5@amd.com>
-References: <20220408210545.3915712-1-vannapurve@google.com>
- <e8a4cac5-bc5a-4483-9443-c0e5b9f707d1@www.fastmail.com>
+        Matthew Wilcox <willy@infradead.org>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>
+Subject: Re: [PATCH v8 01/23] mm: Introduce PTE_MARKER swap entry
+Message-ID: <YlbTtUqa61ygTn1F@xz-m1.local>
+References: <20220405014646.13522-1-peterx@redhat.com>
+ <20220405014646.13522-2-peterx@redhat.com>
+ <87bkx7ayfs.fsf@nvdebian.thelocal>
+ <YlXWzf3nF+lGA5fn@xz-m1.local>
+ <8735ihbw6g.fsf@nvdebian.thelocal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <e8a4cac5-bc5a-4483-9443-c0e5b9f707d1@www.fastmail.com>
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a5d9c6f4-dcdc-4270-7fc8-08da1d53ae9b
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4002:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB4002AC22F31C0EF842A40D1695EC9@BY5PR12MB4002.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qcac+kkG/XGa5DTui9rPym6+VcsFLQaRQ63SBOLbOYdBftOduFCG58SzPOdKgnXpcJplAifahUrNjK5r9CtvUWPY9rpTUECxxnxpjxiS15x+F1wfJf2X1abOhHzWVIT25w431ex5A8UZmLPtr3Zywt1D0y8oj7NAh6asxiRIrLuXBaNLixAmCSgfy8OMNw9LtHr2t03csxgmKK/fWnBP6y8h180zFNkSRYEb6jrEvPY1bnR1E80/nfQhkCbZiMlLtunLwrA0GsO1a1vbuH2vX/bQT9JpsBacbAldtK2M1ZcyLuV3Q1uLKykue9eIUPTIg+s20OV/4pL/XdIgbNIGqbT/tmIbElSa6K7k8yJpva9Ol0znwTDG/oWOHkr2ztcKgN3l6F7YHWtq5WJ8mS2mdBlyuduvYIJE7taUavmaruYquibETA80GBYQjVM3Bq19hSUYUjMMo5iYDQ5hIYnQsxGxn0e8VI6BhrxxuhLvEvfec57QPt7s2trInPATcSDTflfKBqFrQKoNLPOj4nUrEFTMiGnDdd4V6KRqdmr/qZmlkoLQaVN+1Kx/8YRDJBYW1H2tZNH5y9tIW9NElhyXCzYKiz+svZQ91wx0FRVDYIZJA2RIAPS60BCRfzTOuzZkZNY841g+H3hL3g4kTKBNHfCSpjgTq1EqhZ7tC1MjePQLcNJbab+xgYnNfey3n98hpJmRr9sKIzm8B8W8aDxY8D0y5wXyPnWXxlyFrhKe197RV26PWDKZATyRlJG1SPZokF1QD9AMhVbErhe97Yhn0HUMZBY9nY+LFtJ+G4iiCEnQSyqixnsHSYJ4B5FXYnHWVQwmyqOrqIyNlfYWdJi+Lw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(16526019)(426003)(82310400005)(2906002)(81166007)(36756003)(966005)(86362001)(5660300002)(336012)(508600001)(83380400001)(4326008)(8676002)(40460700003)(36860700001)(316002)(6666004)(47076005)(2616005)(8936002)(7416002)(356005)(70586007)(54906003)(70206006)(6916009)(44832011)(1076003)(186003)(26005)(7406005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2022 13:44:07.4638
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5d9c6f4-dcdc-4270-7fc8-08da1d53ae9b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4002
+In-Reply-To: <8735ihbw6g.fsf@nvdebian.thelocal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 05:16:22PM -0700, Andy Lutomirski wrote:
-> On Fri, Apr 8, 2022, at 2:05 PM, Vishal Annapurve wrote:
-> > This series implements selftests targeting the feature floated by Chao
-> > via:
-> > https://lore.kernel.org/linux-mm/20220310140911.50924-1-chao.p.peng@linux.intel.com/
+On Wed, Apr 13, 2022 at 10:30:33AM +1000, Alistair Popple wrote:
+> Peter Xu <peterx@redhat.com> writes:
+> 
+> > On Tue, Apr 12, 2022 at 11:07:56AM +1000, Alistair Popple wrote:
+> >> Hi Peter,
 > >
-> > Below changes aim to test the fd based approach for guest private memory
-> > in context of normal (non-confidential) VMs executing on non-confidential
-> > platforms.
+> > Hi, Alistair,
 > >
-> > Confidential platforms along with the confidentiality aware software
-> > stack support a notion of private/shared accesses from the confidential
-> > VMs.
-> > Generally, a bit in the GPA conveys the shared/private-ness of the
-> > access. Non-confidential platforms don't have a notion of private or
-> > shared accesses from the guest VMs. To support this notion,
-> > KVM_HC_MAP_GPA_RANGE
-> > is modified to allow marking an access from a VM within a GPA range as
-> > always shared or private. Any suggestions regarding implementing this ioctl
-> > alternatively/cleanly are appreciated.
+> >>
+> >> I noticed this while reviewing the next patch in the series. I think you need to
+> >> add CONFIG_PTE_MARKER to the below as well:
+> >>
+> >> #if defined(CONFIG_MEMORY_FAILURE) || defined(CONFIG_MIGRATION) || \
+> >>     defined(CONFIG_DEVICE_PRIVATE)
+> >> static inline int non_swap_entry(swp_entry_t entry)
+> >> {
+> >> 	return swp_type(entry) >= MAX_SWAPFILES;
+> >> }
+> >> #else
+> >> static inline int non_swap_entry(swp_entry_t entry)
+> >> {
+> >> 	return 0;
+> >> }
+> >> #endif
+> >>
+> >> Otherwise marker entries will be treated as swap entries, which is wrong for
+> >> example in swapin_walk_pmd_entry() as marker entries are no longer considered
+> >> pte_none().
+> >
+> > Thanks for the comment, that makes sense.
+> >
+> > Instead of adding PTE_MARKER into this equation, I'm going backward and
+> > wondering purely on why we need to bother with non_swap_entry() at all if
+> > MAX_SWAPFILES is already defined with proper knowledges of all these bits.
 > 
-> This is fantastic.  I do think we need to decide how this should work in general.  We have a few platforms with somewhat different properties:
+> I was going to suggest it was to help the compiler optimise the non-swap entry
+> code away. But I just tested and it makes no difference in .text section size
+> either way so I think your suggestion is good unless that isn't true for other
+> architecture/compiler combinations (I only tried gcc-10.2.1 and x86_64).
 > 
-> TDX: The guest decides, per memory access (using a GPA bit), whether an access is private or shared.  In principle, the same address could be *both* and be distinguished by only that bit, and the two addresses would refer to different pages.
+> That's a possibility because the optimisation isn't obvious to me at least.
 > 
-> SEV: The guest decides, per memory access (using a GPA bit), whether an access is private or shared.  At any given time, a physical address (with that bit masked off) can be private, shared, or invalid, but it can't be valid as private and shared at the same time.
+> non_swap_entry() is equivalent to:
 > 
-> pKVM (currently, as I understand it): the guest decides by hypercall, in advance of an access, which addresses are private and which are shared.
+> (entry.val >> SWP_TYPE_SHIFT) >= MAX_SWAPFILES;
+> (entry.val >> (BITS_PER_XA_VALUE - MAX_SWAPFILES_SHIFT)) >= (1<<5);
+> (entry.val >> (BITS_PER_LONG - 1 - 5)) >= (1<<5);
+> (entry.val >> 58) >= (1<<5);
 > 
-> This series, if I understood it correctly, is like TDX except with no hardware security.
-> 
-> Sean or Chao, do you have a clear sense of whether the current fd-based private memory proposal can cleanly support SEV and pKVM?  What, if anything, needs to be done on the API side to get that working well?  I don't think we need to support SEV or pKVM right away to get this merged, but I do think we should understand how the API can map to them.
+> Where entry.val is a long. So from that alone it's not obvious this could be
+> optimised away, because nothing there implies entry.val != (1<<63) which would
+> make the conditional true. But there's a lot of inlining going on in the
+> creation of swap entries which I didn't trace, so something must end up implying
+> entry.val < (1<<63).
 
-I've been looking at porting the SEV-SNP hypervisor patches over to
-using memfd, and I hit an issue that I think is generally applicable
-to SEV/SEV-ES as well. Namely at guest init time we have something
-like the following flow:
+I think my point was that we check non_swap_entry() with a pre-assumption
+that it's a swap entry, then it means it's the slow path already after
+we've parsed the pte entry and be aware it's not present.
 
-  VMM:
-    - allocate shared memory to back the guest and map it into guest
-      address space
-    - initialize shared memory with initialize memory contents (namely
-      the BIOS)
-    - ask KVM to encrypt these pages in-place and measure them to
-      generate the initial measured payload for attestation, via
-      KVM_SEV_LAUNCH_UPDATE with the GPA for each range of memory to
-      encrypt.
-  KVM:
-    - issue SEV_LAUNCH_UPDATE firmware command, which takes an HPA as
-      input and does an in-place encryption/measure of the page.
+So I'm doubting how much the optimization (even if at last, applicable)
+could help in reality, not to mention that it'll only have an effect when
+all of the configs are not set, so it's a micro optimization on slow path
+in a rare config setup.
 
-With current v5 of the memfd/UPM series, I think the expected flow is that
-we would fallocate() these ranges from the private fd backend in advance of
-calling KVM_SEV_LAUNCH_UPDATE (if VMM does it after we'd destroy the initial
-guest payload, since they'd be replaced by newly-allocated pages). But if
-VMM does it before, VMM has no way to initialize the guest memory contents,
-since mmap()/pwrite() are disallowed due to MFD_INACCESSIBLE.
+For any sane modern hosts I'd expect CONFIG_MIGRATION should at least be
+set.. then it invalidates any potential optimization we're discussing here.
 
-I think something similar to your proposal[1] here of making pread()/pwrite()
-possible for private-fd-backed memory that's been flagged as "shareable"
-would work for this case. Although here the "shareable" flag could be
-removed immediately upon successful completion of the SEV_LAUNCH_UPDATE
-firmware command.
+Let me post a patch for this and move the discussion there.  Thanks a lot
+for looking into it.
 
-I think with TDX this isn't an issue because their analagous TDH.MEM.PAGE.ADD
-seamcall takes a pair of source/dest HPA as input params, so the VMM
-wouldn't need write access to dest HPA at any point, just source HPA.
+-- 
+Peter Xu
 
-[1] https://lwn.net/ml/linux-kernel/eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com/
