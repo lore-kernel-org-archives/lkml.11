@@ -2,77 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1920BC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233748AbiDMIYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 04:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
+        id S233743AbiDMIZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 04:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233729AbiDMIYl (ORCPT
+        with ESMTP id S232618AbiDMIZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 04:24:41 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7549C340CE;
-        Wed, 13 Apr 2022 01:22:19 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 13 Apr
- 2022 16:22:18 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 13 Apr
- 2022 16:22:17 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-CC:     Haowen Bai <baihaowen@meizu.com>,
-        <linux-renesas-soc@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] clk: renesas: Fix memory leak of 'cpg'
-Date:   Wed, 13 Apr 2022 16:22:16 +0800
-Message-ID: <1649838136-19851-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 13 Apr 2022 04:25:55 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4C0340CE
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 01:23:35 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id lc2so2331395ejb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 01:23:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pDdCO2Z9sHAkcidfpKBTGhIx4GsRFl2YRA+5zMVZ7Po=;
+        b=EQSfe/OGM1bDLSi6whKMEjNq4/6t5obsX6B3zW3tIoZLjKAB8+dPT5hT7TZitAkSiT
+         fTwT0mW7viCTIF4OAb5wBT0PlPjORofhAKFSzh9V9G3tcQa7lEhUL13MOzBriYY+fqmc
+         IVVRwfNl3wO2clI7usFeV426Mk2ctlMr3lIpc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=pDdCO2Z9sHAkcidfpKBTGhIx4GsRFl2YRA+5zMVZ7Po=;
+        b=PFwDlX6qcFcPhAEOqZuYSzdoXtc1i+Cs2Ntu1kUl7t0imw5vUcYTs4yAuoz1cWsFk9
+         ZTXmwiuZ1D7Ub4B6LRQg9IdH49imqALUG2+DQC6uQI5pXcZezDNf+ay6PhZnMjI+a1UB
+         tMITxRBs/Qg7ygPBrAjJgI/n9HJxoLkGNocEFXtlMmuepai3MaNxGVfk1tIETrA+8L3K
+         4pxYM1euEB/++kkiTB+qSkjdq8BV4WfuhbHbPa9raCvjwk3HwFL0kS3UO1gweoP3Dtk3
+         srPU2RsfqXr2/giIgTyE7agVijtU1XZoOV6H4Tr/lBWUvM7zJQ9qyuLKpiFnW0OTSWUv
+         WLSg==
+X-Gm-Message-State: AOAM531zOCmcnqGcgWbbbUEuPyut0kfM64hrKPr6Rg2au+IxGmwID712
+        3rt/W/1T1MUxCgdGR2/TEQdnyw==
+X-Google-Smtp-Source: ABdhPJy6vkhPnQjZPHpvyKo4dmGeTKsNWOhUCSOfAThna7ZkD4GSLlcdAsCMZnlM5vvm+zfGBdc8Tw==
+X-Received: by 2002:a17:907:94cd:b0:6e0:b001:aeb6 with SMTP id dn13-20020a17090794cd00b006e0b001aeb6mr37652242ejc.283.1649838213381;
+        Wed, 13 Apr 2022 01:23:33 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id k11-20020a50c8cb000000b0041d97e9fd46sm879363edh.83.2022.04.13.01.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 01:23:32 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 10:23:31 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Dave Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the drm-misc tree
+Message-ID: <YlaIgxknwmPbsg1h@phenom.ffwll.local>
+Mail-Followup-To: Stephen Rothwell <sfr@canb.auug.org.au>,
+        Dave Airlie <airlied@linux.ie>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220406155030.0dacf051@canb.auug.org.au>
+ <20220413100448.6f5f4de7@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413100448.6f5f4de7@canb.auug.org.au>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix this issue by freeing the cpg when exiting the function in the
-error/normal path.
+On Wed, Apr 13, 2022 at 10:04:48AM +1000, Stephen Rothwell wrote:
+> Hi all,
+> 
+> On Wed, 6 Apr 2022 15:50:30 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > After merging the drm-misc tree, today's linux-next build (htmldocs)
+> > produced this warning:
+> > 
+> > include/drm/ttm/ttm_resource.h:226: warning: Function parameter or member 'pos' not described in 'ttm_lru_bulk_move'
+> > 
+> > Introduced by commit
+> > 
+> >   b0e2c9ea5afc ("drm/ttm: allow bulk moves for all domains")
+> 
+> This warning is now produced by the drm tree.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/clk/renesas/clk-r8a73a4.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/clk/renesas/clk-r8a73a4.c b/drivers/clk/renesas/clk-r8a73a4.c
-index cfed11c659d9..5a8d976f49e0 100644
---- a/drivers/clk/renesas/clk-r8a73a4.c
-+++ b/drivers/clk/renesas/clk-r8a73a4.c
-@@ -215,7 +215,7 @@ static void __init r8a73a4_cpg_clocks_init(struct device_node *np)
- 
- 	cpg->reg = of_iomap(np, 0);
- 	if (WARN_ON(cpg->reg == NULL))
--		return;
-+		goto out_free_cpg;
- 
- 	for (i = 0; i < num_clks; ++i) {
- 		const char *name;
-@@ -233,6 +233,9 @@ static void __init r8a73a4_cpg_clocks_init(struct device_node *np)
- 	}
- 
- 	of_clk_add_provider(np, of_clk_src_onecell_get, &cpg->data);
-+out_free_cpg:
-+	kfree(cpg);
-+	kfree(clks);
- }
- CLK_OF_DECLARE(r8a73a4_cpg_clks, "renesas,r8a73a4-cpg-clocks",
- 	       r8a73a4_cpg_clocks_init);
+Christian, do you have a patch to fix this?
+-Daniel
 -- 
-2.7.4
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
