@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B081C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 082A3C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235168AbiDMLcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
+        id S235176AbiDMLcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbiDMLcg (ORCPT
+        with ESMTP id S235128AbiDMLcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Apr 2022 07:32:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745F52AC6F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7478134BAE;
         Wed, 13 Apr 2022 04:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F6861DC6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BFC061DC7;
         Wed, 13 Apr 2022 11:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB5E6C385B3;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B0799C385B1;
         Wed, 13 Apr 2022 11:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649849412;
-        bh=dx7OUX8/yekR+5yZ3BY30eSyyVdl4N1P7VEeD7kiFeE=;
+        bh=lYZwM62lSPSEPPxpG6/zjgEXhke96Vy+w33ZwNIn0no=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gNiau/O2B3bWi89MNgvZK6Pg8+zNFYhixJtWOmqHdX1uyxz06R2KoiHgumx0sjt1/
-         YcnJddWnfp4FWVavEyzc1tzoXrtRKrn9mWphGDFxH2sfOdDlu6PvndSZFF4V9ET7j4
-         ArARo02UOSzSN0Y3+hQzy9CqJRyzZutOJi0Tse+G0fy7NLYHmYmfRsUSy2RRBalyA2
-         1AdSJcd5+Jv5QwLNjZAkYucJ/VODyDnxZQXSBnKoZw7V0wDs9rXRB+4A5aZg/sQIu+
-         zAZEaDSpMQ+OA93bFLDE0hyuBv1R/ecuCW05jOZDLuL1k99kRBuwfwUusav1lgcyt2
-         CumZKKx6RMhqA==
+        b=guasWZTNytEVX6hF7ILcutWkrigV9gVr1/uR7csImbaV58jpOcwrhWdVnuc+wS6Bq
+         MypZathzsO+EJBFYfDI6rJAY2IVLqc97VNB8Jc82pLMvaBnaCLGVCQx/pVriqTAqs8
+         XnuQrgd0qEhlPLe3jZXjy7Q72LbGYqHnloLeHlaGixHSfMPACa2NxXyXSPja9SFtHu
+         KYMRi+Tq5emszgrEPd2gAVFjhBspVZg5qXFucjSmjCciVbaH1Nun23NUVE6zfAXuG/
+         wXFaS+1wsIG3maHoM9DbikwIbWE5AmfL+rpXv+H0iJrCFbSTUG8XD7OmWoLXPKLH2G
+         wrDs1KjALAHuQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F4A1E8DD67;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 98F05E8DD6A;
         Wed, 13 Apr 2022 11:30:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] NFC: NULL out the dev->rfkill to prevent UAF
+Subject: Re: [PATCH] ipv6: exthdrs: use swap() instead of open coding it
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164984941258.14313.4753120813378621079.git-patchwork-notify@kernel.org>
+Message-Id: <164984941262.14313.12229725514053203170.git-patchwork-notify@kernel.org>
 Date:   Wed, 13 Apr 2022 11:30:12 +0000
-References: <20220412053208.28681-1-linma@zju.edu.cn>
-In-Reply-To: <20220412053208.28681-1-linma@zju.edu.cn>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220412032058.14136-1-guozhengkui@vivo.com>
+In-Reply-To: <20220412032058.14136-1-guozhengkui@vivo.com>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zhengkui_guo@outlook.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -57,20 +57,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 12 Apr 2022 13:32:08 +0800 you wrote:
-> Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
-> assumes the device_is_registered() in function nfc_dev_up() will help
-> to check when the rfkill is unregistered. However, this check only
-> take effect when device_del(&dev->dev) is done in nfc_unregister_device().
-> Hence, the rfkill object is still possible be dereferenced.
+On Tue, 12 Apr 2022 11:20:58 +0800 you wrote:
+> Address the following coccicheck warning:
+> net/ipv6/exthdrs.c:620:44-45: WARNING opportunity for swap()
 > 
-> The crash trace in latest kernel (5.18-rc2):
+> by using swap() for the swapping of variable values and drop
+> the tmp (`addr`) variable that is not needed any more.
+> 
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - NFC: NULL out the dev->rfkill to prevent UAF
-    https://git.kernel.org/netdev/net-next/c/1b0e81416a24
+  - ipv6: exthdrs: use swap() instead of open coding it
+    https://git.kernel.org/netdev/net-next/c/5ee6ad1dcae8
 
 You are awesome, thank you!
 -- 
