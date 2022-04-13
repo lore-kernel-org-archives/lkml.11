@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59079C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D443C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238947AbiDMVI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
+        id S235013AbiDMVJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238826AbiDMVIR (ORCPT
+        with ESMTP id S238834AbiDMVIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:08:17 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D552984EDA
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:34 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id i5-20020a258b05000000b006347131d40bso2666623ybl.17
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:34 -0700 (PDT)
+        Wed, 13 Apr 2022 17:08:11 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213FC83B17
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:30 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id j129-20020a252387000000b00641e1faafecso1126897ybj.3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 14:05:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=MKyIlb14kjoDwiTLRJoibK3zmQSI+f9RAOGtdQkGAb0=;
-        b=iWk8MWfFdHQTF1RiR2YiO0cAhgu+ekxQ/RJcrsUoAJ8Ehnuf78lwlXuLPJH1cl79Wr
-         71ibilE8ygIOj5S/4sjzDalWyaGjSQ9fCDItNRJUH46RpNBeQXikHuNUSEWJw64lqIGv
-         7C68DUU4diBt6nyVAEvRtqEz+VqebyNRfZakHJyrEVlhs3p81miawyCF6ULOs82LGV9N
-         YOxSMjMFUe+bvfpdnCywUx0qQbY8rByXJYvYgK7EkvIY2uPAPvtqPk4a/mDJwJnBA8vw
-         f02oEeIrXYs/+IX9wXr/2hc74Fu1vgJgZzO9VlQmQN+C3BT5SJnWbIw0ThgHn6e2FRl9
-         FWFg==
+        bh=YbrCAd0HTzm8nIYQbKISy9o9brmGYCkpuolMPrFO/E0=;
+        b=nyChMhsTgdMUn1iXKlSFVbjKsXDeEbTqQfWpiFh11D5qmybgKLmDVaVsPJbMnCjLc6
+         61ADOkEaA7YhpdWzy27F2Z3z0CEbT9iegk6w/LChX8Xfzjw9520i7lea9oc+dBJTWNMk
+         0fYT4QBwhW6AKDpFa2WVnvWRkYy29clnkDSl6kuzIEbWoPBtJxbpkwN96cQEMXB9c2NI
+         xUL6UQ9hC8tr5EYvBFfAMPqTrM7hgvywoH2BqEpG+uFD+Pif7XMPsiqw4hZejtMif9Op
+         +U16NVUYtZ6G2fNp3e+5BbJEpoUEK/ijqryPX6+oKj1CzvepRZyo1tic7xDp3mqZXGEg
+         Zkeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=MKyIlb14kjoDwiTLRJoibK3zmQSI+f9RAOGtdQkGAb0=;
-        b=ZWkxGiRsCqp4eIPSswencDawtYZFBpvtouCEb0FEJNfgQcxn3Ei6qh2rKt7SSEga5v
-         OV+X8lsfxhKKEqBz8DxETIWHtYz8JU0vfQCyKKUcC0E6fpqnYMCCQ96+mBtSNyP5mhRz
-         y0NO+Mhm3BlVYAJY9uRTDkH79htuD5KdCs+SafzyLnlaMThLiVGwV3iyKw6v/lXh66HJ
-         CKUAk8HDJ0WUbLQFykFmIg7/M503zENcEQLaV0RA0S77NyoR5pLwK4vrJDwtXgdAHYuK
-         YFbWo/B8fdSnZtp8b+e59EgwYYvVYnCn7c8nXGsJ2G49VrSLZQSXBgIBV/bJ8FlsAqy5
-         OYSw==
-X-Gm-Message-State: AOAM530Y8TCQvlELT7oSuCI9u5YDrnTsK61WHqYxPrQIeVatXSpIk2Dt
-        NPTK8x8zBxuOqcS7vfe5rdJnns+DjMHu
-X-Google-Smtp-Source: ABdhPJxFqsuZ6qMuWLSeRtUQRg/LfuGdgV/QufIDf5GSiSd5CLkIj5yGvBrbm/lcWvEEsHtncDU2IpYzlR7h
+        bh=YbrCAd0HTzm8nIYQbKISy9o9brmGYCkpuolMPrFO/E0=;
+        b=3+xjRbHFTcCpWmKnsx5wWh7cNJsVcFvkeoqIFkGAMKNIfn3ANJn+mrKrkNPmu//NW2
+         MsK9WYPgKdQi8b7+H88P50kZGhThp0nf4VzfbNrdQtun9AcNGEX5T7kjZ0TNfnNXFzX9
+         FeNLFrVwtM9PK/a+bXZnffwZ7Qe3DY6bpOJ+G9Q0Fi197HT5apu1i/TITS+TeEjNfF99
+         SQtmQz3vxH1rmBfwWBy2ml9aBPdWRmwzRYiGKHO6wDXdBpLULf6VbtUKI/CJgt0njhHx
+         7OpFD14cnDSqVNM1ls8/gJGh7s/Xh62+feIl08dzAp+K5mvzWGU9GUzfVOUtT7ZUeYfi
+         XWzQ==
+X-Gm-Message-State: AOAM533r3cL3WSxDVN+qi9c2PK2PbZ/ao0cdyu8VM6rwBgNAC2imV7pb
+        stV1WRqa78PrgQphEvHWSBtYHTAHcT+F
+X-Google-Smtp-Source: ABdhPJztFP7Zw7XFEYDHCtwvHmr4hehc+wkwsMIcT6Hl68294Na0xIN8Jze7tgHocr+v3lrQMNMmA1c7UnRv
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9135:da53:a8a2:bf11])
- (user=irogers job=sendgmr) by 2002:a05:6902:13c1:b0:61d:969c:109c with SMTP
- id y1-20020a05690213c100b0061d969c109cmr675962ybu.133.1649883934046; Wed, 13
- Apr 2022 14:05:34 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 14:05:01 -0700
+ (user=irogers job=sendgmr) by 2002:a25:b0a5:0:b0:641:4c43:db00 with SMTP id
+ f37-20020a25b0a5000000b006414c43db00mr708820ybj.478.1649883929238; Wed, 13
+ Apr 2022 14:05:29 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 14:04:59 -0700
 In-Reply-To: <20220413210503.3256922-1-irogers@google.com>
-Message-Id: <20220413210503.3256922-12-irogers@google.com>
+Message-Id: <20220413210503.3256922-10-irogers@google.com>
 Mime-Version: 1.0
 References: <20220413210503.3256922-1-irogers@google.com>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH 12/14] perf vendor events intel: Update elkhartlake event topics
+Subject: [PATCH 10/14] perf vendor events intel: Update westmereep-sp event topics
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -80,61 +80,181 @@ https://github.com/intel/event-converter-for-linux-perf/
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- .../perf/pmu-events/arch/x86/elkhartlake/other.json | 13 +------------
- .../pmu-events/arch/x86/elkhartlake/pipeline.json   | 13 ++++++++++++-
- 2 files changed, 13 insertions(+), 13 deletions(-)
+ .../arch/x86/westmereep-sp/other.json         | 66 +------------------
+ .../arch/x86/westmereep-sp/pipeline.json      | 66 ++++++++++++++++++-
+ 2 files changed, 66 insertions(+), 66 deletions(-)
 
-diff --git a/tools/perf/pmu-events/arch/x86/elkhartlake/other.json b/tools/perf/pmu-events/arch/x86/elkhartlake/other.json
-index de55b199ba79..8692d4847476 100644
---- a/tools/perf/pmu-events/arch/x86/elkhartlake/other.json
-+++ b/tools/perf/pmu-events/arch/x86/elkhartlake/other.json
-@@ -1,15 +1,4 @@
+diff --git a/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json b/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json
+index 23dcd554728c..67bc34984fa8 100644
+--- a/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json
++++ b/tools/perf/pmu-events/arch/x86/westmereep-sp/other.json
+@@ -1,28 +1,4 @@
  [
 -    {
--        "BriefDescription": "Counts the total number of BTCLEARS.",
--        "CollectPEBSRecord": "2",
+-        "BriefDescription": "Early Branch Prediciton Unit clears",
 -        "Counter": "0,1,2,3",
--        "EventCode": "0xe8",
--        "EventName": "BTCLEAR.ANY",
--        "PDIR_COUNTER": "na",
--        "PEBScounters": "0,1,2,3",
--        "PublicDescription": "Counts the total number of BTCLEARS which occurs when the Branch Target Buffer (BTB) predicts a taken branch.",
--        "SampleAfterValue": "200003"
+-        "EventCode": "0xE8",
+-        "EventName": "BPU_CLEARS.EARLY",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0x1"
+-    },
+-    {
+-        "BriefDescription": "Late Branch Prediction Unit clears",
+-        "Counter": "0,1,2,3",
+-        "EventCode": "0xE8",
+-        "EventName": "BPU_CLEARS.LATE",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0x2"
+-    },
+-    {
+-        "BriefDescription": "Branch prediction unit missed call or return",
+-        "Counter": "0,1,2,3",
+-        "EventCode": "0xE5",
+-        "EventName": "BPU_MISSED_CALL_RET",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0x1"
 -    },
      {
-         "BriefDescription": "This event is deprecated. Refer to new event BUS_LOCK.SELF_LOCKS",
-         "CollectPEBSRecord": "2",
-@@ -180,4 +169,4 @@
-         "SampleAfterValue": "100003",
+         "BriefDescription": "ES segment renames",
+         "Counter": "0,1,2,3",
+@@ -127,46 +103,6 @@
+         "SampleAfterValue": "200000",
+         "UMask": "0x1"
+     },
+-    {
+-        "BriefDescription": "All RAT stall cycles",
+-        "Counter": "0,1,2,3",
+-        "EventCode": "0xD2",
+-        "EventName": "RAT_STALLS.ANY",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0xf"
+-    },
+-    {
+-        "BriefDescription": "Flag stall cycles",
+-        "Counter": "0,1,2,3",
+-        "EventCode": "0xD2",
+-        "EventName": "RAT_STALLS.FLAGS",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0x1"
+-    },
+-    {
+-        "BriefDescription": "Partial register stall cycles",
+-        "Counter": "0,1,2,3",
+-        "EventCode": "0xD2",
+-        "EventName": "RAT_STALLS.REGISTERS",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0x2"
+-    },
+-    {
+-        "BriefDescription": "ROB read port stalls cycles",
+-        "Counter": "0,1,2,3",
+-        "EventCode": "0xD2",
+-        "EventName": "RAT_STALLS.ROB_READ_PORT",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0x4"
+-    },
+-    {
+-        "BriefDescription": "Scoreboard stall cycles",
+-        "Counter": "0,1,2,3",
+-        "EventCode": "0xD2",
+-        "EventName": "RAT_STALLS.SCOREBOARD",
+-        "SampleAfterValue": "2000000",
+-        "UMask": "0x8"
+-    },
+     {
+         "BriefDescription": "All Store buffer stall cycles",
+         "Counter": "0,1,2,3",
+@@ -284,4 +220,4 @@
+         "SampleAfterValue": "2000000",
          "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json b/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json
-index 31816c6543a8..c18acb422145 100644
---- a/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json
-+++ b/tools/perf/pmu-events/arch/x86/elkhartlake/pipeline.json
-@@ -153,6 +153,17 @@
-         "SampleAfterValue": "200003",
-         "UMask": "0xfe"
+diff --git a/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json b/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json
+index 10140f460fbb..403fb2b87fc4 100644
+--- a/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/westmereep-sp/pipeline.json
+@@ -50,6 +50,30 @@
+         "SampleAfterValue": "2000000",
+         "UMask": "0x1"
      },
 +    {
-+        "BriefDescription": "Counts the total number of BTCLEARS.",
-+        "CollectPEBSRecord": "2",
++        "BriefDescription": "Early Branch Prediciton Unit clears",
 +        "Counter": "0,1,2,3",
-+        "EventCode": "0xe8",
-+        "EventName": "BTCLEAR.ANY",
-+        "PDIR_COUNTER": "na",
-+        "PEBScounters": "0,1,2,3",
-+        "PublicDescription": "Counts the total number of BTCLEARS which occurs when the Branch Target Buffer (BTB) predicts a taken branch.",
-+        "SampleAfterValue": "200003"
++        "EventCode": "0xE8",
++        "EventName": "BPU_CLEARS.EARLY",
++        "SampleAfterValue": "2000000",
++        "UMask": "0x1"
++    },
++    {
++        "BriefDescription": "Late Branch Prediction Unit clears",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xE8",
++        "EventName": "BPU_CLEARS.LATE",
++        "SampleAfterValue": "2000000",
++        "UMask": "0x2"
++    },
++    {
++        "BriefDescription": "Branch prediction unit missed call or return",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xE5",
++        "EventName": "BPU_MISSED_CALL_RET",
++        "SampleAfterValue": "2000000",
++        "UMask": "0x1"
 +    },
      {
-         "BriefDescription": "Counts the number of unhalted core clock cycles. (Fixed event)",
-         "CollectPEBSRecord": "2",
-@@ -516,4 +527,4 @@
-         "SampleAfterValue": "2000003",
+         "BriefDescription": "Branch instructions decoded",
+         "Counter": "0,1,2,3",
+@@ -494,6 +518,46 @@
+         "SampleAfterValue": "20000",
+         "UMask": "0x4"
+     },
++    {
++        "BriefDescription": "All RAT stall cycles",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xD2",
++        "EventName": "RAT_STALLS.ANY",
++        "SampleAfterValue": "2000000",
++        "UMask": "0xf"
++    },
++    {
++        "BriefDescription": "Flag stall cycles",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xD2",
++        "EventName": "RAT_STALLS.FLAGS",
++        "SampleAfterValue": "2000000",
++        "UMask": "0x1"
++    },
++    {
++        "BriefDescription": "Partial register stall cycles",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xD2",
++        "EventName": "RAT_STALLS.REGISTERS",
++        "SampleAfterValue": "2000000",
++        "UMask": "0x2"
++    },
++    {
++        "BriefDescription": "ROB read port stalls cycles",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xD2",
++        "EventName": "RAT_STALLS.ROB_READ_PORT",
++        "SampleAfterValue": "2000000",
++        "UMask": "0x4"
++    },
++    {
++        "BriefDescription": "Scoreboard stall cycles",
++        "Counter": "0,1,2,3",
++        "EventCode": "0xD2",
++        "EventName": "RAT_STALLS.SCOREBOARD",
++        "SampleAfterValue": "2000000",
++        "UMask": "0x8"
++    },
+     {
+         "BriefDescription": "Resource related stall cycles",
+         "Counter": "0,1,2,3",
+@@ -896,4 +960,4 @@
+         "SampleAfterValue": "2000000",
          "UMask": "0x1"
      }
 -]
