@@ -2,123 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237193AbiDMRMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
+        id S237200AbiDMRMU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235648AbiDMRLx (ORCPT
+        with ESMTP id S236974AbiDMRMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:11:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC3F2DC6;
-        Wed, 13 Apr 2022 10:09:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA718B82651;
-        Wed, 13 Apr 2022 17:09:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E59DC385A9;
-        Wed, 13 Apr 2022 17:09:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649869768;
-        bh=3u9ubt29kWBfeoohBhUaZtYjynoSHsWckWYS1SxrLGI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JK9l9xdpE9RXp5q6IKefJNSq94TlF8c8ZbbkoCEl3DfmKQX/u/Y5eHHfZiWqaCkHl
-         vNMYHB60l1zE/NTHt+YX4u9UJy1Hohq9Y9uIiyZS0UesNdQY9IuDFVuXv+GZc0iSy9
-         GOxJ5asWJXr46Jl7+bHKYTVBraKaKN3ELoVmWvnFKDF/qAdCvQpe01T1MOX+G+8PEJ
-         W/nEdLA0FUZQtBoE+nbE/OooaTUeIGR6ZPfoVGUX75S9WmoEg6lIQExuStxle9jApw
-         WsywUJ9AAHpBnPUjz1AGg6Du3ExvItn++nnt7nMp8PvIKGKyYcfGQWfcLCNvane7NZ
-         0/pwBOTaVo4Ng==
-Received: by mail-oo1-f50.google.com with SMTP id e7-20020a4aaac7000000b00330e3ddfd4bso449128oon.8;
-        Wed, 13 Apr 2022 10:09:28 -0700 (PDT)
-X-Gm-Message-State: AOAM530pyoVU2H/48WxmiYIBD4uxf7yfFA40Sa65Qpk+SFffb/NOJm06
-        /y6H3VkXAcugDGxOQVBcG3K5aID+xQfh4MFowF4=
-X-Google-Smtp-Source: ABdhPJy4fqCnnOJ0yVJ/sVE7NuBrsvkq3j08z26BO8f364+N+vDYbVb1R94XalEEtFRF7OhM79TTQ8/8j/SKXbF4NXU=
-X-Received: by 2002:a4a:e6c2:0:b0:329:1863:6c3a with SMTP id
- v2-20020a4ae6c2000000b0032918636c3amr13572681oot.98.1649869767546; Wed, 13
- Apr 2022 10:09:27 -0700 (PDT)
+        Wed, 13 Apr 2022 13:12:14 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CF9BE1E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:09:52 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id cw11so2567057pfb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:09:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S3oz53a9Ng+DbhMPj3RmOVulLJKw0oHFC07pKdWasCM=;
+        b=TyHwk2+ZDToVQLJjhJ+GwARFZdQ6fdXaVDK/YYC0qiPJ7F3HvvKdsIy4kR9NZ9lfiE
+         xNbBBit8CgoQNMM3vbwz+zcUp+XG/QEgMchCYBLIqOoKHYh9qiClo5rVQPmmMpqSPUnO
+         fTwAt+4RIGqoQKVn7FHmUl91EINKQGRX9V6O4XaYR3KKGwQ7DyuU+XskDD/yq+WfPPb0
+         jHhSsiDLvDy2OM8+L6vgYYlOIp1RyCtA5mM1o9SZx1R1D8uyT7qDjUAy/V21ZTuRI2KZ
+         15EHyz55yFLViX9GowNZKfzHIy8YpYtk99kUuRUamcEDzFAgVe0K5UkAGDXYVx+esSvD
+         6SWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S3oz53a9Ng+DbhMPj3RmOVulLJKw0oHFC07pKdWasCM=;
+        b=1zBUr53sAhu9jKHCmAXAUsKaqVfooYaki02dBe3kJVleYmRZXj5pby1tLFMxw9SBxP
+         JMC4AyZqR3jVBhqIkAJjGe7oOV3j7G2rFd/cNK9LlaPZvX/QpfPKGGQQg3Bubo6koH7y
+         qkaFLjk+zn2J0xWWV0rK91UpUJAoNY2CKOf8tlvZFkubN/CZTeQLIzhBuFsTMY7vWxgO
+         W5Lu3fR0VJDKwS00cvGvKHjJpsvaVffppcP3HKrPdCTn0ZL/cDFyUeJHBYCqFMHr3qZ/
+         2RKkVw+hThTGc8weROqtPTIWhGg/7bbzkd3nM03B7IKPITHJJmD91/z//jMrfsU7xvhC
+         FEkg==
+X-Gm-Message-State: AOAM532AN511IObdIdVCKvrRVw3G//+kduFxOCOrPAKDw8sApSvWYWkC
+        APGO+MxwzghyM87oC6mB2BvfbJLUWMPe+Vd4PXjIEA==
+X-Google-Smtp-Source: ABdhPJzLi8gMisuellOBcvRBO68apFNBLKqg7RJ1uejuUvIlQHfa3U9nodhdf0gc7bErx9RfyUux7vESwpwfRM8oyF0=
+X-Received: by 2002:a05:6a02:283:b0:342:703e:1434 with SMTP id
+ bk3-20020a056a02028300b00342703e1434mr35296654pgb.74.1649869791634; Wed, 13
+ Apr 2022 10:09:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220331221030.889718-1-jakobkoschel@gmail.com> <20220331221030.889718-2-jakobkoschel@gmail.com>
-In-Reply-To: <20220331221030.889718-2-jakobkoschel@gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 13 Apr 2022 19:09:14 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGqttOSOmYg1pkHOLTmVkrNVmLD5ngRLAPHiwv3j14wZg@mail.gmail.com>
-Message-ID: <CAMj1kXGqttOSOmYg1pkHOLTmVkrNVmLD5ngRLAPHiwv3j14wZg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] efi: replace usage of found with dedicated list
- iterator variable
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     linux-efi <linux-efi@vger.kernel.org>,
+References: <20220410160904.3758789-1-ruansy.fnst@fujitsu.com>
+ <20220410160904.3758789-7-ruansy.fnst@fujitsu.com> <20220413000423.GK1544202@dread.disaster.area>
+ <CAPcyv4jKLZhcCiSEU+O+OJ2e+y9_B2CvaEfAKyBnhhSd+da=Zg@mail.gmail.com> <20220413060946.GL1544202@dread.disaster.area>
+In-Reply-To: <20220413060946.GL1544202@dread.disaster.area>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Wed, 13 Apr 2022 10:09:40 -0700
+Message-ID: <CAPcyv4jPgX3w2e1dENJvKjhCpiB7GMZURXWMoGUNNcOQFotb3A@mail.gmail.com>
+Subject: Re: [PATCH v12 6/7] xfs: Implement ->notify_failure() for XFS
+To:     Dave Chinner <david@fromorbit.com>
+Cc:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jane Chu <jane.chu@oracle.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 at 00:11, Jakob Koschel <jakobkoschel@gmail.com> wrote:
+On Tue, Apr 12, 2022 at 11:10 PM Dave Chinner <david@fromorbit.com> wrote:
 >
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
+> On Tue, Apr 12, 2022 at 07:06:40PM -0700, Dan Williams wrote:
+> > On Tue, Apr 12, 2022 at 5:04 PM Dave Chinner <david@fromorbit.com> wrote:
+> > > On Mon, Apr 11, 2022 at 12:09:03AM +0800, Shiyang Ruan wrote:
+> > > > Introduce xfs_notify_failure.c to handle failure related works, such as
+> > > > implement ->notify_failure(), register/unregister dax holder in xfs, and
+> > > > so on.
+> > > >
+> > > > If the rmap feature of XFS enabled, we can query it to find files and
+> > > > metadata which are associated with the corrupt data.  For now all we do
+> > > > is kill processes with that file mapped into their address spaces, but
+> > > > future patches could actually do something about corrupt metadata.
+> > > >
+> > > > After that, the memory failure needs to notify the processes who are
+> > > > using those files.
+> ...
+> > > > @@ -1964,8 +1965,8 @@ xfs_alloc_buftarg(
+> > > >       btp->bt_mount = mp;
+> > > >       btp->bt_dev =  bdev->bd_dev;
+> > > >       btp->bt_bdev = bdev;
+> > > > -     btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off, NULL,
+> > > > -                                         NULL);
+> > > > +     btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off, mp,
+> > > > +                                         &xfs_dax_holder_operations);
+> > >
+> > > I see a problem with this: we are setting up notify callbacks before
+> > > we've even read in the superblock during mount. i.e. we don't even
+> > > kow yet if we've got an XFS filesystem on this block device.
+> > > Hence these notifications need to be delayed until after the
+> > > filesystem is mounted, all the internal structures have been set up
+> > > and log recovery has completed.
+> >
+> > So I think this gets back to the fact that there will eventually be 2
+> > paths into this notifier.
 >
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
+> I'm not really concerned by how the notifications are generated;
+> my concern is purely that notifications can be handled safely.
 >
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
+> > All that to say, I think it is ok / expected for the filesystem to
+> > drop notifications on the floor when it is not ready to handle them.
 >
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> Well, yes. The whole point of notifications is the consumer makes
+> the decision on what to do with the notification it receives - the
+> producer of the notification does not (and can not) dictate what
+> policy the consumer(s) implement...
+>
+> > For example there are no processes to send SIGBUS to if the filesystem
+> > has not even finished mount.
+>
+> There may be not processes to send SIGBUS to even if the filesystem
+> has finished mount. But we still want the notifications to be
+> delivered and we still need to handle them safely.
+>
+> IOWs, while we might start by avoiding notifications during mount,
+> this doesn't mean we will never have reason to process events during
+> mount. What we do with this notification is going to evolve over
+> time as we add new and adapt existing functionality....
 
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-
-I'll queue this up once we converge on a solution for the other patch.
-
-> ---
->  drivers/firmware/efi/vars.c | 15 +++++++--------
->  1 file changed, 7 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/firmware/efi/vars.c b/drivers/firmware/efi/vars.c
-> index 3994aad38661..e4e1cc593441 100644
-> --- a/drivers/firmware/efi/vars.c
-> +++ b/drivers/firmware/efi/vars.c
-> @@ -809,22 +809,21 @@ EXPORT_SYMBOL_GPL(efivar_entry_set_safe);
->  struct efivar_entry *efivar_entry_find(efi_char16_t *name, efi_guid_t guid,
->                                        struct list_head *head, bool remove)
->  {
-> -       struct efivar_entry *entry, *n;
-> +       struct efivar_entry *entry = NULL, *iter, *n;
->         int strsize1, strsize2;
-> -       bool found = false;
->
-> -       list_for_each_entry_safe(entry, n, head, list) {
-> +       list_for_each_entry_safe(iter, n, head, list) {
->                 strsize1 = ucs2_strsize(name, 1024);
-> -               strsize2 = ucs2_strsize(entry->var.VariableName, 1024);
-> +               strsize2 = ucs2_strsize(iter->var.VariableName, 1024);
->                 if (strsize1 == strsize2 &&
-> -                   !memcmp(name, &(entry->var.VariableName), strsize1) &&
-> -                   !efi_guidcmp(guid, entry->var.VendorGuid)) {
-> -                       found = true;
-> +                   !memcmp(name, &(iter->var.VariableName), strsize1) &&
-> +                   !efi_guidcmp(guid, iter->var.VendorGuid)) {
-> +                       entry = iter;
->                         break;
->                 }
->         }
->
-> -       if (!found)
-> +       if (!entry)
->                 return NULL;
->
->         if (remove) {
-> --
-> 2.25.1
->
+Yes, sounds like we're on the same page. I had mistakenly interpreted
+"Hence these notifications need to be delayed until after the
+filesystem is mounted" as something the producer would need to handle,
+but yes, consumer is free to drop if the notification arrives at an
+inopportune time.
