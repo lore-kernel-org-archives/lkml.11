@@ -2,128 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF2A2C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 03:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231392AbiDMD6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 23:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
+        id S232171AbiDMD6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 23:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbiDMD51 (ORCPT
+        with ESMTP id S229707AbiDMD6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 23:57:27 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA7613D0F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:55:07 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id a19so836806oie.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 20:55:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FvzKmQHaXA0DZABJVytp1jfjqBhOZKxzqyShV5ysPaI=;
-        b=OAYW9UBBpw4A+iCY4I5EaWlkldsxeOp+anBKmwX62Q0TRRCSFVHoTCU5lunO/PwDLx
-         o9Lq+MXt+IxvKdH0+TdwOTFmR5YDmI6ZONy2//sJsfgol5+xR2NEjtKeNDnKFkHRMyLX
-         uQV14/xbRAHLShTXWvkTeNZPc7KBdG+lJ2ai5PR/UXkH2YMusFSkfEqo/SBYzYCMwiRZ
-         4CwUcjqa5I8qMkUoPikziGCvExKSgudLFV/G9BqZmw6fXq1ERAJUJUcr8gfAmhDtNXAO
-         U/SWYihomjkSpBd2ZLvLsVY6dBsmG35qBse0B1wtgjTr82HNcKu1hl4mrtjzl7oddirx
-         0AMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FvzKmQHaXA0DZABJVytp1jfjqBhOZKxzqyShV5ysPaI=;
-        b=VATXrxPjexDpjuukkRCtobJaJ++8cnv3obdqPbn+6PXbdJWX4PiRMtkmdlf/fWoFDb
-         Ib6oi2+L6Hv3efUYrh3EVp8FU9kUdg+5A6wGkvgT1w+S52hrtWL6pTp8vLtSvgvN4vNE
-         dCEdQM4LxjIT9Gch3ii/QFBvvXoO6e2QETqE78CNGIcPTKBxI4q/BUZhFbGb89L2gezW
-         1Glg8AFtfJvITmFk3eSNgGptQeDeSsDYNX5PRJOGMnwQ+xBSOR+B6Q6JA6PtZkBcvXkA
-         gubto6ymL5Fihc3XDRIx1ssM552SDft1ITz2lxuWoj4J0VvE/5sw9q/T2Bi68yIY5Ahy
-         ASWw==
-X-Gm-Message-State: AOAM532vYpPoa39Rd9RxDPkfcVA5n2zH6hm73W3izttk1Q1ndqlyyLe/
-        9viEMQQsje15SOFpZkUVdgekMfLxETw8y2A6
-X-Google-Smtp-Source: ABdhPJytHv9MYWBDz80W+4BG+BN0cR8bkxDn1ifdKRCOmARN+MzL0v9/ak+9qWlwCN1TEpvdUahlHA==
-X-Received: by 2002:a05:6808:1201:b0:2f9:ef08:1a4f with SMTP id a1-20020a056808120100b002f9ef081a4fmr3263265oil.192.1649822106718;
-        Tue, 12 Apr 2022 20:55:06 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id e9-20020a056820060900b003216277bfdasm13576747oow.19.2022.04.12.20.55.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 20:55:06 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 20:57:20 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] arm64: dts: qcom: sm8350: Add GENI I2C/SPI DMA
- channels
-Message-ID: <YlZKIKR1iHO+Btwk@ripper>
-References: <20220412215137.2385831-1-bjorn.andersson@linaro.org>
- <20220412215137.2385831-2-bjorn.andersson@linaro.org>
- <YlZALC0DdSPB9n+/@matsya>
+        Tue, 12 Apr 2022 23:58:39 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB74E13CCE;
+        Tue, 12 Apr 2022 20:56:19 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id A3DDB5C01EB;
+        Tue, 12 Apr 2022 23:56:16 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 12 Apr 2022 23:56:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1649822176; x=1649908576; bh=fRGpBGjSVcQ6tiwpq8TxsX90l
+        LVaDJpSbkukOVqXDTw=; b=L6S1WLsskO/cv/yisL4TmjWXOC31pQPCvtwkCVWCH
+        2xY1/4PxmaTD/x2ZYNM2417xgPAPSBO+iU/fDqK0LXpFEV1+LrWxJM8jRiNtkRa5
+        sqlihAXp3oKqIm6gcrqvq9prxf+9vSO2h12UE41MOfWbt5mAs0IJpOCVEsGz6MS9
+        7hnBFv2eFhRZv/YTR5mNmIVtCZpWVwtBZFMoast3Hmljz2aMDoWdNO3O2J5h2f7B
+        GS/5Kz2vOxP5gNEmFVNZ6Xn0YBrqans5hkHc/WOFLcjvKgHMQK11rZ85+h4UWU5q
+        MpMykS2YbzryXxZXVkhUZpeT4aALDn4H+CYzg9mp1pSYQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; t=1649822176; x=1649908576; bh=f
+        RGpBGjSVcQ6tiwpq8TxsX90lLVaDJpSbkukOVqXDTw=; b=wNIbUQ1sB2KJytUC0
+        QhGpepVZPg57KFnRt/4BVqSszESDSWZ8eS2xJgfQHORgJO8vNwiVabolif38T3j9
+        FpGcVAavQ1DHufGfpYM7w6Sgc/oH0FKVXd8Ts1HPGQIXu5MhTFdCiEVQDXr1x9g5
+        G9EnkCh5i9lOyqwwi/H8zCG/U5LG2/Q8emq6f4+xR7Bwk18JVmru9c6JIW5xOnLo
+        uJtU/gJT641x1M4nG6Lt16Htq2dzeRh/OI0xYdb9v3I/TWwSNA2gZoAWHN8ivHsi
+        tJ2z9549u0QOVE8u3zxOF4t6ZLWbeDIJmcY8m+81TOx1f5fIrZ6CAK5/+HEFiXhi
+        iJzPQ==
+X-ME-Sender: <xms:4ElWYvfsLLVHt7b1DzSaMS9ShVOR1hk2MRGwmmei5qMwxsv_jwIKKw>
+    <xme:4ElWYlPrsG6LooY_Fs3smteeKm30GnrUaO6XwPSxEwLd77k0Sl8pJnTnKe-y587k5
+    gHivXvMLXUYMi-UCQ>
+X-ME-Received: <xmr:4ElWYogcpfaIxKHwec1fnadco4S_jy6l1mGdax00yzD1SEkrN9TQxZeI1CmoKryp06Jq5M-syLd6SN44Y_2cQbWXfovCzYs1Z_1m2VcnlssrKzrrQzkZ-e8hqKTMB_CKkpAqBg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekledgjeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeeiteekhfehuddugfeltddufeejjeefgeevheekueffhffhjeekheeiffdt
+    vedtveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:4ElWYg_CMt6ZLY5Fdmhcfd-9iSD8_hxO9WeYAv8EZg2WBhEkUzB_fA>
+    <xmx:4ElWYrveDVrnLXmYk6R9T3wxex9ZoMRmRqS3jtwC-5tEjRvBzM77Gg>
+    <xmx:4ElWYvFzTs02XINMclpQoLns6K33H2jB70XXVV83bcdw1rvCxJAoZQ>
+    <xmx:4ElWYvh9mwUaaTbtuw8qRyf-SqTywapvUEYUy0y_xCWhJowdxlYTmA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 12 Apr 2022 23:56:16 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Heiko Stuebner <heiko@sntech.de>,
+        linux-rockchip@lists.infradead.org
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] arm64: dts: rockchip: pinenote: Enable more hardware
+Date:   Tue, 12 Apr 2022 22:56:12 -0500
+Message-Id: <20220413035614.31045-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlZALC0DdSPB9n+/@matsya>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 12 Apr 20:14 PDT 2022, Vinod Koul wrote:
-
-> On 12-04-22, 14:51, Bjorn Andersson wrote:
-> > The GENI I2C and SPI controllers may use the GPI DMA engine, define the
-> > rx and tx channels for these controllers to enable this.
-> > 
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > ---
-> >  arch/arm64/boot/dts/qcom/sm8350.dtsi | 108 +++++++++++++++++++++++++++
-> >  1 file changed, 108 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-> > index 7e585d9e4c68..8547c0b2f060 100644
-> > --- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-> > +++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-> > @@ -721,6 +721,9 @@ i2c14: i2c@880000 {
-> >  				pinctrl-names = "default";
-> >  				pinctrl-0 = <&qup_i2c14_default>;
-> >  				interrupts = <GIC_SPI 373 IRQ_TYPE_LEVEL_HIGH>;
-> > +				dmas = <&gpi_dma2 0 0 QCOM_GPI_I2C>,
-> > +				       <&gpi_dma2 1 0 QCOM_GPI_I2C>;
-> > +				dma-names = "tx", "rx";
-> 
-> I have been thinking about this. I dont feel this is right approach here
-> as this is board dependent and having the firmware loaded on the board..
-> 
-> This was tested on HDK and can fail in MTP or other boards.. which might
-> be in FIFO mode
-> 
-
-But if the controller is in FIFO mode, then !fifo_disable so we wouldn't
-try to pick up the dmas. And in the opposite case, i.e. when
-fifo_disable, the introduction of the GPI implementation meant that the
-i2c driver wouldn't no longer probe without the dmas specified.
-
-Unfortunately we don't have any i2c busses enabled on the MTP currently,
-so I'm not able to validate this easily.
+This series adds support for some features in the PineNote that had
+devicetree bindings or SoC support merged since the board was added.
 
 
-For the SPI driver though, the same logic is used to invoke
-spi_geni_grab_gpi_chan(). So dmas will only be considered if
-fifo_disabled is set.
+Samuel Holland (2):
+  arm64: dts: rockchip: pinenote: Add accelerometer
+  arm64: dts: rockchip: pinenote: Add USB and TCPC
 
-That said, in the even that the SPI driver finds a fifo_disabled
-controller and dma_request_chan() returns an error, we will fall back to
-fifo mode instead. I'm not sure if that's desirable...
+ .../boot/dts/rockchip/rk3566-pinenote.dtsi    | 80 +++++++++++++++++++
+ 1 file changed, 80 insertions(+)
 
-If that makes sense, we should at least handle EPROBE_DEFER instead of
-falling through to fifo mode.
+-- 
+2.35.1
 
-Regards,
-Bjorn
-
-> So, I think it might be apt to move these to board dtsi.. what do you
-> think?
-> 
-> -- 
-> ~Vinod
