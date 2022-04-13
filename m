@@ -2,353 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CDAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E44C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236343AbiDMOvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40988 "EHLO
+        id S236191AbiDMOxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236319AbiDMOvQ (ORCPT
+        with ESMTP id S231720AbiDMOxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:51:16 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0078E6471F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:48:51 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id c12so2168163plr.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:48:51 -0700 (PDT)
+        Wed, 13 Apr 2022 10:53:17 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1700A62BF4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:50:56 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso1310532otf.12
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:50:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tOkU/RARB4HzUE+K871kdn+JSt0MwPZIDE1q0TKS/DQ=;
-        b=mKPqOFmxEH9CoM02doouEtiGFnJrlZwt9FmlhOLSXsZuL4T2BxOinNhqDb43NzewNV
-         3uK80ApdASLEhxhXGZ7dInOL9YWfw+Jfkk6+xxvmNtAmXVeeVtywymnXZJWIS4x7/p7J
-         wuO2Unw4zZke3jMY4dkPSLquEv7Gj5XmEEBNimZdd3+TNt5qG/HSLJ6msuC4ZYVNOEcA
-         qWSOQEQKzno9//5ZQ8/+RSS+ZWbtNswgw0plsdpIu22AC238rL/X/PtIoiER3maocqH6
-         vnhFjzb3tygXITelZH+pLm884cfpAqER+sOao5Cakmsvoe8jJ2GXNqlBjMB+bPy1Plxi
-         01Uw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+NNFF3WYjd8C1QYq4detVhKQK1MffqpGN9VKt8TJvZs=;
+        b=By63kXptljWQTyCi/GWdKBpb6G/eWPjK9x+6S4EATkV/dFTtjOxMuSD48XhbDhRbwG
+         JrpviCrGwYtMtaDhYdsMiWHPlgyMhpbzli5QgVah2F0HKHZmotoEAfMJ4zlM3CBb2Zqh
+         Wrb1s0Ll2Vsfc/Xzb7gRLKWZUA/uUiNvp2iiyUHba0Pz2pcu6Z6PgewIJW7sSINk9w7F
+         lpfcyy/QVA+9Y/o5Kb5EBP9NHNvyL5aH2hTFqgDxau/Se+bo9KTATpt+bdb6y82m9chu
+         eixTnKsVUniCZLmEOyqqUNGVWS14f1N0CpLT71j9RO6Fb5h2CT4w6c5Gy7585TadB43P
+         elSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tOkU/RARB4HzUE+K871kdn+JSt0MwPZIDE1q0TKS/DQ=;
-        b=jTL/6PtpuOSSsz+RMXp14w8e8ORRo7PIYQ+KGLlJ7H+s/Sj6xcBncMFFIMtt2tMT/0
-         V0gu7Wp1qK9h6y0uEHjOM8SSa0bZEfYHpba3H4u8bWmtwmmF8QQNOUJFrP0fflGl8PsZ
-         Du8OK43egFYwYA4dPy8mT96YNIWLuI5l5OC/sADlpjhuiW1a9PXb+eqD4KXLP8Q9zfR/
-         3hvXHNJ/g1cPVh7psy+tgU0mJI/rGlAXr8LqqZlVJdjdjLjvyfX5ZEQ0/u00iKniPYGY
-         n0ztpdb9Rm8bowiP0b+yP6odqh9z6Q2J4ptJw3dLCtwfq84Hv6xsVAenX/vH4pxbXox2
-         nMeg==
-X-Gm-Message-State: AOAM533vTMcxiaZRsRbainGU5nqoTb1MKrfoTowEQanj6UcohrtAinZl
-        Qb+spWTvYGEHJdPsbL+dffaa2w==
-X-Google-Smtp-Source: ABdhPJwzoezVyzZJ8M0AKsSv86EOAHQksT4ccTnz3V2lO6KsN0CQpIl4iHn+pi3KWU7ZLbsvkQYNZw==
-X-Received: by 2002:a17:902:c410:b0:158:8a80:5087 with SMTP id k16-20020a170902c41000b001588a805087mr8196520plk.28.1649861331462;
-        Wed, 13 Apr 2022 07:48:51 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id p27-20020a056a000a1b00b004f3f63e3cf2sm47817257pfh.58.2022.04.13.07.48.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 07:48:51 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v8 4/4] mm: hugetlb_vmemmap: add hugetlb_optimize_vmemmap sysctl
-Date:   Wed, 13 Apr 2022 22:47:48 +0800
-Message-Id: <20220413144748.84106-5-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220413144748.84106-1-songmuchun@bytedance.com>
-References: <20220413144748.84106-1-songmuchun@bytedance.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+NNFF3WYjd8C1QYq4detVhKQK1MffqpGN9VKt8TJvZs=;
+        b=qyoyOrWpufTCSY4Ek58Rbb2MwbplBjb6SkikEFS75FKFh7LHMLm7GqMS3GSeTg9Zkz
+         wtFP5Xaz1LfjndZTwADbJN85ew6QczrMAH/U9hngqTAGsgeH9Wcd+OqplXq2FWftxPLu
+         PPAsMA5n7FxoW65uafcjB9Fr4sahPPr5QCTI8CdiHxf0u8w0xBTjDcwwlZFcgCk+2UX4
+         GaIvBTBsCAwSVCUxuq2a99iFSblENkeIjqeuL8lMMDAZtqi2RbE1B/nh9nlgMEpIybnM
+         umsVGQnBAVu9lEcTdIrFLq1qWc9cZXITm/cd+YM8WbtzenCzm7BrnaXN6a8+Kk8e4Hsh
+         ASDw==
+X-Gm-Message-State: AOAM53170FSRtWQHvj1kK98CFiJ8qz4k/16Xfg8f4hnd+6gBmf2O+dcS
+        +xiobkpkkaHYMVFCw8eeMWXDhyVZQqaEIHOzKDU=
+X-Google-Smtp-Source: ABdhPJyn1dTCnUoWxb5z+Sq3ql5W24Hh52Mp7FwrEfgqZXjfodffCZUMuZevwAXM2BfvpWEVe8b6al5mf2N/CV2U+ic=
+X-Received: by 2002:a05:6830:2b0d:b0:5cd:aca2:f3f2 with SMTP id
+ l13-20020a0568302b0d00b005cdaca2f3f2mr14990347otv.212.1649861455407; Wed, 13
+ Apr 2022 07:50:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220413083824.247136-1-gch981213@gmail.com> <20220413145843.46a3d9b5@xps13>
+In-Reply-To: <20220413145843.46a3d9b5@xps13>
+From:   Chuanhong Guo <gch981213@gmail.com>
+Date:   Wed, 13 Apr 2022 22:50:43 +0800
+Message-ID: <CAJsYDV+3J0ipbR+N-xE=DH-WXsjierdHe_pJtKf1Xbt7fdaiWw@mail.gmail.com>
+Subject: Re: [PATCH v2] mtd: spinand: add support for ESMT F50x1G41LB
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     linux-mtd@lists.infradead.org, Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Palmer <daniel@0x0f.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We must add hugetlb_free_vmemmap=on (or "off") to the boot cmdline and
-reboot the server to enable or disable the feature of optimizing vmemmap
-pages associated with HugeTLB pages.  However, rebooting usually takes a
-long time.  So add a sysctl to enable or disable the feature at runtime
-without rebooting.
+Hi!
 
-Once enabled, the vmemmap pages of subsequent allocation of HugeTLB pages
-from buddy allocator will be optimized (7 pages per 2MB HugeTLB page and
-4095 pages per 1GB HugeTLB page), whereas already allocated HugeTLB pages
-will not be optimized.  When those optimized HugeTLB pages are freed from
-the HugeTLB pool to the buddy allocator, the vmemmap pages representing
-that range needs to be remapped again and the vmemmap pages discarded
-earlier need to be rellocated again.  If your use case is that HugeTLB
-pages are allocated 'on the fly' instead of being pulled from the HugeTLB
-pool, you should weigh the benefits of memory savings against the more
-overhead of allocation or freeing HugeTLB pages between the HugeTLB pool
-and the buddy allocator.  Another behavior to note is that if the system
-is under heavy memory pressure, it could prevent the user from freeing
-HugeTLB pages from the HugeTLB pool to the buddy allocator since the
-allocation of vmemmap pages could be failed, you have to retry later if
-your system encounter this situation.
+On Wed, Apr 13, 2022 at 8:58 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> [...]
+> > This patch is made purely based on datasheet info without testing
+> > on any actual chips.
+>
+> Do you plan to get one of these any time soon?
 
-Once disabled, the vmemmap pages of subsequent allocation of HugeTLB
-pages from buddy allocator will not be optimized, whereas already
-optimized HugeTLB pages will not be affected.  If you want to make sure
-there is no optimized HugeTLB pages, you can set "nr_hugepages" to 0
-first and then disable this.
+No. I already have way more spi-nand chips than I possibly
+need due to my last GigaDevice submission :)
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- Documentation/admin-guide/sysctl/vm.rst | 27 ++++++++++
- include/linux/memory_hotplug.h          |  9 ++++
- mm/hugetlb_vmemmap.c                    | 90 +++++++++++++++++++++++++++++----
- mm/hugetlb_vmemmap.h                    |  4 +-
- mm/memory_hotplug.c                     |  7 +--
- 5 files changed, 121 insertions(+), 16 deletions(-)
+I need to replace the spi-nand driver for mediatek in OpenWrt
+with my recent submission, and this chip is used in one of the
+currently supported router. So I made this patch from
+datasheet for it.
 
-diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
-index 747e325ebcd0..5c804ada85c5 100644
---- a/Documentation/admin-guide/sysctl/vm.rst
-+++ b/Documentation/admin-guide/sysctl/vm.rst
-@@ -562,6 +562,33 @@ Change the minimum size of the hugepage pool.
- See Documentation/admin-guide/mm/hugetlbpage.rst
- 
- 
-+hugetlb_optimize_vmemmap
-+========================
-+
-+Enable (set to 1) or disable (set to 0) the feature of optimizing vmemmap pages
-+associated with each HugeTLB page.
-+
-+Once enabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
-+buddy allocator will be optimized (7 pages per 2MB HugeTLB page and 4095 pages
-+per 1GB HugeTLB page), whereas already allocated HugeTLB pages will not be
-+optimized.  When those optimized HugeTLB pages are freed from the HugeTLB pool
-+to the buddy allocator, the vmemmap pages representing that range needs to be
-+remapped again and the vmemmap pages discarded earlier need to be rellocated
-+again.  If your use case is that HugeTLB pages are allocated 'on the fly'
-+instead of being pulled from the HugeTLB pool, you should weigh the benefits of
-+memory savings against the more overhead of allocation or freeing HugeTLB pages
-+between the HugeTLB pool and the buddy allocator.  Another behavior to note is
-+that if the system is under heavy memory pressure, it could prevent the user
-+from freeing HugeTLB pages from the HugeTLB pool to the buddy allocator since
-+the allocation of vmemmap pages could be failed, you have to retry later if
-+your system encounter this situation.
-+
-+Once disabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
-+buddy allocator will not be optimized, whereas already optimized HugeTLB pages
-+will not be affected.  If you want to make sure there is no optimized HugeTLB
-+pages, you can set "nr_hugepages" to 0 first and then disable this.
-+
-+
- nr_hugepages_mempolicy
- ======================
- 
-diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-index 7ab15d6fb227..93f2cbea0f9b 100644
---- a/include/linux/memory_hotplug.h
-+++ b/include/linux/memory_hotplug.h
-@@ -348,4 +348,13 @@ void arch_remove_linear_mapping(u64 start, u64 size);
- extern bool mhp_supports_memmap_on_memory(unsigned long size);
- #endif /* CONFIG_MEMORY_HOTPLUG */
- 
-+#ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
-+bool mhp_memmap_on_memory(void);
-+#else
-+static inline bool mhp_memmap_on_memory(void)
-+{
-+	return false;
-+}
-+#endif
-+
- #endif /* __LINUX_MEMORY_HOTPLUG_H */
-diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-index 4b6a5cf16f11..94571d63916d 100644
---- a/mm/hugetlb_vmemmap.c
-+++ b/mm/hugetlb_vmemmap.c
-@@ -176,6 +176,7 @@
-  */
- #define pr_fmt(fmt)	"HugeTLB: " fmt
- 
-+#include <linux/memory_hotplug.h>
- #include "hugetlb_vmemmap.h"
- 
- #ifdef CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP
-@@ -189,21 +190,40 @@
- #define RESERVE_VMEMMAP_NR		1U
- #define RESERVE_VMEMMAP_SIZE		(RESERVE_VMEMMAP_NR << PAGE_SHIFT)
- 
-+enum vmemmap_optimize_mode {
-+	VMEMMAP_OPTIMIZE_OFF,
-+	VMEMMAP_OPTIMIZE_ON,
-+};
-+
- DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
- 			hugetlb_optimize_vmemmap_key);
- EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
- 
-+static enum vmemmap_optimize_mode vmemmap_optimize_mode =
-+	IS_ENABLED(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON);
-+
-+static void vmemmap_optimize_mode_switch(enum vmemmap_optimize_mode to)
-+{
-+	if (vmemmap_optimize_mode == to)
-+		return;
-+
-+	if (to == VMEMMAP_OPTIMIZE_OFF)
-+		static_branch_dec(&hugetlb_optimize_vmemmap_key);
-+	else
-+		static_branch_inc(&hugetlb_optimize_vmemmap_key);
-+	vmemmap_optimize_mode = to;
-+}
-+
- static int __init hugetlb_vmemmap_early_param(char *buf)
- {
- 	bool enable;
-+	enum vmemmap_optimize_mode mode;
- 
- 	if (kstrtobool(buf, &enable))
- 		return -EINVAL;
- 
--	if (enable)
--		static_branch_enable(&hugetlb_optimize_vmemmap_key);
--	else
--		static_branch_disable(&hugetlb_optimize_vmemmap_key);
-+	mode = enable ? VMEMMAP_OPTIMIZE_ON : VMEMMAP_OPTIMIZE_OFF;
-+	vmemmap_optimize_mode_switch(mode);
- 
- 	return 0;
- }
-@@ -236,8 +256,10 @@ int hugetlb_vmemmap_alloc(struct hstate *h, struct page *head)
- 	 */
- 	ret = vmemmap_remap_alloc(vmemmap_addr, vmemmap_end, vmemmap_reuse,
- 				  GFP_KERNEL | __GFP_NORETRY | __GFP_THISNODE);
--	if (!ret)
-+	if (!ret) {
- 		ClearHPageVmemmapOptimized(head);
-+		static_branch_dec(&hugetlb_optimize_vmemmap_key);
-+	}
- 
- 	return ret;
- }
-@@ -251,6 +273,8 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
- 	if (!vmemmap_pages)
- 		return;
- 
-+	static_branch_inc(&hugetlb_optimize_vmemmap_key);
-+
- 	vmemmap_addr	+= RESERVE_VMEMMAP_SIZE;
- 	vmemmap_end	= vmemmap_addr + (vmemmap_pages << PAGE_SHIFT);
- 	vmemmap_reuse	= vmemmap_addr - PAGE_SIZE;
-@@ -260,7 +284,9 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
- 	 * to the page which @vmemmap_reuse is mapped to, then free the pages
- 	 * which the range [@vmemmap_addr, @vmemmap_end] is mapped to.
- 	 */
--	if (!vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse))
-+	if (vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse))
-+		static_branch_dec(&hugetlb_optimize_vmemmap_key);
-+	else
- 		SetHPageVmemmapOptimized(head);
- }
- 
-@@ -277,9 +303,6 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
- 	BUILD_BUG_ON(__NR_USED_SUBPAGE >=
- 		     RESERVE_VMEMMAP_SIZE / sizeof(struct page));
- 
--	if (!hugetlb_optimize_vmemmap_enabled())
--		return;
--
- 	vmemmap_pages = (nr_pages * sizeof(struct page)) >> PAGE_SHIFT;
- 	/*
- 	 * The head page is not to be freed to buddy allocator, the other tail
-@@ -295,4 +318,53 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
- 	pr_info("can optimize %d vmemmap pages for %s\n",
- 		h->optimize_vmemmap_pages, h->name);
- }
-+
-+#ifdef CONFIG_PROC_SYSCTL
-+static int hugetlb_optimize_vmemmap_handler(struct ctl_table *table, int write,
-+					    void *buffer, size_t *length,
-+					    loff_t *ppos)
-+{
-+	int ret;
-+	enum vmemmap_optimize_mode mode;
-+	static DEFINE_MUTEX(sysctl_mutex);
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	mutex_lock(&sysctl_mutex);
-+	mode = vmemmap_optimize_mode;
-+	table->data = &mode;
-+	ret = proc_dointvec_minmax(table, write, buffer, length, ppos);
-+	if (write && !ret)
-+		vmemmap_optimize_mode_switch(mode);
-+	mutex_unlock(&sysctl_mutex);
-+
-+	return ret;
-+}
-+
-+static struct ctl_table hugetlb_vmemmap_sysctls[] = {
-+	{
-+		.procname	= "hugetlb_optimize_vmemmap",
-+		.maxlen		= sizeof(enum vmemmap_optimize_mode),
-+		.mode		= 0644,
-+		.proc_handler	= hugetlb_optimize_vmemmap_handler,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
-+	},
-+	{ }
-+};
-+
-+static __init int hugetlb_vmemmap_sysctls_init(void)
-+{
-+	/*
-+	 * The vmemmap pages cannot be optimized if
-+	 * "memory_hotplug.memmap_on_memory" is enabled.
-+	 */
-+	if (!mhp_memmap_on_memory())
-+		register_sysctl_init("vm", hugetlb_vmemmap_sysctls);
-+
-+	return 0;
-+}
-+late_initcall(hugetlb_vmemmap_sysctls_init);
-+#endif /* CONFIG_PROC_SYSCTL */
- #endif /* CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP */
-diff --git a/mm/hugetlb_vmemmap.h b/mm/hugetlb_vmemmap.h
-index 3afae3ff37fa..63ae2766ffe0 100644
---- a/mm/hugetlb_vmemmap.h
-+++ b/mm/hugetlb_vmemmap.h
-@@ -21,7 +21,9 @@ void hugetlb_vmemmap_init(struct hstate *h);
-  */
- static inline unsigned int hugetlb_optimize_vmemmap_pages(struct hstate *h)
- {
--	return h->optimize_vmemmap_pages;
-+	if (hugetlb_optimize_vmemmap_enabled())
-+		return h->optimize_vmemmap_pages;
-+	return 0;
- }
- #else
- static inline int hugetlb_vmemmap_alloc(struct hstate *h, struct page *head)
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index f6eab03397d3..af844a01e956 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -63,15 +63,10 @@ static bool memmap_on_memory __ro_after_init;
- module_param_cb(memmap_on_memory, &memmap_on_memory_ops, &memmap_on_memory, 0444);
- MODULE_PARM_DESC(memmap_on_memory, "Enable memmap on memory for memory hotplug");
- 
--static inline bool mhp_memmap_on_memory(void)
-+bool mhp_memmap_on_memory(void)
- {
- 	return memmap_on_memory;
- }
--#else
--static inline bool mhp_memmap_on_memory(void)
--{
--	return false;
--}
- #endif
- 
- enum {
+BTW Rockchip added identical chip support in their u-boot.[0]
+I assume they've tested it.
+
+> I am not really confident merging a 100% non-tested driver :)
+
+I can understand that.
+I'll roll this patch out in OpenWrt anyway. I can wait for a test
+there and resubmit piled downstream patches for chip supports
+after next OpenWrt stable release.
+
+>
+> [...]
+> > +
+> > +/* ESMT uses GigaDevice 0xc8 JECDEC ID on some SPI NANDs */
+> > +#define SPINAND_MFR_ESMT_C8                  0xc8
+>
+> What happens if the gigadevice driver probes first?
+
+Their device ID aren't conflicting yet, so nothing will happen
+at the moment.
+
+There is a solution for future conflict: Recent SPI-NAND chips
+contain a parameter page which has the exact chip vendor
+and model. We can do one more detection with the parameter
+page content.
+Winbond W25N01KV is a 2k+96 SPI-NAND with 4-bit ECC.
+It uses the exact same chip id as the current W25N01GV
+(2k+64 1-bit ECC). We need to support detection using
+parameter page for this crazy decision by Winbond anyway.
+I'll try to code something for this with my free time.
+
+My current idea is: We first do a detection based on chip id.
+If that failed, try to read the parameter page. If we got a
+valid one, match the chip vendor and model string.
+
+Any thoughts?
+
+(BTW this ESMT chip is POWERCHIP PSU1GS20DX
+according to the parameter page in their datasheet.
+But I can't find a datasheet for this model number.)
+
+>
+> > +
+> > +#define F50L2G41XA_ECC_STATUS_MASK           GENMASK(6, 4)
+> > +#define F50L2G41XA_STATUS_ECC_1_3_BITFLIPS   (1 << 4)
+> > +#define F50L2G41XA_STATUS_ECC_4_6_BITFLIPS   (3 << 4)
+> > +#define F50L2G41XA_STATUS_ECC_7_8_BITFLIPS   (5 << 4)
+
+Oops. These are left-over defines when I discovered that ESMT 2G/4G
+SPI-NANDs are repackaged micron parts and dropped their support
+from this file.
+A v3 is needed anyway. I'll wait for a test before submitting it.
+
+[0]: https://github.com/rockchip-linux/u-boot/commit/52b0060178285488737854a48ddecd381f8b236e
 -- 
-2.11.0
-
+Regards,
+Chuanhong Guo
