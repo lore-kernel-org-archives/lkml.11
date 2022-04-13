@@ -2,74 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95517C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D044C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 13:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235900AbiDMNnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 09:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51620 "EHLO
+        id S235898AbiDMNpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 09:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235876AbiDMNm7 (ORCPT
+        with ESMTP id S233893AbiDMNpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 09:42:59 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3042B5EDFD
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 06:40:38 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EAB2C1596;
-        Wed, 13 Apr 2022 06:40:37 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 15A933F73B;
-        Wed, 13 Apr 2022 06:40:35 -0700 (PDT)
-Message-ID: <37c02fc4-d793-b003-f612-206c987a8a42@arm.com>
-Date:   Wed, 13 Apr 2022 14:40:31 +0100
+        Wed, 13 Apr 2022 09:45:05 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED8D6006F;
+        Wed, 13 Apr 2022 06:42:43 -0700 (PDT)
+Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KdkHN2QN1zFpqf;
+        Wed, 13 Apr 2022 21:40:16 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 21:42:41 +0800
+Received: from [10.174.176.52] (10.174.176.52) by
+ kwepemm600015.china.huawei.com (7.193.23.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 21:42:40 +0800
+Message-ID: <0b6546f7-8a04-9d6e-50c3-483c8a1a6591@huawei.com>
+Date:   Wed, 13 Apr 2022 21:42:39 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Align size in __arm_smmu_tlb_inv_range
-Content-Language: en-GB
-To:     Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-        joro@8bytes.org
-Cc:     thunder.leizhen@huawei.com, jgg@ziepe.ca, tglx@linutronix.de,
-        john.garry@huawei.com, jean-philippe@linaro.org,
-        christophe.jaillet@wanadoo.fr,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20220413041745.35174-1-nicolinc@nvidia.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220413041745.35174-1-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH -next 0/2] fix nfsv4 bugs of opening with O_ACCMODE flag
+To:     Lyu Tao <tao.lyu@epfl.ch>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        "anna@kernel.org" <anna@kernel.org>,
+        "bjschuma@netapp.com" <bjschuma@netapp.com>
+CC:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "liuyongqiang13@huawei.com" <liuyongqiang13@huawei.com>,
+        "yi.zhang@huawei.com" <yi.zhang@huawei.com>,
+        "zhangxiaoxu5@huawei.com" <zhangxiaoxu5@huawei.com>
+References: <20220329113208.2466000-1-chenxiaosong2@huawei.com>
+ <68b65889-3b2c-fb72-a0a8-d0afc15a03e0@huawei.com>
+ <e0c2d7ec62b447cabddbc8a9274be955@epfl.ch>
+From:   "chenxiaosong (A)" <chenxiaosong2@huawei.com>
+In-Reply-To: <e0c2d7ec62b447cabddbc8a9274be955@epfl.ch>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.52]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-13 05:17, Nicolin Chen wrote:
-> To calculate num_pages, the size should be aligned with
-> "page size", determined by the tg value. Otherwise, its
-> following "while (iova < end)" might become an infinite
-> loop if unaligned size is slightly greater than 1 << tg.
 
-Hmm, how does a non-page-aligned invalidation request get generated in 
-the first place?
-
-Robin.
-
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+在 2022/4/13 20:07, Lyu Tao 写道:
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 627a3ed5ee8f..8249dad5ae44 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1879,7 +1879,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
->   		/* Determine what level the granule is at */
->   		cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
->   
-> -		num_pages = size >> tg;
-> +		num_pages = ALIGN(size, 1 << tg) >> tg;
->   	}
->   
->   	cmds.num = 0;
+> Hi Xiaosong,
+> 
+> 
+> Thanks for keeping focusing on this bug.
+> 
+> 
+> I applied this CVE for the NULL dereference bug at 
+> nfs4_valid_open_stateid() and added the following description to this 
+> CVE due to the NFS maintainers replied that to me.
+> 
+> "An issue was discovered in fs/nfs/dir.c in the Linux kernel before 
+> 5.16.5. If an application sets the O_DIRECTORY flag, and tries to open a 
+> regular file, nfs_atomic_open() performs a regular lookup. If a regular 
+> file is found, ENOTDIR should occur, but the server instead returns 
+> uninitialized data in the file descriptor.
+> 
+> 
+> Actually I'm still confused with the root cause of this bug. In the 
+> original PoC, there is no O_DIRECTORY flag but commit ac795161c936 
+> mentioned.
+> 
+> Moreover, in your latest commit ab0fc21bc710, it said "After secondly 
+> opening a file with O_ACCMODE|O_DIRECT flags, nfs4_valid_open_stateid() 
+> will dereference NULL nfs4_state when lseek()." However, the original 
+> PoC opens the file only with O_RDWR|O_CREAT for the first time.
+> 
+> 
+> Original PoC:
+> 
+> fd = openat("./file1", o_RDWR|O_CREAT, 000);
+> 
+> open("./file1", 
+> O_ACCMODE|O_CREAT|O_DIRECT|O_LARGEFILE|O_NOFOLLOW|O_NOATIME|O_CLOEXEC|FASYNC|0xb3000008, 
+> 001);
+> 
+> lseek(fd, 9, SEEK_HOLE);
+> 
+> 
+> I'll update this CVE's description after I figure out these.
+> 
+> 
+> Best Regards,
+> 
+> Tao
+> 
+
+Hi Tao:
+
+Yes, O_ACCEMODE is _not_ necessary when fistly open() file.
+
+When open() the file secondly, O_ACCEMODE is necessary if we want to 
+reproduce the bug.
+
+Waiting for your modification of the CVE's description.
+
+Best Regards.
