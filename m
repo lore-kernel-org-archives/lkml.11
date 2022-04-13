@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26604C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B13C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 12:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235405AbiDMMLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 08:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55060 "EHLO
+        id S235413AbiDMMLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 08:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235395AbiDMMLG (ORCPT
+        with ESMTP id S235401AbiDMMLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 08:11:06 -0400
+        Wed, 13 Apr 2022 08:11:11 -0400
 Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C255C868
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:08:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596DA5C875
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 05:08:50 -0700 (PDT)
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 23DBusTt017393;
+        by twspam01.aspeedtech.com with ESMTP id 23DBusIX017388;
         Wed, 13 Apr 2022 19:56:54 +0800 (GMT-8)
         (envelope-from dylan_hung@aspeedtech.com)
 Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
@@ -31,12 +31,10 @@ To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <krzk+dt@kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [PATCH v5 3/3] ARM: dts: aspeed: add reset properties into MDIO nodes
-Date:   Wed, 13 Apr 2022 20:10:37 +0800
-Message-ID: <20220413121037.23748-4-dylan_hung@aspeedtech.com>
+Subject: [PATCH v5 0/3] Add reset deassertion for Aspeed MDIO
+Date:   Wed, 13 Apr 2022 20:10:34 +0800
+Message-ID: <20220413121037.23748-1-dylan_hung@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220413121037.23748-1-dylan_hung@aspeedtech.com>
-References: <20220413121037.23748-1-dylan_hung@aspeedtech.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -44,56 +42,43 @@ X-Originating-IP: [192.168.2.216]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 23DBusTt017393
+X-MAIL: twspam01.aspeedtech.com 23DBusIX017388
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset control properties into MDIO nodes.  The 4 MDIO controllers in
-AST2600 SOC share one reset control bit SCU50[3].
+Add missing reset deassertion for Aspeed MDIO bus controller. The reset
+is asserted by the hardware when power-on so the driver only needs to
+deassert it. To be able to work with the old DT blobs, the reset is
+optional since it may be deasserted by the bootloader or the previous
+kernel.
 
-Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
----
- arch/arm/boot/dts/aspeed-g6.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+V5:
+- fix error of dt_binding_check
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..ab20ea8d829d 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -181,6 +181,7 @@ mdio0: mdio@1e650000 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio1_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio1: mdio@1e650008 {
-@@ -191,6 +192,7 @@ mdio1: mdio@1e650008 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio2_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio2: mdio@1e650010 {
-@@ -201,6 +203,7 @@ mdio2: mdio@1e650010 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio3_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio3: mdio@1e650018 {
-@@ -211,6 +214,7 @@ mdio3: mdio@1e650018 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio4_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mac0: ftgmac@1e660000 {
+V4:
+- use ASPEED_RESET_MII instead of hardcoding in dt-binding example
+
+V3:
+- remove reset property from the required list of the device tree
+  bindings
+- remove "Cc: stable@vger.kernel.org" from the commit messages
+- add more description in the commit message of the dt-binding
+
+V2:
+- add reset property in the device tree bindings
+- add reset assertion in the error path and driver remove
+
+Dylan Hung (3):
+  dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
+  net: mdio: add reset control for Aspeed MDIO
+  ARM: dts: aspeed: add reset properties into MDIO nodes
+
+ .../bindings/net/aspeed,ast2600-mdio.yaml         |  6 ++++++
+ arch/arm/boot/dts/aspeed-g6.dtsi                  |  4 ++++
+ drivers/net/mdio/mdio-aspeed.c                    | 15 ++++++++++++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
+
 -- 
 2.25.1
 
