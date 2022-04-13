@@ -2,96 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D36F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E80F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237460AbiDMRu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+        id S237472AbiDMRxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235764AbiDMRuz (ORCPT
+        with ESMTP id S231749AbiDMRw5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:50:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483D36D4F3;
-        Wed, 13 Apr 2022 10:48:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 13 Apr 2022 13:52:57 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6594D37ABA
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:50:35 -0700 (PDT)
+Received: from zn.tnic (p2e55d808.dip0.t-ipconnect.de [46.85.216.8])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC07561F00;
-        Wed, 13 Apr 2022 17:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A7A1C385AF;
-        Wed, 13 Apr 2022 17:48:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649872110;
-        bh=rXfDkPeJmPfsN9CvKqPiVkT9tTSzCYlnFO5RigKJiZg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=L7pZe7jouiphjoFQFjLLl3peapJ+CAYfkiP4o7LG/5MflRU9G0mMxj6Mor4ca3Vvv
-         s6auGNi/jrXzlQWwspmdQGyu62sa343L92JRJRFQlzn64HZGDsRT/CB/hrETGaODzd
-         4+hI948s4m26ifqVIb2W6Gv9vEVbsUdfoYI13MAvjS9/4nRAismntBCydzXqinxWc3
-         FcGAm28E9pLxGjUGDKj5oToZoIGuyw7BsgU+etzeO8VnDd4KfgGC5z4bN++RZ19R7s
-         I/HWTbN+vfkHoKlAlrcZUH4gJl8cXR+wsqRvnVkBdGFFDZPa5EUcsDqKXiswpvNpya
-         V1Um2jmzwk4pg==
-Received: by mail-oi1-f171.google.com with SMTP id b188so2817611oia.13;
-        Wed, 13 Apr 2022 10:48:30 -0700 (PDT)
-X-Gm-Message-State: AOAM531fpuMInRmwHXdyIisIwf9xUGmHqLILyKb0ji7M8EJ0MM9aqrxU
-        Cwog9YCMYUyDJSZR8Y8Uol6BJoG6eeHUMw/d5Dc=
-X-Google-Smtp-Source: ABdhPJzJENnQ6A7dfOs/l6Lv7AbqAFJCfnDuNoHaUGpNm7lPebf0Lu9rz01aM6S/bE10m++PwD0uRPA2sc4IeYWy3xg=
-X-Received: by 2002:a05:6808:1513:b0:2fa:7a40:c720 with SMTP id
- u19-20020a056808151300b002fa7a40c720mr984410oiw.126.1649872109361; Wed, 13
- Apr 2022 10:48:29 -0700 (PDT)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BD8141EC058B;
+        Wed, 13 Apr 2022 19:50:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649872229;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=A9tbo9wtlWsR5nO6kSBjtjKkte6hQMXr6KoMWcv4AZI=;
+        b=pR4oUUWl4TlMyjkz0P+7ELCABmoB5Au8sP9bFrMX3orZ82ylII0lGRwKrW/VaS36Mnkyq3
+        C0740sIDnQxq/ieV55WK0gDcuXwL5Q9kHlb3964tzG/QWNDalrPuhyOHnp1zVKMxYn58vt
+        2l0sSHm0WeWoA2V8HlYlgJ/rHVW9Ah4=
+Date:   Wed, 13 Apr 2022 19:50:29 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] x86/boot: Add an efi.h header for the decompressor
+Message-ID: <YlcNZY9bQTmSHlfx@zn.tnic>
+References: <YlCKWhMJEMUgJmjF@zn.tnic>
+ <CAMj1kXGvXsZmRkRk32TpueVU1FcFGcDPr-Bd2Op0taWPPEs0SQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220329184712.vl7jzq23h5m5kvqh@redhat.com> <20220329184743.798513-1-pjones@redhat.com>
-In-Reply-To: <20220329184743.798513-1-pjones@redhat.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 13 Apr 2022 19:48:17 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFEGXnm_cz0AZUmQQd8dqAWUT=iNZk0eSqq34=BxiWwUA@mail.gmail.com>
-Message-ID: <CAMj1kXFEGXnm_cz0AZUmQQd8dqAWUT=iNZk0eSqq34=BxiWwUA@mail.gmail.com>
-Subject: Re: [PATCH] x86: Set the NX-compatibility flag in the PE header
-To:     Peter Jones <pjones@redhat.com>
-Cc:     Baskov Evgeniy <baskov@ispras.ru>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXGvXsZmRkRk32TpueVU1FcFGcDPr-Bd2Op0taWPPEs0SQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 at 20:47, Peter Jones <pjones@redhat.com> wrote:
->
-> Following Baskov Evgeniy's "Handle UEFI NX-restricted page tables"
-> patches, it's safe to set this compatibility flag to let loaders know
-> they don't need to make special accommodations for kernel to load if
-> pre-boot NX is enabled.
->
-> Signed-off-by: Peter Jones <pjones@redhat.com>
+On Wed, Apr 13, 2022 at 07:35:05PM +0200, Ard Biesheuvel wrote:
+> No objection from me.
 
-Thanks, I've queued this up.
+Thanks. We will have to copy stuff from kernel proper's EFI headers from
+time to time but I think it shouldn't be all that much, and the whole
+deal would start to separate the decompressor namespace nicely.
 
-> ---
->  arch/x86/boot/header.S | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/arch/x86/boot/header.S b/arch/x86/boot/header.S
-> index 6dbd7e9f74c..0352e4589ef 100644
-> --- a/arch/x86/boot/header.S
-> +++ b/arch/x86/boot/header.S
-> @@ -163,7 +163,11 @@ extra_header_fields:
->         .long   0x200                           # SizeOfHeaders
->         .long   0                               # CheckSum
->         .word   IMAGE_SUBSYSTEM_EFI_APPLICATION # Subsystem (EFI application)
-> +#ifdef CONFIG_DXE_MEM_ATTRIBUTES
-> +       .word   IMAGE_DLL_CHARACTERISTICS_NX_COMPAT     # DllCharacteristics
-> +#else
->         .word   0                               # DllCharacteristics
-> +#endif
->  #ifdef CONFIG_X86_32
->         .long   0                               # SizeOfStackReserve
->         .long   0                               # SizeOfStackCommit
-> --
-> 2.35.1
->
+Oh well, we'll see.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
