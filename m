@@ -2,96 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 681DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 474BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236065AbiDMOIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45238 "EHLO
+        id S234149AbiDMOI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236029AbiDMOIJ (ORCPT
+        with ESMTP id S236092AbiDMOIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:08:09 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9F84606D2;
-        Wed, 13 Apr 2022 07:05:48 -0700 (PDT)
-Received: from x64host.home (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id B8FB220C34D4;
-        Wed, 13 Apr 2022 07:05:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B8FB220C34D4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649858748;
-        bh=f/N9Y3AhHP+6L0TxuoLGQXAr5xuXJnauRqGxyO1ZK4A=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=Yy4A1rcENqnynxGYVqOz9YprcPsMzJ/nG7o3/WWZQhe6MrXhKE0lZPK9CwLfBLoDh
-         5Fo8NqKsS/71ebUW91iSA5V5R3jN0bT7GGpJT4cIk7bpcuRq9ewvLW/9L6x43fkuq+
-         X0YN7Lak/1EcMQfQsIS+VtEPhUB8CUK/1JJXkhOA=
-From:   madvenka@linux.microsoft.com
-To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        madvenka@linux.microsoft.com
-Subject: [PATCH v14 6/7] arm64: Introduce arch_stack_walk_reliable()
-Date:   Wed, 13 Apr 2022 09:05:27 -0500
-Message-Id: <20220413140528.3815-7-madvenka@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220413140528.3815-1-madvenka@linux.microsoft.com>
-References: <f460a35f88195413bcf7305e5083480aab3ca858>
- <20220413140528.3815-1-madvenka@linux.microsoft.com>
+        Wed, 13 Apr 2022 10:08:47 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A9260D9E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:06:25 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id g18so4150709ejc.10
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xclQowK5QbwCO5KzYmDKXFep6DHLbWkFBjvXdbQJZDc=;
+        b=luU37E/8JMHNl4VHIi5MneOzNwctGyKeslQDkG2RJbONP2cISPuohPncjJCMISpSLd
+         JE3lw44w2pubOWRq01DpTW7/WUf4ORBprY9WXREI+Zpr245SkV+0ZNn3PCyCbsLHC7d0
+         s/2eltfPiTse6V0nmcMriwjg+HJ4L6u73/D4uQDNJf30JY0vLCKkZIyhI+rf/5qVE68z
+         KaH6hUAP390HKfdQNawuQeDGju8SxI6imDRDEm4rwN+4bP3ubagIQZjrK93/24UoNF7t
+         Kpfsbvy03tUbdmpahzFBQD292jb53r5SIVjUB2XvsKg7sQfZr3UAwNR4nx5huS2NyDxf
+         R8bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xclQowK5QbwCO5KzYmDKXFep6DHLbWkFBjvXdbQJZDc=;
+        b=ted63oqE1TXRD2QV6N67kGtH5ppMWeWDAYSwcQfCUegwI1LdTmgyT9ZDzpO56JSJGN
+         0Kk2viaMbVFASKgM4a1dvOUYoaoRVWwAWNicTM8PWuyU8IyZlcacW2Gj7Rf0oPbTmNhv
+         m/o2OXjIy1MxGVDJB0WOkFC3wp7DvlPHsLqABeuzT4dn7/CG1Y3wj3RIOVVVDkE2UApY
+         mXmpmiJ8utQMPXguUooC6sebc+FsNxffRXncS0byGs42PkjB39mUaOjH1IT+9NXunlYE
+         bJc2NVnNDYtntRxD/8AJ0Os1EaJxhSj7pTljxUIuxkYSZoVgylhc//eongDpxqCsH0fQ
+         fSXg==
+X-Gm-Message-State: AOAM533YQumeWzOD/B1cHYRtOZcc9LA84sjIxwCemMBYJPnAu5+ImaeI
+        Z9DCb8jo+d68IJ9VIN0yBdOWLw==
+X-Google-Smtp-Source: ABdhPJzjr+0cuBz3KT6Z5/dHflarKqX3dFwJjKeJYoA6U7QJ3txgow0qPdJbiQNrXxDeHEiDBBlb1w==
+X-Received: by 2002:a17:907:16a2:b0:6e8:d283:17d0 with SMTP id hc34-20020a17090716a200b006e8d28317d0mr1658785ejc.445.1649858784172;
+        Wed, 13 Apr 2022 07:06:24 -0700 (PDT)
+Received: from [192.168.0.205] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id d13-20020a50c88d000000b0041d8c0440ebsm1208244edh.95.2022.04.13.07.06.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 07:06:23 -0700 (PDT)
+Message-ID: <ebfe563c-5c3f-d69f-39a3-c8c79616f060@linaro.org>
+Date:   Wed, 13 Apr 2022 16:06:22 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] dt-bindings: hwmon: ti,tmp421: Fix type for 'ti,n-factor'
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220413134729.3112190-1-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220413134729.3112190-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+On 13/04/2022 15:47, Rob Herring wrote:
+> 'ti,n-factor' is read as a 32-bit signed value, so the type and constraints
+> are wrong. The same property is also defined for ti,tmp464 and is correct.
+> 
+> The constraints should also not be under 'items' as this property is not an
+> array.
+> 
 
-Introduce arch_stack_walk_reliable() for ARM64. This works like
-arch_stack_walk() except that it returns -EINVAL if the stack trace is not
-reliable.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Until all the reliability checks are in place, arch_stack_walk_reliable()
-may not be used by livepatch. But it may be used by debug and test code.
 
-Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
-Reviewed-by: Mark Brown <broonie@kernel.org>
----
- arch/arm64/kernel/stacktrace.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
-
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index eda8581f7dbe..8016ba0e2c96 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -383,3 +383,26 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
- 
- 	unwind(&state, consume_entry, cookie);
- }
-+
-+/*
-+ * arch_stack_walk_reliable() may not be used for livepatch until all of
-+ * the reliability checks are in place in unwind_consume(). However,
-+ * debug and test code can choose to use it even if all the checks are not
-+ * in place.
-+ */
-+noinline int notrace arch_stack_walk_reliable(
-+					stack_trace_consume_fn consume_entry,
-+					void *cookie,
-+					struct task_struct *task)
-+{
-+	struct unwind_state state;
-+	bool reliable;
-+
-+	if (task == current)
-+		unwind_init_from_caller(&state);
-+	else
-+		unwind_init_from_task(&state, task);
-+
-+	reliable = unwind(&state, consume_entry, cookie);
-+	return reliable ? 0 : -EINVAL;
-+}
--- 
-2.25.1
-
+Best regards,
+Krzysztof
