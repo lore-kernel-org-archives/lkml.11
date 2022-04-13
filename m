@@ -2,80 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA60C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C4AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 18:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237600AbiDMSN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 14:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
+        id S237603AbiDMSOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 14:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237598AbiDMSNX (ORCPT
+        with ESMTP id S229831AbiDMSOG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 14:13:23 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F2742A1D;
-        Wed, 13 Apr 2022 11:11:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649873461; x=1681409461;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0k/x2QWhXcod6LrpeYd8pZ6GKq7UkjSZY6p5v6Jf2zs=;
-  b=BgHtpMjB8yk//QBs3MyTRVDyLOdmlmTDDFUTLjEAkay06CbOZRJO6lEj
-   9+5T2oBoBsPmqtZOf3JyF8xkqftQcFpYF3icVSBCXU/1G5RH5msl6hnCO
-   Az0yIziUBOybLV6CLe9dRjE47v/P14nK6GDLJ7w7+gQzMkpooTAxLjhMk
-   Ki52GvCIfrXlrKGjBfxlthan9O+/Ez6Pi0QURd1Uo1vRoReHpsTQEY/FS
-   jZmADCcUAclHV42O9EU3PTmNrsccja1F68lxhf7+PntD7mXJMgbpVJtx3
-   FW1NRSNEBdQZOTq9LQhbKA7836zn60OvvS4gA9g/eQZ1ioOfDNquOrWxB
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262491549"
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="262491549"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:10:49 -0700
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="661029240"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 11:10:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nehOX-001xLb-0j;
-        Wed, 13 Apr 2022 21:07:09 +0300
-Date:   Wed, 13 Apr 2022 21:07:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: core: Convert to use firmware node handle
- instead of OF node
-Message-ID: <YlcRTB9W6Ggzt7vp@smile.fi.intel.com>
-References: <20220413180202.19220-1-andriy.shevchenko@linux.intel.com>
+        Wed, 13 Apr 2022 14:14:06 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C69136E0C;
+        Wed, 13 Apr 2022 11:11:43 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23DIBaIs042051;
+        Wed, 13 Apr 2022 13:11:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649873496;
+        bh=YqQ5rhFaUeIpx8tuzzpS1g5Fp/H5CjLBRHeqIyn+Wi0=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=jiB1kSKVqqdFwHaPL0yEw+MBlOXKriOi6k0T/pibExHaE9uWWJBIPoQVIUkDnn3Nb
+         BHCDucxff1xtEEpcssM21NG2fn5novsjea/qEIXPucM7AnUVmBj2ji1ErVb4kdwoHn
+         WXQDV377Zm/tFrnNvz3siZE4QX1b2HAmjrJ+YUCE=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23DIBaPt009306
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 13 Apr 2022 13:11:36 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 13
+ Apr 2022 13:11:36 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 13 Apr 2022 13:11:36 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23DIBZTt058236;
+        Wed, 13 Apr 2022 13:11:35 -0500
+Date:   Wed, 13 Apr 2022 23:41:34 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+CC:     Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ramuthevar Vadivel Murugan 
+        <vadivel.muruganx.ramuthevar@linux.intel.com>,
+        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] spi: cadence-quadspi: fix incorrect supports_op()
+ return value
+Message-ID: <20220413181134.izsam4fuogl6inbj@ti.com>
+References: <20220406132832.199777-1-matthias.schiffer@ew.tq-group.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220413180202.19220-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220406132832.199777-1-matthias.schiffer@ew.tq-group.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 09:02:02PM +0300, Andy Shevchenko wrote:
+On 06/04/22 03:28PM, Matthias Schiffer wrote:
+> Since the conversion to spi-mem, the driver advertised support for
+> various operations that cqspi_set_protocol() was never expected to handle
+> correctly - in particuar all non-DTR operations with command or address
+> buswidth > 1. For DTR, all operations except for 8-8-8 would fail, as
+> cqspi_set_protocol() returns -EINVAL.
+> 
+> In non-DTR mode, this resulted in data corruption for SPI-NOR flashes that
+> support such operations. As a minimal fix that can be backported to stable
+> kernels, simply disallow the unsupported operations again to avoid this
+> issue.
+> 
+> Fixes: a314f6367787 ("mtd: spi-nor: Convert cadence-quadspi to use spi-mem framework")
+> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-...
+I suppose it is too late now since the patch is already applied. But 
+FWIW,
 
-> +	/* If the calling driver did not initialize firmware node, do it here */
-> +	if (dev_fwnode(&indio_dev->dev))
-> +		fwnode = dev_fwnode(&indio_dev->dev);
-> +	else
-> +		fwnode = dev_fwnode(indio_dev->dev.parent);
-
-Can be also done as
-
-	fwnode = dev_fwnode(&indio_dev->dev) ?: dev_fwnode(indio_dev->dev.parent);
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
