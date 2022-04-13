@@ -2,164 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 02:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 061CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 02:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231791AbiDMCxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 22:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
+        id S231814AbiDMCzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 22:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiDMCxh (ORCPT
+        with ESMTP id S229911AbiDMCzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 22:53:37 -0400
-Received: from mo-csw-fb.securemx.jp (mo-csw-fb1115.securemx.jp [210.130.202.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530353884;
-        Tue, 12 Apr 2022 19:51:17 -0700 (PDT)
-Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1115) id 23D2cQlL002042; Wed, 13 Apr 2022 11:38:26 +0900
-Received: by mo-csw.securemx.jp (mx-mo-csw1114) id 23D2c7TH001183; Wed, 13 Apr 2022 11:38:07 +0900
-X-Iguazu-Qid: 2wHHQNGIBJTRt5AGUY
-X-Iguazu-QSIG: v=2; s=0; t=1649817487; q=2wHHQNGIBJTRt5AGUY; m=3whHHj6Ohn8t4gV46TX22fD7Raazw3saI2f5i74OAE4=
-Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
-        by relay.securemx.jp (mx-mr1113) id 23D2c6MR003310
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 13 Apr 2022 11:38:06 +0900
-X-SA-MID: 35919151
-From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp
-Subject: [PATCH 1/3] dt-bindings: media: platform: visconti: Add Toshiba Visconti Video Input Interface bindings
-Date:   Wed, 13 Apr 2022 11:32:32 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220413023234.19526-2-yuji2.ishikawa@toshiba.co.jp>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220413023234.19526-1-yuji2.ishikawa@toshiba.co.jp>
-References: <20220413023234.19526-1-yuji2.ishikawa@toshiba.co.jp>
+        Tue, 12 Apr 2022 22:55:50 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BD3506E7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 19:53:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649818411; x=1681354411;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hRIWfIYlFrX7ZKl3HBejDOvzl6OoZT8bn+gfQ7L9d5o=;
+  b=Qkfo8wSi4Xn9w/JPVe56YmU5uU6iEp7W/MQLWcE88HfXJtbkhrz7gXjY
+   jgOnUhYzkMA/fUEwzfBqPPa8sy8GxNIK832aeQ6FMXMWeQLkiMWyDekhu
+   UTrXEbH+Fxdi2lTfrnQMbtLzeow79pEZn07PyjvUs3mnz6XXfOjR4omHJ
+   EYRVSALSAgoBNjREoft3YRSPmkkI+LY0tdSs7u2oNAind65SHOxOJtCZj
+   hZrfpM72cU8qSxU/TW5mqwuBYKldKl37jCr8N1CjISC/i/UqQio3z1hnS
+   p7tnVF/V+XKDoaVO6W9ga9VXr4yyNE3q/wbD9uBQLPnxXJ+clWv0aMReS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="260153494"
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="260153494"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 19:53:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
+   d="scan'208";a="611708753"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Apr 2022 19:53:28 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neT8K-0003Nk-67;
+        Wed, 13 Apr 2022 02:53:28 +0000
+Date:   Wed, 13 Apr 2022 10:53:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Christoph Hellwig <hch@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [patch V4 1/2] smp: Rename flush_smp_call_function_from_idle()
+Message-ID: <202204131056.b582vtMv-lkp@intel.com>
+References: <20220412204353.655068649@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412204353.655068649@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds the Device Tree binding documentation that allows to describe
-the Video Input Interface found in Toshiba Visconti SoCs.
+Hi Thomas,
 
-Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- .../bindings/media/toshiba,visconti-viif.yaml | 103 ++++++++++++++++++
- 1 file changed, 103 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+I love your patch! Perhaps something to improve:
 
-diff --git a/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
-new file mode 100644
-index 000000000..848ea5019
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
-@@ -0,0 +1,103 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/toshiba,visconti-viif.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Toshiba Visconti5 SoC Video Input Interface Device Tree Bindings
-+
-+maintainers:
-+  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-+
-+description: |
-+  Toshiba Visconti5 SoC Video Input Interface (VIIF) receives MIPI CSI2 video stream,
-+  processes the stream with embedded image signal processor (L1ISP, L2ISP), then stores pictures to main memory.
-+
-+properties:
-+  compatible:
-+    const: toshiba,visconti-viif
-+
-+  reg:
-+    items:
-+      - description: registers for capture control
-+      - description: registers for CSI2 receiver control
-+
-+  interrupts:
-+    items:
-+      - description: Sync Interrupt
-+      - description: Status (Error) Interrupt
-+      - description: CSI2 Receiver Interrupt
-+      - description: L1ISP Interrupt
-+
-+  index:
-+    enum: [0, 1]
-+
-+  port:
-+    $ref: /schemas/graph.yaml#/$defs/port-base
-+    unevaluatedProperties: false
-+    description: Input port node, single endpoint describing the CSI-2 transmitter.
-+
-+    properties:
-+      endpoint:
-+        $ref: video-interfaces.yaml#
-+        unevaluatedProperties: false
-+
-+        properties:
-+          data-lanes:
-+            description: VIIF supports 2 or 4 data lines
-+            items:
-+              minItems: 1
-+              maxItems: 4
-+              items:
-+                - const: 1
-+                - const: 2
-+                - const: 3
-+                - const: 4
-+          clock-lanes:
-+            description: VIIF supports 1 clock line
-+            const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - port
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        viif0: viif@1c000000 {
-+            compatible = "toshiba,visconti-viif";
-+            reg = <0 0x1c000000 0 0x6000>,
-+                  <0 0x1c008000 0 0x400>;
-+            interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
-+            index = <0>;
-+            status = "disabled";
-+
-+            port {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                csi_in0: endpoint {
-+                    remote-endpoint = <&imx219_out0>;
-+                    bus-type = <4>;
-+                    data-lanes = <1 2>;
-+                    clock-lanes = <0>;
-+                    clock-noncontinuous;
-+                    link-frequencies = /bits/ 64 <456000000>;
-+                };
-+            };
-+        };
-+    };
-+
+[auto build test WARNING on tip/sched/core]
+[also build test WARNING on hch-configfs/for-next linus/master linux/master v5.18-rc2 next-20220412]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Thomas-Gleixner/smp-Make-softirq-handling-RT-friendly/20220413-045944
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 089c02ae2771a14af2928c59c56abfb9b885a8d7
+config: hexagon-defconfig (https://download.01.org/0day-ci/archive/20220413/202204131056.b582vtMv-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7c7c3b99f3599eb409f237b32f330fa06bffcd5d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Thomas-Gleixner/smp-Make-softirq-handling-RT-friendly/20220413-045944
+        git checkout 7c7c3b99f3599eb409f237b32f330fa06bffcd5d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/smp.c:697:6: warning: no previous prototype for function 'flush_smp_call_function_queue' [-Wmissing-prototypes]
+   void flush_smp_call_function_queue(void)
+        ^
+   kernel/smp.c:697:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void flush_smp_call_function_queue(void)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/flush_smp_call_function_queue +697 kernel/smp.c
+
+   683	
+   684	
+   685	/**
+   686	 * flush_smp_call_function_queue - Flush pending smp-call-function callbacks
+   687	 *				   from task context (idle, migration thread)
+   688	 *
+   689	 * When TIF_POLLING_NRFLAG is supported and a CPU is in idle and has it
+   690	 * set, then remote CPUs can avoid sending IPIs and wake the idle CPU by
+   691	 * setting TIF_NEED_RESCHED. The idle task on the woken up CPU has to
+   692	 * handle queued SMP function calls before scheduling.
+   693	 *
+   694	 * The migration thread has to ensure that an eventually pending wakeup has
+   695	 * been handled before it migrates a task.
+   696	 */
+ > 697	void flush_smp_call_function_queue(void)
+   698	{
+   699		unsigned long flags;
+   700	
+   701		if (llist_empty(this_cpu_ptr(&call_single_queue)))
+   702			return;
+   703	
+   704		cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->idle, CFD_SEQ_NOCPU,
+   705			      smp_processor_id(), CFD_SEQ_IDLE);
+   706		local_irq_save(flags);
+   707		__flush_smp_call_function_queue(true);
+   708		if (local_softirq_pending())
+   709			do_softirq();
+   710	
+   711		local_irq_restore(flags);
+   712	}
+   713	
+
 -- 
-2.17.1
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
