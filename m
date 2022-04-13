@@ -2,223 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E60F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236189AbiDMOnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
+        id S236184AbiDMOnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234466AbiDMOnj (ORCPT
+        with ESMTP id S236180AbiDMOnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:43:39 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9531C40E52;
-        Wed, 13 Apr 2022 07:41:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649860877; x=1681396877;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=linNOV4EomB16L2HapHfKkK9INH52m95HA/3C7Gt7dc=;
-  b=Gf1QutFsWw4xQHNwPWm9xJbrKtf8v3m+AQWMLuHe/JfZhrtmTB+/ZlE6
-   CS5pBlET/nxZTQhDKVRkgdC9eWZQ7jmPfNWaVEdRMRyMJ/lkKWWe2VsMK
-   pCUHjx6VeZfWblhIPknj/rYww0YkT2sfl8Fw93yV1SMnQy6VAgI5RPPOV
-   9GX9ulniC/SrNEkuj0mz8iNHIi6GK5oWL+8u9zOZ8Gf/56HBBd5Gf8Nkx
-   QLUXDfIrJRsIplAv+tzP6AhcxgG21wHMJ0qC8uSyU1Vjh9MQCjGu0V5EF
-   dolLZg3G9NP+C/oXvatb3NHjFMqEJsAHlzvENFUFM5+glN0oMc/8Qe/hb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242619758"
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="242619758"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 07:34:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="645191086"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Apr 2022 07:34:19 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nee4Y-0000NU-RM;
-        Wed, 13 Apr 2022 14:34:18 +0000
-Date:   Wed, 13 Apr 2022 22:33:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Libo Chen <libo.chen@oracle.com>, gregkh@linuxfoundation.org,
-        masahiroy@kernel.org, tglx@linutronix.de, peterz@infradead.org,
-        mingo@kernel.org, vbabka@suse.cz, akpm@linux-foundation.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arch@vger.kernel.org
-Subject: Re: [PATCH RESEND 1/1] lib/Kconfig: remove DEBUG_PER_CPU_MAPS
- dependency for CPUMASK_OFFSTACK
-Message-ID: <202204132236.KPzXaw0b-lkp@intel.com>
-References: <20220412231508.32629-2-libo.chen@oracle.com>
+        Wed, 13 Apr 2022 10:43:50 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690824EF70
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:41:28 -0700 (PDT)
+Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kdlbr0qV3zgYYx;
+        Wed, 13 Apr 2022 22:39:36 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500008.china.huawei.com (7.221.188.139) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 22:41:25 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 22:41:24 +0800
+Message-ID: <b86dfefe-316f-f650-bc2f-a740d7825bed@huawei.com>
+Date:   Wed, 13 Apr 2022 22:41:23 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412231508.32629-2-libo.chen@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [RFC PATCH -next V3 3/6] arm64: add support for machine check
+ error safe
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Alexander Viro" <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Xie XiuQi <xiexiuqi@huawei.com>
+References: <20220412072552.2526871-1-tongtiangen@huawei.com>
+ <20220412072552.2526871-4-tongtiangen@huawei.com>
+ <af6bd17a-d2ec-3d1a-8360-b51fe38ecdd9@huawei.com>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <af6bd17a-d2ec-3d1a-8360-b51fe38ecdd9@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Libo,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.18-rc2 next-20220413]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Libo-Chen/lib-Kconfig-remove-DEBUG_PER_CPU_MAPS-dependency-for-CPUMASK_OFFSTACK/20220413-073657
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
-config: parisc-randconfig-r014-20220413 (https://download.01.org/0day-ci/archive/20220413/202204132236.KPzXaw0b-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6636f7cf28d2a79cde937c0f212e8a87080da06d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Libo-Chen/lib-Kconfig-remove-DEBUG_PER_CPU_MAPS-dependency-for-CPUMASK_OFFSTACK/20220413-073657
-        git checkout 6636f7cf28d2a79cde937c0f212e8a87080da06d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   hppa-linux-ld: kernel/workqueue.o: in function `free_workqueue_attrs':
->> kernel/workqueue.c:3370: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/workqueue.o: in function `alloc_workqueue_attrs':
->> kernel/workqueue.c:3390: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: kernel/workqueue.o: in function `workqueue_set_unbound_cpumask':
->> kernel/workqueue.c:5390: undefined reference to `zalloc_cpumask_var'
->> hppa-linux-ld: kernel/workqueue.c:5406: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/workqueue.o: in function `wq_unbound_cpumask_store':
-   kernel/workqueue.c:5664: undefined reference to `zalloc_cpumask_var'
-   hppa-linux-ld: kernel/workqueue.c:5671: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/workqueue.o: in function `workqueue_init_early':
-   kernel/workqueue.c:5995: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: kernel/sched/core.o: in function `sched_setaffinity':
->> kernel/sched/core.c:7948: undefined reference to `alloc_cpumask_var'
->> hppa-linux-ld: kernel/sched/core.c:7951: undefined reference to `alloc_cpumask_var'
->> hppa-linux-ld: kernel/sched/core.c:7978: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/sched/core.c:7980: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/sched/core.o: in function `__se_sys_sched_setaffinity':
-   kernel/sched/core.c:8051: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: kernel/sched/core.c:8057: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/sched/core.o: in function `__se_sys_sched_getaffinity':
-   kernel/sched/core.c:8108: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: kernel/sched/core.c:8120: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/sched/core.o: in function `sched_init':
->> kernel/sched/core.c:9499: undefined reference to `load_balance_mask'
->> hppa-linux-ld: kernel/sched/core.c:9499: undefined reference to `load_balance_mask'
->> hppa-linux-ld: kernel/sched/core.c:9501: undefined reference to `select_idle_mask'
->> hppa-linux-ld: kernel/sched/core.c:9501: undefined reference to `select_idle_mask'
-   hppa-linux-ld: kernel/sched/build_utility.o: in function `housekeeping_setup_type':
->> kernel/sched/isolation.c:104: undefined reference to `alloc_bootmem_cpumask_var'
-   hppa-linux-ld: kernel/sched/build_utility.o: in function `housekeeping_setup':
-   kernel/sched/isolation.c:122: undefined reference to `alloc_bootmem_cpumask_var'
->> hppa-linux-ld: kernel/sched/isolation.c:128: undefined reference to `alloc_bootmem_cpumask_var'
->> hppa-linux-ld: kernel/sched/isolation.c:173: undefined reference to `free_bootmem_cpumask_var'
-   hppa-linux-ld: kernel/sched/isolation.c:175: undefined reference to `free_bootmem_cpumask_var'
-   hppa-linux-ld: kernel/taskstats.o: in function `taskstats_user_cmd':
->> kernel/taskstats.c:441: undefined reference to `alloc_cpumask_var'
->> hppa-linux-ld: kernel/taskstats.c:457: undefined reference to `alloc_cpumask_var'
->> hppa-linux-ld: kernel/taskstats.c:464: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/events/core.o: in function `perf_event_init':
->> kernel/events/core.c:13237: undefined reference to `zalloc_cpumask_var'
-   hppa-linux-ld: fs/io_uring.o: in function `__io_uring_register':
->> fs/io_uring.c:11472: undefined reference to `alloc_cpumask_var'
->> hppa-linux-ld: fs/io_uring.c:11488: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: fs/io_uring.c:11493: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: fs/io-wq.o: in function `io_wq_create':
-   fs/io-wq.c:1180: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: fs/io-wq.c:1214: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: fs/io-wq.o: in function `io_wq_put_and_exit':
-   fs/io-wq.c:1290: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: block/blk-mq.o: in function `blk_mq_alloc_hctx':
-   block/blk-mq.c:3528: undefined reference to `zalloc_cpumask_var_node'
-   hppa-linux-ld: block/blk-mq.c:3575: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: drivers/base/cpu.o: in function `print_cpus_offline':
-   drivers/base/cpu.c:245: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: drivers/base/cpu.c:249: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: drivers/base/cpu.o: in function `print_cpus_isolated':
-   drivers/base/cpu.c:274: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: drivers/base/cpu.c:281: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: drivers/net/ethernet/emulex/benet/be_main.o: in function `be_clear_queues':
-   drivers/net/ethernet/emulex/benet/be_main.c:2943: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: drivers/net/ethernet/emulex/benet/be_main.o: in function `be_setup_queues':
-   drivers/net/ethernet/emulex/benet/be_main.c:2981: undefined reference to `zalloc_cpumask_var'
-   hppa-linux-ld: drivers/net/ethernet/sfc/falcon/efx.o: in function `ef4_probe_nic':
-   drivers/net/ethernet/sfc/falcon/efx.c:1329: undefined reference to `zalloc_cpumask_var'
-   hppa-linux-ld: drivers/net/ethernet/sfc/falcon/efx.c:1344: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: net/core/dev.o: in function `netif_get_num_default_rss_queues':
-   net/core/dev.c:3001: undefined reference to `zalloc_cpumask_var'
-   hppa-linux-ld: net/core/dev.c:3009: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/profile.o: in function `prof_cpu_mask_proc_write':
-   kernel/profile.c:361: undefined reference to `zalloc_cpumask_var'
-   hppa-linux-ld: kernel/profile.c:369: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/profile.o: in function `profile_init':
-   kernel/profile.c:114: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: kernel/profile.c:132: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/torture.o: in function `torture_cleanup_begin':
-   kernel/torture.c:591: undefined reference to `free_cpumask_var'
-   hppa-linux-ld: kernel/torture.o: in function `torture_shuffle_init':
-   kernel/torture.c:572: undefined reference to `alloc_cpumask_var'
-   hppa-linux-ld: block/blk-mq-sysfs.o: in function `blk_mq_hw_sysfs_release':
-   block/blk-mq-sysfs.c:41: undefined reference to `free_cpumask_var'
 
 
-vim +3370 kernel/workqueue.c
+在 2022/4/12 21:08, Kefeng Wang 写道:
+[...]
+>> +
+>> +bool fixup_exception_mc(struct pt_regs *regs)
+>> +{
+>> +    const struct exception_table_entry *ex;
+>> +
+>> +    ex = search_exception_tables(instruction_pointer(regs));
+>> +    if (!ex)
+>> +        return false;
+>> +
+>> +    switch (ex->type) {
+>> +    case EX_TYPE_UACCESS_MC:
+>> +        return ex_handler_fixup(ex, regs);
+>> +    }
+>> +
+>> +    return false;
+>> +}
+> 
+> The definition of EX_TYPE_UACCESS_MC is in patch4, please fix it, and if 
+> arm64 exception table
 
-1fa44ecad2b864 James Bottomley     2006-02-23  3360  
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3361  /**
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3362   * free_workqueue_attrs - free a workqueue_attrs
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3363   * @attrs: workqueue_attrs to free
-226223ab3c4118 Tejun Heo           2013-03-12  3364   *
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3365   * Undo alloc_workqueue_attrs().
-226223ab3c4118 Tejun Heo           2013-03-12  3366   */
-513c98d0868295 Daniel Jordan       2019-09-05  3367  void free_workqueue_attrs(struct workqueue_attrs *attrs)
-226223ab3c4118 Tejun Heo           2013-03-12  3368  {
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3369  	if (attrs) {
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02 @3370  		free_cpumask_var(attrs->cpumask);
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3371  		kfree(attrs);
-226223ab3c4118 Tejun Heo           2013-03-12  3372  	}
-226223ab3c4118 Tejun Heo           2013-03-12  3373  }
-226223ab3c4118 Tejun Heo           2013-03-12  3374  
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3375  /**
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3376   * alloc_workqueue_attrs - allocate a workqueue_attrs
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3377   *
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3378   * Allocate a new workqueue_attrs, initialize with default settings and
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3379   * return it.
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3380   *
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3381   * Return: The allocated new workqueue_attr on success. %NULL on failure.
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3382   */
-513c98d0868295 Daniel Jordan       2019-09-05  3383  struct workqueue_attrs *alloc_workqueue_attrs(void)
-226223ab3c4118 Tejun Heo           2013-03-12  3384  {
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3385  	struct workqueue_attrs *attrs;
-226223ab3c4118 Tejun Heo           2013-03-12  3386  
-be69d00d976957 Thomas Gleixner     2019-06-26  3387  	attrs = kzalloc(sizeof(*attrs), GFP_KERNEL);
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3388  	if (!attrs)
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3389  		goto fail;
-be69d00d976957 Thomas Gleixner     2019-06-26 @3390  	if (!alloc_cpumask_var(&attrs->cpumask, GFP_KERNEL))
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3391  		goto fail;
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3392  
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3393  	cpumask_copy(attrs->cpumask, cpu_possible_mask);
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3394  	return attrs;
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3395  fail:
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3396  	free_workqueue_attrs(attrs);
-6ba94429c8e7b8 Frederic Weisbecker 2015-04-02  3397  	return NULL;
-226223ab3c4118 Tejun Heo           2013-03-12  3398  }
-226223ab3c4118 Tejun Heo           2013-03-12  3399  
+ok, will do next version.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> is sorted by exception type, we could drop fixup_exception_mc(), right?
+
+In sort_relative_table_with_data(), it seems sorted by insn and data.
+
+> 
+>> diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+>> index 77341b160aca..56b13cf8bf1d 100644
+>> --- a/arch/arm64/mm/fault.c
+>> +++ b/arch/arm64/mm/fault.c
+>> @@ -695,6 +695,30 @@ static int do_bad(unsigned long far, unsigned int 
+>> esr, struct pt_regs *regs)
+>>       return 1; /* "fault" */
+>>   }
+>> +static bool arm64_process_kernel_sea(unsigned long addr, unsigned int 
+>> esr,
+>> +                     struct pt_regs *regs, int sig, int code)
+>> +{
+>> +    if (!IS_ENABLED(CONFIG_ARCH_HAS_COPY_MC))
+>> +        return false;
+>> +
+>> +    if (user_mode(regs) || !current->mm)
+>> +        return false;
+>> +
+>> +    if (apei_claim_sea(regs) < 0)
+>> +        return false;
+>> +
+>> +    current->thread.fault_address = 0;
+>> +    current->thread.fault_code = esr;
+>> +
+> Use set_thread_esr(0, esr) and move it after fixup_exception_mc();
+>> +    if (!fixup_exception_mc(regs))
+>> +        return false;
+>> +
+>> +    arm64_force_sig_fault(sig, code, addr,
+>> +        "Uncorrected hardware memory error in kernel-access\n");
+>> +
+>> +    return true;
+>> +}
+>> +
+>>   static int do_sea(unsigned long far, unsigned int esr, struct 
+>> pt_regs *regs)
+>>   {
+>>       const struct fault_info *inf;
+>> @@ -720,6 +744,10 @@ static int do_sea(unsigned long far, unsigned int 
+>> esr, struct pt_regs *regs)
+>>            */
+>>           siaddr  = untagged_addr(far);
+>>       }
+>> +
+>> +    if (arm64_process_kernel_sea(siaddr, esr, regs, inf->sig, 
+>> inf->code))
+>> +        return 0;
+>> +
+> 
+> Rename arm64_process_kernel_sea() to arm64_do_kernel_sea() 
+> 
+> if (!arm64_do_kernel_sea())
+> 
+>      arm64_notify_die();
+> 
+
+Agreed, will do next version.
+
+>>       arm64_notify_die(inf->name, regs, inf->sig, inf->code, siaddr, 
+>> esr);
+>>       return 0;
+>> diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+>> index 546179418ffa..dd952aeecdc1 100644
+>> --- a/include/linux/uaccess.h
+>> +++ b/include/linux/uaccess.h
+>> @@ -174,6 +174,14 @@ copy_mc_to_kernel(void *dst, const void *src, 
+>> size_t cnt)
+>>   }
+>>   #endif
+>> +#ifndef copy_mc_to_user
+>> +static inline unsigned long __must_check
+>> +copy_mc_to_user(void *dst, const void *src, size_t cnt)
+>> +{
+> Add check_object_size(cnt, src, true);  which could make 
+> HARDENED_USERCOPY works.
+
+Agreed, will do next version.
+
+Thanks KeFeng,
+Tong.
+
+>> +    return raw_copy_to_user(dst, src, cnt);
+>> +}
+>> +#endif
+>> +
+>>   static __always_inline void pagefault_disabled_inc(void)
+>>   {
+>>       current->pagefault_disabled++;
+> .
