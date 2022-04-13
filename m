@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B807C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD45C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233818AbiDMTaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
+        id S238381AbiDMTaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238342AbiDMTal (ORCPT
+        with ESMTP id S235254AbiDMTam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:30:41 -0400
+        Wed, 13 Apr 2022 15:30:42 -0400
 Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AEF73070
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C013273041
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:20 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649878095;
+        t=1649878097;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=k1Ti9WI7kQjXH/LtbtJpqTp8bomGV2aI21uzEA+/hgk=;
-        b=nykjmmr0sgX45Kb38uAO4roxOKHuFvGqKVhaS7htTLEqnKboJlyPfvkJ7xqMlLAFN7fzbn
-        3YYgvkl0RZ4Ec+gP9PtkVsgLLXTl5jPx7gAw4RlzgAdUTBNII6VaYVnmBXQoYKlKY9XQnv
-        1JRuxhqmlIdwpkIELUxCGbVISHZ0MR8=
+        bh=JDSn48VO/uynw53/sb4SAMVT5nBlYcr9rW/XWz8GxpM=;
+        b=sgF7TidZ/P5xqTORl4THKhdzQ00G5F6Fn39wehah+VVZmo+WJOxBeHdzsNbNNIShn9WE6w
+        Qt9Bazc4jEh/KaM/hD9VnKJ780fSIt7YjOm05xnrVlhblVT2a3/vrvFbj/2vEF002aW9G4
+        2nQnx8WcHwg902UfuFYSedzVMroR/2M=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>,
@@ -45,9 +45,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v3 1/3] arm64, scs: expose irq_shadow_call_stack_ptr
-Date:   Wed, 13 Apr 2022 21:26:44 +0200
-Message-Id: <cef39a8fe1d7783d1b6dfce5eff83c08e75577eb.1649877511.git.andreyknvl@google.com>
+Subject: [PATCH v3 3/3] kasan: use stack_trace_save_shadow
+Date:   Wed, 13 Apr 2022 21:26:46 +0200
+Message-Id: <05fb7a41510f471f82aa1f3930ed3aac8abe2410.1649877511.git.andreyknvl@google.com>
 In-Reply-To: <cover.1649877511.git.andreyknvl@google.com>
 References: <cover.1649877511.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -60,80 +60,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-When a hardirq happens, the Shadow Call Stack (SCS) pointer is switched
-to a per-hardirq one, which is stored in irq_shadow_call_stack_ptr per-CPU.
-
-Collecting stack traces based on SCS in hardirqs requires access to
-irq_shadow_call_stack_ptr.
-
-Expose irq_shadow_call_stack_ptr in arch/arm64/include/asm/scs.h.
-
-For symmetry, move sdei_shadow_call_stack_normal_ptr and
-sdei_shadow_call_stack_critical_ptr declarations there too.
+Use stack_trace_save_shadow() to collect stack traces whenever
+CONFIG_HAVE_SHADOW_STACKTRACE is enabled. This improves the
+boot time of a defconfig build by ~30% for all KASAN modes.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- arch/arm64/include/asm/scs.h | 10 +++++++++-
- arch/arm64/kernel/irq.c      |  4 +---
- arch/arm64/kernel/sdei.c     |  3 ---
- 3 files changed, 10 insertions(+), 7 deletions(-)
+ mm/kasan/common.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/scs.h b/arch/arm64/include/asm/scs.h
-index 8297bccf0784..9d9ac04014f1 100644
---- a/arch/arm64/include/asm/scs.h
-+++ b/arch/arm64/include/asm/scs.h
-@@ -24,6 +24,14 @@
- 	.endm
- #endif /* CONFIG_SHADOW_CALL_STACK */
+diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+index 23b30fa6e270..00fef2e5fe90 100644
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -97,7 +97,9 @@ depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
+ 	unsigned long entries[KASAN_STACK_DEPTH];
+ 	unsigned int nr_entries;
  
--#endif /* __ASSEMBLY __ */
-+#else /* __ASSEMBLY__ */
-+
-+#include <linux/percpu.h>
-+
-+DECLARE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
-+DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
-+DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
-+
-+#endif /* __ASSEMBLY__ */
+-	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
++	nr_entries = stack_trace_save_shadow(entries, ARRAY_SIZE(entries));
++	if (nr_entries < 0)
++		nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
+ 	return __stack_depot_save(entries, nr_entries, flags, can_alloc);
+ }
  
- #endif /* _ASM_SCS_H */
-diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
-index bda49430c9ea..9d85c82f0b1c 100644
---- a/arch/arm64/kernel/irq.c
-+++ b/arch/arm64/kernel/irq.c
-@@ -21,6 +21,7 @@
- #include <linux/seq_file.h>
- #include <linux/vmalloc.h>
- #include <asm/daifflags.h>
-+#include <asm/scs.h>
- #include <asm/vmap_stack.h>
- 
- /* Only access this in an NMI enter/exit */
-@@ -28,9 +29,6 @@ DEFINE_PER_CPU(struct nmi_ctx, nmi_contexts);
- 
- DEFINE_PER_CPU(unsigned long *, irq_stack_ptr);
- 
--
--DECLARE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
--
- #ifdef CONFIG_SHADOW_CALL_STACK
- DEFINE_PER_CPU(unsigned long *, irq_shadow_call_stack_ptr);
- #endif
-diff --git a/arch/arm64/kernel/sdei.c b/arch/arm64/kernel/sdei.c
-index d20620a1c51a..882f88ce8d4d 100644
---- a/arch/arm64/kernel/sdei.c
-+++ b/arch/arm64/kernel/sdei.c
-@@ -39,9 +39,6 @@ DEFINE_PER_CPU(unsigned long *, sdei_stack_normal_ptr);
- DEFINE_PER_CPU(unsigned long *, sdei_stack_critical_ptr);
- #endif
- 
--DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
--DECLARE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
--
- #ifdef CONFIG_SHADOW_CALL_STACK
- DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_normal_ptr);
- DEFINE_PER_CPU(unsigned long *, sdei_shadow_call_stack_critical_ptr);
 -- 
 2.25.1
 
