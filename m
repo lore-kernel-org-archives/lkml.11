@@ -2,63 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C31C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05541C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 10:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235029AbiDMK5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 06:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
+        id S234659AbiDMK60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 06:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235083AbiDMK5e (ORCPT
+        with ESMTP id S232020AbiDMK6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 06:57:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B425A15C
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:55:12 -0700 (PDT)
+        Wed, 13 Apr 2022 06:58:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E24D5A09C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 03:56:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75DD9B821DC
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F3AC385A4;
-        Wed, 13 Apr 2022 10:55:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD993B820DC
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:55:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0085EC385A3;
+        Wed, 13 Apr 2022 10:55:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649847310;
-        bh=dFm1wyKu10QMvm3Wr7qBRB92zACCEpo2u5gPlOnXCdk=;
+        s=k20201202; t=1649847357;
+        bh=x/DfLNP13aIWRhDPgt4OxLhq9Lscy/vrCAdzrghAUD8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iNqr58yFVPSQ71lRauNoO5lETAbXYUa8GTDtcg2dYHmFV2g2Gf+YoJJMKs1fDCWT8
-         urxzGuXb4Mmxvt6A7+yClA1vaxCEqQM+Tp8EetPK/DxXCtaAJDQp5sQ+WizWcmrJZa
-         kpDelMAHTwEUdPBYpbH6QXHR655FaOgz28xtUpLUcJxUgPdSLw0xyRNlJENWulZlvu
-         7irtPP2RQbClP7U6PER1IgMLMdbQYawQ9MzDh8p7871Tbut1113h4HaIaKFhAw2BK6
-         4zHfyacF2duQFbikFycXp3lVu5p8G/8XhYwbORwDEc+geo4GKU1kL65AkmRdMNTKvq
-         TbLttlnlCuzww==
-Date:   Wed, 13 Apr 2022 16:25:06 +0530
+        b=nBDZlrcL3OH4FgQG5F7z2lQUDB+gPyPZaGXcu82pYB9HDtmnkNsSAdm3NW8AO3YzI
+         FD0Q3h9yAdoFUkwnxNQsVZTyiPIM4BAqepDs0ay1drtJWLvnPhqBI/xUBQLeYQqv3w
+         o6v+LK+ExnVXnaAYtOV32BG6eGg7AOdLrUQBdy8LsJ8h3WfgbA16H65unJqXDf0r6I
+         jrekv56LtA22lV4sI9q559KPh/Xuq+W+R1oj0dB3D47394bACWWKn0OP7uADadD7HB
+         1kkA6OaVlLTG3LEXckuX2s47jcKIry57Y9t3q4D0B1zK+qF1hoR+ra2Vi13bds8ROk
+         XrF0SVKuUVVoQ==
+Date:   Wed, 13 Apr 2022 16:25:53 +0530
 From:   Vinod Koul <vkoul@kernel.org>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Roger Quadros <rogerq@ti.com>, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] phy: ti: Add missing pm_runtime_disable() in
- serdes_am654_probe
-Message-ID: <YlasCq2IKMfcafvx@matsya>
-References: <20220105090225.20507-1-linmq006@gmail.com>
- <20220301025853.1911-1-linmq006@gmail.com>
+To:     cgel.zte@gmail.com
+Cc:     kishon@ti.com, linux-phy@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] phy/motorola: using pm_runtime_resume_and_get instead of
+ pm_runtime_get_sync
+Message-ID: <YlasOb7q7ocMJ54i@matsya>
+References: <20220413093627.2538442-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301025853.1911-1-linmq006@gmail.com>
+In-Reply-To: <20220413093627.2538442-1-chi.minghao@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01-03-22, 02:58, Miaoqian Lin wrote:
-> The pm_runtime_enable() will increase power disable depth.
-> If the probe fails, we should use pm_runtime_disable() to balance
-> pm_runtime_enable().
-> Add missing pm_runtime_disable() for serdes_am654_probe().
+On 13-04-22, 09:36, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
 
-Applied, thanks
+Can you explain why is it more appropriate?
+
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+
+where is this report?
+
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>  drivers/phy/motorola/phy-mapphone-mdm6600.c | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/phy/motorola/phy-mapphone-mdm6600.c b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+> index 5172971f4c36..8738d512131d 100644
+> --- a/drivers/phy/motorola/phy-mapphone-mdm6600.c
+> +++ b/drivers/phy/motorola/phy-mapphone-mdm6600.c
+> @@ -253,12 +253,9 @@ static irqreturn_t phy_mdm6600_wakeirq_thread(int irq, void *data)
+>  		return IRQ_NONE;
+>  
+>  	dev_dbg(ddata->dev, "OOB wake on mode_gpio1: %i\n", wakeup);
+> -	error = pm_runtime_get_sync(ddata->dev);
+> -	if (error < 0) {
+> -		pm_runtime_put_noidle(ddata->dev);
+> -
+> +	error = pm_runtime_resume_and_get(ddata->dev);
+> +	if (error < 0)
+>  		return IRQ_NONE;
+> -	}
+>  
+>  	/* Just wake-up and kick the autosuspend timer */
+>  	pm_runtime_mark_last_busy(ddata->dev);
+> @@ -601,10 +598,9 @@ static int phy_mdm6600_probe(struct platform_device *pdev)
+>  	pm_runtime_set_autosuspend_delay(ddata->dev,
+>  					 MDM6600_MODEM_IDLE_DELAY_MS);
+>  	pm_runtime_enable(ddata->dev);
+> -	error = pm_runtime_get_sync(ddata->dev);
+> +	error = pm_runtime_resume_and_get(ddata->dev);
+>  	if (error < 0) {
+>  		dev_warn(ddata->dev, "failed to wake modem: %i\n", error);
+> -		pm_runtime_put_noidle(ddata->dev);
+>  		goto cleanup;
+>  	}
+>  
+> -- 
+> 2.25.1
+> 
 
 -- 
 ~Vinod
