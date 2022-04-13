@@ -2,91 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B23EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E74AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238131AbiDMTPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
+        id S238236AbiDMTPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238247AbiDMTMr (ORCPT
+        with ESMTP id S238328AbiDMTM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:12:47 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E386771ED4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:07:57 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id ay36-20020a05600c1e2400b0038ebc885115so3218963wmb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:07:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JBfzxCMFwSqtUUAKgLYX1NAdCBaYrQJEwA5Wp5fjHpE=;
-        b=yh8B4MA5+IIC0lL6pBWdPhs6d9WmcV3UPM/GHpIaYenQKbu/9Fa70KpToA2XQDr+Yg
-         U9oU05mcUhaNNdu2BM7aJfgQCMyRA1nr6H0/T6urpImHNeJ7xa3de/rU2e1NkK5zRwA7
-         UlbrPz6GNsAr8UytypSrhTBVM+Xht/FOXWY7m+8tawOZoSgerR3YJhf6SXMsgi//4f5d
-         5985xj2AZJYpJHMQlkMrgZCxiC7kbDDqzPpDLMEZ+bhEJX/ELnPhmIGMHPGwkuZAn7Lu
-         dsz6g7W0wSoS5gbs8tFrmepfmCMgF+s8d+zhTQ0FBuipmJNZ3OPeXkBc75OOimNYZX84
-         Elxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JBfzxCMFwSqtUUAKgLYX1NAdCBaYrQJEwA5Wp5fjHpE=;
-        b=QAWel/2Cowk+WGetIsAB8l6uQQ99R3SN2B1oZqgA0k2vXR3GeeUwKE9Wkx/hZ4N5NL
-         W7bd0BHjldi6egdhNC2v8a21rDlKR6UyERJhqaM7NB0r2+xRhWNemIzB1iyPCteyIQ65
-         2vhRN89dwIxUkLbxSLN5JoUaeX6+a+P4OgT83TBVhtKC1QMxV9idWjUXyqMOZlhb7wsG
-         ef87DYxMWPTBWUay/xNNyxwt7HXC66Zekz99vRExg1HHHwlHaxRU17uSwaUSsKxsPDly
-         S4+Oduk2Z6asQ/ln34FOVkVFy8lar2khmP+N/5gHsKPf7SNL6tYO2r3Zsi/tXFZNoF6p
-         Uf5g==
-X-Gm-Message-State: AOAM532YuafpQmyoaWUDOm5b8IkbiLcPI/WrFHnfT5mOkfcOLTmemVTf
-        cbBnRLOReAg4suo7UjA9+FKbfw==
-X-Google-Smtp-Source: ABdhPJyQ86GCiYzB29RlHiNKRPQcam5duoianBOXT2nFnR89sXRr77+hqM+vPCyb+YE2l+bErpELsw==
-X-Received: by 2002:a05:600c:198f:b0:38c:a9e9:754a with SMTP id t15-20020a05600c198f00b0038ca9e9754amr166676wmq.146.1649876876246;
-        Wed, 13 Apr 2022 12:07:56 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id o29-20020a05600c511d00b0038e3532b23csm3551852wms.15.2022.04.13.12.07.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 12:07:55 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v5 32/33] crypto: rockchip: permit to have more than one reset
-Date:   Wed, 13 Apr 2022 19:07:12 +0000
-Message-Id: <20220413190713.1427956-33-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220413190713.1427956-1-clabbe@baylibre.com>
-References: <20220413190713.1427956-1-clabbe@baylibre.com>
+        Wed, 13 Apr 2022 15:12:56 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0042A72446;
+        Wed, 13 Apr 2022 12:08:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649876903; x=1681412903;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/NRCMCz/oyRtVdmOgQk/fJ76afo2WGVrCiTYNHVE2xg=;
+  b=jp1BTGQnqg6om4h3RVprXPx8foex2/AFlEgBn9uIgdsusvqtOC+ANY7b
+   JwaDJMv105ChXwZjTwAB5UK7wtymp51mqnnF+nTUiXc4SKjMO1+YeOxXp
+   Ofg4B/Mz+Hf1qSAwXKUi7sYaZPyysors26lvFQ6LmKXPKHR1uTSEAR447
+   VTj0bctodH+fRDMnJZvL8stADFVRpp7rt9z07Do1AWqE35nAfWRzqSHw+
+   fS5E+ZVqMflRZ3AkVL5E98iAkcDfEfZzh32gz+69kMWOFfxQcVZsvHcak
+   FOk7Wzy/qib7kx44SEXAcsuf1IBmkHR7dqkqMfPv7rtjMXbGf8ZsHG856
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="242686450"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="242686450"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 12:08:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="526590986"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 13 Apr 2022 12:08:20 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 6E66412C; Wed, 13 Apr 2022 22:08:20 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] iio: dac: lpc18xx: Drop dependency on OF
+Date:   Wed, 13 Apr 2022 22:08:19 +0300
+Message-Id: <20220413190819.38206-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The RK3399 has 3 resets, so the driver to handle multiple resets.
-This is done by using devm_reset_control_array_get_exclusive().
+Nothing in this driver depends on OF firmware so drop the dependency
+and update the headers to remove the false impression such a dependency
+exists.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/crypto/rockchip/rk3288_crypto.c | 2 +-
+ drivers/iio/dac/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/rockchip/rk3288_crypto.c b/drivers/crypto/rockchip/rk3288_crypto.c
-index d6d78b8af57c..9ba9b9e433c4 100644
---- a/drivers/crypto/rockchip/rk3288_crypto.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto.c
-@@ -276,7 +276,7 @@ static int rk_crypto_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 8d5b3bad75ad..d578e242d74d 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -304,7 +304,7 @@ config DS4424
+ config LPC18XX_DAC
+ 	tristate "NXP LPC18xx DAC driver"
+ 	depends on ARCH_LPC18XX || COMPILE_TEST
+-	depends on OF && HAS_IOMEM
++	depends on HAS_IOMEM
+ 	help
+ 	  Say yes here to build support for NXP LPC18XX DAC.
  
--	crypto_info->rst = devm_reset_control_get(dev, "crypto-rst");
-+	crypto_info->rst = devm_reset_control_array_get_exclusive(dev);
- 	if (IS_ERR(crypto_info->rst)) {
- 		err = PTR_ERR(crypto_info->rst);
- 		goto err_crypto;
 -- 
 2.35.1
 
