@@ -2,192 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA048C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F526C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238340AbiDMTaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
+        id S238341AbiDMTag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238326AbiDMT3k (ORCPT
+        with ESMTP id S235254AbiDMTae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:29:40 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B9C73049
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:27:17 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id bx5so2981218pjb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:27:17 -0700 (PDT)
+        Wed, 13 Apr 2022 15:30:34 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CB972E24
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:12 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id r2so3032846iod.9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:28:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JR1mdA1j0V8ioBXEk26qhFhVHjrW1gTd25k7XKclfp4=;
-        b=D2b3epcgCIvA+52M0Oi+ft1zs57n2KLA+lzqKiDDoyXuUgWD+gNaP4Gpo6kfvYUxv/
-         z+Wbzn1OtQQ8G2oea16Q9yB3d+hfuR3mbPs0S3J0bPWa5hZqQjmmfHAPLZ/Qa9hX1lA7
-         D6d0z/VCxl0yW7YM4+bPHQPiUXGrO3AUUCkDc=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hGxcoipwWUtIXq1n/IgG8Z+lNTNMbXErzkobqsYlE2I=;
+        b=ZL69/ZorDhoyGCgh2Jl2LpYu9wdzJZuKqXtq1AduuuzTrWaviPzsVClwbPvrv7uCTd
+         Wy5ca+NuwOlsqg+aYU1IESzQE3G37dKVWlkYY9Ly6sDjrly4XzFrSiyORmXjNmjQ4mI1
+         RcSmvLdaR/zIMaP0QB8/RK6BZO1/spPT8pjuIXy6Hbsxim0tIpI11wzgX4bE9Xwa0LXE
+         dGo46fLmaWgUM1asirSzWUse+H+7wDLnZUlc47SzwRHakMzOg/CEpIBjjdRdTKsKFNyh
+         HWwjeVsqd6UISleKatfeF1L5GL3JbMixLX8TYefO5mUvfOT+ryc9Fzkb+FBjn1UI+4cj
+         WEGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=JR1mdA1j0V8ioBXEk26qhFhVHjrW1gTd25k7XKclfp4=;
-        b=yjvBYYIuhyKaZZh6Vr1NohiO58PQPCOBtk681YE1A/1zzi71g38aHYNFARWmLNG2Rp
-         lyJLXnu8uJykY3BMhzQoNSmF8E9bfiwBr9zHxdxN9Qlg0pcm6fZQuJm64TM6peqMzvhR
-         cCwa1FGBzHKzqojKKZy9++bhUCZB1WjvSiuo8CxqGkkb88UbDZgESFR3fQxgTXLW894L
-         YU7gHgh5J3Iy232X5UCcAlx8kcN5L40wvTPN2HjQvzEqDQVmT4RXyOGUAENiUvmYnom5
-         L2kdwU0VUEuoVip6rD3kytjRPzZpT9pGUL57/uJf1Xex6pM+ZKGKQpFS0PyYrcjX1y2d
-         qZaA==
-X-Gm-Message-State: AOAM5324CfOwqgTjNPPjMmwJjbKd2yMyVcZ5SCQWwStTgBIgItBD7K4/
-        03MqYa2Gblm7J1cXPrioRwIdzA==
-X-Google-Smtp-Source: ABdhPJzYHvgYSvzzxbZcpZfpTIbC6ykkBQcCuBywzVRiXGRmQqkek/U1fkogzBenKcQGHqzVjWxLZQ==
-X-Received: by 2002:a17:902:ec86:b0:158:5039:a145 with SMTP id x6-20020a170902ec8600b001585039a145mr19138354plg.5.1649878037233;
-        Wed, 13 Apr 2022 12:27:17 -0700 (PDT)
-Received: from T3500-3.dhcp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u7-20020aa78487000000b00505d9277cb3sm8624906pfn.38.2022.04.13.12.27.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 12:27:16 -0700 (PDT)
-From:   William Zhang <william.zhang@broadcom.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        Kursad Oney <kursad.oney@broadcom.com>,
-        Joel Peshkin <joel.peshkin@broadcom.com>,
-        Anand Gore <anand.gore@broadcom.com>,
-        Dan Beygelman <dan.beygelman@broadcom.com>,
-        Florian Fainelli <florian.fainelli@broadcom.com>,
-        William Zhang <william.zhang@broadcom.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/5] MAINTAINERS: update MAINTAINERS file
-Date:   Wed, 13 Apr 2022 12:26:44 -0700
-Message-Id: <20220413192645.7067-5-william.zhang@broadcom.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220413192645.7067-1-william.zhang@broadcom.com>
-References: <20220413192645.7067-1-william.zhang@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000005ccb0705dc8e2ac8"
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hGxcoipwWUtIXq1n/IgG8Z+lNTNMbXErzkobqsYlE2I=;
+        b=4Yf7KtL/3kpDGT/JNoe3ly68cbsv3y1vrvU02ui9cxVo4Ds2/mq44VS+0QFFW+5O9e
+         1bCO71JZj3pOxfWeb402qHv+6iY97eyETCvZ467vjw2ZAuHG2/LEkq03Hd7WPndCRXKi
+         bAkqxk6NM1s7Ow/TnDneSWyOaAczMq4ZvLdPvtspzoDV/OKr0Ai2VKj7yqG/fC6UJYET
+         ApBST1GXURmJgKx7LDt9BUOPUsxKvYy9SeWSKfCC+QeUGQcbrmqCkNmReDrArQ15uL64
+         3TAIZ3j1LxSrb+MS0bKjyHHxyznnl2JF6kXVNlkAyqxwQHDqQ4EF8DbIIWS/DBBUq6Ft
+         8KzQ==
+X-Gm-Message-State: AOAM530lz3G44g/C6amgrHBMkl/Xobpmy6tjAso8KU1e0YXFPslQWVnl
+        OFIXyd6GdLlWFV7A+cX04Y8NzpyqDs+f4nBLxbw=
+X-Google-Smtp-Source: ABdhPJxDLmrDgN9dtgESqgY2iKUAgV+F+PFUJT9r2kvBTNB7UCTm3ZWMqb2uVl7rs9oHR5y83T6q39jD8xIUTXxNtkk=
+X-Received: by 2002:a05:6602:2b8e:b0:5e9:74e7:6b01 with SMTP id
+ r14-20020a0566022b8e00b005e974e76b01mr19051650iov.127.1649878091766; Wed, 13
+ Apr 2022 12:28:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1648049113.git.andreyknvl@google.com> <YkV6QG+VtO7b0H7g@FVFF77S0Q05N>
+ <YkWg5dCulxknhyZn@FVFF77S0Q05N> <CA+fCnZeQ6UnpM9qEQ4q5Y95U3XVwrsD-g7OX=Qxr1U1OR_KCsQ@mail.gmail.com>
+ <Yk8wbx7/4+9pMLGE@FVFF77S0Q05N>
+In-Reply-To: <Yk8wbx7/4+9pMLGE@FVFF77S0Q05N>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Wed, 13 Apr 2022 21:28:00 +0200
+Message-ID: <CA+fCnZcv6PtR5eT-hbJ54hkH7Kr+CUM4DU2S5nbU4Lp2OnG8dQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] kasan, arm64, scs, stacktrace: collect stack
+ traces from Shadow Call Stack
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000005ccb0705dc8e2ac8
+On Thu, Apr 7, 2022 at 8:42 PM Mark Rutland <mark.rutland@arm.com> wrote:
+>
+> I'm afraid from local testing (atop v5.18-rc1), with your config, I still can't
+> get anywhere near your figures. I've tried to match toolchain versions with
+> what was in your .config file, so I'm using clang 12.0.0 from the llvm.org
+> binary releases, and binutils from the kernel.org crosstool 11.1.0 release.
+>
+> I took baselines with defconfig and defconfig + SHADOW_CALL_STACK, with console
+> output completely suppressed with 'quiet loglevel=0':
+>
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-defconfig/Image
+> |
+> |  Performance counter stats for
+> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-defconfig/Image -append
+> |  loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
+> |
+> |        0.512626031 seconds time elapsed                                          ( +-  0.26% )
+> |
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-defconfig+scs/Image
+> |
+> |  Performance counter stats for
+> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-defconfig+scs/Image -append
+> |  loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
+> |
+> |        0.523245952 seconds time elapsed                                          ( +-  0.18% )
+>
+> Then I tried the same with your config, without your patches:
+>
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image
+> |
+> |  Performance counter stats for
+> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image -append
+> |  loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
+> |
+> |        1.994692366 seconds time elapsed                                          ( +-  0.05% )
+>
+> Then with your config, without your patches, with the stacktrace hacked out:
+>
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image
+> |
+> |  Performance counter stats for
+> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image
+> | -append loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
+> |
+> |        1.861823869 seconds time elapsed                                          ( +-  0.05% )
+>
+> If I use those number to estimate the proportion of time spent stacktracing,
+> with the baseline SCS number discounted to remove the hypervisor+VMM overheads,
+> I get:
+>
+>         (1.994692366 - 0.523245952) - (1.861823869 - 0.523245952)
+>         ---------------------------------------------------------  = 0.09029788358
+>         (1.994692366 - 0.523245952)
+>
+> So roughly 9% when I try to maximize that figure. When actually poking hardware
+> and doing real work, that figure goes down. For example, if just using "quiet":
+>
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -q -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image > /dev/null
+> |
+> |  Performance counter stats for
+> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config/Image -append
+> | loglevel=9 earlycon panic=-1 quiet' (50 runs):
+> |
+> |        4.653286475 seconds time elapsed                                          ( +-  0.06% )
+>
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -q -k ~/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image > /dev/null
+> |
+> |  Performance counter stats for
+> |  '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> |  -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> |  /home/mark/kernel-images/andrey-unwind-v5.18-rc1-andrey.config-nostacktrace/Image
+> |  -append loglevel=9 earlycon panic=-1 quiet' (50 runs):
+> |
+> |        4.585750154 seconds time elapsed                                          ( +-  0.05% )
+>
+> Which gives an estimate of:
+>
+>         (4.653286475 - 0.523245952) - (4.585750154 - 0.523245952)
+>         ---------------------------------------------------------  = 0.01635245964
+>         (4.653286475 - 0.523245952)
+>
+> ... or ~1.6% time spent backtracing:
+>
+> FWIW, applying your patches do show some benefit, but not as drastic as I was
+> expecting:
+>
+> With console output suprressed:
+>
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -s -k ~/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image
+> |
+> |  Performance counter stats for
+> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image
+> | -append loglevel=9 earlycon panic=-1 quiet loglevel=0' (50 runs):
+> |
+> |        1.920300410 seconds time elapsed                                          ( +-  0.05% )
+>
+> ... down from ~9% to ~4%
+>
+> With console output merely reduced:
+>
+> | [mark@gravadlaks:~/repro]% taskset -c 64 ./vmboot.sh --perf-trials 50 -q -k ~/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image > /dev/null
+> |
+> |  Performance counter stats for
+> | '/home/mark/.opt/apps/qemu/bin/qemu-system-aarch64 -m 2048 -smp 1 -nographic
+> | -no-reboot -machine virt,accel=kvm,gic-version=host -cpu host -kernel
+> | /home/mark/kernel-images/andrey-unwind-v5.18-rc1+scs-unwind-andrey.config/Image
+> | -append loglevel=9 earlycon panic=-1 quiet' (50 runs):
+> |
+> |        4.611277833 seconds time elapsed                                          ( +-  0.04% )
+>
+> ... down from 1.6% to 0.6%
+>
+> Given the above I still think we need to understand this a bit better before we
+> consider pursuing the SCS unwinder, given the issues I laid out in my prior mails.
+>
+> My hope is that we can improve the regular unwinder or other code such that
+> this becomes moot. I'm aware of a few things we could try, but given it's very
+> easy to sink a lot of time and effort into this, I'd like to first get some
+> more details, as above.
 
-Add maintainers, SCM tree, files and directories for the new BCMBCA
-arch. Only add 47622 for this change and will update in the future
-when more SoCs are supported.
+Hi Mark,
 
-Signed-off-by: William Zhang <william.zhang@broadcom.com>
----
+I'm about to publish v3, where I'll include a detailed description of
+how I measured the performance.
 
-Changes for V2:
-    * Change Broadcom internal list from maintainer to reviewer
+Perhaps we see different performance numbers because you're using
+KVM-enabled VM on an Arm host and I'm using QEMU on x86-64 host.
+Although, it's suspicious that the difference is so drastic. I'll try
+to get my hands on some Arm hardware in the next few days and do the
+measurements there.
 
- MAINTAINERS | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+This new version also will not be making any changes to the entry
+code, as these changes add unwanted additional slowdown. That would be
+great, if you could check the performance impact of v3 with your
+setup.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 61d9f114c37f..382436f23c72 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3740,6 +3740,20 @@ F:	drivers/net/dsa/bcm_sf2*
- F:	include/linux/dsa/brcm.h
- F:	include/linux/platform_data/b53.h
- 
-+BROADCOM BCMBCA ARM ARCHITECTURE
-+M:	William Zhang <william.zhang@broadcom.com>
-+M:	Anand Gore <anand.gore@broadcom.com>
-+M:	Kursad Oney <kursad.oney@broadcom.com>
-+R:	Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Maintained
-+T:	git git://github.com/broadcom/stblinux.git
-+F:	Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
-+F:	arch/arm/boot/dts/bcm47622.dtsi
-+F:	arch/arm/boot/dts/bcm947622.dts
-+N:	bcmbca
-+N:	bcm[9]?47622
-+
- BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE
- M:	Nicolas Saenz Julienne <nsaenz@kernel.org>
- L:	bcm-kernel-feedback-list@broadcom.com
--- 
-2.17.1
-
-
---0000000000005ccb0705dc8e2ac8
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
-fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
-BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
-YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
-BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
-MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
-YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
-Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
-HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
-BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
-+EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
-abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
-ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
-W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
-1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
-MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
-VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
-SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKiL4jYb3YDJO5abzTnutLAm3mkd
-VsMPqTYxDKipB3vPMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
-MDQxMzE5MjcxN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
-AwQCATANBgkqhkiG9w0BAQEFAASCAQCqXVQZRF9ohucJ0pHVX4dviuGEY6oIsgrUPv4w+FaGWvWF
-9WGSTQvX03UNHlodmLrDuh48v7dvBPcbFfblQLPHdCKH2GzVouiPafTMDBMIQPy4/p14XpSHAoBP
-Sko8VeBYAifUjGybRxCNHGO9mgkwaN/fI+OVxm6fKuy/088GedsxcclTrwczArilx0Zi5rorJCEd
-GHrTENFHDyeacBBz8kCGSLtQxbJF/pOY/KuG/FjBnCAq4wg+Agtsm7ZWqfLVwMSuDhgNhjd7E119
-87ouFM3aZQa0x5bv8+6ip5PL32qpvnmSHUtqPyEYQJAkuc3k+iSais/EfM/HToun3n13
---0000000000005ccb0705dc8e2ac8--
+Thanks!
