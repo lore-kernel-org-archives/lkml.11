@@ -2,141 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE08C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B51C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiDMT4x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
+        id S237493AbiDMT45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 15:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238606AbiDMT4h (ORCPT
+        with ESMTP id S237447AbiDMT4i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:56:37 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783437B563
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:53:46 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id u19so5458414lff.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q/DBgAkv4OQEV7GLgkTJlWv+q3kLHi60Bd65fMkiVGg=;
-        b=dxlaLoqslihL0u5ALJQQNQLkyAJAatT6/BflQltbOe8/sf91WvaHNbi7GO1b9Fv7ym
-         eGx41ozm92iUi2qBs53105A6bIUDq03qjk/3IVzSMTq9V8X0glNvjMmX3ZXtjpTtmSaa
-         IGbV8DgLGUxm4m7Y3DonNhNx06/iV90eFeUS0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q/DBgAkv4OQEV7GLgkTJlWv+q3kLHi60Bd65fMkiVGg=;
-        b=b2VACvzvZQNsfz0TnXAzK14/tL2m8a00ckmKGNN3CHex6u4QX0SEecSSqXwJYjPqQX
-         FYW5hDxJpkfnnu8JlpNqPaC3D9HCa1H3zK6cBhfSMuen1Na4npCD5kl0gaAcFhlk4S1p
-         8Eqj+EzlYubbow7qH/bO2R3wVGAZzuhLEvNlo68QhtH/JSJFSuGuJm3zn70mbt0jKRJn
-         K+6HBnW+t+gRfCDlISLzXEXiv79sJ6glB5bLIUm/MBZoxMMaNwqwxKSlDKMiOjIxy8Ke
-         PJTWqYd3lM4yra0A/epsi3p6ggxJOl1uGnle2hZONaB4JVH+E37bKVjwMbrdaqQQPwxh
-         f97w==
-X-Gm-Message-State: AOAM530cVY85/Q4SFLAvXEvCjQHLgMg+qQyG9VHQ9MlEE1hdH8IbA9Qj
-        nP9aoVuOT7N8waZ89JfGIeB382++XvktiqJW
-X-Google-Smtp-Source: ABdhPJwoNVDW4F9tz17pPGrjyGYpnUES8L9ltDS++SOk6/JsMp4Esn805q2ZHYEwOUN2PYFCuz0ivA==
-X-Received: by 2002:a05:6512:3d08:b0:46b:a03f:6896 with SMTP id d8-20020a0565123d0800b0046ba03f6896mr13768385lfv.120.1649879624522;
-        Wed, 13 Apr 2022 12:53:44 -0700 (PDT)
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
-        by smtp.gmail.com with ESMTPSA id q14-20020a0565123a8e00b0044a7b26ae1dsm4232016lfu.109.2022.04.13.12.53.40
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 12:53:41 -0700 (PDT)
-Received: by mail-lf1-f42.google.com with SMTP id k5so5434498lfg.9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 12:53:40 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr28805493lfh.687.1649879620574; Wed, 13
- Apr 2022 12:53:40 -0700 (PDT)
+        Wed, 13 Apr 2022 15:56:38 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCF35D64D;
+        Wed, 13 Apr 2022 12:54:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649879650; x=1681415650;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ywh3+h3uP3qVZckj1zw7OyZyfOYOqj/A4ypO6SPBREQ=;
+  b=Z69EQVfjKplCq4/2agQdcyZP2raNi3Mc04kBnf+n7OcGMQ8awFRKKlE1
+   3fgBr33IxG3Cf4aAyFfcV6jxdaXIHIP+acbvBv654LhaWKmsnrsXexomc
+   wOU1bgZ9JmLQVCiXFWchaG2Iac6sfFygQqhZZtn8EOPCeHmLiS7S/VkTz
+   Sv6WQMeH9OqT/ZMEcQHTtW+Yb2eXBm4Y8K7MNUJdRh389QEbXp5w5Lqpb
+   GyG6midTzUzrXJ36ijuMDg7uUR/RAi5lHoIhzXySVN4/VKms9II/zr65b
+   V9fM4376+1qLwfy6kO9z6WQJ0vGwEAdrlr5OwMdAQvDZH/5MCTDEFJH4X
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,257,1643698800"; 
+   d="scan'208";a="152570440"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Apr 2022 12:54:09 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 13 Apr 2022 12:54:08 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 13 Apr 2022 12:54:06 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net] net: lan966x: Make sure to release ptp interrupt
+Date:   Wed, 13 Apr 2022 21:57:16 +0200
+Message-ID: <20220413195716.3796467-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <Yk8RGvF6ik34C6BO@arm.com> <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
- <Yk/6ts5sVDMDpKj3@arm.com> <Yk/8QExHlggU8KgC@gondor.apana.org.au>
- <YlVHSvkyUBXZPUr2@arm.com> <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
- <YlVOTsaTVkBOxthG@arm.com> <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
- <YlVxGAHHD/j6lW3c@arm.com> <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
- <YlaOIbSA7B/G9222@arm.com>
-In-Reply-To: <YlaOIbSA7B/G9222@arm.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 13 Apr 2022 09:53:24 -1000
-X-Gmail-Original-Message-ID: <CAHk-=wjr9-n7vHiVdm-L-KX4kXWyY45++8jenFA1QV5oc=yhZg@mail.gmail.com>
-Message-ID: <CAHk-=wjr9-n7vHiVdm-L-KX4kXWyY45++8jenFA1QV5oc=yhZg@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 10:47 PM Catalin Marinas
-<catalin.marinas@arm.com> wrote:
->
-> I agree. There is also an implicit expectation that the DMA API works on
-> kmalloc'ed buffers and that's what ARCH_DMA_MINALIGN is for (and the
-> dynamic arch_kmalloc_minalign() in this series). But the key point is
-> that the driver doesn't need to know the CPU cache topology, coherency,
-> the DMA API and kmalloc() take care of these.
+When the lan966x driver is removed make sure to remove also the ptp_irq
+IRQ.
 
-Honestly, I think it would probably be worth discussing the "kmalloc
-DMA alignment" issues.
+Fixes: e85a96e48e3309 ("net: lan966x: Add support for ptp interrupts")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-99.9% of kmalloc users don't want to do DMA.
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 958e55596b82..95830e3e2b1f 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -671,6 +671,9 @@ static void lan966x_cleanup_ports(struct lan966x *lan966x)
+ 		disable_irq(lan966x->ana_irq);
+ 		lan966x->ana_irq = -ENXIO;
+ 	}
++
++	if (lan966x->ptp_irq)
++		devm_free_irq(lan966x->dev, lan966x->ptp_irq, lan966x);
+ }
+ 
+ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+-- 
+2.33.0
 
-And there's actually a fair amount of small kmalloc for random stuff.
-Right now on my laptop, I have
-
-    kmalloc-8          16907  18432      8  512    1 : ...
-
-according to slabinfo, so almost 17 _thousand_ allocations of 8 bytes.
-
-It's all kinds of sad if those allocations need to be 64 bytes in size
-just because of some silly DMA alignment issue, when none of them want
-it.
-
-Yeah, yeah, wasting a megabyte of memory is "just a megabyte" these
-days. Which is crazy. It's literally memory that could have been used
-for something much more useful than just pure and utter waste.
-
-I think we could and should just say "people who actually require DMA
-accesses should say so at kmalloc time". We literally have that
-GFP_DMA and ZOME_DMA for various historical reasons, so we've been
-able to do that before.
-
-No, that historical GFP_DMA isn't what arm64 wants - it's the old
-crazy "legacy 16MB DMA" thing that ISA DMA used to have.
-
-But the basic issue was true then, and is true now - DMA allocations
-are fairly special, and should not be that hard to just mark as such.
-
-We could add a trivial wrapper function like
-
-     static void *dma_kmalloc(size_t size)
-     { return kmalloc(size | (ARCH_DMA_MINALIGN-1); }
-
-which now means that the size argument is guaranteed to be big enough
-(not not overflow to zero) that you get that aligned memory
-allocation.
-
-We could perhaps even have other special rules. Including really
-specific ones, like saying
-
- - allocations smaller than 32 bytes are not DMA coherent, because we pack them
-
-which would allow those small allocations to not pointlessly waste memory.
-
-I dunno. But it's ridiculous that arm64 wastes so much memory when
-it's approximately never needed.
-
-                 Linus
