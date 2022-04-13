@@ -2,98 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2640CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3890DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:49:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234152AbiDMXts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 19:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
+        id S236266AbiDMXwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 19:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiDMXtq (ORCPT
+        with ESMTP id S234416AbiDMXwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 19:49:46 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95904496BD;
-        Wed, 13 Apr 2022 16:47:22 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kdzln3Dtgz4xL3;
-        Thu, 14 Apr 2022 09:47:16 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649893641;
-        bh=qH/xSM14cxvQij1hFLVu+kiAPdsZvEdmpAYyPixvxek=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZfwxXHhRF2TT05px+iytAli/nFmDCzJld8e/jro6DGDbdc0Qr6kgvPb1nOoQXie0i
-         dekLtpC4yeJkOmjmDd2P86yM66vTe91YO5YMD5yzLyVilD8ymvTcD3q1wdgalRjbRP
-         MjVhSRwKCYmkAJrG6AoHMvGOY/qeYRHWauuXEgh1C3SNfZ1nS7c+DLLV5Ahexe84wH
-         vtf9oGXZ99zuGyPbivBLj3BvmVXirSsgsoymu300/NFCe5Ma4kkO5fZ1RVVekpdYOC
-         QVt/iz7liVhHO37DtuRP6oevZrLaAf0Z94n44URBv+ELZLvMxY2VAafyrs+PrASGzH
-         MK0nyvXnSSQ3g==
-Date:   Thu, 14 Apr 2022 09:47:15 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>
-Cc:     Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the drm-misc tree with the
- drm-misc-fixes tree
-Message-ID: <20220414094715.4c2e0127@canb.auug.org.au>
+        Wed, 13 Apr 2022 19:52:10 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1BF3DDD7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:49:47 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id s14-20020a17090a880e00b001caaf6d3dd1so7718897pjn.3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:49:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yIrx5BX8YdB8EIQrcc/E4jEhfb2e+QJVsGsaTmoT1E8=;
+        b=ZqB+cLOzPEvlgWlWMKH4T9JNuTSu2LBIw/kFcw48Q5/rlwtanZRPBi7mntQnHchUAh
+         OJBFpeGGBVXCkIGWBjlKLWk11KyB+eh9HLbyK7YxZPl33zN1kTcMX8Xa1O7VS5dYL17x
+         DMh28D/iIwPSk8r7bQgv8YNqRgLBAqloAyBnz9RmxWQBvApt+z33ELdpCe73A909Vqm/
+         L6Q+VKoe0TJoBLwouLn3p/CiC6PJOtNpjwFxxhJ5Q0tx7+Y67fzDZVOZ/pvrs7yMx8D/
+         cYmDr16tnj4mbk+637tt2ncpCoRM+Oa8diIw1Vi6p7oN8o0Oub1QkJRt5xHUyGaFOi2E
+         tdVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yIrx5BX8YdB8EIQrcc/E4jEhfb2e+QJVsGsaTmoT1E8=;
+        b=7WlvV28lGOKCXIfCQdjUoEdkiYhoacALy0cHCc0JVAIUaarxQpe4Jv0e3QkZ2heg/i
+         cYqFRFRj3lNLqFNnVQXJHjROlhW6MhNDO1a8rDs9wstTq6e7jpPeCeTXekfAB++OpU6f
+         HWd0ZxbWeLF/ATAN3QbwxAsPpAEcwem4xi8agaOOr4G2mfGAInWKyPKcdH5Z1EBc5c5O
+         xFgJ5rzN/1S3jRfc0z3kHs/sip/ys2WRjSuN/vvKUvMlUpf6XWZIbiNIpTSKzOtZptoW
+         +jnIigy6/7vv8/fM9DtLhqj7W9K6cmprrvm7WTexUgisipprjjLmA78WT1mm7n4fqGok
+         Ff8A==
+X-Gm-Message-State: AOAM533AaS9qmE5gmHfq0xU+yVkcFpCKS79hRZYh0pzPRoisxhCu0/YH
+        YQTDSCOdeLr36LULSh2sBFIjxq/51Zo=
+X-Google-Smtp-Source: ABdhPJzMM1qzarHQcw9uUUCNHGO1v1hp3hctUsRdC++zgLpbX9wFPoh6dvu8E9sxKG/GRJbBlZldbw==
+X-Received: by 2002:a17:90a:1c08:b0:1cd:474a:a4f8 with SMTP id s8-20020a17090a1c0800b001cd474aa4f8mr690612pjs.82.1649893787497;
+        Wed, 13 Apr 2022 16:49:47 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:400:e00:389b:6ba3:7cbd:d8d])
+        by smtp.gmail.com with ESMTPSA id d20-20020a056a00199400b005060849909esm197075pfl.176.2022.04.13.16.49.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 16:49:46 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-xtensa@linux-xtensa.org
+Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
+        Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH 1/3] xtensa: move asid_cache from fault.c to mmu.c
+Date:   Wed, 13 Apr 2022 16:49:28 -0700
+Message-Id: <20220413234930.1212335-2-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220413234930.1212335-1-jcmvbkbc@gmail.com>
+References: <20220413234930.1212335-1-jcmvbkbc@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/1Xpe14MVmARdV4iD3t4pUP/";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/1Xpe14MVmARdV4iD3t4pUP/
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+asid_cache is only useful with full MMU, but fault.c is also useful with
+MPU. Move asid_cache definition to MMU-specific source file.
 
-Hi all,
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+---
+ arch/xtensa/mm/fault.c | 1 -
+ arch/xtensa/mm/mmu.c   | 2 ++
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Today's linux-next merge of the drm-misc tree got a conflict in:
+diff --git a/arch/xtensa/mm/fault.c b/arch/xtensa/mm/fault.c
+index 06d0973a0d74..2a120c024334 100644
+--- a/arch/xtensa/mm/fault.c
++++ b/arch/xtensa/mm/fault.c
+@@ -21,7 +21,6 @@
+ #include <asm/cacheflush.h>
+ #include <asm/hardirq.h>
+ 
+-DEFINE_PER_CPU(unsigned long, asid_cache) = ASID_USER_FIRST;
+ void bad_page_fault(struct pt_regs*, unsigned long, int);
+ 
+ /*
+diff --git a/arch/xtensa/mm/mmu.c b/arch/xtensa/mm/mmu.c
+index 38acda4f04e8..92e158c69c10 100644
+--- a/arch/xtensa/mm/mmu.c
++++ b/arch/xtensa/mm/mmu.c
+@@ -18,6 +18,8 @@
+ #include <asm/initialize_mmu.h>
+ #include <asm/io.h>
+ 
++DEFINE_PER_CPU(unsigned long, asid_cache) = ASID_USER_FIRST;
++
+ #if defined(CONFIG_HIGHMEM)
+ static void * __init init_pmd(unsigned long vaddr, unsigned long n_pages)
+ {
+-- 
+2.30.2
 
-  drivers/gpu/drm/radeon/radeon_sync.c
-
-between commit:
-
-  022074918042 ("drm/radeon: fix logic inversion in radeon_sync_resv")
-
-from the drm-misc-fixes tree and commit:
-
-  7bc80a5462c3 ("dma-buf: add enum dma_resv_usage v4")
-
-from the drm-misc tree.
-
-I fixed it up (I just used the latter version) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/1Xpe14MVmARdV4iD3t4pUP/
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJXYQMACgkQAVBC80lX
-0GzMoAf9FKTF9iImNzKRO3UdcLsXrWTGX3GJJBDJXQvppCSODDFibUtrrx7Nh6PQ
-zWUHK0TWdkUMAtFR2R+hUHdzZp2hkTbNVQzU7DsZIJtP6V2/r122Hy2AVNT3u14/
-RBe8R/UflsTfvbnXmqTtCWQsvfw+TdHKHbtnDlOCAzxD7V7T7Q2mRMZL1R3/MhBa
-Vn4c9ml9AjN3glIETxv4b14zpzEtc7R11wbekjZ/Hjok0erw3RfBcO9g9nFLzTW/
-ao0t05QhF+TejMJTTbJfufbTw81FQZ6h/cqfTDRVrTkkJm84VMWBen6QlyhJ62DK
-xr/6oDOdXwKfegVRzBHrCUn939gqeA==
-=b4G8
------END PGP SIGNATURE-----
-
---Sig_/1Xpe14MVmARdV4iD3t4pUP/--
