@@ -2,141 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 828C3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236395AbiDMPJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 11:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
+        id S234734AbiDMPNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 11:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236359AbiDMPJY (ORCPT
+        with ESMTP id S232646AbiDMPNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 11:09:24 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B622DD59;
-        Wed, 13 Apr 2022 08:07:02 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id g21so2176245iom.13;
-        Wed, 13 Apr 2022 08:07:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=TuXEAXXN4FdSFvJmY2E4QvZOQcDvisndriIsWDy+9fM=;
-        b=GsB2Ev82NreMGIA8uvogn0/9XQwMfmY0tB/CqgJotJzPJcasMXnVVtFZV/Svy8sjJr
-         3TBiO6P8VfKQ/MvpvZqDAC9MmdbMWU+Af4nJm8FvYKhxHb8JwuNtKztNql7j6t3KgJGG
-         x3yHEvVBRXwkcv68HHNHy05m1+Fx3Vk6YO2mfHnZt413ma9wYxAq6EXvevDwzd751saF
-         B4y0Qz8EQRMCrON7tD8ZcSDg9SYB0elOygDtkJ1gDy2i4pwlq5IexWnH3knMd+3ucuMB
-         46r4hF0bFSpnlmnNboHGCzUbNpaJ+wWUyfOZIj8t/Glc2QK/TKdMQ0f+sLyFikryfC71
-         AHkQ==
+        Wed, 13 Apr 2022 11:13:10 -0400
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAEE3703D;
+        Wed, 13 Apr 2022 08:10:49 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2ec42eae76bso25664277b3.10;
+        Wed, 13 Apr 2022 08:10:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=TuXEAXXN4FdSFvJmY2E4QvZOQcDvisndriIsWDy+9fM=;
-        b=HGdvp8lWGpsB87JmZg6xq56qS8ln8hoGVuyZiw42XU7Nt0X+bX23P1NV6mCSs2+QcT
-         iuE/TcsOu5g6V10yd13tbjiwO51fPz8gR+rPSlMRGamtbWoo2odhGgrR+f0P1eUiaiP2
-         wO8rXHBQnJgM9oeoCNlttYnWsiMRRGqk1lL25WDpifnPl4vm8e8NIETKB7Bx0hGFBaGQ
-         4bAEILgXUWBKb2pCbtkAED4v7N+j5uWaTfPgWbIT0AhpJalmq2JFkjn16Tm+zF+E0gs4
-         8z/aNcA3N0ieYLfkPCqmKV2jvYplRjLxOvl3yvMoBx1K1FAEerEUkN0JRubWpO/GvOOh
-         SIHw==
-X-Gm-Message-State: AOAM530K4XZeZKBveJvqCUrSa6+I2m/pF0qzj2MFR0YbUGrj+Jt/hay+
-        9Q8Uet4CSN18nQof8aXPjYGb94CB44/edlGHdlE=
-X-Google-Smtp-Source: ABdhPJyZJj8/LyhFi/9KtP4n919c6CzmL+rXMvY3/qS+0Hkx0Bp9k/E4yK/B83BABc3bRgsV1lBl6u764Dl9PPlX3EE=
-X-Received: by 2002:a6b:f60d:0:b0:645:b224:8d45 with SMTP id
- n13-20020a6bf60d000000b00645b2248d45mr18223544ioh.131.1649862421930; Wed, 13
- Apr 2022 08:07:01 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OM0A/zhk4eZOfp6idkUfQPzZxfIIhWLVD8InF0v8XWU=;
+        b=dta5XXS38bwMkGjSwltpbO3K+p5WhA8wBEdybwubkokDddP5k2r/E51G5X43MjrRnN
+         Tz751vcwKuWw0xHpFNBMkvL9qPksgp0F7L7QhucjtcJfCW28teYLsUJRpckZhAOtl0dz
+         L26nS5wOSN5mRce/HHuFNL1tGy8vHsYsFv0Sm9lbyzMXind+pByfgHtSTH2LTl/Sb2q8
+         8wClDgE3+q5R4nd24qIzRHvpi9pCs712vVHRKup12aYLo2qJ3+q1fcmiH5XnLeejACTj
+         YjDsUiTrPMQt7HMHHjojTpcpeWiXxbhpvegBOBNFvA6NZb9MBKEVDiCFUQ8h1NNM4n3S
+         1XdQ==
+X-Gm-Message-State: AOAM530+j9VzxyBrb2mafT8VlhvWmJjZOESfSBbyN2bWK2+SjTWb56Fk
+        vc6bZgYsFpKMQ1frg4SGYBVfwEl6lrvcKPzB2Hc=
+X-Google-Smtp-Source: ABdhPJwGPR/D1mtWRPhZfR2DlyIP6TE1LD1mgdSSG/bGQKHso98+NkXb7AxOehIlCJTNvUHG9mX/yVboeKpjK/7AqYY=
+X-Received: by 2002:a81:b89:0:b0:2eb:e9e6:470a with SMTP id
+ 131-20020a810b89000000b002ebe9e6470amr21087158ywl.7.1649862648292; Wed, 13
+ Apr 2022 08:10:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220411154210.1870008-1-linux@roeck-us.net> <afd746404a74657a288a9272bf0c419c027dbd06.camel@intel.com>
-In-Reply-To: <afd746404a74657a288a9272bf0c419c027dbd06.camel@intel.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Wed, 13 Apr 2022 17:06:26 +0200
-Message-ID: <CA+icZUVEfKcGi7ME3hoyinz2VQxLKhCXgwDA2K3AB7MEK-bveQ@mail.gmail.com>
-Subject: Re: [PATCH] iwlwifi: iwl-dbg: Use del_timer_sync() before freeing
-To:     "Greenman, Gregory" <gregory.greenman@intel.com>
-Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "linux@roeck-us.net" <linux@roeck-us.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "Berg, Johannes" <johannes.berg@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Coelho, Luciano" <luciano.coelho@intel.com>
+References: <1648807295-31682-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1648807295-31682-1-git-send-email-baihaowen@meizu.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 13 Apr 2022 17:10:36 +0200
+Message-ID: <CAJZ5v0j3DSh7xrWhThmDNR-Rpevk04Q=vdSbqbiy-pVo2YFfBA@mail.gmail.com>
+Subject: Re: [PATCH] PM: hibernate: don't mark comment as kernel-doc
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 11:56 AM Greenman, Gregory
-<gregory.greenman@intel.com> wrote:
+On Fri, Apr 1, 2022 at 12:01 PM Haowen Bai <baihaowen@meizu.com> wrote:
 >
+> Change the comment to a normal (non-kernel-doc) comment to avoid
+> these kernel-doc warnings:
 >
-> On Mon, 2022-04-11 at 08:42 -0700, Guenter Roeck wrote:
-> > In Chrome OS, a large number of crashes is observed due to corrupted
-> > timer
-> > lists. Steven Rostedt pointed out that this usually happens when a
-> > timer
-> > is freed while still active, and that the problem is often triggered
-> > by code calling del_timer() instead of del_timer_sync() just before
-> > freeing.
-> >
-> > Steven also identified the iwlwifi driver as one of the possible
-> > culprits
-> > since it does exactly that.
-> >
-> > Reported-by: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Johannes Berg <johannes.berg@intel.com>
-> > Cc: Gregory Greenman <gregory.greenman@intel.com>
-> > Fixes: 60e8abd9d3e91 ("iwlwifi: dbg_ini: add periodic trigger new API
-> > support")
-> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > ---
-> > v1 (from RFC):
-> >     Removed Shahar S Matityahu from Cc: and added Gregory Greenman.
-> >     No functional change.
-> >
-> > I thought about the need to add a mutex to protect the timer list,
-> > but
-> > I convinced myself that it is not necessary because the code adding
-> > the timer list and the code removing it should never be never
-> > executed
-> > in parallel.
-> >
-> >  drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-> > b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-> > index 866a33f49915..3237d4b528b5 100644
-> > --- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-> > +++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-> > @@ -371,7 +371,7 @@ void iwl_dbg_tlv_del_timers(struct iwl_trans
-> > *trans)
-> >         struct iwl_dbg_tlv_timer_node *node, *tmp;
-> >
-> >         list_for_each_entry_safe(node, tmp, timer_list, list) {
-> > -               del_timer(&node->timer);
-> > +               del_timer_sync(&node->timer);
-> >                 list_del(&node->list);
-> >                 kfree(node);
-> >         }
+> kernel/power/snapshot.c:335: warning: This comment starts with '/**', but
+>  isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>  * Data types related to memory bitmaps.
 >
-> Hi Kalle,
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>  kernel/power/snapshot.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Can you please pick it up to wireless-drivers for the next rc?
-> It is an important fix.
-> Luca has already assigned it to you in patchwork.
+> diff --git a/kernel/power/snapshot.c b/kernel/power/snapshot.c
+> index 330d49937692..2a4d7d40161d 100644
+> --- a/kernel/power/snapshot.c
+> +++ b/kernel/power/snapshot.c
+> @@ -326,7 +326,7 @@ static void *chain_alloc(struct chain_allocator *ca, unsigned int size)
+>         return ret;
+>  }
 >
-> Thanks!
->
-> Acked-by: Gregory Greenman <gregory.greenman@intel.com>
+> -/**
+> +/*
+>   * Data types related to memory bitmaps.
+>   *
+>   * Memory bitmap is a structure consisting of many linked lists of
+> --
 
-I have tested this on top of Linux v5.17.3-rc1.
-
-Feel free to add my...
-
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Linux v5.17.3-rc1 and
-Debian LLVM-14
-
-- Sedat -
+Applied as 5.19 material, thanks!
