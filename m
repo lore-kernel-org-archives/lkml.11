@@ -2,165 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BDF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 15:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236592AbiDMPkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 11:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45710 "EHLO
+        id S236603AbiDMPlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 11:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236594AbiDMPkR (ORCPT
+        with ESMTP id S235008AbiDMPlF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 11:40:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF590654BE
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 08:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649864275;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sLekYFBHk6vmdPrvSejYiiFxxEyq7KZDxaB/jClyyLg=;
-        b=U1rp9SRehMSqtuEyE9+YpEohnsJ7lrcXVUrvfTfVz/QSPysQOLk/RMnAwIrHJxBYvFkbSj
-        69fsDC64R7Llz5xgl9nvYVJhi0uvQlJeUzfmcculFcjma2Mf0FRuVH8RYGyjc54ro5Oj13
-        4GUF1v45rCdq8WBQLgEGGKKK+pBTxAo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-537-HI2ChDyCPO-K0g7Y-EmT8A-1; Wed, 13 Apr 2022 11:37:50 -0400
-X-MC-Unique: HI2ChDyCPO-K0g7Y-EmT8A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0ECAB1014A6A;
-        Wed, 13 Apr 2022 15:37:50 +0000 (UTC)
-Received: from horn.redhat.com (unknown [10.40.193.222])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 524AC40D1B98;
-        Wed, 13 Apr 2022 15:37:47 +0000 (UTC)
-From:   Petr Oros <poros@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        jacob.e.keller@intel.com, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org, ivecera@redhat.com,
-        pmenzel@molgen.mpg.de, alexandr.lobakin@intel.com
-Subject: [PATCH v2] ice: wait 5 s for EMP reset after firmware flash
-Date:   Wed, 13 Apr 2022 17:37:45 +0200
-Message-Id: <20220413153745.1125674-1-poros@redhat.com>
-In-Reply-To: <20220412102753.670867-1-poros@redhat.com>
-References: <20220412102753.670867-1-poros@redhat.com>
+        Wed, 13 Apr 2022 11:41:05 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F17A654BA;
+        Wed, 13 Apr 2022 08:38:44 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso2626120pjh.3;
+        Wed, 13 Apr 2022 08:38:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0yec1enjCeHuEsZdYQYVsHUxCAVmB/vYXKs5nIk3Z50=;
+        b=ZFQXu9DcWOTea3sc/KQ69KmeTgc9qyoWVjUPjhyUL5lQt4MaZjgPkFwgN27Dq/Dy1J
+         k7+KzCI6nHn+Nn3Qw0TX17u0QBfm/MiWDuStpHBU1OckKU4O6Do6AwtB2EMVZQJgASkX
+         xP7tA0ZlqLSYzRDXifHoNjMHWnoPjvHUdY/zmnSyUAA4ZJitlAkO6XmE2y+Q26Nkl04z
+         kaqWoEjXVoliO0cwpbz7jXi8aeCsuQcpwZAHDX1AKC4t0b3FzuX99egojY8eDkgMsf/Q
+         Pl1ioYOhE7ai3LOcwOlT4QKT8doeJiAEUTv++1D5GcLq/Qdh84GE0wxEzrWAxdsisZlT
+         EZKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0yec1enjCeHuEsZdYQYVsHUxCAVmB/vYXKs5nIk3Z50=;
+        b=oCtVerZPjDYG7dLz901qkLbOtYd0WjuXs/LbswDlDFwcFPywoTApgeyYXSfUQyBJxv
+         G8WSKtWNq9Ur3+YsYD5dJQzNjMqbf6pCvCFqIZQySAjZ2Fdh0wBW5z9WAkp1mVrtS5SH
+         BYvcN04IFwLhoWOfh1pemwx2lwFyaI2PcK33NIXpjXXpyeTp8Z8LFrAQIvieH6W88wte
+         zHwbNtMlOyO/psllFPNsYWyCSpu34liS/eQeRUh52TeSZqp4xjI+0BQfIo6KbTbTMCeK
+         k9S96slP/nEE79XvutH9owXxw5r9DwbJuwsajT9cpxEvAEG/GseZdxqGGKb6y0aAWSFT
+         rxEA==
+X-Gm-Message-State: AOAM531h3zJzkxP4s8Pyzz1CH18x3JTnN+DEnK9qvVz7pD7P9DsQ9fP+
+        WrBuABHK0AiUC9J4oW3ES8I=
+X-Google-Smtp-Source: ABdhPJxoxsrxUe08aoYeorQsNSnROQ73dUbYAK4djWPhjhDsp0KohsY7uvEpTZmrwngO1SNCXq/ajA==
+X-Received: by 2002:a17:90b:1e4d:b0:1cb:ae06:2c4 with SMTP id pi13-20020a17090b1e4d00b001cbae0602c4mr11587399pjb.12.1649864323806;
+        Wed, 13 Apr 2022 08:38:43 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id gt14-20020a17090af2ce00b001c701e0a129sm3412190pjb.38.2022.04.13.08.38.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 08:38:43 -0700 (PDT)
+Message-ID: <e9c81a3d-d03a-5b13-ee14-9ba6103093f7@gmail.com>
+Date:   Wed, 13 Apr 2022 08:38:41 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 1/1] firmware: tee_bnxt: Use UUID API for exporting the
+ UUID
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Allen Pais <apais@linux.microsoft.com>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220412113250.57997-1-andriy.shevchenko@linux.intel.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220412113250.57997-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We need to wait 5 s for EMP reset after firmware flash. Code was extracted
-from OOT driver (ice v1.8.3 downloaded from sourceforge). Without this
-wait, fw_activate let card in inconsistent state and recoverable only
-by second flash/activate. Flash was tested on these fw's:
-From -> To
- 3.00 -> 3.10/3.20
- 3.10 -> 3.00/3.20
- 3.20 -> 3.00/3.10
 
-Reproducer:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
 
-dmesg after flash:
-[   55.120788] ice: Copyright (c) 2018, Intel Corporation.
-[   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
-[   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
-[   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
-[   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
-[   55.647348] ice 0000:ca:00.0: PTP init successful
-[   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
-[   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
-[   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
-[   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
-Reboot doesn’t help, only second flash/activate with OOT or patched
-driver put card back in consistent state.
+On 4/12/2022 4:32 AM, Andy Shevchenko wrote:
+> There is export_uuid() function which exports uuid_t to the u8 array.
+> Use it instead of open coding variant.
+> 
+> This allows to hide the uuid_t internals.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> v3: rebased on the latest vanilla, added Andrew since it has no move for 1y+
 
-After patch:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
+I don't think this is going to be picked up unless we designate a entry 
+in the MAINTAINERS file, I don't mind taking this via the Broadcom ARM 
+SoCs pull request if this does not move.
 
-v2 changes:
-- fixed format issues
-- added info about fw and OOT driver versions
-- added time in the commit message summary
-- appended the unit to the macro name
+>   drivers/firmware/broadcom/tee_bnxt_fw.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/firmware/broadcom/tee_bnxt_fw.c b/drivers/firmware/broadcom/tee_bnxt_fw.c
+> index a5bf4c3f6dc7..40e3183a3d11 100644
+> --- a/drivers/firmware/broadcom/tee_bnxt_fw.c
+> +++ b/drivers/firmware/broadcom/tee_bnxt_fw.c
+> @@ -197,7 +197,7 @@ static int tee_bnxt_fw_probe(struct device *dev)
+>   		return -ENODEV;
+>   
+>   	/* Open session with Bnxt load Trusted App */
+> -	memcpy(sess_arg.uuid, bnxt_device->id.uuid.b, TEE_IOCTL_UUID_LEN);
+> +	export_uuid(sess_arg.uuid, &bnxt_device->id.uuid);
+>   	sess_arg.clnt_login = TEE_IOCTL_LOGIN_PUBLIC;
+>   	sess_arg.num_params = 0;
+>   
 
-Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
-Signed-off-by: Petr Oros <poros@redhat.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index d768925785ca79..38825ed2ecd1de 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -6931,12 +6931,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 
- 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
- 
-+#define ICE_EMP_RESET_SLEEP_MS 5000
- 	if (reset_type == ICE_RESET_EMPR) {
- 		/* If an EMP reset has occurred, any previously pending flash
- 		 * update will have completed. We no longer know whether or
- 		 * not the NVM update EMP reset is restricted.
- 		 */
- 		pf->fw_emp_reset_disabled = false;
-+
-+		msleep(ICE_EMP_RESET_SLEEP_MS);
- 	}
- 
- 	err = ice_init_all_ctrlq(hw);
 -- 
-2.35.1
-
+Florian
