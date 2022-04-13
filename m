@@ -2,92 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07422C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 11:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235313AbiDMLwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 07:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
+        id S233841AbiDML45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 07:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235314AbiDMLwh (ORCPT
+        with ESMTP id S232729AbiDML4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 07:52:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4F42DA96;
-        Wed, 13 Apr 2022 04:50:16 -0700 (PDT)
+        Wed, 13 Apr 2022 07:56:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852712A24A;
+        Wed, 13 Apr 2022 04:54:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5365061DF5;
-        Wed, 13 Apr 2022 11:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A5B25C385A6;
-        Wed, 13 Apr 2022 11:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649850615;
-        bh=MQBp0boSDnHBIUAmB9tPj/kkhCcJGqqMg3aBm1m2UYw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mDeRYCbsh//1wJYEKAD+oqTKsQdBCZonb7FAG5sw45BWIRlVDoU7WWhG10IpU9pce
-         LUL8hUBJ2v3d7l9xIJ68lthRjbOeiIBSkIsNduc2qF/eBCC1cL4b8X1feNdwJSAzb/
-         HYaZ4lNdtD65VMSbGjnPGGVKIsD14IocpmupgPz/IGwRObo7LpHaNqjB5MQeEjxytd
-         gNBkLYibhip2oa0lhaZxTzzHw4PNy6iKT9GXql3P6yiDB+rwzNGUGHhWNBkiIZcJ7H
-         n25xCVzaKkJnMNwR1Cpsa5iMKHFIR87QnQ0bTO8qsqcpm3KRiwLu6RyIHWT4gkB5tQ
-         NsR+5kcXCXD+w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8A19AE73CC8;
-        Wed, 13 Apr 2022 11:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F4F2B82288;
+        Wed, 13 Apr 2022 11:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3665C385A3;
+        Wed, 13 Apr 2022 11:54:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="I24BDt43"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649850865;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Syo5gf48g80rVSQvZPt751gQBfMbjfV+Pcog5nChNyY=;
+        b=I24BDt43uFrMKfHLaa3LqTNbmq29rFHJtUSqfd2IBpVMAS8hwKwxp1x+2z289sLn9xIZri
+        aRjISg9muRb3oVmWw2YEhAfoZGSLf6ndYbD2gygbm9q9BStKgkYMjpI+WyC1+vCfswcLMU
+        YfOZ10ZnCtEU7uXWC0RqOl1kTrVw5XI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 832259f5 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 13 Apr 2022 11:54:25 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        tglx@linutronix.de, arnd@arndb.de
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, x86@kernel.org,
+        linux-xtensa@linux-xtensa.org
+Subject: [PATCH v4 00/11] archs/random: fallback to best raw ktime when no cycle counter
+Date:   Wed, 13 Apr 2022 13:54:00 +0200
+Message-Id: <20220413115411.21489-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/3] net: ethernet: ti: enable bc/mc storm
- prevention support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164985061556.24768.770404239682926455.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Apr 2022 11:50:15 +0000
-References: <20220412102929.30719-1-grygorii.strashko@ti.com>
-In-Reply-To: <20220412102929.30719-1-grygorii.strashko@ti.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, kishon@ti.com, vigneshr@ti.com,
-        linux-omap@vger.kernel.org, tony@atomide.com, andrew@lunn.ch,
-        vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi folks,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+The RNG uses a function called random_get_entropy() basically anytime
+that it needs to timestamp an event. For example, an interrupt comes in,
+and we mix a random_get_entropy() into the entropy pool somehow.
+Somebody mashes their keyboard or moves their mouse around? We mix a
+random_get_entropy() into the entropy pool. It's one of the main
+varieties of input.
 
-On Tue, 12 Apr 2022 13:29:26 +0300 you wrote:
-> Hi
-> 
-> This series first adds supports for the ALE feature to rate limit number ingress
-> broadcast(BC)/multicast(MC) packets per/sec which main purpose is BC/MC storm
-> prevention.
-> 
-> And then enables corresponding support for ingress broadcast(BC)/multicast(MC)
-> packets rate limiting for TI CPSW switchdev and AM65x/J221E CPSW_NUSS drivers by
-> implementing HW offload for simple tc-flower with policer action with matches
-> on dst_mac/mask:
->  - ff:ff:ff:ff:ff:ff/ff:ff:ff:ff:ff:ff has to be used for BC packets rate
-> limiting (exact match)
->  - 01:00:00:00:00:00/01:00:00:00:00:00 fixed value has to be used for MC
-> packets rate limiting
-> 
-> [...]
+Unfortunately, it's always 0 on a few platforms. The RNG has accumulated
+various hacks to deal with this, but in general it's not great. Surely
+we can do better than 0. In fact, *anything* that's not the same exact
+value all the time would be better than 0. Even a counter that
+increments once per hour would be better than 0! I think you get the
+idea.
 
-Here is the summary with links:
-  - [net-next,v3,1/3] drivers: net: cpsw: ale: add broadcast/multicast rate limit support
-    https://git.kernel.org/netdev/net-next/c/e3a5e33fae99
-  - [net-next,v3,2/3] net: ethernet: ti: am65-cpsw: enable bc/mc storm prevention support
-    https://git.kernel.org/netdev/net-next/c/5ec836be11b3
-  - [net-next,v3,3/3] net: ethernet: ti: cpsw_new: enable bc/mc storm prevention support
-    https://git.kernel.org/netdev/net-next/c/127c9e970f59
+On most platforms, random_get_entropy() is aliased to get_cycles(),
+which makes sense for platforms where get_cycles() is defined. RDTSC,
+for example, has all the characteristics we care about for this
+function: it's fast to acquire (i.e. acceptable in an irq handler),
+pretty high precision, available, forms a 2-monotone distribution, etc.
+But for platforms without that, what is the next best thing?
 
-You are awesome, thank you!
+Sometimes the next best thing is architecture-defined. For example,
+really old MIPS has the CP0 random register, which isn't a cycle
+counter, but is at least something. However, some platforms don't even
+have an architecture-defined fallback.
+
+Fortunately, the timekeeping subsystem has already solved this problem
+of trying to determine what the least bad clock is on constrained
+systems, falling back to jiffies in the worst case. By exporting the raw
+clock, we can get a decent fallback function for when there's no cycle
+counter or architecture-specific function.
+
+This series makes the RNG more useful on: m68k, RISC-V, MIPS, ARM32,
+NIOS II, SPARC32, Xtensa, and Usermode Linux. Previously these platforms
+would, in certain circumstances, but out of luck with regards to having
+any type of event timestamping source in the RNG.
+
+Finally, note that this series isn't about "jitter entropy" or other
+ways of initializing the RNG. That's a different topic for a different
+thread. Please don't let this discussion veer off into that. Here, I'm
+just trying to find a good fallback counter/timer for platforms without
+get_cycles(), a question with limited scope.
+
+If this (or a future revision) looks good to you all and receives the
+requisite acks, my plan was to take these through the random.git tree
+for 5.19, so that I can then build on top of it.
+
+Thanks,
+Jason
+
+Changes v3->v4:
+- Use EXPORT_SYMBOL_GPL instead of EXPORT_SYMBOL.
+
+Changes v2->v3:
+- Name the fallback function random_get_entropy_fallback(), so that it
+  can be changed out as needed.
+- Include header with prototype in timekeeping.c to avoid compiler
+  warning.
+- Export fallback function symbol.
+
+Changes v1->v2:
+- Use ktime_read_raw_clock() instead of sched_clock(), per Thomas'
+  suggestion.
+- Drop arm64 change.
+- Cleanup header inclusion ordering problem.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Chris Zankel <chris@zankel.net>
+Cc: Max Filippov <jcmvbkbc@gmail.com>
+Cc: John Stultz <john.stultz@linaro.org>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: Dinh Nguyen <dinguyen@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-um@lists.infradead.org
+Cc: x86@kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+
+Jason A. Donenfeld (11):
+  timekeeping: add raw clock fallback for random_get_entropy()
+  m68k: use fallback for random_get_entropy() instead of zero
+  riscv: use fallback for random_get_entropy() instead of zero
+  mips: use fallback for random_get_entropy() instead of zero
+  arm: use fallback for random_get_entropy() instead of zero
+  nios2: use fallback for random_get_entropy() instead of zero
+  x86: use fallback for random_get_entropy() instead of zero
+  um: use fallback for random_get_entropy() instead of zero
+  sparc: use fallback for random_get_entropy() instead of zero
+  xtensa: use fallback for random_get_entropy() instead of zero
+  random: insist on random_get_entropy() existing in order to simplify
+
+ arch/arm/include/asm/timex.h      |  1 +
+ arch/m68k/include/asm/timex.h     |  2 +-
+ arch/mips/include/asm/timex.h     |  2 +-
+ arch/nios2/include/asm/timex.h    |  2 +
+ arch/riscv/include/asm/timex.h    |  2 +-
+ arch/sparc/include/asm/timex_32.h |  4 +-
+ arch/um/include/asm/timex.h       |  9 +---
+ arch/x86/include/asm/tsc.h        | 10 ++++
+ arch/xtensa/include/asm/timex.h   |  6 +--
+ drivers/char/random.c             | 87 ++++++++++---------------------
+ include/linux/timex.h             |  8 +++
+ kernel/time/timekeeping.c         | 10 ++++
+ 12 files changed, 67 insertions(+), 76 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
