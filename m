@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B198AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45672C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 09:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234270AbiDMJLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 05:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
+        id S234273AbiDMJLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 05:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbiDMJLI (ORCPT
+        with ESMTP id S229864AbiDMJLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 05:11:08 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC06527F4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:08:44 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id t1so1650928wra.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:08:44 -0700 (PDT)
+        Wed, 13 Apr 2022 05:11:42 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCA7FC3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:09:20 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id i20so1609329wrb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 02:09:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=vrull.eu; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=o4zB36RMxDLunDbuld3ECmBOvmX9u3/GDy+FlEXNdz0=;
-        b=WBv+T+YkswybocW2g4FPyJnWFtpRidF6EP2r6rxboU8nbVYzGUqoMl8jJO/hBntOLj
-         GAZ4kDsNpSWpNJtm7UXMM/i08CeaxaLnYAr3KR4e5JNGeOQwskj3xjlclb+vvoG7jL0S
-         AAZBPNwh96CNpWCb4BC++xFjtGlW97PMQ5oPHr6QmcZoi4O7UsaV6T2dqb5hA+Q3takV
-         Z9ZXfS5qzKsFpCgAdFht/JYMzRtsacs/2nAMasI9HCXhSwjBVNB5RpW8EW3zSx8yuDdA
-         jDj/gAVfDeeq03a/YsvT0A0b3BnaN4g94s0ACILcuCQxruWVvUXc5YbO4Mpsh0rCRKBT
-         jK9A==
+        bh=n2RfiU2yQ6Q5lZlNdTxAqM838LrNlHbSns2UR/xnZyg=;
+        b=Bv9hcFImSBg1Wy9cSJnbpSHCywcPKdXI4iis2Lx7CwApVkjO4RXQVhuhKO8Vm5Yv2D
+         0ziSbEulKjoblVYKI4v00wh69NZC4DAkXpL+oizYx61S3MRO6TmfUCfDpg/p4DbJB1Cz
+         n3xK6ap0qp/GdBPdhznXce1Lkba/bQOSfLPQeS15qf0aYBgu6zz80qCoYI8St/DhjbM5
+         hXZawCoOCGnMyoivcSIGTbHcrQsPAwbslEIZaQj2CTmm/UG2/gQtl2/aYFo8Oti43GVX
+         HgkgDF9HtPhMRUvZHFnDSfonwNp4GXhEjUaSMwsEfrxBEnKMB5h3fvzRqnJ9Ks0K6Yrt
+         0ypQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=o4zB36RMxDLunDbuld3ECmBOvmX9u3/GDy+FlEXNdz0=;
-        b=MpZH8IjGwXsGW9DrOLTFtFwsKYO36/Topw9Yy8GMyRXZ0x/M9LoHXsbCL61qLMHciS
-         jif+wtP0f1FuoUTXWGTTE6JrgCr/6ukqzeMQD7h+6z/iaOEkLdvmiH6e2ULGEqRTd17H
-         dy6piy+RnWdCzToyn43xE7oLRI+F9k7RnbcX3B5Fp3gtW8/oBDtE+gzrKz0nvuu2c9tY
-         oNBhDWVmLzNLhZPY+3MfOiJQbw4hg08UVfKKsiHnau4nKxpgyGQIh85rYnqziAECbxf0
-         fzsgxvkyUh3BB0d7rPCWuDoJY+2OmeZhVNQns5Hz585DQd7LbNR2ftbJI38AqjFWxPJ/
-         UR3g==
-X-Gm-Message-State: AOAM530q42WfIy6tTjLF/s9C4aL/m1SGHUqk9Ys9sAuZExisC8MxahoY
-        W3doILjiWm3UaEeyBF27XGA/D4NE2qoizA71L4zF2g==
-X-Google-Smtp-Source: ABdhPJxphYtH1eV30Zzzy4z1n3y2xcF+U98AkSimcSUucdFFV8yGUwAx4BgW3gX5+6fnO1yMv0gpGqwNaoP7rRZX1Xc=
-X-Received: by 2002:a05:6000:18e:b0:207:a221:302c with SMTP id
- p14-20020a056000018e00b00207a221302cmr14327494wrx.120.1649840923258; Wed, 13
- Apr 2022 02:08:43 -0700 (PDT)
+        bh=n2RfiU2yQ6Q5lZlNdTxAqM838LrNlHbSns2UR/xnZyg=;
+        b=WzyVHFMpmUoJZSYmOerV77uTMzqUG/LJpiLaGyC2HoPft26lu5nPu/ApdHJslmCTI/
+         NPl6YAPV1t99Nl1TUXoPZ+3v7Y1Gb7j0GkGd5WW1LUhKTltSSBOTQ58VfNIW9rSwlGHQ
+         wP3MFWbjjoNtuSnSHyNhQKeJe6JTqbDez0Xig0A5NykRTLtqoE0nbPmwiB2yujZMtCLS
+         mQHZSsqGFCCWTeeTNBzR7b56xL7SynVqq3Lz65vpwTlhW8qMnd7xTZTeHMae3fDNZ/T6
+         IfsIoM6LU5XR84OByIga5jYrk2RzcUQiggrTmoEWKn9TjPbldzJo+TyDzv/smgdl1xHO
+         nFuQ==
+X-Gm-Message-State: AOAM5325UCmIFnpDd2OHeApCOdBaugOomx24OpG8MolivUvS+63QcUAU
+        IXnRObadRe3kDSHWgX825RSgpeVorA5Kq6BxXE/IPw==
+X-Google-Smtp-Source: ABdhPJzJWfeDgw9z8zOfbk5VeVHE1qpmguwgSezKzsXwCVMGKLhcOhgFUMawAcm9xUFFN0C4OvgnSkf7iyasGSnP80M=
+X-Received: by 2002:adf:de81:0:b0:207:a65c:d895 with SMTP id
+ w1-20020adfde81000000b00207a65cd895mr11352594wrl.647.1649840959334; Wed, 13
+ Apr 2022 02:09:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220413030307.133807-1-heiko@sntech.de> <20220413030307.133807-6-heiko@sntech.de>
-In-Reply-To: <20220413030307.133807-6-heiko@sntech.de>
+References: <20220413030307.133807-1-heiko@sntech.de> <20220413030307.133807-7-heiko@sntech.de>
+In-Reply-To: <20220413030307.133807-7-heiko@sntech.de>
 From:   Philipp Tomsich <philipp.tomsich@vrull.eu>
-Date:   Wed, 13 Apr 2022 11:08:31 +0200
-Message-ID: <CAAeLtUDOhmUmp+XODm9Y1DFHKPEMXbH018qYODBWMd3gOFg-fg@mail.gmail.com>
-Subject: Re: [PATCH v9 05/12] riscv: extend concatenated alternatives-lines to
- the same length
+Date:   Wed, 13 Apr 2022 11:09:07 +0200
+Message-ID: <CAAeLtUCTpfnVM_e4vgYwpBDjbN24Vj-iZY8Nne6qLNTy9UeAEA@mail.gmail.com>
+Subject: Re: [PATCH v9 06/12] riscv: prevent compressed instructions in alternatives
 To:     Heiko Stuebner <heiko@sntech.de>
 Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
         aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
@@ -71,12 +70,20 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Wed, 13 Apr 2022 at 05:03, Heiko Stuebner <heiko@sntech.de> wrote:
 >
-> ALT_NEW_CONTENT already uses same-length assembler lines, so
-> extend this to the other elements as well.
+> Instructions are opportunistically compressed by the RISC-V assembler
+> when possible, but in alternatives-blocks both the old and new content
+> need to be the same size, so having the toolchain do somewhat random
+> optimizations will cause strange side-effects like
+> "attempt to move .org backwards" compile-time errors.
 >
-> This makes it more readable when these elements need to be extended
-> in the future.
+> Already a simple "and" used in alternatives assembly will cause these
+> mismatched code sizes.
+>
+> So prevent compressed instructions to be generated in alternatives-
+> code and use option-push and -pop to only limit this to the relevant
+> code blocks
 >
 > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 
 Reviewed-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
