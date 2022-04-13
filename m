@@ -2,106 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13770C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 19:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 20:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbiDMT67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 15:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S237080AbiDMUDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 16:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232067AbiDMT65 (ORCPT
+        with ESMTP id S230141AbiDMUDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 15:58:57 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0DA60AB2;
-        Wed, 13 Apr 2022 12:56:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=O6WqLRXrVlqDetuLF1Pm12GQvG6RBtczG4mwC7noCkE=; b=EdKKqzak+ppSChEiXSXMyoYkVm
-        U5e5DX0pbpkuey1aDyBbO9x5HZh+d/SfiLmDDIDaTig/+yyJuUtb5Ntz3CvRWGjbTns14m6KiihP+
-        BxXVOiNB/hCoOYtQ+chcWYie+pSqTBu8x6aSG7QwzKtgtYb85dHHGDklTWVNfMUKxDshxH5B6cdKX
-        cZDEkgzMNbh7GkT26Xnwm/r3EefkmDspr4I0RyyKFdgGeLGZLvuzpuP2Tfx2FjFllc20QWuUj0xKt
-        9HTpHHVaQo/VUeLNDbyjqT1Gbfw7CwG3k1csj6KBD6zznAwY5EW+Ghznwhoz5uaT6d370fDqQIcsU
-        OjLV5gbQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nej66-00EWwR-MH; Wed, 13 Apr 2022 19:56:14 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id E76F798623C; Wed, 13 Apr 2022 21:56:12 +0200 (CEST)
-Date:   Wed, 13 Apr 2022 21:56:12 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     rjw@rjwysocki.net, mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        ebiederm@xmission.com, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        tj@kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH 2/5] sched,ptrace: Fix ptrace_check_attach() vs PREEMPT_RT
-Message-ID: <20220413195612.GC2762@worktop.programming.kicks-ass.net>
-References: <20220412114421.691372568@infradead.org>
- <20220412114853.842942162@infradead.org>
- <20220413132451.GA27281@redhat.com>
- <20220413185704.GA30360@redhat.com>
- <20220413185909.GB30360@redhat.com>
- <20220413192053.GY2731@worktop.programming.kicks-ass.net>
+        Wed, 13 Apr 2022 16:03:01 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF99A56220
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 13:00:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649880038; x=1681416038;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0tkUvXJR37PdPMdtjyIHWr7quKwefrxZE2fM/eHBDvo=;
+  b=DcYpbx+mn3ZJGUKtndC3QTn6lYhk1BXftL1nvT4i/LRIC08AV6eWmVxk
+   rVJocFJw4eWgraDiQOGA5oJDTU+XGQ+E9vz8YpeGA1pMssOEYE3ATu2DY
+   WIbcUa0afaIAO7uUTUYUn0othvwCk2OckProgRfAaBV47OF5sZi8Pqn8d
+   7uqGGxK0oLwXE0b2DJTHR2enlNZR8QS280M11Us50b+Cx6n/cYTodYLyu
+   4ZRqkR+Ide7l4LqQcxHzq9BLQ+5xVrIlVVWwvAjRO+e73caakpIVq6eEn
+   SVBkmgDxYSuE3l7tg5tdlt35OKMhoBVj6kosn4fAycvzP109rY1d8B+Tn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244646244"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="244646244"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 13:00:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="612018573"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 13 Apr 2022 13:00:34 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nejAI-0000ZA-9n;
+        Wed, 13 Apr 2022 20:00:34 +0000
+Date:   Thu, 14 Apr 2022 03:59:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        linux-kernel@vger.kernel.org
+Subject: [djwong-xfs:djwong-wtf 399/400] hppa-linux-ld:
+ fs/xfs/xfs_trace.o(.text+0x3fee8): cannot reach
+ 00005b1d___trace_trigger_soft_disabled+0, recompile with -ffunction-sections
+Message-ID: <202204140330.biy5ckQP-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220413192053.GY2731@worktop.programming.kicks-ass.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 09:20:53PM +0200, Peter Zijlstra wrote:
-> On Wed, Apr 13, 2022 at 08:59:10PM +0200, Oleg Nesterov wrote:
-> 
-> 
-> > +		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-> > +		// wrong, needs siglock
-> > +		current->jobctl &= ~JOBCTL_TRACED_XXX;
-> > +		wake_up_bit(&current->jobctl, ~JOBCTL_TRACED_XXX_BIT);
-> 		  __wake_up_common_lock()
-> 		    spin_lock_irqsave()
-> 		      current_save_and_set_rtlock_wait_state();
-> 
-> 			> +	if (wait_on_bit(&task->jobctl, JOBCTL_TRACED_XXX_BIT, TASK_KILLABLE))
-> 			> +		return -EINTR;
-> 			> +	// now that the tracee cleared JOBCTL_TRACED_XXX_BIT
-> 			> +	// wait_task_inactive() should succeed or fail "really soon".
-> 			> +	if (!wait_task_inactive(child, __TASK_TRACED))
-> 			> +		return ret;
-> 
-> 
-> 	*whoopsie* ?
-> 
-> >  		preempt_enable_no_resched();
-> >  		freezable_schedule();
-> >  		cgroup_leave_frozen(true);
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git djwong-wtf
+head:   4b24106233a017435a70bc0e8ff7afbaddd479d6
+commit: ff88d33413f541442f302e44b95dfdc08a52e415 [399/400] xfs: fallocate free space into a file
+config: parisc-allyesconfig (https://download.01.org/0day-ci/archive/20220414/202204140330.biy5ckQP-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=ff88d33413f541442f302e44b95dfdc08a52e415
+        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
+        git fetch --no-tags djwong-xfs djwong-wtf
+        git checkout ff88d33413f541442f302e44b95dfdc08a52e415
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
 
-Something that might work; since there's only the one ptracer, is to
-instead do something like:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	current->jobctl &= ~JOBCTL_TRACED_XXX; // siglock
-	if (current->ptrace)
-		wake_up_process(current->parent);
-	preempt_enable_no_resched();
-	schedule();
+All errors (new ones prefixed by >>):
 
+>> hppa-linux-ld: fs/xfs/xfs_trace.o(.text+0x3fee8): cannot reach 00005b1d___trace_trigger_soft_disabled+0, recompile with -ffunction-sections
+>> hppa-linux-ld: fs/xfs/xfs_trace.o(.text+0x3fee8): cannot handle R_PARISC_PCREL17F for __trace_trigger_soft_disabled
+   hppa-linux-ld: final link failed: bad value
 
-vs
-
-	for (;;) {
-		set_current_state(TASK_UNINTERRUPTIBLE);
-		if (!(p->jobctl & JOBCTL_TRACED_XXX))
-			break;
-		schedule();
-	}
-	__set_current_state(TASK_RUNNING);
-
-	if (!wait_task_inactive(...))
-
-
-ptrace_detach() needs some additional magic as well I think, but this
-might just work.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
