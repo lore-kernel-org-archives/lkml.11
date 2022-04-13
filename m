@@ -2,166 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2379C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 23:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239055AbiDMXW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 19:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
+        id S239185AbiDMXWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 19:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238205AbiDMXWW (ORCPT
+        with ESMTP id S238856AbiDMXWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 19:22:22 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8BF23BDD
+        Wed, 13 Apr 2022 19:22:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E2421B7B0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649892000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WHwtgBFXaVRPDxpgXVknAcXgf6im9N3NqhP05P8+ItY=;
+        b=JYw2gmlRdeRG6UTAZMoS7O8h5yLAhTW3AaXS03i0WQKWTr2BdKEMoFBf9qndjOMqPS4Gek
+        9QmRNLZloAK1gs9gpIQ4KXSodNfTLCjYfcmGNTM0Y58ZT1V4n/XIv38c9ewlK9t2GRYIgK
+        yvhAeNgynancLXGWWMmRIiFLYw+RSj0=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-491-MAMQ73tMOnOzHf_BF5kjyg-1; Wed, 13 Apr 2022 19:19:59 -0400
+X-MC-Unique: MAMQ73tMOnOzHf_BF5kjyg-1
+Received: by mail-qk1-f200.google.com with SMTP id h8-20020a05620a244800b00699fb28d5e4so2135163qkn.22
         for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:19:59 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id i23-20020a9d6117000000b005cb58c354e6so2208409otj.10
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 16:19:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=A76+qe6l2R4PjtaHOG75B4+IXG7YG12PDKm5b7n2jWs=;
-        b=SHoATc0eEmqjjIwRKvexraebmX2kGeRzptDhV06lGjHycAYMT+TOpWHUuC00JxUOTj
-         RHHtsMgFG+ZIU6axzwN0FQc7X9fdSEWHjTK8L/jGvPcI/8iNhZQrE7OwFAp/5b5lWymZ
-         ZpFMog5M4McPKnPsUbvdTa8nAmF0nFb1cEDYU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=A76+qe6l2R4PjtaHOG75B4+IXG7YG12PDKm5b7n2jWs=;
-        b=THbdngb143iXs/KSmRfcaiVvcLx/whEr+rA6nXKAQcUsWukU3jlF9nfvc1Ec8F4E+O
-         S1M2GBpq1OEEGYJMvHERYHjhD1sn8kVetZGIS6OpWjBBjTlQeIKTReq+KWFa+OJuc4Bb
-         FUIDvpDGLtSFHBwbr8PvFenWF7s17oXqkaElz9/2LwFFHcw4FrYEVIeqZSR9APH2gNjO
-         H/TVO9I3sPRb0GdJpXZVDCej1huEoO0/8lfBGELLtPRgZYsEIAmrJwWbN6ZViObZSI5x
-         hcLUZrdg3e8yCN7jL0oPZJTx10NQW9D26n5sjkGj/9fMCK2gcJ1lUtG2obecwCw0L3yj
-         RQvA==
-X-Gm-Message-State: AOAM532/F6QcoVie+DjTGR4l4g9Eu7FFVvIo2BUovZlT+15A/hNz5wUW
-        WeEM9wtZBbFnNPuieoaJT9ubxjAuOtoTDHADhwglCA==
-X-Google-Smtp-Source: ABdhPJz4zQOvWO+Ka65MElptgAevAeXuKyDHAfQnJYr8K685AAWqQ2cIPgcN1VMnmhtkiEpddCxTwpmuwEtmVKjoZ5o=
-X-Received: by 2002:a9d:b85:0:b0:5cb:3eeb:d188 with SMTP id
- 5-20020a9d0b85000000b005cb3eebd188mr10346oth.77.1649891999102; Wed, 13 Apr
- 2022 16:19:59 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 13 Apr 2022 16:19:58 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WHwtgBFXaVRPDxpgXVknAcXgf6im9N3NqhP05P8+ItY=;
+        b=fjxtI5O8L/pZsvyIxrc4d7GuMi3iSohJpB9GXuZMU1DU6sdcbv0BkgRcQ2f3n4OQ9M
+         llyzJZL7n1WPHiRjMQCyS80UeDOS0Na/InyaTcW4MuHn2/SOhZQQMyXmI1/dtKD07SEk
+         q/hNOYbqS6r+kUM0R8LG2J2MEi4FhOf3UpHgcmIuFSb7Jcw/M0JdCCX+8h/guRgbmvSf
+         8emtTi5dRNpPUTXVTF9u2aDdKrzEaln/RDuYv3osRQRhrZgcVATApwFT8vwdFvwT9re/
+         32Hn4YMSO6HXkT+T+V8IGGMA1g92FBdmv8FsSJHmOJnO+ZryrJ1a6K+QhgycVMkRpEPy
+         fPOA==
+X-Gm-Message-State: AOAM533O1c1tw+D/NrJ7yLBpIs78tVh6dqiVN28etBGGKab0PHdDb0/L
+        iTcdiQCzS9FUwvZ2PMghdb4E80FgUObcjrkh3w/+BaVBaGsUCqhddoQkqpGWtjQ1v8zOroZV4ID
+        YS+L+21i7cr0MepfOScfKZhnY
+X-Received: by 2002:a05:6214:c83:b0:441:51c7:9dc9 with SMTP id r3-20020a0562140c8300b0044151c79dc9mr1032427qvr.83.1649891998739;
+        Wed, 13 Apr 2022 16:19:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxK9G/2dn/UjZoKpRBN8/k1+sDOKT3FCsijjvf4/H/VFtzXaH6mAb5/vczmxNrXcN0x6fTE6A==
+X-Received: by 2002:a05:6214:c83:b0:441:51c7:9dc9 with SMTP id r3-20020a0562140c8300b0044151c79dc9mr1032419qvr.83.1649891998552;
+        Wed, 13 Apr 2022 16:19:58 -0700 (PDT)
+Received: from treble.redhat.com ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id b20-20020a05622a021400b002f08f5658a2sm193925qtx.68.2022.04.13.16.19.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 16:19:58 -0700 (PDT)
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     x86@kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH 01/18] objtool: Enable unreachable warnings for CLANG LTO
+Date:   Wed, 13 Apr 2022 16:19:36 -0700
+Message-Id: <7b12df54bceeb0761fe9fc8269ea0c00501214a9.1649891421.git.jpoimboe@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1649891421.git.jpoimboe@redhat.com>
+References: <cover.1649891421.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1649883865-9012-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1649883865-9012-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 13 Apr 2022 16:19:58 -0700
-Message-ID: <CAE-0n5259qjMj12LXRp=7kQ7zT3bRMaHpSpwKMwZ8HL6rq7fbw@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/msm/dp: stop event kernel thread when DP unbind
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
-        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
-        dmitry.baryshkov@linaro.org, robdclark@gmail.com, sean@poorly.run,
-        vkoul@kernel.org
-Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Kuogee Hsieh (2022-04-13 14:04:25)
-> Current DP driver implementation, event thread is kept running
-> after DP display is unbind. This patch fix this problem by disabling
-> DP irq and stop event thread to exit gracefully at dp_display_unbind().
->
-> Changes in v2:
-> -- start event thread at dp_display_bind()
->
-> Fixes: e91e3065a806 ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> ---
->  drivers/gpu/drm/msm/dp/dp_display.c | 40 +++++++++++++++++++++++++++----------
->  1 file changed, 30 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index 01453db..943e4f1 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -113,6 +113,7 @@ struct dp_display_private {
->         u32 hpd_state;
->         u32 event_pndx;
->         u32 event_gndx;
-> +       struct task_struct *ev_tsk;
->         struct dp_event event_list[DP_EVENT_Q_MAX];
->         spinlock_t event_lock;
->
-> @@ -230,6 +231,31 @@ void dp_display_signal_audio_complete(struct msm_dp *dp_display)
->         complete_all(&dp->audio_comp);
->  }
->
-> +static int hpd_event_thread(void *data);
+With IBT support in, objtool is now fully capable of following vmlinux
+code flow in LTO mode.  Start reporting unreachable warnings for Clang
+LTO as well.
 
-Is there a reason why this is needed vs. defining the kthread start
-function after hpd_event_thread()?
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+---
+ scripts/Makefile.build  | 2 +-
+ scripts/link-vmlinux.sh | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> +
-> +static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 9717e6f6fb31..33c1ed581522 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -231,7 +231,7 @@ objtool_args =								\
+ 	$(if $(part-of-module), --module)				\
+ 	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
+ 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+-	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
++	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)			\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+ 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+ 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 20f44504a644..9361a1ef02c9 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -140,7 +140,7 @@ objtool_link()
+ 		if ! is_enabled CONFIG_FRAME_POINTER; then
+ 			objtoolopt="${objtoolopt} --no-fp"
+ 		fi
+-		if is_enabled CONFIG_GCOV_KERNEL || is_enabled CONFIG_LTO_CLANG; then
++		if is_enabled CONFIG_GCOV_KERNEL; then
+ 			objtoolopt="${objtoolopt} --no-unreachable"
+ 		fi
+ 		if is_enabled CONFIG_RETPOLINE; then
+-- 
+2.34.1
 
-Maybe dp_hpd_event_thread_start()?
-
-> +{
-> +       init_waitqueue_head(&dp_priv->event_q);
-> +       spin_lock_init(&dp_priv->event_lock);
-> +
-> +       dp_priv->ev_tsk = kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
-> +
-> +       if (IS_ERR(dp_priv->ev_tsk))
-> +               DRM_ERROR("failed to create DP event thread\n");
-
-Can we return an error from this function?
-
-> +}
-> +
-> +static void dp_hpd_event_stop(struct dp_display_private *dp_priv)
-
-Maybe dp_hpd_event_thread_stop()?
-
-> +{
-> +       if (IS_ERR(dp_priv->ev_tsk))
-> +               return;
-
-If we handled the error then this check becomes impossible.
-
-> +
-> +       kthread_stop(dp_priv->ev_tsk);
-> +
-> +       /* reset event q to empty */
-> +       dp_priv->event_gndx = 0;
-> +       dp_priv->event_pndx = 0;
-> +}
-> +
->  static int dp_display_bind(struct device *dev, struct device *master,
->                            void *data)
->  {
-> @@ -269,6 +295,7 @@ static int dp_display_bind(struct device *dev, struct device *master,
->         if (rc)
->                 DRM_ERROR("Audio registration Dp failed\n");
->
-> +       dp_hpd_event_setup(dp); /* start event thread */
-
-The comment is useless, please remove.
-
->  end:
->         return rc;
->  }
-> @@ -280,6 +307,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
->         struct drm_device *drm = dev_get_drvdata(master);
->         struct msm_drm_private *priv = drm->dev_private;
->
-> +       disable_irq(dp->irq);
-
-Is the disable_irq() necessary? It would be nicer to silence the
-hardware and remove the disable_irq() so that we can reason about the
-code assuming the irq is always enabled after it is requested.
-
-> +       dp_hpd_event_stop(dp); /* stop event thread */
->         dp_power_client_deinit(dp->power);
->         dp_aux_unregister(dp->aux);
->         priv->dp[dp->id] = NULL;
