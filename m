@@ -2,67 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F54C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8628EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236914AbiDMQco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55552 "EHLO
+        id S236882AbiDMQdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236890AbiDMQcb (ORCPT
+        with ESMTP id S236870AbiDMQdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:32:31 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7529941624;
-        Wed, 13 Apr 2022 09:30:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5bxNeFCNqtSiVLbQzdDfEBDhH6rbLnTelph4miGTqcI=; b=ZDD2+/SPzOdS7gIGaIEN0WYdw2
-        csM5cEpfpVa4zPMV6qQMG16FX8GAc8H1eGmVn0mAyKrCmXot6li/ApLCBGfTBvms7T8/IlTqWq2rd
-        cX+7Jh1S0o7VKL2iQxM+0BNlZHKrUACHDPR7gs2zVuDVpyoevItTU8TJemXQCr41HAh1Hpim+LNfs
-        yY8nXcbyB2ub4RiGkg1g+qHiyg/tnrreZACe8kSk14FDiMf4TUFKJaafxLONmflJFnNsSOAxNDaBV
-        JGQCMma/H2xQN3MxEre5D8cDJ5NZrCjJMYzaLHVaYF6Mwj1pYuFfulzY3NdBoTnz/PSqQXCy5o/PP
-        jjAo4hOw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nefsQ-00EOn1-Uf; Wed, 13 Apr 2022 16:29:55 +0000
-Date:   Wed, 13 Apr 2022 17:29:54 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     inux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Will Deacon <will@kernel.org>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Nick Piggin <npiggin@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tlb/hugetlb: Add framework to handle PGDIR_SIZE HugeTLB
- pages
-Message-ID: <Ylb6gvRJ27BCPv1z@casper.infradead.org>
-References: <20220413100714.509888-1-anshuman.khandual@arm.com>
+        Wed, 13 Apr 2022 12:33:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1CB259A63
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:30:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649867454;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JpsTDUjpmmHkgiKCF75tJ9Qb2QqmtHwjLJW7Lijr6Ec=;
+        b=D2SnrNCKiTa1JS0rYYQDcOGF80pSS4KiX5Gqks49E+9oPr4w51x7Y6u/rFsz+FvKnV3z7Q
+        FwMpJpyWYhiWdSIF7lpAuZy5GkrP8szrWSVF7vkMyhXnjXx7gRzR2evPzUQOsyYV5Fmr5e
+        FLVnkjysybxjDKraHYJ/TX6UrfxNM2E=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-299-BDAD78gBOzG90quI0Lb3LA-1; Wed, 13 Apr 2022 12:30:52 -0400
+X-MC-Unique: BDAD78gBOzG90quI0Lb3LA-1
+Received: by mail-wm1-f69.google.com with SMTP id g13-20020a1c4e0d000000b0038eba16aa46so977375wmh.7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 09:30:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=JpsTDUjpmmHkgiKCF75tJ9Qb2QqmtHwjLJW7Lijr6Ec=;
+        b=bKTmiGcISP1wyspqv/pZumCmBBhWmM7ICM76ny0IMCzeYdXCZIm0KdKfS4Sg/06N+u
+         V5WdPWEh2LBfF4Q3z0sRUSuzYIg7EMjcuitU+Jes3YCU1gO0+Y4JTRX9sxPN5u1BDG7/
+         zDCPPbpkKCg00A802yCf+bIT8gZh+n+eQVD+c+mRGIueHms0bvFErxDssnd2YBs5IhAH
+         NcyjSCVbrj2au3dsde8JERdSJSaep1t5L/XfEpbpcG0dTrZXe8UuaiOTfiPK1uXPceaO
+         rA1Y/PJXT5qQYJKnlXzu7NhZ3/34Zo086YVsPW74FqYiRBQ3FaQIys5yqVvorX68l3N4
+         4a3A==
+X-Gm-Message-State: AOAM530w7eK6FPoqHBA87BD+/FSXlEUOX/234xV7gh0kyZUR7Oxp8Asm
+        H2ffTraQc7gHRNl1JIMwPSWdwUVuyXVFcnQKD8e2KP0P2cZBoiSYSd1SdEV+Y2pK6mTkz4qQnVz
+        W6I50gQRodWpwDtZ1CwHXX+zy
+X-Received: by 2002:a05:600c:3512:b0:38c:be56:fc9c with SMTP id h18-20020a05600c351200b0038cbe56fc9cmr9458259wmq.197.1649867450714;
+        Wed, 13 Apr 2022 09:30:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwkytZT68ibSBKNJoHlOqbNjWnA9Zh1oDwEE8SJcMIkEgIwTu5PARnU1fLD1KJu/KXuQqJYmA==
+X-Received: by 2002:a05:600c:3512:b0:38c:be56:fc9c with SMTP id h18-20020a05600c351200b0038cbe56fc9cmr9458202wmq.197.1649867450341;
+        Wed, 13 Apr 2022 09:30:50 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c704:5800:1078:ebb9:e2c3:ea8c? (p200300cbc70458001078ebb9e2c3ea8c.dip0.t-ipconnect.de. [2003:cb:c704:5800:1078:ebb9:e2c3:ea8c])
+        by smtp.gmail.com with ESMTPSA id f9-20020a05600c154900b0038cb98076d6sm3269751wmg.10.2022.04.13.09.30.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 09:30:49 -0700 (PDT)
+Message-ID: <3b9effd9-4aba-e7ca-b3ca-6a474fd6469f@redhat.com>
+Date:   Wed, 13 Apr 2022 18:30:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413100714.509888-1-anshuman.khandual@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Andy Lutomirski <luto@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Nakajima, Jun" <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-5-chao.p.peng@linux.intel.com>
+ <Yk8L0CwKpTrv3Rg3@google.com>
+ <02e18c90-196e-409e-b2ac-822aceea8891@www.fastmail.com>
+ <YlB3Z8fqJ+67a2Ck@google.com>
+ <7ab689e7-e04d-5693-f899-d2d785b09892@redhat.com>
+ <20220412143636.GG64706@ziepe.ca>
+ <6f44ddf9-6755-4120-be8b-7a62f0abc0e0@www.fastmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
+ against RLIMIT_MEMLOCK
+In-Reply-To: <6f44ddf9-6755-4120-be8b-7a62f0abc0e0@www.fastmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 03:37:14PM +0530, Anshuman Khandual wrote:
-> Change tlb_remove_huge_tlb_entry() to accommodate larger PGDIR_SIZE HugeTLB
-> pages via adding a new helper tlb_flush_pgd_range(). While here also update
-> struct mmu_gather as required, that is add a new member cleared_pgds.
-
-Is this just completionist junk, or are there really CPUs that support
-PGDIR sized pages?  We already have support for p4d (512GB), even though
-at least Intel don't support pages larger than 1GB.  I think the largest
-size page I've heard of is 16GB on POWER.  PGDIR_SIZE would be 256TB on
-x86 which just seems ludicrous to be talking about supporting.
-
-> ---
-> This applies on v5.18-rc2, some earlier context could be found here
 > 
-> https://lore.kernel.org/all/20220406112124.GD2731@worktop.programming.kicks-ass.net/
+> So this is another situation where the actual backend (TDX, SEV, pKVM, pure software) makes a difference -- depending on exactly what backend we're using, the memory may not be unmoveable.  It might even be swappable (in the potentially distant future).
 
-Read it, doesn't talk about any real users of this.
+Right. And on a system without swap we don't particularly care about
+mlock, but we might (in most cases) care about fragmentation with
+unmovable memory.
+
+> 
+> Anyway, here's a concrete proposal, with a bit of handwaving:
+
+Thanks for investing some brainpower.
+
+> 
+> We add new cgroup limits:
+> 
+> memory.unmoveable
+> memory.locked
+> 
+> These can be set to an actual number or they can be set to the special value ROOT_CAP.  If they're set to ROOT_CAP, then anyone in the cgroup with capable(CAP_SYS_RESOURCE) (i.e. the global capability) can allocate movable or locked memory with this (and potentially other) new APIs.  If it's 0, then they can't.  If it's another value, then the memory can be allocated, charged to the cgroup, up to the limit, with no particular capability needed.  The default at boot is ROOT_CAP.  Anyone who wants to configure it differently is free to do so.  This avoids introducing a DoS, makes it easy to run tests without configuring cgroup, and lets serious users set up their cgroups.
+
+I wonder what the implications are for existing user space.
+
+Assume we want to move page pinning (rdma, vfio, io_uring, ...) to the
+new model. How can we be sure
+
+a) We don't break existing user space
+b) We don't open the doors unnoticed for the admin to go crazy on
+   unmovable memory.
+
+Any ideas?
+
+> 
+> Nothing is charge per mm.
+> 
+> To make this fully sensible, we need to know what the backend is for the private memory before allocating any so that we can charge it accordingly.
+
+Right, the support for migration and/or swap defines how to account.
+
+-- 
+Thanks,
+
+David / dhildenb
+
