@@ -2,84 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCDAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35CF9C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237502AbiDMRzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        id S237509AbiDMR4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236058AbiDMRzq (ORCPT
+        with ESMTP id S236058AbiDMR4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:55:46 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32A46D847
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:53:24 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2ec04a2ebadso30745587b3.12
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 10:53:24 -0700 (PDT)
+        Wed, 13 Apr 2022 13:56:40 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5421238C;
+        Wed, 13 Apr 2022 10:54:18 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bh17so5498949ejb.8;
+        Wed, 13 Apr 2022 10:54:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RyDA9iTfWDztFEqgkjQ89chzQS7kxTaj+KPUwJ15bKQ=;
-        b=hm/d5hw0nIb0T07H45j4gZMonAjBta7sGE/+gSqIL0ZfSSa/i6jk87hXkRSs7z/C/R
-         60JnUaEuDn6DUDyPkIggKlVmAjiDTk/GQ9G/K/CI/Lm/vr+QIlfxHICshK8N13g1rBuh
-         YrPka14d4JSk4qIJngtB173o0mOdiR4YgL6L760zRUikxvhg5TE0FZv7l4ezoZYu7B+V
-         Qq+htzJHXO80lH3F1krxeje45ufFPml7qJsln/xNg/7PeZZ59HPVjDKkshG421Fxel1B
-         BD61+ZtykRVGIM+sF3Z5LJCxQNE7xrXhVgpsB3QLLikglWiNO9XhjdL9JqPSAd/SV50s
-         V5RQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i2RJ6d/8BCF+jmN6yU2UbVKxMZnB1UcfgAmDeMXHyrY=;
+        b=Nr+TvYGhvsu0zAmYKHlg7d+xkwdz+xwrtMU4Y4Pl5KJSBmTraEoZjNqtwKwgmyRhsm
+         fNgbvGSSN41ADSF6G5rMmAS9GOdq54ZEwNr5BpHzicHLSJqV+NlhEumTIPfMqytbdUTY
+         px1hRcvaXZliFOaJeALkZxxwUck4vlfLL9D/PnZUhXDpMKqt+GRDpF1P7vhNQeodyT15
+         ixoZj5hGMlP5rY2798Bo02lOpumHgHRjzTQqZ39JzjV8I7XEn5Bf+kZaj/itIcN6tdZh
+         zBJjk27KMRo3wDzzoYwh0NmfShdcCEqn7Bwr4hIw8cUP5S501Yxh/kutel5SVMicCUch
+         IuWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RyDA9iTfWDztFEqgkjQ89chzQS7kxTaj+KPUwJ15bKQ=;
-        b=HBLWHIbMXnFlzKvgsxYeYU9nWJJsbxGTgzaHhcgjkQAIVSl/vat2odEInDFIN9MFFz
-         cJT5xEwB4c5HQDArqDs3WrPXRJNHf40F7BsegYHVj7DtFyfUB2zpGZ5f5qKtuALvNt6n
-         xPeKw/CGbPDlyH4/1gL9i2yelf7nYmbG1f5Br4PJub8wW+bEwCuZmRvaR+lJ7slqzaZ3
-         tiKqTXlJFs0S3ljYn5S8pQK3rnLwExBT8nh4h758ZrCL8cgeQXXk30Q2rxVwigqO83Zw
-         6hM4MvfOf1cfWXkTxEOrgMF7GVCSBje3tkkZAgkLpBDhMjGe/r/2CJt//Xz1Hx2DvbP3
-         PKIw==
-X-Gm-Message-State: AOAM532cAd47WN6qTZBjhgh1ULi7cpT8O5Dod4thnK27fEJrTGxtQ48s
-        u07XY834GHplYYH+fnmDxGEmNfZbisPtvxF8Ab0QtQ==
-X-Google-Smtp-Source: ABdhPJwExmug60eQjdpe2sIF2Eb8k/QhuTphLsiPFCLbDhrEUkyvWzjHgHxme2qSemiF2GV3585ju2b+b2Wogr8btKI=
-X-Received: by 2002:a0d:cb86:0:b0:2ec:894:aa51 with SMTP id
- n128-20020a0dcb86000000b002ec0894aa51mr27535ywd.467.1649872403635; Wed, 13
- Apr 2022 10:53:23 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i2RJ6d/8BCF+jmN6yU2UbVKxMZnB1UcfgAmDeMXHyrY=;
+        b=5Cxj1ZhsuUS4pr/aT3tt+9laTe48fMkg8uNNQob1Vc+5OYAXnSfbVl68lhEUF3wGGP
+         ItWZ3DhoM+3COg4GrBwxaWFx4cI6//VrRDgCfNKJ6r/YZDHGilNzssbIVJESEXPRDSLp
+         8tbWgvgq+0XfTNoDsqYJBm1Ezc9TiW/hdlBznsz7/d0QCylFQiSL8QLw4fGXOiuxgfMA
+         1+QOyHhhHquh7sThVAJtpDQqqgycEqAKbgv6xzzkNH9aIWBmVn7s+HNws6xghmTFkecz
+         itYoVnDRYbdPmHZR/F63eL6zc21OfCsyF5+Lw4hF+COxd4IAo4G2ek6KUASz5a4QQB5m
+         C7ug==
+X-Gm-Message-State: AOAM532yVnVW8mQNwlPlM2AFREvKJioig6282pVkBBDsVbMQBEDwILld
+        sVoGT0pJOigoHKtwkBaOCBA=
+X-Google-Smtp-Source: ABdhPJyPE4vLRs3CuC3UtwYKUKXEMTbt7e2CpdF/ZDz7U9ASsekxlQE2QSRn6NqmPoNw0evi9K1jcg==
+X-Received: by 2002:a17:907:1c0c:b0:6e0:9b15:29d5 with SMTP id nc12-20020a1709071c0c00b006e09b1529d5mr40538344ejc.416.1649872456728;
+        Wed, 13 Apr 2022 10:54:16 -0700 (PDT)
+Received: from Ansuel-xps. (host-80-182-176-248.retail.telecomitalia.it. [80.182.176.248])
+        by smtp.gmail.com with ESMTPSA id o5-20020a170906974500b006dfc781498dsm215308ejy.37.2022.04.13.10.54.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 10:54:16 -0700 (PDT)
+Message-ID: <62570e48.1c69fb81.49fb8.143b@mx.google.com>
+X-Google-Original-Message-ID: <YlcOR5+FbKSJ8/uU@Ansuel-xps.>
+Date:   Wed, 13 Apr 2022 19:54:15 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Stephen Boyd <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 03/18] clk: qcom: gcc-ipq806x: add PXO_SRC in clk table
+References: <20220321231548.14276-1-ansuelsmth@gmail.com>
+ <20220321231548.14276-4-ansuelsmth@gmail.com>
+ <20220325011037.03173C340EC@smtp.kernel.org>
+ <Yj0XTYgoMScoiUHP@Ansuel-xps.localdomain>
+ <20220325012231.899FBC340EC@smtp.kernel.org>
+ <62570197.1c69fb81.c3de2.7b70@mx.google.com>
+ <CAA8EJpp2uipTtV=gitiL0g-ywOirC=-UGrQ4tZMwc42jy2TK1Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <164984498582.2000115.4023190177137486137.stgit@warthog.procyon.org.uk>
- <CANn89iLEch=H9OJpwue7HVJNPxxn-TobRyoATHTrSdetwpHVXA@mail.gmail.com> <2419532.1649871672@warthog.procyon.org.uk>
-In-Reply-To: <2419532.1649871672@warthog.procyon.org.uk>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 13 Apr 2022 10:53:12 -0700
-Message-ID: <CANn89iK=8Z2dznM_SVGtk3NsXu3PK_BOBnCOM2ZgFtKe-mBOyA@mail.gmail.com>
-Subject: Re: [PATCH net] rxrpc: Restore removed timer deletion
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAA8EJpp2uipTtV=gitiL0g-ywOirC=-UGrQ4tZMwc42jy2TK1Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 10:41 AM David Howells <dhowells@redhat.com> wrote:
->
-> Eric Dumazet <edumazet@google.com> wrote:
->
-> > ok... so we have a timer and a work queue, both activating each other
-> > in kind of a ping pong ?
->
-> Yes.  I want to emit regular keepalive pokes.
->
-> > Any particular reason not using delayed works ?
->
-> Because there's a race between starting the keepalive timer when a new peer is
-> added and when the keepalive worker is resetting the timer for the next peer
-> in the list.  This is why I'm using timer_reduce().  delayed_work doesn't
-> currently have such a facility.  It's not simple to add because
-> try_to_grab_pending() as called from mod_delayed_work_on() cancels the timer -
-> which is not what I want it to do.
->
+On Wed, Apr 13, 2022 at 08:32:21PM +0300, Dmitry Baryshkov wrote:
+> On Wed, 13 Apr 2022 at 20:00, Ansuel Smith <ansuelsmth@gmail.com> wrote:
+> >
+> > On Thu, Mar 24, 2022 at 06:22:29PM -0700, Stephen Boyd wrote:
+> > > Quoting Ansuel Smith (2022-03-24 18:13:49)
+> > > > On Thu, Mar 24, 2022 at 06:10:35PM -0700, Stephen Boyd wrote:
+> > > > > Quoting Ansuel Smith (2022-03-21 16:15:33)
+> > > > > > PXO_SRC is currently defined in the gcc include and referenced in the
+> > > > > > ipq8064 DTSI. Correctly provide a clk after gcc probe to fix kernel
+> > > > > > panic if a driver starts to actually use it.
+> > > > > >
+> > > > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > > > > ---
+> > > > >
+> > > > > What is this patch about? clk providers shouldn't be calling clk_get().
+> > > > >
+> > > >
+> > > > If pxo is passed as a clock in dts and defined as a fixed clock, what
+> > > > should be used?
+> > >
+> > > clk_parent_data
+> >
+> > Sorry but I'm not following you. No idea if you missed the cover letter
+> > where i describe the problem with PXO_SRC.
+> >
+> > The problem here is that
+> > - In DTS we have node that reference <&gcc PXO_SRC>
+> > But
+> > - gcc driver NEVER defined PXO_SRC
+> > As
+> > - PXO_SRC is actually pxo_board that should be defined as a fixed-clock
+> >   in dts or is defined using qcom_cc_register_board_clk.
+> >
+> > So in theory we should just put in PXO_SRC the clk hw of the
+> > fixed-clock. That is why I'm using clk_get(). I can use __clk_lookup()
+> > as an alternative but I really can't find a way to get the clock defined
+> > from DTS or qcom_cc_register_board_clk.
+> >
+> > (I have the same exact problem with the cpu qsb clock where is defined
+> > using fixed-clock API but can also defined directly in DTS and I have to
+> > use clk_get())
+> >
+> > I'm totally missing something so I would love some hint on how to solve
+> > this.
+> 
+> When we were doing such conversion for other  platforms, we pointed
+> clock consumers to the board clocks directly. There is no need to go
+> through the gcc to fetch pxo.
+> Instead you can use a <&pxo_board> in the dts directly. Typically the
+> sequence is the following:
+> - Minor cleanup of the clock-controller driver
+> (ARRAY_SIZE(parent_data), removal of unused clock sources, unused enum
+> entries, etc)
+> - update drivers to use both .name and  .fw_name in replacement of
+> parent_names. Use parent_hws where possible.
+> - update dtsi to reference clocks using clocks/clock-names properties.
+> Pass board/rpmh/rpm clocks directly to their consumers without
+> bandaids in the gcc driver.
+> - (optionally) after several major releases drop parent_data.name
+> completely. I think we mostly skipped this, since it provides no gain.
+> 
+> This way you don't have to play around clk_get to return PXO_SRC from
+> gcc clock-controller.
+> 
+> -- 
+> With best wishes
+> Dmitry
 
-SGTM, thanks !
+Thanks for the list of steps to do this kind of cleanup.
+From what I'm reading this series is ""stuck"" in the sense that I first
+have to fix the wrong PXO_SRC reference and then I can continue the
+conversion work. A bit sad considering most of the time DTS proposal got
+ignored :(
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+-- 
+	Ansuel
