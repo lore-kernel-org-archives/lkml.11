@@ -2,148 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97315C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20774C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 17:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237185AbiDMREm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 13:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
+        id S237184AbiDMRFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 13:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237173AbiDMREg (ORCPT
+        with ESMTP id S233365AbiDMRF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 13:04:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182856A067;
-        Wed, 13 Apr 2022 10:02:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649869335; x=1681405335;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WLObBFJjHepucWp1gxGGS056KEnKSZ7vFw9X3LFEX+Y=;
-  b=eJyv7ebuwi3w5QdFIDOvCXZc38/mwLBJ/HJXGyAdzyTb5nhqiihZxyFV
-   xpApvRTAMQsCtmQr1LdZ+TGZLeIVCd4d4Mgn4jcRfJKGfhX7HORtOQM/E
-   aShHL3hmwBFu9yUKc2Rst3i6GlDXWiBxrKDPSmo9aKDv7Q/Q2ja0esJsE
-   St8zvKkMoosPA2rXjLEv0e6Yje3kEiT3fgO6ONEUFdR06J6tBtZG+tk8L
-   oC/axaIbgdDKeD4OwsDQPrM8kVDj+i0bfZmPazDmfc0ILZrVLI9/+uZA2
-   rEt0MmdMK7u9ZuMlanavES4riTPl/v3NUVrY6gGH6CXLYlpKd98D0jvTe
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,257,1643698800"; 
-   d="scan'208";a="155466311"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Apr 2022 10:02:14 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 13 Apr 2022 10:02:13 -0700
-Received: from [10.12.72.146] (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 13 Apr 2022 10:02:12 -0700
-Message-ID: <cbef8724-86b6-6eef-eb03-ec27f492f90c@microchip.com>
-Date:   Wed, 13 Apr 2022 19:02:11 +0200
+        Wed, 13 Apr 2022 13:05:27 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC117674FA;
+        Wed, 13 Apr 2022 10:03:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649869386; x=1681405386;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=3sLJ+uyAKa3UrdllPSpp3zBHMlm7dcdDzaDGCF4r4Ts=;
+  b=CL+t1ik9fqBLjojWU3b96wU0539otnM2E3WxHAWlZS+WBy1yokPmz6TI
+   K95NaTcpMe7/lk/13jqr+p1Lo1xzyR1iGboCarYKC0enW9tBk5/y3l+L9
+   GmqfztucJA3nSltRLnVfDFEh4RgfTyZv5pLo0hf4rRAuVKhxDuTR6oI7H
+   QL6KrzED1O4FcDrWk/0ZcHJyTo2jb0IbbND2hvRo2U7Mdtrd+pkLVf9xu
+   vv+8FbbZQumdA1FAm+T2fDrbZ7rq3bhj7KegoZY9g7bTCVdYqLRSxzA8P
+   x8QQGtP4NAeQkjEH4/WrAaSrYl1UOUWiMx7piJpfNz4AJHG+u0zOMoJsE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244606126"
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="244606126"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 10:02:34 -0700
+X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
+   d="scan'208";a="527018619"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 10:02:32 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1negKT-001w6X-Qi;
+        Wed, 13 Apr 2022 19:58:53 +0300
+Date:   Wed, 13 Apr 2022 19:58:53 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v1 1/3] iio: imu: adis16480: Make use of device properties
+Message-ID: <YlcBTfVdtp7nUhjR@smile.fi.intel.com>
+References: <20220413144124.72537-1-andriy.shevchenko@linux.intel.com>
+ <PH0PR03MB67867FD2A0043F5331D1C5E399EC9@PH0PR03MB6786.namprd03.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] ARM: dts: at91: fix pinctrl phandles
-Content-Language: en-US
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <robh+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Ajay Kathat <ajay.kathat@microchip.com>
-References: <20220331141323.194355-1-claudiu.beznea@microchip.com>
- <20220331141323.194355-2-claudiu.beznea@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220331141323.194355-2-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <PH0PR03MB67867FD2A0043F5331D1C5E399EC9@PH0PR03MB6786.namprd03.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/03/2022 at 16:13, Claudiu Beznea wrote:
-> Commit bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all
-> gpios") introduces pinctrl phandles for pins used by individual
-> controllers to avoid failures due to commit 2ab73c6d8323 ("gpio:
-> Support GPIO controllers without pin-ranges"). For SPI controllers
-> available on SAMA5D4 and SAMA5D3 some of the pins are defined in
-> SoC specific dtsi on behalf of pinctrl-0. Adding extra pinctrl phandles
-> on board specific dts also on behalf of pinctrl-0 overwrite the pinctrl-0
-> phandle specified in SoC specific dtsi. Thus add the board specific
-> pinctrl to pinctrl-1.
+On Wed, Apr 13, 2022 at 03:25:49PM +0000, Sa, Nuno wrote:
+> > -----Original Message-----
+> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Sent: Wednesday, April 13, 2022 4:41 PM
+
+...
+
+> You beat me to do this. I actually had planned to do this next week
+> once I saw we already have fwnode_irq_get_byname(). Anyways...
 > 
-> Fixes: bf781869e5cf ("ARM: dts: at91: add pinctrl-{names, 0} for all gpios")
-> Depends-on: e8042102d11e ("ARM: dts: at91: sama5d4_xplained: fix pinctrl phandle name")
-> Reported-by: Ajay Kathat <ajay.kathat@microchip.com>
-> Co-developed-by: Ajay Kathat <ajay.kathat@microchip.com>
-> Signed-off-by: Ajay Kathat <ajay.kathat@microchip.com>
-> Tested-by: Ajay Kathat <ajay.kathat@microchip.com>
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-
-For the 2 patches:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
-
-> ---
+> Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 > 
-> Hi, Nicolas,
-> 
-> If all good with this patches please update the SHA1 on "Depends-on"
-> tag.
+> (I will still give this a test next week)
 
-Yes, sure. I did it on the "fixes" branch queued for 5.18.
-
-Thanks, best regards,
-   Nicolas
-
->   arch/arm/boot/dts/at91-sama5d3_xplained.dts | 8 ++++----
->   arch/arm/boot/dts/at91-sama5d4_xplained.dts | 4 ++--
->   2 files changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/at91-sama5d3_xplained.dts b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-> index d72c042f2850..a49c2966b41e 100644
-> --- a/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-> +++ b/arch/arm/boot/dts/at91-sama5d3_xplained.dts
-> @@ -57,8 +57,8 @@ slot@0 {
->   			};
->   
->   			spi0: spi@f0004000 {
-> -				pinctrl-names = "default";
-> -				pinctrl-0 = <&pinctrl_spi0_cs>;
-> +				pinctrl-names = "default", "cs";
-> +				pinctrl-1 = <&pinctrl_spi0_cs>;
->   				cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
->   				status = "okay";
->   			};
-> @@ -171,8 +171,8 @@ slot@0 {
->   			};
->   
->   			spi1: spi@f8008000 {
-> -				pinctrl-names = "default";
-> -				pinctrl-0 = <&pinctrl_spi1_cs>;
-> +				pinctrl-names = "default", "cs";
-> +				pinctrl-1 = <&pinctrl_spi1_cs>;
->   				cs-gpios = <&pioC 25 0>;
->   				status = "okay";
->   			};
-> diff --git a/arch/arm/boot/dts/at91-sama5d4_xplained.dts b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-> index accb92cfac44..e519d2747936 100644
-> --- a/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-> +++ b/arch/arm/boot/dts/at91-sama5d4_xplained.dts
-> @@ -81,8 +81,8 @@ usart4: serial@fc010000 {
->   			};
->   
->   			spi1: spi@fc018000 {
-> -				pinctrl-names = "default";
-> -				pinctrl-0 = <&pinctrl_spi1_cs>;
-> +				pinctrl-names = "default", "cs";
-> +				pinctrl-1 = <&pinctrl_spi1_cs>;
->   				cs-gpios = <&pioB 21 0>;
->   				status = "okay";
->   			};
-
+Thanks!
 
 -- 
-Nicolas Ferre
+With Best Regards,
+Andy Shevchenko
+
+
