@@ -2,88 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B441C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53362C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 07:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233269AbiDMHRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 03:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
+        id S233277AbiDMHT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 03:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbiDMHQ7 (ORCPT
+        with ESMTP id S230027AbiDMHTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 03:16:59 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407EE29829;
-        Wed, 13 Apr 2022 00:14:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649834079; x=1681370079;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Mb5sTyKPIpaCpRuYb3xPgCASWTnlSQ2irNU2fo4JGwg=;
-  b=DVj2lR4xrkrrQP36QXGWlL9IWLRgoGjmii24vWwv1aS2fGu10aUJ0ZqR
-   7oexm/9VUEv5L/q4jhCgazqH3nnjE58GJxrNctdRO54Quncr3defm9kwz
-   b1m2miWpnf6fqEC4ZdIeN+zYd0zDtKlOOZoJfk1E4o2f+Ufq9yYA4fLhH
-   59dMGlo4yU8Ek1Bk5SakcMwUCE6w2w8u/rsPe7WhBA6iwvLyvaV+e3Kh5
-   C/Ia5SeXT32pGXGYmbtYqsXOCuvzGGZoJDtUrXb8CxLvo6DfwFFHtZ7NT
-   ApJ+omaCF3JUOFRqUPhQHyxXGQUvlWDPfxJAwajtglYMggTY7f6jUbbjG
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,256,1643698800"; 
-   d="scan'208";a="152485273"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Apr 2022 00:14:38 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 13 Apr 2022 00:14:37 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 13 Apr 2022 00:14:34 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "Andrew Lunn" <andrew@lunn.ch>
-Subject: [Patch net] net: phy: LAN937x: added PHY_POLL_CABLE_TEST flag
-Date:   Wed, 13 Apr 2022 12:44:09 +0530
-Message-ID: <20220413071409.13530-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Wed, 13 Apr 2022 03:19:25 -0400
+Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B5C5BE39;
+        Wed, 13 Apr 2022 00:17:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=IPpag
+        3+972R44s++fbd4ZAcZ5wlqRJ02VxB1aGKpffw=; b=nEdXCtMrzOZ/zONktw5jg
+        1I09nJfdWLc33D9fu4tR5TH6vmjjL10DqtJS9HSLlbGPhEu2/zLYK8ZaIdcQwIAp
+        3lT1Sui3EmoDWNwM4loA5wVd3I+nL3blvsJBCcEIqrNLcdFRcsfXuXZIH8R3GBI1
+        4362rJv8MdczpkWAwIpCWI=
+Received: from ubuntu.localdomain (unknown [58.213.83.157])
+        by smtp1 (Coremail) with SMTP id C8mowACXpycocFZimRLWAQ--.47686S4;
+        Wed, 13 Apr 2022 14:39:38 +0800 (CST)
+From:   Bernard Zhao <zhaojunkui2008@126.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     bernard@vivo.com, Bernard Zhao <zhaojunkui2008@126.com>
+Subject: [PATCH] gpu/host1x: remove useless if(ptr) check to kfree
+Date:   Tue, 12 Apr 2022 23:39:34 -0700
+Message-Id: <20220413063934.23571-1-zhaojunkui2008@126.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-CM-TRANSID: C8mowACXpycocFZimRLWAQ--.47686S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW5KrWxZr1UAw1xWFyfXr48Crg_yoWxXwb_ur
+        1kJr1kW3yrGFnYqa17ArnxZrW0yFZ8uaykZryIga4rtryUCrn8Jw17ur1fu3WrWa1rGFyD
+        A3WxtrW5Jw17KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRpwZzPUUUUU==
+X-Originating-IP: [58.213.83.157]
+X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiYArhqlpEG2eDWwAAsb
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added the phy_poll_cable_test flag for the lan937x phy driver.
-Tested using command -  ethtool --cable-test <dev>
+This patch remove useless if(ptr) check to kfree.
 
-Fixes: 680baca546f2 ("net: phy: added the LAN937x phy support")
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
 ---
- drivers/net/phy/microchip_t1.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/host1x/fence.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-index 389df3f4293c..363bfbfa182b 100644
---- a/drivers/net/phy/microchip_t1.c
-+++ b/drivers/net/phy/microchip_t1.c
-@@ -748,6 +748,7 @@ static struct phy_driver microchip_t1_phy_driver[] = {
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_LAN937X),
- 		.name		= "Microchip LAN937x T1",
-+		.flags          = PHY_POLL_CABLE_TEST,
- 		.features	= PHY_BASIC_T1_FEATURES,
- 		.config_init	= lan87xx_config_init,
- 		.suspend	= genphy_suspend,
-
-base-commit: f45ba67eb74ab4b775616af731bdf8944afce3f1
+diff --git a/drivers/gpu/host1x/fence.c b/drivers/gpu/host1x/fence.c
+index ecab72882192..05b36bfc8b74 100644
+--- a/drivers/gpu/host1x/fence.c
++++ b/drivers/gpu/host1x/fence.c
+@@ -93,8 +93,7 @@ static void host1x_syncpt_fence_release(struct dma_fence *f)
+ {
+ 	struct host1x_syncpt_fence *sf = to_host1x_fence(f);
+ 
+-	if (sf->waiter)
+-		kfree(sf->waiter);
++	kfree(sf->waiter);
+ 
+ 	dma_fence_free(f);
+ }
 -- 
-2.33.0
+2.33.1
 
