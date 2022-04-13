@@ -2,77 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C444FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E41C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 16:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237102AbiDMQ6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 12:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
+        id S237080AbiDMQ7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 12:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232667AbiDMQ6G (ORCPT
+        with ESMTP id S232667AbiDMQ7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 12:58:06 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0295069704;
-        Wed, 13 Apr 2022 09:55:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649868945; x=1681404945;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+nqYzv4g8eqFem8dbdxen/mrdhveQU0Ba+F0FwPncek=;
-  b=gUbi0K5wOepAlSIlJKSFxNejT+G5Irn8npykzM8ADfGpGxOwKd+HgSjS
-   rd2NpPPSXXmypXS4Pa8+FN21n2dL1f60lglRcbls3NRAKYWuCdCza7lub
-   4I1mauxsX5h99SVimZPxRJAtZs0vHVmOxJTxGkNZxBWyL5Sf4umaYXy9K
-   LhrLZHLP9BnzjSeP1xRImAgXBlKgD8DkPBty7CE3DiN25wdXMkN1GTSZD
-   ucffIRsVOBD5NsRCbkPa1XpfD/+XDcPBKOakQc2PmhDsXcIExGsy5EB+F
-   gnvCU0uqJBZ0t+cSkdPoJywmn89rYTLZbeTVoZPoqCiMro2bLZdeNiZWp
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262159522"
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="262159522"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:55:44 -0700
-X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="590824572"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 09:55:43 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1negDs-001vud-Dz;
-        Wed, 13 Apr 2022 19:52:04 +0300
-Date:   Wed, 13 Apr 2022 19:52:04 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Allen Pais <apais@linux.microsoft.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v3 1/1] firmware: tee_bnxt: Use UUID API for exporting
- the UUID
-Message-ID: <Ylb/tJKaPbskV1L8@smile.fi.intel.com>
-References: <20220412113250.57997-1-andriy.shevchenko@linux.intel.com>
- <20220413164319.GA31604@lst.de>
+        Wed, 13 Apr 2022 12:59:05 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E70F6A029;
+        Wed, 13 Apr 2022 09:56:43 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 125so2317140pgc.11;
+        Wed, 13 Apr 2022 09:56:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wulehCKZ9CzkZdNSpoxl3pLVYOp3Zk9PVvJlllk+y8I=;
+        b=nyAUdImgrTwhrcUpVxaBvH+jx9VYnKRqN9BUVE/T6dn28rNpCRSiRahYH43aBiYhCP
+         jnxRsD3NeVTFgd6NrZCzqkSRJK6lihCiDKt6r1n3extUdJ4TOFHx2hmhGFbBiZPm9e8J
+         AOob+KnFLrtA9Ob3yCrR8LfRgzT293D1xFYhfwSRrp4A94A1o12h8Hpp15aJUf+7MEN6
+         YMFlUI9P2j7vSTHWOQvy5eoCOc8Lr1UadPJp8C0N5uuwvk/pULIHuOf7HGe3VqnljKmj
+         LvlHkEP2f5xvDzIZV0v58RDyQ+ljRdOc+LO7ec2FyWGAlHBIn6c8U0Ct6LreYrrwk72M
+         IxPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wulehCKZ9CzkZdNSpoxl3pLVYOp3Zk9PVvJlllk+y8I=;
+        b=KCsw4IQdU3vt6JAluvktj+KDCfJ2raj3UjfrDpzY3Ws2jG4NOW9uv+Z7VGPGpdxE3h
+         TFCOapJ6DZw1BOala7vE2B/nj1Z6+ioejziVoeGWqqWA4eFzQLAc7rxzmGAaOwx6jz+E
+         IjugPIssH3kghPEj2q3cElj08az8ACgcSvFM24NQhCQBm2wIIrMO9VIlmo7bG9qcFgGY
+         pUOeDntZXNukE9oukUQM2Uqbk/k1M8BZa7skah5zyAZF40o4rRWKh0wc9qoTuz+2zgsl
+         TIcz4CzBXqyOwQLj3Dtbi6+W2oMaZeazY3dg8Couk7KIasfX1ZmfKKvOhVE/YtH4Gmt6
+         1I5w==
+X-Gm-Message-State: AOAM532nXsPYaoLKt6LjPPuHN+apUXVodAS/maXuKhMl74+qBaGXDaym
+        KAxHV5fgO03C+GalEXL4HIQ=
+X-Google-Smtp-Source: ABdhPJzFMkSv6sxQM8M75/+HeAn97L4EpIhOemkvCXh/OetwEuhSw23yxATgg01hr3OayEksPgVJ5Q==
+X-Received: by 2002:a05:6a00:1304:b0:4e1:2338:f11e with SMTP id j4-20020a056a00130400b004e12338f11emr44265176pfu.24.1649869002880;
+        Wed, 13 Apr 2022 09:56:42 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id s89-20020a17090a69e200b001cd5b0dcaa1sm2443600pjj.17.2022.04.13.09.56.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 09:56:42 -0700 (PDT)
+Message-ID: <712c71e6-0bde-1e04-9181-5ced33de2b90@gmail.com>
+Date:   Wed, 13 Apr 2022 09:56:40 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413164319.GA31604@lst.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 5.10 000/170] 5.10.111-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220412173819.234884577@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220412173819.234884577@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 06:43:19PM +0200, Christoph Hellwig wrote:
-> On Tue, Apr 12, 2022 at 02:32:50PM +0300, Andy Shevchenko wrote:
 
-...
 
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+On 4/12/2022 10:46 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.111 release.
+> There are 170 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 14 Apr 2022 17:37:53 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.111-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Thanks!
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Florian
