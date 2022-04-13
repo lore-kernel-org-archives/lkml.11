@@ -2,131 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B6B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 154E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 14:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234537AbiDMOur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 10:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        id S234555AbiDMOu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 10:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236249AbiDMOup (ORCPT
+        with ESMTP id S236274AbiDMOuv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 10:50:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B82D644E5;
-        Wed, 13 Apr 2022 07:48:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3AE961CD2;
-        Wed, 13 Apr 2022 14:48:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB28C385A4;
-        Wed, 13 Apr 2022 14:48:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649861303;
-        bh=FgczV9vyyhtmBq+7sQB2zbK2zkbVOySmGyJEOuInnlc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TQw7UBPRl43qPWUCP2erzWWaWPQNsx70yocpG64iBv2l/aAtgrwO3qsNv+dq2+Ch5
-         JU7LOh8SUpkXyAOfn0+SnN+NSLeR0dhUGW+m4a7/20guJtrgLblegv5sNemLcgPqKl
-         6J9FTjAKTpFtGRTENxV8SurPZxzU+o/DiJl5sBZXY5wBhL1MObXsp+5qrg/fRxl1JX
-         x9+TXStgVboZIpoQYAV1bAyaKsDvgEai2GQhwx1z7TDTwAp5kz7qfxpKf9bfGC8w8k
-         OETaHeX9pWfVR+5+xQP4RoU2bnZst5FCD2aKRDDi1+lWvsAToUjeX4fbXza6rrXPK2
-         UlrExmZwnqSbw==
-Date:   Wed, 13 Apr 2022 17:48:09 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
-Message-ID: <YlbiqdqCH+j7TK80@kernel.org>
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
- <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
- <767c2100-c171-1fd3-6a92-0af2e4bf3067@intel.com>
- <20220409155423.iv2arckmvavvpegt@box.shutemov.name>
- <6c976344-fdd6-95cd-2cb0-b0e817bf0392@intel.com>
- <YlP94T1ACwxKTgep@kernel.org>
- <20220413114001.wdsi2xrm4btrghms@box.shutemov.name>
+        Wed, 13 Apr 2022 10:50:51 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D62C463BF0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:48:29 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id p10so2157776plf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 07:48:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/LdJAtOUO57Ha4IsgdkfD8oFYqd/Z71aYJmqNULy+Q=;
+        b=tDtubE/ZwH48VZrJoDlBbZ3+P3KQGydQEJdFXKPOZgToajCjO+pn4TZojzE43ltN6s
+         Ce0D9N8Rb0wPcLdJLIq4w1n1syJkOLwRvAU3gTbLNCPHkd1fJyQZAFej1vcVXzqThQpI
+         cQIWi0FWFWFUZRDlVFfCbHKV3RH0O+yGzMPZBmljFsVoO+TjZ1PnjMgq3Rf5eDxhW1wC
+         Cv/Iim/J0Zj2Jbe4/3jTDCqt7pzLtHzbrKeJ6gR7d2ef75OOCujFGYKxgn69xvFOzWxp
+         /v4yVUV762iD/MKcDOAOvrbzG+6iNxTTiuzIl5J9zzVfR2G2gQV1tqhQRpLRCuqLh2Dq
+         Q15A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/LdJAtOUO57Ha4IsgdkfD8oFYqd/Z71aYJmqNULy+Q=;
+        b=4pXdjLOkl8WMlLjXiJb9KkioE1zYUODccbs3be56i+UO32TzqkHSkYETSn9cHhU1Jj
+         uAhY6d4n/dx9zkjPU4Nn4URZWXTI1XBifOZerxttGyhXGt0xxW4CY7PekNpxhbm3VjnL
+         xNgvcMFIyio9DN8D4hyiX+/UBhhza+uM8+keFbAOFLVxgwgV+FsNSX2DIv7y6gAcwi6q
+         s1SHW32UcLWf/5lcW12FYLj9WN+zI45ajnsg547RsVZVEvXcfFM+vjF9p2yzDHtdlgPj
+         4HgAtwvvMXU4zYyE4j3Y/cBMFmoP2cgBRjNbIuuQJ0JB+N+vjkewd0UOgZKIUdmYUCyJ
+         gohQ==
+X-Gm-Message-State: AOAM532pXx7LJWFjedWE37lzeYqZEjYqiHYHsvqyDRIOVswZhZgFnpMh
+        +F/cu0ICCvtB9Evcf0Vg6wCcyw==
+X-Google-Smtp-Source: ABdhPJz2EPmb6m43FkHiFxBEpO7vn7u8K8m686phmKJ6SIsaXxoigMHrk2FsX/UcUEV3dgNYt4fFKg==
+X-Received: by 2002:a17:902:d4c3:b0:158:a79e:9bf with SMTP id o3-20020a170902d4c300b00158a79e09bfmr2237005plg.40.1649861309243;
+        Wed, 13 Apr 2022 07:48:29 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id p27-20020a056a000a1b00b004f3f63e3cf2sm47817257pfh.58.2022.04.13.07.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 07:48:28 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v8 0/4] add hugetlb_optimize_vmemmap sysctl
+Date:   Wed, 13 Apr 2022 22:47:44 +0800
+Message-Id: <20220413144748.84106-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413114001.wdsi2xrm4btrghms@box.shutemov.name>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 02:40:01PM +0300, Kirill A. Shutemov wrote:
-> On Mon, Apr 11, 2022 at 01:07:29PM +0300, Mike Rapoport wrote:
-> > On Sun, Apr 10, 2022 at 11:38:08PM -0700, Dave Hansen wrote:
-> > > On 4/9/22 08:54, Kirill A. Shutemov wrote:
-> > > > On Fri, Apr 08, 2022 at 11:55:43AM -0700, Dave Hansen wrote:
-> > > 
-> > > >>>  	if (fpi_flags & FPI_TO_TAIL)
-> > > >>>  		to_tail = true;
-> > > >>>  	else if (is_shuffle_order(order))
-> > > >>> @@ -1149,7 +1192,8 @@ static inline void __free_one_page(struct page *page,
-> > > >>>  static inline bool page_expected_state(struct page *page,
-> > > >>>  					unsigned long check_flags)
-> > > >>>  {
-> > > >>> -	if (unlikely(atomic_read(&page->_mapcount) != -1))
-> > > >>> +	if (unlikely(atomic_read(&page->_mapcount) != -1) &&
-> > > >>> +	    !PageUnaccepted(page))
-> > > >>>  		return false;
-> > > >>
-> > > >> That probably deserves a comment, and maybe its own if() statement.
-> > > > 
-> > > > Own if does not work. PageUnaccepted() is encoded in _mapcount.
-> > > > 
-> > > > What about this:
-> > > > 
-> > > > 	/*
-> > > > 	 * page->_mapcount is expected to be -1.
-> > > > 	 *
-> > > > 	 * There is an exception for PageUnaccepted(). The page type can be set
-> > > > 	 * for pages on free list. Page types are encoded in _mapcount.
-> > > > 	 *
-> > > > 	 * PageUnaccepted() will get cleared in post_alloc_hook().
-> > > > 	 */
-> > > > 	if (unlikely((atomic_read(&page->_mapcount) | PG_unaccepted) != -1))
-> > 
-> > Maybe I'm missing something, but isn't this true for any PageType?
-> 
-> PG_buddy gets clear on remove from the free list, before the chec.
-> 
-> PG_offline and PG_table pages are never on free lists.
+This series is based on next-20220407.
 
-Right, this will work 'cause PageType is inverted. I still think this
-condition is hard to parse and I liked the old variant with
-!PageUnaccepted() better.
+This series amis to add hugetlb_optimize_vmemmap sysctl to enable or disable
+the feature of optimizing vmemmap pages associated with HugeTLB pages.
 
-Maybe if we wrap the whole construct in a helper it will be less eye
-hurting.
- 
-> -- 
->  Kirill A. Shutemov
+v8:
+  - Fix compilation (scripts/selinux/mdp/mdp.c) error when
+    CONFIG_SECURITY_SELINUX is selected.
+
+v7:
+  - Fix circular dependency issue reported by kernel test robot.
+  - Introduce CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP instead of
+    STRUCT_PAGE_SIZE_IS_POWER_OF_2.
+  - Add more comments into vm.rst to explain hugetlb_optimize_vmemmap (Andrew).
+  - Drop the patch "sysctl: allow to set extra1 to SYSCTL_ONE".
+  - Add a new patch "use kstrtobool for hugetlb_vmemmap param parsing".
+  - Reuse static_key's refcount to count the number of HugeTLB pages with
+    vmemmap pages optimized to simplify the lock scheme.
+
+v6:
+  - Remove "make syncconfig" from Kbuild.
+
+v5:
+  - Fix not working properly if one is workig off of a very clean build
+    reported by Luis Chamberlain.
+  - Add Suggested-by for Luis Chamberlain.
+
+v4:
+  - Introduce STRUCT_PAGE_SIZE_IS_POWER_OF_2 inspired by Luis.
+
+v3:
+  - Add pr_warn_once() (Mike).
+  - Handle the transition from enabling to disabling (Luis)
+
+v2:
+  - Fix compilation when !CONFIG_MHP_MEMMAP_ON_MEMORY reported by kernel
+    test robot <lkp@intel.com>.
+  - Move sysctl code from kernel/sysctl.c to mm/hugetlb_vmemmap.c.
+
+Muchun Song (4):
+  mm: hugetlb_vmemmap: introduce
+    CONFIG_HUGETLB_PAGE_HAS_OPTIMIZE_VMEMMAP
+  mm: memory_hotplug: override memmap_on_memory when
+    hugetlb_free_vmemmap=on
+  mm: hugetlb_vmemmap: use kstrtobool for hugetlb_vmemmap param parsing
+  mm: hugetlb_vmemmap: add hugetlb_optimize_vmemmap sysctl
+
+ Documentation/admin-guide/kernel-parameters.txt |   6 +-
+ Documentation/admin-guide/sysctl/vm.rst         |  27 +++++++
+ Kbuild                                          |  19 +++++
+ arch/x86/mm/init_64.c                           |   2 +-
+ include/linux/hugetlb.h                         |   2 +-
+ include/linux/kconfig.h                         |   4 +
+ include/linux/memory_hotplug.h                  |   9 +++
+ include/linux/mm.h                              |   2 +-
+ include/linux/page-flags.h                      |   2 +-
+ kernel/autoconf_ext.c                           |  26 ++++++
+ mm/hugetlb_vmemmap.c                            | 102 ++++++++++++++++++++----
+ mm/hugetlb_vmemmap.h                            |   8 +-
+ mm/memory_hotplug.c                             |  27 +++++--
+ mm/sparse-vmemmap.c                             |   4 +-
+ scripts/mod/Makefile                            |   2 +
+ 15 files changed, 207 insertions(+), 35 deletions(-)
+ create mode 100644 kernel/autoconf_ext.c
 
 -- 
-Sincerely yours,
-Mike.
+2.11.0
+
