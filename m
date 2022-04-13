@@ -2,179 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BEAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61565C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 01:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231607AbiDMByF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 21:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
+        id S231614AbiDMByY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 21:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiDMByE (ORCPT
+        with ESMTP id S229959AbiDMByW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 21:54:04 -0400
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E73D28E21;
-        Tue, 12 Apr 2022 18:51:44 -0700 (PDT)
-Received: by mail-ot1-f43.google.com with SMTP id g17-20020a9d6191000000b005e8d8583c36so243504otk.8;
-        Tue, 12 Apr 2022 18:51:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UahXXLoHbUN/uWSsm7wZOky+dlLsgBSITuQWQ2zMJB0=;
-        b=RbvW7rFnb0Pknhq2FRGDsFAOp4Z8bw9S2gR4ZyuMfUJaaF4y+tdoMYn06grL5yUEGb
-         FRJScnnhtjM5/SBizzVsNEh/scGrJ3nUZ4nV3qakGupJZndI6iDACH3X+RAMN7U1rKiV
-         DizDQLFbvOWbpPylQH1I8ErpWsFC5qBPk/SQLdAKAfzF/wLeIwMBdJK3Bo7HqU1fZBXe
-         z9rEdf796krIkuOo6TJCqgNdCKfMcJId1T3QNPLLlU8Um1EpZ4ThyXvVoB2QVasensYS
-         EQxtgOxsGuUS3CgKR7catle/1fPhgZUv3b0x1ZbjBTBQ2GkrJAiK5yxTKaBq0QVgg4EZ
-         oKRw==
-X-Gm-Message-State: AOAM533e/UG8C1JL2+d0BkwjOPqadLGHAjnnxTX46NpTPH4VT97UeiSO
-        bS753WMCk7FADgVNPzvtiA==
-X-Google-Smtp-Source: ABdhPJw1RVVGof7p+rbeor/PJIlx0j0Fab9RqC9/ogqwDg+JRpNnGN3tM2pm/LWQRd82XNA0BI7Bvg==
-X-Received: by 2002:a9d:6c55:0:b0:5e9:200e:af9b with SMTP id g21-20020a9d6c55000000b005e9200eaf9bmr619549otq.351.1649814703406;
-        Tue, 12 Apr 2022 18:51:43 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id f44-20020a056871072c00b000e2b638a925sm4113661oap.49.2022.04.12.18.51.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 18:51:43 -0700 (PDT)
-Received: (nullmailer pid 1411321 invoked by uid 1000);
-        Wed, 13 Apr 2022 01:51:42 -0000
-Date:   Tue, 12 Apr 2022 20:51:42 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Satya Priya <quic_c_skakit@quicinc.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        swboyd@chromium.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Subject: Re: [PATCH V9 2/6] dt-bindings: mfd: pm8008: Add pm8008 regulator
- bindings
-Message-ID: <YlYsrlAQv/zmipqt@robh.at.kernel.org>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
- <1649166633-25872-3-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 12 Apr 2022 21:54:22 -0400
+X-Greylist: delayed 142 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 18:52:00 PDT
+Received: from mg.sunplus.com (mswedge1.sunplus.com [60.248.182.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79DC52C651;
+        Tue, 12 Apr 2022 18:52:00 -0700 (PDT)
+X-MailGates: (compute_score:DELIVER,40,3)
+Received: from 172.17.9.112
+        by mg01.sunplus.com with MailGates ESMTP Server V5.0(27729:0:AUTH_RELAY)
+        (envelope-from <lh.Kuo@sunplus.com>); Wed, 13 Apr 2022 09:49:15 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Wed, 13 Apr 2022 09:49:11 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Wed, 13 Apr 2022 09:49:11 +0800
+From:   =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Li-hao Kuo <lhjeff911@gmail.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "amitk@kernel.org" <amitk@kernel.org>,
+        "rui.zhang@intel.com" <rui.zhang@intel.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Subject: RE: [PATCH v7 2/2] dt-bindings:thermal: Add Sunplus SP7021 schema
+Thread-Topic: [PATCH v7 2/2] dt-bindings:thermal: Add Sunplus SP7021 schema
+Thread-Index: AQHYTYGRBrvPBaFpFkWb1HIe0r3aqqzrcwCAgAGhdOA=
+Date:   Wed, 13 Apr 2022 01:49:11 +0000
+Message-ID: <15d27f6131994b2d981b3fcaebdfbb3b@sphcmbx02.sunplus.com.tw>
+References: <cover.1649662002.git.lhjeff911@gmail.com>
+ <f24781413a8a305b28a1e9c3861263975eebaee6.1649662002.git.lhjeff911@gmail.com>
+ <36b7de46-7e8b-fbb5-6eeb-89180d358d84@kernel.org>
+In-Reply-To: <36b7de46-7e8b-fbb5-6eeb-89180d358d84@kernel.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.51]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649166633-25872-3-git-send-email-quic_c_skakit@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 07:20:29PM +0530, Satya Priya wrote:
-> Add bindings for pm8008 regulators device.
-> 
-> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-> ---
-> Changes in V8:
->  - This is split from pm8008.yaml binding.
-> 
-> Changes in V9:
->  - Remove description for reg and drop unused phandle from example.
-> 
->  .../bindings/mfd/qcom,pm8008-regulators.yaml       | 84 ++++++++++++++++++++++
->  1 file changed, 84 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
-> new file mode 100644
-> index 0000000..9a82a8b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008-regulators.yaml
-> @@ -0,0 +1,84 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/qcom,pm8008-regulators.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm Technologies, Inc. PM8008 Regulator bindings
-> +
-> +maintainers:
-> +  - Satya Priya <quic_c_skakit@quicinc.com>
-> +
-> +description: |
-> +  Qualcomm Technologies, Inc. PM8008 is an I2C controlled PMIC
-> +  containing 7 LDO regulators. This binding specifies the PM8008
-> +  regulator peripherals of PM8008 device.
-> +
-> +properties:
-> +  compatible:
-> +    const: qcom,pm8008-regulators
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-
-> +  "#address-cells":
-> +    const: 0
-> +
-> +  "#size-cells":
-> +    const: 0
-
-Not needed, you don't have child nodes with 'reg'.
-
-> +
-> +  vdd_l1_l2-supply:
-> +    description: Input supply phandle of ldo1 and ldo2 regulators.
-> +
-> +  vdd_l3_l4-supply:
-> +    description: Input supply phandle of ldo3 and ldo4 regulators.
-> +
-> +  vdd_l5-supply:
-> +    description: Input supply phandle of ldo5 regulator.
-> +
-> +  vdd_l6-supply:
-> +    description: Input supply phandle of ldo6 regulator.
-> +
-> +  vdd_l7-supply:
-> +    description: Input supply phandle of ldo7 regulator.
-> +
-> +patternProperties:
-> +  "^ldo[1-7]$":
-> +    type: object
-> +    $ref: "../regulator/regulator.yaml#"
-
-/schemas/regulator/...
-
-> +    description: PM8008 regulator peripherals of PM8008 regulator device
-> +
-> +required:
-> +  - compatible
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/mfd/qcom-pm8008.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      pmic@9 {
-> +        compatible = "qcom,pm8008-regulators";
-> +        reg = <0x9>;
-> +        #address-cells = <0>;
-> +        #size-cells = <0>;
-> +
-> +        vdd_l1_l2-supply = <&vreg_s8b_1p2>;
-> +        vdd_l3_l4-supply = <&vreg_s1b_1p8>;
-> +        vdd_l5-supply = <&vreg_bob>;
-> +        vdd_l6-supply = <&vreg_bob>;
-> +        vdd_l7-supply = <&vreg_bob>;
-> +
-> +        pm8008_l1: ldo1 {
-> +          regulator-name = "pm8008_l1";
-> +          regulator-min-microvolt = <950000>;
-> +          regulator-max-microvolt = <1300000>;
-> +        };
-> +      };
-> +    };
-> +...
-> -- 
-> 2.7.4
-> 
-> 
+SGkgTXIuIEtyenlzenRvZg0KDQpJJ20gc29ycnkgZm9yIHRoYXQuIEkgbWlzdW5kZXJzdG9vZCBh
+dCB0aGUgYmVnaW5uaW5nDQoNCkkgd2lsbCBjaGFuZ2UgdGhlIG5hbWUgdG8gc3VucGx1cyx0aGVy
+bWFsLnlhbWwgaW4gdGhlIG5leHQgY29tbWl0Lg0KDQpUaGFua3MgZm9yIHlvdXIgY29tbWVudC4N
+Cg0KQmVzdCByZWdhcmRzLA0KTGkgSGFvIEt1bw0KDQo+IFlvdSBzZW50IHY2IHdpdGhvdXQgaW1w
+bGVtZW50aW5nIHRoZSBjaGFuZ2VzLiBJIHBvaW50ZWQgb3V0IHRoYXQgeW91IGRpZCBub3QgZm9s
+bG93IHdoYXQgSSBhc2tlZCBmb3IuDQo+IE5vdyB5b3Ugc2VudCB2NyBhbHNvIHdpdGhvdXQgaW1w
+bGVtZW50aW5nIHRoZXNlIGNoYW5nZXMsIGFnYWluLg0KPiANCj4gWW91IGFsc28gZGlkIG5vdCBk
+aXNjdXNzIGl0IHdpdGggbWUsIGRpZCBub3QgY29tZSB3aXRoIGNvdW50ZXIgYXJndW1lbnRzLCBv
+dGhlciBwcm9wb3NhbHMuIFRoZXJlZm9yZSBpdA0KPiBsb29rcyBsaWtlIGVpdGhlciB5b3UgbWlz
+dW5kZXJzdG9vZCBtZSBvciB5b3UgaWdub3JlZCBteSBjb21tZW50cy4NCj4gDQo+IExldCdzIGFz
+c3VtZSBmaXJzdCBjYXNlLCBzbyBJIHdpbGwgcmVwZWF0LiBOYW1lIHNob3VsZCBiZSBvbmUgb2Y6
+DQo+IDEuIHN1bnBsdXMsdGhlcm1hbC55YW1sDQo+IDIuIHN1bnBsdXMsc3A3MDIxLXRoZXJtYWwu
+eWFtbA0KDQoNCg0KDQoNCg==
