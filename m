@@ -2,296 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 916C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175C1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 08:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233972AbiDMIog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 04:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
+        id S233980AbiDMIpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 04:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234379AbiDMInE (ORCPT
+        with ESMTP id S229495AbiDMIpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 04:43:04 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3943BC39;
-        Wed, 13 Apr 2022 01:40:31 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F3AB813D5;
-        Wed, 13 Apr 2022 01:40:30 -0700 (PDT)
-Received: from e121896.arm.com (unknown [10.57.8.254])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 203933F5A1;
-        Wed, 13 Apr 2022 01:40:29 -0700 (PDT)
-From:   James Clark <james.clark@arm.com>
-To:     acme@kernel.org, linux-perf-users@vger.kernel.org,
-        leo.yan@linaro.com
-Cc:     German.Gomez@arm.com, James Clark <james.clark@arm.com>,
-        Luke Dare <Luke.Dare@arm.com>, Al Grant <al.grant@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] perf: docs: Add man page entry for Arm SPE
-Date:   Wed, 13 Apr 2022 09:40:21 +0100
-Message-Id: <20220413084021.2556142-1-james.clark@arm.com>
-X-Mailer: git-send-email 2.28.0
+        Wed, 13 Apr 2022 04:45:40 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637C84EF5A;
+        Wed, 13 Apr 2022 01:43:16 -0700 (PDT)
+X-UUID: 0bbbdd5bd93344c480f5c0971460dec0-20220413
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:0530d422-fb45-401b-be82-18cd9bb43ebc,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:516802a9-d103-4e36-82b9-b0e86991b3df,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 0bbbdd5bd93344c480f5c0971460dec0-20220413
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <jason-jh.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 203685718; Wed, 13 Apr 2022 16:43:12 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 13 Apr 2022 16:43:11 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 13 Apr 2022 16:43:10 +0800
+Message-ID: <1c37ca0eb8fad7afd4eb4e32566d8affd71c894f.camel@mediatek.com>
+Subject: Re: [PATCH v18 03/10] soc: mediatek: add mtk-mmsys support for
+ mt8195 vdosys0
+From:   Jason-JH Lin <jason-jh.lin@mediatek.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>, <kbuild@lists.01.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     <lkp@intel.com>, <kbuild-all@lists.01.org>, <fshao@chromium.org>,
+        "David Airlie" <airlied@linux.ie>, <singo.chang@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <roy-cw.yeh@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        <devicetree@vger.kernel.org>, <nancy.lin@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>, <hsinyi@chromium.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <moudy.ho@mediatek.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Date:   Wed, 13 Apr 2022 16:43:10 +0800
+In-Reply-To: <202204130935.urqkcDrG-lkp@intel.com>
+References: <202204130935.urqkcDrG-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SPE integration in Perf has quite a few usability quirks that
-can't be found by just reading the reference manual. So document this
-and at the same time add a summary of the feature that is also hard to
-find elsewhere.
+Hi Dan,
 
-Co-authored-by: Luke Dare <Luke.Dare@arm.com>
-Co-authored-by: Al Grant <al.grant@arm.com>
-Signed-off-by: James Clark <james.clark@arm.com>
----
- tools/perf/Documentation/perf-arm-spe.txt | 218 ++++++++++++++++++++++
- tools/perf/Documentation/perf.txt         |   2 +-
- 2 files changed, 219 insertions(+), 1 deletion(-)
- create mode 100644 tools/perf/Documentation/perf-arm-spe.txt
+Thanks for the reviews.
 
-diff --git a/tools/perf/Documentation/perf-arm-spe.txt b/tools/perf/Documentation/perf-arm-spe.txt
-new file mode 100644
-index 000000000000..bf03222e9a68
---- /dev/null
-+++ b/tools/perf/Documentation/perf-arm-spe.txt
-@@ -0,0 +1,218 @@
-+perf-arm-spe(1)
-+================
-+
-+NAME
-+----
-+perf-arm-spe - Support for Arm Statistical Profiling Extension within Perf tools
-+
-+SYNOPSIS
-+--------
-+[verse]
-+'perf record' -e arm_spe//
-+
-+DESCRIPTION
-+-----------
-+
-+The SPE (Statistical Profiling Extension) feature provides accurate attribution of latencies and
-+ events down to individual instructions. Rather than being interrupt-driven, it picks an
-+instruction to sample and then captures data for it during execution. Data includes execution time
-+in cycles. For loads and stores it also includes data address, cache miss events, and data origin.
-+
-+The sampling has 5 stages:
-+
-+  1. Choose an operation
-+  2. Collect data about the operation
-+  3. Optionally discard the record based on a filter
-+  4. Write the record to memory
-+  5. Interrupt when the buffer is full
-+
-+Choose an operation
-+~~~~~~~~~~~~~~~~~~~
-+
-+This is chosen from a sample population, for SPE this is an IMPLEMENTATION DEFINED choice of all
-+architectural instructions or all micro-ops. Sampling happens at a programmable interval. The
-+architecture provides a mechanism for the SPE driver to infer the minimum interval at which it should
-+sample. This minimum interval is used by the driver if no interval is specified. A pseudo-random
-+perturbation is also added to the sampling interval by default.
-+
-+Collect data about the operation
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+Program counter, PMU events, timings and data addresses related to the operation are recorded.
-+Sampling ensures there is only one sampled operation is in flight.
-+
-+Optionally discard the record based on a filter
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+Based on programmable criteria, choose whether to keep the record or discard it. If the record is
-+discarded then the flow stops here for this sample.
-+
-+Write the record to memory
-+~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+The record is appended to a memory buffer
-+
-+Interrupt when the buffer is full
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+When the buffer fills, an interrupt is sent and the driver signals Perf to collect the records.
-+Perf saves the raw data in the perf.data file.
-+
-+Opening the file
-+----------------
-+
-+Up until this point no decoding of the SPE data was done by either the kernel or Perf. Only when the
-+recorded file is opened with 'perf report' or 'perf script' does the decoding happen. When decoding
-+the data, Perf generates "synthetic samples" as if these were generated at the time of the
-+recording. These samples are the same as if normal sampling was done by Perf without using SPE,
-+although they may have more attributes associated with them. For example a normal sample may have
-+just the instruction pointer, but an SPE sample can have data addresses and latency attributes.
-+
-+Why Sampling?
-+-------------
-+
-+ - Sampling, rather than tracing, cuts down the profiling problem to something more manageable for
-+ hardware. Only one sampled operation is in flight at a time.
-+
-+ - Allows precise attribution data, including: Full PC of instruction, data virtual and physical
-+ addresses.
-+
-+ - Allows correlation between an instruction and events, such as TLB and cache miss. (Data source
-+ indicates which particular cache was hit, but the meaning is implementation defined because
-+ different implementations can have different cache configurations.)
-+
-+However, SPE does not provide any call-graph information, and relies on statistical methods.
-+
-+Collisions
-+----------
-+
-+When an operation is sampled while a previous sampled operation has not finished, a collision
-+occurs. The new sample is dropped. Collisions affect the integrity of the data, so the sample rate
-+should be set to avoid collisions.
-+
-+The 'sample_collision' PMU event can be used to determine the number of lost samples. Although this
-+count is based on collisions _before_ filtering occurs. Therefore this can not be used as an exact
-+number for samples dropped that would have made it through the filter, but can be a rough
-+guide.
-+
-+The effect of microarchitectural sampling
-+-----------------------------------------
-+
-+If an implementation samples micro-operations instead of instructions, the results of sampling must
-+be weighted accordingly.
-+
-+For example, if a given instruction A is always converted into two micro-operations, A0 and A1, it
-+becomes twice as likely to appear in the sample population.
-+
-+The coarse effect of conversions, and, if applicable, sampling of speculative operations, can be
-+estimated from the 'sample_pop' and 'inst_retired' PMU events.
-+
-+Kernel Requirements
-+-------------------
-+
-+The ARM_SPE_PMU config must be set to build as either a module or statically.
-+
-+Depending on CPU model, the kernel may need to be booted with page table isolation disabled
-+(kpti=off). If KPTI needs to be disabled, this will fail with a console message "profiling buffer
-+inaccessible. Try passing 'kpti=off' on the kernel command line".
-+
-+Capturing SPE with perf command-line tools
-+------------------------------------------
-+
-+You can record a session with SPE samples:
-+
-+  perf record -e arm_spe// -- ./mybench
-+
-+The sample period is set from the -c option, and because the minimum interval is used by default
-+it's recommended to set this to a higher value. The value is written to PMSIRR.INTERVAL.
-+
-+Config parameters
-+~~~~~~~~~~~~~~~~~
-+
-+These are placed between the // in the event and comma separated. For example '-e
-+arm_spe/load_filter=1,min_latency=10/'
-+
-+  branch_filter=1     - collect branches only (PMSFCR.B)
-+  event_filter=<mask> - filter on specific events (PMSEVFR) - see bitfield description below
-+  jitter=1            - use jitter to avoid resonance when sampling (PMSIRR.RND)
-+  load_filter=1       - collect loads only (PMSFCR.LD)
-+  min_latency=<n>     - collect only samples with this latency or higher* (PMSLATFR)
-+  pa_enable=1         - collect physical address (as well as VA) of loads/stores (PMSCR.PA) - requires privilege
-+  pct_enable=1        - collect physical timestamp instead of virtual timestamp (PMSCR.PCT) - requires privilege
-+  store_filter=1      - collect stores only (PMSFCR.ST)
-+  ts_enable=1         - enable timestamping with value of generic timer (PMSCR.TS)
-+
-++++*+++ Latency is the total latency from the point at which sampling started on that instruction, rather
-+than only the execution latency.
-+
-+Only some events can be filtered on; these include:
-+
-+  bit 1     - instruction retired (i.e. omit speculative instructions)
-+  bit 3     - L1D refill
-+  bit 5     - TLB refill
-+  bit 7     - mispredict
-+  bit 11    - misaligned access
-+
-+So to sample just retired instructions:
-+
-+  perf record -e arm_spe/event_filter=2/ -- ./mybench
-+
-+or just mispredicted branches:
-+
-+  perf record -e arm_spe/event_filter=0x80/ -- ./mybench
-+
-+Viewing the data
-+~~~~~~~~~~~~~~~~~
-+
-+By default perf report and perf script will assign samples to separate groups depending on the
-+attributes/events of the SPE record. Because instructions can have multiple events associated with
-+them, the samples in these groups are not necessarily unique. For example perf report shows these
-+groups:
-+
-+  Available samples
-+  0 arm_spe//
-+  0 dummy:u
-+  21 l1d-miss
-+  897 l1d-access
-+  5 llc-miss
-+  7 llc-access
-+  2 tlb-miss
-+  1K tlb-access
-+  36 branch-miss
-+  0 remote-access
-+  900 memory
-+
-+The arm_spe// and dummy:u events are implementation details and are expected to be empty.
-+
-+To get a full list of unique samples that are not sorted into groups, set the itrace option to
-+generate 'instruction' samples. The period option is also taken into account, so set it to 1
-+instruction unless you want to further downsample the already sampled SPE data:
-+
-+  perf report --itrace=i1i
-+
-+Memory access details are also stored on the samples and this can be viewed with:
-+
-+  perf report --mem-mode
-+
-+Common errors
-+~~~~~~~~~~~~~
-+
-+ - "Cannot find PMU `arm_spe'. Missing kernel support?"
-+
-+   Module not built or loaded, KPTI not disabled (see above), or running on a VM
-+
-+ - "Arm SPE CONTEXT packets not found in the traces."
-+
-+   Root privilege is required to collect context packets. But these only increase the accuracy of
-+   assigning PIDs to kernel samples. For userspace sampling this can be ignored.
-+
-+ - Excessively large perf.data file size
-+
-+   Increase sampling interval (see above)
-+
-+
-+SEE ALSO
-+--------
-+
-+linkperf:perf-record[1], linkperf:perf-script[1], linkperf:perf-report[1],
-+linkperf:perf-inject[1]
-diff --git a/tools/perf/Documentation/perf.txt b/tools/perf/Documentation/perf.txt
-index 71ebdf8125de..ba3df49c169d 100644
---- a/tools/perf/Documentation/perf.txt
-+++ b/tools/perf/Documentation/perf.txt
-@@ -77,7 +77,7 @@ linkperf:perf-stat[1], linkperf:perf-top[1],
- linkperf:perf-record[1], linkperf:perf-report[1],
- linkperf:perf-list[1]
- 
--linkperf:perf-annotate[1],linkperf:perf-archive[1],
-+linkperf:perf-annotate[1],linkperf:perf-archive[1],linkperf:perf-arm-spe[1],
- linkperf:perf-bench[1], linkperf:perf-buildid-cache[1],
- linkperf:perf-buildid-list[1], linkperf:perf-c2c[1],
- linkperf:perf-config[1], linkperf:perf-data[1], linkperf:perf-diff[1],
+On Wed, 2022-04-13 at 09:07 +0300, Dan Carpenter wrote:
+> Hi "jason-jh.lin",
+> 
+> url:    
+> https://urldefense.com/v3/__https://github.com/intel-lab-lkp/linux/commits/jason-jh-lin/Add-Mediatek-Soc-DRM-vdosys0-support-for-mt8195/20220412-183359__;!!CTRNKA9wMg0ARbw!wAjdEcyQM5SvYaLtDA1d-7DTP-0V0x2EYmyKkpr3QDeGXEknO3vUGir-oiGEYodb6RAr$
+>  
+> base:   git://anongit.freedesktop.org/drm/drm drm-next
+> config: arc-randconfig-m031-20220411 (
+> https://urldefense.com/v3/__https://download.01.org/0day-ci/archive/20220413/202204130935.urqkcDrG-lkp@intel.com/config__;!!CTRNKA9wMg0ARbw!wAjdEcyQM5SvYaLtDA1d-7DTP-0V0x2EYmyKkpr3QDeGXEknO3vUGir-oiGEYvQ-IvSq$
+>  )
+> compiler: arc-elf-gcc (GCC) 11.2.0
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> smatch warnings:
+> drivers/soc/mediatek/mtk-mmsys.c:315 mtk_mmsys_probe() warn: passing
+> zero to 'PTR_ERR'
+> 
+> vim +/PTR_ERR +315 drivers/soc/mediatek/mtk-mmsys.c
+> 
+> 13032709e23285 Matthias Brugger       2020-03-25  281  static int
+> mtk_mmsys_probe(struct platform_device *pdev)
+> 13032709e23285 Matthias Brugger       2020-03-25  282  {
+> 2c758e301ed95a Enric Balletbo i Serra 2020-03-25  283  	struct
+> device *dev = &pdev->dev;
+> 13032709e23285 Matthias Brugger       2020-03-25  284  	struct
+> platform_device *clks;
+> 667c769246b01c Enric Balletbo i Serra 2020-03-25  285  	struct
+> platform_device *drm;
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  286  	const
+> struct mtk_mmsys_match_data *match_data;
+> ce15e7faa2fc54 CK Hu                  2021-03-17  287  	struct
+> mtk_mmsys *mmsys;
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  288  	struct
+> resource *res;
+> 2c758e301ed95a Enric Balletbo i Serra 2020-03-25  289  	int
+> ret;
+> 2c758e301ed95a Enric Balletbo i Serra 2020-03-25  290  
+> ce15e7faa2fc54 CK Hu                  2021-03-17  291  	mmsys =
+> devm_kzalloc(dev, sizeof(*mmsys), GFP_KERNEL);
+> ce15e7faa2fc54 CK Hu                  2021-03-17  292  	if
+> (!mmsys)
+> ce15e7faa2fc54 CK Hu                  2021-03-17  293  		
+> return -ENOMEM;
+> ce15e7faa2fc54 CK Hu                  2021-03-17  294  
+> ce15e7faa2fc54 CK Hu                  2021-03-17  295  	mmsys-
+> >regs = devm_platform_ioremap_resource(pdev, 0);
+> ce15e7faa2fc54 CK Hu                  2021-03-17  296  	if
+> (IS_ERR(mmsys->regs)) {
+> ce15e7faa2fc54 CK Hu                  2021-03-17  297  		
+> ret = PTR_ERR(mmsys->regs);
+> cc6576029aedc7 Enric Balletbo i Serra 2020-10-06  298  		
+> dev_err(dev, "Failed to ioremap mmsys registers: %d\n", ret);
+> 2c758e301ed95a Enric Balletbo i Serra 2020-03-25  299  		
+> return ret;
+> 2c758e301ed95a Enric Balletbo i Serra 2020-03-25  300  	}
+> 2c758e301ed95a Enric Balletbo i Serra 2020-03-25  301  
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  302  	spin_lo
+> ck_init(&mmsys->lock);
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  303  
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  304  	mmsys-
+> >rcdev.owner = THIS_MODULE;
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  305  	mmsys-
+> >rcdev.nr_resets = 32;
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  306  	mmsys-
+> >rcdev.ops = &mtk_mmsys_reset_ops;
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  307  	mmsys-
+> >rcdev.of_node = pdev->dev.of_node;
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  308  	ret =
+> devm_reset_controller_register(&pdev->dev, &mmsys->rcdev);
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  309  	if
+> (ret) {
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  310  		
+> dev_err(&pdev->dev, "Couldn't register mmsys reset controller: %d\n",
+> ret);
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  311  		
+> return ret;
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  312  	}
+> f27ef2856343e2 Enric Balletbo i Serra 2021-09-30  313  
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  314  	res =
+> platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12 @315  	if
+> (PTR_ERR(res)) {
+> 
+> You probably meant IS_ERR() instead of PTR_ERR().  But actually
+> platform_get_resource() does not return error pointers, it returns
+> NULL so the correct check is:
+> 
+> 	if (!res) {
+> 
+Yes, I missed this fix and I will also apply the fix to 
+mtk_drm_drv.c:639 in [v18,07/10] of this series.
+
+Thank you!
+
+Regards,
+Jason-JH.Lin
+
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  316  		
+> dev_err(dev, "Couldn't get mmsys resource\n");
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  317  		
+> return -EINVAL;
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  318  	}
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  319  	mmsys-
+> >io_start = res->start;
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  320  
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  321  	match_d
+> ata = of_device_get_match_data(dev);
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  322  	if
+> (match_data->num_drv_data > 1) {
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  323  		
+> /* This SoC has multiple mmsys channels */
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  324  		
+> ret = mtk_mmsys_find_match_drvdata(mmsys, match_data);
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  325  		
+> if (ret < 0) {
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  326  		
+> 	dev_err(dev, "Couldn't get match driver data\n");
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  327  		
+> 	return ret;
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  328  		
+> }
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  329  		
+> mmsys->data = match_data->drv_data[ret];
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  330  	} else
+> {
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  331  		
+> dev_dbg(dev, "Using single mmsys channel\n");
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  332  		
+> mmsys->data = match_data->drv_data[0];
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  333  	}
+> 8cfc54a36d3e79 jason-jh.lin           2022-04-12  334  
+> ce15e7faa2fc54 CK Hu                  2021-03-17  335  	platfor
+> m_set_drvdata(pdev, mmsys);
+> 13032709e23285 Matthias Brugger       2020-03-25  336  
+> ce15e7faa2fc54 CK Hu                  2021-03-17  337  	clks =
+> platform_device_register_data(&pdev->dev, mmsys->data->clk_driver,
+> 13032709e23285 Matthias Brugger       2020-03-25  338  		
+> 			     PLATFORM_DEVID_AUTO, NULL, 0);
+> 13032709e23285 Matthias Brugger       2020-03-25  339  	if
+> (IS_ERR(clks))
+> 13032709e23285 Matthias Brugger       2020-03-25  340  		
+> return PTR_ERR(clks);
+> 13032709e23285 Matthias Brugger       2020-03-25  341  
+> 667c769246b01c Enric Balletbo i Serra 2020-03-25  342  	drm =
+> platform_device_register_data(&pdev->dev, "mediatek-drm",
+> 667c769246b01c Enric Balletbo i Serra 2020-03-25  343  		
+> 			    PLATFORM_DEVID_AUTO, NULL, 0);
+> ff34e17cf9bce8 Wei Yongjun            2020-05-06  344  	if
+> (IS_ERR(drm)) {
+> ff34e17cf9bce8 Wei Yongjun            2020-05-06  345  		
+> platform_device_unregister(clks);
+> 667c769246b01c Enric Balletbo i Serra 2020-03-25  346  		
+> return PTR_ERR(drm);
+> ff34e17cf9bce8 Wei Yongjun            2020-05-06  347  	}
+> 667c769246b01c Enric Balletbo i Serra 2020-03-25  348  
+> 13032709e23285 Matthias Brugger       2020-03-25  349  	return
+> 0;
+> 13032709e23285 Matthias Brugger       2020-03-25  350  }
+> 
 -- 
-2.28.0
+Jason-JH Lin <jason-jh.lin@mediatek.com>
 
