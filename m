@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B94BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Apr 2022 21:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239045AbiDMVO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 17:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55320 "EHLO
+        id S239055AbiDMVPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 17:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239032AbiDMVNK (ORCPT
+        with ESMTP id S239005AbiDMVNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 17:13:10 -0400
+        Wed, 13 Apr 2022 17:13:06 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD82344A33;
-        Wed, 13 Apr 2022 14:10:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4327F3A5C1;
+        Wed, 13 Apr 2022 14:10:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649884247; x=1681420247;
+  t=1649884243; x=1681420243;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TtQBkc71W/eE9bza27771JItHGMI7ZHCR/obhz2nAK0=;
-  b=Cr7xtMr76CVXDf1v69X7XjR6DImUkVj1yV16N+OC13sYeUcE08xgZ1ND
-   MdNrAPPUyVNd6bPrj9wlt4CCrGr3DBEgIN1JhT/2e99JJy9Q09dhURNZp
-   YRybhxJLwHkdAVK9T8xHMOxKqHyfTwbyWrpaDwNH5JpS8SiNWeeAnjPXN
-   ff7fPlR8X4t+O7o7rAcSW9VNUMBotB1M39jkeK6yvclzLi9WkskQ8xAE7
-   60THUbJq2fMu6qqr4XfExlbwnaGB8JvUIwCy02jYz++vCx6OlmY0o0+QJ
-   dyruq7/XDPlaPQHvlXilpDWRMSqeKV0sPEuFba+m+KaRKVWXa6SMlSnCf
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="323219039"
+  bh=yhqYq03R1gOWee2UyUVLupzCQlollDEDnN5WKIJtgE8=;
+  b=H3ZOpCI2gzjHrJlqWE3JJBoLkZojelprf/KvIeouAA9ma8zBpE9UUzZI
+   eQaa3HgL6PIbIGdQL0JuvBKgNIRKXu/MuMVbsbiGUhLyQNiMw42s1arvz
+   /MIbIXLgvD2AJjWmkP+/hiUSekG9kQtSAWzHbEl5rlTNmE/VUJSwgFVnW
+   A2F6GTm/xnwCWnRNMzGGu/VNKBsH1W4RqDwzcCtjLmncU+tOuI8N6FSf/
+   pucpEzwusAj9alvnpcqC1QtrWNx7PdxJY+WtYvS2mhyQAA+IL/3bp3ynU
+   x41qj5nYt5dSdi8oL+RGD09GdR013KCl8wkGCxPN5I+epR1T4fb8YOpth
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="323219003"
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="323219039"
+   d="scan'208";a="323219003"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:44 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:41 -0700
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="725054290"
+   d="scan'208";a="725054246"
 Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:44 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 14:10:41 -0700
 From:   Reinette Chatre <reinette.chatre@intel.com>
 To:     dave.hansen@linux.intel.com, jarkko@kernel.org, tglx@linutronix.de,
         bp@alien8.de, luto@kernel.org, mingo@redhat.com,
@@ -46,9 +46,9 @@ Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
         cedric.xing@intel.com, haitao.huang@intel.com,
         mark.shanahan@intel.com, vijay.dhanraj@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V4 17/31] x86/sgx: Tighten accessible memory range after enclave initialization
-Date:   Wed, 13 Apr 2022 14:10:17 -0700
-Message-Id: <1eaa05cc46a09728036060b209deb2cf0351eb62.1649878359.git.reinette.chatre@intel.com>
+Subject: [PATCH V4 04/31] x86/sgx: Add wrapper for SGX2 EAUG function
+Date:   Wed, 13 Apr 2022 14:10:04 -0700
+Message-Id: <62915f9ff84ae41f363a3a67a5a86ee4e0f6cc7e.1649878359.git.reinette.chatre@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1649878359.git.reinette.chatre@intel.com>
 References: <cover.1649878359.git.reinette.chatre@intel.com>
@@ -58,32 +58,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before an enclave is initialized the enclave's memory range is unknown.
-The enclave's memory range is learned at the time it is created via the
-SGX_IOC_ENCLAVE_CREATE ioctl() where the provided memory range is
-obtained from an earlier mmap() of /dev/sgx_enclave. After an enclave
-is initialized its memory can be mapped into user space (mmap()) from
-where it can be entered at its defined entry points.
+Add a wrapper for the EAUG ENCLS leaf function used to
+add a page to an initialized enclave.
 
-With the enclave's memory range known after it is initialized there is
-no reason why it should be possible to map memory outside this range.
+EAUG:
+1) Stores all properties of the new enclave page in the SGX
+   hardware's Enclave Page Cache Map (EPCM).
+2) Sets the PENDING bit in the EPCM entry of the enclave page.
+   This bit is cleared by the enclave by invoking ENCLU leaf
+   function EACCEPT or EACCEPTCOPY.
 
-Lock down access to the initialized enclave's memory range by denying
-any attempt to map memory outside its memory range.
-
-Locking down the memory range also makes adding pages to an initialized
-enclave more efficient. Pages are added to an initialized enclave by
-accessing memory that belongs to the enclave's memory range but not yet
-backed by an enclave page. If it is possible for user space to map
-memory that does not form part of the enclave then an access to this
-memory would eventually fail. Failures range from a prompt general
-protection fault if the access was an ENCLU[EACCEPT] from within the
-enclave, or a page fault via the vDSO if it was another access from
-within the enclave, or a SIGBUS (also resulting from a page fault) if
-the access was from outside the enclave.
-
-Disallowing invalid memory to be mapped in the first place avoids
-preventable failures.
+Access from within the enclave to the new enclave page is not
+possible until the PENDING bit is cleared.
 
 Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
@@ -92,27 +78,30 @@ Changes since V3:
 - Add Jarkko's Reviewed-by tag.
 
 Changes since V1:
-- Add comment (Jarkko).
+- Split original patch ("x86/sgx: Add wrappers for SGX2 functions")
+  in three to introduce the SGX2 functions separately (Jarkko).
+- Rewrite commit message to include how the EPCM within the hardware
+  is changed by the SGX2 function as well as any calling
+  conditions (Jarkko).
 
- arch/x86/kernel/cpu/sgx/encl.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/x86/kernel/cpu/sgx/encls.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-index 7ccda6fe1f8f..11f97fdcac1e 100644
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -402,6 +402,11 @@ int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
+diff --git a/arch/x86/kernel/cpu/sgx/encls.h b/arch/x86/kernel/cpu/sgx/encls.h
+index 7a1ecf704ec1..99004b02e2ed 100644
+--- a/arch/x86/kernel/cpu/sgx/encls.h
++++ b/arch/x86/kernel/cpu/sgx/encls.h
+@@ -227,4 +227,10 @@ static inline int __emodt(struct sgx_secinfo *secinfo, void *addr)
+ 	return __encls_ret_2(EMODT, secinfo, addr);
+ }
  
- 	XA_STATE(xas, &encl->page_array, PFN_DOWN(start));
- 
-+	/* Disallow mapping outside enclave's address range. */
-+	if (test_bit(SGX_ENCL_INITIALIZED, &encl->flags) &&
-+	    (start < encl->base || end > encl->base + encl->size))
-+		return -EACCES;
++/* Zero a page of EPC memory and add it to an initialized enclave. */
++static inline int __eaug(struct sgx_pageinfo *pginfo, void *addr)
++{
++	return __encls_2(EAUG, pginfo, addr);
++}
 +
- 	/*
- 	 * Disallow READ_IMPLIES_EXEC tasks as their VMA permissions might
- 	 * conflict with the enclave page permissions.
+ #endif /* _X86_ENCLS_H */
 -- 
 2.25.1
 
