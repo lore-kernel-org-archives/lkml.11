@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D51C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E078CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353097AbiDNOfI (ORCPT
+        id S1353003AbiDNOep (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
+        Thu, 14 Apr 2022 10:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343996AbiDNNjd (ORCPT
+        with ESMTP id S1343509AbiDNNjD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:33 -0400
+        Thu, 14 Apr 2022 09:39:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A264EA37;
-        Thu, 14 Apr 2022 06:36:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E79120;
+        Thu, 14 Apr 2022 06:34:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2008EB82984;
-        Thu, 14 Apr 2022 13:36:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE6CC385A1;
-        Thu, 14 Apr 2022 13:36:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36286B8296A;
+        Thu, 14 Apr 2022 13:34:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 777BBC385A9;
+        Thu, 14 Apr 2022 13:34:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943389;
-        bh=iWPJw6roQg89od+10rxshYq507raroLDi8REkbu28ig=;
+        s=korg; t=1649943255;
+        bh=yjLGCQhLuR2ENNIxQCgjWECgQ0+Ex0Sw31OCB8GOKWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bmennmfILIku5nxYFO+2tKuvaPR6qEqzGIvvKPVqLJ+Oc2qDbcRyCetaKNaRpRWl5
-         DaoWS1n21Cw950ge85+RS3rfrMBfwZshWzCm9a0gEuVg1pv/a2p1+BGUVPvMj0sjQb
-         Yhywvwg7vdQZdbLKb1i8uigZVfGZJILEEz7kkzO0=
+        b=ZuN+BJTxmFtteXgzNsCQXyVHt8VfUNMXjqJy9ONemfHz/u8NXyGqM49OV2p6SuUKT
+         yMmLumua8ElJH1J/g0Ffh43KbC7WdHST2PaDPNvIGn9bENqZZzW51EcK6VyflgH1/r
+         oKu1yDI2ZlIs02bvtgQX/msD6tLQAMNE+aZZ0g8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        kernel test robot <lkp@intel.com>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 088/475] regulator: qcom_smd: fix for_each_child.cocci warnings
-Date:   Thu, 14 Apr 2022 15:07:53 +0200
-Message-Id: <20220414110857.616434472@linuxfoundation.org>
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 050/475] scsi: libsas: Fix sas_ata_qc_issue() handling of NCQ NON DATA commands
+Date:   Thu, 14 Apr 2022 15:07:15 +0200
+Message-Id: <20220414110856.555771728@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,48 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 6390d42c21efff0b4c10956a38e341f4e84ecd3d ]
+commit 8454563e4c2aafbfb81a383ab423ea8b9b430a25 upstream.
 
-drivers/regulator/qcom_smd-regulator.c:1318:1-33: WARNING: Function "for_each_available_child_of_node" should have of_node_put() before return around line 1321.
+To detect for the DMA_NONE (no data transfer) DMA direction,
+sas_ata_qc_issue() tests if the command protocol is ATA_PROT_NODATA.  This
+test does not include the ATA_CMD_NCQ_NON_DATA command as this command
+protocol is defined as ATA_PROT_NCQ_NODATA (equal to ATA_PROT_FLAG_NCQ) and
+not as ATA_PROT_NODATA.
 
-Semantic patch information:
- False positives can be due to function calls within the for_each
- loop that may encapsulate an of_node_put.
+To include both NCQ and non-NCQ commands when testing for the DMA_NONE DMA
+direction, use "!ata_is_data()".
 
-Generated by: scripts/coccinelle/iterators/for_each_child.cocci
-
-Fixes: 14e2976fbabd ("regulator: qcom_smd: Align probe function with rpmh-regulator")
-CC: Konrad Dybcio <konrad.dybcio@somainline.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
-Link: https://lore.kernel.org/r/alpine.DEB.2.22.394.2201151210170.3051@hadrien
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220220031810.738362-2-damien.lemoal@opensource.wdc.com
+Fixes: 176ddd89171d ("scsi: libsas: Reset num_scatter if libata marks qc as NODATA")
+Cc: stable@vger.kernel.org
+Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/scsi/libsas/sas_ata.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index e6601c28ab43..a4c82f5e2dae 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -854,8 +854,10 @@ static int rpm_reg_probe(struct platform_device *pdev)
- 
- 	for_each_available_child_of_node(dev->of_node, node) {
- 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
--		if (!vreg)
-+		if (!vreg) {
-+			of_node_put(node);
- 			return -ENOMEM;
-+		}
- 
- 		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
- 
--- 
-2.34.1
-
+--- a/drivers/scsi/libsas/sas_ata.c
++++ b/drivers/scsi/libsas/sas_ata.c
+@@ -201,7 +201,7 @@ static unsigned int sas_ata_qc_issue(str
+ 		task->total_xfer_len = qc->nbytes;
+ 		task->num_scatter = qc->n_elem;
+ 		task->data_dir = qc->dma_dir;
+-	} else if (qc->tf.protocol == ATA_PROT_NODATA) {
++	} else if (!ata_is_data(qc->tf.protocol)) {
+ 		task->data_dir = DMA_NONE;
+ 	} else {
+ 		for_each_sg(qc->sg, sg, qc->n_elem, si)
 
 
