@@ -2,178 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A24C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06663C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354268AbiDNPlC (ORCPT
+        id S1353942AbiDNPkz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
+        Thu, 14 Apr 2022 11:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354747AbiDNOmc (ORCPT
+        with ESMTP id S1354236AbiDNOlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:42:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD83B10C8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:37:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 624E7B829D3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:37:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B1FC385B1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:37:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649947020;
-        bh=+fX+vlRMAcznpaPYe+5+kaIB//YIVMxZzI5CN9IWnKk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hM9js4sAaVKeo0JTYlLJrCyTzbqHy/v2hSWeLGqbHzWtUpoVmjsVg6T0KUA8Sdjg5
-         iAlYJ8vWQ0bDJmXbEL0Q9gz6qZvMI58e+U/9c9P0cwGvnjJGQ6wFe4FIXaLgkKxh3y
-         veCga6zMwU6fZOJT3HF6I7uBXP+obIx2J+NBYlK5LIhXv0UMt5iSzCnGlIB614PWJZ
-         4BZs8hD4bdGkOBTFA7hnTv9TV2GqR7RApWRC5RsHCsd4F3T29iSfHBHt2GoXdywbqw
-         vcAx4IkZWMbLwBX5w8+Cq9XxWYaimrX37Sj0Or1B89NmMlingHkMjPw0UReqn0acNs
-         88jTwjYyIzoRQ==
-Received: by mail-oi1-f175.google.com with SMTP id q189so5568331oia.9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:37:00 -0700 (PDT)
-X-Gm-Message-State: AOAM531sUCKTvvd2irkdoa0FHuSCtxaKiL5iXC+KB3lslK/I372aDixJ
-        TbeayN5X91tmOqfZP4J6fF7iWex0vWul/vTLHx4=
-X-Google-Smtp-Source: ABdhPJyTt2gRZUSwoRqlYJLw8enun9rICcduOgNbY1CMkVli4eENqZIykyCUn6xJ3oVAVvpPmZtM2U7NAFwzYvNOYLM=
-X-Received: by 2002:a05:6808:1596:b0:2f7:5d89:eec7 with SMTP id
- t22-20020a056808159600b002f75d89eec7mr1828415oiw.228.1649947019047; Thu, 14
- Apr 2022 07:36:59 -0700 (PDT)
+        Thu, 14 Apr 2022 10:41:51 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200C5CD664
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:34:45 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id i184so4461210pgc.2
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:34:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=J8XpPS8fF6//JWfsSd8RX2fW6+WaMSPbmBOhZGi8MbQ=;
+        b=jx2Nrf2VkS8q76IMPSON7sYZumK4VxWREXX+8G8xMt0+IvbBEkw28ugTypfP52JZU+
+         kPl43iO94PcgSFCd5MbuFZw/nWXCXCGJtGJfFZeXdctU46OqDsNjSmkJG493x5tFwsFm
+         pnYkQFt/b6NHNwsYP48D8e+uju9FirrxS6WA2EZPt4HUMba+fDeRY7bOlcD15rDnEtaS
+         NCYD7lm+BuSYz8FNYYizuPLVDtWXkVjPsV4p39/PGezqC30DFTgHDNuoWnRrI1bHJjVK
+         juG6/AkukOFByjK25Vex48lwNP0kt8dWUTiRJ0RK2TlUdpMjF5iltfoyjN2ZjCiQhl35
+         f1IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=J8XpPS8fF6//JWfsSd8RX2fW6+WaMSPbmBOhZGi8MbQ=;
+        b=L/D2t2xJdlm490zAKEbjdZg2CoQCQlJ3x9pRNz0uIqURB6X4VAdRh11NVxBUigrRTj
+         hMOJzlFm8C6Noa5cSCm+rvo5YbSRESXCuMD1+HNnF2QH5jMD+NqU3nUcissK3lm0JWUs
+         RB3kfXXGLNVIM/oldKsd3wDIWQ5A9qnUQPrHxkT/ufM7lRBQZplA0LwWCd5qsOzaXh5S
+         mRHS3oLkgR7IdoIJMyO9GFmgFkstUffzSeNDwZMJ40bXd5DOSzI8OjtnquNk9W15DUsd
+         CUkLsPdZ1pZ6oobDcO+bH1agNxKA7NrW3BKjR52MlsUnT0mDn4FV5suOg6bPsUQfiAii
+         +bPg==
+X-Gm-Message-State: AOAM531Pbr4XSw59qLMrIg4NCICtbuJtXXL9I/yCQ9HwU+ZE2VyAs7TN
+        cQENY8rIowgbHPW/gLXfE8A=
+X-Google-Smtp-Source: ABdhPJxg6LkhK/f+4dkzBNst6mLyHzIY5tyPpKXHH/ea82lbmQG9WigxzTBaAvxHsT91GmLMfKHTnA==
+X-Received: by 2002:a05:6a02:206:b0:399:3c9:f465 with SMTP id bh6-20020a056a02020600b0039903c9f465mr2640670pgb.388.1649946885024;
+        Thu, 14 Apr 2022 07:34:45 -0700 (PDT)
+Received: from guoguo-omen.lan ([2401:c080:1400:4da2:b701:47d5:9291:4cf9])
+        by smtp.gmail.com with ESMTPSA id k5-20020a17090ac50500b001cd5ffcca96sm4411017pjt.27.2022.04.14.07.34.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 07:34:44 -0700 (PDT)
+From:   Chuanhong Guo <gch981213@gmail.com>
+To:     linux-mtd@lists.infradead.org
+Cc:     Chuanhong Guo <gch981213@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Palmer <daniel@0x0f.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 2/2] mtd: spinand: probe Winbond W25N01GV/W using param page
+Date:   Thu, 14 Apr 2022 22:34:26 +0800
+Message-Id: <20220414143426.723168-3-gch981213@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414143426.723168-1-gch981213@gmail.com>
+References: <20220414143426.723168-1-gch981213@gmail.com>
 MIME-Version: 1.0
-References: <YlVHSvkyUBXZPUr2@arm.com> <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
- <YlVOTsaTVkBOxthG@arm.com> <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
- <YlVxGAHHD/j6lW3c@arm.com> <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
- <YlaOIbSA7B/G9222@arm.com> <CAHk-=wjr9-n7vHiVdm-L-KX4kXWyY45++8jenFA1QV5oc=yhZg@mail.gmail.com>
- <YlezcPbFOkSUygBJ@kroah.com> <CAMj1kXFWJXbT+fMEx=wzX1wS6xW1DeGxZ+mWBbY8Z4hj4kc_dw@mail.gmail.com>
- <YlgvaSozV5jU49Y0@kroah.com>
-In-Reply-To: <YlgvaSozV5jU49Y0@kroah.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 14 Apr 2022 16:36:46 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGAd7s1GU=uH+iLOwvbn1zG-=TNXw02Bf-AdiHOQvh02Q@mail.gmail.com>
-Message-ID: <CAMj1kXGAd7s1GU=uH+iLOwvbn1zG-=TNXw02Bf-AdiHOQvh02Q@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 at 16:27, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Apr 14, 2022 at 03:52:53PM +0200, Ard Biesheuvel wrote:
-> > On Thu, 14 Apr 2022 at 07:38, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Wed, Apr 13, 2022 at 09:53:24AM -1000, Linus Torvalds wrote:
-...
-> > > > Honestly, I think it would probably be worth discussing the "kmalloc
-> > > > DMA alignment" issues.
-> > > >
-> > > > 99.9% of kmalloc users don't want to do DMA.
-> > > >
-> > > > And there's actually a fair amount of small kmalloc for random stuff.
-> > > > Right now on my laptop, I have
-> > > >
-> > > >     kmalloc-8          16907  18432      8  512    1 : ...
-> > > >
-> > > > according to slabinfo, so almost 17 _thousand_ allocations of 8 bytes.
-> > > >
-> > > > It's all kinds of sad if those allocations need to be 64 bytes in size
-> > > > just because of some silly DMA alignment issue, when none of them want
-> > > > it.
-> > > >
-> >
-> > Actually, the alignment for non-cache coherent DMA is 128 bytes on
-> > arm64, not 64 bytes.
-> >
-> > > > Yeah, yeah, wasting a megabyte of memory is "just a megabyte" these
-> > > > days. Which is crazy. It's literally memory that could have been used
-> > > > for something much more useful than just pure and utter waste.
-> > > >
-> > > > I think we could and should just say "people who actually require DMA
-> > > > accesses should say so at kmalloc time". We literally have that
-> > > > GFP_DMA and ZOME_DMA for various historical reasons, so we've been
-> > > > able to do that before.
-> > > >
-> > > > No, that historical GFP_DMA isn't what arm64 wants - it's the old
-> > > > crazy "legacy 16MB DMA" thing that ISA DMA used to have.
-> > > >
-> > > > But the basic issue was true then, and is true now - DMA allocations
-> > > > are fairly special, and should not be that hard to just mark as such.
-> > >
-> > > "fairly special" == "all USB transactions", so it will take a lot of
-> > > auditing here.  I think also many SPI controllers require this and maybe
-> > > I2C?  Perhaps other bus types do as well.
-> > >
-> > > So please don't make this change without some way of figuring out just
-> > > what drivers need to be fixed up, as it's going to be a lot...
-> > >
-> >
-> > Yeah, the current de facto contract of being able to DMA map anything
-> > that was allocated via the linear map makes it quite hard to enforce
-> > the use of dma_kmalloc() for this.
-> >
-> > What we might do, given the fact that only inbound non-cache coherent
-> > DMA is problematic, is dropping the kmalloc alignment to 8 like on
-> > x86, and falling back to bounce buffering when a misaligned, non-cache
-> > coherent inbound DMA mapping is created, using the SWIOTLB bounce
-> > buffering code that we already have, and is already in use on most
-> > affected systems for other reasons (i.e., DMA addressing limits)
->
-> Ick, that's a mess.
->
-> > This will cause some performance regressions, but in a way that seems
-> > fixable to me: taking network drivers as an example, the RX buffers
-> > that are filled using inbound DMA are typically owned by the driver
-> > itself, which could be updated to round up its allocations and DMA
-> > mappings. Block devices typically operate on quantities that are
-> > aligned sufficiently already. In other cases, we will likely notice
-> > if/when this fallback is taken on a hot path, but if we don't, at
-> > least we know a bounce buffer is being used whenever we cannot perform
-> > the DMA safely in-place.
->
-> We can move to having an "allocator-per-bus" for memory like this to
-> allow the bus to know if this is a DMA requirement or not.
->
-> So for all USB drivers, we would have:
->         usb_kmalloc(size, flags);
-> and then it might even be easier to verify with static tools that the
-> USB drivers are sending only properly allocated data.  Same for SPI and
-> other busses.
->
+The JEDEC ID of EFAA21 is assigned to both W25N01G and W25N01K.
+Probing the chip with JEDEC ID isn't reliable anymore. Use parameter
+page instead.
 
-As I pointed out earlier in the thread, alignment/padding requirements
-for non-coherent DMA are a property of the CPU's cache hierarchy, not
-of the device. So I'm not sure I follow how a per-subsystem
-distinction would help here. In the case of USB especially, would that
-mean that block, media and networking subsystems would need to be
-aware of the USB-ness of the underlying transport?
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+---
+ drivers/mtd/nand/spi/onfi.c    |  4 +++-
+ drivers/mtd/nand/spi/winbond.c | 25 ++++++++++++++++---------
+ include/linux/mtd/spinand.h    |  3 +++
+ 3 files changed, 22 insertions(+), 10 deletions(-)
 
-> https://lore.kernel.org/r/230a9486fc68ea0182df46255e42a51099403642.1648032613.git.christophe.leroy@csgroup.eu
-> is an example of a SPI driver that has been there "for forever" yet
-> always got it wrong.  If we could have had some way to know "only memory
-> allocated with this function is allowed on the bus" that would have
-> fixed the issue a long time ago.
->
-> Anyway, just an idea, it's up to you all if this is worth it or not.
-> Adding performance regressions at the expense of memory size feels like
-> a rough trade-off to go through until things are fixed up.
->
+diff --git a/drivers/mtd/nand/spi/onfi.c b/drivers/mtd/nand/spi/onfi.c
+index 5cc888e3d038..27484e0cd22d 100644
+--- a/drivers/mtd/nand/spi/onfi.c
++++ b/drivers/mtd/nand/spi/onfi.c
+@@ -141,7 +141,9 @@ static void nand_bit_wise_majority(const void **srcbufs, unsigned int nsrcbufs,
+ 	}
+ }
+ 
+-static const struct spinand_manufacturer *spinand_onfi_manufacturers[] = {};
++static const struct spinand_manufacturer *spinand_onfi_manufacturers[] = {
++	&winbond_onfi_spinand_manufacturer,
++};
+ 
+ static const struct spinand_onfi_info *
+ spinand_onfi_chip_match(struct nand_onfi_params *p,
+diff --git a/drivers/mtd/nand/spi/winbond.c b/drivers/mtd/nand/spi/winbond.c
+index 76684428354e..601316c80b3e 100644
+--- a/drivers/mtd/nand/spi/winbond.c
++++ b/drivers/mtd/nand/spi/winbond.c
+@@ -85,15 +85,15 @@ static const struct spinand_info winbond_spinand_table[] = {
+ 		     0,
+ 		     SPINAND_ECCINFO(&w25m02gv_ooblayout, NULL),
+ 		     SPINAND_SELECT_TARGET(w25m02gv_select_target)),
+-	SPINAND_INFO("W25N01GV",
+-		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xaa),
+-		     NAND_MEMORG(1, 2048, 64, 64, 1024, 20, 1, 1, 1),
+-		     NAND_ECCREQ(1, 512),
+-		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
+-					      &write_cache_variants,
+-					      &update_cache_variants),
+-		     0,
+-		     SPINAND_ECCINFO(&w25m02gv_ooblayout, NULL)),
++};
++
++static const struct spinand_onfi_info winbond_spinand_onfi_table[] = {
++	SPINAND_ONFI_INFO(SPINAND_ONFI_MODELS("W25N01GV", "W25N01GW"),
++			  SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++						   &write_cache_variants,
++						   &update_cache_variants),
++			  0,
++			  SPINAND_ECCINFO(&w25m02gv_ooblayout, NULL)),
+ };
+ 
+ static int winbond_spinand_init(struct spinand_device *spinand)
+@@ -125,3 +125,10 @@ const struct spinand_manufacturer winbond_spinand_manufacturer = {
+ 	.nchips = ARRAY_SIZE(winbond_spinand_table),
+ 	.ops = &winbond_spinand_manuf_ops,
+ };
++
++const struct spinand_manufacturer winbond_onfi_spinand_manufacturer = {
++	.name = "Winbond",
++	.onfi_chips = winbond_spinand_onfi_table,
++	.nchips = ARRAY_SIZE(winbond_spinand_onfi_table),
++	.ops = &winbond_spinand_manuf_ops,
++};
+diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
+index dc218082d773..610320b03773 100644
+--- a/include/linux/mtd/spinand.h
++++ b/include/linux/mtd/spinand.h
+@@ -268,6 +268,9 @@ extern const struct spinand_manufacturer paragon_spinand_manufacturer;
+ extern const struct spinand_manufacturer toshiba_spinand_manufacturer;
+ extern const struct spinand_manufacturer winbond_spinand_manufacturer;
+ 
++/* SPI NAND manufacturers with ONFI parameter page support */
++extern const struct spinand_manufacturer winbond_onfi_spinand_manufacturer;
++
+ /**
+  * struct spinand_op_variants - SPI NAND operation variants
+  * @ops: the list of variants for a given operation
+-- 
+2.35.1
 
-Yeah, I hear you. But we already have distinct classes of memory,
-i.e., vmalloc vs kmalloc, where only the latter is permitted for DMA
-(which is why VMAP stack broke that SPI driver), and I'm not sure
-adding more types is going to make this tractable going forward.
