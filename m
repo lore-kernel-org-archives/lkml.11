@@ -2,119 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 661FEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD64C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343567AbiDNPxJ (ORCPT
+        id S1343844AbiDNPxb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
+        Thu, 14 Apr 2022 11:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244187AbiDNPi1 (ORCPT
+        with ESMTP id S1359291AbiDNPmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:38:27 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48102A27F;
-        Thu, 14 Apr 2022 08:15:58 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso6212283wma.0;
-        Thu, 14 Apr 2022 08:15:58 -0700 (PDT)
+        Thu, 14 Apr 2022 11:42:54 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20067DFD69;
+        Thu, 14 Apr 2022 08:30:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XsqTqLkugnBvqYjkKxNnUI1wcLv9BGValT596llmCYU=;
-        b=jNxJb4hv+jK+H7pc0ZcQ/w2lMqB/5HYjF44vYxPhVvrxcsoLUy9gjgiKp/5ChWh20f
-         TCoLRdR3mjQM9sxZbmLBjozoJFIM6276z2+oxpgiCmZqc1ucjFz+7fArDg0YkM1pVMwf
-         IosDdC5sGL3kxBaHAosuofLXAZjvEp8KMyXvqPkmDYO+hno21LZnPF2s/fbI1D+Fu53g
-         b+Z2nuyrfFRAYLwqaGM/Kkn0/OMXE8kqokiGIxmyk7KUcRA1oAH1scBYi9Se42PYzuNv
-         6yOZBZYVzrXvRM0gt3Cz26HwOOCDdPNb9JN8GDtZe4P21xNhns+rmH9NTYfnyhmM6vpM
-         i3FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XsqTqLkugnBvqYjkKxNnUI1wcLv9BGValT596llmCYU=;
-        b=wRxHZfl55Wh6V65RDOkV0or4IsbomqeEK1L0MDtOQ2zs2YCrry/zNsOj1FULNkwH/T
-         HOKZzEUtJ2xguW40On0DLzeE9e/3iQlz2ZgFI3aPXdOJ7wac4vjXYYyzHjSgCx75FEVQ
-         GONN42rI7mqZkXvhCJllW0Mesob6jPQPLEwngbfCWvKuqMPJGKpktq5WMPKVgtVuherA
-         zztNRIxaURoVQTeEVL4qzMFdtSdBLdxRWfAGvlj8lNCC2zNKJonFiOC1CtSZ0XKgnOgx
-         2czcvH2/mEtNOJ99ocxsHTCuMpNhCc3g3YiCgszZvbYZOU05sAq0aqHng6ZxKBVRmfnk
-         WTcw==
-X-Gm-Message-State: AOAM532LgJpwTNW6TMVfwTpdJaZQWXHNsFRF0TCq053VB9dSp8cQyzCM
-        2rmLDIHe5D+Ks4YrwRsBLGs=
-X-Google-Smtp-Source: ABdhPJycB+Y5sEJjd8AoMIjUoXTPawNZMIKOdRkwxy5iZGTZ8YrwC4qby0DPf8MDpd1fbqMX+afNww==
-X-Received: by 2002:a05:600c:3585:b0:38e:be0e:8471 with SMTP id p5-20020a05600c358500b0038ebe0e8471mr3736537wmq.30.1649949357188;
-        Thu, 14 Apr 2022 08:15:57 -0700 (PDT)
-Received: from [192.168.0.210] (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.googlemail.com with ESMTPSA id q16-20020a1ce910000000b0038eabd31749sm2747109wmc.32.2022.04.14.08.15.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Apr 2022 08:15:56 -0700 (PDT)
-Message-ID: <e32f16a0-f963-be9e-906a-e8995ea60ca2@gmail.com>
-Date:   Thu, 14 Apr 2022 16:15:55 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] KVM: VMX: make read-only const array vmx_uret_msrs_list
- static
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220414100720.295502-1-colin.i.king@gmail.com>
- <YlgyJPRVNCe4w8q3@google.com>
-From:   "Colin King (gmail)" <colin.i.king@gmail.com>
-In-Reply-To: <YlgyJPRVNCe4w8q3@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649950236; x=1681486236;
+  h=from:to:cc:subject:date:message-id;
+  bh=7AbcbFgk7EWSyJCT0kIEs/FzXtBXjMhHceTuFImAtF0=;
+  b=gpR+CoFVJy7FRQSxku1QYJ4M7XBn8WWMcRggb+El/GGasdlduzkLEwfe
+   fuq7pkVIiotdyXcYqU+3MOGdtlpRbqy01DhNTyThh6I6fQt8ltfNnlxjO
+   K5bWfvVeOEVInfbtKSoS4BxQtwWHQbBHVyIBwhm6pZvNETmXv0Dh9FmVy
+   w=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 14 Apr 2022 08:30:36 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 14 Apr 2022 08:30:34 -0700
+X-QCInternal: smtphost
+Received: from mdalam-linux.qualcomm.com ([10.201.2.71])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 14 Apr 2022 21:00:22 +0530
+Received: by mdalam-linux.qualcomm.com (Postfix, from userid 466583)
+        id 94F97229BE; Thu, 14 Apr 2022 21:00:21 +0530 (IST)
+From:   Md Sadre Alam <quic_mdalam@quicinc.com>
+To:     mani@kernel.org, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     konrad.dybcio@somainline.org, quic_srichara@quicinc.com,
+        quic_mdalam@quicinc.com
+Subject: [PATCH V2] mtd: rawnand: qcom: fix memory corruption that causes panic
+Date:   Thu, 14 Apr 2022 21:00:17 +0530
+Message-Id: <1649950217-32272-1-git-send-email-quic_mdalam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/04/2022 15:39, Sean Christopherson wrote:
-> On Thu, Apr 14, 2022, Colin Ian King wrote:
->> Don't populate the read-only array vmx_uret_msrs_list on the stack
->> but instead make it static. Also makes the object code a little smaller.
-> 
-> Why not put it on the stack?  It's an __init function, i.e. called once in the
-> lifetime of kvm-intel.ko, isn't all that big, and is certainly not performance
-> critical.  And making it static begs the question of whether or not the data gets
-> thrown away after init, i.e. this might consume _more_ memory once KVM has reached
-> steady state.
+This patch fixes a memory corruption that occurred in the
+nand_scan() path for Hynix nand device.
 
-Doh, my bad, I forgot to check that it was an __init function. Please 
-discard this patch.
+On boot, for Hynix nand device will panic at a weird place:
+| Unable to handle kernel NULL pointer dereference at virtual
+  address 00000070
+| [00000070] *pgd=00000000
+| Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+| Modules linked in:
+| CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-01473-g13ae1769cfb0
+  #38
+| Hardware name: Generic DT based system
+| PC is at nandc_set_reg+0x8/0x1c
+| LR is at qcom_nandc_command+0x20c/0x5d0
+| pc : [<c088b74c>]    lr : [<c088d9c8>]    psr: 00000113
+| sp : c14adc50  ip : c14ee208  fp : c0cc970c
+| r10: 000000a3  r9 : 00000000  r8 : 00000040
+| r7 : c16f6a00  r6 : 00000090  r5 : 00000004  r4 :c14ee040
+| r3 : 00000000  r2 : 0000000b  r1 : 00000000  r0 :c14ee040
+| Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM Segment none
+| Control: 10c5387d  Table: 8020406a  DAC: 00000051
+| Register r0 information: slab kmalloc-2k start c14ee000 pointer offset
+  64 size 2048
+| Process swapper/0 (pid: 1, stack limit = 0x(ptrval))
+| nandc_set_reg from qcom_nandc_command+0x20c/0x5d0
+| qcom_nandc_command from nand_readid_op+0x198/0x1e8
+| nand_readid_op from hynix_nand_has_valid_jedecid+0x30/0x78
+| hynix_nand_has_valid_jedecid from hynix_nand_init+0xb8/0x454
+| hynix_nand_init from nand_scan_with_ids+0xa30/0x14a8
+| nand_scan_with_ids from qcom_nandc_probe+0x648/0x7b0
+| qcom_nandc_probe from platform_probe+0x58/0xac
 
-Colin
+The problem is that the nand_scan()'s qcom_nand_attach_chip callback
+is updating the nandc->max_cwperpage from 1 to 4.This causes the
+sg_init_table of clear_bam_transaction() in the driver's
+qcom_nandc_command() to memset much more than what was initially
+allocated by alloc_bam_transaction().
 
-> 
->> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
->> ---
->>   arch/x86/kvm/vmx/vmx.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
->> index c654c9d76e09..36429e2bb918 100644
->> --- a/arch/x86/kvm/vmx/vmx.c
->> +++ b/arch/x86/kvm/vmx/vmx.c
->> @@ -7871,7 +7871,7 @@ static __init void vmx_setup_user_return_msrs(void)
->>   	 * but is never loaded into hardware.  MSR_CSTAR is also never loaded
->>   	 * into hardware and is here purely for emulation purposes.
->>   	 */
->> -	const u32 vmx_uret_msrs_list[] = {
->> +	static const u32 vmx_uret_msrs_list[] = {
->>   	#ifdef CONFIG_X86_64
->>   		MSR_SYSCALL_MASK, MSR_LSTAR, MSR_CSTAR,
->>   	#endif
->> -- 
->> 2.35.1
->>
+This patch will update nandc->max_cwperpage 1 to 4 after nand_scan()
+returns, and remove updating nandc->max_cwperpage from
+qcom_nand_attach_chip call back.
+
+Signed-off-by: Md Sadre Alam <quic_mdalam@quicinc.com>
+Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
+---
+[V2]
+ * Freed previously alloacted memory for bam txn before updating 
+   max_cwperpage inside qcom_nand_attach_chip().
+ * Moved alloc_bam_transaction() inside qcom_nand_attach_chip().
+   after upding max_cwperpage 4 or 8 based on page size.
+
+ drivers/mtd/nand/raw/qcom_nandc.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
+index 1a77542..048b255 100644
+--- a/drivers/mtd/nand/raw/qcom_nandc.c
++++ b/drivers/mtd/nand/raw/qcom_nandc.c
+@@ -2651,10 +2651,23 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
+ 	ecc->engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
+ 
+ 	mtd_set_ooblayout(mtd, &qcom_nand_ooblayout_ops);
++	/* Free the initially allocated BAM transaction for reading the ONFI params */
++	if (nandc->props->is_bam)
++		free_bam_transaction(nandc);
+ 
+ 	nandc->max_cwperpage = max_t(unsigned int, nandc->max_cwperpage,
+ 				     cwperpage);
+ 
++	/* Now allocate the BAM transaction based on updated max_cwperpage */
++	if (nandc->props->is_bam) {
++		nandc->bam_txn = alloc_bam_transaction(nandc);
++		if (!nandc->bam_txn) {
++			dev_err(nandc->dev,
++				"failed to allocate bam transaction\n");
++			return -ENOMEM;
++		}
++	}
++
+ 	/*
+ 	 * DATA_UD_BYTES varies based on whether the read/write command protects
+ 	 * spare data with ECC too. We protect spare data by default, so we set
+@@ -2955,17 +2968,6 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (nandc->props->is_bam) {
+-		free_bam_transaction(nandc);
+-		nandc->bam_txn = alloc_bam_transaction(nandc);
+-		if (!nandc->bam_txn) {
+-			dev_err(nandc->dev,
+-				"failed to allocate bam transaction\n");
+-			nand_cleanup(chip);
+-			return -ENOMEM;
+-		}
+-	}
+-
+ 	ret = mtd_device_parse_register(mtd, probes, NULL, NULL, 0);
+ 	if (ret)
+ 		nand_cleanup(chip);
+-- 
+2.7.4
 
