@@ -2,101 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB67C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F004C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345730AbiDNODn (ORCPT
+        id S1348250AbiDNODy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
+        Thu, 14 Apr 2022 10:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241302AbiDNNdK (ORCPT
+        with ESMTP id S244564AbiDNN1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:33:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286FB22BF5;
-        Thu, 14 Apr 2022 06:30:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:27:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3757A0BF6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649942428;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JsNnlC4y7P/vpE0xDeBLZNUoZ387++jz5xn6fyKPXY0=;
+        b=eyUr9wZdIoe+vtvZ7KsiTTpsMBqvLFQdL/K2hMcHCwQthDqF2yJ9HFUxunPRYEBFpBhBi1
+        VYUp9BoSEAbqkfDdnpUXVyRKvvrGvEVIbdvidS4AGBDVRxWxjUPR1jTycftyMgRy/gSpIc
+        9OISnK0sHBkr4s/f0HFXcTuQ+X1LHhI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-284-53Dr_1THPoeY7HodHojW1g-1; Thu, 14 Apr 2022 09:20:27 -0400
+X-MC-Unique: 53Dr_1THPoeY7HodHojW1g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3182B82968;
-        Thu, 14 Apr 2022 13:30:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40516C385A1;
-        Thu, 14 Apr 2022 13:30:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943043;
-        bh=VwFEHE+CO5lRFmJFYl4MnPfpyZ8Welh346AwcCF/UoQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z9qmaLK5NNxQSLggWZw0JFQIa6ad+3zOw/vmi7FfuHaXPTHVRdm5gmsu74MueRQ4O
-         RDJvJTbxsOwNhY7NQ9s+eEuaCwL/BZG67i/RJWXHld9+CH2U5iVBalzo/XhsrvIXu3
-         G+OiZpViSfus5fjruqjB8pEGdxXVGj/oRL3KL+Dg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.4 015/475] iommu/iova: Improve 32-bit free space estimate
-Date:   Thu, 14 Apr 2022 15:06:40 +0200
-Message-Id: <20220414110855.580257654@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6026D800B21;
+        Thu, 14 Apr 2022 13:20:26 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BFAAB53CD;
+        Thu, 14 Apr 2022 13:20:24 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 05/34] KVM: x86: hyper-v: Expose support for extended gva ranges for flush hypercalls
+Date:   Thu, 14 Apr 2022 15:19:44 +0200
+Message-Id: <20220414132013.1588929-6-vkuznets@redhat.com>
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+Extended GVA ranges support bit seems to indicate whether lower 12
+bits of GVA can be used to specify up to 4095 additional consequent
+GVAs to flush. This is somewhat described in TLFS.
 
-commit 5b61343b50590fb04a3f6be2cdc4868091757262 upstream.
+Previously, KVM was handling HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX}
+requests by flushing the whole VPID so technically, extended GVA
+ranges were already supported. As such requests are handled more
+gently now, advertizing support for extended ranges starts making
+sense to reduce the size of TLB flush requests.
 
-For various reasons based on the allocator behaviour and typical
-use-cases at the time, when the max32_alloc_size optimisation was
-introduced it seemed reasonable to couple the reset of the tracked
-size to the update of cached32_node upon freeing a relevant IOVA.
-However, since subsequent optimisations focused on helping genuine
-32-bit devices make best use of even more limited address spaces, it
-is now a lot more likely for cached32_node to be anywhere in a "full"
-32-bit address space, and as such more likely for space to become
-available from IOVAs below that node being freed.
-
-At this point, the short-cut in __cached_rbnode_delete_update() really
-doesn't hold up any more, and we need to fix the logic to reliably
-provide the expected behaviour. We still want cached32_node to only move
-upwards, but we should reset the allocation size if *any* 32-bit space
-has become available.
-
-Reported-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Link: https://lore.kernel.org/r/033815732d83ca73b13c11485ac39336f15c3b40.1646318408.git.robin.murphy@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Cc: Miles Chen <miles.chen@mediatek.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/iommu/iova.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/hyperv-tlfs.h | 2 ++
+ arch/x86/kvm/hyperv.c              | 1 +
+ 2 files changed, 3 insertions(+)
 
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -138,10 +138,11 @@ __cached_rbnode_delete_update(struct iov
- 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
- 	if (free == cached_iova ||
- 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
--	     free->pfn_lo >= cached_iova->pfn_lo)) {
-+	     free->pfn_lo >= cached_iova->pfn_lo))
- 		iovad->cached32_node = rb_next(&free->node);
-+
-+	if (free->pfn_lo < iovad->dma_32bit_pfn)
- 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
--	}
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index 0a9407dc0859..5225a85c08c3 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -61,6 +61,8 @@
+ #define HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE		BIT(10)
+ /* Support for debug MSRs available */
+ #define HV_FEATURE_DEBUG_MSRS_AVAILABLE			BIT(11)
++/* Support for extended gva ranges for flush hypercalls available */
++#define HV_FEATURE_EXT_GVA_RANGES_FLUSH			BIT(14)
+ /*
+  * Support for returning hypercall output block via XMM
+  * registers is available
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 759e1a16e5c3..1a6f9628cee9 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -2702,6 +2702,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+ 			ent->ebx |= HV_DEBUGGING;
+ 			ent->edx |= HV_X64_GUEST_DEBUGGING_AVAILABLE;
+ 			ent->edx |= HV_FEATURE_DEBUG_MSRS_AVAILABLE;
++			ent->edx |= HV_FEATURE_EXT_GVA_RANGES_FLUSH;
  
- 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
- 	if (free->pfn_lo >= cached_iova->pfn_lo)
-
+ 			/*
+ 			 * Direct Synthetic timers only make sense with in-kernel
+-- 
+2.35.1
 
