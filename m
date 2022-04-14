@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44BF1C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 786F4C4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350838AbiDNO2u (ORCPT
+        id S1350927AbiDNO3I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        Thu, 14 Apr 2022 10:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344159AbiDNNkE (ORCPT
+        with ESMTP id S1343963AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3601C6;
-        Thu, 14 Apr 2022 06:37:39 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3FE98F5C;
+        Thu, 14 Apr 2022 06:35:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 39A8CCE296C;
-        Thu, 14 Apr 2022 13:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50AE9C385A1;
-        Thu, 14 Apr 2022 13:37:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39430B828F4;
+        Thu, 14 Apr 2022 13:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C2D9C385A5;
+        Thu, 14 Apr 2022 13:35:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943456;
-        bh=nHqKVKLZqRvDk37NLgF7Ca+K5+ub5ZEn1+PrTH5n6yQ=;
+        s=korg; t=1649943354;
+        bh=mZk2psXy97dchWY0tRiHFtmTMkelF8bEegKOKzPvBsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4GF4W6q538FkPz6aeNDG9U+K0zKwec61lifo2HO09lq1rFBdCkYTN3hOHD0qm4Qn
-         VoXmuXgYj1vrSmCw/hB3dR/Fc+M8Y1okbAHl8HUC99exkreZ6zWJ9QB51VONbePKug
-         XW6XFwk64p8SQgskXVN471AYMHq6dzD+Vf8rirZI=
+        b=QJSB4samhgx4lC2MxYn1fWTCbu65vggsme9wRwUn2UiQCa0NVuBxMvPVpX23IL1h9
+         mQrSe570pXhwzlg90mJP/8YDfM8TRswEhWgY1XlfTkPiV++O/AgasTpphB3b+gcD9E
+         rYm7fTFRf8EsRYnhr66b2oBT6/gCpAXJNuu2gO5E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Nishanth Menon <nm@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 161/475] mtd: rawnand: gpmi: fix controller timings setting
-Date:   Thu, 14 Apr 2022 15:09:06 +0200
-Message-Id: <20220414110859.645490082@linuxfoundation.org>
+Subject: [PATCH 5.4 124/475] soc: ti: wkup_m3_ipc: Fix IRQ check in wkup_m3_ipc_probe
+Date:   Thu, 14 Apr 2022 15:08:29 +0200
+Message-Id: <20220414110858.622230363@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,57 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 2970bf5a32f079e1e9197411db4fe9faccb1503a ]
+[ Upstream commit c3d66a164c726cc3b072232d3b6d87575d194084 ]
 
-Set the controller registers according to the real clock rate. The
-controller registers configuration (setup, hold, timeout, ... cycles)
-depends on the clock rate of the GPMI. Using the real rate instead of
-the ideal one, avoids that this inaccuracy (required_rate - real_rate)
-affects the registers setting.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-This patch has been tested on two custom boards with i.MX28 and i.MX6
-SOCs:
-- i.MX28:
-  required rate 100MHz, real rate 99.3MHz
-- i.MX6
-  required rate 100MHz, real rate 99MHz
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
-Fixes: b1206122069a ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220118095434.35081-3-dario.binacchi@amarulasolutions.com
+Fix the check of return value to catch errors correctly.
+
+Fixes: cdd5de500b2c ("soc: ti: Add wkup_m3_ipc driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Acked-by: Dave Gerlach <d-gerlach@ti.com>
+Link: https://lore.kernel.org/r/20220114062840.16620-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/soc/ti/wkup_m3_ipc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-index ab2f824abf54..02218c3b548f 100644
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -645,6 +645,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 				     const struct nand_sdr_timings *sdr)
- {
- 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
-+	struct resources *r = &this->resources;
- 	unsigned int dll_threshold_ps = this->devdata->max_chain_delay;
- 	unsigned int period_ps, reference_period_ps;
- 	unsigned int data_setup_cycles, data_hold_cycles, addr_setup_cycles;
-@@ -668,6 +669,8 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
- 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
+index e9ece45d7a33..ef3f95fefab5 100644
+--- a/drivers/soc/ti/wkup_m3_ipc.c
++++ b/drivers/soc/ti/wkup_m3_ipc.c
+@@ -447,9 +447,9 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
  	}
  
-+	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
-+
- 	/* SDR core timings are given in picoseconds */
- 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
+ 	irq = platform_get_irq(pdev, 0);
+-	if (!irq) {
++	if (irq < 0) {
+ 		dev_err(&pdev->dev, "no irq resource\n");
+-		return -ENXIO;
++		return irq;
+ 	}
  
+ 	ret = devm_request_irq(dev, irq, wkup_m3_txev_handler,
 -- 
 2.34.1
 
