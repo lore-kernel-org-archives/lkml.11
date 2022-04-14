@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56661C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 365EEC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347265AbiDNOvm (ORCPT
+        id S1347215AbiDNOvh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
+        Thu, 14 Apr 2022 10:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343976AbiDNNoF (ORCPT
+        with ESMTP id S1345284AbiDNNpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:05 -0400
+        Thu, 14 Apr 2022 09:45:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514952C100;
-        Thu, 14 Apr 2022 06:39:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDBC2DE0;
+        Thu, 14 Apr 2022 06:43:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B608061D67;
-        Thu, 14 Apr 2022 13:39:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65F4C385A5;
-        Thu, 14 Apr 2022 13:39:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18F9361BA7;
+        Thu, 14 Apr 2022 13:43:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 298C6C385A1;
+        Thu, 14 Apr 2022 13:43:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943582;
-        bh=1I9ntHJiM21S0qLJy1WF+V3MuZ6FluhhpC6uOraCkoc=;
+        s=korg; t=1649943796;
+        bh=gwJ5FR9DtZIsA2hPSe/5+mSIlwSULFPHfwLGfoecJLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y51m5JyKkA3pqvWb7Y+f/unpB1/hQug4N5J7GjZe3NwFqJDTwAOOmi5L7A41y2/TD
-         yOJaRdtFXgj0ThWi6Gmx11ysJmhLHfzucMQfGUVreYZzq/toSKpzmm+JDhtaeRgmML
-         eI0UBmjtO18UcM64TMsRaM2maQ1BqU3fxihHDqHM=
+        b=ctv2Ze+d4cGGw3j05FO4ivBIkcI9aQzCQna18pKIpMLwt9xJ6bcS+mFM4dWGQZdVl
+         iD+8OX2QSMqIcX3S+wRvEl+fIpyLmq8wH5qovZNZC3xbEdhp3wbn+AK6NPcYa40uh+
+         O+4Vero8MbNK6zItb57IMqgHXUYpX6GDWcTXE5vU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 206/475] powerpc/sysdev: fix incorrect use to determine if list is empty
-Date:   Thu, 14 Apr 2022 15:09:51 +0200
-Message-Id: <20220414110900.894075785@linuxfoundation.org>
+        stable@vger.kernel.org, Matt Brown <matthew.brown.dev@gmail.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 284/475] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
+Date:   Thu, 14 Apr 2022 15:11:09 +0200
+Message-Id: <20220414110903.047157780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,48 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Paul Menzel <pmenzel@molgen.mpg.de>
 
-[ Upstream commit fa1321b11bd01752f5be2415e74a0e1a7c378262 ]
+[ Upstream commit 633174a7046ec3b4572bec24ef98e6ee89bce14b ]
 
-'gtm' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
+Buidling raid6test on Ubuntu 21.10 (ppc64le) with GNU Make 4.3 shows the
+errors below:
 
-Instead of checking the pointer it should be checked if
-the list is empty.
+    $ cd lib/raid6/test/
+    $ make
+    <stdin>:1:1: error: stray ‘\’ in program
+    <stdin>:1:2: error: stray ‘#’ in program
+    <stdin>:1:11: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ \
+        before ‘<’ token
 
-Fixes: 83ff9dcf375c ("powerpc/sysdev: implement FSL GTM support")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220228142434.576226-1-jakobkoschel@gmail.com
+    [...]
+
+The errors come from the HAS_ALTIVEC test, which fails, and the POWER
+optimized versions are not built. That’s also reason nobody noticed on the
+other architectures.
+
+GNU Make 4.3 does not remove the backslash anymore. From the 4.3 release
+announcment:
+
+> * WARNING: Backward-incompatibility!
+>   Number signs (#) appearing inside a macro reference or function invocation
+>   no longer introduce comments and should not be escaped with backslashes:
+>   thus a call such as:
+>     foo := $(shell echo '#')
+>   is legal.  Previously the number sign needed to be escaped, for example:
+>     foo := $(shell echo '\#')
+>   Now this latter will resolve to "\#".  If you want to write makefiles
+>   portable to both versions, assign the number sign to a variable:
+>     H := \#
+>     foo := $(shell echo '$H')
+>   This was claimed to be fixed in 3.81, but wasn't, for some reason.
+>   To detect this change search for 'nocomment' in the .FEATURES variable.
+
+So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
+files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
+of \# in Makefiles") and define and use a $(pound) variable.
+
+Reference for the change in make:
+https://git.savannah.gnu.org/cgit/make.git/commit/?id=c6966b323811c37acedff05b57
+
+Cc: Matt Brown <matthew.brown.dev@gmail.com>
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/fsl_gtm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ lib/raid6/test/Makefile | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/fsl_gtm.c b/arch/powerpc/sysdev/fsl_gtm.c
-index 8963eaffb1b7..39186ad6b3c3 100644
---- a/arch/powerpc/sysdev/fsl_gtm.c
-+++ b/arch/powerpc/sysdev/fsl_gtm.c
-@@ -86,7 +86,7 @@ static LIST_HEAD(gtms);
-  */
- struct gtm_timer *gtm_get_timer16(void)
- {
--	struct gtm *gtm = NULL;
-+	struct gtm *gtm;
- 	int i;
+diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
+index b9e6c3648be1..98b9fd0354dd 100644
+--- a/lib/raid6/test/Makefile
++++ b/lib/raid6/test/Makefile
+@@ -4,6 +4,8 @@
+ # from userspace.
+ #
  
- 	list_for_each_entry(gtm, &gtms, list_node) {
-@@ -103,7 +103,7 @@ struct gtm_timer *gtm_get_timer16(void)
- 		spin_unlock_irq(&gtm->lock);
- 	}
- 
--	if (gtm)
-+	if (!list_empty(&gtms))
- 		return ERR_PTR(-EBUSY);
- 	return ERR_PTR(-ENODEV);
- }
++pound := \#
++
+ CC	 = gcc
+ OPTFLAGS = -O2			# Adjust as desired
+ CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
+@@ -47,7 +49,7 @@ else ifeq ($(HAS_NEON),yes)
+         OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
+         CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
+ else
+-        HAS_ALTIVEC := $(shell printf '\#include <altivec.h>\nvector int a;\n' |\
++        HAS_ALTIVEC := $(shell printf '$(pound)include <altivec.h>\nvector int a;\n' |\
+                          gcc -c -x c - >/dev/null && rm ./-.o && echo yes)
+         ifeq ($(HAS_ALTIVEC),yes)
+                 CFLAGS += -I../../../arch/powerpc/include
 -- 
 2.34.1
 
