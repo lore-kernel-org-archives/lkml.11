@@ -2,129 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37508C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A77C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243701AbiDNNEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58478 "EHLO
+        id S243705AbiDNNMY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232078AbiDNNEu (ORCPT
+        with ESMTP id S243150AbiDNNMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:04:50 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2075F8EB67;
-        Thu, 14 Apr 2022 06:02:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=se7TDjKdD4lTbs4/EAs3EJoTc89hcEiop1DKf6IJ6Ts=; b=O24dwONDjdolTVYJL/Mivk0Css
-        Nam3xqr0eUKo8jnldPTeolq4WDbIxlwcwk2ZvbLTynj3gOn8SRkPyuY2xpVFiHkisvZqLR6e96TpZ
-        iROwj/LKQwBHC+aUkXGrfIYm2lRQ1wWUaWwIv6ZKyGAxPzDmVgqgNjupkad6z4uXeYQ+RsbNqcIIm
-        h1guXKEYNI1lRPmhu/Z0AWZDKKi6Ky88Hddzh0K6yR2quLxW5i3GKNrTf3tCc/TuH9ngsHT9zhOZS
-        vCdRX3d6WVkPGIi1Zd3sAHCMe6ZCla7x6BJrtBvNBOijo3EeHFWRnOOun6b/wu+WU2f1XxP8ZASRL
-        FDEipquA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58262)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nez70-0004Zy-SF; Thu, 14 Apr 2022 14:02:14 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nez6w-0004KB-Vf; Thu, 14 Apr 2022 14:02:10 +0100
-Date:   Thu, 14 Apr 2022 14:02:10 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        Thu, 14 Apr 2022 09:12:18 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56E91AF13;
+        Thu, 14 Apr 2022 06:09:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649941791; x=1681477791;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=v5CxLQbfWtXiVq/sE32vce32MQXtkQXZiAcw0x85tOs=;
+  b=N6qy/l1225/WvWy3yBeDGBeEe6Bkv2vmF1gju1TpaH+T4SfCMBVcppF+
+   /6ZEjL7q3kDV5CEtp2WeuSA+8wwlSQWpk1+kq14aK7+gMfWkwIWJwge9I
+   uH+RtlXd8SSIncmUFyJ1SYyi9mmdyX89ozsai7PcTG4CB4dF8XW6EAO9z
+   2psrP+I52C/3aqrOSldPpdK7pSFTs/A0At188MAd//hf7OIx/BChXGt2T
+   0vf1UPyn4WMDWE/8wxzkP1n05q9xgKgmjta5AJ56TMdhlKDOc2DvWCHDo
+   KmKjouJewl8WiidNeBnuupAH8fXRaawNUtRPGJrk9JNVdxQrXGtLMNIOV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244810465"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="244810465"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:09:51 -0700
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="508401064"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:09:48 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nezEH-002KKY-Gu;
+        Thu, 14 Apr 2022 16:09:45 +0300
+Date:   Thu, 14 Apr 2022 16:09:45 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Laurent Gonzales <laurent.gonzales@non.se.com>,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
- advanced 5 port switch driver
-Message-ID: <YlgbUiXzHa0UNRK+@shell.armlinux.org.uk>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-7-clement.leger@bootlin.com>
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH v6 4/5] device property: Constify fwnode_handle_get()
+Message-ID: <YlgdGb/vKfdCXXx1@smile.fi.intel.com>
+References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
+ <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
+ <CAJZ5v0jnyg6n-1QRmVg1tjzu3szsG3DYqYTXAbobbKwkFhTreg@mail.gmail.com>
+ <YlcUMNe5gDsEca4f@smile.fi.intel.com>
+ <YlcVFRQ9wJIH+sjI@smile.fi.intel.com>
+ <YldE6L7MbgS0NXQY@paasikivi.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220414122250.158113-7-clement.leger@bootlin.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <YldE6L7MbgS0NXQY@paasikivi.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 02:22:44PM +0200, Clément Léger wrote:
-> Add Renesas RZ/N1 advanced 5 port switch driver. This switch handles 5
-> ports including 1 CPU management port. A MDIO bus is also exposed by
-> this switch and allows to communicate with PHYs connected to the ports.
-> Each switch port (except for the CPU management ports) are connected to
-> the MII converter.
+On Thu, Apr 14, 2022 at 12:47:20AM +0300, Sakari Ailus wrote:
+> On Wed, Apr 13, 2022 at 09:23:17PM +0300, Andy Shevchenko wrote:
+> > On Wed, Apr 13, 2022 at 09:19:28PM +0300, Andy Shevchenko wrote:
+> > > On Wed, Apr 13, 2022 at 08:10:22PM +0200, Rafael J. Wysocki wrote:
+> > > > On Fri, Apr 8, 2022 at 8:49 PM Andy Shevchenko
+> > > > <andriy.shevchenko@linux.intel.com> wrote:
+
+...
+
+> > > > > -struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode)
+> > > > > +struct fwnode_handle *fwnode_handle_get(const struct fwnode_handle *fwnode)
+> > > > >  {
+> > > 
+> > > > >         if (!fwnode_has_op(fwnode, get))
+> > > > >                 return fwnode;
+> > > 
+> > > ^^^^, so it needs a casting, but then we have to comment why is so.
+> > 
+> > Note, it means that the fwnode parameter either invalid or has no given option.
+> > It's not a problem to drop casting in the first case, but the second one should
+> > be justified and Sakari wants to be sure that the initial container is not
+> > const, which seems can't be achieved even with the original code.
 > 
-> This driver include basic bridging support, more support will be added
-> later (vlan, etc).
+> I wonder if I'm missing something. The fwnode argument originally was not
+> const here.
 
-This patch looks to me like it needs to be updated...
+Yes, and our discussion went to the direction of what const qualifier implies
+here. I assume that the const means that we do not modify the fwnode object,
+while its container is another story which we have no influence on. You, if
+I read your messages correctly, insisting that const here implies that the
+container object is const as well.
 
-> +static void a5psw_phylink_validate(struct dsa_switch *ds, int port,
-> +				   unsigned long *supported,
-> +				   struct phylink_link_state *state)
-> +{
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0 };
-> +
-> +	phylink_set_port_modes(mask);
-> +
-> +	phylink_set(mask, Autoneg);
-> +	phylink_set(mask, Pause);
-> +	phylink_set(mask, Asym_Pause);
-> +
-> +	phylink_set(mask, 1000baseT_Full);
-> +	if (!dsa_is_cpu_port(ds, port)) {
-> +		phylink_set(mask, 10baseT_Half);
-> +		phylink_set(mask, 10baseT_Full);
-> +		phylink_set(mask, 100baseT_Half);
-> +		phylink_set(mask, 100baseT_Full);
-> +	}
+Reading current implementation I see now, that with children APIs we have
+two pointers passed, while with parent APIs only a single one. In children
+API due to above is easy to use const qualifier for the first argument.
+Parent APIs missed that and hence have this problem that we can't constify
+their parameters.
 
-If the port supports e.g. RGMII (as it does via the media converter)
-then it also supports 1000baseX modes as well - because a PHY attached
-to the RGMII port can convert to 1000baseX.
+to_of_node() expects const parameter while returns non-const container.
+Is it a subtle issue there? (I believe it should be consistent then)
 
-> +
-> +	linkmode_and(supported, supported, mask);
-> +	linkmode_and(state->advertising, state->advertising, mask);
-> +}
-
-This basically means "I support every phy_interface_t mode that has ever
-been implemented" which surely is not what you want. I doubt from the
-above that you support 10GBASE-KR for example.
-
-Please instead implement the .phylink_get_caps DSA switch interface, and
-fill in the config->supported_interfaces for all interface modes that
-the port supports (that including the media converter as well) and the
-config->mac_capabilities members.
+This patch and the followed one can be moved without understanding why
+we need the non-const parameter there.
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+With Best Regards,
+Andy Shevchenko
+
+
