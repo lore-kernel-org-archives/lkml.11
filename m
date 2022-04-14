@@ -2,161 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFEAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DE0C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354710AbiDNPlH (ORCPT
+        id S1358256AbiDNPla (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
+        Thu, 14 Apr 2022 11:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354755AbiDNOmg (ORCPT
+        with ESMTP id S1354785AbiDNOmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:42:36 -0400
-X-Greylist: delayed 7951 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 07:37:18 PDT
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67A7BE30;
-        Thu, 14 Apr 2022 07:37:16 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A9E5140005;
-        Thu, 14 Apr 2022 14:37:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649947034;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pzvpVAHFVERSCKfSjCd2O3kX3fnSWHd58BPp7m5zfsI=;
-        b=iy+GT5pV6avmVLZTv4Eo9dlefVS9d+26T82VLPBBddEKpkcHIooovDTOSDNO9W9Oj7LiK/
-        LZmDngFiWqZOlxybCp1RDK/L295LyaOihoCaFRx9iWvjyaPqB7uoW1zKBTmoD3IcreeBSt
-        5Jd6s8T69+qcaLFERYxp7dtLdV9XTkoK/ZbAzKz6Nb1E6d+UVENiw9LlasizC4Nthd6T7O
-        CDohMo3dc9bi22rg6uav/obQ/MU6Ikid9H0w0Dt0OoeypNdq9U9EsKZunlBbaRrDZrMkE/
-        aaFDr6pexHjIGcvcnzgXsy3AzUEWoXDbVkX1zVI5bQzmhVIewzyv86sSHBSikg==
-Date:   Thu, 14 Apr 2022 16:35:46 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 02/12] net: dsa: add Renesas RZ/N1 switch tag
- driver
-Message-ID: <20220414163546.3f6c5157@fixe.home>
-In-Reply-To: <20220414142242.vsvv3vxexc7i3ukm@skbuf>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-3-clement.leger@bootlin.com>
-        <20220414142242.vsvv3vxexc7i3ukm@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Thu, 14 Apr 2022 10:42:38 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2062.outbound.protection.outlook.com [40.107.93.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F5D2AE3C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:39:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nq0ps0pG1XN4svM4/gmdCs/txlPlvw82QLoxTwnLtujghdNq62LMkkIgwVTt2SGUqjfxXpBJKQVuaqTWxrh7DC4yEJf31CfKFtO7IpPOQYJa1xoDlBBXit8pgXQRAOq/VfbHkobkeFxe0nKBQtKwjozDgkJKE86VKo55CMp2KvnqdVojncK7wY5uSy0juo4d3aY4+HeC2qMJBDRs2asd9EnCf0tQfQtX8gOd83drgdth2KgnsYzHrsB7EM0FaZS7IBSE9GzQ502HHcUq3gvKbq+JLDVCa/naPi8DOLPfM8DB14qsfUUs34gNTGKB2guI1G4RPMkeTERG7yNXSnHsVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=a/Bfz1PATDvC0oypikSeRFZrtlXcP1bU4HB7kfwj9Sc=;
+ b=kF3FPSTwMyD2yCH0lQTE6BlgAlSQjxWIj4Xrn2XZL2ZuWqtHpGhk1GadjwDuzEO6knT0ERysxQTmMULupF9iYTd4DbETaXdgZPmHaAiEri3/a4lXImAz13gRqWTLh8vUPVpgbdmdsSxwDZNt0Zufdv5i6Kc0WHze78VQ30up2W7biduRRS1CDQaX0BBOzvXkNozHgIdnl/PIk9nI0sXgUVnn3i6YPAPJFcn0lKjzeJq2rOyj9FmYWPwptZTw8H3OGtVwDbq2q0xbBwBD3VvdmTh3Ya6qoya67NT2OK+Azjdtf8Myh9JWuHr6pQVVWZDNHl/A6bSDyaJHgKCSJllnWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a/Bfz1PATDvC0oypikSeRFZrtlXcP1bU4HB7kfwj9Sc=;
+ b=IVpLwYi17PdvXdvwoVwV0OpHKRO2/zXmLCNdmrp9rJZZYNtHrScZo9eRNmr8TEOg18LHeeZMLUr8etQpI0wwiaRRoRaozhQMu6H8FBVLlPv7QZ08jHw/t3WLe5hIDh78GMf5dVdOgu4IKdcE7+N+XBvr/EJGSqwNS800b0ak0CtgklWcyW12HsYFfnfwrlDMlSiA1eSUR7SiHi1w/YAIR4JdBgo4QuRmhFxea28e5R354tNe7AnMlOzv+zmjb3Q72obzw/b5puiuDR6j3/FurIsQyY8qk+gV3K+ms20oOneufhO4Gicxxd2QyCzL5ecmt+shMFoPORARj7Y63aOUGw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by SN6PR12MB4719.namprd12.prod.outlook.com (2603:10b6:805:e9::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Thu, 14 Apr
+ 2022 14:39:01 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2%5]) with mapi id 15.20.5164.020; Thu, 14 Apr 2022
+ 14:39:01 +0000
+Date:   Thu, 14 Apr 2022 11:38:59 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Wang, Zhi A" <zhi.a.wang@intel.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: refactor the i915 GVT support and move to the modern mdev API v3
+Message-ID: <20220414143859.GE368031@nvidia.com>
+References: <82c13d8e-1cb4-2873-86e9-16fd38e15b27@intel.com>
+ <20220413154642.GA28095@lst.de>
+ <871qy1geko.fsf@intel.com>
+ <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
+ <20220413232053.GA2120790@nvidia.com>
+ <1c3aaab9-3bd4-95d4-9f9f-4be9e10e6516@intel.com>
+ <20220414133427.GB2120790@nvidia.com>
+ <87ilrbeqbo.fsf@intel.com>
+ <20220414134321.GD2120790@nvidia.com>
+ <abc0a953-8527-ba25-9987-d2f1284a7430@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <abc0a953-8527-ba25-9987-d2f1284a7430@intel.com>
+X-ClientProxiedBy: BLAPR03CA0131.namprd03.prod.outlook.com
+ (2603:10b6:208:32e::16) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7bb56b66-d021-4fd6-9b24-08da1e248450
+X-MS-TrafficTypeDiagnostic: SN6PR12MB4719:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB4719D04B56C68210F4E2628BC2EF9@SN6PR12MB4719.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SSGmmUFcJ2RQuZGXFswa7oSIOvY0LUSSv0CuVe6KFh9rfIRN47aed/B/da8LIatR6xhIY2MbjbkYsl9aiayxFhVFmgjZEDvvc4rTD424O51NWU0D1F5VVmEt4RqMPhEwK+8HuUMz0qS+dMtddozrY6q6Y7UjZKlHJelbRrBdktMdCcS/3ry0IIpfec7386L3bVxu7mXUxczczWRi8/3CA57p/B6HS2ZfMUe/FSf9+Mwu279CoPyUp8kXWeQr8UxpqpWMpYQhwrm66Eys0t/qyCNJwpV60Pu71DPYCo3gZBWbLW/EZILGyTZlCKDKgq1D5HKyzPNC0kadyrjOYXwtuMAXT24UdJGNX3ytXmmjT9lDthntqiGV3WsGVLBOt4jceybdkKkF7ZOF2KFu28Veeo+qyFmyw205Honl8n9V1lQaWpbtW8QRmQuUL/ruhdo3+QLEl11hVmPC1DdztO3ig/p1ZmvxF68RSl5jQljfK7FHqLSoAjlwHvCwy8d0fbpnHaF9xxDonh863lDa5F0DooDAtmWviXio/TTyHZSItZFiQnpxEJuZC1BbdaBc5kpyAVRhYtDJWJvDYzAZD4JX6OYkLTg7U6eVwREg5mfOM9upGhMdZRPRm0DbY1Z3+n70od05PCl5YERl2b5vu9f/SDzfp9IiPy20mZQ8sfVrIGXFZZsLOzbtIrqkOSPLUxqkMpHfuUAj1vpq6qBCXmMhMg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(5660300002)(8936002)(26005)(6512007)(33656002)(38100700002)(4326008)(86362001)(316002)(66476007)(66556008)(54906003)(8676002)(66946007)(6916009)(6506007)(6486002)(508600001)(2906002)(7416002)(36756003)(1076003)(186003)(83380400001)(27376004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?m3ExuVKoUKybjs389f97/JJ1nbF168b1Uu+Y36OhTFxlMcZHG4D5PFCl0/jB?=
+ =?us-ascii?Q?ZC9JjcIkQ6ePZiA+SX5GrMOUGD1vdGsEM9tjGmbLqW4qcFxyFqWJALOEBBIU?=
+ =?us-ascii?Q?C5r4E+sgcmR2aQvZTh7FlEjItRBM+z19dkpTEohsco6Ii4F/adBnx4dghJOh?=
+ =?us-ascii?Q?M4m/nZsXT/2OWHs2sO3FjPxKPsvLUz0YU2dDv4Bp9Ffo697w3/CGNGVnL8ig?=
+ =?us-ascii?Q?rQg9G04mYPyi/5jyEaIb745hgZFv7IOu8KJi6SdwEOuhqXsYogzgLU3LM4PF?=
+ =?us-ascii?Q?fbCsfw7/uZUDopdptzrAMvMZfjwA+XgugdADp5lysq75gidQ+FLjVYXIqb94?=
+ =?us-ascii?Q?w5VdidKcYuOtScCCMEOINyhaK4ryG270AsYfAzeryHsYMBEW9IW0MKU5VhrX?=
+ =?us-ascii?Q?MIPQnCJb0cAnGAPz4roLZMJsksSvIX9ytLXl3VUtJCjB8OVCoQoqyagG8FX6?=
+ =?us-ascii?Q?M52k5ZrEua7dPL6F+us26KYx0CAawbQcZDm3LE2s29AFxe32VFvwwY43Mls1?=
+ =?us-ascii?Q?Ub2A1OFfowNqBjyvSpLrWyVY5RNJ6sMeem6PoBxuCTLtNrBZfL/ha0Ef+Xiq?=
+ =?us-ascii?Q?6RsxFU/1plTs8pHMpjw0YaeTTEBvim4HvX1Hj8/tOaEqoKGcRhTKfpv6uUsO?=
+ =?us-ascii?Q?jQ0r1QxaDXOu7wostkLHJBWV3tVUVvOXh1+r3wP2ecIjtlPeeWHQNDondBeM?=
+ =?us-ascii?Q?YforjTrAqJpO3ycTLvq5b33IGkzejOmAtQJp0WXJyNbpIFPOnuP/oljASiWz?=
+ =?us-ascii?Q?T3kPnp//1aD94QGJ0meTRBcpCaba/W+TIluKK90MECgb9piQS6fpK9IgTsej?=
+ =?us-ascii?Q?kLnJyFf9EpNzgDItZrm+80LGUUx6AUDkVE/qs0h8v4YldZ73U2P3EmuF3LQH?=
+ =?us-ascii?Q?Z9pa7WaSGPmIMPwIhZp3O8MZ3wLDBaIPkdAYLqIxRcbVL1g7YpWUb4owTHQG?=
+ =?us-ascii?Q?ypwX9SrUE9rJiiTiozDBcjxLPk6pfMTZCkR2rzSahgKsG1Kbh6h9E8+jvYaO?=
+ =?us-ascii?Q?7C+OBY6PQnzGKDNRPhHM57y5HBDmx/FyBmN0bizkJK0ht2jpM5nP8iotiz+r?=
+ =?us-ascii?Q?2JeM+oxn3C7NgYF2DHAgo5Kb7E4ymJkBRhCWRw+lMbtGanJfdseNM8GBB5om?=
+ =?us-ascii?Q?PguvilcAK1RtQ4krvtj0Hx8LjdxBSajV5WDEMAov3VM8iGS7E0795h7W9UnP?=
+ =?us-ascii?Q?uYN+zMBBcnhjLP5EcOgiUicviOdeLndy1zsm2wWkRzU8ck79ZGl1/VoGtBbW?=
+ =?us-ascii?Q?Yo2YuwyoJsLPPrgohMKaIbzt5DgNjcRlVAs3pDPZU2+ApUHGP4v+B1yvEfaA?=
+ =?us-ascii?Q?GvfpOIE01qEwr3cXHhivIMmE4P2X8LfuwyWtrPxa+wUulczzwMPcTFVaWrTw?=
+ =?us-ascii?Q?7Brj+s0XcEETKjg8HaAk0HYK3eZIxQhNb/yc2sIEzIRMI9ix4MWGgoPAbtw8?=
+ =?us-ascii?Q?+O27gW29DmXZhrXOaAwnuZ+aS6MKUaT8KBz2t78vIXfEahVT8dQNIOKC2Acx?=
+ =?us-ascii?Q?oGKrli/6e5RuctpqMRThW0g1aE5OG8CLVmGQUYi9n4QUd1V093J931LnTYr4?=
+ =?us-ascii?Q?k8v8Gi0OM2J1lkxZGco0T9mSZtMSYU9nc9Wxz/AfY/0GtvlG+0IOATLh9gxI?=
+ =?us-ascii?Q?3PJdgCVa7c3vGxmsMM/Q1akkzN8ZTpzuCG+duH0L7unoNPQAI3N5ywtQo55r?=
+ =?us-ascii?Q?B/ySYKIzKWMERruj/lgdVQbPElHhPjDZrR383HgQmfXXklW9rRr/Uv8z04cs?=
+ =?us-ascii?Q?vajujAETzg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7bb56b66-d021-4fd6-9b24-08da1e248450
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 14:39:01.5752
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wjISa0hfnwjnGt+3NzPHJ9CAjDSBMDurdl0Hs57LT5xxhM0kfaLr6Y2ctcpCwhqw
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4719
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Thu, 14 Apr 2022 17:22:42 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
+On Thu, Apr 14, 2022 at 02:25:36PM +0000, Wang, Zhi A wrote:
 
-> > +
-> > +/* To define the outgoing port and to discover the incoming port a TAG=
- is
-> > + * inserted after Src MAC :
-> > + *
-> > + *       Dest MAC       Src MAC           TAG         Type
-> > + * ...| 1 2 3 4 5 6 | 1 2 3 4 5 6 | 1 2 3 4 5 6 7 8 | 1 2 |...
-> > + *                                |<--------------->|
-> > + *
-> > + * See struct a5psw_tag for layout
-> > + */
-> > +
-> > +#define A5PSW_TAG_VALUE			0xE001
-> > +#define A5PSW_TAG_LEN			8
-> > +#define A5PSW_CTRL_DATA_FORCE_FORWARD	BIT(0)
-> > +/* This is both used for xmit tag and rcv tagging */
-> > +#define A5PSW_CTRL_DATA_PORT		GENMASK(3, 0)
-> > +
-> > +struct a5psw_tag { =20
->=20
-> This needs to be packed.
->=20
-> > +	u16 ctrl_tag;
-> > +	u16 ctrl_data; =20
->=20
-> These need to be __be16.
->=20
-> > +	u32 ctrl_data2; =20
->=20
-> This needs to be __be32.
+> > So drop the '[DONT PULL]' commit and send a PR to the next DRM tree -
+> > when that is confirmed send the same PR to vfio,
+> 
+> I updated the branch again, but I am confused. What is the purpose of sending
+> the PR to next DRM tree? I suppose all the patches will go through VFIO? If
+> I understand correctly?
 
-Acked.
+pull requests can flow through more than one tree concurrently. The
+purpose of the topic branch is to allow all the commits to be in all
+the trees they need to be in at once.
 
->=20
-> > +};
-> > +
-> > +static struct sk_buff *a5psw_tag_xmit(struct sk_buff *skb, struct net_=
-device *dev)
-> > +{
-> > +	struct a5psw_tag *ptag, tag =3D {0};
-> > +	struct dsa_port *dp =3D dsa_slave_to_port(dev); =20
->=20
-> Please keep variable declarations sorted in decreasing order of line
-> length (applies throughout the patch series, I won't repeat this comment).
+So you should send this branch as a PR to the next logical upstream
+tree gvt patches normally go through, in the usual way that you send
+PRs. Especially in this case where there is a small merge conflict
+internal to DRM to resolve. I'm assuming this is the drm-intel-next
+tree?
 
-Acked, both PCS and DSA driver are ok with that rule. Missed that one
-though.
->=20
-> > +	u32 data2_val;
-> > +
-> > +	/* The Ethernet switch we are interfaced with needs packets to be at
-> > +	 * least 64 bytes (including FCS) otherwise they will be discarded wh=
-en
-> > +	 * they enter the switch port logic. When tagging is enabled, we need
-> > +	 * to make sure that packets are at least 68 bytes (including FCS and
-> > +	 * tag).
-> > +	 */
-> > +	if (__skb_put_padto(skb, ETH_ZLEN + sizeof(tag), false))
-> > +		return NULL;
-> > +
-> > +	/* provide 'A5PSW_TAG_LEN' bytes additional space */
-> > +	skb_push(skb, A5PSW_TAG_LEN);
-> > +
-> > +	/* make room between MACs and Ether-Type to insert tag */
-> > +	dsa_alloc_etype_header(skb, A5PSW_TAG_LEN);
-> > +
-> > +	ptag =3D dsa_etype_header_pos_tx(skb);
-> > +
-> > +	data2_val =3D FIELD_PREP(A5PSW_CTRL_DATA_PORT, BIT(dp->index));
-> > +	tag.ctrl_tag =3D htons(A5PSW_TAG_VALUE);
-> > +	tag.ctrl_data =3D htons(A5PSW_CTRL_DATA_FORCE_FORWARD);
-> > +	tag.ctrl_data2 =3D htonl(data2_val);
-> > +
-> > +	memcpy(ptag, &tag, sizeof(struct a5psw_tag)); =20
->=20
-> sizeof(tag), to be consistent with the other use of sizeof() above?
-> Although, hmm, I think you could get away with editing "ptag" in place.
+Once DRM is internally happy then VFIO can merge it as well. You can
+view VFIO as the secondary path to Linus, DRM as primary. Alex will
+mention in his pull request that VFIO has a 'shared branch with DRM
+for gvt'.
 
-I was not sure of the alignment guarantee I would have here. If the
-VLAN header is guaranteed to be aligned on 2 bytes, then I guess it's
-ok to do that in-place.
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Jason
