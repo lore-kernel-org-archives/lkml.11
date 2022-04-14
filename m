@@ -2,192 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AFAC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B47EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243573AbiDNMsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 08:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        id S240233AbiDNMsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241889AbiDNMr2 (ORCPT
+        with ESMTP id S234116AbiDNMsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 08:47:28 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D220C90270;
-        Thu, 14 Apr 2022 05:45:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=Q89LmOY4QsQwqDUIV/jiE3VXQh22TbF6MoKNt2t/lbY=; b=Y604GdzeZvrieynRAz3bmrTjl9
-        OUtJvuqb0RUPm1Qod0VyHNsNkJJ3FEzHzva8XTvqyi1oFEhjGBTcbUhydSuofO9sXioNXYXXUEmtw
-        IGMBWoleyc0I4g6OTxrX6U10YrdV734RwH+JqCOJIBxk79AED2nAJqLos4EP8ufaWwwkHTc5cYiaA
-        MILjYXzCZXbEJK5xh9b8h/Kbb+MfEk/VTn3WivVL4KqpNy20kiEMrO1TDOwjlWUHCJlg9MXT9FFmE
-        /Y9Aa3gOHUIlyuy2GjTyfXtZl62J3M35TRE2Y0/vJomIaH/sxFBySnewQKTFIT6+7aA8ojUBxkMbI
-        SzhTheyjRKCpdPsFIlM6SM8RiVd/p3ZAcRezXPnYB12DQo8YdHv+DTbPhgcJFI0WIB7DqWGRxW9/P
-        WF0dGEzdcl2oYyACSlOhD52mZZaa/KdLhsQX+d7MqP4tjPR9rZ8Y5NZxgkvVkRgqDSrMsQ4AR0Mrq
-        OK/oCzKKm/5BxB8YvKb+psouKamIqdxZLScIJ+OkBH9zArk1yrUx+5YR1OEjZaateCXYbonmVk+/2
-        d2hwVLh0IyBR5wHdzb7wgE8Z5k6GHxoqDll6JZ4e43xQufc+8ow5Eh0qHpfbHSIqmx5wHbjEh/7bW
-        bi8LWVNqH31oLZkZgR0TC3hxUVODXDDqf3myvVde0=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org
-Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
-Date:   Thu, 14 Apr 2022 14:44:53 +0200
-Message-ID: <2551609.RCmPuZc3Qn@silver>
-In-Reply-To: <YlX/XRWwQ7eQntLr@codewreck.org>
-References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
- <3119964.Qa6D4ExsIi@silver> <YlX/XRWwQ7eQntLr@codewreck.org>
+        Thu, 14 Apr 2022 08:48:31 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BB2191362
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 05:46:06 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 62BBC1424;
+        Thu, 14 Apr 2022 05:46:06 -0700 (PDT)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 133923F70D;
+        Thu, 14 Apr 2022 05:46:03 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 13:46:01 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     andrey.konovalov@linux.dev
+Cc:     Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: Re: [PATCH v3 2/3] kasan, arm64: implement stack_trace_save_shadow
+Message-ID: <YlgXiddhNAQxzmTC@lakrids>
+References: <cover.1649877511.git.andreyknvl@google.com>
+ <78cd352296ceb14da1d0136ff7d0a6818e594ab7.1649877511.git.andreyknvl@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78cd352296ceb14da1d0136ff7d0a6818e594ab7.1649877511.git.andreyknvl@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mittwoch, 13. April 2022 00:38:21 CEST asmadeus@codewreck.org wrote:
-> Christian Schoenebeck wrote on Mon, Apr 11, 2022 at 03:41:45PM +0200:
-> > I get more convinced that it's a bug on Linux kernel side. When guest is
-> > booted I always immediately get a read("/var/log/wtmp") = EBADF error on
-> > guest. And the 9p command sequence sent to QEMU 9p server were:
+On Wed, Apr 13, 2022 at 09:26:45PM +0200, andrey.konovalov@linux.dev wrote:
+> From: Andrey Konovalov <andreyknvl@google.com>
 > 
-> Yes, I'm not pointing fingers, just trying to understand :)
-
-Don't worry, that was not my impression, nor was it my intention either. I'm 
-jut trying to interpret what I'm seeing here.
-
-> > ...
-> > v9fs_clunk tag 0 id 120 fid 568
-> > v9fs_walk tag 0 id 110 fid 1 newfid 568 nwnames 1
-> > v9fs_rerror tag 0 id 110 err 2
-> > v9fs_walk tag 0 id 110 fid 26 newfid 568 nwnames 1
-> > v9fs_rerror tag 0 id 110 err 2
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_walk tag 0 id 110 fid 633 newfid 568 nwnames 1
-> > v9fs_rerror tag 0 id 110 err 2
-> > v9fs_walk tag 0 id 110 fid 875 newfid 568 nwnames 0
-> > v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
-> > v9fs_open tag 0 id 12 fid 568 mode 32769
-> > v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit
-> > 507904 v9fs_walk tag 0 id 110 fid 875 newfid 900 nwnames 0
-> > v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
-> > v9fs_open tag 0 id 12 fid 900 mode 2
-> > v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit
-> > 507904 v9fs_lock tag 0 id 52 fid 568 type 1 start 0 length 0
-> > v9fs_lock_return tag 0 id 52 status 0
-> > v9fs_xattrwalk tag 0 id 30 fid 568 newfid 901 name security.capability
-> > v9fs_rerror tag 0 id 30 err 95
-> > v9fs_read tag 0 id 116 fid 568 off 192512 max_count 256
-> > 
-> > So guest opens /var/log/wtmp with fid=568 mode=32769, which is write-only
-> > mode, and then it tries to read that fid 568, which eventually causes the
-> > read() call on host to error with EBADF. Which makes sense, as the file
-> > was
-> > opened in write-only mode, hence read() is not possible with that file
-> > descriptor.
+> Implement stack_trace_save_shadow() that collects stack traces based on
+> the Shadow Call Stack (SCS) for arm64 by copiing the frames from SCS.
 > 
-> Oh! That's something we can work on. the vfs code has different caches
-> for read only and read-write fids, perhaps the new netfs code just used
-> the wrong one somewhere. I'll have a look.
+> The implementation is best-effort and thus has limitations.
 > 
-> > The other things I noticed when looking at the 9p command sequence above:
-> > there is a Twalk on fid 568 before, which is not clunked before reusing
-> > fid
-> > 568 with Topen later. And before that Twalk on fid 568 there is a Tclunk
-> > on
-> > fid 568, but apparently that fid was not used before.
+> stack_trace_save_shadow() fully handles task and softirq contexts, which
+> are both processed on the per-task SCS.
 > 
-> This one though is just weird, I don't see where linux would make up a fid
-> to clunk like this... Could messages be ordered a bit weird through
-> multithreading?
-> e.g. thread 1 opens, thread 2 clunks almost immediately afterwards, and
-> would be printed the other way around?
-
-Yeah, something like that was also my guess.
-
-> Should still be serialized through the virtio ring buffer so I don't
-> believe what I'm saying myself... It might be worth digging further as
-> well.
+> For hardirqs, the support is limited: stack_trace_save_shadow() does not
+> collect the task part of the stack trace. For KASAN, this is not a problem,
+> as stack depot only saves the interrupt part of the stack anyway.
 > 
-> > > Perhaps backing filesystem dependant? qemu version? virtfs access
-> > > options?
-> > 
-> > I tried with different hardware and different file systems (ext4, btrfs),
-> > same misbehaviours.
-> > 
-> > QEMU is latest git version. I also tried several different QEMU versions,
-> > same thing.
-> > 
-> > QEMU command line used:
-> > 
-> > ~/git/qemu/build/qemu-system-x86_64 \
-> > -machine pc,accel=kvm,usb=off,dump-guest-core=off -m 16384 \
-> > -smp 8,sockets=8,cores=1,threads=1 -rtc base=utc -boot strict=on \
-> > -kernel ~/vm/bullseye/boot/vmlinuz \
-> > -initrd ~/vm/bullseye/boot/initrd.img \
-> > -append 'root=fsRoot rw rootfstype=9p
-> > rootflags=trans=virtio,version=9p2000.L,msize=4186112,cache=loose
-> > console=ttyS0' \ -fsdev
-> > local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=$HOME/vm/bu
-> > llseye/ \ -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fsRoot \
-> > -sandbox
-> > on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
-> > -nographic
-> > 
-> > Important for reproducing this issue:
-> >   * cache=loose
-> >   * -smp N (with N>1)
-> >   * Guest booted with Linux kernel containing commit eb497943fa21
-> >   
-> >     (uname >= 5.16)
-> > 
-> > I'm pretty sure that you can reproduce this issue with the QEMU 9p rootfs
-> > setup HOWTO linked before.
+> Otherwise, stack_trace_save_shadow() also takes a best-effort approach
+> with a focus on performance. Thus, it:
 > 
-> Yes, I'm not sure why I can't reproduce... All my computers are pretty
-> slow but the conditions should be met.
-> I'll try again with a command line closer to what you just gave here.
-
-I'm not surprised that you could not reproduce the EBADF errors yet. To make 
-this more clear, as for the git client errors: I have like 200+ git 
-repositories checked out on that test VM, and only about 5 of them trigger 
-EBADF errors on 'git pull'. But those few repositories reproduce the EBADF 
-errors reliably here.
-
-In other words: these EBADF errors only seem to trigger under certain 
-circumstances, so it requires quite a bunch of test material to get a 
-reproducer.
-
-Like I said though, with the Bullseye installation I immediately get EBADF 
-errors already when booting, whereas with a Buster VM it boots without errors.
-
-> > > It's all extremely slow though... like the final checkout counting files
-> > > at less than 10/s
-> > 
-> > It is VERY slow. And the weird thing is that cache=loose got much slower
-> > than cache=mmap. My worst case expactation would be cache=loose at least
-> > not performing worse than cache=mmap.
+> - Does not try to collect stack traces from other exceptions like SDEI.
+> - Does not try to recover frames modified by KRETPROBES or by FTRACE.
 > 
-> Yes, some profiling is also in order, it didn't use to be that slow so
-> it must not be reusing previously open fids as it should have or
-> something..
+> However, stack_trace_save_shadow() does strip PTR_AUTH tags to avoid
+> leaking them in stack traces.
+> 
+> The -ENOSYS return value is deliberatly used to match
+> stack_trace_save_tsk_reliable().
+> 
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> ---
+>  mm/kasan/common.c | 62 +++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
 
-If somebody has some more ideas what I can try/test, let me know. However ATM 
-I won't be able to review the netfs and vfs code to actually find the cause of 
-these issues.
+As things stand, NAK to this patch, for the reasons I have laid out in
+my replies to earlier postings and to my reply to the cover letter of
+this posting.
 
-Best regards,
-Christian Schoenebeck
+To be clear, that NAK applies regardless of where this is placed within
+the kernel tree. If we *really* need to have a special unwinder, that
+should live under arch/arm64/, but my first objection is that it is not
+necessary.
 
+I am more than happy to extend the existing unwinder with some options
+to minimize overhead (e.g. to stop dumping at an exception boundary),
+since that sounds useful to you, and I know is relatively simple to
+implement.
 
+Thanks,
+Mark.
+
+> diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+> index d9079ec11f31..23b30fa6e270 100644
+> --- a/mm/kasan/common.c
+> +++ b/mm/kasan/common.c
+> @@ -30,6 +30,68 @@
+>  #include "kasan.h"
+>  #include "../slab.h"
+>  
+> +#ifdef CONFIG_SHADOW_CALL_STACK
+> +#include <linux/scs.h>
+> +#include <asm/scs.h>
+> +
+> +/*
+> + * Collect the stack trace from the Shadow Call Stack in a best-effort manner:
+> + *
+> + * - Do not collect the task part of the stack trace when in a hardirq.
+> + * - Do not collect stack traces from other exception levels like SDEI.
+> + * - Do not recover frames modified by KRETPROBES or by FTRACE.
+> + *
+> + * Note that marking the function with __noscs leads to unnacceptable
+> + * performance impact, as helper functions stop being inlined.
+> + */
+> +static inline int stack_trace_save_shadow(unsigned long *store,
+> +					  unsigned int size)
+> +{
+> +	unsigned long *scs_top, *scs_base, *frame;
+> +	unsigned int len = 0;
+> +
+> +	/* Get the SCS base. */
+> +	if (in_task() || in_serving_softirq()) {
+> +		/* Softirqs reuse the task SCS area. */
+> +		scs_base = task_scs(current);
+> +	} else if (in_hardirq()) {
+> +		/* Hardirqs use a per-CPU SCS area. */
+> +		scs_base = *this_cpu_ptr(&irq_shadow_call_stack_ptr);
+> +	} else {
+> +		/* Ignore other exception levels. */
+> +		return 0;
+> +	}
+> +
+> +	/*
+> +	 * Get the SCS pointer.
+> +	 *
+> +	 * Note that this assembly might be placed before the function's
+> +	 * prologue. In this case, the last stack frame will be lost. This is
+> +	 * acceptable: the lost frame will correspond to an internal KASAN
+> +	 * function, which is not relevant to identify the external call site.
+> +	 */
+> +	asm volatile("mov %0, x18" : "=&r" (scs_top));
+> +
+> +	/* The top SCS slot is empty. */
+> +	scs_top -= 1;
+> +
+> +	for (frame = scs_top; frame >= scs_base; frame--) {
+> +		if (len >= size)
+> +			break;
+> +		/* Do not leak PTR_AUTH tags in stack traces. */
+> +		store[len++] = ptrauth_strip_insn_pac(*frame);
+> +	}
+> +
+> +	return len;
+> +}
+> +#else /* CONFIG_SHADOW_CALL_STACK */
+> +static inline int stack_trace_save_shadow(unsigned long *store,
+> +					  unsigned int size)
+> +{
+> +	return -ENOSYS;
+> +}
+> +#endif /* CONFIG_SHADOW_CALL_STACK */
+> +
+>  depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
+>  {
+>  	unsigned long entries[KASAN_STACK_DEPTH];
+> -- 
+> 2.25.1
+> 
