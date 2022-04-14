@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A695CC352AA
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 840A5C4707F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351233AbiDNOyR (ORCPT
+        id S1349927AbiDNOxe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34724 "EHLO
+        Thu, 14 Apr 2022 10:53:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245344AbiDNNsY (ORCPT
+        with ESMTP id S1345119AbiDNNpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:48:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADA880235;
-        Thu, 14 Apr 2022 06:43:50 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423A9F7F;
+        Thu, 14 Apr 2022 06:42:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34D4C61D7E;
-        Thu, 14 Apr 2022 13:43:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F05CC2BBE4;
-        Thu, 14 Apr 2022 13:43:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03358B828F4;
+        Thu, 14 Apr 2022 13:42:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F9BAC385A1;
+        Thu, 14 Apr 2022 13:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943829;
-        bh=Ck8pZ+K+09uZKTFJGDmrbOSck6azoaLvPiYT7H8ouDI=;
+        s=korg; t=1649943754;
+        bh=CTgwVXYA5lBxlv9t0fAUMmQVfYnzUwoofFlAGeGu5zU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cZDHqy8W8YOi5iOohkDMH5EkKW64gB1FGuPfJJbH7mcyfBCNZfTD+uAWZ8jkrgdYM
-         Gax+p2Q2bsD6rL4xIweazmbZj5sASual1vxcbOSLYA2PCoKjPGFvXo5cox66oRcin7
-         6vHDWBaic6y3XgiASa4wcwSY8+F+A4mG9TwjlHBI=
+        b=TdooPZovlPRhdc1HPMzum5+NHbItH4AgaYmENws6ayvW15B0XkygqMCUwLKbbc1lf
+         Crto978Pr85fZC0ASc9TkQ3bY3FzkaNMju/tN3bEdbDC/M/HsDgnWK0OFj+kM/Mui8
+         0FOIpsvrZBiOPJ83pYaf1al6fQ6Svexad8qEhFd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>,
-        LogicalErzor <logicalerzor@gmail.com>
-Subject: [PATCH 5.4 295/475] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
-Date:   Thu, 14 Apr 2022 15:11:20 +0200
-Message-Id: <20220414110903.350883121@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 262/475] NFSv4.1: dont retry BIND_CONN_TO_SESSION on session error
+Date:   Thu, 14 Apr 2022 15:10:47 +0200
+Message-Id: <20220414110902.441488581@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,58 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
+[ Upstream commit 1d15d121cc2ad4d016a7dc1493132a9696f91fc5 ]
 
-IRQ types blindly copied from very similar APQ8064.
+There is no reason to retry the operation if a session error had
+occurred in such case result structure isn't filled out.
 
-Fixes warnings as:
-WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
-...
-
-Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
+Fixes: dff58530c4ca ("NFSv4.1: fix handling of backchannel binding in BIND_CONN_TO_SESSION")
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/nfs/nfs4proc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index f2aeaccdc1ad..15ff0e8fd0d3 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -145,7 +145,9 @@
- 			reg		= <0x108000 0x1000>;
- 			qcom,ipc	= <&l2cc 0x8 2>;
- 
--			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
-+			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
- 			interrupt-names	= "ack", "err", "wakeup";
- 
- 			regulators {
-@@ -191,7 +193,7 @@
- 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 				reg = <0x16440000 0x1000>,
- 				      <0x16400000 0x1000>;
--				interrupts = <0 154 0x0>;
-+				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
- 				clock-names = "core", "iface";
- 				status = "disabled";
-@@ -317,7 +319,7 @@
- 				#address-cells = <1>;
- 				#size-cells = <0>;
- 				reg = <0x16080000 0x1000>;
--				interrupts = <0 147 0>;
-+				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
- 				spi-max-frequency = <24000000>;
- 				cs-gpios = <&msmgpio 8 0>;
- 
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index fb3d1532f11d..76baf7b441f3 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -7918,6 +7918,7 @@ nfs4_bind_one_conn_to_session_done(struct rpc_task *task, void *calldata)
+ 	case -NFS4ERR_DEADSESSION:
+ 		nfs4_schedule_session_recovery(clp->cl_session,
+ 				task->tk_status);
++		return;
+ 	}
+ 	if (args->dir == NFS4_CDFC4_FORE_OR_BOTH &&
+ 			res->dir != NFS4_CDFS4_BOTH) {
 -- 
 2.34.1
 
