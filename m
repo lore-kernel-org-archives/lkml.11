@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC8AC3A589
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD01C38A2E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245616AbiDNNsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
+        id S245684AbiDNNsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344012AbiDNNaO (ORCPT
+        with ESMTP id S1344013AbiDNNaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:30:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6936E92870;
-        Thu, 14 Apr 2022 06:26:13 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A524992876;
+        Thu, 14 Apr 2022 06:26:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15E03B8296A;
-        Thu, 14 Apr 2022 13:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B8CFC385A1;
-        Thu, 14 Apr 2022 13:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41CF8612B3;
+        Thu, 14 Apr 2022 13:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 540C8C385A1;
+        Thu, 14 Apr 2022 13:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942770;
-        bh=ZnHTmTtesLWyh9h2bGNI4sFy/7BjPSJ1hU3Je25sBCY=;
+        s=korg; t=1649942773;
+        bh=jpf1n49PwEk7KXAiKU/xbsttVCN7nX+VUnABwoWLeKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AeOSvDbpzonn8JAb8lSVOJgblw/8TP80gXqOpF9PL3++PthFe/dPfeW3kCTfApNWF
-         9c1CwRt62e3eUSfrKpegoZSiKTgFc1P7hvrp6aONv7gaRn3/P04X2d8rxFDeX9WriN
-         y6h53v7iWs608NH2WQk7iFaJ2oJddz+SeIzWNQMA=
+        b=xqPwYPCRQsqkcCWTn058u4UXywuWn1gPi4c2dCPgnYeb7mFKbonN5jNH0YCo4RhKs
+         AwcTYD8Ck2UD2J54LqjrFlLD7ptCoYCSi58gLOwuYn2LKYwmMjqcOzLSmGT+TS4qdP
+         KsxcVIjyBl2cWShHVN2vQ3UdG77NICmYp/b830x0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 256/338] ubifs: Rectify space amount budget for mkdir/tmpfile operations
-Date:   Thu, 14 Apr 2022 15:12:39 +0200
-Message-Id: <20220414110846.177631773@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.19 239/338] can: mcba_usb: mcba_usb_start_xmit(): fix double dev_kfree_skb in error path
+Date:   Thu, 14 Apr 2022 15:12:22 +0200
+Message-Id: <20220414110845.695262825@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,71 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit a6dab6607d4681d227905d5198710b575dbdb519 ]
+commit 04c9b00ba83594a29813d6b1fb8fdc93a3915174 upstream.
 
-UBIFS should make sure the flash has enough space to store dirty (Data
-that is newer than disk) data (in memory), space budget is exactly
-designed to do that. If space budget calculates less data than we need,
-'make_reservation()' will do more work(return -ENOSPC if no free space
-lelf, sometimes we can see "cannot reserve xxx bytes in jhead xxx, error
--28" in ubifs error messages) with ubifs inodes locked, which may effect
-other syscalls.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+because can_put_echo_skb() deletes original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-A simple way to decide how much space do we need when make a budget:
-See how much space is needed by 'make_reservation()' in ubifs_jnl_xxx()
-function according to corresponding operation.
-
-It's better to report ENOSPC in ubifs_budget_space(), as early as we can.
-
-Fixes: 474b93704f32163 ("ubifs: Implement O_TMPFILE")
-Fixes: 1e51764a3c2ac05 ("UBIFS: add new flash file system")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+Link: https://lore.kernel.org/all/20220311080208.45047-1-hbh25y@gmail.com
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/dir.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/can/usb/mcba_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/fs/ubifs/dir.c b/fs/ubifs/dir.c
-index 9e466eb30dcb..111905ddbfc2 100644
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -373,15 +373,18 @@ static int do_tmpfile(struct inode *dir, struct dentry *dentry,
- {
- 	struct inode *inode;
- 	struct ubifs_info *c = dir->i_sb->s_fs_info;
--	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1};
-+	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
-+					.dirtied_ino = 1};
- 	struct ubifs_budget_req ino_req = { .dirtied_ino = 1 };
- 	struct ubifs_inode *ui, *dir_ui = ubifs_inode(dir);
- 	int err, instantiated = 0;
- 	struct fscrypt_name nm;
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -379,7 +379,6 @@ static netdev_tx_t mcba_usb_start_xmit(s
+ xmit_failed:
+ 	can_free_echo_skb(priv->netdev, ctx->ndx);
+ 	mcba_usb_free_ctx(ctx);
+-	dev_kfree_skb(skb);
+ 	stats->tx_dropped++;
  
- 	/*
--	 * Budget request settings: new dirty inode, new direntry,
--	 * budget for dirtied inode will be released via writeback.
-+	 * Budget request settings: new inode, new direntry, changing the
-+	 * parent directory inode.
-+	 * Allocate budget separately for new dirtied inode, the budget will
-+	 * be released via writeback.
- 	 */
- 
- 	dbg_gen("dent '%pd', mode %#hx in dir ino %lu",
-@@ -973,7 +976,8 @@ static int ubifs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
- 	struct ubifs_inode *dir_ui = ubifs_inode(dir);
- 	struct ubifs_info *c = dir->i_sb->s_fs_info;
- 	int err, sz_change;
--	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1 };
-+	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
-+					.dirtied_ino = 1};
- 	struct fscrypt_name nm;
- 
- 	/*
--- 
-2.35.1
-
+ 	return NETDEV_TX_OK;
 
 
