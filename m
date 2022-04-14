@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF561C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D90C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344640AbiDNPN5 (ORCPT
+        id S1344332AbiDNPNR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
+        Thu, 14 Apr 2022 11:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347351AbiDNN6q (ORCPT
+        with ESMTP id S1347118AbiDNN63 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFE626AD9;
-        Thu, 14 Apr 2022 06:49:30 -0700 (PDT)
+        Thu, 14 Apr 2022 09:58:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EA9B7162;
+        Thu, 14 Apr 2022 06:48:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 221BDB82988;
-        Thu, 14 Apr 2022 13:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86B0BC385A9;
-        Thu, 14 Apr 2022 13:49:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 374DE61D73;
+        Thu, 14 Apr 2022 13:48:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8DEC385A9;
+        Thu, 14 Apr 2022 13:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944167;
-        bh=oS0gUQkH3zcIiHXRBOZTmba3XwSHQXTt4emSZtFgwhY=;
+        s=korg; t=1649944137;
+        bh=+bi3CB0sKMUtiIkI6DbmdeWT1n5jF2lA8k1vBDqSFM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lTPBf20Rnn2ZMnxuv9XVV8rCBdQU7Za2qV8NFEPEXFhMpSX/WHR3FrAlWFjg8OJyW
-         nGHPdAx+inICny6KI385pWQUnt8ipe5jk/7WbyXk1ZqvE0DcPpq2B86NrrmJN2P+r+
-         yC/grVqtkMKEY4aEFl8iJw1nGbe28Y17ZnQ6zHPA=
+        b=pIINmJoJ5KuniuVGI3WMEUPcEKt3ilKU54IFmkE4XCXhXtn7wc2PmBmToRwsu97/L
+         F/tRjdrCjfpqxCZdyvv13Fv9Ti8/RklcVHAXmce4kNhcfzEovdCYV8pHZbHHFzDyF9
+         o3m3/0d3uUARGDwfX06zQRJrREMQJFf8/hCusxuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
-        Haimin Zhang <tcs_kernel@tencent.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 418/475] jfs: prevent NULL deref in diFree
-Date:   Thu, 14 Apr 2022 15:13:23 +0200
-Message-Id: <20220414110906.759843958@linuxfoundation.org>
+Subject: [PATCH 5.4 408/475] clk: si5341: fix reported clk_rate when output divider is 2
+Date:   Thu, 14 Apr 2022 15:13:13 +0200
+Message-Id: <20220414110906.482208290@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,46 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+From: Adam Wujek <dev_public@wujek.eu>
 
-[ Upstream commit a53046291020ec41e09181396c1e829287b48d47 ]
+[ Upstream commit 2a8b539433e111c4de364237627ef219d2f6350a ]
 
-Add validation check for JFS_IP(ipimap)->i_imap to prevent a NULL deref
-in diFree since diFree uses it without do any validations.
-When function jfs_mount calls diMount to initialize fileset inode
-allocation map, it can fail and JFS_IP(ipimap)->i_imap won't be
-initialized. Then it calls diFreeSpecial to close fileset inode allocation
-map inode and it will flow into jfs_evict_inode. Function jfs_evict_inode
-just validates JFS_SBI(inode->i_sb)->ipimap, then calls diFree. diFree use
-JFS_IP(ipimap)->i_imap directly, then it will cause a NULL deref.
+SI5341_OUT_CFG_RDIV_FORCE2 shall be checked first to distinguish whether
+a divider for a given output is set to 2 (SI5341_OUT_CFG_RDIV_FORCE2
+is set) or the output is disabled (SI5341_OUT_CFG_RDIV_FORCE2 not set,
+SI5341_OUT_R_REG is set 0).
+Before the change, divider set to 2 (SI5341_OUT_R_REG set to 0) was
+interpreted as output is disabled.
 
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20211203141125.2447520-1-dev_public@wujek.eu
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/inode.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/clk/clk-si5341.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
-index d862cfc3d3a8..62c4a5450cda 100644
---- a/fs/jfs/inode.c
-+++ b/fs/jfs/inode.c
-@@ -146,12 +146,13 @@ void jfs_evict_inode(struct inode *inode)
- 		dquot_initialize(inode);
+diff --git a/drivers/clk/clk-si5341.c b/drivers/clk/clk-si5341.c
+index 20ed0955416a..07ef9995b3cb 100644
+--- a/drivers/clk/clk-si5341.c
++++ b/drivers/clk/clk-si5341.c
+@@ -638,6 +638,15 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	u32 r_divider;
+ 	u8 r[3];
  
- 		if (JFS_IP(inode)->fileset == FILESYSTEM_I) {
-+			struct inode *ipimap = JFS_SBI(inode->i_sb)->ipimap;
- 			truncate_inode_pages_final(&inode->i_data);
++	err = regmap_read(output->data->regmap,
++			SI5341_OUT_CONFIG(output), &val);
++	if (err < 0)
++		return err;
++
++	/* If SI5341_OUT_CFG_RDIV_FORCE2 is set, r_divider is 2 */
++	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
++		return parent_rate / 2;
++
+ 	err = regmap_bulk_read(output->data->regmap,
+ 			SI5341_OUT_R_REG(output), r, 3);
+ 	if (err < 0)
+@@ -654,13 +663,6 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
+ 	r_divider += 1;
+ 	r_divider <<= 1;
  
- 			if (test_cflag(COMMIT_Freewmap, inode))
- 				jfs_free_zero_link(inode);
+-	err = regmap_read(output->data->regmap,
+-			SI5341_OUT_CONFIG(output), &val);
+-	if (err < 0)
+-		return err;
+-
+-	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
+-		r_divider = 2;
  
--			if (JFS_SBI(inode->i_sb)->ipimap)
-+			if (ipimap && JFS_IP(ipimap)->i_imap)
- 				diFree(inode);
- 
- 			/*
+ 	return parent_rate / r_divider;
+ }
 -- 
 2.35.1
 
