@@ -2,129 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB537C388F3
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DA5C38A04
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245199AbiDNNiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
+        id S245503AbiDNNij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244609AbiDNN1u (ORCPT
+        with ESMTP id S244701AbiDNN2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:27:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10331A1463
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942434;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K4KbFy9pDfTMle1k/JyKiBtHGLqWVzDUZ7hIxRDL20o=;
-        b=T9RhfHRjoQEgX+B8BIRFgbgqBK56zR1HVjsyJYniATXMy769RmC3cbxPSOMApx0EvIwEcK
-        cQBoZhlgyr0LwnDr77tTX+XrQC15S0KLGpsjxF2TmyoIDhLH02i6XU+gkaqwdpqREz14Uz
-        GYt22iCxPacskU53QEkaAYde7R/yD0M=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-581-zGGhXgLEMeWC2MtmG-7mJQ-1; Thu, 14 Apr 2022 09:20:31 -0400
-X-MC-Unique: zGGhXgLEMeWC2MtmG-7mJQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:28:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B4EA27E8;
+        Thu, 14 Apr 2022 06:20:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A6506185A794;
-        Thu, 14 Apr 2022 13:20:30 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A489E53CD;
-        Thu, 14 Apr 2022 13:20:28 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 07/34] x86/hyperv: Introduce HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK constants
-Date:   Thu, 14 Apr 2022 15:19:46 +0200
-Message-Id: <20220414132013.1588929-8-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26E9561670;
+        Thu, 14 Apr 2022 13:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ABA0C385A5;
+        Thu, 14 Apr 2022 13:20:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942446;
+        bh=iNvgSVgt3pJsi4RUJjwFI3DWHwekNw9Wj2oqLngQwAY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A/xg6L43caJAcSl25NswzvMjYBQkY4DHWgTpv39iW7lm9LwEqS+9tfVoHJwAHDh5Z
+         CSuxd3+wjKd74RDMh6vzAE5jCM9IilgLBE1DiBymYE/6BRbCMP6JJKSydikq7ZOWeL
+         E2p2uBmgWm29eB2mRsnZzEwwiZpt/dvOxQ/MIMi0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 138/338] powerpc/Makefile: Dont pass -mcpu=powerpc64 when building 32-bit
+Date:   Thu, 14 Apr 2022 15:10:41 +0200
+Message-Id: <20220414110842.834302491@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It may not come clear from where the magical '64' value used in
-__cpumask_to_vpset() come from. Moreover, '64' means both the maximum
-sparse bank number as well as the number of vCPUs per bank. Add defines
-to make things clear. These defines are also going to be used by KVM.
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-No functional change.
+[ Upstream commit 2863dd2db23e0407f6c50b8ba5c0e55abef894f1 ]
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+When CONFIG_GENERIC_CPU=y (true for all our defconfigs) we pass
+-mcpu=powerpc64 to the compiler, even when we're building a 32-bit
+kernel.
+
+This happens because we have an ifdef CONFIG_PPC_BOOK3S_64/else block in
+the Makefile that was written before 32-bit supported GENERIC_CPU. Prior
+to that the else block only applied to 64-bit Book3E.
+
+The GCC man page says -mcpu=powerpc64 "[specifies] a pure ... 64-bit big
+endian PowerPC ... architecture machine [type], with an appropriate,
+generic processor model assumed for scheduling purposes."
+
+It's unclear how that interacts with -m32, which we are also passing,
+although obviously -m32 is taking precedence in some sense, as the
+32-bit kernel only contains 32-bit instructions.
+
+This was noticed by inspection, not via any bug reports, but it does
+affect code generation. Comparing before/after code generation, there
+are some changes to instruction scheduling, and the after case (with
+-mcpu=powerpc64 removed) the compiler seems more keen to use r8.
+
+Fix it by making the else case only apply to Book3E 64, which excludes
+32-bit.
+
+Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220215112858.304779-1-mpe@ellerman.id.au
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/asm-generic/hyperv-tlfs.h |  5 +++++
- include/asm-generic/mshyperv.h    | 11 ++++++-----
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ arch/powerpc/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
-index fdce7a4cfc6f..020ca9bdbb79 100644
---- a/include/asm-generic/hyperv-tlfs.h
-+++ b/include/asm-generic/hyperv-tlfs.h
-@@ -399,6 +399,11 @@ struct hv_vpset {
- 	u64 bank_contents[];
- } __packed;
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index f51e21ea5349..26654d0c2af7 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -167,7 +167,7 @@ else
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=power7,$(call cc-option,-mtune=power5))
+ CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mcpu=power5,-mcpu=power4)
+ endif
+-else
++else ifdef CONFIG_PPC_BOOK3E_64
+ CFLAGS-$(CONFIG_GENERIC_CPU) += -mcpu=powerpc64
+ endif
  
-+/* The maximum number of sparse vCPU banks which can be encoded by 'struct hv_vpset' */
-+#define HV_MAX_SPARSE_VCPU_BANKS (64)
-+/* The number of vCPUs in one sparse bank */
-+#define HV_VCPUS_PER_SPARSE_BANK (64)
-+
- /* HvCallSendSyntheticClusterIpi hypercall */
- struct hv_send_ipi {
- 	u32 vector;
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index c08758b6b364..0abe91df1ef6 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -214,9 +214,10 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
- {
- 	int cpu, vcpu, vcpu_bank, vcpu_offset, nr_bank = 1;
- 	int this_cpu = smp_processor_id();
-+	int max_vcpu_bank = hv_max_vp_index / HV_VCPUS_PER_SPARSE_BANK;
- 
--	/* valid_bank_mask can represent up to 64 banks */
--	if (hv_max_vp_index / 64 >= 64)
-+	/* vpset.valid_bank_mask can represent up to HV_MAX_SPARSE_VCPU_BANKS banks */
-+	if (max_vcpu_bank >= HV_MAX_SPARSE_VCPU_BANKS)
- 		return 0;
- 
- 	/*
-@@ -224,7 +225,7 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
- 	 * structs are not cleared between calls, we risk flushing unneeded
- 	 * vCPUs otherwise.
- 	 */
--	for (vcpu_bank = 0; vcpu_bank <= hv_max_vp_index / 64; vcpu_bank++)
-+	for (vcpu_bank = 0; vcpu_bank <= max_vcpu_bank; vcpu_bank++)
- 		vpset->bank_contents[vcpu_bank] = 0;
- 
- 	/*
-@@ -236,8 +237,8 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
- 		vcpu = hv_cpu_number_to_vp_number(cpu);
- 		if (vcpu == VP_INVAL)
- 			return -1;
--		vcpu_bank = vcpu / 64;
--		vcpu_offset = vcpu % 64;
-+		vcpu_bank = vcpu / HV_VCPUS_PER_SPARSE_BANK;
-+		vcpu_offset = vcpu % HV_VCPUS_PER_SPARSE_BANK;
- 		__set_bit(vcpu_offset, (unsigned long *)
- 			  &vpset->bank_contents[vcpu_bank]);
- 		if (vcpu_bank >= nr_bank)
 -- 
-2.35.1
+2.34.1
+
+
 
