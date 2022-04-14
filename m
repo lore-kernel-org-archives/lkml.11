@@ -2,120 +2,316 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E09C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C330CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240469AbiDNHnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
+        id S237449AbiDNHn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240478AbiDNHmc (ORCPT
+        with ESMTP id S240473AbiDNHmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 03:42:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FCF240931
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:08 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACA3856C0F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649922007;
+        s=mimecast20190719; t=1649922006;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GS5GXdXYcQZI1wo1x5s5S3htNZXur5jE8g9OaqoOCOs=;
-        b=O6KKRAEVdSkPAGJWBznDRZLOPyGbQXiqjd2yBiIaeEym2Dfa4qyXhOlsPR02gQ0NxUiPdO
-        zl9EZULhBFeqrpe+M/ISpr0p7/c4U6rB4oebzsCmtYM9ymJyGw6YYyucocEx7PMp/U8kQD
-        4M6Jrus2sIG1VaEbcWSPDuj/kRzmaHg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=40lIAGSpAB/FfFBfKetPwwW4R/AL1PekHYbsZB51kfo=;
+        b=KNPJ4fYTWDo0iY/pwIl8e5meq6DHSaNJau6/dtl1DxD8gkxTTc+kCVWrbINnq/cX/S2LN8
+        bc4G76N6CPIx+U0jvWNnTqz+VXC1jI8CoLz3IFPWSMPf+0n+GeD6QZk2Dw8r9PxYoAu3Qx
+        fbwfLyU362WrjZFNZ15eUa2PN6uDH0U=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-616-1dpg4S1vONy91vzehhuyqQ-1; Thu, 14 Apr 2022 03:40:03 -0400
-X-MC-Unique: 1dpg4S1vONy91vzehhuyqQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-539-cWhFOQjyMhyKYnWMjX0BOw-1; Thu, 14 Apr 2022 03:40:02 -0400
+X-MC-Unique: cWhFOQjyMhyKYnWMjX0BOw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 59AB119705DB;
-        Thu, 14 Apr 2022 07:40:03 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5DB461C06915;
+        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C6CCC28109;
-        Thu, 14 Apr 2022 07:40:03 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3F64C40D1DB;
+        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH 13/22] KVM: x86/mmu: store shadow EFER.NX in the MMU role
-Date:   Thu, 14 Apr 2022 03:39:51 -0400
-Message-Id: <20220414074000.31438-14-pbonzini@redhat.com>
+Subject: [PATCH 07/22] KVM: x86/mmu: split cpu_role from mmu_role
+Date:   Thu, 14 Apr 2022 03:39:45 -0400
+Message-Id: <20220414074000.31438-8-pbonzini@redhat.com>
 In-Reply-To: <20220414074000.31438-1-pbonzini@redhat.com>
 References: <20220414074000.31438-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that the MMU role is separate from the CPU role, it can be a
-truthful description of the format of the shadow pages.  This includes
-whether the shadow pages use the NX bit; so force the efer_nx field
-of the MMU role when TDP is disabled, and remove the hardcoding it in
-the callers of reset_shadow_zero_bits_mask.
+Snapshot the state of the processor registers that govern page walk into
+a new field of struct kvm_mmu.  This is a more natural representation
+than having it *mostly* in mmu_role but not exclusively; the delta
+right now is represented in other fields, such as root_level.
 
-In fact, the initialization of reserved SPTE bits can now be made common
-to shadow paging and shadow NPT; move it to shadow_mmu_init_context.
+The nested MMU now has only the CPU role; and in fact the new function
+kvm_calc_cpu_role is analogous to the previous kvm_calc_nested_mmu_role,
+except that it has role.base.direct equal to !CR0.PG.  For a walk-only
+MMU, "direct" has no meaning, but we set it to !CR0.PG so that
+role.ext.cr0_pg can go away in a future patch.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ arch/x86/include/asm/kvm_host.h |   1 +
+ arch/x86/kvm/mmu/mmu.c          | 109 ++++++++++++++++++++------------
+ arch/x86/kvm/mmu/paging_tmpl.h  |   2 +-
+ 3 files changed, 70 insertions(+), 42 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index e46bd289e5df..50edf52a3ef6 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -438,6 +438,7 @@ struct kvm_mmu {
+ 			 struct kvm_mmu_page *sp);
+ 	void (*invlpg)(struct kvm_vcpu *vcpu, gva_t gva, hpa_t root_hpa);
+ 	struct kvm_mmu_root_info root;
++	union kvm_mmu_role cpu_role;
+ 	union kvm_mmu_role mmu_role;
+ 	u8 root_level;
+ 	u8 shadow_root_level;
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 92dade92462c..f491d3c47ac8 100644
+index 7f156da3ca93..0f8c4d8f2081 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4430,16 +4430,6 @@ static inline u64 reserved_hpa_bits(void)
- static void reset_shadow_zero_bits_mask(struct kvm_vcpu *vcpu,
- 					struct kvm_mmu *context)
- {
--	/*
--	 * KVM uses NX when TDP is disabled to handle a variety of scenarios,
--	 * notably for huge SPTEs if iTLB multi-hit mitigation is enabled and
--	 * to generate correct permissions for CR0.WP=0/CR4.SMEP=1/EFER.NX=0.
--	 * The iTLB multi-hit workaround can be toggled at any time, so assume
--	 * NX can be used by any non-nested shadow MMU to avoid having to reset
--	 * MMU contexts.  Note, KVM forces EFER.NX=1 when TDP is disabled.
--	 */
--	bool uses_nx = is_efer_nx(context) || !tdp_enabled;
--
- 	/* @amd adds a check on bit of SPTEs, which KVM shouldn't use anyways. */
- 	bool is_amd = true;
- 	/* KVM doesn't use 2-level page tables for the shadow MMU. */
-@@ -4451,7 +4441,8 @@ static void reset_shadow_zero_bits_mask(struct kvm_vcpu *vcpu,
- 
- 	shadow_zero_check = &context->shadow_zero_check;
- 	__reset_rsvds_bits_mask(shadow_zero_check, reserved_hpa_bits(),
--				context->shadow_root_level, uses_nx,
-+				context->shadow_root_level,
-+				context->mmu_role.base.efer_nx,
- 				guest_can_use_gbpages(vcpu), is_pse, is_amd);
- 
- 	if (!shadow_me_mask)
-@@ -4815,6 +4806,16 @@ kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
- 	else
- 		role.base.level = PT64_ROOT_4LEVEL;
- 
-+	/*
-+	 * KVM forces EFER.NX=1 when TDP is disabled, reflect it in the MMU role.
-+	 * KVM uses NX when TDP is disabled to handle a variety of scenarios,
-+	 * notably for huge SPTEs if iTLB multi-hit mitigation is enabled and
-+	 * to generate correct permissions for CR0.WP=0/CR4.SMEP=1/EFER.NX=0.
-+	 * The iTLB multi-hit workaround can be toggled at any time, so assume
-+	 * NX can be used by any non-nested shadow MMU to avoid having to reset
-+	 * MMU contexts.
-+	 */
-+	role.base.efer_nx = true;
- 	return role;
+@@ -222,7 +222,7 @@ BUILD_MMU_ROLE_REGS_ACCESSOR(efer, lma, EFER_LMA);
+ #define BUILD_MMU_ROLE_ACCESSOR(base_or_ext, reg, name)		\
+ static inline bool __maybe_unused is_##reg##_##name(struct kvm_mmu *mmu)	\
+ {								\
+-	return !!(mmu->mmu_role. base_or_ext . reg##_##name);	\
++	return !!(mmu->cpu_role. base_or_ext . reg##_##name);	\
+ }
+ BUILD_MMU_ROLE_ACCESSOR(ext,  cr0, pg);
+ BUILD_MMU_ROLE_ACCESSOR(base, cr0, wp);
+@@ -4705,6 +4705,41 @@ static void paging32_init_context(struct kvm_mmu *context)
+ 	context->direct_map = false;
  }
  
++static union kvm_mmu_role
++kvm_calc_cpu_role(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *regs)
++{
++	union kvm_mmu_role role = {0};
++
++	role.base.access = ACC_ALL;
++	role.base.smm = is_smm(vcpu);
++	role.base.guest_mode = is_guest_mode(vcpu);
++	role.ext.valid = 1;
++
++	if (!____is_cr0_pg(regs)) {
++		role.base.direct = 1;
++		return role;
++	}
++
++	role.base.efer_nx = ____is_efer_nx(regs);
++	role.base.cr0_wp = ____is_cr0_wp(regs);
++	role.base.smep_andnot_wp = ____is_cr4_smep(regs) && !____is_cr0_wp(regs);
++	role.base.smap_andnot_wp = ____is_cr4_smap(regs) && !____is_cr0_wp(regs);
++	role.base.has_4_byte_gpte = !____is_cr4_pae(regs);
++	role.base.level = role_regs_to_root_level(regs);
++
++	role.ext.cr0_pg = 1;
++	role.ext.cr4_pae = ____is_cr4_pae(regs);
++	role.ext.cr4_smep = ____is_cr4_smep(regs);
++	role.ext.cr4_smap = ____is_cr4_smap(regs);
++	role.ext.cr4_pse = ____is_cr4_pse(regs);
++
++	/* PKEY and LA57 are active iff long mode is active. */
++	role.ext.cr4_pke = ____is_efer_lma(regs) && ____is_cr4_pke(regs);
++	role.ext.cr4_la57 = ____is_efer_lma(regs) && ____is_cr4_la57(regs);
++	role.ext.efer_lma = ____is_efer_lma(regs);
++	return role;
++}
++
+ static union kvm_mmu_role kvm_calc_mmu_role_common(struct kvm_vcpu *vcpu,
+ 						   const struct kvm_mmu_role_regs *regs)
+ {
+@@ -4764,13 +4799,16 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
+ 			     const struct kvm_mmu_role_regs *regs)
+ {
+ 	struct kvm_mmu *context = &vcpu->arch.root_mmu;
+-	union kvm_mmu_role new_role =
++	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, regs);
++	union kvm_mmu_role mmu_role =
+ 		kvm_calc_tdp_mmu_root_page_role(vcpu, regs);
+ 
+-	if (new_role.as_u64 == context->mmu_role.as_u64)
++	if (cpu_role.as_u64 == context->cpu_role.as_u64 &&
++	    mmu_role.as_u64 == context->mmu_role.as_u64)
+ 		return;
+ 
+-	context->mmu_role.as_u64 = new_role.as_u64;
++	context->cpu_role.as_u64 = cpu_role.as_u64;
++	context->mmu_role.as_u64 = mmu_role.as_u64;
+ 	context->page_fault = kvm_tdp_page_fault;
+ 	context->sync_page = nonpaging_sync_page;
+ 	context->invlpg = NULL;
+@@ -4825,13 +4863,15 @@ kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
+ }
+ 
+ static void shadow_mmu_init_context(struct kvm_vcpu *vcpu, struct kvm_mmu *context,
+-				    const struct kvm_mmu_role_regs *regs,
+-				    union kvm_mmu_role new_role)
++				    union kvm_mmu_role cpu_role,
++				    union kvm_mmu_role mmu_role)
+ {
+-	if (new_role.as_u64 == context->mmu_role.as_u64)
++	if (cpu_role.as_u64 == context->cpu_role.as_u64 &&
++	    mmu_role.as_u64 == context->mmu_role.as_u64)
+ 		return;
+ 
+-	context->mmu_role.as_u64 = new_role.as_u64;
++	context->cpu_role.as_u64 = cpu_role.as_u64;
++	context->mmu_role.as_u64 = mmu_role.as_u64;
+ 
+ 	if (!is_cr0_pg(context))
+ 		nonpaging_init_context(context);
+@@ -4839,10 +4879,10 @@ static void shadow_mmu_init_context(struct kvm_vcpu *vcpu, struct kvm_mmu *conte
+ 		paging64_init_context(context);
+ 	else
+ 		paging32_init_context(context);
+-	context->root_level = role_regs_to_root_level(regs);
++	context->root_level = cpu_role.base.level;
+ 
+ 	reset_guest_paging_metadata(vcpu, context);
+-	context->shadow_root_level = new_role.base.level;
++	context->shadow_root_level = mmu_role.base.level;
+ 
+ 	reset_shadow_zero_bits_mask(vcpu, context);
+ }
+@@ -4851,10 +4891,11 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
+ 				const struct kvm_mmu_role_regs *regs)
+ {
+ 	struct kvm_mmu *context = &vcpu->arch.root_mmu;
+-	union kvm_mmu_role new_role =
++	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, regs);
++	union kvm_mmu_role mmu_role =
+ 		kvm_calc_shadow_mmu_root_page_role(vcpu, regs);
+ 
+-	shadow_mmu_init_context(vcpu, context, regs, new_role);
++	shadow_mmu_init_context(vcpu, context, cpu_role, mmu_role);
+ }
+ 
+ static union kvm_mmu_role
+@@ -4879,11 +4920,10 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
+ 		.cr4 = cr4 & ~X86_CR4_PKE,
+ 		.efer = efer,
+ 	};
+-	union kvm_mmu_role new_role;
+-
+-	new_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);
++	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, &regs);
++	union kvm_mmu_role mmu_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);;
+ 
+-	shadow_mmu_init_context(vcpu, context, &regs, new_role);
++	shadow_mmu_init_context(vcpu, context, cpu_role, mmu_role);
+ 	kvm_mmu_new_pgd(vcpu, nested_cr3);
+ }
+ EXPORT_SYMBOL_GPL(kvm_init_shadow_npt_mmu);
+@@ -4906,7 +4946,6 @@ kvm_calc_shadow_ept_root_page_role(struct kvm_vcpu *vcpu, bool accessed_dirty,
+ 	role.base.guest_mode = true;
+ 	role.base.access = ACC_ALL;
+ 
+-	/* EPT, and thus nested EPT, does not consume CR0, CR4, nor EFER. */
+ 	role.ext.word = 0;
+ 	role.ext.execonly = execonly;
+ 	role.ext.valid = 1;
+@@ -4920,12 +4959,14 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
+ {
+ 	struct kvm_mmu *context = &vcpu->arch.guest_mmu;
+ 	u8 level = vmx_eptp_page_walk_level(new_eptp);
+-	union kvm_mmu_role new_role =
++	union kvm_mmu_role new_mode =
+ 		kvm_calc_shadow_ept_root_page_role(vcpu, accessed_dirty,
+ 						   execonly, level);
+ 
+-	if (new_role.as_u64 != context->mmu_role.as_u64) {
+-		context->mmu_role.as_u64 = new_role.as_u64;
++	if (new_mode.as_u64 != context->cpu_role.as_u64) {
++		/* EPT, and thus nested EPT, does not consume CR0, CR4, nor EFER. */
++		context->cpu_role.as_u64 = new_mode.as_u64;
++		context->mmu_role.as_u64 = new_mode.as_u64;
+ 
+ 		context->shadow_root_level = level;
+ 
+@@ -4958,37 +4999,20 @@ static void init_kvm_softmmu(struct kvm_vcpu *vcpu,
+ 	context->inject_page_fault = kvm_inject_page_fault;
+ }
+ 
+-static union kvm_mmu_role
+-kvm_calc_nested_mmu_role(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *regs)
+-{
+-	union kvm_mmu_role role;
+-
+-	role = kvm_calc_shadow_root_page_role_common(vcpu, regs);
+-
+-	/*
+-	 * Nested MMUs are used only for walking L2's gva->gpa, they never have
+-	 * shadow pages of their own and so "direct" has no meaning.   Set it
+-	 * to "true" to try to detect bogus usage of the nested MMU.
+-	 */
+-	role.base.direct = true;
+-	role.base.level = role_regs_to_root_level(regs);
+-	return role;
+-}
+-
+ static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu,
+ 				const struct kvm_mmu_role_regs *regs)
+ {
+-	union kvm_mmu_role new_role = kvm_calc_nested_mmu_role(vcpu, regs);
++	union kvm_mmu_role new_mode = kvm_calc_cpu_role(vcpu, regs);
+ 	struct kvm_mmu *g_context = &vcpu->arch.nested_mmu;
+ 
+-	if (new_role.as_u64 == g_context->mmu_role.as_u64)
++	if (new_mode.as_u64 == g_context->cpu_role.as_u64)
+ 		return;
+ 
+-	g_context->mmu_role.as_u64 = new_role.as_u64;
++	g_context->cpu_role.as_u64   = new_mode.as_u64;
+ 	g_context->get_guest_pgd     = get_cr3;
+ 	g_context->get_pdptr         = kvm_pdptr_read;
+ 	g_context->inject_page_fault = kvm_inject_page_fault;
+-	g_context->root_level        = new_role.base.level;
++	g_context->root_level        = new_mode.base.level;
+ 
+ 	/*
+ 	 * L2 page tables are never shadowed, so there is no need to sync
+@@ -5046,6 +5070,9 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 	vcpu->arch.root_mmu.mmu_role.ext.valid = 0;
+ 	vcpu->arch.guest_mmu.mmu_role.ext.valid = 0;
+ 	vcpu->arch.nested_mmu.mmu_role.ext.valid = 0;
++	vcpu->arch.root_mmu.cpu_role.ext.valid = 0;
++	vcpu->arch.guest_mmu.cpu_role.ext.valid = 0;
++	vcpu->arch.nested_mmu.cpu_role.ext.valid = 0;
+ 	kvm_mmu_reset_context(vcpu);
+ 
+ 	/*
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index 07a7832f96cb..56544c542d05 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -281,7 +281,7 @@ static inline bool FNAME(is_last_gpte)(struct kvm_mmu *mmu,
+ 	 * is not reserved and does not indicate a large page at this level,
+ 	 * so clear PT_PAGE_SIZE_MASK in gpte if that is the case.
+ 	 */
+-	gpte &= level - (PT32_ROOT_LEVEL + mmu->mmu_role.ext.cr4_pse);
++	gpte &= level - (PT32_ROOT_LEVEL + mmu->cpu_role.ext.cr4_pse);
+ #endif
+ 	/*
+ 	 * PG_LEVEL_4K always terminates.  The RHS has bit 7 set
 -- 
 2.31.1
 
