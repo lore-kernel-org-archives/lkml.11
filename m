@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D161C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E338C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240793AbiDNHpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S229518AbiDNHpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240643AbiDNHnh (ORCPT
+        with ESMTP id S240492AbiDNHmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 03:43:37 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA3E58801;
-        Thu, 14 Apr 2022 00:40:55 -0700 (PDT)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id 4A0761C0002;
-        Thu, 14 Apr 2022 07:40:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649922054;
+        Thu, 14 Apr 2022 03:42:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC63655BE1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649922007;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/HaP1IPsXOMTJDxi/2nGbwDNVZapKrfnOpUYaIlabXs=;
-        b=pjtI2EnteulEn6PvCuscIMvp9IYAnzULmnwWB8Vowxa/qBhOBdzVK9ESvlaPL591E5pt6E
-        CvTZtvvydWziOy1NJ+tglOi1WSPn6EAxPsDU+9Q4y50WiLGJ8TUXLNvrqq6G/WIiUmnJNQ
-        w9PuvMr3a0qxVc/dNrQLfPtx7blx1b/aJUWt2cTlEsm84s16UwCTrTWgjMMLwJLlUnf3Ya
-        qgGiM1SdpXjHut+h7uUT+vgCEV6hBOQEE6ihrtrQvq9R6gN1qlGR40BszSzZRE6MUSHAJw
-        8w+/98NSV3UP4SMB93joDnMzdQV4IBLbylvBbfTNgoOYLYtAsRutUjLzYqnoRg==
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>
-Subject: [PATCH v2 8/8] ARM: dts: r9a06g032: Link the PCI USB devices to the USB PHY
-Date:   Thu, 14 Apr 2022 09:40:11 +0200
-Message-Id: <20220414074011.500533-9-herve.codina@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414074011.500533-1-herve.codina@bootlin.com>
-References: <20220414074011.500533-1-herve.codina@bootlin.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=iHNjoj54lYwN18Dz7c9T9KYDom8xn4aUbJSlnwLzc/c=;
+        b=ASYhx8XdjVW+bbevPlYf2IpkGD6VOM/pNsFN+ccO7jV0IZygkTKg4ltr+Q8JgK4OceSZ9Q
+        4vgDE9aHFroQYn9efHbhwQlCAl9QNz2oW2WCfTZv6lwWhqVKpHl+DpQt/JZdnURSDIQn3h
+        oKIWpkF0OA5ytCtiuj/6EimKn1CWXlg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-507-bm3CvvOKN8aClSqfucMTcw-1; Thu, 14 Apr 2022 03:40:01 -0400
+X-MC-Unique: bm3CvvOKN8aClSqfucMTcw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6B176296A61D;
+        Thu, 14 Apr 2022 07:40:01 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A25340D1DB;
+        Thu, 14 Apr 2022 07:40:01 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com
+Subject: [PATCH v3 00/22] https://www.spinics.net/lists/kvm/msg267878.html
+Date:   Thu, 14 Apr 2022 03:39:38 -0400
+Message-Id: <20220414074000.31438-1-pbonzini@redhat.com>
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Describe the PCI USB devices that are behind the PCI bridge, adding
-necessary links to the USB PHY device.
+Right now the "MMU role" is a messy mix of the shadow page table format
+and the CPU paging mode (CR0/CR4/EFER, SMM, guest mode, etc).  Whenever
+something is different between the MMU and the CPU, it is stored as an
+extra field in struct kvm_mmu; for extra bonus complication, sometimes
+the same thing is stored in both the role and an extra field.
 
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
----
- arch/arm/boot/dts/r9a06g032.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+This series cleans up things by putting the two in separate fields,
+so that the "MMU role" represents exactly the role of the root page.
+This in turn makes it possible to eliminate various fields that are
+now redundant with either the CPU or te MMU role.
 
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index 2f7236e3eff0..f0007b0447ca 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -244,6 +244,18 @@ pci_usb: pci@40030000 {
- 			interrupt-map = <0x0000 0 0 1 &gic GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH
- 					 0x0800 0 0 1 &gic GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH
- 					 0x1000 0 0 2 &gic GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
-+
-+			usb@1,0 {
-+				reg = <0x800 0 0 0 0>;
-+				phys = <&usbphy 0>;
-+				phy-names = "usb";
-+			};
-+
-+			usb@2,0 {
-+				reg = <0x1000 0 0 0 0>;
-+				phys = <&usbphy 0>;
-+				phy-names = "usb";
-+			};
- 		};
- 	};
- 
+These patches have mostly been posted and reviewed already[1], and I
+have now retested them on top of kvm/next.
+
+Paolo
+
+[1] https://patchew.org/linux/20220221162243.683208-1-pbonzini@redhat.com/
+
+Paolo Bonzini (21):
+  KVM: x86/mmu: nested EPT cannot be used in SMM
+  KVM: x86/mmu: constify uses of struct kvm_mmu_role_regs
+  KVM: x86/mmu: pull computation of kvm_mmu_role_regs to kvm_init_mmu
+  KVM: x86/mmu: rephrase unclear comment
+  KVM: x86/mmu: remove "bool base_only" arguments
+  KVM: x86/mmu: split cpu_role from mmu_role
+  KVM: x86/mmu: do not recompute root level from kvm_mmu_role_regs
+  KVM: x86/mmu: remove ept_ad field
+  KVM: x86/mmu: remove kvm_calc_shadow_root_page_role_common
+  KVM: x86/mmu: cleanup computation of MMU roles for two-dimensional
+    paging
+  KVM: x86/mmu: cleanup computation of MMU roles for shadow paging
+  KVM: x86/mmu: store shadow EFER.NX in the MMU role
+  KVM: x86/mmu: remove extended bits from mmu_role, rename field
+  KVM: x86/mmu: rename kvm_mmu_role union
+  KVM: x86/mmu: remove redundant bits from extended role
+  KVM: x86/mmu: remove valid from extended role
+  KVM: x86/mmu: simplify and/or inline computation of shadow MMU roles
+  KVM: x86/mmu: pull CPU mode computation to kvm_init_mmu
+  KVM: x86/mmu: replace shadow_root_level with root_role.level
+  KVM: x86/mmu: replace root_level with cpu_role.base.level
+  KVM: x86/mmu: replace direct_map with root_role.direct
+
+Sean Christopherson (1):
+  KVM: x86: Clean up and document nested #PF workaround
+
+ arch/x86/include/asm/kvm_host.h |  19 +-
+ arch/x86/kvm/mmu.h              |   2 +-
+ arch/x86/kvm/mmu/mmu.c          | 376 ++++++++++++++------------------
+ arch/x86/kvm/mmu/paging_tmpl.h  |  14 +-
+ arch/x86/kvm/mmu/tdp_mmu.c      |   4 +-
+ arch/x86/kvm/svm/nested.c       |  18 +-
+ arch/x86/kvm/svm/svm.c          |   2 +-
+ arch/x86/kvm/vmx/nested.c       |  15 +-
+ arch/x86/kvm/vmx/vmx.c          |   2 +-
+ arch/x86/kvm/x86.c              |  33 ++-
+ 10 files changed, 219 insertions(+), 266 deletions(-)
+
 -- 
-2.35.1
+2.31.1
 
