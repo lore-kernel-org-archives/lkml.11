@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E31DC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42128C3527E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355159AbiDNO5q (ORCPT
+        id S1355110AbiDNO5i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        Thu, 14 Apr 2022 10:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345732AbiDNNyI (ORCPT
+        with ESMTP id S1345714AbiDNNyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:54:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FAFAFACC;
-        Thu, 14 Apr 2022 06:45:13 -0700 (PDT)
+        Thu, 14 Apr 2022 09:54:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3459AF1CC;
+        Thu, 14 Apr 2022 06:45:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 939BB61D68;
-        Thu, 14 Apr 2022 13:45:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E28DC385A1;
-        Thu, 14 Apr 2022 13:45:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECAE261DA0;
+        Thu, 14 Apr 2022 13:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F38C385A5;
+        Thu, 14 Apr 2022 13:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943912;
-        bh=T9M5uLIrosTZ0Ku7oTi//0OVu/Iky/OpEzhLMYGx4yA=;
+        s=korg; t=1649943906;
+        bh=/mMS9ki2GT3i9dX0cNzKgMudEsJGWcMU/6hkWeK+bRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hSoX2oPBgjGTFaHhuu+xrgz1uA+SPW5l/UAgPCxxS4A6wJkAnHYXXJo0l4PDWXoEl
-         YgSscF1CrcqoOwVkAPi9NXKKMyjRhvTPjMdWiB+xl9cvSVZPCBkwrFPNELJppMcBXE
-         iYlfY1riugbqNsFDpaYGciwWeATiC3mQldBmgTDw=
+        b=lKW6n0nkWpDZwMGAiF56i5a/AsA/Cz1CvxW6Qmt1zr7bcQFdVqxLEt9/GSG3874O5
+         jhOzJ7YxHpqkKib5JYJYatbxm3B2QwKlTDbTsHWQdZyX1h4F8kkVT7lzO+7eexImKz
+         KuPd51n/eSzldRf4vsLmM2B9x3FUIlaLyIp0vKwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
+        Arun Easi <aeasi@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 326/475] scsi: qla2xxx: Reduce false trigger to login
-Date:   Thu, 14 Apr 2022 15:11:51 +0200
-Message-Id: <20220414110904.210717401@linuxfoundation.org>
+Subject: [PATCH 5.4 324/475] scsi: qla2xxx: Fix missed DMA unmap for NVMe ls requests
+Date:   Thu, 14 Apr 2022 15:11:49 +0200
+Message-Id: <20220414110904.155312992@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,47 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Arun Easi <aeasi@marvell.com>
 
-commit d2646eed7b19a206912f49101178cbbaa507256c upstream.
+commit c85ab7d9e27a80e48d5b7d7fb2fe2b0fdb2de523 upstream.
 
-While a session is in the middle of a relogin, a late RSCN can be delivered
-from switch. RSCN trigger fabric scan where the scan logic can trigger
-another session login while a login is in progress.  Reduce the extra
-trigger to prevent multiple logins to the same session.
+At NVMe ELS request time, request structure is DMA mapped and never
+unmapped. Fix this by calling the unmap on ELS completion.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-10-njavali@marvell.com
-Fixes: bee8b84686c4 ("scsi: qla2xxx: Reduce redundant ADISC command for RSCNs")
+Link: https://lore.kernel.org/r/20220310092604.22950-5-njavali@marvell.com
+Fixes: e84067d74301 ("scsi: qla2xxx: Add FC-NVMe F/W initialization and transport registration")
 Cc: stable@vger.kernel.org
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_nvme.c |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1557,7 +1557,8 @@ int qla24xx_fcport_handle_login(struct s
- 	    fcport->conflict, fcport->last_rscn_gen, fcport->rscn_gen,
- 	    fcport->login_gen, fcport->loop_id, fcport->scan_state);
+--- a/drivers/scsi/qla2xxx/qla_nvme.c
++++ b/drivers/scsi/qla2xxx/qla_nvme.c
+@@ -157,6 +157,18 @@ out:
+ 	qla2xxx_rel_qpair_sp(sp->qpair, sp);
+ }
  
--	if (fcport->scan_state != QLA_FCPORT_FOUND)
-+	if (fcport->scan_state != QLA_FCPORT_FOUND ||
-+	    fcport->disc_state == DSC_DELETE_PEND)
- 		return 0;
++static void qla_nvme_ls_unmap(struct srb *sp, struct nvmefc_ls_req *fd)
++{
++	if (sp->flags & SRB_DMA_VALID) {
++		struct srb_iocb *nvme = &sp->u.iocb_cmd;
++		struct qla_hw_data *ha = sp->fcport->vha->hw;
++
++		dma_unmap_single(&ha->pdev->dev, nvme->u.nvme.cmd_dma,
++				 fd->rqstlen, DMA_TO_DEVICE);
++		sp->flags &= ~SRB_DMA_VALID;
++	}
++}
++
+ static void qla_nvme_release_ls_cmd_kref(struct kref *kref)
+ {
+ 	struct srb *sp = container_of(kref, struct srb, cmd_kref);
+@@ -173,6 +185,8 @@ static void qla_nvme_release_ls_cmd_kref
+ 	spin_unlock_irqrestore(&priv->cmd_lock, flags);
  
- 	if ((fcport->loop_id != FC_NO_LOOP_ID) &&
-@@ -1578,7 +1579,7 @@ int qla24xx_fcport_handle_login(struct s
- 	if (vha->host->active_mode == MODE_TARGET)
- 		return 0;
+ 	fd = priv->fd;
++
++	qla_nvme_ls_unmap(sp, fd);
+ 	fd->done(fd, priv->comp_status);
+ out:
+ 	qla2x00_rel_sp(sp);
+@@ -319,6 +333,8 @@ static int qla_nvme_ls_req(struct nvme_f
+ 	dma_sync_single_for_device(&ha->pdev->dev, nvme->u.nvme.cmd_dma,
+ 	    fd->rqstlen, DMA_TO_DEVICE);
  
--	if (fcport->flags & FCF_ASYNC_SENT) {
-+	if (fcport->flags & (FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE)) {
- 		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
- 		return 0;
++	sp->flags |= SRB_DMA_VALID;
++
+ 	rval = qla2x00_start_sp(sp);
+ 	if (rval != QLA_SUCCESS) {
+ 		ql_log(ql_log_warn, vha, 0x700e,
+@@ -326,6 +342,7 @@ static int qla_nvme_ls_req(struct nvme_f
+ 		wake_up(&sp->nvme_ls_waitq);
+ 		sp->priv = NULL;
+ 		priv->sp = NULL;
++		qla_nvme_ls_unmap(sp, fd);
+ 		qla2x00_rel_sp(sp);
+ 		return rval;
  	}
 
 
