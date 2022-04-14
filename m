@@ -2,43 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9112C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A62C47090
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344576AbiDNNoY (ORCPT
+        id S1344527AbiDNNoV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
+        Thu, 14 Apr 2022 09:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245415AbiDNN24 (ORCPT
+        with ESMTP id S245359AbiDNN2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:56 -0400
+        Thu, 14 Apr 2022 09:28:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220468FE4C;
-        Thu, 14 Apr 2022 06:22:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069A49BB89;
+        Thu, 14 Apr 2022 06:22:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA46BB82983;
-        Thu, 14 Apr 2022 13:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C7A0C385A9;
-        Thu, 14 Apr 2022 13:22:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79468B82983;
+        Thu, 14 Apr 2022 13:22:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD80C385A5;
+        Thu, 14 Apr 2022 13:22:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942564;
-        bh=fL/9JExO2tXP04LmpEbKDEVhu/cjfqqWwkkGoW1e1g8=;
+        s=korg; t=1649942553;
+        bh=/yxcK02g7VH/RZ2+1dxRFjHmnG7NYbGRQivQLXSLm2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jWvgzZ2taV1mprgOfKBP4+i29ExEyllNMG6WLJSItFB56ZJKWzyDYACAyFuzSXeE8
-         PWKec3hMZCeHTyjYiY5/5XV4nu20p1KVmdA2Ntn/W9wGIzlctECHzGA61QQ7Fn0Aty
-         mvWpy1D1QYXF+0rMmzfJQJ21yXOsekgUrP6cVuNE=
+        b=kGOH6W8xzCslZOzZjoZ76gXl9YCuxKBvhEBhCC62EH8RQ3Df4xpUw0gqzy6HogtvV
+         jI0J6kcoBpVhOmGDfLCoQzBtf06NkIqOIykSuorXnxu6Ea+Z4xNdlRaLOV6GFNNtdo
+         UZtyVM1H+D4REVVn1iPRKoBxOhEV0MMAzNlSxSOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, He Zhe <zhe.he@windriver.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-serial@vger.kernel.org,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 154/338] selftests/bpf/test_lirc_mode2.sh: Exit with proper code
-Date:   Thu, 14 Apr 2022 15:10:57 +0200
-Message-Id: <20220414110843.284819545@linuxfoundation.org>
+Subject: [PATCH 4.19 177/338] kgdboc: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:11:20 +0200
+Message-Id: <20220414110843.936093665@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,53 +57,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit ec80906b0fbd7be11e3e960813b977b1ffe5f8fe ]
+[ Upstream commit ab818c7aa7544bf8d2dd4bdf68878b17a02eb332 ]
 
-When test_lirc_mode2_user exec failed, the test report failed but still
-exit with 0. Fix it by exiting with an error code.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
+So return 1 from kgdboc_option_setup().
 
-Another issue is for the LIRCDEV checking. With bash -n, we need to quote
-the variable, or it will always be true. So if test_lirc_mode2_user was
-not run, just exit with skip code.
+Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+  kgdboc=kbd kgdbts=", will be passed to user space.
 
-Fixes: 6bdd533cee9a ("bpf: add selftest for lirc_mode2 type program")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220321024149.157861-1-liuhangbin@gmail.com
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc7
+     kgdboc=kbd
+     kgdbts=
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 1bd54d851f50 ("kgdboc: Passing ekgdboc to command line causes panic")
+Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
+Cc: He Zhe <zhe.he@windriver.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: kgdb-bugreport@lists.sourceforge.net
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: linux-serial@vger.kernel.org
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220309033018.17936-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_lirc_mode2.sh | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/tty/serial/kgdboc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_lirc_mode2.sh b/tools/testing/selftests/bpf/test_lirc_mode2.sh
-index 677686198df3..795e56e3eaec 100755
---- a/tools/testing/selftests/bpf/test_lirc_mode2.sh
-+++ b/tools/testing/selftests/bpf/test_lirc_mode2.sh
-@@ -3,6 +3,7 @@
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index b0aa864f84a9..6e81d782d8a0 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -302,16 +302,16 @@ static int kgdboc_option_setup(char *opt)
+ {
+ 	if (!opt) {
+ 		pr_err("config string not provided\n");
+-		return -EINVAL;
++		return 1;
+ 	}
  
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-+ret=$ksft_skip
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+ 		pr_err("config string too long\n");
+-		return -ENOSPC;
++		return 1;
+ 	}
+ 	strcpy(config, opt);
  
- msg="skip all tests:"
- if [ $UID != 0 ]; then
-@@ -24,7 +25,7 @@ do
- 	fi
- done
+-	return 0;
++	return 1;
+ }
  
--if [ -n $LIRCDEV ];
-+if [ -n "$LIRCDEV" ];
- then
- 	TYPE=lirc_mode2
- 	./test_lirc_mode2_user $LIRCDEV
-@@ -35,3 +36,5 @@ then
- 		echo -e ${GREEN}"PASS: $TYPE"${NC}
- 	fi
- fi
-+
-+exit $ret
+ __setup("kgdboc=", kgdboc_option_setup);
 -- 
 2.34.1
 
