@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C106BC35273
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14596C4707A
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352078AbiDNPR2 (ORCPT
+        id S1352515AbiDNPRi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43138 "EHLO
+        Thu, 14 Apr 2022 11:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347703AbiDNN7a (ORCPT
+        with ESMTP id S1347670AbiDNN70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:30 -0400
+        Thu, 14 Apr 2022 09:59:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC67EA7756;
-        Thu, 14 Apr 2022 06:51:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E42D47AE0;
+        Thu, 14 Apr 2022 06:51:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68294B82910;
-        Thu, 14 Apr 2022 13:51:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE25BC385A1;
-        Thu, 14 Apr 2022 13:51:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65DB5B82968;
+        Thu, 14 Apr 2022 13:51:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D16A1C385A1;
+        Thu, 14 Apr 2022 13:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944302;
-        bh=wutGclBUfxGLLDAMDkOqd76TAwFxGfljFph8llK6Xs0=;
+        s=korg; t=1649944263;
+        bh=AhAKy5axmBXACV88/1gcrmRV0hMa5yyiso3Svok4iQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WsTvs2NmnVYXpPawmLmyKbtAYFozlaBRRAcVs5MOTaY3tQ3bHF1CemMrpfKfG962Y
-         azu5le45nCvZJHbf8RVXFXsLkuzpcC6frOBVDhIdXBLzaek4qJAVDx4Ga8Nk2gc5sx
-         f3HvcdMiG3mkLqSF8H8iT6zjaMLfFO0SFn7iQIHI=
+        b=kvATxw/7N24wOlnHHeTIJ18iMqnhtIEcY5t8dFMQsJCk1SyymqnP7bfzc5C0XNaf8
+         KaNNOBoMAUCM8QyAKYWnDFGn8QnjAV/OSX7g8A19wX+jJqhdf5AOHiqR0/nFyCWw+O
+         XuOfYAyKMwVmKk5z4y+xw3+g2DtIykXBNnfoGNeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.4 465/475] drm/amdkfd: add missing void argument to function kgd2kfd_init
-Date:   Thu, 14 Apr 2022 15:14:10 +0200
-Message-Id: <20220414110908.067968065@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 435/475] net: openvswitch: dont send internal clone attribute to the userspace.
+Date:   Thu, 14 Apr 2022 15:13:40 +0200
+Message-Id: <20220414110907.236543597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,34 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-From: Colin Ian King <colin.king@canonical.com>
+[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
 
-commit 63617d8b125ed9f674133dd000b6df58d6b2965a upstream.
+'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+performance optimization inside the kernel.  It's added by the kernel
+while parsing user-provided actions and should not be sent during the
+flow dump as it's not part of the uAPI.
 
-Function kgd2kfd_init is missing a void argument, add it
-to clean up the non-ANSI function declaration.
+The issue doesn't cause any significant problems to the ovs-vswitchd
+process, because reported actions are not really used in the
+application lifecycle and only supposed to be shown to a human via
+ovs-dpctl flow dump.  However, the action list is still incorrect
+and causes the following error if the user wants to look at the
+datapath flows:
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  # ovs-dpctl add-dp system@ovs-system
+  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
+                  ct(commit),0)
+
+With the fix:
+
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(ct(commit),0)
+
+Additionally fixed an incorrect attribute name in the comment.
+
+Fixes: b233504033db ("openvswitch: kernel datapath clone action")
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
+Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_module.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/openvswitch/actions.c      | 2 +-
+ net/openvswitch/flow_netlink.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-@@ -82,7 +82,7 @@ static void kfd_exit(void)
- 	kfd_chardev_exit();
- }
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 2c0f8cbc5c43..ae40593daf21 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1037,7 +1037,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
+ 	int rem = nla_len(attr);
+ 	bool dont_clone_flow_key;
  
--int kgd2kfd_init()
-+int kgd2kfd_init(void)
- {
- 	return kfd_init();
- }
+-	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
++	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
+ 	clone_arg = nla_data(attr);
+ 	dont_clone_flow_key = nla_get_u32(clone_arg);
+ 	actions = nla_next(clone_arg, &rem);
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index e4c23ae9cfe5..d3f068ad154c 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -3284,7 +3284,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
+ 	if (!start)
+ 		return -EMSGSIZE;
+ 
+-	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
++	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
++	attr = nla_next(nla_data(attr), &rem);
++	err = ovs_nla_put_actions(attr, rem, skb);
+ 
+ 	if (err)
+ 		nla_nest_cancel(skb, start);
+-- 
+2.35.1
+
 
 
