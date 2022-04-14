@@ -2,149 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25414C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 964D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347475AbiDNXJE (ORCPT
+        id S1347534AbiDNXJI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 19:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
+        Thu, 14 Apr 2022 19:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347439AbiDNXIl (ORCPT
+        with ESMTP id S1347505AbiDNXI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 19:08:41 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF56A9F38C
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:06:13 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id D0B872C046F;
-        Thu, 14 Apr 2022 23:06:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1649977570;
-        bh=dGYWSb/R1cLhXyXTQg/sSD8eTwwaJib2f9Zr1g30uDo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zCT4/XufbzIdaDLu9xy3eWmw8AnEnK49NnP74SfNFqTT86Z9eVvOwuSpAScgnTCOP
-         teVAkIkRVPA6SegK5PxVxMYCJ/dp1zGdY2TjMPWBO1Wzb0CcA3iKo0LtawfNtfF0NR
-         eh8s88qZ7c1RyiKoaMM0rcTy69WFXc/eFSKLJrNp/7wsdd9/RmSOjPrctNBn8sicVz
-         f2fpVL3ZV43Wpx/2tRAGuqzuJ8RHRykGDTwNKe8FjU6OMuYMJRuzLtU8zozhWGF7Kk
-         xzWf5ygBOQ1AtSdsHDE+6ZSXiRSl7kCTxXNFExr7lduFAwTtEQ0/jXnbhHP/OhWxyT
-         aKccL+P3LGBcg==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B6258a8e20003>; Fri, 15 Apr 2022 11:06:10 +1200
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 8AE9113EE37;
-        Fri, 15 Apr 2022 11:06:10 +1200 (NZST)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 36F392A2679; Fri, 15 Apr 2022 11:06:07 +1200 (NZST)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        andrew@lunn.ch, gregory.clement@bootlin.com,
-        sebastian.hesselbarth@gmail.com
-Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH 3/4] dt-bindings: mmc: convert orion-sdio to JSON schema
-Date:   Fri, 15 Apr 2022 11:06:02 +1200
-Message-Id: <20220414230603.567049-4-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414230603.567049-1-chris.packham@alliedtelesis.co.nz>
-References: <20220414230603.567049-1-chris.packham@alliedtelesis.co.nz>
+        Thu, 14 Apr 2022 19:08:59 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26C0C4E06;
+        Thu, 14 Apr 2022 16:06:30 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id s18so12803568ejr.0;
+        Thu, 14 Apr 2022 16:06:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FWv6HfHgguUI/DkyUK/M7ub8F2Hnwf3DDEuvQm5kh6I=;
+        b=jVw4GOcH3RcqMdY546tIfnHKAzKSFVrfdcuyiuXhRJIGn3nRu3J2PWpR+iHQpxNCTY
+         jQ+0GaJtldFjCISeshgIIbBqo4oIUDlIb2qyJuoM95LzxDapZG3cPvzVonUy6xEh/i/W
+         HT3l3O5uRTjYEK74yI6QMkszUHbK7FxncW1YiS4MXVD82YEfd+o7h7CYbke3vwYkAEXp
+         8iCVEpE2NEUhRNGFRzsTDyxZikHEbFp3EcSb61jiQ+HnVFLDMMMVA5lV5M88Ym/c/Y2Q
+         jTJREQhCH+nOyy+EB2bqJ7wdOuEGmLUZAr809Jwb1ijz5rROe9L/UeH3noCgbUKxb6+f
+         O3Vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FWv6HfHgguUI/DkyUK/M7ub8F2Hnwf3DDEuvQm5kh6I=;
+        b=tEwyhzj2bkkFoFkgq4EjhdvP/2tYY59HtNS9ZNDe/Gv5XCKLCOQfSNU5c11EXg3lnb
+         vRMm8Q3PaIKxeR8HbhtGiyhM/OBdzloHd102Wl0LvagS7GIDX+6TL+fdVdSrQHs87U5s
+         +tEBhXA2QnJ6MVwTSz306mJXCWGVBJVC0CKjWeiUezBEOSZCJd9icMHy/NatexvV73w7
+         AWQEeuwg5aLEXXRujvU7zK47y/6P6DkvCHFQU/dLAQ2MS6Qn+TpMHl3UEeo23P/uw/U2
+         XMlFeWGlTWVdnwsa55wwAFA2VcKaEe69m7h6zxoiK2KXqAiNrPMgP6Y6RUfj31lDU6jh
+         LzhQ==
+X-Gm-Message-State: AOAM533gwFmk7g0fvWNEryemFWh7vQVxtt5oL83wXgJpVMjlqS87hv68
+        uwNYSMYGX2aOVRRR2Z0RfzgtooLtyoM5U2nbT6FXIDPEGLptPQ==
+X-Google-Smtp-Source: ABdhPJzFYecPFk5iqrvSN42xj2qiqfmHlA6CP+95l1Euk0rl59I2XblLMR2RCz1MPbEqv0sdHhhEn4ZtX1SD4NDGOuI=
+X-Received: by 2002:a17:907:c05:b0:6db:f118:8834 with SMTP id
+ ga5-20020a1709070c0500b006dbf1188834mr4220431ejc.536.1649977589007; Thu, 14
+ Apr 2022 16:06:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=L59jvNb8 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=gEfo2CItAAAA:8 a=KKAkSRfTAAAA:8 a=-4Ke6npRohLabbDaJfkA:9 a=sptkURWiP4Gy88Gu7hUp:22 a=cvBusfyB2V15izCimMoJ:22
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+References: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk>
+From:   Matt Turner <mattst88@gmail.com>
+Date:   Thu, 14 Apr 2022 16:06:17 -0700
+Message-ID: <CAEdQ38EpBMnkP-PNZnwaoO4poFJQO5YSFJeZgiQ-obJmjogBFQ@mail.gmail.com>
+Subject: Re: [PATCH] Alpha: Remove redundant local asm header redirections
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        linux-alpha <linux-alpha@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the orion-sdio binding to JSON schema.
+On Sun, Feb 13, 2022 at 12:01 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>
+> Remove a number of asm headers locally redirected to the respective
+> generic or generated versions.
+>
+> For asm-offsets.h all that is needed is a Kbuild entry for the generic
+> version, and for div64.h, irq_regs.h and kdebug.h nothing is needed as
+> in their absence they will be redirected automatically according to
+> include/asm-generic/Kbuild.
+>
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> ---
+> Hi,
+>
+>  Noticed while fiddling with Kbuild for PARPORT_PC.  Please apply.
+>
+>   Maciej
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
----
- .../bindings/mmc/marvell,orion-sdio.yaml      | 43 +++++++++++++++++++
- .../devicetree/bindings/mmc/orion-sdio.txt    | 16 -------
- 2 files changed, 43 insertions(+), 16 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/mmc/marvell,orion-s=
-dio.yaml
- delete mode 100644 Documentation/devicetree/bindings/mmc/orion-sdio.txt
 
-diff --git a/Documentation/devicetree/bindings/mmc/marvell,orion-sdio.yam=
-l b/Documentation/devicetree/bindings/mmc/marvell,orion-sdio.yaml
-new file mode 100644
-index 000000000000..4fef53fc78ed
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mmc/marvell,orion-sdio.yaml
-@@ -0,0 +1,43 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mmc/marvell,orion-sdio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Marvell orion-sdio controller
-+
-+maintainers:
-+  - Ulf Hansson <ulf.hansson@linaro.org>
-+
-+allOf:
-+  - $ref: mmc-controller.yaml#
-+
-+properties:
-+  compatible:
-+    const: marvell,orion-sdio
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mmc@d00d4000 {
-+      compatible =3D "marvell,orion-sdio";
-+      reg =3D <0xd00d4000 0x200>;
-+      interrupts =3D <54>;
-+      clocks =3D <&gateclk 17>;
-+    };
-diff --git a/Documentation/devicetree/bindings/mmc/orion-sdio.txt b/Docum=
-entation/devicetree/bindings/mmc/orion-sdio.txt
-deleted file mode 100644
-index 10f0818a34c5..000000000000
---- a/Documentation/devicetree/bindings/mmc/orion-sdio.txt
-+++ /dev/null
-@@ -1,16 +0,0 @@
--* Marvell orion-sdio controller
--
--This file documents differences between the core properties in mmc.txt
--and the properties used by the orion-sdio driver.
--
--- compatible: Should be "marvell,orion-sdio"
--- clocks: reference to the clock of the SDIO interface
--
--Example:
--
--	mvsdio@d00d4000 {
--		compatible =3D "marvell,orion-sdio";
--		reg =3D <0xd00d4000 0x200>;
--		interrupts =3D <54>;
--		clocks =3D <&gateclk 17>;
--	};
---=20
-2.35.1
+Sorry for the delay. I'll apply this. I just haven't had much time for
+alphas lately.
 
+Maybe now's a good time to remind you that I'm still waiting on you to
+upstream the m41t80/SWARM/i2c/smbus patches? It's been more than 11
+years now, so it seems long enough for a ping :)
