@@ -2,110 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384DDC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E79AC4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243416AbiDNP2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
+        id S1347607AbiDNP2R (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346621AbiDNN5q (ORCPT
+        with ESMTP id S1346624AbiDNN5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:57:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D578CA1471;
-        Thu, 14 Apr 2022 06:47:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E8F66190F;
-        Thu, 14 Apr 2022 13:47:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572B2C385A5;
-        Thu, 14 Apr 2022 13:47:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944067;
-        bh=dvPcYCzevFs+1/jJSvQNJgim5I2zaaED6vtbihtMvF4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ci8hVCdi5KdQh93H/OHu+wGUM+78N15/EXfs4NRi8alxuMvWsd/TjcPVm8YEhi7km
-         Wiv0MQcIDPtwbctYQaSCRFYOK4TFI/4vCkQoo4Bq49LhL8UpQBa8q/a7l5UOojRgb2
-         UOJ7eV51TtP0YXvo2dblpGjUhd4ErJTOY99DgIek=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 381/475] power: supply: axp20x_battery: properly report current when discharging
-Date:   Thu, 14 Apr 2022 15:12:46 +0200
-Message-Id: <20220414110905.734302533@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6402657F;
+        Thu, 14 Apr 2022 06:47:50 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id lc2so10108650ejb.12;
+        Thu, 14 Apr 2022 06:47:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R9hYB17biMvNqrX89B5MdlYJL0E69SsfsfXeh7dFOiA=;
+        b=FYXH//pkag+vPVt/fhiJZaiDlY3kGR88wCFPSmrTgqb5ZNtAdDLHDD3Y/gF5WauOYG
+         KEzUHL7hY9V5KaWZOwCXfsKpjazg1rcwbrWb4fTLz+L72C8iMnQXb+mclvHFbknOOLoN
+         /oCAOJD8U0YQ4ecNyBm/Dx6KGBcDF12GK8UgGTaPnRGBrXc4oGI4Orfn7mosBnj/ApJO
+         UGlDI98IJzCBFma+xiBUwav3kKgDlTNc+U4ZCF1dIPr/p3A1bj4YOw8zVvyBW8p8UAc+
+         bFFQDTgQfQ1kWC+i2LDoBBEfIiv8k+XCpH7qbnBmWGt5a/40cb63hX9PZDdoRkk46hKv
+         Vj1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R9hYB17biMvNqrX89B5MdlYJL0E69SsfsfXeh7dFOiA=;
+        b=QXRwWF1ZXSlw9bVE7GS2EVNiO+MrCydzVSRUZgic4eFZwJ8NdFEflaYjbfCQTIAnjp
+         hcYr9MFwYXmVK2qor+DMnVnyUkmLOVmJdlhYPvWuwRZNHDlXBHCt4gZhdJmRfdBx9enJ
+         d+aCORxe/Vc1JG6cnxEQWYCrqD3zZiUo6e3NBquoi2cy3Fiq3uWErto0dqrsC+GlZwnp
+         z8ixk1Zj3Q/donkSgCCLf+jVLWJCLAv7wpQeaeK4JkK0H9RFSqSueFVsyPT8vES7A8qD
+         zLP6UFYfBsa/hnyLY0w3PhaIfIb/ufRUUaCBUtY9sSMTmGheA2LXwYuwE9vIHMFBMX/q
+         23CQ==
+X-Gm-Message-State: AOAM531xdpvl7HZJ+ZJzorgRh/UxYqFtB+ebsoBqkimlMt9iSgaoMCFt
+        V0XmH/IzOuyz/BdsOPdxR1jvankqnItUviZFuQogDvbHfRCbvg==
+X-Google-Smtp-Source: ABdhPJzH4bczk+yp+HYwqIc2+zd8sOLX6Q+Bgy0HhVY4Jv5RyQnR9MAwOtrB48Qb7K5VsnR4UsRCEOw6UtYXI6oiJ6I=
+X-Received: by 2002:a17:906:3799:b0:6ec:d25:3afe with SMTP id
+ n25-20020a170906379900b006ec0d253afemr1060600ejc.44.1649944068719; Thu, 14
+ Apr 2022 06:47:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <1649933135-14236-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1649933135-14236-1-git-send-email-baihaowen@meizu.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 14 Apr 2022 16:47:12 +0300
+Message-ID: <CAHp75VfbZhMvs7dHwadvNs6maPsBVOY3Mk5wkKSwZ1RANQQHDA@mail.gmail.com>
+Subject: Re: [PATCH] iio: gp2ap020a00f: Fix signedness bug
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+On Thu, Apr 14, 2022 at 2:19 PM Haowen Bai <baihaowen@meizu.com> wrote:
+>
+> function gp2ap020a00f_get_thresh_reg() is unsigned but returning -EINVAL
+> errcode, and thresh_reg_l is unsigned but receiving -EINVAL errcode. so
+> we have to change u8 -> s8.
 
-[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+s8 is not enough to hold an (arbitrary) error code. To be on the safe
+side you need to use int.
 
-As stated in [1], negative current values are used for discharging
-batteries.
-
-AXP PMICs internally have two different ADC channels for shunt current
-measurement: one used during charging and one during discharging.
-The values reported by these ADCs are unsigned.
-While the driver properly selects ADC channel to get the data from,
-it doesn't apply negative sign when reporting discharging current.
-
-[1] Documentation/ABI/testing/sysfs-class-power
-
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/power/supply/axp20x_battery.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index e84b6e4da14a..9fda98b950ba 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -185,7 +185,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
- {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	struct iio_channel *chan;
- 	int ret = 0, reg, val1;
- 
- 	switch (psp) {
-@@ -265,12 +264,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 		if (ret)
- 			return ret;
- 
--		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
--			chan = axp20x_batt->batt_chrg_i;
--		else
--			chan = axp20x_batt->batt_dischrg_i;
--
--		ret = iio_read_channel_processed(chan, &val->intval);
-+		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
-+		} else {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
-+			val->intval = -val1;
-+		}
- 		if (ret)
- 			return ret;
- 
 -- 
-2.35.1
-
-
-
+With Best Regards,
+Andy Shevchenko
