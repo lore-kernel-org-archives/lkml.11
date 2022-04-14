@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEA7C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470B6C4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356507AbiDNPTF (ORCPT
+        id S1356653AbiDNPTc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
+        Thu, 14 Apr 2022 11:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347396AbiDNN6t (ORCPT
+        with ESMTP id S1347680AbiDNN70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E6836E21;
-        Thu, 14 Apr 2022 06:49:36 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A20E49C81;
+        Thu, 14 Apr 2022 06:51:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9914CB828F4;
-        Thu, 14 Apr 2022 13:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03136C385A5;
-        Thu, 14 Apr 2022 13:49:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E874BB8298C;
+        Thu, 14 Apr 2022 13:51:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34054C385A1;
+        Thu, 14 Apr 2022 13:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944173;
-        bh=snVegn9YinnM8bNgLdpLWwdwpJdSlaBGPByMBjwpuwg=;
+        s=korg; t=1649944271;
+        bh=wK2YngWWIWxMomu3G/G3fja+4rlWu+67C42w0ivXxVo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TIIPWtcWdKCg7uQgwUarCEQjHtqPTGxzA88jeq0SZWDxGr612IIbC/EsTnXNCB0ZK
-         VVggPhmTayCYbOwL+tTn4KkqMqQoOnVZNf8DiJJmwlNxvtrtyrqleNdLlM1U0En4Zv
-         xjPQ23f3H78Ap9+8DIVGP+xcEIEtt6+AHaCALFpU=
+        b=mQW4q04Vu17W64H6Vbx1TXZ4P6CZ0vX3U5a20ljAWC7AgbNxGhhUAKT0G8tLUZlT0
+         Ru/ab1fZwYTZcEZnKCYyuZzXenlRzb61vXR8Ku+kBxfQxmczGmY4EM4BJmnLv19Ufl
+         d17a1YuIyiGz9/l5D9z+LWAgS1ccIA569NRyiVxo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 393/475] scsi: pm8001: Fix pm8001_mpi_task_abort_resp()
-Date:   Thu, 14 Apr 2022 15:12:58 +0200
-Message-Id: <20220414110906.070024648@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.4 455/475] perf: qcom_l2_pmu: fix an incorrect NULL check on list iterator
+Date:   Thu, 14 Apr 2022 15:14:00 +0200
+Message-Id: <20220414110907.791052190@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,46 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 7e6b7e740addcea450041b5be8e42f0a4ceece0f ]
+commit 2012a9e279013933885983cbe0a5fe828052563b upstream.
 
-The call to pm8001_ccb_task_free() at the end of
-pm8001_mpi_task_abort_resp() already frees the ccb tag. So when the device
-NCQ_ABORT_ALL_FLAG is set, the tag should not be freed again.  Also change
-the hardcoded 0xBFFFFFFF value to ~NCQ_ABORT_ALL_FLAG as it ought to be.
+The bug is here:
+	return cluster;
 
-Link: https://lore.kernel.org/r/20220220031810.738362-19-damien.lemoal@opensource.wdc.com
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The list iterator value 'cluster' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
+
+To fix the bug, return 'cluster' when found, otherwise return NULL.
+
+Cc: stable@vger.kernel.org
+Fixes: 21bdbb7102ed ("perf: add qcom l2 cache perf events driver")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327055733.4070-1-xiam0nd.tong@gmail.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/perf/qcom_l2_pmu.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index fe5d996bf069..fec653b54307 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -3775,12 +3775,11 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	mb();
+--- a/drivers/perf/qcom_l2_pmu.c
++++ b/drivers/perf/qcom_l2_pmu.c
+@@ -781,7 +781,7 @@ static struct cluster_pmu *l2_cache_asso
+ {
+ 	u64 mpidr;
+ 	int cpu_cluster_id;
+-	struct cluster_pmu *cluster = NULL;
++	struct cluster_pmu *cluster;
  
- 	if (pm8001_dev->id & NCQ_ABORT_ALL_FLAG) {
--		pm8001_tag_free(pm8001_ha, tag);
- 		sas_free_task(t);
--		/* clear the flag */
--		pm8001_dev->id &= 0xBFFFFFFF;
--	} else
-+		pm8001_dev->id &= ~NCQ_ABORT_ALL_FLAG;
-+	} else {
- 		t->task_done(t);
-+	}
+ 	/*
+ 	 * This assumes that the cluster_id is in MPIDR[aff1] for
+@@ -803,10 +803,10 @@ static struct cluster_pmu *l2_cache_asso
+ 			 cluster->cluster_id);
+ 		cpumask_set_cpu(cpu, &cluster->cluster_cpus);
+ 		*per_cpu_ptr(l2cache_pmu->pmu_cluster, cpu) = cluster;
+-		break;
++		return cluster;
+ 	}
  
- 	return 0;
+-	return cluster;
++	return NULL;
  }
--- 
-2.35.1
-
+ 
+ static int l2cache_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 
 
