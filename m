@@ -2,115 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242943AbiDNQBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
+        id S1346340AbiDNQBe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:01:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359844AbiDNPrZ (ORCPT
+        with ESMTP id S1359010AbiDNPmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:47:25 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B611F70FB;
-        Thu, 14 Apr 2022 08:32:54 -0700 (PDT)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nf1Se-0006Mb-Q0; Thu, 14 Apr 2022 17:32:44 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nf1Se-000PQJ-F2; Thu, 14 Apr 2022 17:32:44 +0200
-Subject: Re: [RFC PATCH 0/1] sample: bpf: introduce irqlat
-To:     Song Chen <chensong_2000@189.cn>
-References: <1649927240-18991-1-git-send-email-chensong_2000@189.cn>
- <2e6ee265-903c-2b5c-aefd-ec24f930c999@iogearbox.net>
- <ac371d36-2624-cdd8-0c15-62ccf53bed81@189.cn>
-Cc:     ast@kernel.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, brendan.d.gregg@gmail.com
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f4267d24-28ca-bd99-100e-6fa4ee84cc50@iogearbox.net>
-Date:   Thu, 14 Apr 2022 17:32:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Thu, 14 Apr 2022 11:42:33 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3963AF211A;
+        Thu, 14 Apr 2022 08:26:01 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id bg10so10752416ejb.4;
+        Thu, 14 Apr 2022 08:26:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0EhNSpMEIQGwegy6XwubyizxkyeN0Yst2h+T5pwc7wQ=;
+        b=XSdI9SNB3jBQqpAUl2AkG4FTRNx/rdgEV/ie4LGU/cNA+rGhpI1sdCNLipuVapA0uo
+         JRw6MqoFe3lSaO9LY7dB8t7RMDFS9yyI44MU9veZ8hi9/HgRly2OP7Ax9KVEzxwehmMW
+         42QJpXyApV/qSQDgVxunEy/DsnNErAsOTkMzIW/94gU9eQTpQgaCeZZ9HwHYeAfojxEq
+         2mxP4lSaiteo310zBUdYGqnoFjef3Dt3PglOjgNzV+ajpubTaGw6KdHieGIgtrft6pw9
+         anQwFYnG43K9KulTzEPzYvHoXtYkldZczBhtINTfNMMhY3+RpPZUzpQvCoM0AoDQtVC1
+         bMXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0EhNSpMEIQGwegy6XwubyizxkyeN0Yst2h+T5pwc7wQ=;
+        b=O9dLuhfTGVulnkb8OLtdWp8bGz0YHCYkrw2y4B4AErsNTVeld0dMmY9Jh5u0CqCy39
+         qgbo0sPcaO/AJ/EAP/xM64zQ2qV4HGERSvxQIhEQ75pyBVG9PdmnInN52UpPlNxwiI3z
+         Ram1EY3jE88wzdK74u+KnICj9kGipm5UYih2l9LTuu2MMeuQaTRGbO6pM/bIE8KDH+r/
+         Xy1KzQg9xNSLtHCUVDOnCIfv4BDqWsC0CNSNTe7ys3wYfp9R/S/Dqpbl9nwaBXuNFKQL
+         MMcp9z3Sal2JxNCQFl5wMGIvgP9ds6cX7v9vjE+hsYdIbZ+UTG21U7KHlI006mcYrDxe
+         f4dQ==
+X-Gm-Message-State: AOAM531lm4bE2WGn20VW/BdNYH77OvEmpvTc+g2ocQU4gXZ2psn8/KWQ
+        wU0If+cbQrD44luYmGW4KpCTvXcWL8wloV3F9+g=
+X-Google-Smtp-Source: ABdhPJzje0FYaro4GDs25WGq9DJiciPtbOYkFrF+6xfThZJOs30FaUMCXOrLnhtC+hG05TTiN9HH49esY1mMEsGnvdA=
+X-Received: by 2002:a17:906:1692:b0:6e8:d245:44a9 with SMTP id
+ s18-20020a170906169200b006e8d24544a9mr2783204ejd.639.1649949959614; Thu, 14
+ Apr 2022 08:25:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <ac371d36-2624-cdd8-0c15-62ccf53bed81@189.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26512/Thu Apr 14 10:28:56 2022)
+References: <20220414025705.598-1-mario.limonciello@amd.com>
+In-Reply-To: <20220414025705.598-1-mario.limonciello@amd.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 14 Apr 2022 18:25:23 +0300
+Message-ID: <CAHp75Vcxw+4mqfkiaDid-n4_n=Bg49UzH8X-12H2MQwEcNXQoA@mail.gmail.com>
+Subject: Re: [PATCH] gpio: Request interrupts after IRQ is initialized
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Richard.Gong@amd.com, Stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Song,
+On Thu, Apr 14, 2022 at 5:57 AM Mario Limonciello
+<mario.limonciello@amd.com> wrote:
+>
+> commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before
+> initialization") attempted to fix a race condition that lead to a NULL
+> pointer, but in the process caused a regression for _AEI/_EVT declared
+> GPIOs. This manifests in messages showing deferred probing while trying
+> to allocate IRQs like so:
+>
+> [    0.688318] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0000 to IRQ, err -517
+> [    0.688337] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x002C to IRQ, err -517
+> [    0.688348] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
+> [    0.688359] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003E to IRQ, err -517
+> [    0.688369] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003A to IRQ, err -517
+> [    0.688379] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003B to IRQ, err -517
+> [    0.688389] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0002 to IRQ, err -517
+> [    0.688399] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0011 to IRQ, err -517
+> [    0.688410] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0012 to IRQ, err -517
+> [    0.688420] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0007 to IRQ, err -517
+>
+> The code for walking _AEI doesn't handle deferred probing and so this leads
+> to non-functional GPIO interrupts.
+>
+> Fix this issue by moving the call to `acpi_gpiochip_request_interrupts` to
+> occur after gc->irc.initialized is set.
 
-On 4/14/22 1:25 PM, Song Chen wrote:
-> hi Daniel,
-> 
-> Thanks for liking the idea.
-> 
-> My target is embedded devices, that's why i get started from ebpf C.bcc and bpftrace is a good idea, but i prefer taking one thing at a time, what's more, i'm not familiar with python, it might take longer.
-> 
-> Once C code is accepted, i will move myself to bcc and bpftrace. Is it ok for you?
+Good catch, Mario, and thanks for the prompt fix!
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-The libbpf-based tools from the mentioned link in BCC are all C, not Python. Also bpftrace
-has guidelines for building it more portably that would be suitable for embedded devices [2].
-I'd presume these should still match your requirements?
+> Cc: Shreeya Patel <shreeya.patel@collabora.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before initialization")
+> Reported-by: Mario Limonciello <mario.limonciello@amd.com>
+> Link: https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/T/#u
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+>  drivers/gpio/gpiolib.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+> index 085348e08986..b7694171655c 100644
+> --- a/drivers/gpio/gpiolib.c
+> +++ b/drivers/gpio/gpiolib.c
+> @@ -1601,8 +1601,6 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
+>
+>         gpiochip_set_irq_hooks(gc);
+>
+> -       acpi_gpiochip_request_interrupts(gc);
+> -
+>         /*
+>          * Using barrier() here to prevent compiler from reordering
+>          * gc->irq.initialized before initialization of above
+> @@ -1612,6 +1610,8 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
+>
+>         gc->irq.initialized = true;
+>
+> +       acpi_gpiochip_request_interrupts(gc);
+> +
+>         return 0;
+>  }
+>
+> --
+> 2.34.1
+>
 
-Right now samples/bpf/ is a bit of a dumping ground of random things, some BPF samples better
-maintained than others, but generally samples/bpf/ is a bit of a mess. BPF has a huge ecosystem
-outside of kernel in its various areas it covers, so it has outgrown the few samples in there
-long ago, and you'll find many resources on how to get started in the wild.
 
-Adding this as a samples/bpf/ will have little value to others, since people may not be aware
-of them, and if they are they need to manually build/ship it, etc. If you upstream and can improve
-the tools in bpftrace/bcc as pointed out, then a lot more people will be able to consume them
-and benefit from it, and you get the shipping via distros for free.
-
-   [2] https://github.com/iovisor/bpftrace/blob/master/docs/embedded_builds.md
-
-Thanks again,
-Daniel
-
-> BR
-> 
-> Song
-> 
-> 
-> 在 2022/4/14 17:47, Daniel Borkmann 写道:
->> On 4/14/22 11:07 AM, Song Chen wrote:
->>> I'm planning to implement a couple of ebpf tools for preempt rt,
->>> including irq latency, preempt latency and so on, how does it sound
->>> to you?
->>
->> Sounds great, thanks! Please add these tools for upstream inclusion either to bpftrace [0] or
->> bcc [1], then a wider range of users would be able to benefit from them as well as they are
->> also shipped as distro packages and generally more widely used compared to kernel samples.
->>
->> Thanks Song!
->>
->>    [0] https://github.com/iovisor/bpftrace/tree/master/tools
->>    [1] https://github.com/iovisor/bcc/tree/master/libbpf-tools
->>
->>> Song Chen (1):
->>>    sample: bpf: introduce irqlat
->>>
->>>   samples/bpf/.gitignore    |   1 +
->>>   samples/bpf/Makefile      |   5 ++
->>>   samples/bpf/irqlat_kern.c |  81 ++++++++++++++++++++++++++++++
->>>   samples/bpf/irqlat_user.c | 100 ++++++++++++++++++++++++++++++++++++++
->>>   4 files changed, 187 insertions(+)
->>>   create mode 100644 samples/bpf/irqlat_kern.c
->>>   create mode 100644 samples/bpf/irqlat_user.c
->>>
->>
->>
-
+-- 
+With Best Regards,
+Andy Shevchenko
