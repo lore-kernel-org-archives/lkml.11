@@ -2,95 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C1FC35273
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 668BBC35296
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346278AbiDNN4O (ORCPT
+        id S1346494AbiDNN5V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49922 "EHLO
+        Thu, 14 Apr 2022 09:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245330AbiDNN2u (ORCPT
+        with ESMTP id S244763AbiDNN2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743EDABF7E;
-        Thu, 14 Apr 2022 06:22:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2ECB4B82986;
-        Thu, 14 Apr 2022 13:22:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96553C385A5;
-        Thu, 14 Apr 2022 13:22:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942542;
-        bh=xLuf2gaCIsdC85aloUIrwjdqwbQusrc1oRkLP8Oo6Y4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aFDhwn5OUJQkZA8ZJe9raBmwfFAnX0H9GPkLjb6OgwDQqjxcdoXf6deS8k7G4cM7k
-         c0wYOSn2upa4pPBEfpmGRydKEYlN43iiLYQiuE/oSNPSjQsUdheSJl822mjVxyno/R
-         KocftM7+4bhfcPV/enh+l4TLt+FPF7NTYyzX/DUE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 173/338] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
-Date:   Thu, 14 Apr 2022 15:11:16 +0200
-Message-Id: <20220414110843.822191355@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:28:06 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39B3A5E95;
+        Thu, 14 Apr 2022 06:20:52 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id t67so9385826ybi.2;
+        Thu, 14 Apr 2022 06:20:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Q/gbAEREb62A8JevuFxQMwwR0Kq1AX0d797Hsd3s/CI=;
+        b=h+0BbF6sL4P9IeOcFTP3fUX4pLFM2G+jWWL7otAPjya+NOFgkW/ui40SHY/sZAhHS4
+         qmoS/HCiMFZ4xJbootTmWiqv5CVvquVUizsFTmMAXk6R9UMr+wniH/k+IO1f54So0cBk
+         hKGJe6FmDckivfj3yze2asz/Dp13VnroJOR7SM/s/a28Ejtw/dK5n6cQLTSmQuBb6F9G
+         1jN+nNtyU2+tHCYV8Zyq0uptEJkrXSBpLVvthDv6On6WtT49dlHByS2f/X/sWnODoKrc
+         C1QQuvIS2R2U9J4wfIj+juph9RscMlH9ugpiNc70/1F2gfgO8AibxxY9/lZgIHHdnCM8
+         LKDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Q/gbAEREb62A8JevuFxQMwwR0Kq1AX0d797Hsd3s/CI=;
+        b=7kRkR3LXLvwsMY4kfT462LGssc46rn3d+KPvRN6HN9CikvnaHk++5o9pmRkkhQX+jt
+         d8UFZGTUEmvn1mFsqKrSDEJPBxjc48TMZxOmZloN7JVt02fuBC/JRNpzhRtrj8ujP7NL
+         A/41t+y/vAMSioS6rTedU31gJG+QK7Q/EKm64HHThjgV4XcOff5v8ULtRzJsX0wo7VgO
+         ENh+iuucop/3zKT8LHZwVW+CpGnLFVvkiBTDwtYjqJwQGBEkp+EGqO81I1Z/DXSiXRB4
+         s4fcp4hd5vv2ep6/kr7l9UjUxAJjVGHmVqcr8uRFbCv9FDAAOV7gFhjN0SdwczsFG7vS
+         vGDA==
+X-Gm-Message-State: AOAM530TMKM0bgjPOolEFPdQyInm/+DxODjpojtnY61etFzqjfo7DNUn
+        6XPqY+G4kziEwvyBgEiNOytF8L2/XJDc8nGakP0=
+X-Google-Smtp-Source: ABdhPJzA/6wH5wYipanebt4UPB8IhFL/56DXJMDetAOQZrPeoPqghdPu3W8hC1001/DfVHUEum/cKtygewIJYc7kpes=
+X-Received: by 2002:a25:cf11:0:b0:641:bfc8:4fc7 with SMTP id
+ f17-20020a25cf11000000b00641bfc84fc7mr1733774ybg.366.1649942451985; Thu, 14
+ Apr 2022 06:20:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <9e12d806c5554b4ed18c644f71f6662fcf0d0516.1649813822.git.lhjeff911@gmail.com>
+ <Yla01C6MJbaieIwR@sirena.org.uk>
+In-Reply-To: <Yla01C6MJbaieIwR@sirena.org.uk>
+From:   =?UTF-8?B?6YOt5Yqb6LGq?= <lhjeff911@gmail.com>
+Date:   Thu, 14 Apr 2022 21:18:34 +0800
+Message-ID: <CAGcXWkx6fZZ3kMnGuXtAA+WatJMf1dq_vd6fiFAocH9b03CWcg@mail.gmail.com>
+Subject: Re: [PATCH] spi: remove spin_lock_irq in the irq procress
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?B?5ZGC6Iqz6aiwTHVXZWxscw==?= <wells.lu@sunplus.com>,
+        "lh.kuo" <lh.kuo@sunplus.com>, nathan@kernel.org,
+        Tom Rix <trix@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Hi Mr.Mark :
 
-[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
+I will remove the variable "psim->lock" in the next patch
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Li-hao Kuo
 
-Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-index 16ff56f93501..64fa544ac850 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-@@ -1046,6 +1046,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
- 	if (node) {
- 		pctl->regmap1 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap1))
- 			return PTR_ERR(pctl->regmap1);
- 	} else if (regmap) {
-@@ -1059,6 +1060,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
- 	if (node) {
- 		pctl->regmap2 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap2))
- 			return PTR_ERR(pctl->regmap2);
- 	}
--- 
-2.34.1
-
-
-
+Mark Brown <broonie@kernel.org> =E6=96=BC 2022=E5=B9=B44=E6=9C=8813=E6=97=
+=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=887:32=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On Wed, Apr 13, 2022 at 09:38:00AM +0800, Li-hao Kuo wrote:
+> > - remove spin_lock_irq and spin_unlock_irq in the irq funciton
+>
+> It looks like this is the only use of the lock so the variable can be
+> removed as well?
