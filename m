@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6801FC38A2E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343908AbiDNNja (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
+        id S240073AbiDNNls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244902AbiDNN2P (ORCPT
+        with ESMTP id S245101AbiDNN2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:15 -0400
+        Thu, 14 Apr 2022 09:28:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22903A776E;
-        Thu, 14 Apr 2022 06:21:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72188A9974;
+        Thu, 14 Apr 2022 06:21:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B42BA612E6;
-        Thu, 14 Apr 2022 13:21:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C673FC385A5;
-        Thu, 14 Apr 2022 13:21:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 053E7612B3;
+        Thu, 14 Apr 2022 13:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A1FFC385A1;
+        Thu, 14 Apr 2022 13:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942477;
-        bh=Hjz2oU53MLAT469dRVbdyT7uIR4htjXRrXfpzBlOT8A=;
+        s=korg; t=1649942499;
+        bh=ESmkX1nqelw0zFwRX5vLKk8DOz1DhVHBb9u1+DCQth8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cWqCcbnbCrxY1AsoqIWUJNR5utn3SE6jG6+j52e2318kiFp9r0vdDmEqjx0yZ2BsI
-         kDeKyssmmb1J7EfQ/CXwcLYtLmwjdbGh63aUJLCaJwyqsezB1yBM4votRB1tVj7atL
-         GUIoUe0rWW/ii2t0d3Psu7/ReG8TF8ISrEebFUwk=
+        b=CxVSNUofwPnrpMEKFFENLdsJdTmnxyRTZeR6QdQzSIxqdgilS/wnhwA3FWhfUNQdS
+         KrvtOTtoZXU7bdVx50X79fhPUwsu24k2rA4VN/a6h3Z+KG3PRUOra7OCHbhrhs1UFF
+         QN3d2jWZWCDN7PGf8VZ051XlhKOOaKJUeX7/MW20=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 148/338] vxcan: enable local echo for sent CAN frames
-Date:   Thu, 14 Apr 2022 15:10:51 +0200
-Message-Id: <20220414110843.116162702@linuxfoundation.org>
+Subject: [PATCH 4.19 107/338] ASoC: wm8350: Handle error for wm8350_register_irq
+Date:   Thu, 14 Apr 2022 15:10:10 +0200
+Message-Id: <20220414110841.957151465@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,44 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 259bdba27e32368b4404f69d613b1c1014c07cbf ]
+[ Upstream commit db0350da8084ad549bca16cc0486c11cc70a1f9b ]
 
-The vxcan driver provides a pair of virtual CAN interfaces to exchange
-CAN traffic between different namespaces - analogue to veth.
+As the potential failure of the wm8350_register_irq(),
+it should be better to check it and return error if fails.
+Also, use 'free_' in order to avoid the same code.
 
-In opposite to the vcan driver the local sent CAN traffic on this interface
-is not echo'ed back but only sent to the remote peer. This is unusual and
-can be easily fixed by removing IFF_ECHO from the netdevice flags that
-are set for vxcan interfaces by default at startup.
-
-Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
-in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
-same local echo behavior and procedures as known from the vcan interfaces.
-
-Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
-Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: a6ba2b2dabb5 ("ASoC: Implement WM8350 headphone jack detection")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220304023821.391936-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/vxcan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/wm8350.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index ccd758ba3fb0..8197f04aa8b6 100644
---- a/drivers/net/can/vxcan.c
-+++ b/drivers/net/can/vxcan.c
-@@ -156,7 +156,7 @@ static void vxcan_setup(struct net_device *dev)
- 	dev->hard_header_len	= 0;
- 	dev->addr_len		= 0;
- 	dev->tx_queue_len	= 0;
--	dev->flags		= (IFF_NOARP|IFF_ECHO);
-+	dev->flags		= IFF_NOARP;
- 	dev->netdev_ops		= &vxcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
+diff --git a/sound/soc/codecs/wm8350.c b/sound/soc/codecs/wm8350.c
+index e92ebe52d485..707b31ef9346 100644
+--- a/sound/soc/codecs/wm8350.c
++++ b/sound/soc/codecs/wm8350.c
+@@ -1538,18 +1538,38 @@ static  int wm8350_component_probe(struct snd_soc_component *component)
+ 	wm8350_clear_bits(wm8350, WM8350_JACK_DETECT,
+ 			  WM8350_JDL_ENA | WM8350_JDR_ENA);
+ 
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L,
+ 			    wm8350_hpl_jack_handler, 0, "Left jack detect",
+ 			    priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
++	if (ret != 0)
++		goto err;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R,
+ 			    wm8350_hpr_jack_handler, 0, "Right jack detect",
+ 			    priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
++	if (ret != 0)
++		goto free_jck_det_l;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICSCD,
+ 			    wm8350_mic_handler, 0, "Microphone short", priv);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
++	if (ret != 0)
++		goto free_jck_det_r;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CODEC_MICD,
+ 			    wm8350_mic_handler, 0, "Microphone detect", priv);
++	if (ret != 0)
++		goto free_micscd;
+ 
+ 	return 0;
++
++free_micscd:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_MICSCD, priv);
++free_jck_det_r:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_R, priv);
++free_jck_det_l:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CODEC_JCK_DET_L, priv);
++err:
++	return ret;
  }
+ 
+ static void wm8350_component_remove(struct snd_soc_component *component)
 -- 
 2.34.1
 
