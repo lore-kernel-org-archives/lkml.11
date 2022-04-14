@@ -2,295 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C19C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346969AbiDNW1R (ORCPT
+        id S1346986AbiDNW2j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 18:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        Thu, 14 Apr 2022 18:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbiDNW1O (ORCPT
+        with ESMTP id S229769AbiDNW2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 18:27:14 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49125AECE;
-        Thu, 14 Apr 2022 15:24:47 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23EKvuFn014133;
-        Thu, 14 Apr 2022 22:24:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=E7kQgRSLVqahKmxKZzLWMGfXKfPKTjxNOfxmojvXUZg=;
- b=kfqFMWhnolvEoXfRn7Mrb/DBN4Ra29zbVGjkYmDnz3EaR3ZPv070l18eHINLJ/AwVMgy
- CPV5U1SjVY+sDfzE4JsmtuprPRKjVCkh1a0hVxeA8TqlnFu/XAPsWCxREPEaXQn8yfQ2
- friX+T511wj+90VVm8rPMOhbG752lcGOdiZLoMDZGfGcXJFFOcjIksHkZNShjpv/lNOc
- /QmisqOD23tIzqldgS0MuZrH11PFZ9GFxIDd+E1rej9ze2xsyCkhJfC+663eNsCpzvNi
- S31OwxnvNkRhhTL5xug4QmBE270fT6nBAaHKh1S3IZEuTiSN34JVSBASSz4PMz3eIQcv og== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3fb2pu6be9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Apr 2022 22:24:40 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23EMHQPL020978;
-        Thu, 14 Apr 2022 22:24:39 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2177.outbound.protection.outlook.com [104.47.56.177])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fb0k57ddj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Apr 2022 22:24:39 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dzRsxf8v5EiU91Z88pjDL0NWlRzFvg0S9s/wdycCq1e3FQPR/3S0Egkjsu81iTQqdcQ8rptglT9AnYhIqJ9BizaJZmea6m9y/PBuicBQ5AXDD8/Bh9t7kCaBHEIdzyy6nAinAFtRMPKdnvlMapKml2iO/VewqXgFAFKxzFCu/T481OpGv4Oj/YuCX6+dxagqUVBdSixRjgdMX54G76jv5Xpd0SKD4YR5BQ4m2rSGMvYXwXX0saObE0xqZr1S3p/Of1CCnKkryqyr63MZaxf3P3P5FbpWlPc1Kr1k+EBEm02GisUgENqo82J4Ygm+QEtPYtp0PtASOdWu8cJFvd/BqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E7kQgRSLVqahKmxKZzLWMGfXKfPKTjxNOfxmojvXUZg=;
- b=Hh+MhdCy1HjciqnBQgm6emcf5AtPEvlTNeMwgtHM2khIViNF95nPjPl6owPIp1JyzrTBeKJIbax/X75pUU5pXoDRyepKluqITBo6nrHLqBBbnEOve46ldwKg/Wor2Ar/7pW3G6FYobGAjQyWqudOVg0JZIG73rCbxTPu6iWxhRTx19+lNgxxEJESChmG/kxFoy7iFnCFn5iGktv+kLk87113kPwG7MmP1+IcU8llX+aifWy3uPzaCKvEJlQot2uO5xDwj/GNSnuCHjHDkDBw/yO8nuKaNjGE1ABGZVCpyUu5BC+busp7qr/uibHf+indyyLLmz5U0yGbNiK/q+zgvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E7kQgRSLVqahKmxKZzLWMGfXKfPKTjxNOfxmojvXUZg=;
- b=lVsTBgpR5q+YfSHJnqgYq8MCxw8tjER4GKEAwdExx/0bLvrsefh3hY3EyP/Nj2OTGF+WCgGWRymXnR0UHSMRyqR2xYhEUoNzFvRQOxT50/4n9khZ55HhfVFQFUNyZaaiBdhtkZH8dnjmky1bN3CYvE9xtmXIDgaGP3IP+peZ6ko=
-Received: from CH0PR10MB5113.namprd10.prod.outlook.com (2603:10b6:610:c9::8)
- by DM6PR10MB3962.namprd10.prod.outlook.com (2603:10b6:5:1fb::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Thu, 14 Apr
- 2022 22:24:36 +0000
-Received: from CH0PR10MB5113.namprd10.prod.outlook.com
- ([fe80::a8c2:7a0b:5845:1675]) by CH0PR10MB5113.namprd10.prod.outlook.com
- ([fe80::a8c2:7a0b:5845:1675%8]) with mapi id 15.20.5144.030; Thu, 14 Apr 2022
- 22:24:36 +0000
-Message-ID: <7b1c0a82-f7c3-4f60-ccb3-893caf4221f9@oracle.com>
-Date:   Thu, 14 Apr 2022 15:24:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 2/4] selftest/vm: verify remap destination address in
- mremap_test
-Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>, shuah@kernel.org,
-        akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220414171529.62058-1-sidhartha.kumar@oracle.com>
- <20220414171529.62058-3-sidhartha.kumar@oracle.com>
- <e6cc5cf6-b6bc-2eca-255d-5dd247253255@linuxfoundation.org>
-From:   Sidhartha Kumar <sidhartha.kumar@oracle.com>
-In-Reply-To: <e6cc5cf6-b6bc-2eca-255d-5dd247253255@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BYAPR08CA0010.namprd08.prod.outlook.com
- (2603:10b6:a03:100::23) To CH0PR10MB5113.namprd10.prod.outlook.com
- (2603:10b6:610:c9::8)
+        Thu, 14 Apr 2022 18:28:37 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DBAAC1CB5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 15:26:10 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6D47D23A;
+        Thu, 14 Apr 2022 15:26:10 -0700 (PDT)
+Received: from airbuntu (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C56E63F73B;
+        Thu, 14 Apr 2022 15:26:07 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 23:26:02 +0100
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "bsegall@google.com" <bsegall@google.com>,
+        "mgorman@suse.de" <mgorman@suse.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "parth@linux.ibm.com" <parth@linux.ibm.com>,
+        "chris.hyser@oracle.com" <chris.hyser@oracle.com>,
+        "pkondeti@codeaurora.org" <pkondeti@codeaurora.org>,
+        "Valentin.Schneider@arm.com" <Valentin.Schneider@arm.com>,
+        "patrick.bellasi@matbug.net" <patrick.bellasi@matbug.net>,
+        "pjt@google.com" <pjt@google.com>, "pavel@ucw.cz" <pavel@ucw.cz>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "qperret@google.com" <qperret@google.com>,
+        "tim.c.chen@linux.intel.com" <tim.c.chen@linux.intel.com>,
+        Wei Wang <wvw@google.com>
+Subject: Re: Scheduling tasks on idle cpu
+Message-ID: <20220414222412.r5gn66lyg6zo4gq3@airbuntu>
+References: <030aacb0c1304e43ab917924dcf4f138@AcuMS.aculab.com>
+ <20220411233447.rcencjivkhyltyxm@airbuntu>
+ <4ca5cd70904d47bea0df93f7c0979c66@AcuMS.aculab.com>
+ <20220413235121.tzefvdvnwcipzo7p@airbuntu>
+ <c831736b76c3411baea48a7c3e18cf4d@AcuMS.aculab.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0d94769d-e8c5-434f-c1d7-08da1e658eaf
-X-MS-TrafficTypeDiagnostic: DM6PR10MB3962:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB39620664DA03464CD816DA2E95EF9@DM6PR10MB3962.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fuIzb9b2ZsxSX84JRzRDn8irtihm51gyXBaouwVDqzGwoR1bIK4anw57xZkbEhKRgUV1Cb9uiZRJLwGwFIpcXLyMcOc+CPk/BKmJKF0256ElDjTGP00jPxkBEHueAizoAdYvpxsFgA3nw/KUQ82e3Oiu8DTMRI9/wHlkHL+BJ4cwLnn9gmNUxnVLC7M1R0zzMPYff7pHd8nMSK1lvxU5niQke2Yq5Sf9ZY/LQaRhl+tR1vnv2uH3HMKV7QWa3JXFWKe8VIl0W5R9aUw7J2947D+kkm6viAbLW6zXxvxhj1tEnOouqv30PSkZGiNzP2Veg5h91CclJNOlam1OaNMAxdQssrmS5M4Fix09YRViPs6JRew7wn4F3B7Rp+uvGcrL9UQyMWLvS1zZI98NHmld4DFDozdULlTeWgCofr9BRi3ZwgW8h9+yvEUkWGnKrMMoscF/XO5zljpxbAX/1NKjIpRJ6JOKXJdxuLIYmkGQBSVq7i+u21etKgP+0w9sZckWQ/VJWTLurUo+ag9hMDyCtsCzfsQfhevCn6h/HHRP2cKTd1GCRdV2QcvoSGnFiqcjqEs8EB8yAucu6Choq3KortUbSrxmi0ykVnjLN2tU9M87eGyZm2EC10phUf/XdxNtjGqw1R0aKU703BCqIDYblrH4xStrY1nm4eW+klz5Eh4pros4JWVaJXnQ8cd4EkXFPEJn8hialkBttG9RO2gh4JrKt327Dth6BT9CFQ5B+ywkBr1TnM/i/5W9z6DN8Gr6
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR10MB5113.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66556008)(66476007)(66946007)(44832011)(186003)(86362001)(4326008)(31696002)(36756003)(508600001)(5660300002)(15650500001)(6486002)(38100700002)(2616005)(8936002)(83380400001)(8676002)(316002)(6506007)(6512007)(53546011)(2906002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?amlGVmxtN01McXF2SXhlZXlwMnorcFROREVma1RGQmkwN0RERnFQUklrblhF?=
- =?utf-8?B?WnlXZXFOSGFQSDJLaUE2MTlRY1Ayd3ljRzdoT2ZmOFFUb3BoUFN5emxXYTBa?=
- =?utf-8?B?M0s5cjdzdG1PTjNiMkFxa29SdFFIbU95cGtlNllza1llL0R0ckZtQ1E1L2R3?=
- =?utf-8?B?dnZSKzBMTVAveVFSc3YxdGs0MkphUU5lL2FKd21QQzFBRGs0cmw5WXI2Wkdv?=
- =?utf-8?B?dmJHU1dPSHRzVnU2SVZSYlU4U2Zwc0U0dG1nSHAybzV5TlpXUDdrYk14dXRU?=
- =?utf-8?B?UUM0MVFxc1J5eVJ6bnNvZHZxUVZzVFg0Q2FadVlhdXNLVlllbldLMUVSTytO?=
- =?utf-8?B?QkplQlpCSmJhWHpRek9nMDJsbC9IWG9jTEtwTk5EUFBxdXRIaGRFMTVpaWNj?=
- =?utf-8?B?TFlJZ0laQkhwYXJVOVl3SWVKYmRoNHFHUkpVVDFWdTFJcHdhcmQ0aGhJT3o4?=
- =?utf-8?B?TG9ZK09CUzhsVGtLbmdPMStjSFhKQTYvUktBc05rMXZUakJlZllYaTI2bXp6?=
- =?utf-8?B?aG53NU5EWEkwMWI4bzhEZHVSYWtuL0Y3ZmZNTXFZa0c3YWZrYTdCeXRJU2t4?=
- =?utf-8?B?Z3dTTGIya3I1QW5qQ1YrR0x0bVdhRkN0RzBlalViR0RCZ0VLaVBVZlNaM3V6?=
- =?utf-8?B?Q3cyam1BWEJyaVQxRmtIbmZ0cko0Q2hIRzFKU2loZFJFL285ZWgvL2Zpakdl?=
- =?utf-8?B?NWtjUWcvRVZBSzY4MUpZcHBhTTJrYzJ2QVFvbHhsK0xsTHBRcVVTSmY5M05k?=
- =?utf-8?B?SUhwL05lbjAyTDVSNUc1MTJuaGF1Z0VLWkpQSklnRlBSWS9lTE1TRU53ZzBD?=
- =?utf-8?B?Y052UFJ5REZ1TU9rWDBJdDBpTUxJelU3NkhDMzJRUHBZenN5VGVTbmpMVUpa?=
- =?utf-8?B?M0pQSlI0RGsxbHFwRmt3TjgxS2k1YnVXVkUxQkZBL3ZGZ0JCK01wVVZKUk1s?=
- =?utf-8?B?YUNDMWN3TE5uOXlaeEhEZTQzUjZ5aldyQTBnSUxrMnRiR0J3UlY1OG8zRExn?=
- =?utf-8?B?dmdxZzI4Mk4rY3B2NVhjcGx4WTJVV09iamlKWStQa3lPYkEwK3FiZ20rRTli?=
- =?utf-8?B?bkNPVlJyM0xKWFhrNVAwMWRGTzh6c3FyUmFacjd4Wi95VUlSWlAwdFU5U3E0?=
- =?utf-8?B?eDFtMUQzTWdZM3haTm8vTDVKVDhJK2NCam5XZkxBZW5ndG5xWmJIMGZqSHhP?=
- =?utf-8?B?Ull3cnJVbFpaQlQzeDAwQWRsZmE2djVOK0lCZnJIWkxNL0hLRUdPeTRWd04r?=
- =?utf-8?B?MjVadktGQ3k1M3p6MVI4VVl6ekRKSjJzSmp1UC8vZWV4OGVzK0ljUnhHMm0y?=
- =?utf-8?B?OVhKU2VtTDVhWVRzL2QvRGpJL3JwRkFqZUFsZG5Sa3AxSEdiZ2tSem5QK25J?=
- =?utf-8?B?clNrK0dVOURTSnV4OGQra0kzdGFMaWRJVzVJazhqOVJNSFB5eitZeUVtaENK?=
- =?utf-8?B?RUl1SVNEMnF6bkUzRlE5T0hMMHBRSVNQWVBTVVNydU53SHJrbFpHZ1J2Rzht?=
- =?utf-8?B?aWwwVDU1OGpLYXVjR1hYaWt1SWZNUFdqU1RwQjdjb0o0amVLdWtrcFhwSUQ3?=
- =?utf-8?B?WnhudnNPY3pzY3JPU3VVNjZxemlmMWFMYytoME9ETmZwemtQQlBqMHlScnlU?=
- =?utf-8?B?cVBhNEt4a0R5N1JYVWxNVzNjNDd1R3J0Q0tmaG53WVZwbW83VWRPM2s5bXoz?=
- =?utf-8?B?RTVFYi91Q1ZUUjNDUU9ibHlseFgzUDQ2UmJrVllTUG5BQXZFc242WWd6aXly?=
- =?utf-8?B?YkE2Q0hiMFpMeElwdWFPRExFVjRIdUVTN3JYdHltUlBSajNZV3dEaEpJSGsw?=
- =?utf-8?B?NXBWOGZJc3hROWJVa3FPMTFNbnlQdmdrNm53amZRdGk4Q2pMdDQ5TVBqU2Zp?=
- =?utf-8?B?dU5VWGlaL0lncjJUc016azZXblFVeWFIQTlvU29YNHIxV2FDZ050QkxsbTA4?=
- =?utf-8?B?MWZXVktKS1lDYXhqN3dGMTZvdjVJaDZuOG9EOU9yRVJJZmdwWHpQRzlpa3VJ?=
- =?utf-8?B?aXlkYXpReGVjWjN4U1Y5a3QxS1ZwOWVsL3dUYUJyYmtrNTQzcFZwRkFhb0ow?=
- =?utf-8?B?azl2R3I4bWxGNDh6bUNSdTd4ZDFQTFpmSXJoZzcwSnJRV0hJZG03R2xDWkxI?=
- =?utf-8?B?NER1UDliaEMxYzZNaGF5b1VOcG9LN2gyeklZdzYza21FZmJrN2c4S2lTaTFh?=
- =?utf-8?B?TmZmcGhqcEFiMFpOUnhZcHZQYThCendHbkNIdjAxUUVyVTVId2pua0YxK2Yr?=
- =?utf-8?B?SDlBR2hDSlJzdmpya1d5SDBHaWJWMDZ3WGt1dUlja2wzNjFnbys4YlVzdkNX?=
- =?utf-8?B?RVdnYlR5bEgxZmtqeDZPQmZ5c2l6WUxYVGNtMGQ1ajVOaGFUTVd3ZWw0WFVF?=
- =?utf-8?Q?OSRJYmypHnEsCWDJKOOiNVuqNbQFXdYFRZmxffc+dwq1f?=
-X-MS-Exchange-AntiSpam-MessageData-1: za1A6eNIi1c2Mw==
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d94769d-e8c5-434f-c1d7-08da1e658eaf
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR10MB5113.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 22:24:36.2634
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t8SBliPv+q74M66zDCgvpndLKXcMFgcIuJCgNhhXAAIAfMHvBs41S6LaGMT500htC1sMGee2uQyr7DQwchoVHBh0DySApNBc0v6DuziJJR8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3962
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-04-14_07:2022-04-14,2022-04-14 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0 mlxscore=0
- bulkscore=0 phishscore=0 spamscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204140116
-X-Proofpoint-ORIG-GUID: qx4X9w1kie0SV8_fi8JsLn8LYfW4NSjL
-X-Proofpoint-GUID: qx4X9w1kie0SV8_fi8JsLn8LYfW4NSjL
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <c831736b76c3411baea48a7c3e18cf4d@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 04/14/22 06:09, David Laight wrote:
 
+[...]
 
-On 4/14/22 2:47 PM, Shuah Khan wrote:
-> On 4/14/22 11:15 AM, Sidhartha Kumar wrote:
->> Because mremap does not have a NOREPLACE flag,
->> it can destroy existing mappings. This can
->> cause a segfault if regions such as text are
->> destroyed.
->
-> Please explain the reason for segfault.
->
-With the MREMAP_FIXED flag used by the test,
-the text region, which fell in the range of the remap
-region, got unmapped. This caused a segfault when
-trying to fetch the next instruction after the mremap()
-call.
-> Add a blank line here. Makes it easier to read.
->
-> Verify the requested mremap destination
->> address does not overlap any existing mappings
->> by using mmap's FIXED_NOREPLACE flag and checking
->
-> Spell this out fully - MAP_FIXED_NOREPLACE
->> for the EEXIST error code. Keep incrementing the
->> destination address until a valid mapping is found
->> or max address is reached.
->>
->
-> Essentially mremap() doesn't check for overlaps and removes
-> or overwrites existing mappings? The way you are fixing it
-> is by verifying by calling mremap() with MAP_FIXED_NOREPLACE
-> flag and check for EEXIST.
->
-Yes, with the MREMAP_FIXED flag that the test uses, any previous
-mapping in the address range of the remap region gets unmapped.
-Yes, fixing this issue by calling mmap() with MAP_FIXED_NOREPLACE
-flag and checking for EEXIST.
+> > > That seems to be something different.
+> > > Related to something else I've seen where a RT process is scheduled
+> > > on its old cpu (to get the hot cache) but the process running on
+> > > that cpu is looping in kernel - so the RT process doesn't start.
+> > 
+> > I *think* you're hitting softirq latencies. Most likely it's the network RX
+> > softirq processing the packets. If this latency is a problem, then PREEMPT_RT
+> > [1] should help with this. For Android we hit this issue and there's a long
+> > living out of tree patch that I'm trying to find an upstream replacement for.
+> 
+> I suspect the costs of PREEMPT_RT would slow things down too much.
 
-> What happens when max address is reached?
->
-That is covered by the check if (addr > ULLONG_MAX - region size)
-in the remap_region_valid() function.
-> Same comment on # of chars per line in commit log. Also
->
->> Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
->> ---
->>   tools/testing/selftests/vm/mremap_test.c | 36 ++++++++++++++++++++++++
->>   1 file changed, 36 insertions(+)
->>
->> diff --git a/tools/testing/selftests/vm/mremap_test.c 
->> b/tools/testing/selftests/vm/mremap_test.c
->> index 58600fee4b81..98e9cff34aa7 100644
->> --- a/tools/testing/selftests/vm/mremap_test.c
->> +++ b/tools/testing/selftests/vm/mremap_test.c
->> @@ -10,6 +10,7 @@
->>   #include <string.h>
->>   #include <sys/mman.h>
->>   #include <time.h>
->> +#include <limits.h>
->>     #include "../kselftest.h"
->>   @@ -65,6 +66,34 @@ enum {
->>       .expect_failure = should_fail                \
->>   }
->>   +/*
->> + * Returns 0 if the requested remap region overlaps with an
->> + * existing mapping (e.g text, stack) else returns 1.
->> + */
->> +static int remap_region_valid(void *addr, unsigned long long size)
->
-> This returns bool 0 (false) 1 (true)
->
-> Please name the routine - is_remap_region_valid() and change it to
-> return bool.
->
->> +{
->> +    void *remap_addr = NULL;
->> +    int ret = 1;
->> +
->> +    if ((unsigned long long) addr > ULLONG_MAX - size) {
->> +        ksft_print_msg("Can't find a valid region to remap to\n");
->
-> Change it to "Couldn't" - also this message doesn't look right. We hav't
-> looked for valid region yet and it just exceeds the limits?
->
-Because this function is called in a loop in remap_region() and addr is 
-being
-incremented continuously, we could enter this function with addr high 
-enough that
-another increment would cause overflow.
->
->> +        exit(KSFT_SKIP);> +    }
->> +
->> +    /* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
->> +    remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
->> +            MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
->> +            -1, 0);
->
-> Alignment should match open parenthesis here and in other places. 
-> Makes it
-> easier to read the code.
->
->> +    if (remap_addr == MAP_FAILED) {
->> +        if (errno == EEXIST)
->> +            ret = 0;
->> +    } else {
->> +        munmap(remap_addr, size);
->> +    }
->> +
->> +    return ret;
->> +}
->> +
->>   /* Returns mmap_min_addr sysctl */
->>   static unsigned long long get_mmap_min_addr(void)
->>   {
->> @@ -180,6 +209,13 @@ static long long remap_region(struct config c, 
->> unsigned int threshold_mb,
->>       if (!((unsigned long long) addr & c.dest_alignment))
->>           addr = (void *) ((unsigned long long) addr | 
->> c.dest_alignment);
->>   +    /* Don't destroy existing mappings unless expected to overlap */
->> +    while (!remap_region_valid(addr, c.region_size)) {
->> +        if (c.overlapping)
->> +            break;
->> +        addr += c.src_alignment;
->> +    }
->> +
->>       clock_gettime(CLOCK_MONOTONIC, &t_start);
->>       dest_addr = mremap(src_addr, c.region_size, c.region_size,
->>               MREMAP_MAYMOVE|MREMAP_FIXED, (char *) addr);
->>
->
-> thanks,
-> -- Shuah
->
+It shouldn't.. If it did it's worth reporting to the RT folks, or consider
+whether some bad usage in userspace is causing the problem.
 
+linux-rt-users mailing list is a good place to ask questions. The details are
+in the link to linuxfoundation realtime wiki page.
+
+> This test system has 40 cpu, 35 of them are RT and processing the same 'jobs'.
+> It doesn't really matter if one is delayed by the network irq + softirq code.
+> The problems arise if they all stop.
+> The 'job' list was protected by a mutex - usually not too bad.
+> But if a network irq interrupts the code while it holds the mutex then all
+> the RT tasks stall until the softirq code completes.
+> I've replaced the linked list with an array and used atomic_inc().
+
+I see. So an interrupt that happens in the wrong time could block everything.
+
+You can try 'threadirqs' kernel parameter to see if this helps. PREEMPT_RT will
+help with softirq latencies too. So I think this problem should be handled by
+PREEMPT_RT.
+
+There's _probably_ room for improving how userspace manages the job list too..
+Do the readers have to block?
+
+You can use irq affinities and task affinities to ensure the two never happen
+on the same cpu.
+
+> I can imagine that a PREEMPT_RT kernel will have the same problem
+> because (I think) all the spin locks get replaced by sleep locks.
+
+I don't think so. The point of PREEMPT_RT is to not block that RT tasks. With
+PREEMPT_RT + threadirqs, irqs and softirqs will run as kernel threads. I think
+they run as RT tasks, so you can manage which is more important by assigning
+the right priorities to your tasks vs irq/softirqs kthreads priorities.
+
+> 
+> > 
+> > There's a new knob to reduce how long netdev spends in the loop. Might be worth
+> > a try:
+> > 
+> > 	https://lore.kernel.org/netdev/1492619830-7561-1-git-send-email-tedheadster@gmail.com/
+> > 
+> > [1] https://wiki.linuxfoundation.org/realtime/start
+> 
+> I think the patch that runs the softirq in a separate thread might help.
+> But it probably needs a test to only to that if it would 'stall' a RT process.
+
+I think people have been using this in rt-kernels for a long time now.
+I believe you'd just need to be mindful about priorities since they'll run as
+RT tasks.
+
+threadirqs kernel parameter is available in mainline kernel too. But the
+softirqs part still didn't get merged, last I checked which was a while ago.
+So in mainline irqs will get threaded, but not softirqs - when I last checked.
+
+You might find good info here about tuning systems for RT from Red Hat:
+
+	https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_for_real_time/7/html/tuning_guide/interrupt_and_process_binding
+
+There's lots of advise regarding various aspects of the system, so worth
+exploring if you didn't come across it before.
+
+> 
+> > > I've avoided most of the pain that caused by not using a single
+> > > cv_broadcast() to wake up the 34 RT threads (in this config).
+> > > (Each kernel thread seemed to wake up the next one, so the
+> > > delays were cumulative.)
+> > > Instead there is a separate cv for each RT thread.
+> > > I actually want the 'herd of wildebeest' :-)
+> > 
+> > It seems you have a big RT app running in userspace. I thought initially you're
+> > hitting issues with random kthreads or something. If you have control over
+> > these tasks, then that should be easier to handle (as you suggest at the end).
+> 
+> I've a big app with a lot of RT threads doing network send/receive.
+> (All the packets as ~200 byte UDP, 50/sec on 1000+ port numbers.)
+> But there are other things going on as well.
+> 
+> > I'm not sure about the delays when using cv_broadcast(). Could it be the way
+> > this library is implemented is causing the problem rather than a kernel
+> > limitation?
+> 
+> I was definitely seeing the threads wake up one by one.
+> Every 10ms one of the RT threads wakes up and then wakes up all the others.
+> There weren't any 'extra' system calls, once one thread was running
+> in kernel the next one got woken up.
+> Most (and always) noticeable were the delays getting each cpu out
+> of its sleep state.
+
+Oh, yeah idle states and dvfs are known sources of latencies. You can prevent
+the cpus from going into deep idle states.
+
+	https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_for_real_time/8/html-single/optimizing_rhel_8_for_real_time_for_low_latency_operation/index#con_power-saving-states_assembly_controlling-power-management-transitions
+
+> But if one of the required cpu was (eg) running the softint code
+> none of the latter ones would wake up.
+> 
+
+[...]
+
+> > If you make it an RT task (which I think is a good idea), then the RT scheduler
+> > will handle it in the push/pull remark that seem to have started this
+> > discussion and get pushed/pulled to another CPU that is running lower priority
+> > task.
+> 
+> The problem is that while I'd like this thread to start immediately
+> what it is doing isn't THAT important.
+> There are other things that might run on the CFS scheduler that are
+> more important.
+> I can make it RT for experiments.
+
+You can isolate 35 cpus if you like to run your RT app and keep the remaining
+5 cpus for everything else. Depends what else you use the system for. The red
+hat guide I pasted above have a section on using isolated cpus feature.
+
+	https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_for_real_time/7/html/tuning_guide/isolating_cpus_using_tuned-profiles-realtime
+
+Although this seems a bit of a stretch for your use case. You can still use
+irq and task affinities to ensure certain things don't happen on the same CPU.
+
+Cheers
+
+--
+Qais Yousef
