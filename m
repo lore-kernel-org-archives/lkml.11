@@ -2,105 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 588E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 049A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347446AbiDNXdI (ORCPT
+        id S1347623AbiDNXdi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 19:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60104 "EHLO
+        Thu, 14 Apr 2022 19:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347728AbiDNXcx (ORCPT
+        with ESMTP id S241351AbiDNXde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 19:32:53 -0400
-Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18195A76F3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:30:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1649979026;
-        bh=TPcqwIRvfuDk2Qwm6BTs6G3vahsLIZFdldODm3sklMk=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=ZxPjQ+F7plFCcKdotqrCwi/s/FNlCDJMV1r0eQdm3t3Rlkgo7v45EfXAocRWrLcGd
-         4XTsJg5e9GuiburSyTtswK0SPWHEBnHkE1IB9HsabtrxOKocBLkEuNi03hKnMhEupb
-         tRwtJVcGaDHcU6hewfTKMD0a72M/xmsWdlqKWiFg=
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 57715128A06F;
-        Thu, 14 Apr 2022 19:30:26 -0400 (EDT)
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id NpbvdN0xVR-D; Thu, 14 Apr 2022 19:30:26 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1649979026;
-        bh=TPcqwIRvfuDk2Qwm6BTs6G3vahsLIZFdldODm3sklMk=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=ZxPjQ+F7plFCcKdotqrCwi/s/FNlCDJMV1r0eQdm3t3Rlkgo7v45EfXAocRWrLcGd
-         4XTsJg5e9GuiburSyTtswK0SPWHEBnHkE1IB9HsabtrxOKocBLkEuNi03hKnMhEupb
-         tRwtJVcGaDHcU6hewfTKMD0a72M/xmsWdlqKWiFg=
-Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::c14])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 9B7AA128A06D;
-        Thu, 14 Apr 2022 19:30:25 -0400 (EDT)
-Message-ID: <3119c35ba1fa7247e87d7acb56e85ea99092d0a4.camel@HansenPartnership.com>
-Subject: Re: Plumbers conf presentation on -fanalyze?
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        David Malcolm <dmalcolm@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     "Jose E. Marchesi" <jemarch@gnu.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>
-Date:   Thu, 14 Apr 2022 19:30:24 -0400
-In-Reply-To: <CAKwvOdmXYa-A76CGitoAFNQz3rab37AJafQVN-=QSRVDA8y1fg@mail.gmail.com>
-References: <CAKwvOdnb-DiAnq4bT7XiJpFtqyJYpWNw1shEp8gWYpVmUpRBaA@mail.gmail.com>
-         <8c5012c88989a8f05a3b67540b9172336c57ddf7.camel@redhat.com>
-         <CAKwvOdmXYa-A76CGitoAFNQz3rab37AJafQVN-=QSRVDA8y1fg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        Thu, 14 Apr 2022 19:33:34 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAE5A76F3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:31:08 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id d19-20020a0566022bf300b00645eba5c992so3915916ioy.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:31:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=cacxPvYX+7YoVTe1rbwEqAdwSgHbgFcryjKRqnj4k6o=;
+        b=Ztt8oG97gzB/D4ZSJdjdD3KmUo85hx7e9/axpKRFHz8rMaYoBjN3u5VzDVdMyhjdhF
+         Kd8xQSb3X1sdc/fhyupxiSkjtnFr24RDJQChLktbWnWhe6QnlEgO7SMG19yEheef3Xh2
+         3sgPEz0kC4Mfhcd/Ee2fhFcwL69yvcX/saGa2B46vHi0bBDV6p4gv4FrzbZtopUCxkBA
+         YD23vYKyt3Jm11I2k+vifF4srgP7TSUYOu5mLps7aADJqwY0+KPA3WO3399gCQoR1rUI
+         od7vwI97y3YrZn4vrPAu8jYwOLgVi61mpIATL4QKhH9JC9YCRhv3HA+ELwEvUy44+wUf
+         Tqmw==
+X-Gm-Message-State: AOAM533fPkaPq9rZsuQnIC99m6LE/xn9kqkBqLcinOosg7/sb/mRaD+f
+        GAOZR0blu3qkP0Q9cqFbyDk2T3ZvdjHMAnnx0lO9IhNsTLCq
+X-Google-Smtp-Source: ABdhPJyIevyU0774Z/8ufRGfExJNo+ANrxot63r6R9B7mINzokzQuOulhQeJNK64zaCiOhEPwslyPLTq+36eX8PN6//sDidtLde9
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6638:16d2:b0:323:7285:474b with SMTP id
+ g18-20020a05663816d200b003237285474bmr2431975jat.61.1649979067429; Thu, 14
+ Apr 2022 16:31:07 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 16:31:07 -0700
+In-Reply-To: <9ff91977-a6b5-90f9-3502-58ac641e1307@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003378b905dca5b0e6@google.com>
+Subject: Re: [syzbot] UBSAN: array-index-out-of-bounds in pvr2_i2c_core_init
+From:   syzbot <syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com>
+To:     isely@pobox.com, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, mchehab@kernel.org,
+        paskripkin@gmail.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-14 at 15:13 -0700, Nick Desaulniers wrote:
-> On Thu, Apr 14, 2022 at 3:08 PM David Malcolm <dmalcolm@redhat.com>
-> wrote:
-> > On Thu, 2022-04-14 at 14:42 -0700, Nick Desaulniers wrote:
-> > > Hi David,
-> > > Jose and I are currently in the planning process to put together
-> > > a
-> > > Kernel+Toolchain microconference track at Linux Plumbers
-> > > Conference
-> > > this year (Sept 12-14) in Dublin, Ireland.
-> > > 
-> > > We had seen
-> > > https://developers.redhat.com/articles/2022/04/12/state-static-analysis-gcc-12-compiler#scaling_up_the_analyzer
-> > > particularly the section on The Linux kernel and were wondering
-> > > if
-> > > you'd be interested in presenting more information about
-> > > -fanalyze to
-> > > kernel and toolchain developers there?
-> > 
-> > Thanks!  I'm very much interested, but am not yet sure about travel
-> > (both in terms of (a) budget and (b) possible new virus
-> > strains).  Is
-> > this conference going to be purely in-person, or hybrid virtual/in-
-> > person?
-> 
-> I didn't see an answer to that question on
-> https://lpc.events/event/16/page/185-faqs.
-> cc' James + Stephen who might be able to answer that more precisely
-> than I could.
+Hello,
 
-It's going to be hybrid ... I thought we actually managed to announce
-that but forgot to put it on the front page.  However, there is a
-caveat: to minimize the risk of technical issues, we'd very much like
-the content producers (speakers etc) to be in person.  This won't be a
-blanket requirement but we'll be unhappy if you try to have a MC with
-mostly virtual speakers for instance.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Jaems
+Reported-and-tested-by: syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
 
+Tested on:
 
+commit:         115acbb5 Merge tag 's390-5.18-3' of git://git.kernel.o..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=eb177500e563582f
+dashboard link: https://syzkaller.appspot.com/bug?extid=1a247e36149ffd709a9b
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=113c24e0f00000
+
+Note: testing is done by a robot and is best-effort only.
