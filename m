@@ -2,95 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61571C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C972C4707A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345546AbiDNOuT (ORCPT
+        id S1345039AbiDNOuA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34322 "EHLO
+        Thu, 14 Apr 2022 10:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345199AbiDNNpY (ORCPT
+        with ESMTP id S1345109AbiDNNpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22EAB5FD5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:43:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649943779;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cEwU1k8RkWbHuBpGrcJSmZWxIQf9wx4CSSVAzVNcIcQ=;
-        b=ZLcgSWeM8QtZkU9ae04DMJ2myjV4G3DNBxL5Lhd0cQjwBAmwozJq0ZlXRqlCFxX1gf/Lt6
-        0ghdps+DuqWQNsLL+cAJL5I2LMn99cpcB3IhC0e/Dsn71A2jT2GVjb79HxnOxaoDtm7Vl6
-        9kwGcoAyKlA16hDjNrQQtU7mXAag/ko=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-511-wUZU7hvyOgy4Bc7zOMyeAA-1; Thu, 14 Apr 2022 09:42:58 -0400
-X-MC-Unique: wUZU7hvyOgy4Bc7zOMyeAA-1
-Received: by mail-wm1-f70.google.com with SMTP id 6-20020a1c0206000000b0038ff4f1014fso1109215wmc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:42:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=cEwU1k8RkWbHuBpGrcJSmZWxIQf9wx4CSSVAzVNcIcQ=;
-        b=i8MgHJlfEbqk4nSa8RKCBTp7wtJIotZ2nwAyU/KyKGV7RhJCPIJjzwvc3aPg1wSCBX
-         Md7sEVr9WtAaD2hrgz8VtgXL7HfozStGjhKfRF5LWLB807HikP8pW6j/6kG47J2/FHdZ
-         ly9lF62ZZSRT4mc3NOcipUrJWvZ6xCScGRJ7V3WXyrElQv+NytjjYeKpLGHf+5OnLV4V
-         MzuBQwIoqWnth/o0PpsmIUoerhWbBm462lR1IYarUvYID0I8wp3KZolQ9PyVfQzGnaFZ
-         rCulVNEcyR3WJXyipOXelSmtnI1Ilmp5yWmw6WV3O/pS/HjRQ0xOjTJPipbrt1zyKJEC
-         KkRA==
-X-Gm-Message-State: AOAM530YMeSYM1Xk9KSdVzU87j7O2B0uTT+ic6i4/VQElF4Q42K03dRP
-        39XasilFc2MPgB0ByPES4sUoFdjfz55m75+0XM/N01QIF1Z4WcvJ1MGObLVPE+mNV0eyLkQa0SI
-        Hy2rBkwHTvn5m1m6+wZXQzkbi
-X-Received: by 2002:adf:f783:0:b0:207:a8ce:c155 with SMTP id q3-20020adff783000000b00207a8cec155mr2222983wrp.258.1649943776972;
-        Thu, 14 Apr 2022 06:42:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwPeHlNz+XH8pGgX+QQTKvuDAR0AtbdicT3vCkba0paOH9TIMgYj+vx/KybA6X1K9UK6B5gJA==
-X-Received: by 2002:adf:f783:0:b0:207:a8ce:c155 with SMTP id q3-20020adff783000000b00207a8cec155mr2222971wrp.258.1649943776771;
-        Thu, 14 Apr 2022 06:42:56 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
-        by smtp.gmail.com with ESMTPSA id e14-20020a5d6d0e000000b002078ea4f6bdsm2166780wrq.75.2022.04.14.06.42.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 06:42:56 -0700 (PDT)
-Message-ID: <7f9ae4f7c484d16e8f9a923f2facee95a720a62b.camel@redhat.com>
-Subject: Re: [net-next PATCH v2 1/4] drivers: net: dsa: qca8k: drop MTU
- tracking from qca8k_priv
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 14 Apr 2022 15:42:55 +0200
-In-Reply-To: <20220412173019.4189-2-ansuelsmth@gmail.com>
-References: <20220412173019.4189-1-ansuelsmth@gmail.com>
-         <20220412173019.4189-2-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 14 Apr 2022 09:45:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5A3344D1;
+        Thu, 14 Apr 2022 06:42:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DC9A61B51;
+        Thu, 14 Apr 2022 13:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FE80C385A1;
+        Thu, 14 Apr 2022 13:42:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649943728;
+        bh=PHHeuhm0NWxLPAAT62pIvnTG3/TxrZ35Cu7YW5GfDsI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=m84sL6NiQUrfv3xT4FpuSsKIRNFEJ4pUcX/9spPzZKwn14bx1jT9vNj0URPvarhN0
+         tOrGBWETcWyc2gzlXcp0hzABj+Vef9S9wetn3rfE9H0zpR7Uuo+sCoP34SX7Qu/Wyj
+         59vwlSg+ibUMXaoNCQ1rNMavun6T0XzmCRfmhMe8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        anton ivanov <anton.ivanov@cambridgegreys.com>,
+        Julius Werner <jwerner@chromium.org>,
+        David Gow <davidgow@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 258/475] firmware: google: Properly state IOMEM dependency
+Date:   Thu, 14 Apr 2022 15:10:43 +0200
+Message-Id: <20220414110902.331271619@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-12 at 19:30 +0200, Ansuel Smith wrote:
-> DSA set the CPU port based on the largest MTU of all the slave ports.
-> Based on this we can drop the MTU array from qca8k_priv and set the
-> port_change_mtu logic on DSA changing MTU of the CPU port as the switch
-> have a global MTU settingfor each port.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+From: David Gow <davidgow@google.com>
 
-@Vladimir: it looks like this addresses your concern on the previous
-iteration, could you please have a look?
+[ Upstream commit 37fd83916da2e4cae03d350015c82a67b1b334c4 ]
 
-Thanks!
+The Google Coreboot implementation requires IOMEM functions
+(memmremap, memunmap, devm_memremap), but does not specify this is its
+Kconfig. This results in build errors when HAS_IOMEM is not set, such as
+on some UML configurations:
 
-Paolo
+/usr/bin/ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
+coreboot_table.c:(.text+0x311): undefined reference to `memremap'
+/usr/bin/ld: coreboot_table.c:(.text+0x34e): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
+memconsole-coreboot.c:(.text+0x12d): undefined reference to `memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x17e): undefined reference to `devm_memremap'
+/usr/bin/ld: memconsole-coreboot.c:(.text+0x191): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
+vpd.c:(.text+0x300): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
+vpd.c:(.text+0x382): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x459): undefined reference to `memunmap'
+/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
+vpd.c:(.text+0x59d): undefined reference to `memremap'
+/usr/bin/ld: vpd.c:(.text+0x5d3): undefined reference to `memunmap'
+collect2: error: ld returned 1 exit status
+
+Fixes: a28aad66da8b ("firmware: coreboot: Collapse platform drivers into bus core")
+Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
+Acked-By: Julius Werner <jwerner@chromium.org>
+Signed-off-by: David Gow <davidgow@google.com>
+Link: https://lore.kernel.org/r/20220225041502.1901806-1-davidgow@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/firmware/google/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
+index 2fba0aa7fc54..20dfe39a0537 100644
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -21,7 +21,7 @@ config GOOGLE_SMI
+ 
+ config GOOGLE_COREBOOT_TABLE
+ 	tristate "Coreboot Table Access"
+-	depends on ACPI || OF
++	depends on HAS_IOMEM && (ACPI || OF)
+ 	help
+ 	  This option enables the coreboot_table module, which provides other
+ 	  firmware modules access to the coreboot table. The coreboot table
+-- 
+2.34.1
+
+
 
