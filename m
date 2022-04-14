@@ -2,156 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A00C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 03:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A906C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 03:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239711AbiDNDpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 23:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
+        id S239737AbiDNDqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 23:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234059AbiDNDph (ORCPT
+        with ESMTP id S239721AbiDNDqq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 23:45:37 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AED165B4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 20:43:13 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VA0LwpP_1649907790;
-Received: from 30.225.28.199(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0VA0LwpP_1649907790)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 14 Apr 2022 11:43:11 +0800
-Message-ID: <9e5758e2-c9a7-2253-ee69-9979ae31afdd@linux.alibaba.com>
-Date:   Thu, 14 Apr 2022 11:43:10 +0800
+        Wed, 13 Apr 2022 23:46:46 -0400
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AA1165B5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 20:44:22 -0700 (PDT)
+Received: by mail-ua1-x92c.google.com with SMTP id f7so1298007uap.4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 20:44:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KSfIlz8DUgM+uj4vQg8KHkhawk6SdG9Lz0hRbX4guE8=;
+        b=Lo9h2T+uYh37ucLp1GfRnhXeiRN6mfPNF9PjYgJMep0n+Vs0d9at9bYg0SHIPnEpFs
+         ENEa/w69jIkWNFZgcZELFTsoSWE7ckPvJleEv918kLowAgM3rSrAocuIvXE7oycEwBaf
+         hdIJlxQ3apKJ3QCVQo+DIDfNmWTbyvFUDHa1hT4+8+5sQM7l3F9VgK0cot9G2GWQ/Qch
+         Rnf9YYU9xK0nzU00/rsP8oHczzfxw2ADJ4X08by7WRbDdEgli9Sx1vV+UvnoOtGr/ljk
+         C8z45FSj59harYuUDh0t1tUErMbCk/Pkv8tDo6aYPXNlpyb5jnGEIviF6LUx+XMTnv5Q
+         GOPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KSfIlz8DUgM+uj4vQg8KHkhawk6SdG9Lz0hRbX4guE8=;
+        b=MmtnHIXYqqJumDt5igGJijHKgly3C1ZqQKwsDyO1gI/wnzRky3VxtlVl/+vxTjV617
+         05qP6SDJ1GhMQqDss/ZJeJSaZjzLEzWiqSYIWuDzssFgpPWZpUPTm9CbGaiZK9MXsU+3
+         SL4APi8hK5vfmkg9n6YEpKOisrDgObEKQJJN/A0nQ3B94wlaOf+uThZm6ZBxCe88Rp7c
+         Z9tATJ0XXslo09EnAj7R16c1xfwfr/nsvKoNFaXg7Oq4gVwgxm29hrjy8Q0dQ3Jm7g8a
+         oTqU2xtbhHQSNjOm6VA3Z7FRNEgjEMmvF+N54Z/YopaP/1iFH0t1+sbBoxPRJ/XnDvhJ
+         QqNg==
+X-Gm-Message-State: AOAM532s6BAG6g+BJb3auXuPAD04gf67PMAOPANMBmhrHKKXppWA4RmY
+        NQYOK+fJ4cnY66fyvv2cexgXVwbCdCyPK+5+sBqE5A==
+X-Google-Smtp-Source: ABdhPJxEuB5nkxXLPnUZBpM95D8R0G8f+4XXtwtYRgW1ekNE9qaAsJV2yLUm2n9y3Op2j+ePMyBweJIMfqXcHsG49yg=
+X-Received: by 2002:ab0:2695:0:b0:352:5fc9:4132 with SMTP id
+ t21-20020ab02695000000b003525fc94132mr273324uao.29.1649907861646; Wed, 13 Apr
+ 2022 20:44:21 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH RFC v1] arm64: mm: change mem_map to use block/section
- mapping with crashkernel
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     will@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, baolin.wang@linux.alibaba.com
-References: <1649754476-8713-1-git-send-email-guanghuifeng@linux.alibaba.com>
- <YlcAEo3lpKJg8HJf@arm.com>
-From:   "guanghui.fgh" <guanghuifeng@linux.alibaba.com>
-In-Reply-To: <YlcAEo3lpKJg8HJf@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220413040610.06AAAC385A4@smtp.kernel.org> <4ef4aa81-ed32-6c7f-2504-e7462bbaae2d@infradead.org>
+In-Reply-To: <4ef4aa81-ed32-6c7f-2504-e7462bbaae2d@infradead.org>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Wed, 13 Apr 2022 21:43:45 -0600
+Message-ID: <CAOUHufb8yn3PF9gm3ahne2GLs8SCpjjuz_DpS1aH75jeDT_J7A@mail.gmail.com>
+Subject: Re: mmotm 2022-04-12-21-05 uploaded (ARCH_HAS_NONLEAF_PMD_YOUNG)
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for your response!
+On Wed, Apr 13, 2022 at 9:39 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+>
+>
+> On 4/12/22 21:06, Andrew Morton wrote:
+> > The mm-of-the-moment snapshot 2022-04-12-21-05 has been uploaded to
+> >
+> >    https://www.ozlabs.org/~akpm/mmotm/
+> >
+> > mmotm-readme.txt says
+> >
+> > README for mm-of-the-moment:
+> >
+> > https://www.ozlabs.org/~akpm/mmotm/
+> >
+> > This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> > more than once a week.
+> >
+> > You will need quilt to apply these patches to the latest Linus release (5.x
+> > or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> > https://ozlabs.org/~akpm/mmotm/series
+>
+> on i386:
+>
+> WARNING: unmet direct dependencies detected for ARCH_HAS_NONLEAF_PMD_YOUNG
+>   Depends on [n]: PGTABLE_LEVELS [=2]>2
+>   Selected by [y]:
+>   - X86 [=y]
 
-在 2022/4/14 0:53, Catalin Marinas 写道:
-> On Tue, Apr 12, 2022 at 05:07:56PM +0800, Guanghui Feng wrote:
->> There are many changes and discussions:
->> commit 031495635b46
->> commit 1a8e1cef7603
->> commit 8424ecdde7df
->> commit 0a30c53573b0
->> commit 2687275a5843
->>
->> When using DMA/DMA32 zone and crashkernel, disable rodata full and kfence,
->> mem_map will use non block/section mapping(for crashkernel requires to shrink
->> the region in page granularity). But it will degrade performance when doing
->> larging continuous mem access in kernel(memcpy/memmove, etc).
->>
->> This patch firstly do block/section mapping at mem_map, reserve crashkernel
->> memory. And then walking pagetable to split block/section mapping
->> to non block/section mapping [only] for crashkernel mem. We will accelerate
->> mem access about 10-20% performance improvement, and reduce the cpu dTLB miss
->> conspicuously on some platform with this optimization.
-> Do you actually have some real world use-cases where this improvement
-> matters? I don't deny that large memcpy over the kernel linear map may
-> be slightly faster but where does this really matter?
-When doing fio test, there may be about 10-20% performance gap.
-The test method:
-1.prepare env with shell script
+Thanks for the heads up. Please try the following fix if it gets in your way.
 
-set -x
-modprobe -r brd
-modprobe brd rd_nr=1 rd_size=134217728
-dmsetup remove_all
-wipefs -a --force /dev/ram0
-mkfs -t ext4 -E lazy_itable_init=0,lazy_journal_init=0 -q -F /dev/ram0
-mkdir -p /fs/ram0
-mount -t ext4 /dev/ram0 /fs/ram0
-#sed -i s/scan_lvs = 1/scan_lvs = 1/ /etc/lvm/lvm.conf
-
-2.prepare fio env with setting file in [x.fio]:
-
-[global]
-bs=4k
-ioengine=psync
-iodepth=128
-size=8G
-direct=1
-runtime=30
-invalidate=1
-#fallocate=native
-group_reporting
-thread=1
-time_based=1
-rw=read
-directory=/fs/ram0
-#filename=/dev/ram0
-numjobs=1
-
-[task_0]
-cpus_allowed=16
-stonewall=1
-
-3.running fio testcase:
-sudo fio x.fio
------------------------------------------------------
-At the same time, I have test memcpy in the double envs
-(block/section mapping + non block/section mapping):
-1.alloc many continuous pages(src/dst: 10000 * 2^10 bytes): 
-alloc_pages(GFP_KERNEL, 10)
-2.memcpy for src to dst
-
->> +static void init_crashkernel_pmd(pud_t *pudp, unsigned long addr,
->> +				 unsigned long end, phys_addr_t phys,
->> +				 pgprot_t prot,
->> +				 phys_addr_t (*pgtable_alloc)(int), int flags)
->> +{
->> +	phys_addr_t map_offset;
->> +	unsigned long next;
->> +	pmd_t *pmdp;
->> +	pmdval_t pmdval;
->> +
->> +	pmdp = pmd_offset(pudp, addr);
->> +	do {
->> +		next = pmd_addr_end(addr, end);
->> +		if (!pmd_none(*pmdp) && pmd_sect(*pmdp)) {
->> +			phys_addr_t pte_phys = pgtable_alloc(PAGE_SHIFT);
->> +			pmd_clear(pmdp);
->> +			pmdval = PMD_TYPE_TABLE | PMD_TABLE_UXN;
->> +			if (flags & NO_EXEC_MAPPINGS)
->> +				pmdval |= PMD_TABLE_PXN;
->> +			__pmd_populate(pmdp, pte_phys, pmdval);
->> +			flush_tlb_kernel_range(addr, addr + PAGE_SIZE);
-> The architecture requires us to do a break-before-make here, so
-> pmd_clear(), TLBI, __pmd_populate() - in this order. And that's where it
-> gets tricky, if the kernel happens to access this pmd range while it is
-> unmapped, you'd get a translation fault.
-OK, Thanks.
-
-+			if (map_offset)
-+			    alloc_init_cont_pte(pmdp, addr & PMD_MASK, addr,
-+						phys - map_offset, prot,
-+						pgtable_alloc, flags);
-+
-
-+
-+			map_offset = addr - (addr & PUD_MASK);
-+			if (map_offset)
-+			    alloc_init_cont_pmd(pudp, addr & PUD_MASK, addr,
-+						phys - map_offset, prot,
-+						pgtable_alloc, flags);
-+
-
-Sorry，There is a defect. When rebuilding normal pmd/pte(out of crashkernel mem),
-the flags should strip NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS on some scenes:
-!(can_set_direct_map() || IS_ENABLED(CONFIG_KFENCE)).
-So we will use as many as possible block/section mapping.
-
+https://lore.kernel.org/mm-commits/20220414023214.40C14C385A6@smtp.kernel.org/
