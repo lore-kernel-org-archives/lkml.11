@@ -2,84 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07535C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35090C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353120AbiDNOfP (ORCPT
+        id S1353076AbiDNOfD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
+        Thu, 14 Apr 2022 10:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344062AbiDNNjf (ORCPT
+        with ESMTP id S1344006AbiDNNjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AD518370;
-        Thu, 14 Apr 2022 06:37:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 603DAB828F4;
-        Thu, 14 Apr 2022 13:37:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4753C385A1;
-        Thu, 14 Apr 2022 13:37:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943426;
-        bh=JFyZZRADxfo9q+pfWdPtQ2PaP46k1OOMtNnAGLXwdyw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c7cQN6ndYpPd+Ge3xlHcVBVAwr4hOxvGmX7aFgtk0f/aMEhrpBtYGC5CL8vN6nOZT
-         Yd0XG2l+zpGvR5cxj0jQRxT7PTC4BwCOZsmO5Bp8tRnZt3FjsMZEJ8anVC2EeLP8po
-         oeB1UblIN/M7uX5J0+AFpku5CB5yErh3UmRxPkGE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Wensheng <wangwensheng4@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 151/475] ASoC: imx-es8328: Fix error return code in imx_es8328_probe()
-Date:   Thu, 14 Apr 2022 15:08:56 +0200
-Message-Id: <20220414110859.368484190@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:39:33 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0180F8BF43;
+        Thu, 14 Apr 2022 06:36:35 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23EDaRD6009825;
+        Thu, 14 Apr 2022 08:36:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649943387;
+        bh=MuALufS27IYgRFCVcWUTMGjvsiQ0FveOuIy4CrAFgDw=;
+        h=From:To:CC:Subject:Date;
+        b=Yhnd6VQ1qFoZzKaZaOQhZB1XEdaKwKaZsSzdMsHHEQ0AOogWYuBLBwS5oqU6SI54c
+         PTZeapLtoRnF5E3SNV9BhCzswE/Ra3dPCBR8fSnLTxbYNvzICsUs1g6Ebyysmx1p9l
+         /O0T2vdVxLTx6wmC1ZRrIPsUMlTEXST6YNmsUfa0=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23EDaRQp007336
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 14 Apr 2022 08:36:27 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 14
+ Apr 2022 08:36:27 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 14 Apr 2022 08:36:27 -0500
+Received: from swubn03.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23EDaON6056137;
+        Thu, 14 Apr 2022 08:36:24 -0500
+From:   Aparna M <a-m1@ti.com>
+To:     <nm@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
+        <kristo@kernel.org>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <praneeth@ti.com>, <nikhil.nd@ti.com>
+Subject: [RESEND PATCH v3] arm64: dts: ti: k3-am642-sk: Enable WLAN connected to SDHCI0
+Date:   Thu, 14 Apr 2022 19:06:12 +0530
+Message-ID: <20220414133612.13365-1-a-m1@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Wensheng <wangwensheng4@huawei.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-[ Upstream commit 3b891513f95cba3944e72c1139ea706d04f3781b ]
+WL1837 module is connected to SDHCI0 in AM642 SK. Enable it here.
+This will enable the WiFi functionaliy on the board.
 
-Fix to return a negative error code from the error handling case instead
-of 0, as done elsewhere in this function.
-
-Fixes: 7e7292dba215 ("ASoC: fsl: add imx-es8328 machine driver")
-Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
-Link: https://lore.kernel.org/r/20220310091902.129299-1-wangwensheng4@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Nikhil Devshatwar <nikhil.nd@ti.com>
+Signed-off-by: Aparna M <a-m1@ti.com>
 ---
- sound/soc/fsl/imx-es8328.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/fsl/imx-es8328.c b/sound/soc/fsl/imx-es8328.c
-index fad1eb6253d5..9e602c345619 100644
---- a/sound/soc/fsl/imx-es8328.c
-+++ b/sound/soc/fsl/imx-es8328.c
-@@ -87,6 +87,7 @@ static int imx_es8328_probe(struct platform_device *pdev)
- 	if (int_port > MUX_PORT_MAX || int_port == 0) {
- 		dev_err(dev, "mux-int-port: hardware only has %d mux ports\n",
- 			MUX_PORT_MAX);
-+		ret = -EINVAL;
- 		goto fail;
- 	}
+v3 RESEND: rebased on top of v5.18-rc2
+v2 -> v3: Use generic node names for the regulators as per DT Specs
+v1 -> v2: Add "From" tag in commit message
+
+ arch/arm64/boot/dts/ti/k3-am642-sk.dts | 62 ++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
+index 1d7db8bf3a5c..59f506cbd275 100644
+--- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
++++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
+@@ -125,6 +125,31 @@
+ 		vin-supply = <&vcc_3v3_sys>;
+ 		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
+ 	};
++
++	com8_ls_en: regulator-1 {
++		compatible = "regulator-fixed";
++		regulator-name = "com8_ls_en";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++		regulator-boot-on;
++		pinctrl-0 = <&main_com8_ls_en_pins_default>;
++		pinctrl-names = "default";
++		gpio = <&main_gpio0 62 GPIO_ACTIVE_LOW>;
++	};
++
++	wlan_en: regulator-2 {
++		/* output of SN74AVC4T245RSVR */
++		compatible = "regulator-fixed";
++		regulator-name = "wlan_en";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		enable-active-high;
++		pinctrl-0 = <&main_wlan_en_pins_default>;
++		pinctrl-names = "default";
++		vin-supply = <&com8_ls_en>;
++		gpio = <&main_gpio0 48 GPIO_ACTIVE_HIGH>;
++	};
+ };
  
+ &main_pmx0 {
+@@ -216,6 +241,23 @@
+ 			AM64X_IOPAD(0x0270, PIN_INPUT, 0) /* (D18) ECAP0_IN_APWM_OUT */
+ 		>;
+ 	};
++	main_wlan_en_pins_default: main-wlan-en-pins-default {
++		pinctrl-single,pins = <
++			AM64X_IOPAD(0x00c4, PIN_OUTPUT_PULLUP, 7) /* (V8) GPIO0_48 */
++		>;
++	};
++
++	main_com8_ls_en_pins_default: main-com8-ls-en-pins-default {
++		pinctrl-single,pins = <
++			AM64X_IOPAD(0x00fc, PIN_OUTPUT, 7) /* (U7) PRG1_PRU0_GPO17.GPIO0_62 */
++		>;
++	};
++
++	main_wlan_pins_default: main-wlan-pins-default {
++		pinctrl-single,pins = <
++			AM64X_IOPAD(0x00bc, PIN_INPUT, 7) /* (U8) GPIO0_46 */
++		>;
++	};
+ };
+ 
+ &mcu_uart0 {
+@@ -293,6 +335,26 @@
+ 	status = "reserved";
+ };
+ 
++&sdhci0 {
++	vmmc-supply = <&wlan_en>;
++	bus-width = <4>;
++	non-removable;
++	cap-power-off-card;
++	keep-power-in-suspend;
++	ti,driver-strength-ohm = <50>;
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++	wlcore: wlcore@2 {
++		compatible = "ti,wl1837";
++		reg = <2>;
++		pinctrl-0 = <&main_wlan_pins_default>;
++		pinctrl-names = "default";
++		interrupt-parent = <&main_gpio0>;
++		interrupts = <46 IRQ_TYPE_EDGE_FALLING>;
++	};
++};
++
+ &sdhci1 {
+ 	/* SD/MMC */
+ 	vmmc-supply = <&vdd_mmc1>;
 -- 
-2.34.1
-
-
+2.17.1
 
