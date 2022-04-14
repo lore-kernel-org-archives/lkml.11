@@ -2,259 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C06C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B19C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242818AbiDNLzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 07:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60092 "EHLO
+        id S242820AbiDNLz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 07:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242806AbiDNLzC (ORCPT
+        with ESMTP id S235031AbiDNLz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 07:55:02 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC146211D;
-        Thu, 14 Apr 2022 04:52:37 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23EA4xRk004370;
-        Thu, 14 Apr 2022 11:52:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=qUR3IV9PSWnWVOKAWUBSI2CNWAL8FpOs6KH9wnspHY8=;
- b=J9+pFw4qMP3OG7Nmu9Wvrl1GqK+hNjkVIvyZQ3DImYJYR1Gkt6AQwFLv0OeF/bDDRQwU
- qMGcpLMIAth+tChuj6qjKf80E2vdgeiiP3wIs02xicIFz3UEJrvFuGIArCsw0ZOPywkr
- Fp/KdelMp0sERxn9nUX2PEEEIyxTCUP4nb45sroKXF2/ejFF9DyWvddrFE8yLEESC7z5
- FJ0OuvfqjXrJ/pHSW8tpoxF8QtHropiyCTG91jBKUT63vOMjU/esR9RJVo7/D8BxwpEl
- NkKohXYSYJ9ovD9R6Ul6EMPjFQ5PKs2TThUEjH3O0h2TyyUkCdDQEQnrnoC7Em/s+7bI sQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fefyd3pxm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Apr 2022 11:52:35 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23EBmWmY015975;
-        Thu, 14 Apr 2022 11:52:35 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fefyd3px1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Apr 2022 11:52:34 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23EBmSob028364;
-        Thu, 14 Apr 2022 11:52:32 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3fb1s90d21-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Apr 2022 11:52:32 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23EBqTBX49218000
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Apr 2022 11:52:29 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 46BBD11C04A;
-        Thu, 14 Apr 2022 11:52:29 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C393711C052;
-        Thu, 14 Apr 2022 11:52:28 +0000 (GMT)
-Received: from p-imbrenda (unknown [9.145.1.140])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Apr 2022 11:52:28 +0000 (GMT)
-Date:   Thu, 14 Apr 2022 13:39:50 +0200
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     Thomas Huth <thuth@redhat.com>
-Cc:     kvm@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Subject: Re: [PATCH 2/4] KVM: s390: selftests: Use TAP interface in the
- sync_regs test
-Message-ID: <20220414133950.20a84eef@p-imbrenda>
-In-Reply-To: <20220414105322.577439-3-thuth@redhat.com>
-References: <20220414105322.577439-1-thuth@redhat.com>
-        <20220414105322.577439-3-thuth@redhat.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Thu, 14 Apr 2022 07:55:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B7C6211D;
+        Thu, 14 Apr 2022 04:53:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03219B82921;
+        Thu, 14 Apr 2022 11:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74976C385A1;
+        Thu, 14 Apr 2022 11:53:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649937180;
+        bh=CfAU/8BLQZf/z4UTLjwFtFdwDKxtlWOO615gu89IVos=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lOMredMovFi2z1Dq2qSiGbT066bYK7ftxLfE7AR+rclIpgNyyeXwZj28HnpI7M3x8
+         Q5Z5x7OjySsPRhaRmLjsJas8dFSyh+/yhmIAfcvMtp3HirnDMB04+hDjJw9jJMh6MO
+         6ur2Gti5yOGsoIA6hI5+Xrwzjq1F4NbZDSNju1WJcEJudR2igCSPqACALJJIURm6ht
+         XMcWy9jiBX5OdJUYYhfwVJCAftMC9sgCJJKWp1j4oWjfDI+GeHqp4bIaOTuxHc81Ta
+         RZHnRVaOzNHb5vN6DYV+I5sVKfBgWmmeSf1CHIp7f1X/2Y7YMiXgJnDHIUxL94NpNd
+         Zml132wL19Fsg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id C655440407; Thu, 14 Apr 2022 08:52:57 -0300 (-03)
+Date:   Thu, 14 Apr 2022 08:52:57 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     James Clark <james.clark@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] perf report: Set PERF_SAMPLE_DATA_SRC bit for Arm SPE
+ event
+Message-ID: <YlgLGb+NkMNKc3+0@kernel.org>
+References: <20220413092317.756022-1-leo.yan@linaro.org>
+ <Yld4fzWWY07ksB+5@kernel.org>
+ <9ad30442-41f8-6e17-cb4a-ab102b3ebd69@arm.com>
+ <20220414110124.GB598831@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: XuDbV3mW9aAJt6LJQwnERny9HmM56akc
-X-Proofpoint-ORIG-GUID: _78alRW08MKT5uz2eKmjU08pfeO5Uo9O
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-14_03,2022-04-14_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- mlxscore=0 malwarescore=0 spamscore=0 priorityscore=1501 suspectscore=0
- impostorscore=0 mlxlogscore=900 clxscore=1015 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204140063
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414110124.GB598831@leoy-ThinkPad-X240s>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 12:53:20 +0200
-Thomas Huth <thuth@redhat.com> wrote:
-
-> The sync_regs test currently does not have any output (unless one
-> of the TEST_ASSERT statement fails), so it's hard to say for a user
-> whether a certain new sub-test has been included in the binary or
-> not. Let's make this a little bit more user-friendly and include
-> some TAP output via the kselftests.h interface.
-> To be able to distinguish the different sub-tests more easily, we
-> also break up the huge main() function here in more fine grained
-> parts.
+Em Thu, Apr 14, 2022 at 07:01:24PM +0800, Leo Yan escreveu:
+> On Thu, Apr 14, 2022 at 11:29:48AM +0100, James Clark wrote:
+> > On 14/04/2022 02:27, Arnaldo Carvalho de Melo wrote:
+> > > Em Wed, Apr 13, 2022 at 05:23:17PM +0800, Leo Yan escreveu:
+> > >> Since commit bb30acae4c4d ("perf report: Bail out --mem-mode if mem info
+> > >> is not available") "perf mem report" and "perf report --mem-mode"
+> > >> don't report result if the PERF_SAMPLE_DATA_SRC bit is missed in sample
+> > >> type.
+> > >>
+> > >> The commit ffab48705205 ("perf: arm-spe: Fix perf report --mem-mode")
+> > >> partially fixes the issue.  It adds PERF_SAMPLE_DATA_SRC bit for Arm SPE
+> > >> event, this allows the perf data file generated by kernel v5.18-rc1 or
+> > >> later version can be reported properly.
+> > >>
+> > >> On the other hand, perf tool still fails to be backward compatibility
+> > >> for a data file recorded by an older version's perf which contains Arm
+> > >> SPE trace data.  This patch is a workaround in reporting phase, when
+> > >> detects ARM SPE PMU event and without PERF_SAMPLE_DATA_SRC bit, it will
+> > >> force to set the bit in the sample type and give a warning info.
+> > >>
+> > >> Fixes: bb30acae4c4d ("perf report: Bail out --mem-mode if mem info is not available")
+> > >> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> > >> Tested-by: German Gomez <german.gomez@arm.com>
+> > >> ---
+> > >> v2: Change event name from "arm_spe_" to "arm_spe";
+> > >>     Add German's test tag.
+> > > 
+> > > Tentatively applied, would be great to have James' and Ravi's
+> > > Acked-by/Reviewed-by, which I'll add before pushing this out if provided
+> > > in time.
+> > > 
+> > > - Arnaldo
+> > >  
+> > >>  tools/perf/builtin-report.c | 16 ++++++++++++++++
+> > >>  1 file changed, 16 insertions(+)
+> > >>
+> > >> diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
+> > >> index 1ad75c7ba074..acb07a4a9b67 100644
+> > >> --- a/tools/perf/builtin-report.c
+> > >> +++ b/tools/perf/builtin-report.c
+> > >> @@ -353,6 +353,7 @@ static int report__setup_sample_type(struct report *rep)
+> > >>  	struct perf_session *session = rep->session;
+> > >>  	u64 sample_type = evlist__combined_sample_type(session->evlist);
+> > >>  	bool is_pipe = perf_data__is_pipe(session->data);
+> > >> +	struct evsel *evsel;
+> > >>  
+> > >>  	if (session->itrace_synth_opts->callchain ||
+> > >>  	    session->itrace_synth_opts->add_callchain ||
+> > >> @@ -407,6 +408,21 @@ static int report__setup_sample_type(struct report *rep)
+> > >>  	}
+> > >>  
+> > >>  	if (sort__mode == SORT_MODE__MEMORY) {
+> > >> +		/*
+> > >> +		 * FIXUP: prior to kernel 5.18, Arm SPE missed to set
+> > >> +		 * PERF_SAMPLE_DATA_SRC bit in sample type.  For backward
+> > >> +		 * compatibility, set the bit if it's an old perf data file.
+> > >> +		 */
+> > >> +		evlist__for_each_entry(session->evlist, evsel) {
+> > >> +			if (strstr(evsel->name, "arm_spe") &&
+> > >> +				!(sample_type & PERF_SAMPLE_DATA_SRC)) {
+> > >> +				ui__warning("PERF_SAMPLE_DATA_SRC bit is not set "
+> > >> +					    "for Arm SPE event.\n");
+> > 
+> > Looks ok to me. Personally I would remove the warning, otherwise people are going to start
+> > thinking that they need to do something about it or something bad has happened.
+> > 
+> > But because we've fixed it up there shouldn't really need to be a warning or any action.
 > 
-> Signed-off-by: Thomas Huth <thuth@redhat.com>
-> ---
->  .../selftests/kvm/s390x/sync_regs_test.c      | 86 ++++++++++++++-----
->  1 file changed, 65 insertions(+), 21 deletions(-)
+> Understand.  The warning is not bad for developers but it might
+> introduce confusion for users, and if we really want to check the sample
+> type then we can use 'perf evlist' command, so it's not very useful for
+> the warning.
 > 
-> diff --git a/tools/testing/selftests/kvm/s390x/sync_regs_test.c b/tools/testing/selftests/kvm/s390x/sync_regs_test.c
-> index caf7b8859a94..d5ddcbb82d12 100644
-> --- a/tools/testing/selftests/kvm/s390x/sync_regs_test.c
-> +++ b/tools/testing/selftests/kvm/s390x/sync_regs_test.c
-> @@ -21,6 +21,7 @@
->  #include "test_util.h"
->  #include "kvm_util.h"
->  #include "diag318_test_handler.h"
-> +#include "kselftest.h"
->  
->  #define VCPU_ID 5
->  
-> @@ -74,27 +75,9 @@ static void compare_sregs(struct kvm_sregs *left, struct kvm_sync_regs *right)
->  #define TEST_SYNC_FIELDS   (KVM_SYNC_GPRS|KVM_SYNC_ACRS|KVM_SYNC_CRS|KVM_SYNC_DIAG318)
->  #define INVALID_SYNC_FIELD 0x80000000
->  
-> -int main(int argc, char *argv[])
-> +void test_read_invalid(struct kvm_vm *vm, struct kvm_run *run)
->  {
-> -	struct kvm_vm *vm;
-> -	struct kvm_run *run;
-> -	struct kvm_regs regs;
-> -	struct kvm_sregs sregs;
-> -	int rv, cap;
-> -
-> -	/* Tell stdout not to buffer its content */
-> -	setbuf(stdout, NULL);
-> -
-> -	cap = kvm_check_cap(KVM_CAP_SYNC_REGS);
-> -	if (!cap) {
-> -		print_skip("CAP_SYNC_REGS not supported");
-> -		exit(KSFT_SKIP);
-> -	}
-> -
-> -	/* Create VM */
-> -	vm = vm_create_default(VCPU_ID, 0, guest_code);
-> -
-> -	run = vcpu_state(vm, VCPU_ID);
-> +	int rv;
->  
->  	/* Request reading invalid register set from VCPU. */
->  	run->kvm_valid_regs = INVALID_SYNC_FIELD;
-> @@ -110,6 +93,11 @@ int main(int argc, char *argv[])
->  		    "Invalid kvm_valid_regs did not cause expected KVM_RUN error: %d\n",
->  		    rv);
->  	vcpu_state(vm, VCPU_ID)->kvm_valid_regs = 0;
-> +}
-> +
-> +void test_set_invalid(struct kvm_vm *vm, struct kvm_run *run)
-> +{
-> +	int rv;
->  
->  	/* Request setting invalid register set into VCPU. */
->  	run->kvm_dirty_regs = INVALID_SYNC_FIELD;
-> @@ -125,6 +113,13 @@ int main(int argc, char *argv[])
->  		    "Invalid kvm_dirty_regs did not cause expected KVM_RUN error: %d\n",
->  		    rv);
->  	vcpu_state(vm, VCPU_ID)->kvm_dirty_regs = 0;
-> +}
-> +
-> +void test_req_and_verify_all_valid_regs(struct kvm_vm *vm, struct kvm_run *run)
-> +{
-> +	struct kvm_sregs sregs;
-> +	struct kvm_regs regs;
-> +	int rv;
->  
->  	/* Request and verify all valid register sets. */
->  	run->kvm_valid_regs = TEST_SYNC_FIELDS;
-> @@ -146,6 +141,13 @@ int main(int argc, char *argv[])
->  
->  	vcpu_sregs_get(vm, VCPU_ID, &sregs);
->  	compare_sregs(&sregs, &run->s.regs);
-> +}
-> +
-> +void test_set_and_verify_various_reg_values(struct kvm_vm *vm, struct kvm_run *run)
-> +{
-> +	struct kvm_sregs sregs;
-> +	struct kvm_regs regs;
-> +	int rv;
->  
->  	/* Set and verify various register values */
->  	run->s.regs.gprs[11] = 0xBAD1DEA;
-> @@ -180,6 +182,11 @@ int main(int argc, char *argv[])
->  
->  	vcpu_sregs_get(vm, VCPU_ID, &sregs);
->  	compare_sregs(&sregs, &run->s.regs);
-> +}
-> +
-> +void test_clear_kvm_dirty_regs_bits(struct kvm_vm *vm, struct kvm_run *run)
-> +{
-> +	int rv;
->  
->  	/* Clear kvm_dirty_regs bits, verify new s.regs values are
->  	 * overwritten with existing guest values.
-> @@ -200,8 +207,45 @@ int main(int argc, char *argv[])
->  	TEST_ASSERT(run->s.regs.diag318 != 0x4B1D,
->  		    "diag318 sync regs value incorrect 0x%llx.",
->  		    run->s.regs.diag318);
-> +}
-> +
-> +struct testdef {
-> +	const char *name;
-> +	void (*test)(struct kvm_vm *vm, struct kvm_run *run);
-> +} testlist[] = {
-> +	{ "read invalid", test_read_invalid },
-> +	{ "set invalid", test_set_invalid },
-> +	{ "request+verify all valid regs", test_req_and_verify_all_valid_regs },
-> +	{ "set+verify various regs", test_set_and_verify_various_reg_values },
-> +	{ "clear kvm_dirty_regs bits", test_clear_kvm_dirty_regs_bits },
-> +};
-> +
-> +int main(int argc, char *argv[])
-> +{
-> +	static struct kvm_run *run;
-> +	static struct kvm_vm *vm;
-> +	int idx;
-> +
-> +	/* Tell stdout not to buffer its content */
-> +	setbuf(stdout, NULL);
-> +
-> +	if (!kvm_check_cap(KVM_CAP_SYNC_REGS))
-> +		ksft_exit_skip("CAP_SYNC_REGS not supported");
+> I will remove the warning and resend a new patch.
 
-I'm not an expert on the TAP format, but wouldn't it be more meaningful
-to print the header first? (like you do in the previous patch)
+Waiting then
+ 
+> > I don't feel too strongly about this though, so I will leave it up to Leo to make the
+> > final decision:
+> > 
+> > Reviewed-by: James Clark <james.clark@arm.com>
+> 
+> Thanks a lot for reviewing.
+> Leo
 
-> +
-> +	/* Create VM */
-> +	vm = vm_create_default(VCPU_ID, 0, guest_code);
-> +
-> +	run = vcpu_state(vm, VCPU_ID);
-> +
-> +	ksft_print_header();
-> +	ksft_set_plan(ARRAY_SIZE(testlist));
-> +
-> +	for (idx = 0; idx < ARRAY_SIZE(testlist); idx++) {
-> +		testlist[idx].test(vm, run);
-> +		ksft_test_result_pass("%s\n", testlist[idx].name);
-> +	}
->  
->  	kvm_vm_free(vm);
->  
-> -	return 0;
-> +	ksft_finished();
->  }
+-- 
 
+- Arnaldo
