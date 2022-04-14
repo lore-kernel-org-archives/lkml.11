@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351461AbiDNObA (ORCPT
+        id S1351539AbiDNObE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
+        Thu, 14 Apr 2022 10:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344277AbiDNNke (ORCPT
+        with ESMTP id S245626AbiDNNiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1E81C6;
-        Thu, 14 Apr 2022 06:38:10 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19546A66DC;
+        Thu, 14 Apr 2022 06:33:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B32E5B8296A;
-        Thu, 14 Apr 2022 13:38:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C143C385A5;
-        Thu, 14 Apr 2022 13:38:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9BDE61CB7;
+        Thu, 14 Apr 2022 13:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC538C385A1;
+        Thu, 14 Apr 2022 13:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943487;
-        bh=H9LiHuXsXrGvbQ+hXXvAOGb01P2CKm+X024ISDaRSrw=;
+        s=korg; t=1649943203;
+        bh=ob5A8pLCYv7V/wo/D7vMGzSbqCRb0uRrOR6JbwdjuAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qb+8GsmYVKlyuiGQI4HY84UC+buF4UF9X9iTX3PJQe1FihfilgSI2Gnnye6nnBy5t
-         bHkiFtjvzJqCjVXzdHHDZ4anVyKHxQo2j4llxBBob8r8p6NQMP5Ptb8DZzHU/PuKlN
-         4QtdCEcpyYMri5tITGKjNlWSmypQXK5BWB1WcHsQ=
+        b=YG1okwuGTYyrwbigOrknSWLbdJ5UBeTmkYKVipO7AuhZjBFjPpvYDtzgLMeXPHaaM
+         /oR9s+AyCLao7vEXU+woAg1xbaiCshazK4dZmp6qpZys0hqDRg/BTVIV8sWQcNaDUk
+         Jbdmf36X84xHKHcWYOUYisc3KqyQou5R6775Ps2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 171/475] mt76: mt7615: check sta_rates pointer in mt7615_sta_rate_tbl_update
-Date:   Thu, 14 Apr 2022 15:09:16 +0200
-Message-Id: <20220414110859.922402697@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH 5.4 071/475] ARM: dts: exynos: add missing HDMI supplies on SMDK5250
+Date:   Thu, 14 Apr 2022 15:07:36 +0200
+Message-Id: <20220414110857.140048891@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,37 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 6a6f457ed5fdf6777536c20644a9e42128a50ec2 ]
+commit 60a9914cb2061ba612a3f14f6ad329912b486360 upstream.
 
-Check sta_rates pointer value in mt7615_sta_rate_tbl_update routine
-since minstrel_ht_update_rates can fail allocating rates array.
+Add required VDD supplies to HDMI block on SMDK5250.  Without them, the
+HDMI driver won't probe.  Because of lack of schematics, use same
+supplies as on Arndale 5250 board (voltage matches).
 
-Fixes: 04b8e65922f63 ("mt76: add mac80211 driver for MT7615 PCIe-based chipsets")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org> # v3.15+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Link: https://lore.kernel.org/r/20220208171823.226211-2-krzysztof.kozlowski@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/main.c | 3 +++
+ arch/arm/boot/dts/exynos5250-smdk5250.dts |    3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-index 38183aef0eb9..5ad8b0afa41f 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-@@ -385,6 +385,9 @@ static void mt7615_sta_rate_tbl_update(struct ieee80211_hw *hw,
- 	struct ieee80211_sta_rates *sta_rates = rcu_dereference(sta->rates);
- 	int i;
+--- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
++++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+@@ -117,6 +117,9 @@
+ 	status = "okay";
+ 	ddc = <&i2c_2>;
+ 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
++	vdd-supply = <&ldo8_reg>;
++	vdd_osc-supply = <&ldo10_reg>;
++	vdd_pll-supply = <&ldo8_reg>;
+ };
  
-+	if (!sta_rates)
-+		return;
-+
- 	spin_lock_bh(&dev->mt76.lock);
- 	for (i = 0; i < ARRAY_SIZE(msta->rates); i++) {
- 		msta->rates[i].idx = sta_rates->rate[i].idx;
--- 
-2.34.1
-
+ &i2c_0 {
 
 
