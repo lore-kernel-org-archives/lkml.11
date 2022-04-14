@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C15FC3527D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A42C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344272AbiDNOdS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
+        id S234532AbiDNOiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344469AbiDNNlh (ORCPT
+        with ESMTP id S1344317AbiDNNks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:41:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9618120;
-        Thu, 14 Apr 2022 06:39:12 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0227120;
+        Thu, 14 Apr 2022 06:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74BFA61D67;
-        Thu, 14 Apr 2022 13:39:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84B62C385A1;
-        Thu, 14 Apr 2022 13:39:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94D0AB828F4;
+        Thu, 14 Apr 2022 13:38:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1208C385A1;
+        Thu, 14 Apr 2022 13:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943551;
-        bh=WbKh6Ur1Gmb8bxcN5B/hwiNDmAvQELww8z1QuPha6ws=;
+        s=korg; t=1649943501;
+        bh=mW0/NGktVhnDCE4JOlUAkSAXhp8nnOUBGnleDCPXXx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OXnwpbEGXMwB6o26xi52rvTZhA4B2X66KTmRzSFlqX8v8HS4dyuiC+9+Me9/cLvRb
-         04LJHpifAj2jmnf061YvVqACjAYCDtbZDxed81Nwcfijeu4tqSx+LvSbK2kMLvC1+i
-         C+0sOyMnSyEaC2IZII7VAXtZeTxmZVJwTdIL3tHo=
+        b=2Xahp5+7LvZrruTvykkLjHl7jKJ8K5bBjQ+SxRQ2r0j+UEaNYF7fesm1EijCQCeso
+         2wG+2BHJPOgLPs5cTJe0JQlb2RRfXl7XcOefLjSP4qTDyKv/m/Ftdyb5r6kAPSfwMy
+         upYA0OgY4q7rjU4mvZNhkU0LV+JYDe6tmg0CYysg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xu Kuohai <xukuohai@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 196/475] libbpf: Skip forward declaration when counting duplicated type names
-Date:   Thu, 14 Apr 2022 15:09:41 +0200
-Message-Id: <20220414110900.615105248@linuxfoundation.org>
+Subject: [PATCH 5.4 137/475] ASoC: atmel_ssc_dai: Handle errors for clk_enable
+Date:   Thu, 14 Apr 2022 15:08:42 +0200
+Message-Id: <20220414110858.983052588@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,52 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xu Kuohai <xukuohai@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 4226961b0019b2e1612029e8950a9e911affc995 ]
+[ Upstream commit f9e2ca0640e59d19af0ff285ee5591ed39069b09 ]
 
-Currently if a declaration appears in the BTF before the definition, the
-definition is dumped as a conflicting name, e.g.:
+As the potential failure of the clk_enable(),
+it should be better to check it and return error if fals.
 
-    $ bpftool btf dump file vmlinux format raw | grep "'unix_sock'"
-    [81287] FWD 'unix_sock' fwd_kind=struct
-    [89336] STRUCT 'unix_sock' size=1024 vlen=14
-
-    $ bpftool btf dump file vmlinux format c | grep "struct unix_sock"
-    struct unix_sock;
-    struct unix_sock___2 {	<--- conflict, the "___2" is unexpected
-		    struct unix_sock___2 *unix_sk;
-
-This causes a compilation error if the dump output is used as a header file.
-
-Fix it by skipping declaration when counting duplicated type names.
-
-Fixes: 351131b51c7a ("libbpf: add btf_dump API for BTF-to-C conversion")
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220301053250.1464204-2-xukuohai@huawei.com
+Fixes: cbaadf0f90d6 ("ASoC: atmel_ssc_dai: refactor the startup and shutdown")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301090637.3776558-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ sound/soc/atmel/atmel_ssc_dai.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index b2fc45250450..a1176a9e8430 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1366,6 +1366,11 @@ static const char *btf_dump_resolve_name(struct btf_dump *d, __u32 id,
- 	if (s->name_resolved)
- 		return *cached_name ? *cached_name : orig_name;
+diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
+index ca603397651c..1e0973322cd0 100644
+--- a/sound/soc/atmel/atmel_ssc_dai.c
++++ b/sound/soc/atmel/atmel_ssc_dai.c
+@@ -280,7 +280,10 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
  
-+	if (btf_is_fwd(t) || (btf_is_enum(t) && btf_vlen(t) == 0)) {
-+		s->name_resolved = 1;
-+		return orig_name;
-+	}
+ 	/* Enable PMC peripheral clock for this SSC */
+ 	pr_debug("atmel_ssc_dai: Starting clock\n");
+-	clk_enable(ssc_p->ssc->clk);
++	ret = clk_enable(ssc_p->ssc->clk);
++	if (ret)
++		return ret;
 +
- 	dup_cnt = btf_dump_name_dups(d, name_map, orig_name);
- 	if (dup_cnt > 1) {
- 		const size_t max_len = 256;
+ 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
+ 
+ 	/* Reset the SSC unless initialized to keep it in a clean state */
 -- 
 2.34.1
 
