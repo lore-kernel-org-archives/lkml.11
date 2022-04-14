@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03414C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 223E1C46467
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353393AbiDNOj6 (ORCPT
+        id S1353408AbiDNOkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        Thu, 14 Apr 2022 10:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344850AbiDNNoo (ORCPT
+        with ESMTP id S1344890AbiDNNot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:44 -0400
+        Thu, 14 Apr 2022 09:44:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2260393CB;
-        Thu, 14 Apr 2022 06:40:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F86A39B86;
+        Thu, 14 Apr 2022 06:40:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02F1161D68;
-        Thu, 14 Apr 2022 13:40:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 182A1C385A5;
-        Thu, 14 Apr 2022 13:40:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87FC8612E6;
+        Thu, 14 Apr 2022 13:40:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BAD5C385A5;
+        Thu, 14 Apr 2022 13:40:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943626;
-        bh=LOb+r/VmivW4/DQVZ0Vvs64MuNmePu62WrNeN9K0ZPs=;
+        s=korg; t=1649943632;
+        bh=FgkMapFX7HltZgmcI/SyG9B6F5Hr6wX4JefuaCKEJaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZecT+2kuFDrbck6NUB4bxNtN0cIF+zLQnJ+u4cvcyf3EjIqGU20btQjQXzQpXznqJ
-         2Q1cm5lfJ04e5+GRno9rGpW8NsySN8mfVlE+v92Rf4UKB2A2C6oP7fYG5WEfPmG+66
-         m/HeS47CIemmtvTo61j+pZjzDmp2W5qou9KF2hdw=
+        b=y9C/tpYWxjqWnqLZOB0CVGSJieQecN+VSY9Q7XKB2Com9SzqfoUHRFXSNjDcCBVqX
+         5ANZS87dHNwNKtJ3Kh3XrMU0JuCszYHydrTosuA+iFh8an897d4iK35SoxeRBXfn/H
+         50l9SZj1tfxJ//v0kPurHhyQyN1qDmqhxA1eHmIk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 183/475] scsi: pm8001: Fix command initialization in pm80XX_send_read_log()
-Date:   Thu, 14 Apr 2022 15:09:28 +0200
-Message-Id: <20220414110900.254693110@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 175/475] HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
+Date:   Thu, 14 Apr 2022 15:09:20 +0200
+Message-Id: <20220414110900.032809478@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,57 +51,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-[ Upstream commit 1a37b6738b58d86f6b144b3fc754ace0f2e0166d ]
+[ Upstream commit a5e5e03e94764148a01757b2fa4737d3445c13a6 ]
 
-Since the sata_cmd struct is zeroed out before its fields are initialized,
-there is no need for using "|=" to initialize the ncqtag_atap_dir_m
-field. Using a standard assignment removes the sparse warning:
+Internally kernel prepends all report buffers, for both numbered and
+unnumbered reports, with report ID, therefore to properly handle unnumbered
+reports we should prepend it ourselves.
 
-warning: invalid assignment: |=
+For the same reason we should skip the first byte of the buffer when
+calling i2c_hid_set_or_send_report() which then will take care of properly
+formatting the transfer buffer based on its separate report ID argument
+along with report payload.
 
-Also, since the ncqtag_atap_dir_m field has type __le32, use cpu_to_le32()
-to generate the assigned value.
-
-Link: https://lore.kernel.org/r/20220220031810.738362-5-damien.lemoal@opensource.wdc.com
-Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[jkosina@suse.cz: finalize trimmed sentence in changelog as spotted by Benjamin]
+Fixes: 9b5a9ae88573 ("HID: i2c-hid: implement ll_driver transport-layer callbacks")
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
- drivers/scsi/pm8001/pm80xx_hwi.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/i2c-hid/i2c-hid-core.c | 32 ++++++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 68a8217032d0..7dbf0289e350 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1828,7 +1828,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
+diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
+index ac076ac73de5..1547b0ec6a11 100644
+--- a/drivers/hid/i2c-hid/i2c-hid-core.c
++++ b/drivers/hid/i2c-hid/i2c-hid-core.c
+@@ -622,6 +622,17 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
+ 	if (report_type == HID_OUTPUT_REPORT)
+ 		return -EINVAL;
  
- 	sata_cmd.tag = cpu_to_le32(ccb_tag);
- 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
--	sata_cmd.ncqtag_atap_dir_m |= ((0x1 << 7) | (0x5 << 9));
-+	sata_cmd.ncqtag_atap_dir_m = cpu_to_le32((0x1 << 7) | (0x5 << 9));
- 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
++	/*
++	 * In case of unnumbered reports the response from the device will
++	 * not have the report ID that the upper layers expect, so we need
++	 * to stash it the buffer ourselves and adjust the data size.
++	 */
++	if (!report_number) {
++		buf[0] = 0;
++		buf++;
++		count--;
++	}
++
+ 	/* +2 bytes to include the size of the reply in the query buffer */
+ 	ask_count = min(count + 2, (size_t)ihid->bufsize);
  
- 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd, 0);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 161bf4760eac..5bf897188f4f 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1516,7 +1516,7 @@ static void pm80xx_send_read_log(struct pm8001_hba_info *pm8001_ha,
+@@ -643,6 +654,9 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
+ 	count = min(count, ret_count - 2);
+ 	memcpy(buf, ihid->rawbuf + 2, count);
  
- 	sata_cmd.tag = cpu_to_le32(ccb_tag);
- 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
--	sata_cmd.ncqtag_atap_dir_m_dad |= ((0x1 << 7) | (0x5 << 9));
-+	sata_cmd.ncqtag_atap_dir_m_dad = cpu_to_le32(((0x1 << 7) | (0x5 << 9)));
- 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
++	if (!report_number)
++		count++;
++
+ 	return count;
+ }
  
- 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd, 0);
+@@ -659,17 +673,19 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
+ 
+ 	mutex_lock(&ihid->reset_lock);
+ 
+-	if (report_id) {
+-		buf++;
+-		count--;
+-	}
+-
++	/*
++	 * Note that both numbered and unnumbered reports passed here
++	 * are supposed to have report ID stored in the 1st byte of the
++	 * buffer, so we strip it off unconditionally before passing payload
++	 * to i2c_hid_set_or_send_report which takes care of encoding
++	 * everything properly.
++	 */
+ 	ret = i2c_hid_set_or_send_report(client,
+ 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
+-				report_id, buf, count, use_data);
++				report_id, buf + 1, count - 1, use_data);
+ 
+-	if (report_id && ret >= 0)
+-		ret++; /* add report_id to the number of transfered bytes */
++	if (ret >= 0)
++		ret++; /* add report_id to the number of transferred bytes */
+ 
+ 	mutex_unlock(&ihid->reset_lock);
+ 
 -- 
 2.34.1
 
