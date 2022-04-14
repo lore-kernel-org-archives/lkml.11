@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FEEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB58C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244247AbiDNNYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        id S244255AbiDNNYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244118AbiDNNWM (ORCPT
+        with ESMTP id S244019AbiDNNVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:22:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6174E985AB;
-        Thu, 14 Apr 2022 06:17:44 -0700 (PDT)
+        Thu, 14 Apr 2022 09:21:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF27A972E1;
+        Thu, 14 Apr 2022 06:17:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11359B82985;
-        Thu, 14 Apr 2022 13:17:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7436EC385A9;
-        Thu, 14 Apr 2022 13:17:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FCD7610A6;
+        Thu, 14 Apr 2022 13:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E051C385A1;
+        Thu, 14 Apr 2022 13:17:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942261;
-        bh=LRMcuRAz8cXZL9oty/YyL1kniLkpvvMMRpGxcqHvqlQ=;
+        s=korg; t=1649942252;
+        bh=tKDf/MbBgYBcIuSRd5o9A4mYU79slsU9+wMt9sanalQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m51OtVXIxrOTcFHkjC16CCcYLV/Wh1HqqRhvrZ0vnU816Ln5qzd8KrVUJGM1b6Sj2
-         tJxmKdIp1ap4yp0qjp7iD6Z1ha1FAGdUJfoFaHGOMGWg6MTz5ao4foZPlL5617KwIm
-         HQfaG9qA7bSKFTATueOJ6Jc5X6dTB1fPmqZwbKkk=
+        b=aQf+mii47HhUao92Jpi/bXRoMahk2KNTiXN13KVY1I+WQ7nt92psHZorQe9ZbfnXr
+         xtpV2dikba5y69e7b9m2cTJrwSxQjt3ElSpRoPyuZ30AMl36J2/lpCZoDD64Tf122n
+         fVtmuShY61eM3IQ077Ua4UCi6Z9OAT8O2/8VnF8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Liguang Zhang <zhangliguang@linux.alibaba.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: [PATCH 4.19 065/338] PCI: pciehp: Clear cmd_busy bit in polling mode
-Date:   Thu, 14 Apr 2022 15:09:28 +0200
-Message-Id: <20220414110840.749679401@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 4.19 029/338] NFSD: prevent integer overflow on 32 bit systems
+Date:   Thu, 14 Apr 2022 15:08:52 +0200
+Message-Id: <20220414110839.720507036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,53 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liguang Zhang <zhangliguang@linux.alibaba.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 92912b175178c7e895f5e5e9f1e30ac30319162b upstream.
+commit 23a9dbbe0faf124fc4c139615633b9d12a3a89ef upstream.
 
-Writes to a Downstream Port's Slot Control register are PCIe hotplug
-"commands."  If the Port supports Command Completed events, software must
-wait for a command to complete before writing to Slot Control again.
+On a 32 bit system, the "len * sizeof(*p)" operation can have an
+integer overflow.
 
-pcie_do_write_cmd() sets ctrl->cmd_busy when it writes to Slot Control.  If
-software notification is enabled, i.e., PCI_EXP_SLTCTL_HPIE and
-PCI_EXP_SLTCTL_CCIE are set, ctrl->cmd_busy is cleared by pciehp_isr().
-
-But when software notification is disabled, as it is when pcie_init()
-powers off an empty slot, pcie_wait_cmd() uses pcie_poll_cmd() to poll for
-command completion, and it neglects to clear ctrl->cmd_busy, which leads to
-spurious timeouts:
-
-  pcieport 0000:00:03.0: pciehp: Timeout on hotplug command 0x01c0 (issued 2264 msec ago)
-  pcieport 0000:00:03.0: pciehp: Timeout on hotplug command 0x05c0 (issued 2288 msec ago)
-
-Clear ctrl->cmd_busy in pcie_poll_cmd() when it detects a Command Completed
-event (PCI_EXP_SLTSTA_CC).
-
-[bhelgaas: commit log]
-Fixes: a5dd4b4b0570 ("PCI: pciehp: Wait for hotplug command completion where necessary")
-Link: https://lore.kernel.org/r/20211111054258.7309-1-zhangliguang@linux.alibaba.com
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215143
-Link: https://lore.kernel.org/r/20211126173309.GA12255@wunner.de
-Signed-off-by: Liguang Zhang <zhangliguang@linux.alibaba.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org	# v4.19+
+Cc: stable@vger.kernel.org
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c |    2 ++
+ include/linux/sunrpc/xdr.h |    2 ++
  1 file changed, 2 insertions(+)
 
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -80,6 +80,8 @@ static int pcie_poll_cmd(struct controll
- 		if (slot_status & PCI_EXP_SLTSTA_CC) {
- 			pcie_capability_write_word(pdev, PCI_EXP_SLTSTA,
- 						   PCI_EXP_SLTSTA_CC);
-+			ctrl->cmd_busy = 0;
-+			smp_mb();
- 			return 1;
- 		}
- 		if (timeout < 0)
+--- a/include/linux/sunrpc/xdr.h
++++ b/include/linux/sunrpc/xdr.h
+@@ -509,6 +509,8 @@ xdr_stream_decode_uint32_array(struct xd
+ 
+ 	if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
+ 		return -EBADMSG;
++	if (len > SIZE_MAX / sizeof(*p))
++		return -EBADMSG;
+ 	p = xdr_inline_decode(xdr, len * sizeof(*p));
+ 	if (unlikely(!p))
+ 		return -EBADMSG;
 
 
