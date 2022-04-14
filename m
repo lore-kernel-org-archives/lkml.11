@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D412FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9210EC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350710AbiDNOXx (ORCPT
+        id S1343884AbiDNOYD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
+        Thu, 14 Apr 2022 10:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343973AbiDNNjc (ORCPT
+        with ESMTP id S1343960AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7373D1D0;
-        Thu, 14 Apr 2022 06:36:08 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D5E98581;
+        Thu, 14 Apr 2022 06:35:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C41161D68;
-        Thu, 14 Apr 2022 13:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96015C385A1;
-        Thu, 14 Apr 2022 13:36:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1E90B828F4;
+        Thu, 14 Apr 2022 13:35:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C7E1C385A5;
+        Thu, 14 Apr 2022 13:35:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943368;
-        bh=RC3uOy71Idi7fkeMEBAW4N4KH+gFNPmKZTL6PQs7Aio=;
+        s=korg; t=1649943345;
+        bh=kEJXb56bbqvY/OQQtRwmbKn4Oecb+8vBfcPJQHdteR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rNoItJitzVcNnNMvmhEhVU4N4qTISZDxQcI5FabB4JM8VYbg0Tg2JpruZctvTU7xN
-         N50CT9fufwjuoAjn/+Vml2prHJcU8Mly5fpuJ6p3En1tYZUyFZAjj7dccz15ONQ/At
-         YagnGtz8jia/6xUeHD5TKD9RnLMW96dCGRrxKl+A=
+        b=MD7hMnxW6XGyIhpczkOT694AmPM4KNCcMP6NRSeNsY8kyEZvVSIddDO4+gaVDrBLB
+         0IPfRCqvfeR4ProgYANC21LNvnK8DJwmFN0Zz0b8u71sS8ncIlQl8oH04UWRAWEwRa
+         Hfnd/1PGFHe3lYYxl3TZpsSHE1JbujwtIl2Ewx7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 128/475] media: usb: go7007: s2250-board: fix leak in probe()
-Date:   Thu, 14 Apr 2022 15:08:33 +0200
-Message-Id: <20220414110858.732631564@linuxfoundation.org>
+Subject: [PATCH 5.4 121/475] soc: qcom: rpmpd: Check for null return of devm_kcalloc
+Date:   Thu, 14 Apr 2022 15:08:26 +0200
+Message-Id: <20220414110858.539024926@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,55 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 67e4550ecd6164bfbdff54c169e5bbf9ccfaf14d ]
+[ Upstream commit 5a811126d38f9767a20cc271b34db7c8efc5a46c ]
 
-Call i2c_unregister_device(audio) on this error path.
+Because of the possible failure of the allocation, data->domains might
+be NULL pointer and will cause the dereference of the NULL pointer
+later.
+Therefore, it might be better to check it and directly return -ENOMEM
+without releasing data manually if fails, because the comment of the
+devm_kmalloc() says "Memory allocated with this function is
+automatically freed on driver detach.".
 
-Fixes: d3b2ccd9e307 ("[media] s2250: convert to the control framework")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: bbe3a66c3f5a ("soc: qcom: rpmpd: Add a Power domain driver to model corners")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211231094419.1941054-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/go7007/s2250-board.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/soc/qcom/rpmpd.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/usb/go7007/s2250-board.c b/drivers/media/usb/go7007/s2250-board.c
-index 49e75a1a1f3f..af3b18c6d9e1 100644
---- a/drivers/media/usb/go7007/s2250-board.c
-+++ b/drivers/media/usb/go7007/s2250-board.c
-@@ -504,6 +504,7 @@ static int s2250_probe(struct i2c_client *client,
- 	u8 *data;
- 	struct go7007 *go = i2c_get_adapdata(adapter);
- 	struct go7007_usb *usb = go->hpi_context;
-+	int err = -EIO;
+diff --git a/drivers/soc/qcom/rpmpd.c b/drivers/soc/qcom/rpmpd.c
+index 3c1a55cf25d6..4715acfecff4 100644
+--- a/drivers/soc/qcom/rpmpd.c
++++ b/drivers/soc/qcom/rpmpd.c
+@@ -362,6 +362,9 @@ static int rpmpd_probe(struct platform_device *pdev)
  
- 	audio = i2c_new_dummy_device(adapter, TLV320_ADDRESS >> 1);
- 	if (IS_ERR(audio))
-@@ -532,11 +533,8 @@ static int s2250_probe(struct i2c_client *client,
- 		V4L2_CID_HUE, -512, 511, 1, 0);
- 	sd->ctrl_handler = &state->hdl;
- 	if (state->hdl.error) {
--		int err = state->hdl.error;
--
--		v4l2_ctrl_handler_free(&state->hdl);
--		kfree(state);
--		return err;
-+		err = state->hdl.error;
-+		goto fail;
- 	}
+ 	data->domains = devm_kcalloc(&pdev->dev, num, sizeof(*data->domains),
+ 				     GFP_KERNEL);
++	if (!data->domains)
++		return -ENOMEM;
++
+ 	data->num_domains = num;
  
- 	state->std = V4L2_STD_NTSC;
-@@ -600,7 +598,7 @@ static int s2250_probe(struct i2c_client *client,
- 	i2c_unregister_device(audio);
- 	v4l2_ctrl_handler_free(&state->hdl);
- 	kfree(state);
--	return -EIO;
-+	return err;
- }
- 
- static int s2250_remove(struct i2c_client *client)
+ 	for (i = 0; i < num; i++) {
 -- 
 2.34.1
 
