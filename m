@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94588C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B25C0C4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355342AbiDNO6Z (ORCPT
+        id S1355360AbiDNO6b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56944 "EHLO
+        Thu, 14 Apr 2022 10:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346143AbiDNNzw (ORCPT
+        with ESMTP id S1345957AbiDNNzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:55:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54620AFB3E;
-        Thu, 14 Apr 2022 06:45:42 -0700 (PDT)
+        Thu, 14 Apr 2022 09:55:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE873AFB2C;
+        Thu, 14 Apr 2022 06:45:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54221B82989;
-        Thu, 14 Apr 2022 13:45:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90A09C385A5;
-        Thu, 14 Apr 2022 13:45:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CFC461D7C;
+        Thu, 14 Apr 2022 13:45:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65546C385A9;
+        Thu, 14 Apr 2022 13:45:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943936;
-        bh=lGVbkTZDOx6x8haPYR8jAhmRuzo/0XmWdL/xSWQR1n4=;
+        s=korg; t=1649943925;
+        bh=6w7lNS926/eVUzdpTZYeOZAKppXEosh7b0pzGq1xyUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xN4prLhu20khCee9QC1NJrHABdPUt6Q9Yc2KWTXgRnBStAFXkXBwTPywxw2VmEXge
-         40agyc5NhnWnywUS4gcUym/kBTCWqeAqwjjgiz7cWWfdqEyLkbt2DhaIJTFDSL6h+O
-         4a8DIOLPPYXWqB5q7GHPnaUZFMu/G5puLKezZDiI=
+        b=C/PRjodqZsf+m6wLCzpaX/zbmGSC4djjlftXj/+ZLR7kPnm/zPOSV5559TPqM40CE
+         Pg3ozWtxrZLNFeG5PLOVQuqQKt4VFbzHxygigZzx0CzK6/fLLMT1nN7YJWKVsHTbeR
+         kmPwtWqrYCsfz/aDnukUHYtiro24gtsEkUU+Bjgs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
         Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.4 334/475] ubifs: setflags: Make dirtied_ino_d 8 bytes aligned
-Date:   Thu, 14 Apr 2022 15:11:59 +0200
-Message-Id: <20220414110904.432332396@linuxfoundation.org>
+Subject: [PATCH 5.4 331/475] ubifs: rename_whiteout: Fix double free for whiteout_ui->data
+Date:   Thu, 14 Apr 2022 15:11:56 +0200
+Message-Id: <20220414110904.349522595@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,36 +51,69 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit 1b83ec057db16b4d0697dc21ef7a9743b6041f72 upstream.
+commit 40a8f0d5e7b3999f096570edab71c345da812e3e upstream.
 
-Make 'ui->data_len' aligned with 8 bytes before it is assigned to
-dirtied_ino_d. Since 8871d84c8f8b0c6b("ubifs: convert to fileattr")
-applied, 'setflags()' only affects regular files and directories, only
-xattr inode, symlink inode and special inode(pipe/char_dev/block_dev)
-have none- zero 'ui->data_len' field, so assertion
-'!(req->dirtied_ino_d & 7)' cannot fail in ubifs_budget_space().
-To avoid assertion fails in future evolution(eg. setflags can operate
-special inodes), it's better to make dirtied_ino_d 8 bytes aligned,
-after all aligned size is still zero for regular files.
+'whiteout_ui->data' will be freed twice if space budget fail for
+rename whiteout operation as following process:
 
-Fixes: 1e51764a3c2ac05a ("UBIFS: add new flash file system")
+rename_whiteout
+  dev = kmalloc
+  whiteout_ui->data = dev
+  kfree(whiteout_ui->data)  // Free first time
+  iput(whiteout)
+    ubifs_free_inode
+      kfree(ui->data)	    // Double free!
+
+KASAN reports:
+==================================================================
+BUG: KASAN: double-free or invalid-free in ubifs_free_inode+0x4f/0x70
+Call Trace:
+  kfree+0x117/0x490
+  ubifs_free_inode+0x4f/0x70 [ubifs]
+  i_callback+0x30/0x60
+  rcu_do_batch+0x366/0xac0
+  __do_softirq+0x133/0x57f
+
+Allocated by task 1506:
+  kmem_cache_alloc_trace+0x3c2/0x7a0
+  do_rename+0x9b7/0x1150 [ubifs]
+  ubifs_rename+0x106/0x1f0 [ubifs]
+  do_syscall_64+0x35/0x80
+
+Freed by task 1506:
+  kfree+0x117/0x490
+  do_rename.cold+0x53/0x8a [ubifs]
+  ubifs_rename+0x106/0x1f0 [ubifs]
+  do_syscall_64+0x35/0x80
+
+The buggy address belongs to the object at ffff88810238bed8 which
+belongs to the cache kmalloc-8 of size 8
+==================================================================
+
+Let ubifs_free_inode() free 'whiteout_ui->data'. BTW, delete unused
+assignment 'whiteout_ui->data_len = 0', process 'ubifs_evict_inode()
+-> ubifs_jnl_delete_inode() -> ubifs_jnl_write_inode()' doesn't need it
+(because 'inc_nlink(whiteout)' won't be excuted by 'goto out_release',
+ and the nlink of whiteout inode is 0).
+
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
 Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
 Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ubifs/dir.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/fs/ubifs/ioctl.c
-+++ b/fs/ubifs/ioctl.c
-@@ -101,7 +101,7 @@ static int setflags(struct inode *inode,
- 	struct ubifs_inode *ui = ubifs_inode(inode);
- 	struct ubifs_info *c = inode->i_sb->s_fs_info;
- 	struct ubifs_budget_req req = { .dirtied_ino = 1,
--					.dirtied_ino_d = ui->data_len };
-+			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1431,8 +1431,6 @@ static int do_rename(struct inode *old_d
  
- 	err = ubifs_budget_space(c, &req);
- 	if (err)
+ 		err = ubifs_budget_space(c, &wht_req);
+ 		if (err) {
+-			kfree(whiteout_ui->data);
+-			whiteout_ui->data_len = 0;
+ 			iput(whiteout);
+ 			goto out_release;
+ 		}
 
 
