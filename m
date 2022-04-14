@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E63AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BA9C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344807AbiDNNti (ORCPT
+        id S1344891AbiDNNtn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57402 "EHLO
+        Thu, 14 Apr 2022 09:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344073AbiDNNaR (ORCPT
+        with ESMTP id S1344077AbiDNNaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAF1CF7;
-        Thu, 14 Apr 2022 06:27:33 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B012182;
+        Thu, 14 Apr 2022 06:27:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 052D4B8296A;
-        Thu, 14 Apr 2022 13:27:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C0DC385A5;
-        Thu, 14 Apr 2022 13:27:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 505B8B82941;
+        Thu, 14 Apr 2022 13:27:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2D0DC385A5;
+        Thu, 14 Apr 2022 13:27:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942850;
-        bh=kG83fm/uw9f9FgbFT6dnBntrYvXbw3LuHcg8CbvN6tU=;
+        s=korg; t=1649942867;
+        bh=G1PmI0k2uDk2OxjBITD1xWBbaymdjRIiinoNbewwwTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B5tBBIvhN5WzktlcwsA2QsI3gD8+y4MSJJFBCdiMHqT1LzPoR8MuZqx5mP/m1wyEq
-         3LalH7EaB8pAd8UYek1OgzxySqc2l4oUZEkcav7kh1CuyDLIo9JQ2eWzey/uKPJtik
-         O7Sse7f/u9Os7nxC+YWf5ycaQepp+B6BS6iVpppM=
+        b=Zhea8oWLSJumX8b6I+mpcq6+2qLkttADXY84ifCpfdrG2q15d2CQ1ntrvL3px0rXm
+         ClemPMjbaA8X2e4NTZk454MeNvhNZsFfmc2U3Qj5Ppqi9w1k8lrGCGIsb0mbB6YtlH
+         AidZ3Iihua5mV513a2gKun4IMzZkIRuqfj9uiDCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Huang Rui <ray.huang@amd.com>
-Subject: [PATCH 4.19 244/338] ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
-Date:   Thu, 14 Apr 2022 15:12:27 +0200
-Message-Id: <20220414110845.836088561@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Jin <joe.jin@oracle.com>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 291/338] xen: delay xen_hvm_init_time_ops() if kdump is boot on vcpu>=32
+Date:   Thu, 14 Apr 2022 15:13:14 +0200
+Message-Id: <20220414110847.171515155@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,37 +51,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Dongli Zhang <dongli.zhang@oracle.com>
 
-commit 40d8abf364bcab23bc715a9221a3c8623956257b upstream.
+[ Upstream commit eed05744322da07dd7e419432dcedf3c2e017179 ]
 
-If the NumEntries field in the _CPC return package is less than 2, do
-not attempt to access the "Revision" element of that package, because
-it may not be present then.
+The sched_clock() can be used very early since commit 857baa87b642
+("sched/clock: Enable sched clock early"). In addition, with commit
+38669ba205d1 ("x86/xen/time: Output xen sched_clock time from 0"), kdump
+kernel in Xen HVM guest may panic at very early stage when accessing
+&__this_cpu_read(xen_vcpu)->time as in below:
 
-Fixes: 337aadff8e45 ("ACPI: Introduce CPU performance controls using CPPC")
-BugLink: https://lore.kernel.org/lkml/20220322143534.GC32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Reviewed-by: Huang Rui <ray.huang@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+setup_arch()
+ -> init_hypervisor_platform()
+     -> x86_init.hyper.init_platform = xen_hvm_guest_init()
+         -> xen_hvm_init_time_ops()
+             -> xen_clocksource_read()
+                 -> src = &__this_cpu_read(xen_vcpu)->time;
+
+This is because Xen HVM supports at most MAX_VIRT_CPUS=32 'vcpu_info'
+embedded inside 'shared_info' during early stage until xen_vcpu_setup() is
+used to allocate/relocate 'vcpu_info' for boot cpu at arbitrary address.
+
+However, when Xen HVM guest panic on vcpu >= 32, since
+xen_vcpu_info_reset(0) would set per_cpu(xen_vcpu, cpu) = NULL when
+vcpu >= 32, xen_clocksource_read() on vcpu >= 32 would panic.
+
+This patch calls xen_hvm_init_time_ops() again later in
+xen_hvm_smp_prepare_boot_cpu() after the 'vcpu_info' for boot vcpu is
+registered when the boot vcpu is >= 32.
+
+This issue can be reproduced on purpose via below command at the guest
+side when kdump/kexec is enabled:
+
+"taskset -c 33 echo c > /proc/sysrq-trigger"
+
+The bugfix for PVM is not implemented due to the lack of testing
+environment.
+
+[boris: xen_hvm_init_time_ops() returns on errors instead of jumping to end]
+
+Cc: Joe Jin <joe.jin@oracle.com>
+Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Link: https://lore.kernel.org/r/20220302164032.14569-3-dongli.zhang@oracle.com
+Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ arch/x86/xen/smp_hvm.c |  6 ++++++
+ arch/x86/xen/time.c    | 24 +++++++++++++++++++++++-
+ 2 files changed, 29 insertions(+), 1 deletion(-)
 
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -742,6 +742,11 @@ int acpi_cppc_processor_probe(struct acp
- 	cpc_obj = &out_obj->package.elements[0];
- 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
- 		num_ent = cpc_obj->integer.value;
-+		if (num_ent <= 1) {
-+			pr_debug("Unexpected _CPC NumEntries value (%d) for CPU:%d\n",
-+				 num_ent, pr->id);
-+			goto out_free;
-+		}
- 	} else {
- 		pr_debug("Unexpected entry type(%d) for NumEntries\n",
- 				cpc_obj->type);
+diff --git a/arch/x86/xen/smp_hvm.c b/arch/x86/xen/smp_hvm.c
+index f8d39440b292..e5bd9eb42191 100644
+--- a/arch/x86/xen/smp_hvm.c
++++ b/arch/x86/xen/smp_hvm.c
+@@ -18,6 +18,12 @@ static void __init xen_hvm_smp_prepare_boot_cpu(void)
+ 	 */
+ 	xen_vcpu_setup(0);
+ 
++	/*
++	 * Called again in case the kernel boots on vcpu >= MAX_VIRT_CPUS.
++	 * Refer to comments in xen_hvm_init_time_ops().
++	 */
++	xen_hvm_init_time_ops();
++
+ 	/*
+ 	 * The alternative logic (which patches the unlock/lock) runs before
+ 	 * the smp bootup up code is activated. Hence we need to set this up
+diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
+index 01dcccf9185f..9809de9f2310 100644
+--- a/arch/x86/xen/time.c
++++ b/arch/x86/xen/time.c
+@@ -547,6 +547,11 @@ static void xen_hvm_setup_cpu_clockevents(void)
+ 
+ void __init xen_hvm_init_time_ops(void)
+ {
++	static bool hvm_time_initialized;
++
++	if (hvm_time_initialized)
++		return;
++
+ 	/*
+ 	 * vector callback is needed otherwise we cannot receive interrupts
+ 	 * on cpu > 0 and at this point we don't know how many cpus are
+@@ -556,7 +561,22 @@ void __init xen_hvm_init_time_ops(void)
+ 		return;
+ 
+ 	if (!xen_feature(XENFEAT_hvm_safe_pvclock)) {
+-		pr_info("Xen doesn't support pvclock on HVM, disable pv timer");
++		pr_info_once("Xen doesn't support pvclock on HVM, disable pv timer");
++		return;
++	}
++
++	/*
++	 * Only MAX_VIRT_CPUS 'vcpu_info' are embedded inside 'shared_info'.
++	 * The __this_cpu_read(xen_vcpu) is still NULL when Xen HVM guest
++	 * boots on vcpu >= MAX_VIRT_CPUS (e.g., kexec), To access
++	 * __this_cpu_read(xen_vcpu) via xen_clocksource_read() will panic.
++	 *
++	 * The xen_hvm_init_time_ops() should be called again later after
++	 * __this_cpu_read(xen_vcpu) is available.
++	 */
++	if (!__this_cpu_read(xen_vcpu)) {
++		pr_info("Delay xen_init_time_common() as kernel is running on vcpu=%d\n",
++			xen_vcpu_nr(0));
+ 		return;
+ 	}
+ 
+@@ -568,5 +588,7 @@ void __init xen_hvm_init_time_ops(void)
+ 	x86_platform.calibrate_tsc = xen_tsc_khz;
+ 	x86_platform.get_wallclock = xen_get_wallclock;
+ 	x86_platform.set_wallclock = xen_set_wallclock;
++
++	hvm_time_initialized = true;
+ }
+ #endif
+-- 
+2.35.1
+
 
 
