@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F26C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50692C35295
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346426AbiDNN5C (ORCPT
+        id S1346475AbiDNN5R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        Thu, 14 Apr 2022 09:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244946AbiDNN2V (ORCPT
+        with ESMTP id S1344222AbiDNNbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DBE92D21;
-        Thu, 14 Apr 2022 06:21:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:31:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AF5E6;
+        Thu, 14 Apr 2022 06:28:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 102BFB82910;
-        Thu, 14 Apr 2022 13:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F6BCC385A5;
-        Thu, 14 Apr 2022 13:21:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A58F7B82986;
+        Thu, 14 Apr 2022 13:28:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7C00C385A5;
+        Thu, 14 Apr 2022 13:28:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942479;
-        bh=l7d66aP+CP5ElLEDAcENCaR7JrvXmzpPHGCIoregqro=;
+        s=korg; t=1649942926;
+        bh=PA6WpmV+SdEPk0yvNC0B4dfwcRXF6mvrHwXn3QEiDr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gk9lVol0HIQdqB7789naBQeST194xertex+2jFQBh9a1X5wV5LT/bG8q4oRZxV1OW
-         F2Yr/cMbUMn6lnRXrD6lZrmLm34LIvXBb1oWEsRvTL5Q0XKS6Rg78tOq7cGPqKGIj5
-         CCMfP4KKDp5V8VOb8XuWtU6hqbTgj8O7vJnBJCko=
+        b=CJq5RY/zleBj5mxuAXiqoVW7RirZmgqjFFxSt5ug6Oc1ttRaKlqQ9nO4iwjM9Kcts
+         xoN+XGpeqkZNbuoR0e2WXzRI5TYWiHZ+O+BIBEMy3jfxDypJXOaRo3sTVFWPTwHVXA
+         DLpwgXW6uI5D+4Rdp3D7s63LdcwHTTpfd/hJ46nE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
+        stable@vger.kernel.org,
+        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Phil Sutter <n0-1@freewrt.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Daniel Walter <dwalter@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 149/338] MIPS: RB532: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:10:52 +0200
-Message-Id: <20220414110843.144141518@linuxfoundation.org>
+Subject: [PATCH 4.19 310/338] qede: confirm skb is allocated before using
+Date:   Thu, 14 Apr 2022 15:13:33 +0200
+Message-Id: <20220414110847.704440823@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -57,57 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
 
-[ Upstream commit 8755d57ba1ff910666572fab9e32890e8cc6ed3b ]
+[ Upstream commit 4e910dbe36508654a896d5735b318c0b88172570 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings. Also, error return codes don't mean anything to
-obsolete_checksetup() -- only non-zero (usually 1) or zero.
-So return 1 from setup_kmac().
+qede_build_skb() assumes build_skb() always works and goes straight
+to skb_reserve(). However, build_skb() can fail under memory pressure.
+This results in a kernel panic because the skb to reserve is NULL.
 
-Fixes: 9e21c7e40b7e ("MIPS: RB532: Replace parse_mac_addr() with mac_pton().")
-Fixes: 73b4390fb234 ("[MIPS] Routerboard 532: Support for base system")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-From: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Phil Sutter <n0-1@freewrt.org>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Cc: Daniel Walter <dwalter@google.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Add a check in case build_skb() failed to allocate and return NULL.
+
+The NULL return is handled correctly in callers to qede_build_skb().
+
+Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
+Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/rb532/devices.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/mips/rb532/devices.c b/arch/mips/rb532/devices.c
-index 354d258396ff..6624fe15839a 100644
---- a/arch/mips/rb532/devices.c
-+++ b/arch/mips/rb532/devices.c
-@@ -315,11 +315,9 @@ static int __init plat_setup_devices(void)
- static int __init setup_kmac(char *s)
- {
- 	printk(KERN_INFO "korina mac = %s\n", s);
--	if (!mac_pton(s, korina_dev0_data.mac)) {
-+	if (!mac_pton(s, korina_dev0_data.mac))
- 		printk(KERN_ERR "Invalid mac\n");
--		return -EINVAL;
--	}
--	return 0;
-+	return 1;
- }
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index 9d5c2e31dfe9..6a1a7d37dfd7 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -731,6 +731,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
+ 	buf = page_address(bd->data) + bd->page_offset;
+ 	skb = build_skb(buf, rxq->rx_buf_seg_size);
  
- __setup("kmac=", setup_kmac);
++	if (unlikely(!skb))
++		return NULL;
++
+ 	skb_reserve(skb, pad);
+ 	skb_put(skb, len);
+ 
 -- 
-2.34.1
+2.35.1
 
 
 
