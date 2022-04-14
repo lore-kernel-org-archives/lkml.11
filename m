@@ -2,99 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D234C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B164CC4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244541AbiDNPWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
+        id S1343721AbiDNPX2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347595AbiDNN7W (ORCPT
+        with ESMTP id S242410AbiDNN7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D7543EDA;
-        Thu, 14 Apr 2022 06:50:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D970F61DA0;
-        Thu, 14 Apr 2022 13:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8A7EC385A1;
-        Thu, 14 Apr 2022 13:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944215;
-        bh=fLFQ4pTdFMxQEWltQFVuFY+wlufNVyHPuJ7cjZoX2sI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VhARvOlI/UZx9ctnV6VKlE8DSrNWcZs1epXCRRIgjgDKx/GlAZh9oiCm9x/drxo7n
-         r6Pg/fmUaxeGDwA7k8b23kFQLxdc4xKUc/F7vi0i47B0XPohFr6tybuPL9PEK21vTJ
-         ALDmwGiMba04CNEc5gkNxHQZlkokEAJFpDqq5AeU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dust Li <dust.li@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 395/475] net/smc: correct settings of RMB window update limit
-Date:   Thu, 14 Apr 2022 15:13:00 +0200
-Message-Id: <20220414110906.125255947@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:59:33 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B412018A;
+        Thu, 14 Apr 2022 06:55:44 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id c64so6433544edf.11;
+        Thu, 14 Apr 2022 06:55:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y5aWYxkMrcBFiZitnUw0BTQJF0hESlZ4bWlKsoVZ2qk=;
+        b=JY+wyiniWXODIB9ip+nO+wz7WCk7mIMRSrne8Efqpq6QArFTFLkSy1HHHAcMyfO5Lh
+         7c1+uBsd4DXxMgKgAzuhJTQ0T9kSCP/aKmZ/hIqrpZTi8d3M3czgJv7aRJNpJ66uwW63
+         BDRAZJPH/yW0iqGp3y8Hz29qbByy24RMCqzS22Jv3/MJqFu5JTzVRgfIJ5fQLRGVOKGe
+         Xr5vqtVVMEhDZeplv7OUiuwOGeVEm7ycntN+Frp3W/awvwq20P3gmiVwW14Qpmv4N7aj
+         Zwyk166RqpMzhj/c31zjd7lwvBFPdn/RyZVLjjZ/ofxopRqmY5+oBYmQyLX5EBnMvwah
+         ZvXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y5aWYxkMrcBFiZitnUw0BTQJF0hESlZ4bWlKsoVZ2qk=;
+        b=VzsQjve0imrdIA5pTjN/xdTpcH8ZCY9eRvqNTrZwHFFG8SkSE5Z3bw4DNjt20CSlWi
+         0UPINHOxSs3DctGS5K6Bzy22gF/UA2tBrFt/P/Ajp7vreKD260LWRl/HwGFWyVwGiGTC
+         OeqbJg31v4ZpRtsV+QyDt13jqkIyVwwhD3HTjg/thMHFBqLZYzpw3F4mIUEr+giiCieO
+         D6BwqkNiHIg2lYE0J2LTka2s6MlW9XJpqgpBdUPmUwQgYAsuLFHglgQT2o9k6TyHmyxv
+         TCCWUYsztgtUYCYDhDPX/hHFNBkBOWHVobQzRwUrQ+GiKnMp5gsviaqSYkZFjXGrmvCZ
+         caTg==
+X-Gm-Message-State: AOAM531eb0WkOPEpBG0GzPdUeNOFSa5XO2Fholrwn9BhvIxILPoSXPoq
+        J3VkVnnlnKjaK6yU2/MSxHrBGebf2bqJDwQHbaY=
+X-Google-Smtp-Source: ABdhPJwyww3e7aXwVAs5W5XjFg3dukyYoKr1v4cFU96Oyg0QAXFlpH1HVg2jgzcNDXhZb66cB0aqELroxq5jSc7mxQ4=
+X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
+ z22-20020a50e696000000b00419998d5febmr3188574edm.122.1649944543309; Thu, 14
+ Apr 2022 06:55:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2204132103190.9383@angie.orcam.me.uk> <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
+ <alpine.DEB.2.21.2204141421190.9383@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2204141421190.9383@angie.orcam.me.uk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 14 Apr 2022 16:55:07 +0300
+Message-ID: <CAHp75Vcb0JBQoNrb=ABCsPeM1U2zmHLw0P7Haa-Z=6D__VuqWA@mail.gmail.com>
+Subject: Re: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford Semiconductor
+ 950 UARTs
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+On Thu, Apr 14, 2022 at 4:47 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+> On Thu, 14 Apr 2022, Andy Shevchenko wrote:
 
-[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
+>  I fail to understand really why a piece of code to correct and improve
+> broken UART baud rate calculation has to be stuck in limbo for almost a
+> year.  There is nothing wrong with this code and it has a proper change
+> description and my observation has been that actually broken code often
+> with half a sentence serving as justification gets accepted with no fuss
+> all the time. :(
 
-rmbe_update_limit is used to limit announcing receive
-window updating too frequently. RFC7609 request a minimal
-increase in the window size of 10% of the receive buffer
-space. But current implementation used:
+If you remove those 3 or so lines of the code (that are pushing old
+SPD_CUST hack) I would be happy to Ack your patches immediately.
+Otherwise it's up to maintainers, if they are fine on that. I think
+it's a step back advertising something that should have not existed
+from day 1.
 
-  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
-
-and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
-always less then 10% of the receive buffer space.
-
-This causes the receiver always sending CDC message to
-update its consumer cursor when it consumes more then 2K
-of data. And as a result, we may encounter something like
-"TCP silly window syndrome" when sending 2.5~8K message.
-
-This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
-
-With this patch and SMC autocorking enabled, qperf 2K/4K/8K
-tcp_bw test shows 45%/75%/40% increase in throughput respectively.
-
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/smc/smc_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 12672019f76c..66cdfd5725ac 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -734,7 +734,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
-  */
- static inline int smc_rmb_wnd_update_limit(int rmbe_size)
- {
--	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
-+	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
- }
- 
- static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
 -- 
-2.35.1
-
-
-
+With Best Regards,
+Andy Shevchenko
