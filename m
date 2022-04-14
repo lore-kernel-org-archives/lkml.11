@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A80C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6E1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244975AbiDNPUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45536 "EHLO
+        id S1349552AbiDNPQP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347752AbiDNN7b (ORCPT
+        with ESMTP id S1347606AbiDNN7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF5EBCB71;
-        Thu, 14 Apr 2022 06:52:29 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E061240AA;
+        Thu, 14 Apr 2022 06:50:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 794DB61E33;
-        Thu, 14 Apr 2022 13:52:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A2DEC385A5;
-        Thu, 14 Apr 2022 13:52:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA32DB82985;
+        Thu, 14 Apr 2022 13:50:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D08FC385A5;
+        Thu, 14 Apr 2022 13:50:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944348;
-        bh=IrHkgNkTjMspQ/PfQua7POCpkCgUgP/xW+Bu2KBXnK8=;
+        s=korg; t=1649944226;
+        bh=IodMgCOPlbHTjYstVwL1rgNsPbzgP2ff+Y5c15pjrSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vcsLJACfltArfJfkuh+OLl98yxSAjLsKdNSTkAZNlb22a6SZU/JsLj7e9e9GbcvJ0
-         ZgBURMIid11mWkUmnhVXy1uPhg4CVnAj/W4QLk/yIRZq5ufFohhTUruDoLhYkylf3U
-         nAfV+d1jC4GUkv8WgVkWLifrJIGfSFTZ2tBkARic=
+        b=vbsi7uhO6/sL31yM6XAkPiQWZ5oiR81kPOo82TWpZqAf7mBN31+Mhov1/Z9VvijvQ
+         9pQv2xgq7jkrBF+Ph/8E5Lpfu4EOfF8+6OM/fFSI9sNMhYCTs3sv/MBr+uLdYEb4Mh
+         VWAc5KwlfsqqD3bGluRh1TYCEoKMiYnAWCt6xcSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.4 475/475] ACPI: processor idle: Check for architectural support for LPI
-Date:   Thu, 14 Apr 2022 15:14:20 +0200
-Message-Id: <20220414110908.349507329@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Colin Winegarden <colin.winegarden@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 399/475] bnxt_en: Eliminate unintended link toggle during FW reset
+Date:   Thu, 14 Apr 2022 15:13:04 +0200
+Message-Id: <20220414110906.235158825@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,68 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Michael Chan <michael.chan@broadcom.com>
 
-commit eb087f305919ee8169ad65665610313e74260463 upstream.
+[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
 
-When `osc_pc_lpi_support_confirmed` is set through `_OSC` and `_LPI` is
-populated then the cpuidle driver assumes that LPI is fully functional.
+If the flow control settings have been changed, a subsequent FW reset
+may cause the ethernet link to toggle unnecessarily.  This link toggle
+will increase the down time by a few seconds.
 
-However currently the kernel only provides architectural support for LPI
-on ARM.  This leads to high power consumption on X86 platforms that
-otherwise try to enable LPI.
+The problem is caused by bnxt_update_phy_setting() detecting a false
+mismatch in the flow control settings between the stored software
+settings and the current FW settings after the FW reset.  This mismatch
+is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
+inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
+bit should not be added to link_info->req_flow_ctrl.
 
-So probe whether or not LPI support is implemented before enabling LPI in
-the kernel.  This is done by overloading `acpi_processor_ffh_lpi_probe` to
-check whether it returns `-EOPNOTSUPP`. It also means that all future
-implementations of `acpi_processor_ffh_lpi_probe` will need to follow
-these semantics as well.
-
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/processor_idle.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -1201,6 +1201,11 @@ static int flatten_lpi_states(struct acp
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 97aff84fd1d1..d74c6a34b936 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1673,9 +1673,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+ 		}
  
-+int __weak acpi_processor_ffh_lpi_probe(unsigned int cpu)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static int acpi_processor_get_lpi_info(struct acpi_processor *pr)
- {
- 	int ret, i;
-@@ -1209,6 +1214,11 @@ static int acpi_processor_get_lpi_info(s
- 	struct acpi_device *d = NULL;
- 	struct acpi_lpi_states_array info[2], *tmp, *prev, *curr;
- 
-+	/* make sure our architecture has support */
-+	ret = acpi_processor_ffh_lpi_probe(pr->id);
-+	if (ret == -EOPNOTSUPP)
-+		return ret;
-+
- 	if (!osc_pc_lpi_support_confirmed)
- 		return -EOPNOTSUPP;
- 
-@@ -1260,11 +1270,6 @@ static int acpi_processor_get_lpi_info(s
- 	return 0;
- }
- 
--int __weak acpi_processor_ffh_lpi_probe(unsigned int cpu)
--{
--	return -ENODEV;
--}
--
- int __weak acpi_processor_ffh_lpi_enter(struct acpi_lpi_state *lpi)
- {
- 	return -ENODEV;
+ 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
+-		if (bp->hwrm_spec_code >= 0x10201)
+-			link_info->req_flow_ctrl =
+-				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
++		link_info->req_flow_ctrl = 0;
+ 	} else {
+ 		/* when transition from auto pause to force pause,
+ 		 * force a link change
+-- 
+2.35.1
+
 
 
