@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BE5C47088
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6122BC388F3
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355040AbiDNO5O (ORCPT
+        id S1354979AbiDNOzW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56810 "EHLO
+        Thu, 14 Apr 2022 10:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345571AbiDNNxq (ORCPT
+        with ESMTP id S1344055AbiDNNue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:53:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A641A7768;
-        Thu, 14 Apr 2022 06:44:53 -0700 (PDT)
+        Thu, 14 Apr 2022 09:50:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC07AE4F;
+        Thu, 14 Apr 2022 06:44:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1AA661BA7;
-        Thu, 14 Apr 2022 13:44:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFF98C385A1;
-        Thu, 14 Apr 2022 13:44:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 31F45CE296C;
+        Thu, 14 Apr 2022 13:44:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4286DC385AC;
+        Thu, 14 Apr 2022 13:44:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943892;
-        bh=usCtAVw9HZvGKewnGLaVVyFTh1KVhPuX1FXOoHhB5XU=;
+        s=korg; t=1649943859;
+        bh=WTTgE0jq1ET24nxFgkUnERXPbOwuOz6l4qpBGMY5MV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zghvAE9bK+c7WCk0ONUB6bOtO2itlxM/i3DlIF1xYckrRNX2E7wgeeBokk8FvWxGs
-         6quWbitKphoqRWuNKQe9y/UreBauVFAEs8sEyEWqpTr5lNYxbgTlVAxbRyIMDZzvQL
-         HjieVpFUOC4hGfLWlllXxTTukRqHbl06VxOANSmk=
+        b=fVTwJNyPkgfF9euSFwVgAoVAL+t+CdKuMUJydZZGkmYPD3DAmc+KOLRtLDsVT9mmY
+         QWmuslCBNH1iK1BHXYPZs2aAUUFslStlHyw+UWVT2cXyVjKYjgusfVM6vlBkQlk7Ai
+         i/OCVmzgwE/Rfbis/uTsijvAawE8QuuLDAtYZD4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 320/475] scsi: qla2xxx: Suppress a kernel complaint in qla_create_qpair()
-Date:   Thu, 14 Apr 2022 15:11:45 +0200
-Message-Id: <20220414110904.043472065@linuxfoundation.org>
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 267/475] selftests: test_vxlan_under_vrf: Fix broken test case
+Date:   Thu, 14 Apr 2022 15:10:52 +0200
+Message-Id: <20220414110902.579470253@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,64 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit a60447e7d451df42c7bde43af53b34f10f34f469 upstream.
+[ Upstream commit b50d3b46f84282d795ae3076111acb75ae1031f3 ]
 
-[   12.323788] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-udevd/1020
-[   12.332297] caller is qla2xxx_create_qpair+0x32a/0x5d0 [qla2xxx]
-[   12.338417] CPU: 7 PID: 1020 Comm: systemd-udevd Tainted: G          I      --------- ---  5.14.0-29.el9.x86_64 #1
-[   12.348827] Hardware name: Dell Inc. PowerEdge R610/0F0XJ6, BIOS 6.6.0 05/22/2018
-[   12.356356] Call Trace:
-[   12.358821]  dump_stack_lvl+0x34/0x44
-[   12.362514]  check_preemption_disabled+0xd9/0xe0
-[   12.367164]  qla2xxx_create_qpair+0x32a/0x5d0 [qla2xxx]
-[   12.372481]  qla2x00_probe_one+0xa3a/0x1b80 [qla2xxx]
-[   12.377617]  ? _raw_spin_lock_irqsave+0x19/0x40
-[   12.384284]  local_pci_probe+0x42/0x80
-[   12.390162]  ? pci_match_device+0xd7/0x110
-[   12.396366]  pci_device_probe+0xfd/0x1b0
-[   12.402372]  really_probe+0x1e7/0x3e0
-[   12.408114]  __driver_probe_device+0xfe/0x180
-[   12.414544]  driver_probe_device+0x1e/0x90
-[   12.420685]  __driver_attach+0xc0/0x1c0
-[   12.426536]  ? __device_attach_driver+0xe0/0xe0
-[   12.433061]  ? __device_attach_driver+0xe0/0xe0
-[   12.439538]  bus_for_each_dev+0x78/0xc0
-[   12.445294]  bus_add_driver+0x12b/0x1e0
-[   12.451021]  driver_register+0x8f/0xe0
-[   12.456631]  ? 0xffffffffc07bc000
-[   12.461773]  qla2x00_module_init+0x1be/0x229 [qla2xxx]
-[   12.468776]  do_one_initcall+0x44/0x200
-[   12.474401]  ? load_module+0xad3/0xba0
-[   12.479908]  ? kmem_cache_alloc_trace+0x45/0x410
-[   12.486268]  do_init_module+0x5c/0x280
-[   12.491730]  __do_sys_init_module+0x12e/0x1b0
-[   12.497785]  do_syscall_64+0x3b/0x90
-[   12.503029]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   12.509764] RIP: 0033:0x7f554f73ab2e
+The purpose of the last test case is to test VXLAN encapsulation and
+decapsulation when the underlay lookup takes place in a non-default VRF.
+This is achieved by enslaving the physical device of the tunnel to a
+VRF.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-15-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The binding of the VXLAN UDP socket to the VRF happens when the VXLAN
+device itself is opened, not when its physical device is opened. This
+was also mentioned in the cited commit ("tests that moving the underlay
+from a VRF to another works when down/up the VXLAN interface"), but the
+test did something else.
+
+Fix it by reopening the VXLAN device instead of its physical device.
+
+Before:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [FAIL]
+
+After:
+
+ # ./test_vxlan_under_vrf.sh
+ Checking HV connectivity                                           [ OK ]
+ Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
+ Check VM connectivity through VXLAN (underlay in a VRF)            [ OK ]
+
+Fixes: 03f1c26b1c56 ("test/net: Add script for VXLAN underlay in a VRF")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220324200514.1638326-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/test_vxlan_under_vrf.sh | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -9022,7 +9022,7 @@ struct qla_qpair *qla2xxx_create_qpair(s
- 		qpair->rsp->req = qpair->req;
- 		qpair->rsp->qpair = qpair;
- 		/* init qpair to this cpu. Will adjust at run time. */
--		qla_cpu_update(qpair, smp_processor_id());
-+		qla_cpu_update(qpair, raw_smp_processor_id());
+diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+index 09f9ed92cbe4..a44b9aca7427 100755
+--- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
++++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
+@@ -118,11 +118,11 @@ echo "[ OK ]"
  
- 		if (IS_T10_PI_CAPABLE(ha) && ql2xenabledif) {
- 			if (ha->fw_attributes & BIT_4)
+ # Move the underlay to a non-default VRF
+ ip -netns hv-1 link set veth0 vrf vrf-underlay
+-ip -netns hv-1 link set veth0 down
+-ip -netns hv-1 link set veth0 up
++ip -netns hv-1 link set vxlan0 down
++ip -netns hv-1 link set vxlan0 up
+ ip -netns hv-2 link set veth0 vrf vrf-underlay
+-ip -netns hv-2 link set veth0 down
+-ip -netns hv-2 link set veth0 up
++ip -netns hv-2 link set vxlan0 down
++ip -netns hv-2 link set vxlan0 up
+ 
+ echo -n "Check VM connectivity through VXLAN (underlay in a VRF)            "
+ ip netns exec vm-1 ping -c 1 -W 1 10.0.0.2 &> /dev/null || (echo "[FAIL]"; false)
+-- 
+2.34.1
+
 
 
