@@ -2,121 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC78C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5B3C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244302AbiDNNYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:24:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38424 "EHLO
+        id S244251AbiDNNYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244142AbiDNNWc (ORCPT
+        with ESMTP id S244147AbiDNNWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:22:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E0D986E9;
-        Thu, 14 Apr 2022 06:17:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A59E3612CA;
-        Thu, 14 Apr 2022 13:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B792AC385A9;
-        Thu, 14 Apr 2022 13:17:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942270;
-        bh=bEM7qOBc7IJVNEaG71DewBv/7O4ZTdXmvVxauwwLXro=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z5BAQ0VZVUokpzeTyu+zZu8TS6KNlk1/25ZJPSZ7PocBlyNfBiEZqzKPMOvtDx9qj
-         CfpHfQNDQECZPNvm0/zB7+E5LdZeLOAkBRoV8le7HpfVsMxKv41cfTXZd3VHzt8oZK
-         GVSkK89jiXbVic1mmckKsB3uyZVbr8qSk/z4HCfg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 076/338] PM: suspend: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:09:39 +0200
-Message-Id: <20220414110841.063241365@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:22:33 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3277D986CF;
+        Thu, 14 Apr 2022 06:17:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649942274; x=1681478274;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9DrEjC40Tj4WgLi+0EQZfgUYf1059TdFj1Rn7P1f4VM=;
+  b=H0GHhuwulA+VW7EAl6AgQh+EuQ9veN7EIAqRw5445uDY3RxxUSx8USNr
+   xCzoRmp7Wc3g0CtuEYPT0okxPEwkny+Ww1I6rpfX0SFdnD4Mj5viUChrQ
+   d4rjW9kv/ZWn0gPlJTtiG4gMqxmrbY6KD7+8lRwD5NOblTDOGubIgLzGb
+   Y=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 14 Apr 2022 06:17:54 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:17:53 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 14 Apr 2022 06:17:53 -0700
+Received: from [10.216.51.243] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Apr
+ 2022 06:17:48 -0700
+Message-ID: <b03ae0d0-070c-fb74-e272-4901fd085008@quicinc.com>
+Date:   Thu, 14 Apr 2022 18:47:45 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v9 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin
+ controller node
+Content-Language: en-US
+To:     Matthias Kaehlcke <mka@chromium.org>
+CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1649861047-7811-1-git-send-email-quic_srivasam@quicinc.com>
+ <1649861047-7811-3-git-send-email-quic_srivasam@quicinc.com>
+ <YlcHhhFLcryXqxEC@google.com>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <YlcHhhFLcryXqxEC@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 7a64ca17e4dd50d5f910769167f3553902777844 ]
-
-If an invalid option is given for "test_suspend=<option>", the entire
-string is added to init's environment, so return 1 instead of 0 from
-the __setup handler.
-
-  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
-    test_suspend=invalid"
-
-and
-
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     test_suspend=invalid
-
-Fixes: 2ce986892faf ("PM / sleep: Enhance test_suspend option with repeat capability")
-Fixes: 27ddcc6596e5 ("PM / sleep: Add state field to pm_states[] entries")
-Fixes: a9d7052363a6 ("PM: Separate suspend to RAM functionality from core")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/power/suspend_test.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/power/suspend_test.c b/kernel/power/suspend_test.c
-index 6a897e8b2a88..3f6345d60256 100644
---- a/kernel/power/suspend_test.c
-+++ b/kernel/power/suspend_test.c
-@@ -158,22 +158,22 @@ static int __init setup_test_suspend(char *value)
- 	value++;
- 	suspend_type = strsep(&value, ",");
- 	if (!suspend_type)
--		return 0;
-+		return 1;
- 
- 	repeat = strsep(&value, ",");
- 	if (repeat) {
- 		if (kstrtou32(repeat, 0, &test_repeat_count_max))
--			return 0;
-+			return 1;
- 	}
- 
- 	for (i = PM_SUSPEND_MIN; i < PM_SUSPEND_MAX; i++)
- 		if (!strcmp(pm_labels[i], suspend_type)) {
- 			test_state_label = pm_labels[i];
--			return 0;
-+			return 1;
- 		}
- 
- 	printk(warn_bad_state, suspend_type);
--	return 0;
-+	return 1;
- }
- __setup("test_suspend", setup_test_suspend);
- 
--- 
-2.34.1
-
-
-
+On 4/13/2022 10:55 PM, Matthias Kaehlcke wrote:
+Thanks for your time Matthias!!!
+> On Wed, Apr 13, 2022 at 08:14:07PM +0530, Srinivasa Rao Mandadapu wrote:
+>> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
+>> based platforms.
+>>
+>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> ---
+>>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  84 ++++++++++++++++++++++++
+>>   arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
+>>   2 files changed, 191 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+>> index 6e6cfeda..50fea0e 100644
+>> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+>> @@ -1987,6 +1987,113 @@
+>>   			qcom,bcm-voters = <&apps_bcm_voter>;
+>>   		};
+>>   
+>> +		lpass_tlmm: pinctrl@33c0000 {
+>> +			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
+>> +			reg = <0 0x033c0000 0x0 0x20000>,
+>> +				<0 0x03550000 0x0 0x10000>;
+>> +			gpio-controller;
+>> +			#gpio-cells = <2>;
+>> +			gpio-ranges = <&lpass_tlmm 0 0 15>;
+>> +
+>> +			#clock-cells = <1>;
+>> +
+>> +			lpass_dmic01: lpass-dmic01 {
+> For the node names the 'lpass-' prefix is redundant as you remarked
+> earlier, since they are inside the 'lpass_tlmm' node. It's only useful
+> for the labels, which can be used in other .dts[i] files where the
+> context might not be evident.
+Okay. will do accordingly.
