@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9649BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:41:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235178AbiDNQmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
+        id S240549AbiDNQmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236303AbiDNQl3 (ORCPT
+        with ESMTP id S231256AbiDNQl3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 12:41:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87632BBE1C;
-        Thu, 14 Apr 2022 09:10:27 -0700 (PDT)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9164BB0BB;
+        Thu, 14 Apr 2022 09:10:21 -0700 (PDT)
 Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KfPX15RzpzgYjq;
-        Fri, 15 Apr 2022 00:08:33 +0800 (CST)
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KfPYJ0Tx5z1HBW1;
+        Fri, 15 Apr 2022 00:09:40 +0800 (CST)
 Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Apr
- 2022 00:10:23 +0800
+ 2022 00:10:16 +0800
 From:   Xu Kuohai <xukuohai@huawei.com>
 To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
@@ -55,9 +55,9 @@ CC:     Catalin Marinas <catalin.marinas@arm.com>,
         Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Delyan Kratunov <delyank@fb.com>
-Subject: [PATCH bpf-next v2 4/6] bpf, arm64: Impelment bpf_arch_text_poke() for arm64
-Date:   Thu, 14 Apr 2022 12:22:18 -0400
-Message-ID: <20220414162220.1985095-5-xukuohai@huawei.com>
+Subject: [PATCH bpf-next v2 2/6] ftrace: Fix deadloop caused by direct call in ftrace selftest
+Date:   Thu, 14 Apr 2022 12:22:16 -0400
+Message-ID: <20220414162220.1985095-3-xukuohai@huawei.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220414162220.1985095-1-xukuohai@huawei.com>
 References: <20220414162220.1985095-1-xukuohai@huawei.com>
@@ -72,89 +72,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
-it to replace nop with jump, or replace jump with nop.
+After direct call is enabled for arm64, ftrace selftest enters a
+dead loop:
 
+<trace_selftest_dynamic_test_func>:
+00  bti     c
+01  mov     x9, x30                            <trace_direct_tramp>:
+02  bl      <trace_direct_tramp>    ---------->     ret
+                                                     |
+                                         lr/x30 is 03, return to 03
+                                                     |
+03  mov     w0, #0x0   <-----------------------------|
+     |                                               |
+     |                   dead loop!                  |
+     |                                               |
+04  ret   ---- lr/x30 is still 03, go back to 03 ----|
+
+The reason is that when the direct caller trace_direct_tramp() returns
+to the patched function trace_selftest_dynamic_test_func(), lr is still
+the address after the instrumented instruction in the patched function,
+so when the patched function exits, it returns to itself!
+
+To fix this issue, we need to restore lr before trace_direct_tramp()
+exits, so make trace_direct_tramp() a weak symbol and rewrite it for
+arm64.
+
+To detect this issue directly, call DYN_FTRACE_TEST_NAME() before
+register_ftrace_graph().
+
+Reported-by: Li Huafei <lihuafei1@huawei.com>
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Acked-by: Song Liu <songliubraving@fb.com>
 ---
- arch/arm64/net/bpf_jit_comp.c | 52 +++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ arch/arm64/kernel/entry-ftrace.S | 10 ++++++++++
+ kernel/trace/trace_selftest.c    |  4 +++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index 8ab4035dea27..1a1c3ea75ee2 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -9,6 +9,7 @@
+diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+index dfe62c55e3a2..e58eb06ec9b2 100644
+--- a/arch/arm64/kernel/entry-ftrace.S
++++ b/arch/arm64/kernel/entry-ftrace.S
+@@ -357,3 +357,13 @@ SYM_CODE_START(return_to_handler)
+ 	ret
+ SYM_CODE_END(return_to_handler)
+ #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
++
++#ifdef CONFIG_FTRACE_SELFTEST
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++SYM_FUNC_START(trace_direct_tramp)
++	mov	x10, x30
++	mov	x30, x9
++	ret	x10
++SYM_FUNC_END(trace_direct_tramp)
++#endif /* CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS */
++#endif /* CONFIG_FTRACE_SELFTEST */
+diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
+index abcadbe933bb..38b0d5c9a1e0 100644
+--- a/kernel/trace/trace_selftest.c
++++ b/kernel/trace/trace_selftest.c
+@@ -785,7 +785,7 @@ static struct fgraph_ops fgraph_ops __initdata  = {
+ };
  
- #include <linux/bitfield.h>
- #include <linux/bpf.h>
-+#include <linux/memory.h>
- #include <linux/filter.h>
- #include <linux/printk.h>
- #include <linux/slab.h>
-@@ -18,6 +19,7 @@
- #include <asm/cacheflush.h>
- #include <asm/debug-monitors.h>
- #include <asm/insn.h>
-+#include <asm/patching.h>
- #include <asm/set_memory.h>
+ #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+-noinline __noclone static void trace_direct_tramp(void) { }
++void __weak trace_direct_tramp(void) { }
+ #endif
  
- #include "bpf_jit.h"
-@@ -1529,3 +1531,53 @@ void bpf_jit_free_exec(void *addr)
- {
- 	return vfree(addr);
- }
+ /*
+@@ -868,6 +868,8 @@ trace_selftest_startup_function_graph(struct tracer *trace,
+ 	if (ret)
+ 		goto out;
+ 
++	DYN_FTRACE_TEST_NAME();
 +
-+static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
-+			     void *addr, u32 *insn)
-+{
-+	if (!addr)
-+		*insn = aarch64_insn_gen_nop();
-+	else
-+		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
-+						    (unsigned long)addr,
-+						    type);
-+
-+	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
-+}
-+
-+int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
-+		       void *old_addr, void *new_addr)
-+{
-+	int ret;
-+	u32 old_insn;
-+	u32 new_insn;
-+	u32 replaced;
-+	enum aarch64_insn_branch_type branch_type;
-+
-+	if (poke_type == BPF_MOD_CALL)
-+		branch_type = AARCH64_INSN_BRANCH_LINK;
-+	else
-+		branch_type = AARCH64_INSN_BRANCH_NOLINK;
-+
-+	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
-+		return -EFAULT;
-+
-+	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
-+		return -EFAULT;
-+
-+	mutex_lock(&text_mutex);
-+	if (aarch64_insn_read(ip, &replaced)) {
-+		ret = -EFAULT;
-+		goto out;
-+	}
-+
-+	if (replaced != old_insn) {
-+		ret = -EFAULT;
-+		goto out;
-+	}
-+
-+	ret =  aarch64_insn_patch_text_nosync((void *)ip, new_insn);
-+out:
-+	mutex_unlock(&text_mutex);
-+	return ret;
-+}
+ 	ret = register_ftrace_graph(&fgraph_ops);
+ 	if (ret) {
+ 		warn_failed_init_tracer(trace, ret);
 -- 
 2.30.2
 
