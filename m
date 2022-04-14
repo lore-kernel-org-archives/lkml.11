@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A917C3527A
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD823C41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355078AbiDNO5Y (ORCPT
+        id S1355399AbiDNO6m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
+        Thu, 14 Apr 2022 10:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345506AbiDNNxT (ORCPT
+        with ESMTP id S1345804AbiDNNyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:53:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1BCA6E0C;
-        Thu, 14 Apr 2022 06:44:50 -0700 (PDT)
+        Thu, 14 Apr 2022 09:54:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34554AFB11;
+        Thu, 14 Apr 2022 06:45:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D3C061D68;
-        Thu, 14 Apr 2022 13:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41869C385AA;
-        Thu, 14 Apr 2022 13:44:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFAFDB828E6;
+        Thu, 14 Apr 2022 13:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E634C385A5;
+        Thu, 14 Apr 2022 13:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943889;
-        bh=TJrbjpm3lKY1CWyEcbDBz5itmCMZV2/kaX88Cs2rbs4=;
+        s=korg; t=1649943917;
+        bh=m5XxGY5ELGhG9UhpHxnG/6aieN5yyL4FwdwTDuBz9ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q5IGpzXzf/NtmMQE2+fzSGM0vM6eemM0Ls4BCU19pIUy1T61gMQC970p3rCEppwFm
-         brK4vFEx+ou+KN5s4QZB79Q/1M2N+LinSg8eZP1DuBp8PJ+WD9/+7WLu0bNuQXE98B
-         DIxeukBvnpM6Pttdc20SQ/JfZZRFgYmvpm/HxT1k=
+        b=wtjLfOISQCwOqhkXxLgsda8r3n3kWCCvQy4+SfRsFga3KVTrjvx2OTINRY/X2Lz5B
+         83opTO8pCfuL3+FT8/9I+25tIiBzIPFDzp9/D2l4nqmb/4g8jvIov87t8gShOUVcnS
+         q+IqYRg1BusAp91gui5ARkBSiMS3XIn5zFtAQK9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 319/475] scsi: qla2xxx: Check for firmware dump already collected
-Date:   Thu, 14 Apr 2022 15:11:44 +0200
-Message-Id: <20220414110904.015578346@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.4 328/475] KVM: Prevent module exit until all VMs are freed
+Date:   Thu, 14 Apr 2022 15:11:53 +0200
+Message-Id: <20220414110904.266364908@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,39 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Carnuccio <joe.carnuccio@cavium.com>
+From: David Matlack <dmatlack@google.com>
 
-commit cfbafad7c6032d449a5a07f2d273acd2437bbc6a upstream.
+commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
 
-While allocating firmware dump, check if dump is already collected and do
-not re-allocate the buffer.
+Tie the lifetime the KVM module to the lifetime of each VM via
+kvm.users_count. This way anything that grabs a reference to the VM via
+kvm_get_kvm() cannot accidentally outlive the KVM module.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-17-njavali@marvell.com
+Prior to this commit, the lifetime of the KVM module was tied to the
+lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
+file descriptors by their respective file_operations "owner" field.
+This approach is insufficient because references grabbed via
+kvm_get_kvm() do not prevent closing any of the aforementioned file
+descriptors.
+
+This fixes a long standing theoretical bug in KVM that at least affects
+async page faults. kvm_setup_async_pf() grabs a reference via
+kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
+prevents the VM file descriptor from being closed and the KVM module
+from being unloaded before this callback runs.
+
+Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
+Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
 Cc: stable@vger.kernel.org
-Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Suggested-by: Ben Gardon <bgardon@google.com>
+[ Based on a patch from Ben implemented for Google's kernel. ]
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ virt/kvm/kvm_main.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -3231,6 +3231,14 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
- 	struct rsp_que *rsp = ha->rsp_q_map[0];
- 	struct qla2xxx_fw_dump *fw_dump;
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -115,6 +115,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
+ static int kvm_debugfs_num_entries;
+ static const struct file_operations *stat_fops_per_vm[];
  
-+	if (ha->fw_dump) {
-+		ql_dbg(ql_dbg_init, vha, 0x00bd,
-+		    "Firmware dump already allocated.\n");
-+		return;
++static struct file_operations kvm_chardev_ops;
++
+ static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
+ 			   unsigned long arg);
+ #ifdef CONFIG_KVM_COMPAT
+@@ -766,6 +768,16 @@ static struct kvm *kvm_create_vm(unsigne
+ 
+ 	preempt_notifier_inc();
+ 
++	/*
++	 * When the fd passed to this ioctl() is opened it pins the module,
++	 * but try_module_get() also prevents getting a reference if the module
++	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
++	 */
++	if (!try_module_get(kvm_chardev_ops.owner)) {
++		r = -ENODEV;
++		goto out_err;
 +	}
 +
-+	ha->fw_dumped = 0;
-+	ha->fw_dump_cap_flags = 0;
- 	dump_size = fixed_size = mem_size = eft_size = fce_size = mq_size = 0;
- 	req_q_size = rsp_q_size = 0;
+ 	return kvm;
  
+ out_err:
+@@ -844,6 +856,7 @@ static void kvm_destroy_vm(struct kvm *k
+ 	preempt_notifier_dec();
+ 	hardware_disable_all();
+ 	mmdrop(mm);
++	module_put(kvm_chardev_ops.owner);
+ }
+ 
+ void kvm_get_kvm(struct kvm *kvm)
 
 
