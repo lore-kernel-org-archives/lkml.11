@@ -2,103 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B88C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B5DC352A7
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348537AbiDNPnk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
+        id S241245AbiDNPnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352692AbiDNPRm (ORCPT
+        with ESMTP id S1354587AbiDNPSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:17:42 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B253939E4;
-        Thu, 14 Apr 2022 08:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649948586; x=1681484586;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=/VBlTs3jL1nxbmcrZIkwzXIXkP2p4Qd9Cgidy2UuOOY=;
-  b=Yn8zFvGHL+4eYN3VxM/LSQ0xlmE/L8jysmkHJMpv+RVGZGiiJyhbciZi
-   btaipoEOC0ISsh/d36HlUBc7Rn/WyuaRfymR52s6RwHT5ICm8DNFA9vwy
-   DxPEfRswD3sWYhO64PdAzA0OGtG5zpP2Nb029A6V0bxfbfdwOM11yCJnX
-   3cqBckhvcf7oFopQigkb6v+Ke+rGdAuOE8BIrD3f3Sshn1JUhnxcs9Tib
-   6gO7sFws0cnH0TE9kyjCvN5K6QzrUpe+tLQ7C19cyVA50m4oy/1MH8VvA
-   La+zdQYvjck+cDBnkeEDPgNP/xl7D/fql9B1voYeCKHasxfKJ3bPoNvPa
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="263126626"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="263126626"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 08:03:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="725392121"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga005.jf.intel.com with ESMTP; 14 Apr 2022 08:03:05 -0700
-Received: from [10.209.96.223] (kliang2-MOBL.ccr.corp.intel.com [10.209.96.223])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Thu, 14 Apr 2022 11:18:23 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBD7ECB3B
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:06:50 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 811035805BD;
-        Thu, 14 Apr 2022 08:03:04 -0700 (PDT)
-Message-ID: <368c5b92-f035-41cc-96a8-4908f1325462@linux.intel.com>
-Date:   Thu, 14 Apr 2022 11:03:03 -0400
+        (Authenticated sender: bbrezillon)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 218D21F47B07;
+        Thu, 14 Apr 2022 16:06:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649948808;
+        bh=UpSLyopnlq5YAkIaxL8rC/z8gQiFGUjISBXjuDV87YA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=b0pwOTmW+kxJoLFq5v97T8FjTuaAb8wrqPxesw6cwS+6nTA86EsvdR+Chu26nEWCy
+         Xf3qKjda/0QTX/bFoVGdrjagui6XsSTSQ1L9HwCXh74Rm5w5x0DiRSjHVb0JxxNPNQ
+         bqWf+vIKAbX/hVQfy7h2oTN2Iy0IZKRAebF+sd41nSxF4QV0psAsLqbKE2uWE8/WlE
+         qcVEUlR3nJwD01Nq3MxUmpUKrKWr2rLCJUC36537UvTZAn/x0R6pehthyq6/P2TqtC
+         xv6GBdR7477RO7wlrat+EGIYskHD8T4Xr1PPPiqCP99itD0GSaDanjiPUTpFkJP+5h
+         qVJgqOvlkKTAA==
+Date:   Thu, 14 Apr 2022 17:06:44 +0200
+From:   Boris Brezillon <boris.brezillon@collabora.com>
+To:     Chuanhong Guo <gch981213@gmail.com>
+Cc:     linux-mtd@lists.infradead.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Palmer <daniel@0x0f.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH 1/2] mtd: spinand: add support for detection with param
+ page
+Message-ID: <20220414170644.4a53484f@collabora.com>
+In-Reply-To: <20220414143426.723168-2-gch981213@gmail.com>
+References: <20220414143426.723168-1-gch981213@gmail.com>
+        <20220414143426.723168-2-gch981213@gmail.com>
+Organization: Collabora
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 03/14] perf vendor events intel: Add sapphirerapids events
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        James Clark <james.clark@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-References: <20220413210503.3256922-1-irogers@google.com>
- <20220413210503.3256922-3-irogers@google.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220413210503.3256922-3-irogers@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 14 Apr 2022 22:34:25 +0800
+Chuanhong Guo <gch981213@gmail.com> wrote:
 
+> SPI-NAND detection using chip ID isn't always reliable.
+> Here are two known cases:
+> 1. ESMT uses JEDEC ID from other vendors. This may collapse with future
+>    chips.
 
-On 4/13/2022 5:04 PM, Ian Rogers wrote:
-> Events were generated from 01.org using:
-> https://github.com/intel/event-converter-for-linux-perf
+Really?! So the manufacturer id matching is not even possible?
+
+> 2. Winbond W25N01KV uses the exact same JEDEC ID as W25N01GV while
+>    having completely different chip parameters.
 > 
-> Signed-off-by: Ian Rogers<irogers@google.com>
+> Recent SPI-NANDs have a parameter page which is stored in the same
+> format as raw NAND ONFI data. There are strings for chip manufacturer
+> and chip model. Chip ECC requirement and memory organization are
+> available too.
+> This patch adds support for detecting SPI-NANDs with the parameter page
+> after ID matching failed. In this detection, memory organization and
+> ECC requirements are taken from the parameter page, and other SPI-NAND
+> specific parameters are obtained by matching chip model string with
+> a separated table.
+
+Oh come on! Looks like they never learn from their mistakes...
+
+> 
+> It's common for vendors to release a series of SPI-NANDs with the same
+> SPI-NAND parameters in different voltages and/or capacities. The chip
+> table defined in this patch supports multiple model strings in one
+> entry, and multiple chip models can be covered using only one entry.
+
+That's really disappointing. And I guess the ONFI-page read commands are
+not even standard, and each vendor will come with its own sequence to
+read it. What's bothering me the most is the fact that ONFI parameter
+pages are not even designed for SPI NANDs. They have a bunch of
+parameters that don't really apply to SPI NANDs, and we're still
+lacking SPI-specific info, like the read/write/erase command variants,
+the maximum SPI bus width (AKA SPI modes)...
+
+To sum-up, if we have to support reading the ONFI parameter page, I'd
+rather keep it vendor-private (but that's assuming the vendor ID
+detection works, and you seem to imply ESMT cheats on that too), and
+use it only as a way to distinguish between 2 chip variants.
+
+> 
+> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
 > ---
->   tools/perf/pmu-events/arch/x86/mapfile.csv    |    1 +
->   .../arch/x86/sapphirerapids/cache.json        | 1083 ++++++++++++++
->   .../x86/sapphirerapids/floating-point.json    |  218 +++
->   .../arch/x86/sapphirerapids/frontend.json     |  471 ++++++
->   .../arch/x86/sapphirerapids/memory.json       |  415 ++++++
->   .../arch/x86/sapphirerapids/other.json        |  329 +++++
->   .../arch/x86/sapphirerapids/pipeline.json     | 1271 +++++++++++++++++
->   .../x86/sapphirerapids/virtual-memory.json    |  225 +++
+> 
+> I'm not brave enough to touch raw nand code without testing, so
+> sanitize_string, onfi_crc16 and nand_bit_wise_majority are
+> duplicated from raw/nand_onfi.c into spi/onfi.c
+> 
+>  drivers/mtd/nand/spi/Makefile |   2 +-
+>  drivers/mtd/nand/spi/core.c   |  23 +--
+>  drivers/mtd/nand/spi/onfi.c   | 296 ++++++++++++++++++++++++++++++++++
 
-Thank you very much Ian for the patches. They all looks good to me.
-
-     Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-
-BTW: I think the uncore events for SPR are also published in 01.org.
-Do you have plan to add them later?
-
-Thanks,
-Kan
+Please, no. Try to move the common code to drivers/mtd/nand/onfi.c
+instead of duplicating it. AFAICT, the only thing that's spinand
+specific is spinand_onfi_read() and the last part of
+spinand_onfi_detect(). I'm sure we can find a way to expose
+generic onfi_parsing() helpers.
