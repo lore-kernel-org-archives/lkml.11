@@ -2,82 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A331C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 661FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245736AbiDNPwt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
+        id S1343567AbiDNPxJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359243AbiDNPmv (ORCPT
+        with ESMTP id S244187AbiDNPi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:42:51 -0400
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D838615A15;
-        Thu, 14 Apr 2022 08:29:45 -0700 (PDT)
-Received: by mail-ot1-f52.google.com with SMTP id c11-20020a9d684b000000b00603307cef05so22492oto.3;
-        Thu, 14 Apr 2022 08:29:45 -0700 (PDT)
+        Thu, 14 Apr 2022 11:38:27 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48102A27F;
+        Thu, 14 Apr 2022 08:15:58 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso6212283wma.0;
+        Thu, 14 Apr 2022 08:15:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XsqTqLkugnBvqYjkKxNnUI1wcLv9BGValT596llmCYU=;
+        b=jNxJb4hv+jK+H7pc0ZcQ/w2lMqB/5HYjF44vYxPhVvrxcsoLUy9gjgiKp/5ChWh20f
+         TCoLRdR3mjQM9sxZbmLBjozoJFIM6276z2+oxpgiCmZqc1ucjFz+7fArDg0YkM1pVMwf
+         IosDdC5sGL3kxBaHAosuofLXAZjvEp8KMyXvqPkmDYO+hno21LZnPF2s/fbI1D+Fu53g
+         b+Z2nuyrfFRAYLwqaGM/Kkn0/OMXE8kqokiGIxmyk7KUcRA1oAH1scBYi9Se42PYzuNv
+         6yOZBZYVzrXvRM0gt3Cz26HwOOCDdPNb9JN8GDtZe4P21xNhns+rmH9NTYfnyhmM6vpM
+         i3FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3UETaIQeb6P+iXjP5IpxOK7ZKq81QNIBiRdKxlrRypk=;
-        b=gqzZ8/8byZqIRJ3eIUBneLCOQcOrIRmxs3gJ8gaOyMvAW4QrlldFhezkhV+oE1kc/H
-         3MmFeuvQ0T3MSxYohk3zSiW+yujoAatHQbF2OMia3z1B+ZGGx8pGhtU/4OIYoNct4k6e
-         RGi0MWPWwGSJuTWueGRhypiLQac6X2ThbuO1Kr7b06tLHouS237bXlH3kFajlwzuGc2S
-         vt+0i+BfqnvoQTJEJrubp3q7OsGSl6F3mm7mEwp2qBXQR9sLre5YLEm0U89Nndccnf5q
-         6hzyWmkjJ/2lR78KzYJEXCWyGkTms5LnEW81E/fF3Q+eBqED/if0M6rh69dlEEKPUc2u
-         wZSA==
-X-Gm-Message-State: AOAM531kaOQcgy9SHjp3jNta2mu9cz7ssb1lpLkrZwcpqn/tiFUYHzgR
-        mrJi2Q9+ojP9MM+gxvejlg==
-X-Google-Smtp-Source: ABdhPJzs0u3Z4z9b2OPpfdX30VAA1RKhl/+i1o5tSuI8op0LdPKD1lzWlr/TEd8c+lGrvkEloUASFg==
-X-Received: by 2002:a9d:1c4:0:b0:5cf:2f29:d8a1 with SMTP id e62-20020a9d01c4000000b005cf2f29d8a1mr1100878ote.273.1649950185148;
-        Thu, 14 Apr 2022 08:29:45 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bl4-20020a056808308400b00322281cd376sm145153oib.11.2022.04.14.08.29.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:29:44 -0700 (PDT)
-Received: (nullmailer pid 2089792 invoked by uid 1000);
-        Thu, 14 Apr 2022 15:29:44 -0000
-Date:   Thu, 14 Apr 2022 10:29:44 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v2] dt-bindings: soc: qcom,smp2p: convert to dtschema
-Message-ID: <Ylg96EDTqtIHQu5D@robh.at.kernel.org>
-References: <20220411155528.502889-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XsqTqLkugnBvqYjkKxNnUI1wcLv9BGValT596llmCYU=;
+        b=wRxHZfl55Wh6V65RDOkV0or4IsbomqeEK1L0MDtOQ2zs2YCrry/zNsOj1FULNkwH/T
+         HOKZzEUtJ2xguW40On0DLzeE9e/3iQlz2ZgFI3aPXdOJ7wac4vjXYYyzHjSgCx75FEVQ
+         GONN42rI7mqZkXvhCJllW0Mesob6jPQPLEwngbfCWvKuqMPJGKpktq5WMPKVgtVuherA
+         zztNRIxaURoVQTeEVL4qzMFdtSdBLdxRWfAGvlj8lNCC2zNKJonFiOC1CtSZ0XKgnOgx
+         2czcvH2/mEtNOJ99ocxsHTCuMpNhCc3g3YiCgszZvbYZOU05sAq0aqHng6ZxKBVRmfnk
+         WTcw==
+X-Gm-Message-State: AOAM532LgJpwTNW6TMVfwTpdJaZQWXHNsFRF0TCq053VB9dSp8cQyzCM
+        2rmLDIHe5D+Ks4YrwRsBLGs=
+X-Google-Smtp-Source: ABdhPJycB+Y5sEJjd8AoMIjUoXTPawNZMIKOdRkwxy5iZGTZ8YrwC4qby0DPf8MDpd1fbqMX+afNww==
+X-Received: by 2002:a05:600c:3585:b0:38e:be0e:8471 with SMTP id p5-20020a05600c358500b0038ebe0e8471mr3736537wmq.30.1649949357188;
+        Thu, 14 Apr 2022 08:15:57 -0700 (PDT)
+Received: from [192.168.0.210] (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.googlemail.com with ESMTPSA id q16-20020a1ce910000000b0038eabd31749sm2747109wmc.32.2022.04.14.08.15.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 08:15:56 -0700 (PDT)
+Message-ID: <e32f16a0-f963-be9e-906a-e8995ea60ca2@gmail.com>
+Date:   Thu, 14 Apr 2022 16:15:55 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411155528.502889-1-krzysztof.kozlowski@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] KVM: VMX: make read-only const array vmx_uret_msrs_list
+ static
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220414100720.295502-1-colin.i.king@gmail.com>
+ <YlgyJPRVNCe4w8q3@google.com>
+From:   "Colin King (gmail)" <colin.i.king@gmail.com>
+In-Reply-To: <YlgyJPRVNCe4w8q3@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022 17:55:28 +0200, Krzysztof Kozlowski wrote:
-> Convert the Qualcomm Shared Memory Point 2 Point bindings to DT Schema.
+On 14/04/2022 15:39, Sean Christopherson wrote:
+> On Thu, Apr 14, 2022, Colin Ian King wrote:
+>> Don't populate the read-only array vmx_uret_msrs_list on the stack
+>> but instead make it static. Also makes the object code a little smaller.
 > 
-> Changes against original bindings: enforce only specific names of child
-> nodes, instead of any names.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Changes since v1:
-> 1. Correct qcom,local-pid and qcom,remote-pid types to uint32.
-> 2. The DT schema warnings reported by Rob's robot are fixed already in
->    separate patches.
-> ---
->  .../bindings/soc/qcom/qcom,smp2p.txt          | 110 -------------
->  .../bindings/soc/qcom/qcom,smp2p.yaml         | 145 ++++++++++++++++++
->  2 files changed, 145 insertions(+), 110 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.txt
->  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.yaml
-> 
+> Why not put it on the stack?  It's an __init function, i.e. called once in the
+> lifetime of kvm-intel.ko, isn't all that big, and is certainly not performance
+> critical.  And making it static begs the question of whether or not the data gets
+> thrown away after init, i.e. this might consume _more_ memory once KVM has reached
+> steady state.
 
-Applied, thanks!
+Doh, my bad, I forgot to check that it was an __init function. Please 
+discard this patch.
+
+Colin
+
+> 
+>> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+>> ---
+>>   arch/x86/kvm/vmx/vmx.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+>> index c654c9d76e09..36429e2bb918 100644
+>> --- a/arch/x86/kvm/vmx/vmx.c
+>> +++ b/arch/x86/kvm/vmx/vmx.c
+>> @@ -7871,7 +7871,7 @@ static __init void vmx_setup_user_return_msrs(void)
+>>   	 * but is never loaded into hardware.  MSR_CSTAR is also never loaded
+>>   	 * into hardware and is here purely for emulation purposes.
+>>   	 */
+>> -	const u32 vmx_uret_msrs_list[] = {
+>> +	static const u32 vmx_uret_msrs_list[] = {
+>>   	#ifdef CONFIG_X86_64
+>>   		MSR_SYSCALL_MASK, MSR_LSTAR, MSR_CSTAR,
+>>   	#endif
+>> -- 
+>> 2.35.1
+>>
+
