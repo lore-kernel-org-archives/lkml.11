@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA7EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A7FC4707F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353676AbiDNPRx (ORCPT
+        id S1353998AbiDNPSK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45684 "EHLO
+        Thu, 14 Apr 2022 11:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347728AbiDNN7a (ORCPT
+        with ESMTP id S1347722AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE15AD121;
-        Thu, 14 Apr 2022 06:52:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50C6BC870;
+        Thu, 14 Apr 2022 06:52:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB936B82996;
-        Thu, 14 Apr 2022 13:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A6B3C385A5;
-        Thu, 14 Apr 2022 13:52:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 413DE61D9B;
+        Thu, 14 Apr 2022 13:52:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 525D9C385A5;
+        Thu, 14 Apr 2022 13:52:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944332;
-        bh=yyacd1Dcv1qRXwbo+JuSV5hgkICqF9BJvvM4PtbI4gM=;
+        s=korg; t=1649944329;
+        bh=9/0C55r8YNdUzGbc1aYxkVwEdQ/kCd0iEFzHki92Jlk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p9SbQK9b0ZDwgRBP6ysoEllQ4eD81wrfii24XWi5eSgt+eiNoKjketCa598xuLoAC
-         FqZRornkCtR3GZUuyRlc63Ij4m12X6JDPNkb+3nOgg16E+ByOp/Oku4PGvRLTt3o5f
-         KGx5osU17Y7fBlvfZjlpAzL+Av64GyXQWFgZ/vDA=
+        b=THpUf102egGYWc8KhcK0lx66Z9K57ZA0CJiw3pStRIrTVOxenf1pQLE3P0OvlN/cT
+         xfIDW4joz/g3Mz7HKZ7Tqv6NhHkzPIzZ003XlaAD81O8LaXqp9/FBZYQBeaEz86loK
+         WuYhUw8vewfxdyK44BZ/MzQdglr3ea6Xom6VT1WU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 438/475] spi: bcm-qspi: fix MSPI only access with bcm_qspi_exec_mem_op()
-Date:   Thu, 14 Apr 2022 15:13:43 +0200
-Message-Id: <20220414110907.320117991@linuxfoundation.org>
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 474/475] cpuidle: PSCI: Move the `has_lpi` check to the beginning of the function
+Date:   Thu, 14 Apr 2022 15:14:19 +0200
+Message-Id: <20220414110908.322131387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,47 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Dasu <kdasu.kdev@gmail.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 2c7d1b281286c46049cd22b43435cecba560edde ]
+commit 01f6c7338ce267959975da65d86ba34f44d54220 upstream.
 
-This fixes case where MSPI controller is used to access spi-nor
-flash and BSPI block is not present.
+Currently the first thing checked is whether the PCSI cpu_suspend function
+has been initialized.
 
-Fixes: 5f195ee7d830 ("spi: bcm-qspi: Implement the spi_mem interface")
-Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220328142442.7553-1-kdasu.kdev@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Another change will be overloading `acpi_processor_ffh_lpi_probe` and
+calling it sooner.  So make the `has_lpi` check the first thing checked
+to prepare for that change.
+
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-bcm-qspi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/kernel/cpuidle.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-bcm-qspi.c b/drivers/spi/spi-bcm-qspi.c
-index 3755be04346a..d933a6eda5fd 100644
---- a/drivers/spi/spi-bcm-qspi.c
-+++ b/drivers/spi/spi-bcm-qspi.c
-@@ -960,7 +960,7 @@ static int bcm_qspi_exec_mem_op(struct spi_mem *mem,
- 	addr = op->addr.val;
- 	len = op->data.nbytes;
+--- a/arch/arm64/kernel/cpuidle.c
++++ b/arch/arm64/kernel/cpuidle.c
+@@ -53,6 +53,9 @@ static int psci_acpi_cpu_init_idle(unsig
+ 	struct acpi_lpi_state *lpi;
+ 	struct acpi_processor *pr = per_cpu(processors, cpu);
  
--	if (bcm_qspi_bspi_ver_three(qspi) == true) {
-+	if (has_bspi(qspi) && bcm_qspi_bspi_ver_three(qspi) == true) {
- 		/*
- 		 * The address coming into this function is a raw flash offset.
- 		 * But for BSPI <= V3, we need to convert it to a remapped BSPI
-@@ -979,7 +979,7 @@ static int bcm_qspi_exec_mem_op(struct spi_mem *mem,
- 	    len < 4)
- 		mspi_read = true;
++	if (unlikely(!pr || !pr->flags.has_lpi))
++		return -EINVAL;
++
+ 	/*
+ 	 * If the PSCI cpu_suspend function hook has not been initialized
+ 	 * idle states must not be enabled, so bail out
+@@ -60,9 +63,6 @@ static int psci_acpi_cpu_init_idle(unsig
+ 	if (!psci_ops.cpu_suspend)
+ 		return -EOPNOTSUPP;
  
--	if (mspi_read)
-+	if (!has_bspi(qspi) || mspi_read)
- 		return bcm_qspi_mspi_exec_mem_op(spi, op);
- 
- 	ret = bcm_qspi_bspi_set_mode(qspi, op, 0);
--- 
-2.35.1
-
+-	if (unlikely(!pr || !pr->flags.has_lpi))
+-		return -EINVAL;
+-
+ 	count = pr->power.count - 1;
+ 	if (count <= 0)
+ 		return -ENODEV;
 
 
