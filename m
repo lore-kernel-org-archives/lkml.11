@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F006C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0807EC4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352869AbiDNOeI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
+        id S231266AbiDNOgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244971AbiDNNiA (ORCPT
+        with ESMTP id S245520AbiDNNil (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7928198F62;
-        Thu, 14 Apr 2022 06:31:30 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F73FA207F;
+        Thu, 14 Apr 2022 06:32:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D845AB82983;
-        Thu, 14 Apr 2022 13:31:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49B46C385AB;
-        Thu, 14 Apr 2022 13:31:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0F3C619DA;
+        Thu, 14 Apr 2022 13:32:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED4E1C385A1;
+        Thu, 14 Apr 2022 13:32:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943087;
-        bh=0EpLQqBQHjcTpSODKHXy71hIZ4eq3bpxMs0J0sqKlmw=;
+        s=korg; t=1649943155;
+        bh=VyPMBV7TTks1pk5+FCIN8TMQLHba/6ctFX8uhteFhYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vJURob21Su/cNB8JC+beojiiXMrD7DvomYK2xyahUYKjtfL/fXk3Kv2f70FlcFJa6
-         qTS726A4EekIRg9kmj/JdIn1Zv6v8+E6Ee470ev9yaxL0CM9w0NTZItGcPGiI5RH6k
-         Jidmuh/wAwTvRaGc565fgAx6PGwemlMfw0fAIHKM=
+        b=WEzGhUxQW5vBGtXTQc0sfgABsAcxaLQAVeCkOy4VN4mZf22zqdFUr50SmNTvkyKVh
+         by7xdlfZnh+djW/miBtso1+ebcApbNxDsVfLA5Jadv8yfMd5tQoAzU90C03034yukT
+         5/rfDzAVa6DpGq4yZ01TOeNmci9O++G1TU7HOV9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Jann Horn <jannh@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.4 030/475] ptrace: Check PTRACE_O_SUSPEND_SECCOMP permission on PTRACE_SEIZE
-Date:   Thu, 14 Apr 2022 15:06:55 +0200
-Message-Id: <20220414110855.998558970@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 055/475] ALSA: cs4236: fix an incorrect NULL check on list iterator
+Date:   Thu, 14 Apr 2022 15:07:20 +0200
+Message-Id: <20220414110856.693356392@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,105 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit ee1fee900537b5d9560e9f937402de5ddc8412f3 upstream.
+commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
 
-Setting PTRACE_O_SUSPEND_SECCOMP is supposed to be a highly privileged
-operation because it allows the tracee to completely bypass all seccomp
-filters on kernels with CONFIG_CHECKPOINT_RESTORE=y. It is only supposed to
-be settable by a process with global CAP_SYS_ADMIN, and only if that
-process is not subject to any seccomp filters at all.
+The bug is here:
+	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
 
-However, while these permission checks were done on the PTRACE_SETOPTIONS
-path, they were missing on the PTRACE_SEIZE path, which also sets
-user-specified ptrace flags.
+The list iterator value 'cdev' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-Move the permissions checks out into a helper function and let both
-ptrace_attach() and ptrace_setoptions() call it.
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'cdev' as a dedicated pointer
+to point to the found element. And snd_card_cs423x_pnp() itself
+has NULL check for cdev.
 
-Cc: stable@kernel.org
-Fixes: 13c4a90119d2 ("seccomp: add ptrace options for suspend/resume")
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lkml.kernel.org/r/20220319010838.1386861-1-jannh@google.com
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+Cc: stable@vger.kernel.org
+Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/ptrace.c |   47 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 15 deletions(-)
+ sound/isa/cs423x/cs4236.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -370,6 +370,26 @@ bool ptrace_may_access(struct task_struc
- 	return !err;
- }
+--- a/sound/isa/cs423x/cs4236.c
++++ b/sound/isa/cs423x/cs4236.c
+@@ -544,7 +544,7 @@ static int snd_cs423x_pnpbios_detect(str
+ 	static int dev;
+ 	int err;
+ 	struct snd_card *card;
+-	struct pnp_dev *cdev;
++	struct pnp_dev *cdev, *iter;
+ 	char cid[PNP_ID_LEN];
  
-+static int check_ptrace_options(unsigned long data)
-+{
-+	if (data & ~(unsigned long)PTRACE_O_MASK)
-+		return -EINVAL;
-+
-+	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
-+		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
-+		    !IS_ENABLED(CONFIG_SECCOMP))
-+			return -EINVAL;
-+
-+		if (!capable(CAP_SYS_ADMIN))
-+			return -EPERM;
-+
-+		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
-+		    current->ptrace & PT_SUSPEND_SECCOMP)
-+			return -EPERM;
-+	}
-+	return 0;
-+}
-+
- static int ptrace_attach(struct task_struct *task, long request,
- 			 unsigned long addr,
- 			 unsigned long flags)
-@@ -381,8 +401,16 @@ static int ptrace_attach(struct task_str
- 	if (seize) {
- 		if (addr != 0)
- 			goto out;
-+		/*
-+		 * This duplicates the check in check_ptrace_options() because
-+		 * ptrace_attach() and ptrace_setoptions() have historically
-+		 * used different error codes for unknown ptrace options.
-+		 */
- 		if (flags & ~(unsigned long)PTRACE_O_MASK)
- 			goto out;
-+		retval = check_ptrace_options(flags);
-+		if (retval)
-+			return retval;
- 		flags = PT_PTRACED | PT_SEIZED | (flags << PT_OPT_FLAG_SHIFT);
- 	} else {
- 		flags = PT_PTRACED;
-@@ -655,22 +683,11 @@ int ptrace_writedata(struct task_struct
- static int ptrace_setoptions(struct task_struct *child, unsigned long data)
- {
- 	unsigned flags;
-+	int ret;
- 
--	if (data & ~(unsigned long)PTRACE_O_MASK)
--		return -EINVAL;
--
--	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
--		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
--		    !IS_ENABLED(CONFIG_SECCOMP))
--			return -EINVAL;
--
--		if (!capable(CAP_SYS_ADMIN))
--			return -EPERM;
--
--		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
--		    current->ptrace & PT_SUSPEND_SECCOMP)
--			return -EPERM;
--	}
-+	ret = check_ptrace_options(data);
-+	if (ret)
-+		return ret;
- 
- 	/* Avoid intermediate state when all opts are cleared */
- 	flags = child->ptrace;
+ 	if (pnp_device_is_isapnp(pdev))
+@@ -560,9 +560,11 @@ static int snd_cs423x_pnpbios_detect(str
+ 	strcpy(cid, pdev->id[0].id);
+ 	cid[5] = '1';
+ 	cdev = NULL;
+-	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
+-		if (!strcmp(cdev->id[0].id, cid))
++	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
++		if (!strcmp(iter->id[0].id, cid)) {
++			cdev = iter;
+ 			break;
++		}
+ 	}
+ 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
+ 	if (err < 0)
 
 
