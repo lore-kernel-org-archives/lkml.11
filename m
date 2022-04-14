@@ -2,137 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5E0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245473AbiDNRYt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59230 "EHLO
+        id S245514AbiDNRZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245248AbiDNRYq (ORCPT
+        with ESMTP id S244624AbiDNRZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:24:46 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0F2BC866
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:22:20 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso6281627pjf.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:22:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=74YOS5V1qHXZZ1fLoG5JxUvAs7/uENmkI5e8dEDxses=;
-        b=iP28I5g0myp4w/7aNYzjc3WyyPOxckjdXhNgkDQjobWLTAXQkU73Qgd0OL6OYIcFiZ
-         7TuqFSQhN5HPnyy4iqyfBSWtpSwySLdgUqwmpPNPnSN+nbp/stQkNNRigCCyyPHN/Amv
-         CP92wNGgq5xuHIV5YjMikUjlIFzM0CXlpzBGE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=74YOS5V1qHXZZ1fLoG5JxUvAs7/uENmkI5e8dEDxses=;
-        b=EzrxYJcaz4hCGPDrb1HgI2Y1ZBhJSExsAQVUAu7pTWgtt1pusKwJZlFzu2FZcODBVI
-         msGF/7SKuYCTWAo1J7XjLXPjywm9NU2SDD6P8/iqQC89b5qKSAEZ068IULWWZWcWQNYu
-         FTDWJearc2Sj0MFDuR584v26+vbD7MiZ+4jW/S8tcfYapYtRWGZcHtbjn6abZIuRk0JZ
-         OD/oecamt7NYAnRG3/SM6eTmIGUAWNZK7CHIkr+9DhH1CKlUPAaA5SOqCrtPvU9y1SCo
-         xtuwJjKcruxCEMYxWyw8JuDInk9FyFdU4Tf2ZjjaOdHIWd/c4vIjUF/knEkAUM2o0SQb
-         i10w==
-X-Gm-Message-State: AOAM531Ymq1GkEdVGRHN9e3ubmDNWyWKzB66VLb5YkuTrscK8JUjjGOQ
-        oIrqzgIXFagHrG3buP8fzm3L4Q==
-X-Google-Smtp-Source: ABdhPJxAprf/p03cPbZ5hRrExWbkfNTc3juXB5tKGk3RtI0L1iw6o5BW7MusfTN8dyZm5rA7k+YW7A==
-X-Received: by 2002:a17:902:e808:b0:156:cbfd:4235 with SMTP id u8-20020a170902e80800b00156cbfd4235mr48710529plg.24.1649956940429;
-        Thu, 14 Apr 2022 10:22:20 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h20-20020aa786d4000000b00505dfd42f2fsm503493pfo.22.2022.04.14.10.22.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 10:22:19 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 10:22:19 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Dan Li <ashimida@linux.alibaba.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] lkdtm: Add CFI_BACKWARD to test ROP mitigations
-Message-ID: <202204141019.CD9152A7@keescook>
-References: <20220413213917.711770-1-keescook@chromium.org>
- <f7a5642f-bfcb-865d-7039-d0b9d62a3360@linux.alibaba.com>
+        Thu, 14 Apr 2022 13:25:37 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946A3BC862
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:23:11 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id B79D21F47BCE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649956990;
+        bh=D3Guilrkks6V/1hTwTRFRrqejHfbyPr22LWaBmWvToo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=KhEWKrc5jpdpnlEan/SJ5+kGF26hEhzLFsX6DVMxJLGi7R7KpgAMDEYPQJotCaaWo
+         uIjlI/MD0FDOyWmglK4Bi4Hy59l9zTdy1cPQZn9lA3euRlaRBBBQAzcuwPj+uUCCdw
+         S3wAiqfaQoVYB0G2jzHVZ5llQJCLsva2bCHU/uetz5eis8/YZpOl0FiBd0Mxtdzd8G
+         OTfzlMLHdHKlP/rKTgpr7UjcAZ+ni5VCtJPpJ+EjFEjRotb/AiwQHPMa0iVx0F1RsS
+         /xWFCgcHZJa9aqNb64gZra/RxZ0455Ef4v8X+NMJyPmLSPY+4iPrhdDBnJXDBP2c7x
+         ZrF4tqzg5GgHw==
+Message-ID: <2f71160e-01cc-40a5-4661-b998b3acd153@collabora.com>
+Date:   Thu, 14 Apr 2022 18:29:03 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f7a5642f-bfcb-865d-7039-d0b9d62a3360@linux.alibaba.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 5/5] drm/i915: stolen memory use ttm backend
+Content-Language: en-US
+To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
+References: <20220412193817.2098308-1-bob.beckett@collabora.com>
+ <20220412193817.2098308-6-bob.beckett@collabora.com>
+ <94ddf51a-90ae-dee8-5d6a-45ee2cd1e584@linux.intel.com>
+From:   Robert Beckett <bob.beckett@collabora.com>
+In-Reply-To: <94ddf51a-90ae-dee8-5d6a-45ee2cd1e584@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 03:19:02AM -0700, Dan Li wrote:
-> Hi, Kees,
-> Thanks for the rewrite. I tested this patch, and it works fine for
-> me except for a few minor comments below :)
-> 
-> On 4/13/22 14:39, Kees Cook wrote:
-> > +/* The ultimate ROP gadget. */
-> > +static noinline __no_ret_protection
-> > +void set_return_addr_unchecked(unsigned long *expected, unsigned long *addr)
-> > +{
-> > +	/* Use of volatile is to make sure final write isn't seen as a dead store. */
-> > +	unsigned long * volatile *ret_addr = (unsigned long **)__builtin_frame_address(0) + 1;
-> > +
-> > +	/* Make sure we've found the right place on the stack before writing it. */
-> > +	if(*ret_addr == expected)
-> > +		*ret_addr = (addr);
-> > +	else
-> > +		/* Check architecture, stack layout, or compiler behavior... */
-> > +		pr_warn("Eek: return address mismatch! %px != %px\n",
-> > +			*ret_addr, addr);
-> > +}
-> > +
-> > +static noinline
-> > +void set_return_addr(unsigned long *expected, unsigned long *addr)
-> > +{
-> > +	/* Use of volatile is to make sure final write isn't seen as a dead store. */
-> > +	unsigned long * volatile *ret_addr = (unsigned long **)__builtin_frame_address(0) + 1;
-> > +
-> > +	/* Make sure we've found the right place on the stack before writing it. */
-> > +	if(*ret_addr == expected)
-> > +		*ret_addr = (addr);
-> 
-> When PAC is enabled, I get a mismatch as follows:
-> 
-> /kselftest_install/lkdtm # ./CFI_BACKWARD.sh
-> [  182.120133] lkdtm: Performing direct entry CFI_BACKWARD
-> [  182.120665] lkdtm: Attempting unchecked stack return address redirection ...
-> [  182.122543] lkdtm: ok: redirected stack return address.
-> [  182.123521] lkdtm: Attempting checked stack return address redirection ...
-> [  182.123964] lkdtm: Eek: return address mismatch! bfff800008fa8014 != ffff800008fa8030
-> [  182.124502] lkdtm: ok: control flow unchanged.
-> CFI_BACKWARD: saw 'call trace:|ok: control flow unchanged': ok
-> 
-> We may need to ignore the pac high bits of return address according
-> to TCR.T1SZ (or simply remove the high 16 bits before comparing).
 
-Oh! Hah, yes, I totally forgot that. Thanks for testing -- getting PAC
-emulation working in QEMU has eluded me. I think untagged_addr() will
-work yes? i.e.:
 
-	if((untagged_addr(*ret_addr) == expected)
+On 14/04/2022 15:41, Thomas Hellström wrote:
+> Hi,
+> 
+> 
+> On 4/12/22 21:38, Robert Beckett wrote:
+>> +struct ttm_resource *
+>> +i915_gem_stolen_reserve_range(struct drm_i915_private *i915,
+>> +                  resource_size_t size,
+>> +                  u64 start, u64 end)
+>>   {
+>> -    int ret;
+>> +    struct intel_memory_region *mem = i915->mm.stolen_region;
+>> -    if (!drm_mm_initialized(&i915->mm.stolen))
+>> -        return -ENODEV;
+>> -
+>> -    /* WaSkipStolenMemoryFirstPage:bdw+ */
+>> -    if (GRAPHICS_VER(i915) >= 8 && start < 4096)
+>> -        start = 4096;
+> 
+> Did we lose this Workaround?
+
+woops, looks like we did. Nice catch.
+I'll add a reservation at start of day if wa is needed when I issue v4.
 
 > 
-> > +	else
-> > +		/* Check architecture, stack layout, or compiler behavior... */
-> > +		pr_warn("Eek: return address mismatch! %px != %px\n",
-> > +			*ret_addr, addr);
+> Need to continue reviewing this patchnext week.
 > 
-> According to the context, it might be "expected" here?
 > 
-> 		pr_warn("Eek: return address mismatch! %px != %px\n",
-> 			*ret_addr, expected);
+> Thx,
 > 
-> I simply ignored the upper 16 bits, and tested it separately
-> in gcc/llvm 12 with SCS/PAC and all the four cases worked fine for me.
-
-Great! Do you have the PAC "Oops" text handy so I can include it in the
-commit log as an example of what should be expected?
-
-Thanks!
-
--- 
-Kees Cook
+> Thomas
+> 
+> 
+> 
+> 
+>> -
+>> -    mutex_lock(&i915->mm.stolen_lock);
+>> -    ret = drm_mm_insert_node_in_range(&i915->mm.stolen, node,
+>> -                      size, alignment, 0,
+>> -                      start, end, DRM_MM_INSERT_BEST);
+>> -    mutex_unlock(&i915->mm.stolen_lock);
+>> +    if (!mem)
+>> +        return ERR_PTR(-ENODEV);
+>> +    return intel_region_ttm_resource_alloc(mem, size, start, end, 
+>> I915_BO_ALLOC_CONTIGUOUS);
+>> +}
+>> -
