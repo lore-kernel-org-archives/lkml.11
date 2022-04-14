@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8162CC4708C
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20701C47093
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344565AbiDNNtT (ORCPT
+        id S1344631AbiDNNtZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
+        Thu, 14 Apr 2022 09:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344021AbiDNNaP (ORCPT
+        with ESMTP id S1344033AbiDNNaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D153992D03;
-        Thu, 14 Apr 2022 06:26:25 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9E0C39;
+        Thu, 14 Apr 2022 06:26:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BC38612B3;
-        Thu, 14 Apr 2022 13:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BBE9C385A1;
-        Thu, 14 Apr 2022 13:26:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D185CB82941;
+        Thu, 14 Apr 2022 13:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F7DCC385A1;
+        Thu, 14 Apr 2022 13:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942784;
-        bh=azZg63SKPjeddzVz+T39tuS4s1cORkFrsjZpBrsPqQw=;
+        s=korg; t=1649942795;
+        bh=4jTFIdE/RLeE76gCMMXu6/RBZIRcmWv8WEiWwMjmKIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=atS1taRANTge3rr6n4hgaW/RNXozYxSdBVVc/PTGsvjCBRdudCixZopYr7/6H5MuU
-         91C+0/M0n+sHI3FeHr4MZH1Tn1Oy6DdvLlOyBcNDpAeyy4gRBSoP6FswZ0yYeAUCzd
-         5Ya2zen4GnKiXKiWgmYUI0CmSgByVTCaLMo8Us6A=
+        b=tcJOWetgLp9HUw/r0Sqr/ozC0KTVXP1thl5yjZMBYZXot3wCDOjZVFgdP7jv6sqwX
+         6Gjd+aoyklLM7W+168DMwR9nUq35PEl4t689BA9Kf0MM+SWv6VyJf5r2niOJzANtRX
+         xIRuABty/UktMZ8+ZwG+As3/2ocYvJOiMXklD6a0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lotus Fenn <lotusf@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Like Xu <likexu@tencent.com>,
-        David Dunn <daviddunn@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 260/338] KVM: x86/svm: Clear reserved bits written to PerfEvtSeln MSRs
-Date:   Thu, 14 Apr 2022 15:12:43 +0200
-Message-Id: <20220414110846.290377603@linuxfoundation.org>
+Subject: [PATCH 4.19 264/338] ptp: replace snprintf with sysfs_emit
+Date:   Thu, 14 Apr 2022 15:12:47 +0200
+Message-Id: <20220414110846.404215583@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -53,72 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Mattson <jmattson@google.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 9b026073db2f1ad0e4d8b61c83316c8497981037 ]
+[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
 
-AMD EPYC CPUs never raise a #GP for a WRMSR to a PerfEvtSeln MSR. Some
-reserved bits are cleared, and some are not. Specifically, on
-Zen3/Milan, bits 19 and 42 are not cleared.
+coccinelle report:
+./drivers/ptp/ptp_sysfs.c:17:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/ptp/ptp_sysfs.c:390:8-16:
+WARNING: use scnprintf or sprintf
 
-When emulating such a WRMSR, KVM should not synthesize a #GP,
-regardless of which bits are set. However, undocumented bits should
-not be passed through to the hardware MSR. So, rather than checking
-for reserved bits and synthesizing a #GP, just clear the reserved
-bits.
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-This may seem pedantic, but since KVM currently does not support the
-"Host/Guest Only" bits (41:40), it is necessary to clear these bits
-rather than synthesizing #GP, because some popular guests (e.g Linux)
-will set the "Host Only" bit even on CPUs that don't support
-EFER.SVME, and they don't expect a #GP.
-
-For example,
-
-root@Ubuntu1804:~# perf stat -e r26 -a sleep 1
-
- Performance counter stats for 'system wide':
-
-                 0      r26
-
-       1.001070977 seconds time elapsed
-
-Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379957] unchecked MSR access error: WRMSR to 0xc0010200 (tried to write 0x0000020000130026) at rIP: 0xffffffff9b276a28 (native_write_msr+0x8/0x30)
-Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379958] Call Trace:
-Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379963]  amd_pmu_disable_event+0x27/0x90
-
-Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
-Reported-by: Lotus Fenn <lotusf@google.com>
-Signed-off-by: Jim Mattson <jmattson@google.com>
-Reviewed-by: Like Xu <likexu@tencent.com>
-Reviewed-by: David Dunn <daviddunn@google.com>
-Message-Id: <20220226234131.2167175-1-jmattson@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/pmu_amd.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/ptp/ptp_sysfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/pmu_amd.c b/arch/x86/kvm/pmu_amd.c
-index 41dff881e0f0..93a135f216b2 100644
---- a/arch/x86/kvm/pmu_amd.c
-+++ b/arch/x86/kvm/pmu_amd.c
-@@ -247,12 +247,10 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	/* MSR_EVNTSELn */
- 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_EVNTSEL);
- 	if (pmc) {
--		if (data == pmc->eventsel)
--			return 0;
--		if (!(data & pmu->reserved_bits)) {
-+		data &= ~pmu->reserved_bits;
-+		if (data != pmc->eventsel)
- 			reprogram_gp_counter(pmc, data);
--			return 0;
--		}
-+		return 0;
- 	}
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index 48401dfcd999..f97a5eefa2e2 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -26,7 +26,7 @@ static ssize_t clock_name_show(struct device *dev,
+ 			       struct device_attribute *attr, char *page)
+ {
+ 	struct ptp_clock *ptp = dev_get_drvdata(dev);
+-	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
++	return sysfs_emit(page, "%s\n", ptp->info->name);
+ }
+ static DEVICE_ATTR_RO(clock_name);
  
- 	return 1;
+@@ -240,7 +240,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
+ 
+ 	mutex_unlock(&ptp->pincfg_mux);
+ 
+-	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
++	return sysfs_emit(page, "%u %u\n", func, chan);
+ }
+ 
+ static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
 -- 
 2.35.1
 
