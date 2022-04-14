@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD4A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E76C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240002AbiDNNU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
+        id S244002AbiDNNVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243884AbiDNNTD (ORCPT
+        with ESMTP id S243876AbiDNNTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:19:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC3D92D02;
-        Thu, 14 Apr 2022 06:16:26 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D269286D;
+        Thu, 14 Apr 2022 06:16:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 817AD612CA;
-        Thu, 14 Apr 2022 13:16:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 959EFC385A1;
-        Thu, 14 Apr 2022 13:16:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F2B4B8296A;
+        Thu, 14 Apr 2022 13:16:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8ABFC385A5;
+        Thu, 14 Apr 2022 13:16:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942186;
-        bh=s3o8QTEpkB8AkiwUUghyiX7MUeEBycRZKkT9os17hoc=;
+        s=korg; t=1649942180;
+        bh=6118wY5SUqvaOGFyKq6KoocM37LhFJT1VLYB+36B0Ig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h1X7xpTX498meOq2oi+ruGTp9AYVhmPgL7fOxVSU6LyYl9AQmlwMTpUlCC0kWTGnm
-         zrsCdhA+9oTmVc39wMoiepnnDxB1ZGmNpftj1W+jxppZPeMO2GYCCzZTANUrZJnXDL
-         DG7rskHihkddNJXHAT+bSSiHLNtW0LGi5CxR5H+c=
+        b=ST0AlKaw9J+46r+N4C/ETmEAK059dx1ke9usI72V5dzhzA3fuC9OZNo13/3rAhuzk
+         x9mjX5d1ucxAs0tmeC8A5deojT/jjA8n55DID1S5WyMTndTnF124OCbuB22G0pxRsd
+         6UMaS6WKgeEIAArFVLKnYdyQD7aASyug4iASm/ng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 045/338] mm,hwpoison: unmap poisoned page before invalidation
-Date:   Thu, 14 Apr 2022 15:09:08 +0200
-Message-Id: <20220414110840.179325178@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 043/338] ALSA: cs4236: fix an incorrect NULL check on list iterator
+Date:   Thu, 14 Apr 2022 15:09:06 +0200
+Message-Id: <20220414110840.122748349@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -54,67 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
+commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
 
-In some cases it appears the invalidation of a hwpoisoned page fails
-because the page is still mapped in another process.  This can cause a
-program to be continuously restarted and die when it page faults on the
-page that was not invalidated.  Avoid that problem by unmapping the
-hwpoisoned page when we find it.
+The bug is here:
+	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
 
-Another issue is that sometimes we end up oopsing in finish_fault, if
-the code tries to do something with the now-NULL vmf->page.  I did not
-hit this error when submitting the previous patch because there are
-several opportunities for alloc_set_pte to bail out before accessing
-vmf->page, and that apparently happened on those systems, and most of
-the time on other systems, too.
+The list iterator value 'cdev' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-However, across several million systems that error does occur a handful
-of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
-will cause do_read_fault to return before calling finish_fault.
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'cdev' as a dedicated pointer
+to point to the found element. And snd_card_cs423x_pnp() itself
+has NULL check for cdev.
 
-Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
-Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ sound/isa/cs423x/cs4236.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3416,14 +3416,18 @@ static vm_fault_t __do_fault(struct vm_f
- 		return ret;
+--- a/sound/isa/cs423x/cs4236.c
++++ b/sound/isa/cs423x/cs4236.c
+@@ -559,7 +559,7 @@ static int snd_cs423x_pnpbios_detect(str
+ 	static int dev;
+ 	int err;
+ 	struct snd_card *card;
+-	struct pnp_dev *cdev;
++	struct pnp_dev *cdev, *iter;
+ 	char cid[PNP_ID_LEN];
  
- 	if (unlikely(PageHWPoison(vmf->page))) {
-+		struct page *page = vmf->page;
- 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
- 		if (ret & VM_FAULT_LOCKED) {
-+			if (page_mapped(page))
-+				unmap_mapping_pages(page_mapping(page),
-+						    page->index, 1, false);
- 			/* Retry if a clean page was removed from the cache. */
--			if (invalidate_inode_page(vmf->page))
--				poisonret = 0;
--			unlock_page(vmf->page);
-+			if (invalidate_inode_page(page))
-+				poisonret = VM_FAULT_NOPAGE;
-+			unlock_page(page);
- 		}
--		put_page(vmf->page);
-+		put_page(page);
- 		vmf->page = NULL;
- 		return poisonret;
+ 	if (pnp_device_is_isapnp(pdev))
+@@ -575,9 +575,11 @@ static int snd_cs423x_pnpbios_detect(str
+ 	strcpy(cid, pdev->id[0].id);
+ 	cid[5] = '1';
+ 	cdev = NULL;
+-	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
+-		if (!strcmp(cdev->id[0].id, cid))
++	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
++		if (!strcmp(iter->id[0].id, cid)) {
++			cdev = iter;
+ 			break;
++		}
  	}
+ 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
+ 	if (err < 0)
 
 
