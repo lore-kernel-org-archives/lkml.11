@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5D8C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E994DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243492AbiDNMpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 08:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
+        id S243516AbiDNMp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243472AbiDNMpR (ORCPT
+        with ESMTP id S243500AbiDNMpW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 08:45:17 -0400
+        Thu, 14 Apr 2022 08:45:22 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 622DC85666
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 05:42:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF79B8FE5D
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 05:42:56 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25A44139F;
-        Thu, 14 Apr 2022 05:42:52 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8C2C6139F;
+        Thu, 14 Apr 2022 05:42:56 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2B9943F70D;
-        Thu, 14 Apr 2022 05:42:50 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8ABC43F70D;
+        Thu, 14 Apr 2022 05:42:54 -0700 (PDT)
 From:   Robin Murphy <robin.murphy@arm.com>
 To:     joro@8bytes.org, will@kernel.org
 Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
@@ -30,9 +30,9 @@ Cc:     iommu@lists.linux-foundation.org, sven@svenpeter.dev,
         zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
         jean-philippe@linaro.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 02/13] iommu: Move bus setup to IOMMU device registration
-Date:   Thu, 14 Apr 2022 13:42:31 +0100
-Message-Id: <e607a32be8e84c56d65160902f4bd3fb434ee9d3.1649935679.git.robin.murphy@arm.com>
+Subject: [PATCH 04/13] iommu/arm-smmu: Clean up bus_set_iommu()
+Date:   Thu, 14 Apr 2022 13:42:33 +0100
+Message-Id: <2e59602d982fd4941ec923571940fa3c628b2188.1649935679.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1649935679.git.robin.murphy@arm.com>
 References: <cover.1649935679.git.robin.murphy@arm.com>
@@ -42,106 +42,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the bus setup to iommu_device_register(). This should allow
-bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
-and leaves bus_set_iommu() as a glorfied no-op to be cleaned up next.
-
-Note that although the handling of errors from bus_iommu_probe() looks
-inadequate, it is merely preserving the well-established existing
-behaviour. This could be improved in future - probably combined with
-equivalent cleanup for iommu_device_unregister() - but that isn't a
-priority right now.
+Stop calling bus_set_iommu() since it's now unnecessary. With device
+probes now replayed for every IOMMU instance registration, the whole
+sorry ordering workaround for legacy DT bindings goes too, hooray!
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/iommu.c | 50 ++++++++++++++++++++++---------------------
- 1 file changed, 26 insertions(+), 24 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 84 +--------------------------
+ 1 file changed, 2 insertions(+), 82 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 13e1a8bd5435..51205c33c426 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -175,6 +175,14 @@ static int __init iommu_subsys_init(void)
- }
- subsys_initcall(iommu_subsys_init);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 52bd42d80b4f..34cab56b9c6d 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -37,7 +37,6 @@
+ #include <linux/ratelimit.h>
+ #include <linux/slab.h>
  
-+static int remove_iommu_group(struct device *dev, void *data)
-+{
-+	if (dev->iommu && dev->iommu->iommu_dev == data)
-+		iommu_release_device(dev);
-+
-+	return 0;
-+}
-+
- /**
-  * iommu_device_register() - Register an IOMMU hardware instance
-  * @iommu: IOMMU handle for the instance
-@@ -197,6 +205,22 @@ int iommu_device_register(struct iommu_device *iommu,
- 	spin_lock(&iommu_device_lock);
- 	list_add_tail(&iommu->list, &iommu_device_list);
- 	spin_unlock(&iommu_device_lock);
-+
-+	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
-+		struct bus_type *bus = iommu_buses[i];
-+		const struct iommu_ops *bus_ops = bus->iommu_ops;
-+		int err;
-+
-+		WARN_ON(bus_ops && bus_ops != ops);
-+		bus->iommu_ops = ops;
-+		err = bus_iommu_probe(bus);
-+		if (err) {
-+			bus_for_each_dev(bus, NULL, iommu, remove_iommu_group);
-+			bus->iommu_ops = bus_ops;
-+			return err;
-+		}
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_device_register);
-@@ -1654,13 +1678,6 @@ static int probe_iommu_group(struct device *dev, void *data)
- 	return ret;
- }
+-#include <linux/amba/bus.h>
+ #include <linux/fsl/mc.h>
  
--static int remove_iommu_group(struct device *dev, void *data)
--{
--	iommu_release_device(dev);
+ #include "arm-smmu.h"
+@@ -93,8 +92,6 @@ static struct platform_driver arm_smmu_driver;
+ static struct iommu_ops arm_smmu_ops;
+ 
+ #ifdef CONFIG_ARM_SMMU_LEGACY_DT_BINDINGS
+-static int arm_smmu_bus_init(struct iommu_ops *ops);
 -
+ static struct device_node *dev_get_dev_node(struct device *dev)
+ {
+ 	if (dev_is_pci(dev)) {
+@@ -180,20 +177,6 @@ static int arm_smmu_register_legacy_master(struct device *dev,
+ 	kfree(sids);
+ 	return err;
+ }
+-
+-/*
+- * With the legacy DT binding in play, we have no guarantees about
+- * probe order, but then we're also not doing default domains, so we can
+- * delay setting bus ops until we're sure every possible SMMU is ready,
+- * and that way ensure that no probe_device() calls get missed.
+- */
+-static int arm_smmu_legacy_bus_init(void)
+-{
+-	if (using_legacy_binding)
+-		return arm_smmu_bus_init(&arm_smmu_ops);
 -	return 0;
 -}
--
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
- {
-@@ -1883,27 +1900,12 @@ static int iommu_bus_init(struct bus_type *bus)
-  */
- int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
- {
+-device_initcall_sync(arm_smmu_legacy_bus_init);
+ #else
+ static int arm_smmu_register_legacy_master(struct device *dev,
+ 					   struct arm_smmu_device **smmu)
+@@ -2022,52 +2005,6 @@ static int arm_smmu_device_dt_probe(struct arm_smmu_device *smmu,
+ 	return 0;
+ }
+ 
+-static int arm_smmu_bus_init(struct iommu_ops *ops)
+-{
 -	int err;
 -
--	if (ops == NULL) {
--		bus->iommu_ops = NULL;
--		return 0;
+-	/* Oh, for a proper bus abstraction */
+-	if (!iommu_present(&platform_bus_type)) {
+-		err = bus_set_iommu(&platform_bus_type, ops);
+-		if (err)
+-			return err;
 -	}
--
--	if (bus->iommu_ops != NULL)
-+	if (bus->iommu_ops && ops && bus->iommu_ops != ops)
- 		return -EBUSY;
- 
- 	bus->iommu_ops = ops;
- 
--	/* Do IOMMU specific setup for this bus-type */
--	err = bus_iommu_probe(bus);
--	if (err) {
--		/* Clean up */
--		bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
--		bus->iommu_ops = NULL;
+-#ifdef CONFIG_ARM_AMBA
+-	if (!iommu_present(&amba_bustype)) {
+-		err = bus_set_iommu(&amba_bustype, ops);
+-		if (err)
+-			goto err_reset_platform_ops;
 -	}
+-#endif
+-#ifdef CONFIG_PCI
+-	if (!iommu_present(&pci_bus_type)) {
+-		err = bus_set_iommu(&pci_bus_type, ops);
+-		if (err)
+-			goto err_reset_amba_ops;
+-	}
+-#endif
+-#ifdef CONFIG_FSL_MC_BUS
+-	if (!iommu_present(&fsl_mc_bus_type)) {
+-		err = bus_set_iommu(&fsl_mc_bus_type, ops);
+-		if (err)
+-			goto err_reset_pci_ops;
+-	}
+-#endif
+-	return 0;
 -
+-err_reset_pci_ops: __maybe_unused;
+-#ifdef CONFIG_PCI
+-	bus_set_iommu(&pci_bus_type, NULL);
+-#endif
+-err_reset_amba_ops: __maybe_unused;
+-#ifdef CONFIG_ARM_AMBA
+-	bus_set_iommu(&amba_bustype, NULL);
+-#endif
+-err_reset_platform_ops: __maybe_unused;
+-	bus_set_iommu(&platform_bus_type, NULL);
 -	return err;
-+	return 0;
+-}
+-
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+@@ -2185,7 +2122,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	err = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+ 	if (err) {
+ 		dev_err(dev, "Failed to register iommu\n");
+-		goto err_sysfs_remove;
++		iommu_device_sysfs_remove(&smmu->iommu);
++		return err;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, smmu);
+@@ -2203,24 +2141,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		pm_runtime_enable(dev);
+ 	}
+ 
+-	/*
+-	 * For ACPI and generic DT bindings, an SMMU will be probed before
+-	 * any device which might need it, so we want the bus ops in place
+-	 * ready to handle default domain setup as soon as any SMMU exists.
+-	 */
+-	if (!using_legacy_binding) {
+-		err = arm_smmu_bus_init(&arm_smmu_ops);
+-		if (err)
+-			goto err_unregister_device;
+-	}
+-
+ 	return 0;
+-
+-err_unregister_device:
+-	iommu_device_unregister(&smmu->iommu);
+-err_sysfs_remove:
+-	iommu_device_sysfs_remove(&smmu->iommu);
+-	return err;
  }
- EXPORT_SYMBOL_GPL(bus_set_iommu);
+ 
+ static int arm_smmu_device_remove(struct platform_device *pdev)
+@@ -2233,7 +2154,6 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
+ 		dev_notice(&pdev->dev, "disabling translation\n");
+ 
+-	arm_smmu_bus_init(NULL);
+ 	iommu_device_unregister(&smmu->iommu);
+ 	iommu_device_sysfs_remove(&smmu->iommu);
  
 -- 
 2.28.0.dirty
