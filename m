@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB71C352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12253C352A1
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343726AbiDNOJO (ORCPT
+        id S1343624AbiDNOJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
+        Thu, 14 Apr 2022 10:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344070AbiDNNaR (ORCPT
+        with ESMTP id S1343977AbiDNNaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06471D64;
-        Thu, 14 Apr 2022 06:27:36 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E96BA2046;
+        Thu, 14 Apr 2022 06:25:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9C07B82941;
-        Thu, 14 Apr 2022 13:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3A1BC385A5;
-        Thu, 14 Apr 2022 13:27:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6D74B82985;
+        Thu, 14 Apr 2022 13:25:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C71C385AA;
+        Thu, 14 Apr 2022 13:25:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942853;
-        bh=3iLHWJ9oMVew3w5dKq0ip6r7rm2TZisUU8LmVzgiauw=;
+        s=korg; t=1649942743;
+        bh=DfWn7v/m6DQzQCD1f1qIdQ8MDA8tM/XY3TK+NAT8MHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G7k3P2BWe17RxE0zu+J5sdXgINRDGXvMbcZNgvGD2JF7pBy03W/Ii1bpn0C3bJVXU
-         2Rxr4e+NU3X0+5svb+4Z+NU3eTS130Ho8phge3y7vjvpYHNAH3aIt6NCdmyTLSVWid
-         qpmoXv3ioH7Y1E+sCZGtqht+nCEjqS+rQfT9Zqds=
+        b=oWKtKhc2H7Gb3u0+lGgooI6H4qA8PcXupM/JZnyyrDLHbkwj8wuCIrvTsgCgiozw7
+         djfTeV2NM5TjIwYITGt1229q0ljLeBWnGv70buRvy7pFlcjpmUSPhtFu91DfATvSBk
+         KI9Ez/XaDzvVq8e18hEyMfveZwqkT8mzOX3Bml+s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 245/338] mm/mmap: return 1 from stack_guard_gap __setup() handler
-Date:   Thu, 14 Apr 2022 15:12:28 +0200
-Message-Id: <20220414110845.864034268@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.19 238/338] ubifs: rename_whiteout: correct old_dir size computing
+Date:   Thu, 14 Apr 2022 15:12:21 +0200
+Message-Id: <20220414110845.666973691@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -52,61 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit e6d094936988910ce6e8197570f2753898830081 upstream.
+commit 705757274599e2e064dd3054aabc74e8af31a095 upstream.
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; it just pollutes init's
-environment).  This prevents:
+When renaming the whiteout file, the old whiteout file is not deleted.
+Therefore, we add the old dentry size to the old dir like XFS.
+Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
+in check_indes.
 
-  Unknown kernel command line parameters \
-  "BOOT_IMAGE=/boot/bzImage-517rc5 stack_guard_gap=100", will be \
-  passed to user space.
-
-  Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     stack_guard_gap=100
-
-Return 1 to indicate that the boot option has been handled.
-
-Note that there is no warning message if someone enters:
-	stack_guard_gap=anything_invalid
-and 'val' and stack_guard_gap are both set to 0 due to the use of
-simple_strtoul(). This could be improved by using kstrtoxxx() and
-checking for an error.
-
-It appears that having stack_guard_gap == 0 is valid (if unexpected) since
-using "stack_guard_gap=0" on the kernel command line does that.
-
-Link: https://lkml.kernel.org/r/20220222005817.11087-1-rdunlap@infradead.org
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 1be7107fbe18e ("mm: larger stack guard gap, between vmas")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Hugh Dickins <hughd@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mmap.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ubifs/dir.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2469,7 +2469,7 @@ static int __init cmdline_parse_stack_gu
- 	if (!*endptr)
- 		stack_guard_gap = val << PAGE_SHIFT;
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1379,6 +1379,9 @@ static int do_rename(struct inode *old_d
+ 			iput(whiteout);
+ 			goto out_release;
+ 		}
++
++		/* Add the old_dentry size to the old_dir size. */
++		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
+ 	}
  
--	return 0;
-+	return 1;
- }
- __setup("stack_guard_gap=", cmdline_parse_stack_guard_gap);
- 
+ 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
 
 
