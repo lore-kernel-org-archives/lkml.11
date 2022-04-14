@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D2CC38162
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92292C38A04
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344535AbiDNOJr (ORCPT
+        id S1345698AbiDNOKk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57310 "EHLO
+        Thu, 14 Apr 2022 10:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344078AbiDNNaS (ORCPT
+        with ESMTP id S1343544AbiDNN3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4F3117D;
-        Thu, 14 Apr 2022 06:27:45 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D0B6265;
+        Thu, 14 Apr 2022 06:24:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEEEE6190F;
-        Thu, 14 Apr 2022 13:27:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DACCFC385A1;
-        Thu, 14 Apr 2022 13:27:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FEEB60C1C;
+        Thu, 14 Apr 2022 13:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE64C385A1;
+        Thu, 14 Apr 2022 13:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942864;
-        bh=pq5Hkm5sFmOw4+bSV+L9OhXIlFKnUqlcIn+go98fDOo=;
+        s=korg; t=1649942671;
+        bh=444i3GnLvkhtZVvQG9HI+QXWBbAZGHnZuMdWQvVa3zc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ijCF15l19Sqi4SZIlgeVvJja3RBJwnbyJirewikgVEWeHEEp9aIO2Qhu/yoAmCskC
-         ViOVDNp9eYj/7R76OhGCVQVePuYE7EjCRXqAtQaXsRhK31YJ3cXeNDouzbtxrugYwq
-         zKjDTkPXX0DNP99h6mYXOKoKXG1HpilcWP7nLcbQ=
+        b=pnCpkfbbdbt0nDwbaXd6xow2N/R6GVx3aM++EYIXMDx2s+w572ySQXJLkVnKANpSC
+         eD8NZoY2a5azf7vIFwBWnj60wckBqDuEueawbwTS3yL92Tkp7m1q/nt7CwTFDJ2KgR
+         oYAit3KNGAgkgepC8nHMiVf2G+k1XPH287MQeJC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 290/338] NFSv4: Protect the state recovery thread against direct reclaim
-Date:   Thu, 14 Apr 2022 15:13:13 +0200
-Message-Id: <20220414110847.143408909@linuxfoundation.org>
+Subject: [PATCH 4.19 219/338] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
+Date:   Thu, 14 Apr 2022 15:12:02 +0200
+Message-Id: <20220414110845.125853314@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,76 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 3e17898aca293a24dae757a440a50aa63ca29671 ]
+[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
 
-If memory allocation triggers a direct reclaim from the state recovery
-thread, then we can deadlock. Use memalloc_nofs_save/restore to ensure
-that doesn't happen.
+Even if the current WARN() notifies the user that something is severely
+wrong, we can still end up in a PANIC() when trying to invoke the missing
+->enable_sdio_irq() ops. Therefore, let's also return an error code and
+prevent the host from being added.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+While at it, move the code into a separate function to prepare for
+subsequent changes and for further host caps validations.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4state.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/mmc/core/host.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
-index 9c98547fcefc..30576a10a1f4 100644
---- a/fs/nfs/nfs4state.c
-+++ b/fs/nfs/nfs4state.c
-@@ -49,6 +49,7 @@
- #include <linux/workqueue.h>
- #include <linux/bitops.h>
- #include <linux/jiffies.h>
-+#include <linux/sched/mm.h>
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index dd1c14d8f686..9de8a3553d42 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -413,6 +413,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
  
- #include <linux/sunrpc/clnt.h>
+ EXPORT_SYMBOL(mmc_alloc_host);
  
-@@ -2505,9 +2506,17 @@ static int nfs4_bind_conn_to_session(struct nfs_client *clp)
- 
- static void nfs4_state_manager(struct nfs_client *clp)
- {
-+	unsigned int memflags;
- 	int status = 0;
- 	const char *section = "", *section_sep = "";
- 
-+	/*
-+	 * State recovery can deadlock if the direct reclaim code tries
-+	 * start NFS writeback. So ensure memory allocations are all
-+	 * GFP_NOFS.
-+	 */
-+	memflags = memalloc_nofs_save();
++static int mmc_validate_host_caps(struct mmc_host *host)
++{
++	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
++		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
++		return -EINVAL;
++	}
 +
- 	/* Ensure exclusive access to NFSv4 state */
- 	do {
- 		clear_bit(NFS4CLNT_RUN_MANAGER, &clp->cl_state);
-@@ -2600,6 +2609,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
- 				goto out_error;
- 		}
++	return 0;
++}
++
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -425,8 +435,9 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
  
-+		memalloc_nofs_restore(memflags);
- 		nfs4_end_drain_session(clp);
- 		nfs4_clear_state_manager_bit(clp);
+-	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
+-		!host->ops->enable_sdio_irq);
++	err = mmc_validate_host_caps(host);
++	if (err)
++		return err;
  
-@@ -2616,6 +2626,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
- 			return;
- 		if (test_and_set_bit(NFS4CLNT_MANAGER_RUNNING, &clp->cl_state) != 0)
- 			return;
-+		memflags = memalloc_nofs_save();
- 	} while (refcount_read(&clp->cl_count) > 1 && !signalled());
- 	goto out_drain;
- 
-@@ -2627,6 +2638,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
- 			clp->cl_hostname, -status);
- 	ssleep(1);
- out_drain:
-+	memalloc_nofs_restore(memflags);
- 	nfs4_end_drain_session(clp);
- 	nfs4_clear_state_manager_bit(clp);
- }
+ 	err = device_add(&host->class_dev);
+ 	if (err)
 -- 
-2.35.1
+2.34.1
 
 
 
