@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2079C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9DBC4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245252AbiDNN2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
+        id S244202AbiDNNdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244318AbiDNNZE (ORCPT
+        with ESMTP id S244345AbiDNNZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:25:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7B02E093;
-        Thu, 14 Apr 2022 06:19:35 -0700 (PDT)
+        Thu, 14 Apr 2022 09:25:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D98F9D0EF;
+        Thu, 14 Apr 2022 06:19:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74B6E617B7;
-        Thu, 14 Apr 2022 13:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84327C385A5;
-        Thu, 14 Apr 2022 13:19:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A61C3B82910;
+        Thu, 14 Apr 2022 13:19:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03B40C385A1;
+        Thu, 14 Apr 2022 13:19:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942374;
-        bh=KTN0X4FW5gLMAt9HwX2qa26OsxYjrrPzmMtT5dx7FlQ=;
+        s=korg; t=1649942380;
+        bh=ZjnIkTT+EfwJEUtR8/sFEfd5fpB4d2azg7CksWVUHrQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vBcr26Yeo6pY3OoOGTqLzC4+Y8CWUiGQAVNG1cXph8e4I34/ULs29jW+lGQRqDrj7
-         6a3HodruW4OIBfd+ArRRFZDyyV0rZw6lxIcv+BcL0tvJdhwY0LGWiFVo++9WnmM4WK
-         G9AB2T0C8VMr/+Xx1yWYKEKpvgaZ2Jp8rAKNP40Q=
+        b=CRTEe2pDVVhbHwAl3JlM7mUBgfjCvW5MdiKZU9jxk+YcLjg4ddfm+BcgmqyT2MDfD
+         ZuFlWzGyPYaz/Tfp3uiVHYCHOoRoaZCkCUvGXzlflSRFeFoN23Rk/8y1xp8e0qLJ/F
+         JuAOg855EFTYE97vwmkt17vjQ5olYFyPIn/YG2kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Armin Wolf <W_Armin@gmx.de>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 073/338] hwmon: (sch56xx-common) Replace WDOG_ACTIVE with WDOG_HW_RUNNING
-Date:   Thu, 14 Apr 2022 15:09:36 +0200
-Message-Id: <20220414110840.977381811@linuxfoundation.org>
+Subject: [PATCH 4.19 108/338] ASoC: fsi: Add check for clk_enable
+Date:   Thu, 14 Apr 2022 15:10:11 +0200
+Message-Id: <20220414110841.984812575@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,43 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 647d6f09bea7dacf4cdb6d4ea7e3051883955297 ]
+[ Upstream commit 405afed8a728f23cfaa02f75bbc8bdd6b7322123 ]
 
-If the watchdog was already enabled by the BIOS after booting, the
-watchdog infrastructure needs to regularly send keepalives to
-prevent a unexpected reset.
-WDOG_ACTIVE only serves as an status indicator for userspace,
-we want to use WDOG_HW_RUNNING instead.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-Since my Fujitsu Esprimo P720 does not support the watchdog,
-this change is compile-tested only.
-
-Suggested-by: Guenter Roeck <linux@roeck-us.net>
-Fixes: fb551405c0f8 (watchdog: sch56xx: Use watchdog core)
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Link: https://lore.kernel.org/r/20220131211935.3656-5-W_Armin@gmx.de
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220302062844.46869-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/sch56xx-common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sh/fsi.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
-index bda3d5285586..e1c4e6937a64 100644
---- a/drivers/hwmon/sch56xx-common.c
-+++ b/drivers/hwmon/sch56xx-common.c
-@@ -437,7 +437,7 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(struct device *parent,
- 	if (nowayout)
- 		set_bit(WDOG_NO_WAY_OUT, &data->wddev.status);
- 	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
--		set_bit(WDOG_ACTIVE, &data->wddev.status);
-+		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
+diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
+index aa7e902f0c02..f486e2b2c540 100644
+--- a/sound/soc/sh/fsi.c
++++ b/sound/soc/sh/fsi.c
+@@ -816,14 +816,27 @@ static int fsi_clk_enable(struct device *dev,
+ 			return ret;
+ 		}
  
- 	/* Since the watchdog uses a downcounter there is no register to read
- 	   the BIOS set timeout from (if any was set at all) ->
+-		clk_enable(clock->xck);
+-		clk_enable(clock->ick);
+-		clk_enable(clock->div);
++		ret = clk_enable(clock->xck);
++		if (ret)
++			goto err;
++		ret = clk_enable(clock->ick);
++		if (ret)
++			goto disable_xck;
++		ret = clk_enable(clock->div);
++		if (ret)
++			goto disable_ick;
+ 
+ 		clock->count++;
+ 	}
+ 
+ 	return ret;
++
++disable_ick:
++	clk_disable(clock->ick);
++disable_xck:
++	clk_disable(clock->xck);
++err:
++	return ret;
+ }
+ 
+ static int fsi_clk_disable(struct device *dev,
 -- 
 2.34.1
 
