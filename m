@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841EDC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 327B1C47081
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347051AbiDNN6Q (ORCPT
+        id S1346806AbiDNN56 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58086 "EHLO
+        Thu, 14 Apr 2022 09:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344288AbiDNNbe (ORCPT
+        with ESMTP id S1344245AbiDNNbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:31:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A954E6;
-        Thu, 14 Apr 2022 06:29:09 -0700 (PDT)
+        Thu, 14 Apr 2022 09:31:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F99CE6;
+        Thu, 14 Apr 2022 06:28:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC67561B18;
-        Thu, 14 Apr 2022 13:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 086C7C385A5;
-        Thu, 14 Apr 2022 13:29:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD570B82986;
+        Thu, 14 Apr 2022 13:28:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31327C385A5;
+        Thu, 14 Apr 2022 13:28:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942948;
-        bh=WBZ/+bgpIHKBuhV6mX/mZSkeNZU9jK8K7cpWbpeUv3k=;
+        s=korg; t=1649942934;
+        bh=/wJG+XTvgjQdx9zNB5ugg1IgvdbNmvOV11yo0RTX+Vw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d0h3N9H6wDO/Qnp7ceDXNGANwxv3l9pPg2+hSdh7Z7GYVvDeygggmNiwuhjuR/Kn8
-         hu+N0Cqoljr+2UBSzAATujuLOoco9MePX8YsqWXfjvayk25uZqsK3E4tyP352Q+HXX
-         GTa2ocpDRGi1mQyfKHIEFkajt+e+uUf7ZHuMbYFo=
+        b=gz520aCCY4GmIkF55pxaJetGcIfiyE9lIsX51jr64z+/IjVhDRLEu5jg+iwNBitXL
+         XHEwSA7YhtdRiSTsNubNzh7BqyXG4GsHAQasaPIZ7L/RVMiB9oFM1uIzXrnMwgvFB6
+         ZpfKXzLvWqCCLU6wrt0+A2odjiCojGvRwxNt5rkA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Neelima Krishnan <neelima.krishnan@intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 318/338] x86/speculation: Restore speculation related MSRs during S3 resume
-Date:   Thu, 14 Apr 2022 15:13:41 +0200
-Message-Id: <20220414110847.938325381@linuxfoundation.org>
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 4.19 313/338] Revert "mmc: sdhci-xenon: fix annoying 1.8V regulator warning"
+Date:   Thu, 14 Apr 2022 15:13:36 +0200
+Message-Id: <20220414110847.788200136@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -53,60 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit e2a1256b17b16f9b9adf1b6fea56819e7b68e463 upstream.
+commit 7e2646ed47542123168d43916b84b954532e5386 upstream.
 
-After resuming from suspend-to-RAM, the MSRs that control CPU's
-speculative execution behavior are not being restored on the boot CPU.
+This reverts commit bb32e1987bc55ce1db400faf47d85891da3c9b9f.
 
-These MSRs are used to mitigate speculative execution vulnerabilities.
-Not restoring them correctly may leave the CPU vulnerable.  Secondary
-CPU's MSRs are correctly being restored at S3 resume by
-identify_secondary_cpu().
+Commit 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
+contains proper fix for the issue described in commit bb32e1987bc5 ("mmc:
+sdhci-xenon: fix annoying 1.8V regulator warning").
 
-During S3 resume, restore these MSRs for boot CPU when restoring its
-processor state.
-
-Fixes: 772439717dbf ("x86/bugs/intel: Set proper CPU features and setup RDS")
-Reported-by: Neelima Krishnan <neelima.krishnan@intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
-Acked-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 8d876bf472db ("mmc: sdhci-xenon: wait 5ms after set 1.8V signal enable")
+Cc: stable@vger.kernel.org # 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Marcin Wojtas <mw@semihalf.com>
+Link: https://lore.kernel.org/r/20220318141441.32329-1-pali@kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/power/cpu.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/mmc/host/sdhci-xenon.c |   10 ----------
+ 1 file changed, 10 deletions(-)
 
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -517,10 +517,24 @@ static int pm_cpu_check(const struct x86
- 	return ret;
- }
- 
-+static void pm_save_spec_msr(void)
-+{
-+	u32 spec_msr_id[] = {
-+		MSR_IA32_SPEC_CTRL,
-+		MSR_IA32_TSX_CTRL,
-+		MSR_TSX_FORCE_ABORT,
-+		MSR_IA32_MCU_OPT_CTRL,
-+		MSR_AMD64_LS_CFG,
-+	};
-+
-+	msr_build_context(spec_msr_id, ARRAY_SIZE(spec_msr_id));
-+}
-+
- static int pm_check_save_msr(void)
+--- a/drivers/mmc/host/sdhci-xenon.c
++++ b/drivers/mmc/host/sdhci-xenon.c
+@@ -243,16 +243,6 @@ static void xenon_voltage_switch(struct
  {
- 	dmi_check_system(msr_save_dmi_table);
- 	pm_cpu_check(msr_save_cpu_table);
-+	pm_save_spec_msr();
- 
- 	return 0;
+ 	/* Wait for 5ms after set 1.8V signal enable bit */
+ 	usleep_range(5000, 5500);
+-
+-	/*
+-	 * For some reason the controller's Host Control2 register reports
+-	 * the bit representing 1.8V signaling as 0 when read after it was
+-	 * written as 1. Subsequent read reports 1.
+-	 *
+-	 * Since this may cause some issues, do an empty read of the Host
+-	 * Control2 register here to circumvent this.
+-	 */
+-	sdhci_readw(host, SDHCI_HOST_CONTROL2);
  }
+ 
+ static const struct sdhci_ops sdhci_xenon_ops = {
 
 
