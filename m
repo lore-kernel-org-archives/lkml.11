@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BA9C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB284C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344891AbiDNNtn (ORCPT
+        id S1345050AbiDNNuA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        Thu, 14 Apr 2022 09:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344077AbiDNNaS (ORCPT
+        with ESMTP id S1344049AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:18 -0400
+        Thu, 14 Apr 2022 09:30:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B012182;
-        Thu, 14 Apr 2022 06:27:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446415FD5;
+        Thu, 14 Apr 2022 06:26:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 505B8B82941;
-        Thu, 14 Apr 2022 13:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2D0DC385A5;
-        Thu, 14 Apr 2022 13:27:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFB13B82984;
+        Thu, 14 Apr 2022 13:26:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D21CC385A1;
+        Thu, 14 Apr 2022 13:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942867;
-        bh=G1PmI0k2uDk2OxjBITD1xWBbaymdjRIiinoNbewwwTU=;
+        s=korg; t=1649942803;
+        bh=Mx8zchDa9SkluUW/ZUzXsfByOdpqXSxIFW/g17wQSzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zhea8oWLSJumX8b6I+mpcq6+2qLkttADXY84ifCpfdrG2q15d2CQ1ntrvL3px0rXm
-         ClemPMjbaA8X2e4NTZk454MeNvhNZsFfmc2U3Qj5Ppqi9w1k8lrGCGIsb0mbB6YtlH
-         AidZ3Iihua5mV513a2gKun4IMzZkIRuqfj9uiDCg=
+        b=V/iueRNAQ9XQtOoU4lHsse7jK25h4bjuYGutomrrCL6AznqFGTK6soH1b9Q1/ENVy
+         b88NkJGS44dj6WdyfhUg4AFR7uZ74wFdsGqrFk1r+z3fpEY2x8EPPXcrUiBC4ceWrg
+         ASkouJpYWgKY2PuAuDwU+FK2M8N5tNu8H97J1YrQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Jin <joe.jin@oracle.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 291/338] xen: delay xen_hvm_init_time_ops() if kdump is boot on vcpu>=32
-Date:   Thu, 14 Apr 2022 15:13:14 +0200
-Message-Id: <20220414110847.171515155@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 240/338] can: mcba_usb: properly check endpoint type
+Date:   Thu, 14 Apr 2022 15:12:23 +0200
+Message-Id: <20220414110845.722712456@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,123 +51,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongli Zhang <dongli.zhang@oracle.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit eed05744322da07dd7e419432dcedf3c2e017179 ]
+commit 136bed0bfd3bc9c95c88aafff2d22ecb3a919f23 upstream.
 
-The sched_clock() can be used very early since commit 857baa87b642
-("sched/clock: Enable sched clock early"). In addition, with commit
-38669ba205d1 ("x86/xen/time: Output xen sched_clock time from 0"), kdump
-kernel in Xen HVM guest may panic at very early stage when accessing
-&__this_cpu_read(xen_vcpu)->time as in below:
+Syzbot reported warning in usb_submit_urb() which is caused by wrong
+endpoint type. We should check that in endpoint is actually present to
+prevent this warning.
 
-setup_arch()
- -> init_hypervisor_platform()
-     -> x86_init.hyper.init_platform = xen_hvm_guest_init()
-         -> xen_hvm_init_time_ops()
-             -> xen_clocksource_read()
-                 -> src = &__this_cpu_read(xen_vcpu)->time;
+Found pipes are now saved to struct mcba_priv and code uses them
+directly instead of making pipes in place.
 
-This is because Xen HVM supports at most MAX_VIRT_CPUS=32 'vcpu_info'
-embedded inside 'shared_info' during early stage until xen_vcpu_setup() is
-used to allocate/relocate 'vcpu_info' for boot cpu at arbitrary address.
+Fail log:
 
-However, when Xen HVM guest panic on vcpu >= 32, since
-xen_vcpu_info_reset(0) would set per_cpu(xen_vcpu, cpu) = NULL when
-vcpu >= 32, xen_clocksource_read() on vcpu >= 32 would panic.
+| usb 5-1: BOGUS urb xfer, pipe 3 != type 1
+| WARNING: CPU: 1 PID: 49 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+| Modules linked in:
+| CPU: 1 PID: 49 Comm: kworker/1:2 Not tainted 5.17.0-rc6-syzkaller-00184-g38f80f42147f #0
+| Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+| Workqueue: usb_hub_wq hub_event
+| RIP: 0010:usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+| ...
+| Call Trace:
+|  <TASK>
+|  mcba_usb_start drivers/net/can/usb/mcba_usb.c:662 [inline]
+|  mcba_usb_probe+0x8a3/0xc50 drivers/net/can/usb/mcba_usb.c:858
+|  usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+|  call_driver_probe drivers/base/dd.c:517 [inline]
 
-This patch calls xen_hvm_init_time_ops() again later in
-xen_hvm_smp_prepare_boot_cpu() after the 'vcpu_info' for boot vcpu is
-registered when the boot vcpu is >= 32.
-
-This issue can be reproduced on purpose via below command at the guest
-side when kdump/kexec is enabled:
-
-"taskset -c 33 echo c > /proc/sysrq-trigger"
-
-The bugfix for PVM is not implemented due to the lack of testing
-environment.
-
-[boris: xen_hvm_init_time_ops() returns on errors instead of jumping to end]
-
-Cc: Joe Jin <joe.jin@oracle.com>
-Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20220302164032.14569-3-dongli.zhang@oracle.com
-Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+Link: https://lore.kernel.org/all/20220313100903.10868-1-paskripkin@gmail.com
+Reported-and-tested-by: syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/smp_hvm.c |  6 ++++++
- arch/x86/xen/time.c    | 24 +++++++++++++++++++++++-
- 2 files changed, 29 insertions(+), 1 deletion(-)
+ drivers/net/can/usb/mcba_usb.c |   26 ++++++++++++++++----------
+ 1 file changed, 16 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/xen/smp_hvm.c b/arch/x86/xen/smp_hvm.c
-index f8d39440b292..e5bd9eb42191 100644
---- a/arch/x86/xen/smp_hvm.c
-+++ b/arch/x86/xen/smp_hvm.c
-@@ -18,6 +18,12 @@ static void __init xen_hvm_smp_prepare_boot_cpu(void)
- 	 */
- 	xen_vcpu_setup(0);
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -44,10 +44,6 @@
+ #define MCBA_USB_RX_BUFF_SIZE 64
+ #define MCBA_USB_TX_BUFF_SIZE (sizeof(struct mcba_usb_msg))
  
-+	/*
-+	 * Called again in case the kernel boots on vcpu >= MAX_VIRT_CPUS.
-+	 * Refer to comments in xen_hvm_init_time_ops().
-+	 */
-+	xen_hvm_init_time_ops();
-+
- 	/*
- 	 * The alternative logic (which patches the unlock/lock) runs before
- 	 * the smp bootup up code is activated. Hence we need to set this up
-diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
-index 01dcccf9185f..9809de9f2310 100644
---- a/arch/x86/xen/time.c
-+++ b/arch/x86/xen/time.c
-@@ -547,6 +547,11 @@ static void xen_hvm_setup_cpu_clockevents(void)
+-/* MCBA endpoint numbers */
+-#define MCBA_USB_EP_IN 1
+-#define MCBA_USB_EP_OUT 1
+-
+ /* Microchip command id */
+ #define MBCA_CMD_RECEIVE_MESSAGE 0xE3
+ #define MBCA_CMD_I_AM_ALIVE_FROM_CAN 0xF5
+@@ -95,6 +91,8 @@ struct mcba_priv {
+ 	atomic_t free_ctx_cnt;
+ 	void *rxbuf[MCBA_MAX_RX_URBS];
+ 	dma_addr_t rxbuf_dma[MCBA_MAX_RX_URBS];
++	int rx_pipe;
++	int tx_pipe;
+ };
  
- void __init xen_hvm_init_time_ops(void)
- {
-+	static bool hvm_time_initialized;
-+
-+	if (hvm_time_initialized)
-+		return;
-+
- 	/*
- 	 * vector callback is needed otherwise we cannot receive interrupts
- 	 * on cpu > 0 and at this point we don't know how many cpus are
-@@ -556,7 +561,22 @@ void __init xen_hvm_init_time_ops(void)
- 		return;
+ /* CAN frame */
+@@ -283,10 +281,8 @@ static netdev_tx_t mcba_usb_xmit(struct
  
- 	if (!xen_feature(XENFEAT_hvm_safe_pvclock)) {
--		pr_info("Xen doesn't support pvclock on HVM, disable pv timer");
-+		pr_info_once("Xen doesn't support pvclock on HVM, disable pv timer");
-+		return;
+ 	memcpy(buf, usb_msg, MCBA_USB_TX_BUFF_SIZE);
+ 
+-	usb_fill_bulk_urb(urb, priv->udev,
+-			  usb_sndbulkpipe(priv->udev, MCBA_USB_EP_OUT), buf,
+-			  MCBA_USB_TX_BUFF_SIZE, mcba_usb_write_bulk_callback,
+-			  ctx);
++	usb_fill_bulk_urb(urb, priv->udev, priv->tx_pipe, buf, MCBA_USB_TX_BUFF_SIZE,
++			  mcba_usb_write_bulk_callback, ctx);
+ 
+ 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+ 	usb_anchor_urb(urb, &priv->tx_submitted);
+@@ -621,7 +617,7 @@ static void mcba_usb_read_bulk_callback(
+ resubmit_urb:
+ 
+ 	usb_fill_bulk_urb(urb, priv->udev,
+-			  usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_OUT),
++			  priv->rx_pipe,
+ 			  urb->transfer_buffer, MCBA_USB_RX_BUFF_SIZE,
+ 			  mcba_usb_read_bulk_callback, priv);
+ 
+@@ -666,7 +662,7 @@ static int mcba_usb_start(struct mcba_pr
+ 		urb->transfer_dma = buf_dma;
+ 
+ 		usb_fill_bulk_urb(urb, priv->udev,
+-				  usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_IN),
++				  priv->rx_pipe,
+ 				  buf, MCBA_USB_RX_BUFF_SIZE,
+ 				  mcba_usb_read_bulk_callback, priv);
+ 		urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+@@ -820,6 +816,13 @@ static int mcba_usb_probe(struct usb_int
+ 	struct mcba_priv *priv;
+ 	int err = -ENOMEM;
+ 	struct usb_device *usbdev = interface_to_usbdev(intf);
++	struct usb_endpoint_descriptor *in, *out;
++
++	err = usb_find_common_endpoints(intf->cur_altsetting, &in, &out, NULL, NULL);
++	if (err) {
++		dev_err(&intf->dev, "Can't find endpoints\n");
++		return err;
 +	}
-+
-+	/*
-+	 * Only MAX_VIRT_CPUS 'vcpu_info' are embedded inside 'shared_info'.
-+	 * The __this_cpu_read(xen_vcpu) is still NULL when Xen HVM guest
-+	 * boots on vcpu >= MAX_VIRT_CPUS (e.g., kexec), To access
-+	 * __this_cpu_read(xen_vcpu) via xen_clocksource_read() will panic.
-+	 *
-+	 * The xen_hvm_init_time_ops() should be called again later after
-+	 * __this_cpu_read(xen_vcpu) is available.
-+	 */
-+	if (!__this_cpu_read(xen_vcpu)) {
-+		pr_info("Delay xen_init_time_common() as kernel is running on vcpu=%d\n",
-+			xen_vcpu_nr(0));
- 		return;
+ 
+ 	netdev = alloc_candev(sizeof(struct mcba_priv), MCBA_MAX_TX_URBS);
+ 	if (!netdev) {
+@@ -865,6 +868,9 @@ static int mcba_usb_probe(struct usb_int
+ 		goto cleanup_free_candev;
  	}
  
-@@ -568,5 +588,7 @@ void __init xen_hvm_init_time_ops(void)
- 	x86_platform.calibrate_tsc = xen_tsc_khz;
- 	x86_platform.get_wallclock = xen_get_wallclock;
- 	x86_platform.set_wallclock = xen_set_wallclock;
++	priv->rx_pipe = usb_rcvbulkpipe(priv->udev, in->bEndpointAddress);
++	priv->tx_pipe = usb_sndbulkpipe(priv->udev, out->bEndpointAddress);
 +
-+	hvm_time_initialized = true;
- }
- #endif
--- 
-2.35.1
-
+ 	devm_can_led_init(netdev);
+ 
+ 	/* Start USB dev only if we have successfully registered CAN device */
 
 
