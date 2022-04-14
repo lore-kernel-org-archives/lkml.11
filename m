@@ -2,121 +2,313 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E51C352B6
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5895C352A7
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347134AbiDNN6a (ORCPT
+        id S1346560AbiDNN5k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
+        Thu, 14 Apr 2022 09:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344320AbiDNNbj (ORCPT
+        with ESMTP id S244557AbiDNN1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:31:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497D81D3;
-        Thu, 14 Apr 2022 06:29:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:27:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE1C5A1444
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649942429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zKNRMm/zmlnxnTqTidayLxe/grc/WSScQh4/mFK6IaI=;
+        b=C+7rKZSBU1CxTKDUwj0dtA6qew2Sah2rvBxTuApZXB6QFGfr51dllDKtpZJgUgEmBmEenH
+        ZN4B6YwFMi9yHHVyTjQRuvDZ2Zd2LwazciY9MFhqQUFdFtvLtwDnvcwOohqHlq0P1vrl4R
+        g1f5sNqioTXvZv3Ck6KbGf7Jf5TXdUM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-443-yDkcsHHdM3eE5vWYe24yzQ-1; Thu, 14 Apr 2022 09:20:25 -0400
+X-MC-Unique: yDkcsHHdM3eE5vWYe24yzQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA1A561B18;
-        Thu, 14 Apr 2022 13:29:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2756C385A1;
-        Thu, 14 Apr 2022 13:29:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942954;
-        bh=zCLyd9yat9t+0NJF5ard6p5JfnYrqiSGe4IUhgCGwZs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2mYrindejx1IVuoWXc+hfbh/534ICPZwmVqOAS/l0CUF6+phTaDargVqq2E8npD4
-         Mqcg+5mGBa5gt1C14n0SbpdhVtyD+OWUYTpcYfCHQCY4HNp1k8WF89vLktKh2/o5pc
-         jgnRlzx04b6bgWGQDDTKAB4zaY8DEwOc0TeYNLCE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 284/338] usb: dwc3: omap: fix "unbalanced disables for smps10_out1" on omap5evm
-Date:   Thu, 14 Apr 2022 15:13:07 +0200
-Message-Id: <20220414110846.972986150@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 81BEB185A794;
+        Thu, 14 Apr 2022 13:20:24 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D41767C28;
+        Thu, 14 Apr 2022 13:20:22 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 04/34] KVM: x86: hyper-v: Handle HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
+Date:   Thu, 14 Apr 2022 15:19:43 +0200
+Message-Id: <20220414132013.1588929-5-vkuznets@redhat.com>
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: H. Nikolaus Schaller <hns@goldelico.com>
+Currently, HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls are handled
+the exact same way as HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE{,EX}: by
+flushing the whole VPID and this is sub-optimal. Switch to handling
+these requests with 'flush_tlb_gva()' hooks instead. Use the newly
+introduced TLB flush ring to queue the requests.
 
-[ Upstream commit ac01df343e5a6c6bcead2ed421af1fde30f73e7e ]
-
-Usually, the vbus_regulator (smps10 on omap5evm) boots up disabled.
-
-Hence calling regulator_disable() indirectly through dwc3_omap_set_mailbox()
-during probe leads to:
-
-[   10.332764] WARNING: CPU: 0 PID: 1628 at drivers/regulator/core.c:2853 _regulator_disable+0x40/0x164
-[   10.351919] unbalanced disables for smps10_out1
-[   10.361298] Modules linked in: dwc3_omap(+) clk_twl6040 at24 gpio_twl6040 palmas_gpadc palmas_pwrbutton
-industrialio snd_soc_omap_mcbsp(+) snd_soc_ti_sdma display_connector ti_tpd12s015 drm leds_gpio
-drm_panel_orientation_quirks ip_tables x_tables ipv6 autofs4
-[   10.387818] CPU: 0 PID: 1628 Comm: systemd-udevd Not tainted 5.17.0-rc1-letux-lpae+ #8139
-[   10.405129] Hardware name: Generic OMAP5 (Flattened Device Tree)
-[   10.411455]  unwind_backtrace from show_stack+0x10/0x14
-[   10.416970]  show_stack from dump_stack_lvl+0x40/0x4c
-[   10.422313]  dump_stack_lvl from __warn+0xb8/0x170
-[   10.427377]  __warn from warn_slowpath_fmt+0x70/0x9c
-[   10.432595]  warn_slowpath_fmt from _regulator_disable+0x40/0x164
-[   10.439037]  _regulator_disable from regulator_disable+0x30/0x64
-[   10.445382]  regulator_disable from dwc3_omap_set_mailbox+0x8c/0xf0 [dwc3_omap]
-[   10.453116]  dwc3_omap_set_mailbox [dwc3_omap] from dwc3_omap_probe+0x2b8/0x394 [dwc3_omap]
-[   10.467021]  dwc3_omap_probe [dwc3_omap] from platform_probe+0x58/0xa8
-[   10.481762]  platform_probe from really_probe+0x168/0x2fc
-[   10.481782]  really_probe from __driver_probe_device+0xc4/0xd8
-[   10.481782]  __driver_probe_device from driver_probe_device+0x24/0xa4
-[   10.503762]  driver_probe_device from __driver_attach+0xc4/0xd8
-[   10.510018]  __driver_attach from bus_for_each_dev+0x64/0xa0
-[   10.516001]  bus_for_each_dev from bus_add_driver+0x148/0x1a4
-[   10.524880]  bus_add_driver from driver_register+0xb4/0xf8
-[   10.530678]  driver_register from do_one_initcall+0x90/0x1c4
-[   10.536661]  do_one_initcall from do_init_module+0x4c/0x200
-[   10.536683]  do_init_module from load_module+0x13dc/0x1910
-[   10.551159]  load_module from sys_finit_module+0xc8/0xd8
-[   10.561319]  sys_finit_module from __sys_trace_return+0x0/0x18
-[   10.561336] Exception stack(0xc344bfa8 to 0xc344bff0)
-[   10.561341] bfa0:                   b6fb5778 b6fab8d8 00000007 b6ecfbb8 00000000 b6ed0398
-[   10.561341] bfc0: b6fb5778 b6fab8d8 855c0500 0000017b 00020000 b6f9a3cc 00000000 b6fb5778
-[   10.595500] bfe0: bede18f8 bede18e8 b6ec9aeb b6dda1c2
-[   10.601345] ---[ end trace 0000000000000000 ]---
-
-Fix this unnecessary warning by checking if the regulator is enabled.
-
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Link: https://lore.kernel.org/r/af3b750dc2265d875deaabcf5f80098c9645da45.1646744616.git.hns@goldelico.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/usb/dwc3/dwc3-omap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/hyperv.c | 132 ++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 115 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-omap.c b/drivers/usb/dwc3/dwc3-omap.c
-index 0dfb710f48b5..0b800bc6150d 100644
---- a/drivers/usb/dwc3/dwc3-omap.c
-+++ b/drivers/usb/dwc3/dwc3-omap.c
-@@ -237,7 +237,7 @@ static void dwc3_omap_set_mailbox(struct dwc3_omap *omap,
- 		break;
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index d66c27fd1e8a..759e1a16e5c3 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1805,6 +1805,13 @@ static u64 kvm_get_sparse_vp_set(struct kvm *kvm, struct kvm_hv_hcall *hc,
+ 				  sparse_banks, consumed_xmm_halves, offset);
+ }
  
- 	case OMAP_DWC3_ID_FLOAT:
--		if (omap->vbus_reg)
-+		if (omap->vbus_reg && regulator_is_enabled(omap->vbus_reg))
- 			regulator_disable(omap->vbus_reg);
- 		val = dwc3_omap_read_utmi_ctrl(omap);
- 		val |= USBOTGSS_UTMI_OTG_CTRL_IDDIG;
++static int kvm_hv_get_tlb_flush_entries(struct kvm *kvm, struct kvm_hv_hcall *hc, u64 entries[],
++				       int consumed_xmm_halves, gpa_t offset)
++{
++	return kvm_hv_get_hc_data(kvm, hc, hc->rep_cnt, hc->rep_cnt,
++				  entries, consumed_xmm_halves, offset);
++}
++
+ static inline int hv_tlb_flush_ring_free(struct kvm_vcpu_hv *hv_vcpu,
+ 					 int read_idx, int write_idx)
+ {
+@@ -1814,12 +1821,13 @@ static inline int hv_tlb_flush_ring_free(struct kvm_vcpu_hv *hv_vcpu,
+ 	return read_idx - write_idx - 1;
+ }
+ 
+-static void hv_tlb_flush_ring_enqueue(struct kvm_vcpu *vcpu)
++static void hv_tlb_flush_ring_enqueue(struct kvm_vcpu *vcpu, u64 *entries, int count)
+ {
+ 	struct kvm_vcpu_hv_tlb_flush_ring *tlb_flush_ring;
+ 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+ 	int ring_free, write_idx, read_idx;
+ 	unsigned long flags;
++	int i;
+ 
+ 	if (!hv_vcpu)
+ 		return;
+@@ -1845,14 +1853,34 @@ static void hv_tlb_flush_ring_enqueue(struct kvm_vcpu *vcpu)
+ 	if (!ring_free)
+ 		goto out_unlock;
+ 
+-	tlb_flush_ring->entries[write_idx].addr = 0;
+-	tlb_flush_ring->entries[write_idx].flush_all = 1;
+ 	/*
+-	 * Advance write index only after filling in the entry to
+-	 * synchronize with lockless reader.
++	 * All entries should fit on the ring leaving one free for 'flush all'
++	 * entry in case another request comes in. In case there's not enough
++	 * space, just put 'flush all' entry there.
++	 */
++	if (!count || count >= ring_free - 1 || !entries) {
++		tlb_flush_ring->entries[write_idx].addr = 0;
++		tlb_flush_ring->entries[write_idx].flush_all = 1;
++		/*
++		 * Advance write index only after filling in the entry to
++		 * synchronize with lockless reader.
++		 */
++		smp_wmb();
++		tlb_flush_ring->write_idx = (write_idx + 1) % KVM_HV_TLB_FLUSH_RING_SIZE;
++		goto out_unlock;
++	}
++
++	for (i = 0; i < count; i++) {
++		tlb_flush_ring->entries[write_idx].addr = entries[i];
++		tlb_flush_ring->entries[write_idx].flush_all = 0;
++		write_idx = (write_idx + 1) % KVM_HV_TLB_FLUSH_RING_SIZE;
++	}
++	/*
++	 * Advance write index only after filling in the entry to synchronize
++	 * with lockless reader.
+ 	 */
+ 	smp_wmb();
+-	tlb_flush_ring->write_idx = (write_idx + 1) % KVM_HV_TLB_FLUSH_RING_SIZE;
++	tlb_flush_ring->write_idx = write_idx;
+ 
+ out_unlock:
+ 	spin_unlock_irqrestore(&tlb_flush_ring->write_lock, flags);
+@@ -1862,15 +1890,58 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_vcpu_hv_tlb_flush_ring *tlb_flush_ring;
+ 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++	struct kvm_vcpu_hv_tlb_flush_entry *entry;
++	int read_idx, write_idx;
++	u64 address;
++	u32 count;
++	int i, j;
+ 
+-	kvm_vcpu_flush_tlb_guest(vcpu);
+-
+-	if (!hv_vcpu)
++	if (!tdp_enabled || !hv_vcpu) {
++		kvm_vcpu_flush_tlb_guest(vcpu);
+ 		return;
++	}
+ 
+ 	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
+ 
+-	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
++	/*
++	 * TLB flush must be performed on the target vCPU so 'read_idx'
++	 * (AKA 'tail') cannot change underneath, the compiler is free
++	 * to re-read it.
++	 */
++	read_idx = tlb_flush_ring->read_idx;
++
++	/*
++	 * 'write_idx' (AKA 'head') can be concurently updated by a different
++	 * vCPU so we must be sure it's read once.
++	 */
++	write_idx = READ_ONCE(tlb_flush_ring->write_idx);
++
++	/* Pairs with smp_wmb() in hv_tlb_flush_ring_enqueue() */
++	smp_rmb();
++
++	for (i = read_idx; i != write_idx; i = (i + 1) % KVM_HV_TLB_FLUSH_RING_SIZE) {
++		entry = &tlb_flush_ring->entries[i];
++
++		if (entry->flush_all)
++			goto out_flush_all;
++
++		/*
++		 * Lower 12 bits of 'address' encode the number of additional
++		 * pages to flush.
++		 */
++		address = entry->addr & PAGE_MASK;
++		count = (entry->addr & ~PAGE_MASK) + 1;
++		for (j = 0; j < count; j++)
++			static_call(kvm_x86_flush_tlb_gva)(vcpu, address + j * PAGE_SIZE);
++	}
++	++vcpu->stat.tlb_flush;
++	goto out_empty_ring;
++
++out_flush_all:
++	kvm_vcpu_flush_tlb_guest(vcpu);
++
++out_empty_ring:
++	tlb_flush_ring->read_idx = write_idx;
+ }
+ 
+ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+@@ -1879,11 +1950,22 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 	struct hv_tlb_flush_ex flush_ex;
+ 	struct hv_tlb_flush flush;
+ 	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
++	/*
++	 * Normally, there can be no more than 'KVM_HV_TLB_FLUSH_RING_SIZE - 1'
++	 * entries on the TLB Flush ring as when 'read_idx == write_idx' the
++	 * ring is considered as empty. The last entry on the ring, however,
++	 * needs to be always left free for 'flush all' entry which gets placed
++	 * when there is not enough space to put all the requested entries.
++	 */
++	u64 __tlb_flush_entries[KVM_HV_TLB_FLUSH_RING_SIZE - 2];
++	u64 *tlb_flush_entries;
+ 	u64 valid_bank_mask;
+ 	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
+ 	struct kvm_vcpu *v;
+ 	unsigned long i;
+ 	bool all_cpus;
++	int consumed_xmm_halves = 0;
++	gpa_t data_offset;
+ 
+ 	/*
+ 	 * The Hyper-V TLFS doesn't allow more than 64 sparse banks, e.g. the
+@@ -1899,10 +1981,12 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			flush.address_space = hc->ingpa;
+ 			flush.flags = hc->outgpa;
+ 			flush.processor_mask = sse128_lo(hc->xmm[0]);
++			consumed_xmm_halves = 1;
+ 		} else {
+ 			if (unlikely(kvm_read_guest(kvm, hc->ingpa,
+ 						    &flush, sizeof(flush))))
+ 				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++			data_offset = sizeof(flush);
+ 		}
+ 
+ 		trace_kvm_hv_flush_tlb(flush.processor_mask,
+@@ -1926,10 +2010,12 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			flush_ex.flags = hc->outgpa;
+ 			memcpy(&flush_ex.hv_vp_set,
+ 			       &hc->xmm[0], sizeof(hc->xmm[0]));
++			consumed_xmm_halves = 2;
+ 		} else {
+ 			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &flush_ex,
+ 						    sizeof(flush_ex))))
+ 				return HV_STATUS_INVALID_HYPERCALL_INPUT;
++			data_offset = sizeof(flush_ex);
+ 		}
+ 
+ 		trace_kvm_hv_flush_tlb_ex(flush_ex.hv_vp_set.valid_bank_mask,
+@@ -1945,25 +2031,37 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			return HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 
+ 		if (all_cpus)
+-			goto do_flush;
++			goto read_flush_entries;
+ 
+ 		if (!hc->var_cnt)
+ 			goto ret_success;
+ 
+-		if (kvm_get_sparse_vp_set(kvm, hc, sparse_banks, 2,
+-					  offsetof(struct hv_tlb_flush_ex,
+-						   hv_vp_set.bank_contents)))
++		if (kvm_get_sparse_vp_set(kvm, hc, sparse_banks, consumed_xmm_halves,
++					  data_offset))
++			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		data_offset += hc->var_cnt * sizeof(sparse_banks[0]);
++		consumed_xmm_halves += hc->var_cnt;
++	}
++
++read_flush_entries:
++	if (hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE ||
++	    hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX ||
++	    hc->rep_cnt > ARRAY_SIZE(__tlb_flush_entries)) {
++		tlb_flush_entries = NULL;
++	} else {
++		if (kvm_hv_get_tlb_flush_entries(kvm, hc, __tlb_flush_entries,
++						consumed_xmm_halves, data_offset))
+ 			return HV_STATUS_INVALID_HYPERCALL_INPUT;
++		tlb_flush_entries = __tlb_flush_entries;
+ 	}
+ 
+-do_flush:
+ 	/*
+ 	 * vcpu->arch.cr3 may not be up-to-date for running vCPUs so we can't
+ 	 * analyze it here, flush TLB regardless of the specified address space.
+ 	 */
+ 	if (all_cpus) {
+ 		kvm_for_each_vcpu(i, v, kvm)
+-			hv_tlb_flush_ring_enqueue(v);
++			hv_tlb_flush_ring_enqueue(v, tlb_flush_entries, hc->rep_cnt);
+ 
+ 		kvm_make_all_cpus_request(kvm, KVM_REQ_HV_TLB_FLUSH);
+ 	} else {
+@@ -1973,7 +2071,7 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 			v = kvm_get_vcpu(kvm, i);
+ 			if (!v)
+ 				continue;
+-			hv_tlb_flush_ring_enqueue(v);
++			hv_tlb_flush_ring_enqueue(v, tlb_flush_entries, hc->rep_cnt);
+ 		}
+ 
+ 		kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
 -- 
 2.35.1
-
-
 
