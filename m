@@ -2,213 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AEAC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242904AbiDNRGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
+        id S240573AbiDNRGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244060AbiDNRFm (ORCPT
+        with ESMTP id S244615AbiDNRFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:05:42 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2F63BBED
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:19 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id bj36so901517ljb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/81+PkkPmPe/TTQwrTB+sxyYxn9iTbpRvnVkvTg+pC8=;
-        b=B9wDWH42g9YW9AI0Nss9bPg2ke9AcgJPM27MaTf5FcLd2cYA8sez9IWCsZ1KH5qcqa
-         Lu+dH/ZYnrkVAhHHkskGQMRfl28OXKQ8/hvdgxC+Gd1N0dqNrZq14l0edVEEzLsBFvGP
-         IU9Ox5r96ULPR95h7HSZz6dMttqUaACHn8hkw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/81+PkkPmPe/TTQwrTB+sxyYxn9iTbpRvnVkvTg+pC8=;
-        b=QauKxiT80RS7ILj63nyTWD/7Zj0lrcW7FJDDeXys2maKwI2QN93/4fECsAqQMokxB7
-         0wXE1hCjFJRnjrB2PxGQ5jJVbnjSSVDO4TQ8qEcpy6ddlyDAquRuLUozbJusRolHi4HV
-         r2wwb1ukS0FIDBUZQgNqYtwbGSNLzU84692FABmm30bP/NH6RzjggMCkZApmBgth4S+1
-         d0fiTYoMbjo9jOITdgqHl4GUH8nj/g0GOw7DOcvicnJnlgRujC6pWhAsKbkETqQGdrhv
-         qyCx88LjZUBmmHAIGJAboPGNHfr3g1ZfEh+q0r3BEF5ECEvx1NnT2JEfjJ+OuZww8w4e
-         LQmQ==
-X-Gm-Message-State: AOAM530WttkQa1UesKNegDHYYx21XIDGQLdQerkKUFJEzXQefuYO43Mi
-        iepFJlDY3AYtWGlZuTuAfMne5Zabx2BUyoEds+s=
-X-Google-Smtp-Source: ABdhPJyX1/xgcmXdpzdtsJVtk74bhwzcSa9bR4LUVKHXX+QxGuPvS89nbK7a5YenSZnPZ3z8jrTYwg==
-X-Received: by 2002:a05:651c:1a0e:b0:24c:83e3:14f3 with SMTP id by14-20020a05651c1a0e00b0024c83e314f3mr2070810ljb.376.1649954837606;
-        Thu, 14 Apr 2022 09:47:17 -0700 (PDT)
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
-        by smtp.gmail.com with ESMTPSA id n9-20020a196f49000000b0046bbeb8c242sm46751lfk.171.2022.04.14.09.47.17
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Apr 2022 09:47:17 -0700 (PDT)
-Received: by mail-lj1-f175.google.com with SMTP id 17so6801420lji.1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:17 -0700 (PDT)
-X-Received: by 2002:a05:6000:1c15:b0:207:849a:648b with SMTP id
- ba21-20020a0560001c1500b00207849a648bmr2610564wrb.513.1649954370738; Thu, 14
- Apr 2022 09:39:30 -0700 (PDT)
+        Thu, 14 Apr 2022 13:05:45 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2069.outbound.protection.outlook.com [40.107.94.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9375F49CAA;
+        Thu, 14 Apr 2022 09:48:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lJG4ki+jhfEOqoMYzd8CkEyGPl2+ErAGuK7AaTQz8umzjRo1oDWMNGvM7soJb91hD3zF1drS2nwMuAeZJzANf3xRIhpWmHv/vqiAN5Sy/eqKjxfgmQz4UjFhzPUOAo4Aw4GeB+UCF57cc+lcGj/j/gQeuUIAD9lsRLWdLU8wLYCnueWdQJwSrZ/Y8ME7BTxItipslXGtyis45QVD4cScxqo469brE4P7qJImVp39dW6ywm9gqLCv5SxrCGcF0bpj7FHj6cuY7iV59PfM2paf2izXz8teACKcuZ8P183BiE0IuENKgi+Pu02dT/IC2dNENvZsI+yR8XcaPMzsM3sjcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pkgpigE1LvaXonsaJ8J779zuU+/p6eVI11s0hWA+n8Y=;
+ b=nMJM1namw2FUWb2vJApbSir9inWyVTGPbwj9ATaE46m7UISvpuusvYMwKwP3Dd8VQL3J/UqAkVAoXZbInMsXf1mRcWQxip5+7z7uegFg7B/XuTypJMBzwylRmGPY7d/NqdkQkf4hHIyCDdSsSKLqRlhHWKZdxeCEDhQIkFeiXhkalBXhpnDPDeVl0hVLYC6e/IaxAgWOqZAtkKa3PxoeMgl5cu1YBaecFPZX955QZjRAd27EYxuX3rf1uBugTycuQCEUTN8qxnQKFV2yijDOX0zj1LlBZ7BljwQD2yMy71lFBXI8jgxMvfVZ7O9zQAjG7IjnFRBes8wk2KSTVvi4BQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pkgpigE1LvaXonsaJ8J779zuU+/p6eVI11s0hWA+n8Y=;
+ b=znvlv7uXUdiBQ8JU9f3PA3YYZFBnMmuNuWh9ASrdqS+Q3QP5BemJQyR2b7Do9M+8kMPKAu8RRMsiLuvELVbz18Xc5XFa8woN3a8KgCWU9ewVmw46Vr+e9OMdXU9xi8z0mA5W+tTZglHdP409oqLnPVrR8DzVXRyT2w6UwN0HfKM=
+Received: from BN9PR03CA0780.namprd03.prod.outlook.com (2603:10b6:408:13a::35)
+ by DM5PR12MB1371.namprd12.prod.outlook.com (2603:10b6:3:78::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Thu, 14 Apr
+ 2022 16:48:14 +0000
+Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13a:cafe::51) by BN9PR03CA0780.outlook.office365.com
+ (2603:10b6:408:13a::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18 via Frontend
+ Transport; Thu, 14 Apr 2022 16:48:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5164.19 via Frontend Transport; Thu, 14 Apr 2022 16:48:14 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Apr
+ 2022 11:48:08 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Rui Huang <ray.huang@amd.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+CC:     "open list:AMD PSTATE DRIVER" <linux-pm@vger.kernel.org>,
+        Perry Yuan <Perry.Yuan@amd.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "Mario Limonciello" <mario.limonciello@amd.com>
+Subject: [PATCH v3 2/6] cpufreq: amd-pstate: Only show shared memory solution message once
+Date:   Thu, 14 Apr 2022 11:47:57 -0500
+Message-ID: <20220414164801.1051-3-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220414164801.1051-1-mario.limonciello@amd.com>
+References: <20220414164801.1051-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-References: <1649938766-6768-1-git-send-email-quic_sbillaka@quicinc.com> <1649938766-6768-2-git-send-email-quic_sbillaka@quicinc.com>
-In-Reply-To: <1649938766-6768-2-git-send-email-quic_sbillaka@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 14 Apr 2022 09:39:18 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Wmiv2WGhFCLYmXbWESNOh5FfobjNme85aU6YtN1SLVDA@mail.gmail.com>
-Message-ID: <CAD=FV=Wmiv2WGhFCLYmXbWESNOh5FfobjNme85aU6YtN1SLVDA@mail.gmail.com>
-Subject: Re: [PATCH v7 1/4] drm/msm/dp: Add eDP support via aux_bus
-To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Steev Klimaszewski <steev@kali.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 070996c3-2ff2-4aa5-4e17-08da1e36916a
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1371:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB13711A597880F25B80301E4BE2EF9@DM5PR12MB1371.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rAjzNGM7Q2uM0QZ9j4/t0W5cewILjusodtk2pKhE1mQ4JBedQnAfsNZl9o49f1NjRZkSprz6sa8AtGQng6urVHAF0nYub9zlBKQ/WlpwDWonX6QV/Dk2HPBWUIszCy1c84x5SIMllMfm8YGvwUFZTxD+/1Z6f/jgNpDGT7n4kQg4VIJqGe7EDrpi/NPKd8Jawp2gP967XRccWiFfcq8BPdcRViIjtXGaxFeTAXvkVxfGYBVmF+TK9OwzTr3WAecJMGSp31i4jQ8lcoz2ikYZ/hJPGd74Ja+hsE0TDHmo/peAtiJPlo6URIoYkbXYX9dsY7TGsFwp8GZwZKHdQ4N7BColgpEQPDWih2LsUG7TlSMZURmTKC7hgQQeFm8aFdPZcIBTtT3q5E/vcBiCcilGOtIFsEU0ZFYw1voEcf4WVykOXGhgZuEzAgcMaVLKb8PScjiJ6hqRAWhLhkLnrAbzmBr1k2fLux3N60q0b6POO9CgLrzRYLLkwQ5F2CA8pridaaMXFCsMraHbZEj9ZZ2YS5j5mZhDA6KxmRg0V6ecX63VspED8m4vuCCnmqM+It7iCRGtKvXBvqR9ygrwDtzfgvM6isq5SU6vBBDwbF9Qb1G75PsslEgdoKMssdOX7q7meI9UDTvfwCqY/y52pyncU3DmCPYvKGezpN5wHd+wJFqkR95ppr90hx15MjBuDBos9/kxFCJTOZ3lZlqflVypPQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(2616005)(8676002)(47076005)(54906003)(426003)(4326008)(6666004)(86362001)(508600001)(36756003)(1076003)(16526019)(5660300002)(44832011)(336012)(40460700003)(110136005)(316002)(8936002)(186003)(26005)(81166007)(7696005)(2906002)(83380400001)(82310400005)(356005)(70206006)(70586007)(36860700001)(15650500001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 16:48:14.2451
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 070996c3-2ff2-4aa5-4e17-08da1e36916a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1371
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+A message is emitted to let users know they can enable shared memory,
+but it shows on all CPUs.
 
-On Thu, Apr 14, 2022 at 5:20 AM Sankeerth Billakanti
-<quic_sbillaka@quicinc.com> wrote:
->
-> @@ -1530,6 +1532,60 @@ void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor)
->         }
->  }
->
-> +static int dp_display_get_next_bridge(struct msm_dp *dp)
-> +{
-> +       int rc;
-> +       struct dp_display_private *dp_priv;
-> +       struct device_node *aux_bus;
-> +       struct device *dev;
-> +
-> +       dp_priv = container_of(dp, struct dp_display_private, dp_display);
-> +       dev = &dp_priv->pdev->dev;
-> +       aux_bus = of_get_child_by_name(dev->of_node, "aux-bus");
-> +
-> +       if (aux_bus && dp->is_edp) {
-> +               dp_display_host_init(dp_priv);
-> +               dp_catalog_ctrl_hpd_config(dp_priv->catalog);
-> +               dp_display_host_phy_init(dp_priv);
-> +               enable_irq(dp_priv->irq);
-> +
-> +               rc = devm_of_dp_aux_populate_ep_devices(dp_priv->aux);
-> +               of_node_put(aux_bus);
-> +               if (rc) {
-> +                       disable_irq(dp_priv->irq);
-> +                       dp_display_host_phy_exit(dp_priv);
-> +                       dp_display_host_deinit(dp_priv);
-> +                       return rc;
-> +               }
-> +       } else if (dp->is_edp) {
-> +               DRM_ERROR("eDP aux_bus not found\n");
-> +               return -ENODEV;
-> +       }
-> +
-> +       /*
-> +        * External bridges are mandatory for eDP interfaces: one has to
-> +        * provide at least an eDP panel (which gets wrapped into panel-bridge).
-> +        *
-> +        * For DisplayPort interfaces external bridges are optional, so
-> +        * silently ignore an error if one is not present (-ENODEV).
-> +        */
-> +       rc = dp_parser_find_next_bridge(dp_priv->parser);
+As this parameter is system-wide not CPU specific, it doesn't make
+sense to show 8+ times.  Modify it to print only once.
 
-This gets into the same problem that Dmitry pointed out that ps8640
-has that's addressed by my recent series [1].  Namely it's not
-guaranteed that the panel will have finished probing by the time
-devm_of_dp_aux_populate_ep_devices() finishes probing. I don't think
-it's going to be really solvable without the bigger rewrite that we've
-been discussing, though. ...it's probably OK to land something like
-what you have here, but it might at least deserve a comment in the
-code?
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+v2->v3:
+ * New patch
 
-[1] https://lore.kernel.org/r/20220409023628.2104952-1-dianders@chromium.org
+ drivers/cpufreq/amd-pstate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
+index 7be38bc6a673..ecd1fd5e5b5a 100644
+--- a/drivers/cpufreq/amd-pstate.c
++++ b/drivers/cpufreq/amd-pstate.c
+@@ -666,7 +666,7 @@ static int __init amd_pstate_init(void)
+ 		static_call_update(amd_pstate_init_perf, cppc_init_perf);
+ 		static_call_update(amd_pstate_update_perf, cppc_update_perf);
+ 	} else {
+-		pr_info("This processor supports shared memory solution, you can enable it with amd_pstate.shared_mem=1\n");
++		pr_info_once("A processor on this system supports the shared memory solution, you can enable it with amd_pstate.shared_mem=1\n");
+ 		return -ENODEV;
+ 	}
+ 
+-- 
+2.34.1
 
-> +       if (rc == -ENODEV) {
-> +               if (dp->is_edp) {
-> +                       DRM_ERROR("eDP: next bridge is not present\n");
-> +                       return rc;
-> +               }
-> +       } else if (rc) {
-> +               if (rc != -EPROBE_DEFER)
-> +                       DRM_ERROR("DP: error parsing next bridge: %d\n", rc);
-> +               return rc;
-
-In both of your two error returns here isn't it a problem that you don't do:
-
-  disable_irq(dp_priv->irq);
-  dp_display_host_phy_exit(dp_priv);
-  dp_display_host_deinit(dp_priv);
-
-Should probably at least fix that clear error before landing, unless
-I'm misunderstanding and there's some reason not to do that?
-
-
-As discussed previously, I'm not convinced that we've covered every
-corner case for properly doing and undoing the above things. I'm
-hoping that once we do the cleanup and move to pm_runtime() management
-that it will be cleaned up?
-
-
-> @@ -114,10 +114,12 @@ struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *
->         bridge->funcs = &dp_bridge_ops;
->         bridge->type = dp_display->connector_type;
->
-> -       bridge->ops =
-> -               DRM_BRIDGE_OP_DETECT |
-> -               DRM_BRIDGE_OP_HPD |
-> -               DRM_BRIDGE_OP_MODES;
-> +       if (!dp_display->is_edp) {
-> +               bridge->ops =
-> +                       DRM_BRIDGE_OP_DETECT |
-> +                       DRM_BRIDGE_OP_HPD |
-> +                       DRM_BRIDGE_OP_MODES;
-
-Given that Dmitry had questions about why eDP has different ops in his
-previous review of this code, the above probably deserves an inline
-code comment. If you want to use my wording, you could paste this into
-your code:
-
-  /*
-   * Many ops only make sense for DP. Why?
-   * - Detect/HPD are used by DRM to know if a display is _physically_
-   *   there, not whether the display is powered on / finished initting.
-   *   On eDP we assume the display is always there because you can't
-   *   know until power is applied. If we don't implement the ops DRM will
-   *   assume our display is always there.
-   * - Currently eDP mode reading is driven by the panel driver. This
-   *   allows the panel driver to properly power itself on to read the
-   *   modes.
-   */
-
-
-Overall: as discussed, I think that the current implementation is a
-bit fragile and might have some wrong corner cases since it's hard for
-me to reason about exactly when we init/de-init things. Even if it
-works great, the fact that it's hard to reason about isn't wonderful.
-That being said, I honestly believe that would benefit upstream to get
-this landed and iterate on it. I don't think this should be causing
-any existing behavior to be _worse_ and getting it landed upstream
-will keep more people focused on the same codebase.
-
-
--Doug
