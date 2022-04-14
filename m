@@ -2,146 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA7ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345889AbiDNTqQ (ORCPT
+        id S1345924AbiDNTqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
+        Thu, 14 Apr 2022 15:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239376AbiDNTqI (ORCPT
+        with ESMTP id S1345896AbiDNTqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:46:08 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46B1ED9C2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:43:42 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id c12-20020a17090a020c00b001cba1ebb20cso6754646pjc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:43:42 -0700 (PDT)
+        Thu, 14 Apr 2022 15:46:21 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F3DED9C3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:43:55 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id z16so5731317pfh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:43:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YMPolPkFbrluEA7trFzW5vfGL6xOTpY2rpO+rRWfteE=;
-        b=aD5O4GRMocgwH2YInqmL40T6Jk55qVWck1TJ1OI0qsVNqYmQVCJP5pBGIVgXGHnCL0
-         uZQmAvLy9RVTRE03fIPEewK7KYTFGSm9sEI/+ZaP12yw3Z6e+R6bW4QMjGx6acd1Sb0x
-         JWcmgYjHK+52nNHv1qDiHroGDkhFjZ6xRDdsyuhOBydIiMA8z7skSoharKjcq2oNZYcX
-         3GazU6w/ihmzJGraYZdRUKcwVu79CgyJzIn/WRXzZI0AHElODTZfy6xAuvYh/aADAMYZ
-         l9dqEHA2XSts/NFEDe17rqVXcfqTAg4bNhKU/xR2APWVP8XqY1JwG7dqEQ3xsDfspAli
-         rAeg==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HoOTe7YE1Mi7xuJrmm/HVDsML2ycAntXdv9+Mjx+eA8=;
+        b=5t0ZJQfdz5maXzWjYugPMQc/fDTCQUV5q+XBgBy/6l1iKUPV2lNe7VuF/nxT3pCtT1
+         1I6TITDBexQeA7vrARtqzq6TzeNVUG9N8s2fS9HhtrfMrvqWjSUHaDH197eS155kUqOM
+         uKp21Hvk91zXDWkOWdBZvWARGkna8Fhxi+G8yQXkYsTGoXK3f95b2rC7YeCCEuNj8WZy
+         z1rdAOwboXWEKI1xRxJ54UoO4aP2A53BGS+fLT7f8EvDqfubPAdx8g/cABvSEJb7OBsa
+         idJMJNbfK2bkpn692xb9BBXHFGuueBhl18Td0o6QoVO1+WhCg7VDRNy6JsP0orim6HPw
+         oeZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YMPolPkFbrluEA7trFzW5vfGL6xOTpY2rpO+rRWfteE=;
-        b=RE0Zu6LCB/Yhpn907aU9ZRbQyp0oiEQIyQ8obavDkROtPq5CFR5++6cjiiLHBzgXmf
-         PI98vFVLfH5XjT/J/Gu4xGSxQpJYmewUXU6ZfsYDBbKYaJkHoa9HcOTJIXr3wJrpZo1u
-         coaw5foUAIFBI9CaVGikhJqhIhHzNHnOxW9ThB/IxOk28SrghPbJPqx/uqnIGZ/UR/Ca
-         mMOypB+hePe4oLtREX+UXWz6br36X1IRDSQMbzMZKxj5UeuGkJvHg+qFu1usIpxbpxFm
-         ryFhN3dw/NWYKY4qSztYWe0Hj1poKel+IeCfs0lwgrqCU2BLmiM8gEzHQaUIIxyYJypy
-         G1ag==
-X-Gm-Message-State: AOAM530xsloV0nsyeYuzsQQ79zw0FvOZT+ZDQK2FERBXHZui4OYG+bTV
-        0nmHy6looNqR+GVMGUEYUlor0WifJjjTSzUQJkk7+A==
-X-Google-Smtp-Source: ABdhPJxLJx2dhijhY2GgYR6k+AAoWzSxf1ZMV2jWzsPbKL3wihos+1a3+smba0fpXn3HJ0WjmduhiN4tJaiMRMxnaEA=
-X-Received: by 2002:a17:902:dac7:b0:158:b284:cdc3 with SMTP id
- q7-20020a170902dac700b00158b284cdc3mr6149439plx.34.1649965422400; Thu, 14 Apr
- 2022 12:43:42 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HoOTe7YE1Mi7xuJrmm/HVDsML2ycAntXdv9+Mjx+eA8=;
+        b=OVhanEsLE1IN2tLObwicc28Bu/ZgJ94FeTMfjMwatnjEPwKBVWRtuO6/i5QJ2xioT5
+         /V0HYe++fEFEkZetpc/9IPIi5iEM0l8z7DaWiGvX8AD/Bu9kDNB19nH++afxsO0A4xvc
+         Q/pTC0IYq8P2OFIXsGgNGkgow9sesSXYZqTqjysQzL5fhgbBkaywnCeNL0NlHYTSlEG9
+         pR0fcgl48RwaSMXnQHyJcg/SkJ7iVkd3NDnDdQ98yrDQrZywhbVHTdm7aTP8NnHliwx6
+         +6I2+LFoDPB4CFWtYVlJMnvpdNFifcps6i+IuOajXFSnVooYmWVV0raJl6TV0yPQmxFj
+         UE0A==
+X-Gm-Message-State: AOAM533qelyq0v8g5F2wKtndcvv+gOXFiiEcxD579xm6sSlsyRe5qius
+        ccuNoiQd7I/Yy73RxvKjl3oUww==
+X-Google-Smtp-Source: ABdhPJzlnAEM0ZydIi4iBdfWU4lsspLSPyZZdr0qS3LhVt5qVMjZWphp5KG6zcuzjev8SP5KpT0/ug==
+X-Received: by 2002:a63:e146:0:b0:39d:1b00:e475 with SMTP id h6-20020a63e146000000b0039d1b00e475mr3517147pgk.537.1649965434831;
+        Thu, 14 Apr 2022 12:43:54 -0700 (PDT)
+Received: from x1 ([2601:1c2:1001:7090:5b60:6a76:138d:2646])
+        by smtp.gmail.com with ESMTPSA id x7-20020aa784c7000000b005058d220b37sm629861pfn.64.2022.04.14.12.43.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 12:43:54 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 12:44:40 -0700
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Nishanth Menon <nm@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>,
+        Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: wkup-m3-ipc: Add ti,set-io-isolation
+ property
+Message-ID: <Ylh5qPs57uruokUh@x1>
+References: <20220414192722.2978837-1-dfustini@baylibre.com>
+ <20220414192722.2978837-2-dfustini@baylibre.com>
 MIME-Version: 1.0
-References: <164982968798.684294.15817853329823976469.stgit@dwillia2-desk3.amr.corp.intel.com>
- <164982969858.684294.17819743973041389492.stgit@dwillia2-desk3.amr.corp.intel.com>
- <20220413084309.GV2731@worktop.programming.kicks-ass.net> <CAPcyv4huZVNkxa7-rQ_J=nVN77+5F1AJg5vi6kLHp8t5khcwHA@mail.gmail.com>
- <Ylf0dewci8myLvoW@hirez.programming.kicks-ass.net> <CAPcyv4hFabn6H064HTrH8=GQ-cxsOk4xEK8s66JQxQavfgAzGw@mail.gmail.com>
- <Ylh3ISDToV5y9/4P@hirez.programming.kicks-ass.net>
-In-Reply-To: <Ylh3ISDToV5y9/4P@hirez.programming.kicks-ass.net>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Thu, 14 Apr 2022 12:43:31 -0700
-Message-ID: <CAPcyv4hwsKCbaxDhAL6LPZQmLZZV2T4wpja+cNZpjy=enR-eYQ@mail.gmail.com>
-Subject: Re: [PATCH v2 02/12] device-core: Add dev->lock_class to enable
- device_lock() lockdep validation
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-cxl@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        "Schofield, Alison" <alison.schofield@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414192722.2978837-2-dfustini@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 12:34 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Thu, Apr 14, 2022 at 10:17:13AM -0700, Dan Williams wrote:
->
-> > One more sanity check... So in driver subsystems there are cases where
-> > a device on busA hosts a topology on busB. When that happens there's a
-> > need to set the lock class late in a driver since busA knows nothing
-> > about the locking rules of busB.
->
-> I'll pretend I konw what you're talking about ;-)
->
-> > Since the device has a longer lifetime than a driver when the driver
-> > exits it must set dev->mutex back to the novalidate class, otherwise
-> > it sets up a use after free of the static lock_class_key.
->
-> I'm not following, static storage has infinite lifetime.
+On Thu, Apr 14, 2022 at 12:27:23PM -0700, Drew Fustini wrote:
+> Add documentation for the ti,set-io-isolation DT property on the wkup_m3_ipc
+> node which tells the wkup_m3_ipc driver to use the wkup_m3 to enable
+> IO Isolation during low power mode transitions on am43xx platforms.
+> 
+> Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
+> [dfustini: convert to YAML, make DTS example that passes check]
+> Signed-off-by: Drew Fustini <dfustini@baylibre.com>
+> ---
+> Changes from v2:
+> - correct indentation of the 'allOf:' block
+> 
+> Changes from v1:
+> - correct typo of 'ti,set-io-isolation' property in subject
+> - make 'ti,set-io-isolation' only valid for 'ti,am4372-wkup-m3-ipc'
+> 
+>  .../bindings/soc/ti/wkup-m3-ipc.yaml          | 78 +++++++++++++++++--
+>  1 file changed, 73 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+> index 7f4a75c5fcaa..f0ae86250fe4 100644
+> --- a/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+> +++ b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+> @@ -24,14 +24,22 @@ description: |+
+>    A wkup_m3_ipc device node is used to represent the IPC registers within an
+>    SoC.
+>  
+> -  Support for VTT Toggle
+> -  ==================================
+> +  Support for VTT Toggle with GPIO pin
+> +  ====================================
+>    On some boards like the AM335x EVM-SK and the AM437x GP EVM, a GPIO pin is
+>    connected to the enable pin on the DDR VTT regulator. This allows the
+>    regulator to be disabled upon suspend and enabled upon resume. Please note
+>    that the GPIO pin must be part of the GPIO0 module as only this GPIO module
+>    is in the wakeup power domain.
+>  
+> +  Support for IO Isolation
+> +  ========================
+> +  On AM437x SoCs, certain pins can be forced into an alternate state when IO
+> +  isolation is activated. Those pins have pad control registers prefixed by
+> +  'CTRL_CONF_' that contain DS0 (e.g. deep sleep) configuration bits that can
+> +  override the pin's existing bias (pull-up/pull-down) and value (high/low) when
+> +  IO isolation is active.
+> +
+>  properties:
+>    compatible:
+>      enum:
+> @@ -63,6 +71,24 @@ properties:
+>      $ref: /schemas/types.yaml#/definitions/uint32
+>      description: GPIO pin connected to enable pin on VTT regulator
+>  
+> +  ti,set-io-isolation:
+> +    type: boolean
+> +    description:
+> +      If this property is present, then the wkup_m3_ipc driver will instruct
+> +      the CM3 firmware to activate IO isolation when suspending to deep sleep.
+> +      This can be leveraged by a board design to put other devices on the board
+> +      into a low power state.
+> +allOf:
 
-Not static storage in a driver module.
+Rob - sorry for the churn.  I realize now that there should have been a
+blank line before 'allOf:'.  Should I send a v4 or (if there are not
+other issues) could that just added when applying?
 
-modprobe -r fancy_lockdep_using_driver.ko
-
-Any use of device_lock() by the core on a device that a driver in this
-module was driving will de-reference a now invalid pointer into
-whatever memory was vmalloc'd for the module static data.
-
->
-> > I came up with this and it seems to work, just want to make sure I'm
-> > properly using the lock_set_class() API and it is ok to transition
-> > back and forth from the novalidate case:
-> >
-> > diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-> > index 990b6670222e..32673e1a736d 100644
-> > --- a/drivers/cxl/cxl.h
-> > +++ b/drivers/cxl/cxl.h
-> > @@ -405,6 +405,29 @@ struct cxl_nvdimm_bridge
-> > *cxl_find_nvdimm_bridge(struct cxl_nvdimm *cxl_nvd);
-> >  #define __mock static
-> >  #endif
-> >
-> > +#ifdef CONFIG_PROVE_LOCKING
-> > +static inline void cxl_lock_reset_class(void *_dev)
-> > +{
-> > +       struct device *dev = _dev;
-> > +
-> > +       lock_set_class(&dev->mutex.dep_map, "__lockdep_no_validate__",
-> > +                      &__lockdep_no_validate__, 0, _THIS_IP_);
-> > +}
-> > +
-> > +static inline int cxl_lock_set_class(struct device *dev, const char *name,
-> > +                                    struct lock_class_key *key)
-> > +{
-> > +       lock_set_class(&dev->mutex.dep_map, name, key, 0, _THIS_IP_);
-> > +       return devm_add_action_or_reset(dev, cxl_lock_reset_class, dev);
-> > +}
-> > +#else
-> > +static inline int cxl_lock_set_class(struct device *dev, const char *name,
-> > +                                    struct lock_class_key *key)
-> > +{
-> > +       return 0;
-> > +}
-> > +#endif
->
-> Under the assumption that the lock is held (lock_set_class() will
-> actually barf if @lock isn't held) this should indeed work as expected
-
-Nice.
-
-> (although I think you got the @name part 'wrong', I think that's
-> canonically something like "&dev->mutex" or something).
-
-Ah, yes, I got it wrong for restoring the same name that results from
-lockdep_set_novalidate_class(), will fix.
+Thank you,
+Drew
