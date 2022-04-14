@@ -2,248 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB75C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C75C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244643AbiDNNes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
+        id S244509AbiDNNfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244400AbiDNN0b (ORCPT
+        with ESMTP id S244401AbiDNN0b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:26:31 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627039F38A;
-        Thu, 14 Apr 2022 06:19:58 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id ec8940abd779740b; Thu, 14 Apr 2022 15:19:56 +0200
-Received: from kreacher.localnet (unknown [213.134.181.101])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4359E9D5;
+        Thu, 14 Apr 2022 06:19:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id CC5B866BE86;
-        Thu, 14 Apr 2022 15:19:55 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v3 5/9] PCI/PM: Move pci_set_low_power_state() next to its caller
-Date:   Thu, 14 Apr 2022 15:14:10 +0200
-Message-ID: <3124866.5fSG56mABF@kreacher>
-In-Reply-To: <5838942.lOV4Wx5bFT@kreacher>
-References: <4419002.LvFx2qVVIh@kreacher> <11975904.O9o76ZdvQC@kreacher> <5838942.lOV4Wx5bFT@kreacher>
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2856B82982;
+        Thu, 14 Apr 2022 13:19:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0255BC385A9;
+        Thu, 14 Apr 2022 13:19:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942394;
+        bh=cFs0/YPO9suB+9Jetv1ZBf9FHyzAp6QvYPIkxENJxzE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rOIlrIjtXFEYItMFnRDrDoflaIAfs36x6xd6n6d+dfnUVMZwHWR3VpRLbJin6YTPF
+         IcnQkt3G+ZM28S7R+IAck3dhgkltKoCP9yBddWukWMy4/9U/rSgaTMWMFu8LwV4WrI
+         CGUK33wP4zE9ThGDAmBj6Lquxd2jSsvcVZSTszLc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 121/338] ath9k_htc: fix uninit value bugs
+Date:   Thu, 14 Apr 2022 15:10:24 +0200
+Message-Id: <20220414110842.348635392@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.101
-X-CLIENT-HOSTNAME: 213.134.181.101
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgieegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudekuddruddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddutddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehm
- ihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-Because pci_set_power_state() is the only caller of
-pci_set_low_power_state(), move the latter next to the former.
+[ Upstream commit d1e0df1c57bd30871dd1c855742a7c346dbca853 ]
 
-No functional impact.
+Syzbot reported 2 KMSAN bugs in ath9k. All of them are caused by missing
+field initialization.
 
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+In htc_connect_service() svc_meta_len and pad are not initialized. Based
+on code it looks like in current skb there is no service data, so simply
+initialize svc_meta_len to 0.
+
+htc_issue_send() does not initialize htc_frame_hdr::control array. Based
+on firmware code, it will initialize it by itself, so simply zero whole
+array to make KMSAN happy
+
+Fail logs:
+
+BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
+ hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
+ htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
+ htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
+...
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
+...
+
+Bytes 4-7 of 18 are uninitialized
+Memory access of size 18 starts at ffff888027377e00
+
+BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
+ hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
+ htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
+ htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
+...
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
+...
+
+Bytes 16-17 of 18 are uninitialized
+Memory access of size 18 starts at ffff888027377e00
+
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220115122733.11160-1-paskripkin@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-v1 -> v3:
-   * Added R-by from Mika.
-
----
- drivers/pci/pci.c |  160 +++++++++++++++++++++++++++---------------------------
- 1 file changed, 80 insertions(+), 80 deletions(-)
-
-Index: linux-pm/drivers/pci/pci.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci.c
-+++ linux-pm/drivers/pci/pci.c
-@@ -1068,86 +1068,6 @@ static inline bool platform_pci_bridge_d
- }
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index 05fca38b38ed..e37de14bc502 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -30,6 +30,7 @@ static int htc_issue_send(struct htc_target *target, struct sk_buff* skb,
+ 	hdr->endpoint_id = epid;
+ 	hdr->flags = flags;
+ 	hdr->payload_len = cpu_to_be16(len);
++	memset(hdr->control, 0, sizeof(hdr->control));
  
- /**
-- * pci_set_low_power_state - Program the given device into a low-power state
-- * @dev: PCI device to handle.
-- * @state: PCI power state (D1, D2, D3hot) to put the device into.
-- *
-- * RETURN VALUE:
-- * -EINVAL if the requested state is invalid.
-- * -EIO if device does not support PCI PM or its PM capabilities register has a
-- * wrong version, or device doesn't support the requested state.
-- * 0 if device already is in the requested state.
-- * 0 if device's power state has been successfully changed.
-- */
--static int pci_set_low_power_state(struct pci_dev *dev, pci_power_t state)
--{
--	u16 pmcsr;
--
--	/* Check if we're already there */
--	if (dev->current_state == state)
--		return 0;
--
--	if (!dev->pm_cap)
--		return -EIO;
--
--	if (state < PCI_D1 || state > PCI_D3hot)
--		return -EINVAL;
--
--	/*
--	 * Validate transition: We can enter D0 from any state, but if
--	 * we're already in a low-power state, we can only go deeper.  E.g.,
--	 * we can go from D1 to D3, but we can't go directly from D3 to D1;
--	 * we'd have to go from D3 to D0, then to D1.
--	 */
--	if (dev->current_state <= PCI_D3cold && dev->current_state > state) {
--		pci_err(dev, "invalid power transition (from %s to %s)\n",
--			pci_power_name(dev->current_state),
--			pci_power_name(state));
--		return -EINVAL;
--	}
--
--	/* Check if this device supports the desired state */
--	if ((state == PCI_D1 && !dev->d1_support)
--	   || (state == PCI_D2 && !dev->d2_support))
--		return -EIO;
--
--	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
--	if (PCI_POSSIBLE_ERROR(pmcsr)) {
--		pci_err(dev, "can't change power state from %s to %s (config space inaccessible)\n",
--			pci_power_name(dev->current_state),
--			pci_power_name(state));
--		return -EIO;
--	}
--
--	pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
--	pmcsr |= state;
--
--	/* Enter specified state */
--	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
--
--	/*
--	 * Mandatory power management transition delays; see PCI PM 1.1
--	 * 5.6.1 table 18
--	 */
--	if (state == PCI_D3hot)
--		pci_dev_d3_sleep(dev);
--	else if (state == PCI_D2)
--		udelay(PCI_PM_D2_DELAY);
--
--	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
--	dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
--	if (dev->current_state != state)
--		pci_info_ratelimited(dev, "refused to change power state from %s to %s\n",
--			 pci_power_name(dev->current_state),
--			 pci_power_name(state));
--
--	if (dev->bus->self)
--		pcie_aspm_pm_state_change(dev->bus->self);
--
--	return 0;
--}
--
--/**
-  * pci_update_current_state - Read power state of given device and cache it
-  * @dev: PCI device to handle.
-  * @state: State to cache in case the device doesn't have the PM capability
-@@ -1405,6 +1325,86 @@ static int pci_set_full_power_state(stru
+ 	status = target->hif->send(target->hif_dev, endpoint->ul_pipeid, skb);
  
- 	if (dev->bus->self)
- 		pcie_aspm_pm_state_change(dev->bus->self);
-+
-+	return 0;
-+}
-+
-+/**
-+ * pci_set_low_power_state - Program the given device into a low-power state
-+ * @dev: PCI device to handle.
-+ * @state: PCI power state (D1, D2, D3hot) to put the device into.
-+ *
-+ * RETURN VALUE:
-+ * -EINVAL if the requested state is invalid.
-+ * -EIO if device does not support PCI PM or its PM capabilities register has a
-+ * wrong version, or device doesn't support the requested state.
-+ * 0 if device already is in the requested state.
-+ * 0 if device's power state has been successfully changed.
-+ */
-+static int pci_set_low_power_state(struct pci_dev *dev, pci_power_t state)
-+{
-+	u16 pmcsr;
-+
-+	/* Check if we're already there */
-+	if (dev->current_state == state)
-+		return 0;
-+
-+	if (!dev->pm_cap)
-+		return -EIO;
-+
-+	if (state < PCI_D1 || state > PCI_D3hot)
-+		return -EINVAL;
-+
-+	/*
-+	 * Validate transition: We can enter D0 from any state, but if
-+	 * we're already in a low-power state, we can only go deeper.  E.g.,
-+	 * we can go from D1 to D3, but we can't go directly from D3 to D1;
-+	 * we'd have to go from D3 to D0, then to D1.
-+	 */
-+	if (dev->current_state <= PCI_D3cold && dev->current_state > state) {
-+		pci_err(dev, "invalid power transition (from %s to %s)\n",
-+			pci_power_name(dev->current_state),
-+			pci_power_name(state));
-+		return -EINVAL;
-+	}
-+
-+	/* Check if this device supports the desired state */
-+	if ((state == PCI_D1 && !dev->d1_support)
-+	   || (state == PCI_D2 && !dev->d2_support))
-+		return -EIO;
-+
-+	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-+	if (PCI_POSSIBLE_ERROR(pmcsr)) {
-+		pci_err(dev, "can't change power state from %s to %s (config space inaccessible)\n",
-+			pci_power_name(dev->current_state),
-+			pci_power_name(state));
-+		return -EIO;
-+	}
-+
-+	pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
-+	pmcsr |= state;
-+
-+	/* Enter specified state */
-+	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
-+
-+	/*
-+	 * Mandatory power management transition delays; see PCI PM 1.1
-+	 * 5.6.1 table 18
-+	 */
-+	if (state == PCI_D3hot)
-+		pci_dev_d3_sleep(dev);
-+	else if (state == PCI_D2)
-+		udelay(PCI_PM_D2_DELAY);
-+
-+	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-+	dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
-+	if (dev->current_state != state)
-+		pci_info_ratelimited(dev, "refused to change power state from %s to %s\n",
-+			 pci_power_name(dev->current_state),
-+			 pci_power_name(state));
-+
-+	if (dev->bus->self)
-+		pcie_aspm_pm_state_change(dev->bus->self);
+@@ -274,6 +275,10 @@ int htc_connect_service(struct htc_target *target,
+ 	conn_msg->dl_pipeid = endpoint->dl_pipeid;
+ 	conn_msg->ul_pipeid = endpoint->ul_pipeid;
  
- 	return 0;
- }
++	/* To prevent infoleak */
++	conn_msg->svc_meta_len = 0;
++	conn_msg->pad = 0;
++
+ 	ret = htc_issue_send(target, skb, skb->len, 0, ENDPOINT0);
+ 	if (ret)
+ 		goto err;
+-- 
+2.34.1
 
 
 
