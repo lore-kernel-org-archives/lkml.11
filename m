@@ -2,139 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E237CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:04:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245010AbiDNRG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
+        id S244930AbiDNRHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244906AbiDNRFp (ORCPT
+        with ESMTP id S244474AbiDNRFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:05:45 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2049.outbound.protection.outlook.com [40.107.102.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B5049CB3;
-        Thu, 14 Apr 2022 09:48:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NBJ7Nx/xb/VQejZ2zpJnEZOc758IQUlGu6O6KpkbB4iNPwnn3tKQgQt4gpUROcHPEfKWJfrBGLvwa3U/3Zd/uE/2LATiZqeJnSFiq3mUxEYUAZCPXjW9+H0ekUXaa+rfrRWQ/WhgCyg7fNsWyddbnwBfbt4qcZhgSk+8KRb5iR5moFobl3rLYYC9Ogzf0l82H+Bc3a4/W3C2lfgVJ47KV4YDJDjLPBCQgbOBJcidP7bf1PlUUK+NpL1oRO7BRFRRp8JBSTIdPdDwwENr/TaSQG4NEWsCyhUcaaezb5JBIsJ2zK+kD//acVRhGeXxVdx54Wt2/5Ct2X6wFgTYwouPsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l68433YVMq66wTCNnzwadv9YbsWeBaN8JOpghfEUYyM=;
- b=K/V4Ep3ceetRfE0RHF2VHRLx07d2276JGO3+kryZMggmQZAjF7FoezExJzT28WU6zUeaOHu0lhNyrnIPmQ7mh/X7qdUwAM8sDN3XxD5YB/ptAewdBoB8SftDrcIVE18neC/CIPCU6spczOhQ3R0mSxgSX5+gg5+CTNz+i/12C/4498X0cPW24fsPaOeigX5E5PyVeWw5aaOsBfs5OSZBCzEDWdle6BbGHwz6p4oGg82SrYX9pHzz+3lON1nYLYC8BsWSFXzN34nNtzlYK5eSL6WPZLSTfp+Ptn4KFZ390q8IhmqRpEGnasXjxNImYSCuq/n2xZeR538171Rq6aLJOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l68433YVMq66wTCNnzwadv9YbsWeBaN8JOpghfEUYyM=;
- b=l2cxLH+Ma80FAiFlelsm+JOHt7PeIn4Hmi5bTftcNDnliYYGEufKOV1ioTF3aeEeBUf6EKEb0NZ13SKjIPy1yFqoXkopqA+d+2rRccLij+0hVYqQSta+0BeB+2TPU+eAztY3lJ9OWxemBlsXVseQJjqvGjTiYNyMv7R3XSjtVts=
-Received: from BN9PR03CA0778.namprd03.prod.outlook.com (2603:10b6:408:13a::33)
- by PH0PR12MB5608.namprd12.prod.outlook.com (2603:10b6:510:143::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Thu, 14 Apr
- 2022 16:48:15 +0000
-Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13a:cafe::7f) by BN9PR03CA0778.outlook.office365.com
- (2603:10b6:408:13a::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18 via Frontend
- Transport; Thu, 14 Apr 2022 16:48:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5164.19 via Frontend Transport; Thu, 14 Apr 2022 16:48:15 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Apr
- 2022 11:48:10 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Rui Huang <ray.huang@amd.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-CC:     "open list:AMD PSTATE DRIVER" <linux-pm@vger.kernel.org>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "Mario Limonciello" <mario.limonciello@amd.com>
-Subject: [PATCH v3 5/6] cpufreq: amd-pstate: Add a module device table
-Date:   Thu, 14 Apr 2022 11:48:00 -0500
-Message-ID: <20220414164801.1051-6-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220414164801.1051-1-mario.limonciello@amd.com>
-References: <20220414164801.1051-1-mario.limonciello@amd.com>
+        Thu, 14 Apr 2022 13:05:43 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C450DE4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:54 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id q14so6751225ljc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zX+0Rp8KeI1bu36+dWYbiIQtitTDuR4Sdzxg17DTCMM=;
+        b=N693k4tshoimUMR7PJSOzCwUrqo6jmdbynTTZ5/gGXiI4BUH5YFaTyhChlD1qYPwIv
+         Kh7ugHtuZ2uky5ruCQ6mniUIioKbVQxsbZ/Rnh06noLFOOH9Mi+acFsRtex2XGvkaG4R
+         Q3VlTKcErFU8W0iVIIxODoppOuI9yIftPOgPA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zX+0Rp8KeI1bu36+dWYbiIQtitTDuR4Sdzxg17DTCMM=;
+        b=37S/0J0SvWONPX/zFv5LF1rVFyXwXVA0vnNGrP7defSyL/3qa3vkULry1T3+wWtacF
+         A47F0iQQIk3Pz5XvCOUnaRuhzTLcWTgF94UaqlQ6gNxGCapqAixY+HZHqVqOiazdmWar
+         B4NgDrwK7QAqXumCI0+9MhV4XNuGNoHrgYS0PYFsfDoQSsMXG3oIsWfoHoIUz6ek2MR/
+         L0GuyaEOyRRYkD75gYwDfj8/KZU9pTYB6Xg95hhQx2tuYYHYY6sFX3g/Eto6Io47vXQx
+         MKiEtbPg59OjptZl22p7mckiu2f7eKX35nsr1CO2RFcPkENEDkNZgsezzMnV8Tcjg2ui
+         JLPw==
+X-Gm-Message-State: AOAM5326e1FQPwmc/WmJywiw44+HsZHE4l8eoiPSfaatQZddKKizxHIC
+        wCP+n5VwPQDKTPbc7TNvFzmkqJT/EAPCIHMz0So=
+X-Google-Smtp-Source: ABdhPJw+KR23cz3eZ3C2oXT0pZVS/C0afqbq3o8wvRlt0GHY93W5UIskiLKQsfFGyoftLqjfSX2s3Q==
+X-Received: by 2002:a2e:6814:0:b0:24a:f422:e953 with SMTP id c20-20020a2e6814000000b0024af422e953mr2042842lja.527.1649954872347;
+        Thu, 14 Apr 2022 09:47:52 -0700 (PDT)
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com. [209.85.167.52])
+        by smtp.gmail.com with ESMTPSA id i18-20020a056512225200b0044a29058506sm46388lfu.194.2022.04.14.09.47.51
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 09:47:52 -0700 (PDT)
+Received: by mail-lf1-f52.google.com with SMTP id u19so10130486lff.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:51 -0700 (PDT)
+X-Received: by 2002:a5d:47cf:0:b0:207:ac31:c2ce with SMTP id
+ o15-20020a5d47cf000000b00207ac31c2cemr2734623wrc.422.1649954428907; Thu, 14
+ Apr 2022 09:40:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8838f436-60e9-4766-1e44-08da1e3691df
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5608:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR12MB5608C40578E25EE0B28E3598E2EF9@PH0PR12MB5608.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DyxsT4ns4eis8pMyoxbIOs69nCRQx3ISPDmmbJyzVlUcE/XAVi/Ik/kTkmba6RLCWUNXH+SSapfWqKHs0b7Zf52ooRMLcmGdwEWyzqoNVhQ88fnrkEptOhBWEOBATcOl84hbATf3xZ9VrDNAR71tO/3TtmjfZVvm5qrsLp/CctTr+Rx2WMJv+Sg4rM6aRyISq0SOzCSLoR0WxR1xcJ3fpevKRhwmhOciFJ45izJpxHrRXl48AXqVYWP9PrQyVCA9v4sV6r+fl4RczECen7C05EObbxY+KsBz5LJIEKR0sOnRdCLIJyAPA3ozT/L2syvg21d6Sc8O/SHoRZBNf8XkrCh8jIt4X9dznrR9N7+WsPoccJv6gmKT2YIHo2avUb+cuBvNdiNHA/LWEemJsBc3pHBgS6REL3xa8G3E1Lh5vwMIHhHptU+MijshSDUnzoUQaTADkuEaLgk4pk3/qKwIXL9/Ya/mPMB3ItsrR0hEvRSx3coe+/WbvccgWps+FYCSYcb9um8OkgqFSianOEatYh1D0m9E2BYrVgrH2rGaUma4oYQ+MKwgoS7lfyd5nKOWKA3YVwCEwhb/K68HTvVHcdQFyLjzJQOS+QeqGvU7IKS/GSUSqLVxmuhYGm8oBl8WQk6fJHOxAK+QrtXJBF4zWB3dSyDYAzcP1Y7EbOaE+if91HeAsuMgMyw17dkVzqwOJjZCMK2pncCYm3vW4Dpg2A==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(36860700001)(81166007)(6666004)(7696005)(4326008)(508600001)(40460700003)(426003)(86362001)(83380400001)(26005)(36756003)(186003)(16526019)(1076003)(82310400005)(356005)(2616005)(336012)(5660300002)(44832011)(316002)(54906003)(8676002)(47076005)(110136005)(8936002)(70586007)(2906002)(70206006)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 16:48:15.0107
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8838f436-60e9-4766-1e44-08da1e3691df
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5608
+References: <1649938766-6768-1-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1649938766-6768-1-git-send-email-quic_sbillaka@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 14 Apr 2022 09:40:15 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Ui6BAsnTaJ2_TMh1Tnjtaw7FR92aWoUysS+UT=c0qB3Q@mail.gmail.com>
+Message-ID: <CAD=FV=Ui6BAsnTaJ2_TMh1Tnjtaw7FR92aWoUysS+UT=c0qB3Q@mail.gmail.com>
+Subject: Re: [PATCH v7 0/4] Add support for the eDP panel over aux_bus
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Steev Klimaszewski <steev@kali.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-`amd-pstate` currently only loads automatically if compiled into the
-kernel.  To improve the usability, add a module device table that
-will load when AMD CPUs that support CPPC are detected.
+Hi,
 
-Reviewed-by: Huang Rui <ray.huang@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-v2->v3:
- * Add Ray's tag
-v1->v2:
- * Add comment to indicate need of SBIOS support.
+On Thu, Apr 14, 2022 at 5:19 AM Sankeerth Billakanti
+<quic_sbillaka@quicinc.com> wrote:
+>
+> This series adds support for generic eDP panel over aux_bus.
+>
+> These changes are dependent on the following series:
+> https://patchwork.kernel.org/project/linux-arm-msm/list/?series=613654&state=*
 
- drivers/cpufreq/amd-pstate.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+You're basically depending on the last two patches of that series.
+What's the plan there? In patchwork they're marked as "Not
+Applicable". If they're good to go, maybe we should land them? If not,
+maybe you should include them (with Dmitry as the author, of course)
+at the beginning of your series?
 
-diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
-index 8ae65a2072d6..3330504b7070 100644
---- a/drivers/cpufreq/amd-pstate.c
-+++ b/drivers/cpufreq/amd-pstate.c
-@@ -710,6 +710,17 @@ static void __exit amd_pstate_exit(void)
- 	amd_pstate_enable(false);
- }
- 
-+/*
-+ * This will only match the HW feature, there still needs to be appropriate
-+ * SBIOS support, so it's possible that in such cases this causes a module
-+ * load with -ENODEV as the result.
-+ */
-+static const struct x86_cpu_id __maybe_unused amd_pstate_ids[] = {
-+	X86_MATCH_VENDOR_FEATURE(AMD, X86_FEATURE_CPPC, NULL),
-+	{}
-+};
-+MODULE_DEVICE_TABLE(x86cpu, amd_pstate_ids);
-+
- module_init(amd_pstate_init);
- module_exit(amd_pstate_exit);
- 
--- 
-2.34.1
 
+> Sankeerth Billakanti (4):
+>   drm/msm/dp: Add eDP support via aux_bus
+>   drm/msm/dp: Support only IRQ_HPD and REPLUG interrupts for eDP
+>   drm/msm/dp: wait for hpd high before aux transaction
+>   Support the eDP modes given by panel
+
+One of these things is not like the others. One of these things just
+doesn't belong. Can you spot which patch is missing the prefix by
+looking at the subject line of all 4 patches? ;-)
