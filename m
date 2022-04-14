@@ -2,94 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 695D5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5DAC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244902AbiDNQHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56356 "EHLO
+        id S245541AbiDNQH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352833AbiDNP5n (ORCPT
+        with ESMTP id S1353451AbiDNP5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:57:43 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6052E8F985
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:43:18 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id k13so5833623oiw.1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:43:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1cLq8LqK3UWLIBy6r884Y8tieCmkMT6Wfv6wEy0NldI=;
-        b=VptJw5dBZp9OfikGLgMiouAjoLb8WgvNhpgSnhJNtvZHJb+l4sA7vUtX3KbyRteXS3
-         JXG60RH0lkJDCpBNyitMeY4XHSAMdbNvgwDG2qavT+ZQn4AmewRlPfUcCYXicLxD06bK
-         84W9C+YV4RwjBvBMDxnd46yCVSDp0I0XJeYkWPf7/XD8vKriHYv1F2/XYgTVA8CoHofX
-         tdXDZaJI3QqkbGWeiy2sePVHdAdLbVM4hitoz+JX/EFyFDsBhypwgilIy8lKnV7lrDhH
-         W9TWvvVvOhovrxY7ojvOKmQFl4SadjdmYiYsjngOpB54zgjd4JVL2EhwONuN5lf10rkM
-         hNDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1cLq8LqK3UWLIBy6r884Y8tieCmkMT6Wfv6wEy0NldI=;
-        b=q+toYiPrPZ8pLI2UO77/cER55m5ITmfzv0THlSe5VVqaaHP4WBnQQoZiGU8wciCcOH
-         oMUFK5WuU79R4Mykv6ScDoMBsTl5ng70v9kpEbt5WgPa3DlVa6Yl98onj/rCYK4Mh5v1
-         7Y3v8UcU/s3TOYVh9KMmRf9YWeDh5F068Y1zRdUTK+4LO1slwsxyq9dr4nkYdwXJZQbG
-         vFZl1gxLHUecE/JyTQ/NtrSUcel5rAvWHVIVW++6bOfOXaX8G/Z5zB/iRXmbAuFPHqer
-         bNS0Wb3WnEJYBdmpZ2wg59EeKSWGYam+GXB9Otcdvla6Bt5prJ7DWH39hr0TRxp+HP9z
-         fNOQ==
-X-Gm-Message-State: AOAM532T5WIs0JvdqSmHsAqWVKRXpmuv94LgrI0KjzMPkMLDTh17x634
-        pfjEUf1xe2ay74rJanHfWBsnCI20gfuvSA==
-X-Google-Smtp-Source: ABdhPJwCUcGJxvcxLdlnB+MKeVNToYmiypu3HyQ2KpwPVeExLTI1mbnL0OHiHBRuOEXR1X1cPL2/eA==
-X-Received: by 2002:a05:6808:1202:b0:2f9:c7b4:fd56 with SMTP id a2-20020a056808120200b002f9c7b4fd56mr1582429oil.55.1649950997784;
-        Thu, 14 Apr 2022 08:43:17 -0700 (PDT)
-Received: from ?IPV6:2603:8090:2005:39b3::100e? (2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com. [2603:8090:2005:39b3::100e])
-        by smtp.gmail.com with ESMTPSA id k124-20020aca3d82000000b002ef4c5bb9dbsm138726oia.0.2022.04.14.08.43.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Apr 2022 08:43:17 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <9316567b-19e7-e8c1-ab45-491eae6ec0c2@lwfinger.net>
-Date:   Thu, 14 Apr 2022 10:43:16 -0500
+        Thu, 14 Apr 2022 11:57:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1E419D4D6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:44:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649951081;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hqb8ahm9U2hYtvVT/EdGYzU5Sa+emRCVx8fikQB261Q=;
+        b=GGujEJKkePaVoE2cN/qRZgAfK0ijweM0Pfgqt+kiruZNRjbeGamRFRiVg0qgjBkG31re8M
+        5qMT7CQD4r4q4SgLsvchOAToyYvJjK9moMQsh6Qc/8a2uUe6RNJ1sSQB+LyphY+VvU7FQ4
+        wJR0XHR8qED0arlyj1mCE6GIWrmWL1k=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-266-mZHH7mEjN7exuZKavSJfmQ-1; Thu, 14 Apr 2022 11:44:35 -0400
+X-MC-Unique: mZHH7mEjN7exuZKavSJfmQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C28011014A7A;
+        Thu, 14 Apr 2022 15:44:34 +0000 (UTC)
+Received: from [10.22.19.30] (unknown [10.22.19.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AF5E1111D3D1;
+        Thu, 14 Apr 2022 15:44:33 +0000 (UTC)
+Message-ID: <eda947e6-367a-9e7e-84cf-dee4a70a3b82@redhat.com>
+Date:   Thu, 14 Apr 2022 11:44:33 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/7] staging: r8188eu: fix and clean up some firmware code
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more
+ consistent
 Content-Language: en-US
-To:     Michael Straube <straube.linux@gmail.com>,
-        gregkh@linuxfoundation.org
-Cc:     phil@philpotter.co.uk, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220414083853.3422-1-straube.linux@gmail.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <20220414083853.3422-1-straube.linux@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     john.p.donnelly@oracle.com,
+        chenguanyou <chenguanyou9338@gmail.com>, dave@stgolabs.net,
+        hdanton@sina.com, linux-kernel@vger.kernel.org,
+        mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
+        quic_aiquny@quicinc.com, will@kernel.org, sashal@kernel.org,
+        stable@vger.kernel.org
+References: <20211116012912.723980-1-longman@redhat.com>
+ <20220214154741.12399-1-chenguanyou@xiaomi.com>
+ <3f02975c-1a9d-be20-32cf-f1d8e3dfafcc@oracle.com>
+ <e873727e-22db-3330-015d-bd6581a2937a@redhat.com>
+ <31178c33-e25c-c3e8-35e2-776b5211200c@oracle.com>
+ <161c2e25-3d26-4dd7-d378-d1741f7bcca8@redhat.com>
+ <2b6ed542-b3e0-1a87-33ac-d52fc0e0339c@oracle.com>
+ <b3620b7b-c66a-65f8-b10b-c3669b2f82ec@redhat.com>
+ <Ylf78yGuXdXWugpn@kroah.com>
+ <d32d3036-a554-624b-0d3f-247539142273@redhat.com>
+ <YlhA1IVb/MIox/Ik@kroah.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YlhA1IVb/MIox/Ik@kroah.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/14/22 03:38, Michael Straube wrote:
-> This series fixes wrong size of struct rt_firmware_hdr in the first
-> patch and does some cleanups in rtl8188e_firmware_download() in the
-> other patches.
-> 
-> Tested on x86_64 with Inter-Tech DMG-02.
-> 
-> Michael Straube (7):
->    staging: r8188eu: fix struct rt_firmware_hdr
->    staging: r8188eu: clean up comments in struct rt_firmware_hdr
->    staging: r8188eu: rename fields of struct rt_firmware_hdr
->    staging: r8188eu: use sizeof instead of hardcoded firmware header size
->    staging: r8188eu: remove variables from rtl8188e_firmware_download()
->    staging: r8188eu: always log firmware info
->    staging: r8188eu: check firmware header existence before access
+On 4/14/22 11:42, Greg KH wrote:
+> On Thu, Apr 14, 2022 at 11:18:23AM -0400, Waiman Long wrote:
+>> On 4/14/22 06:48, Greg KH wrote:
+>>> On Tue, Apr 12, 2022 at 01:04:05PM -0400, Waiman Long wrote:
+>>>> The patch has already been in the tip tree. It may not be easy to add a
+>>>> Fixes tag to it. Anyway, I will encourage stable tree maintainer to take it
+>>>> as it does fix a problem as shown in your test.
+>>> I have no idea what you want me to do here.  Please be explicit...
+>>>
+>> I would like the stable trees to include commit 1ee326196c66
+>> ("locking/rwsem: Always try to wake waiters in out_nolock path") after it is
+>> merged into the mainline in the v5.19 merge window. It should be applied to
+>> the stable trees that have incorporated the backport of commit d257cc8cb8d5
+>> ("locking/rwsem: Make handoff bit handling more consistent") since this
+>> commit seems to make the missed wakeup problem easier to show up.
+> Please let us know when this is merged into Linus's tree.  Nothing we
+> can do until then and I'm not going to remember this in a few months
+> anyway.
 
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net> for 2/7 through 5/7. Patch 
-1/7 has a typo in the commit message, and I have objection to the logging 
-changes in 6/7 and 7/7.
+Sure, I will remind you again after the merge happens.
 
-Larry
+Cheers,
+Longman
 
