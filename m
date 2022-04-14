@@ -2,164 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72917C47082
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AE3C38A04
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359378AbiDNPoZ (ORCPT
+        id S1359497AbiDNPpb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49350 "EHLO
+        Thu, 14 Apr 2022 11:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352570AbiDNPRj (ORCPT
+        with ESMTP id S1344538AbiDNP0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:17:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CAEBB927
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:01:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 11:26:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39E43F55E0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:09:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649948951;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RtGebAgbSA9lYbaI57i+Rxn48XdJu/DmmwsLsGsA5XE=;
+        b=h4E1dznwiky0aO7TPmmVB8bA51he+XsSUqEVkHoZJD9DvrJxaQsMtySW3Ea5rSgePuEexQ
+        IKTx90BRBzUr6TaaIx3OT4RBsL04qrpeeuCGl4JGmKXzG7SSBDnC55r9i+Py5XvhUwDZix
+        cDBVl18s4bk2AohzrlZMc64anZmKUBM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-433-C04J5NPBMgWBva7j5I52gA-1; Thu, 14 Apr 2022 11:09:08 -0400
+X-MC-Unique: C04J5NPBMgWBva7j5I52gA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 426C861976
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 15:01:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1059C385B0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 15:01:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649948499;
-        bh=uLBpQvyEuj7UIyisLgnSpnl7dIxguh1LQBJxeQR74JA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=P03NZEvLNnl/qHpOe9RZzVKFIzmSB+T7HTapxwWoFBMr87YqR9pQXB6kyXdbkBnMG
-         6j7qWLQm6ZrhqYn00VggYn4pO0puIBKuEuz5eL6Z17s2PYTJdwAHhIy8F/tG/GW75F
-         HEJdWdHnvhU9GQGobD4788L1uXVxbtNjZMnpe+VKm2mhlsBEG8dBkZkCzJf8CKxBIS
-         MLda3oVzcMK+hZGtmkKwyZ0t4QQ4T4OKZEIftdJSKGOOV1Z3PghS0w3Y/pPlnff8vR
-         3yAK/vBB8PS7JWhhI7MOAjLrFE8aeJDbZ0T+CrBF4pfh48C5D0ehFDeieE/OBWdS8y
-         h+B2AkLfQx9yw==
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-de3eda6b5dso5563247fac.0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:01:39 -0700 (PDT)
-X-Gm-Message-State: AOAM533wPb40cU9oNguMN21mPibzeIIv3U6sPz172t+Uh/u4shjnsVLv
-        SJ0ZdNF5KCh3miqWWFGy15mvxYrvMpCA3CozhzI=
-X-Google-Smtp-Source: ABdhPJxUjc8busUYfEAzwkSfVarMQKKFF1JAZIwr0b7vsKNuetnUhoU+WD81T7eb9a9ehBbm8Yl6laFqxdnsnRNQZJQ=
-X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
- s37-20020a056870eaa500b000da0b3f2b45mr1774023oap.228.1649948498648; Thu, 14
- Apr 2022 08:01:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <YlVOTsaTVkBOxthG@arm.com> <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
- <YlVxGAHHD/j6lW3c@arm.com> <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
- <YlaOIbSA7B/G9222@arm.com> <CAHk-=wjr9-n7vHiVdm-L-KX4kXWyY45++8jenFA1QV5oc=yhZg@mail.gmail.com>
- <YlezcPbFOkSUygBJ@kroah.com> <CAMj1kXFWJXbT+fMEx=wzX1wS6xW1DeGxZ+mWBbY8Z4hj4kc_dw@mail.gmail.com>
- <YlgvaSozV5jU49Y0@kroah.com> <CAMj1kXGAd7s1GU=uH+iLOwvbn1zG-=TNXw02Bf-AdiHOQvh02Q@mail.gmail.com>
- <Ylg1SCBA6lJM/k4h@kroah.com>
-In-Reply-To: <Ylg1SCBA6lJM/k4h@kroah.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 14 Apr 2022 17:01:26 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHeYQ0=oDYT8uaHxFt1dFe3pR+H9psF8ohv5HC351NTKQ@mail.gmail.com>
-Message-ID: <CAMj1kXHeYQ0=oDYT8uaHxFt1dFe3pR+H9psF8ohv5HC351NTKQ@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5B015185A7BA;
+        Thu, 14 Apr 2022 15:09:07 +0000 (UTC)
+Received: from turbo.dinechin (unknown [10.39.192.131])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B8B5FC07F51;
+        Thu, 14 Apr 2022 15:09:04 +0000 (UTC)
+From:   Christophe de Dinechin <dinechin@redhat.com>
+To:     trivial@kernel.org
+Cc:     Ben Segall <bsegall@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH 3/3] virtio-pci: Use cpumask_available to fix compilation error
+Date:   Thu, 14 Apr 2022 17:08:55 +0200
+Message-Id: <20220414150855.2407137-4-dinechin@redhat.com>
+In-Reply-To: <20220414150855.2407137-1-dinechin@redhat.com>
+References: <20220414150855.2407137-1-dinechin@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 at 16:53, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Apr 14, 2022 at 04:36:46PM +0200, Ard Biesheuvel wrote:
-> > On Thu, 14 Apr 2022 at 16:27, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Thu, Apr 14, 2022 at 03:52:53PM +0200, Ard Biesheuvel wrote:
-...
-> > > > What we might do, given the fact that only inbound non-cache coherent
-> > > > DMA is problematic, is dropping the kmalloc alignment to 8 like on
-> > > > x86, and falling back to bounce buffering when a misaligned, non-cache
-> > > > coherent inbound DMA mapping is created, using the SWIOTLB bounce
-> > > > buffering code that we already have, and is already in use on most
-> > > > affected systems for other reasons (i.e., DMA addressing limits)
-> > >
-> > > Ick, that's a mess.
-> > >
-> > > > This will cause some performance regressions, but in a way that seems
-> > > > fixable to me: taking network drivers as an example, the RX buffers
-> > > > that are filled using inbound DMA are typically owned by the driver
-> > > > itself, which could be updated to round up its allocations and DMA
-> > > > mappings. Block devices typically operate on quantities that are
-> > > > aligned sufficiently already. In other cases, we will likely notice
-> > > > if/when this fallback is taken on a hot path, but if we don't, at
-> > > > least we know a bounce buffer is being used whenever we cannot perform
-> > > > the DMA safely in-place.
-> > >
-> > > We can move to having an "allocator-per-bus" for memory like this to
-> > > allow the bus to know if this is a DMA requirement or not.
-> > >
-> > > So for all USB drivers, we would have:
-> > >         usb_kmalloc(size, flags);
-> > > and then it might even be easier to verify with static tools that the
-> > > USB drivers are sending only properly allocated data.  Same for SPI and
-> > > other busses.
-> > >
-> >
-> > As I pointed out earlier in the thread, alignment/padding requirements
-> > for non-coherent DMA are a property of the CPU's cache hierarchy, not
-> > of the device. So I'm not sure I follow how a per-subsystem
-> > distinction would help here. In the case of USB especially, would that
-> > mean that block, media and networking subsystems would need to be
-> > aware of the USB-ness of the underlying transport?
->
-> That's what we have required today, yes.  That's only because we knew
-> that for some USB controllers, that was a requirement and we had no way
-> of passing that information back up the stack so we just made it a
-> requirement.
->
-> But I do agree this is messy.  It's even messier for things like USB
-> where it's not the USB device itself that matters, it's the USB
-> controller that the USB device is attached to.  And that can be _way_ up
-> the device hierarchy.  Attach something like a NFS mount over a PPP
-> network connection on a USB to serial device and ugh, where do you
-> begin?  :)
->
+With GCC 12 and defconfig, we get the following error:
 
-Exactly.
+|   CC      drivers/virtio/virtio_pci_common.o
+| drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
+| drivers/virtio/virtio_pci_common.c:257:29: error: the comparison will
+|  always evaluate as ‘true’ for the pointer operand in
+|  ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 8)’
+|  must not be NULL [-Werror=address]
+|   257 |                         if (vp_dev->msix_affinity_masks[i])
+|       |                             ^~~~~~
 
-> And is this always just an issue of the CPU cache hierarchy?  And not the
-> specific bridge that a device is connected to that CPU on?  Or am I
-> saying the same thing here?
->
+This happens in the case where CONFIG_CPUMASK_OFFSTACK is not defined,
+since we typedef cpumask_var_t as an array. The compiler is essentially
+complaining that an array pointer cannot be NULL. This is not a very
+important warning, but there is a function called cpumask_available that
+seems to be defined just for that case, so the fix is easy.
 
-Yes, this is a system property not a device property, and the driver
-typically doesn't have any knowledge of this. For example, if a PCI
-host bridge happens to be integrated in a non-cache coherent way, any
-PCI device plugged into it becomes non-coherent, and the associated
-driver needs to do the right thing. This is why we rely on the DMA
-layer to take care of this.
+Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
+Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
+---
+ drivers/virtio/virtio_pci_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> I mean take a USB controller for example.  We could have a system where
-> one USB controller is on a PCI bus, while another is on a "platform"
-> bus.  Both of those are connected to the CPU in different ways and so
-> could have different DMA rules.  Do we downgrade everything in the
-> system for the worst connection possible?
->
+diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+index d724f676608b..5c44a2f13c93 100644
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -254,7 +254,7 @@ void vp_del_vqs(struct virtio_device *vdev)
+ 
+ 	if (vp_dev->msix_affinity_masks) {
+ 		for (i = 0; i < vp_dev->msix_vectors; i++)
+-			if (vp_dev->msix_affinity_masks[i])
++			if (cpumask_available(vp_dev->msix_affinity_masks[i]))
+ 				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
+ 	}
+ 
+-- 
+2.35.1
 
-No, we currently support a mix of coherent and non-coherent just fine,
-and this shouldn't change. It's just that the mere fact that
-non-coherent devices might exist is increasing the memory footprint of
-all kmalloc allocations.
-
-> Again, consider a USB driver allocating memory to transfer stuff, should
-> it somehow know the cache hierarchy that it is connected to?  Right now
-> we punt and do not do that at the expense of a bit of potentially
-> wasted memory for small allocations.
->
-
-This whole discussion is based on the premise that this is an expense
-we would prefer to avoid. Currently, every kmalloc allocation is
-rounded up to 128 bytes on arm64, while x86 uses only 8.
