@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E2FC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10149C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349483AbiDNOU0 (ORCPT
+        id S1349583AbiDNOUs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
+        Thu, 14 Apr 2022 10:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343904AbiDNNj3 (ORCPT
+        with ESMTP id S1343937AbiDNNjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530D370079;
-        Thu, 14 Apr 2022 06:35:20 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B79A88BE;
+        Thu, 14 Apr 2022 06:35:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15CD4B8296A;
-        Thu, 14 Apr 2022 13:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E928C385A5;
-        Thu, 14 Apr 2022 13:35:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E48361D29;
+        Thu, 14 Apr 2022 13:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27E59C385A1;
+        Thu, 14 Apr 2022 13:35:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943317;
-        bh=PaaOdIznsXfUpK/AM7p7giJmI1mKr0xa1VOsdXg0rmM=;
+        s=korg; t=1649943334;
+        bh=WBKT2YO2VHBVTL9dpFF9Dl4veiphWoqJ6kRBXpG2OVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m53bdjGQ7gqNWx32dRRsghv2J2TwUsFE+Idkl3BaeUfYsed4U9uYMjNbMIyuWKw8q
-         zF42j9EDsyH6HhFKmctvD+zJkYbUsSWKUW5l3rGzKYvJ24UA7Ln8/rrv3OovoyKSFQ
-         MmO5WslrFMIW2T0udqXB6aTTT38TkhoJRyVUXaIs=
+        b=up41+eHf2Q4pQRjv34ANMTTAN1/j+HQhLypADt0Qcr/Ysor/2oxbK36JFksq7dLee
+         BlrGiMaWmgJgMZEA6ENJzVF7lWk3ULl1xh9WzNQRLHSLWDtRQhLngv/CHDpPc6TpMD
+         vAd/km9I32aKxz8ByE8HySkR8WHSUWNQGiw5sAao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <yuchao0@huawei.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 112/475] f2fs: fix to avoid potential deadlock
-Date:   Thu, 14 Apr 2022 15:08:17 +0200
-Message-Id: <20220414110858.287814558@linuxfoundation.org>
+Subject: [PATCH 5.4 091/475] spi: tegra114: Add missing IRQ check in tegra_spi_probe
+Date:   Thu, 14 Apr 2022 15:07:56 +0200
+Message-Id: <20220414110857.699899406@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,57 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit df77fbd8c5b222c680444801ffd20e8bbc90a56e ]
+[ Upstream commit 4f92724d4b92c024e721063f520d66e11ca4b54b ]
 
-Using f2fs_trylock_op() in f2fs_write_compressed_pages() to avoid potential
-deadlock like we did in f2fs_write_single_data_page().
+This func misses checking for platform_get_irq()'s call and may passes the
+negative error codes to request_threaded_irq(), which takes unsigned IRQ #,
+causing it to fail with -EINVAL, overriding an original error code.
+Stop calling request_threaded_irq() with invalid IRQ #s.
 
-Signed-off-by: Chao Yu <yuchao0@huawei.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: f333a331adfa ("spi/tegra114: add spi driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220128165238.25615-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/data.c | 6 +++++-
- fs/f2fs/node.c | 6 +++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ drivers/spi/spi-tegra114.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 1679f9c0b63b..773028921c48 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -2467,8 +2467,12 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
- 	/* to avoid spliting IOs due to mixed WB_SYNC_ALL and WB_SYNC_NONE */
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[DATA]);
--	else if (atomic_read(&sbi->wb_sync_req[DATA]))
-+	else if (atomic_read(&sbi->wb_sync_req[DATA])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
+diff --git a/drivers/spi/spi-tegra114.c b/drivers/spi/spi-tegra114.c
+index 594905bf89aa..3f7a64b2a5d0 100644
+--- a/drivers/spi/spi-tegra114.c
++++ b/drivers/spi/spi-tegra114.c
+@@ -1352,6 +1352,10 @@ static int tegra_spi_probe(struct platform_device *pdev)
+ 	tspi->phys = r->start;
+ 
+ 	spi_irq = platform_get_irq(pdev, 0);
++	if (spi_irq < 0) {
++		ret = spi_irq;
++		goto exit_free_master;
 +	}
+ 	tspi->irq = spi_irq;
  
- 	if (__should_serialize_io(inode, wbc)) {
- 		mutex_lock(&sbi->writepages);
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index 0cd1d51dde06..3dc7cc3d6ac6 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -1995,8 +1995,12 @@ static int f2fs_write_node_pages(struct address_space *mapping,
- 
- 	if (wbc->sync_mode == WB_SYNC_ALL)
- 		atomic_inc(&sbi->wb_sync_req[NODE]);
--	else if (atomic_read(&sbi->wb_sync_req[NODE]))
-+	else if (atomic_read(&sbi->wb_sync_req[NODE])) {
-+		/* to avoid potential deadlock */
-+		if (current->plug)
-+			blk_finish_plug(current->plug);
- 		goto skip_write;
-+	}
- 
- 	trace_f2fs_writepages(mapping->host, wbc, NODE);
- 
+ 	tspi->clk = devm_clk_get(&pdev->dev, "spi");
 -- 
 2.34.1
 
