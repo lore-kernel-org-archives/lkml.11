@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20701C47093
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2882FC4707F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344631AbiDNNtZ (ORCPT
+        id S1344694AbiDNNta (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56792 "EHLO
+        Thu, 14 Apr 2022 09:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344033AbiDNNaQ (ORCPT
+        with ESMTP id S1344042AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9E0C39;
-        Thu, 14 Apr 2022 06:26:38 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA925F88;
+        Thu, 14 Apr 2022 06:26:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D185CB82941;
-        Thu, 14 Apr 2022 13:26:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F7DCC385A1;
-        Thu, 14 Apr 2022 13:26:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF3986190F;
+        Thu, 14 Apr 2022 13:26:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4235C385A5;
+        Thu, 14 Apr 2022 13:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942795;
-        bh=4jTFIdE/RLeE76gCMMXu6/RBZIRcmWv8WEiWwMjmKIM=;
+        s=korg; t=1649942809;
+        bh=dvPcYCzevFs+1/jJSvQNJgim5I2zaaED6vtbihtMvF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tcJOWetgLp9HUw/r0Sqr/ozC0KTVXP1thl5yjZMBYZXot3wCDOjZVFgdP7jv6sqwX
-         6Gjd+aoyklLM7W+168DMwR9nUq35PEl4t689BA9Kf0MM+SWv6VyJf5r2niOJzANtRX
-         xIRuABty/UktMZ8+ZwG+As3/2ocYvJOiMXklD6a0=
+        b=szdQKaJnAtlGBK4sFwOQ1GFnx93AF7NHe1f0C0DeUL5bfZE8eAyBh1vDZYL7qb4SQ
+         4vZxRp+WTQM9k/Tyo1AgTqHuEAt8tZ1V80PDle4bwfzrymvCrewxF2xTbzRFGUXzp2
+         T7E0B+CTdPyV6G16EOoskXtGuKWXk4iuZyLjTgXM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 264/338] ptp: replace snprintf with sysfs_emit
-Date:   Thu, 14 Apr 2022 15:12:47 +0200
-Message-Id: <20220414110846.404215583@linuxfoundation.org>
+Subject: [PATCH 4.19 268/338] power: supply: axp20x_battery: properly report current when discharging
+Date:   Thu, 14 Apr 2022 15:12:51 +0200
+Message-Id: <20220414110846.517055203@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -53,50 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Evgeny Boger <boger@wirenboard.com>
 
-[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
+[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
 
-coccinelle report:
-./drivers/ptp/ptp_sysfs.c:17:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/ptp/ptp_sysfs.c:390:8-16:
-WARNING: use scnprintf or sprintf
+As stated in [1], negative current values are used for discharging
+batteries.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+AXP PMICs internally have two different ADC channels for shunt current
+measurement: one used during charging and one during discharging.
+The values reported by these ADCs are unsigned.
+While the driver properly selects ADC channel to get the data from,
+it doesn't apply negative sign when reporting discharging current.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[1] Documentation/ABI/testing/sysfs-class-power
+
+Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_sysfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/power/supply/axp20x_battery.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
-index 48401dfcd999..f97a5eefa2e2 100644
---- a/drivers/ptp/ptp_sysfs.c
-+++ b/drivers/ptp/ptp_sysfs.c
-@@ -26,7 +26,7 @@ static ssize_t clock_name_show(struct device *dev,
- 			       struct device_attribute *attr, char *page)
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index e84b6e4da14a..9fda98b950ba 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -185,7 +185,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
  {
- 	struct ptp_clock *ptp = dev_get_drvdata(dev);
--	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
-+	return sysfs_emit(page, "%s\n", ptp->info->name);
- }
- static DEVICE_ATTR_RO(clock_name);
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	struct iio_channel *chan;
+ 	int ret = 0, reg, val1;
  
-@@ -240,7 +240,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
+ 	switch (psp) {
+@@ -265,12 +264,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 		if (ret)
+ 			return ret;
  
- 	mutex_unlock(&ptp->pincfg_mux);
+-		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+-			chan = axp20x_batt->batt_chrg_i;
+-		else
+-			chan = axp20x_batt->batt_dischrg_i;
+-
+-		ret = iio_read_channel_processed(chan, &val->intval);
++		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
++			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
++		} else {
++			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
++			val->intval = -val1;
++		}
+ 		if (ret)
+ 			return ret;
  
--	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
-+	return sysfs_emit(page, "%u %u\n", func, chan);
- }
- 
- static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
 -- 
 2.35.1
 
