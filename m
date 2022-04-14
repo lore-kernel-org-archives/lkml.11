@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 299CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243915AbiDNNWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38820 "EHLO
+        id S244041AbiDNNWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243957AbiDNNTZ (ORCPT
+        with ESMTP id S243905AbiDNNTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:19:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A232892859;
-        Thu, 14 Apr 2022 06:16:40 -0700 (PDT)
+        Thu, 14 Apr 2022 09:19:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551BE931A7;
+        Thu, 14 Apr 2022 06:16:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BFC0612CA;
-        Thu, 14 Apr 2022 13:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8F9C385A1;
-        Thu, 14 Apr 2022 13:16:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF3DAB8296A;
+        Thu, 14 Apr 2022 13:16:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 534F8C385A5;
+        Thu, 14 Apr 2022 13:16:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942199;
-        bh=BXz/m7/rmNSGhlV5Sss+4tAT0nXDBa7JzfELx38B5Lw=;
+        s=korg; t=1649942202;
+        bh=Fn0N6rbu1aYIk80aqUu0WAhP8E6CbSv/1xTslSUVGuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RFeXhXAJek8UzwfZwuvjLx8oj756iM3tXg7OQnzfHlf+ytxzZ1N8y0x+Ytlehxt8D
-         29taKu5F0H/fTCbj8+AeRkcgd5+dHCBebbnUmAZ2vdWc1v/E13KURrTnkPRygxc1fv
-         zXxmfM6NvFowv+pNGyVaY3fJ8snxMMhfk4yDPQxw=
+        b=o97/F3VOpZC9x+JbKq+hP2YgguaDVHSpBBm5a0FKBCwb6nD/JfVfjSEyVdhW42GZ3
+         aJyvvKFeomBFLuTm4GCIEgEtg3AJY4u//XQEVinLxJ5Bw2pxPNyQoAjtbcawcrg5XQ
+         r50qSHCUis6G+n8+sV+NwC0J67h4s/A9paAD/B/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Josef Bacik <jbacik@fb.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.19 050/338] block: dont merge across cgroup boundaries if blkcg is enabled
-Date:   Thu, 14 Apr 2022 15:09:13 +0200
-Message-Id: <20220414110840.320857397@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Jann Horn <jannh@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 4.19 024/338] ptrace: Check PTRACE_O_SUSPEND_SECCOMP permission on PTRACE_SEIZE
+Date:   Thu, 14 Apr 2022 15:08:47 +0200
+Message-Id: <20220414110839.580612502@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -48,113 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Jann Horn <jannh@google.com>
 
-commit 6b2b04590b51aa4cf395fcd185ce439cab5961dc upstream.
+commit ee1fee900537b5d9560e9f937402de5ddc8412f3 upstream.
 
-blk-iocost and iolatency are cgroup aware rq-qos policies but they didn't
-disable merges across different cgroups. This obviously can lead to
-accounting and control errors but more importantly to priority inversions -
-e.g. an IO which belongs to a higher priority cgroup or IO class may end up
-getting throttled incorrectly because it gets merged to an IO issued from a
-low priority cgroup.
+Setting PTRACE_O_SUSPEND_SECCOMP is supposed to be a highly privileged
+operation because it allows the tracee to completely bypass all seccomp
+filters on kernels with CONFIG_CHECKPOINT_RESTORE=y. It is only supposed to
+be settable by a process with global CAP_SYS_ADMIN, and only if that
+process is not subject to any seccomp filters at all.
 
-Fix it by adding blk_cgroup_mergeable() which is called from merge paths and
-rejects cross-cgroup and cross-issue_as_root merges.
+However, while these permission checks were done on the PTRACE_SETOPTIONS
+path, they were missing on the PTRACE_SEIZE path, which also sets
+user-specified ptrace flags.
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Fixes: d70675121546 ("block: introduce blk-iolatency io controller")
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Josef Bacik <jbacik@fb.com>
-Link: https://lore.kernel.org/r/Yi/eE/6zFNyWJ+qd@slm.duckdns.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Move the permissions checks out into a helper function and let both
+ptrace_attach() and ptrace_setoptions() call it.
+
+Cc: stable@kernel.org
+Fixes: 13c4a90119d2 ("seccomp: add ptrace options for suspend/resume")
+Signed-off-by: Jann Horn <jannh@google.com>
+Link: https://lkml.kernel.org/r/20220319010838.1386861-1-jannh@google.com
+Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-merge.c          |   12 ++++++++++++
- include/linux/blk-cgroup.h |   17 +++++++++++++++++
- 2 files changed, 29 insertions(+)
+ kernel/ptrace.c |   47 ++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 15 deletions(-)
 
---- a/block/blk-merge.c
-+++ b/block/blk-merge.c
-@@ -7,6 +7,8 @@
- #include <linux/bio.h>
- #include <linux/blkdev.h>
- #include <linux/scatterlist.h>
-+#include <linux/blkdev.h>
-+#include <linux/blk-cgroup.h>
- 
- #include <trace/events/block.h>
- 
-@@ -486,6 +488,9 @@ static inline int ll_new_hw_segment(stru
- 	if (req->nr_phys_segments + nr_phys_segs > queue_max_segments(q))
- 		goto no_merge;
- 
-+	if (!blk_cgroup_mergeable(req, bio))
-+		goto no_merge;
-+
- 	if (blk_integrity_merge_bio(q, req, bio) == false)
- 		goto no_merge;
- 
-@@ -609,6 +614,9 @@ static int ll_merge_requests_fn(struct r
- 	if (total_phys_segments > queue_max_segments(q))
- 		return 0;
- 
-+	if (!blk_cgroup_mergeable(req, next->bio))
-+		return 0;
-+
- 	if (blk_integrity_merge_rq(q, req, next) == false)
- 		return 0;
- 
-@@ -843,6 +851,10 @@ bool blk_rq_merge_ok(struct request *rq,
- 	if (rq->rq_disk != bio->bi_disk || req_no_special_merge(rq))
- 		return false;
- 
-+	/* don't merge across cgroup boundaries */
-+	if (!blk_cgroup_mergeable(rq, bio))
-+		return false;
-+
- 	/* only merge integrity protected bio into ditto rq */
- 	if (blk_integrity_merge_bio(rq->q, rq, bio) == false)
- 		return false;
---- a/include/linux/blk-cgroup.h
-+++ b/include/linux/blk-cgroup.h
-@@ -21,6 +21,7 @@
- #include <linux/blkdev.h>
- #include <linux/atomic.h>
- #include <linux/kthread.h>
-+#include <linux/blkdev.h>
- 
- /* percpu_counter batch for blkg_[rw]stats, per-cpu drift doesn't matter */
- #define BLKG_STAT_CPU_BATCH	(INT_MAX / 2)
-@@ -844,6 +845,21 @@ static inline void blkcg_use_delay(struc
- 		atomic_inc(&blkg->blkcg->css.cgroup->congestion_count);
+--- a/kernel/ptrace.c
++++ b/kernel/ptrace.c
+@@ -364,6 +364,26 @@ bool ptrace_may_access(struct task_struc
+ 	return !err;
  }
  
-+/**
-+ * blk_cgroup_mergeable - Determine whether to allow or disallow merges
-+ * @rq: request to merge into
-+ * @bio: bio to merge
-+ *
-+ * @bio and @rq should belong to the same cgroup and their issue_as_root should
-+ * match. The latter is necessary as we don't want to throttle e.g. a metadata
-+ * update because it happens to be next to a regular IO.
-+ */
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio)
++static int check_ptrace_options(unsigned long data)
 +{
-+	return rq->bio->bi_blkg == bio->bi_blkg &&
-+		bio_issue_as_root_blkg(rq->bio) == bio_issue_as_root_blkg(bio);
++	if (data & ~(unsigned long)PTRACE_O_MASK)
++		return -EINVAL;
++
++	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
++		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
++		    !IS_ENABLED(CONFIG_SECCOMP))
++			return -EINVAL;
++
++		if (!capable(CAP_SYS_ADMIN))
++			return -EPERM;
++
++		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
++		    current->ptrace & PT_SUSPEND_SECCOMP)
++			return -EPERM;
++	}
++	return 0;
 +}
 +
- static inline int blkcg_unuse_delay(struct blkcg_gq *blkg)
+ static int ptrace_attach(struct task_struct *task, long request,
+ 			 unsigned long addr,
+ 			 unsigned long flags)
+@@ -375,8 +395,16 @@ static int ptrace_attach(struct task_str
+ 	if (seize) {
+ 		if (addr != 0)
+ 			goto out;
++		/*
++		 * This duplicates the check in check_ptrace_options() because
++		 * ptrace_attach() and ptrace_setoptions() have historically
++		 * used different error codes for unknown ptrace options.
++		 */
+ 		if (flags & ~(unsigned long)PTRACE_O_MASK)
+ 			goto out;
++		retval = check_ptrace_options(flags);
++		if (retval)
++			return retval;
+ 		flags = PT_PTRACED | PT_SEIZED | (flags << PT_OPT_FLAG_SHIFT);
+ 	} else {
+ 		flags = PT_PTRACED;
+@@ -649,22 +677,11 @@ int ptrace_writedata(struct task_struct
+ static int ptrace_setoptions(struct task_struct *child, unsigned long data)
  {
- 	int old = atomic_read(&blkg->use_delay);
-@@ -947,6 +963,7 @@ static inline struct request_list *blk_r
+ 	unsigned flags;
++	int ret;
  
- static inline bool blkcg_bio_issue_check(struct request_queue *q,
- 					 struct bio *bio) { return true; }
-+static inline bool blk_cgroup_mergeable(struct request *rq, struct bio *bio) { return true; }
+-	if (data & ~(unsigned long)PTRACE_O_MASK)
+-		return -EINVAL;
+-
+-	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
+-		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
+-		    !IS_ENABLED(CONFIG_SECCOMP))
+-			return -EINVAL;
+-
+-		if (!capable(CAP_SYS_ADMIN))
+-			return -EPERM;
+-
+-		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
+-		    current->ptrace & PT_SUSPEND_SECCOMP)
+-			return -EPERM;
+-	}
++	ret = check_ptrace_options(data);
++	if (ret)
++		return ret;
  
- #define blk_queue_for_each_rl(rl, q)	\
- 	for ((rl) = &(q)->root_rl; (rl); (rl) = NULL)
+ 	/* Avoid intermediate state when all opts are cleared */
+ 	flags = child->ptrace;
 
 
