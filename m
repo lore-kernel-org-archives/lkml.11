@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0E5C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45AC5C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352889AbiDNOeM (ORCPT
+        id S1352919AbiDNOeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        Thu, 14 Apr 2022 10:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245043AbiDNNiJ (ORCPT
+        with ESMTP id S245523AbiDNNil (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD9B99ED4;
-        Thu, 14 Apr 2022 06:31:33 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5906FA27C9;
+        Thu, 14 Apr 2022 06:32:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCFD6B8296A;
-        Thu, 14 Apr 2022 13:31:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 252E9C385A5;
-        Thu, 14 Apr 2022 13:31:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC8CACE2997;
+        Thu, 14 Apr 2022 13:32:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E19C385AC;
+        Thu, 14 Apr 2022 13:32:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943090;
-        bh=Utz1YvWbSMLmkIEVCdwmAdUPQ3ARE9UXbQLDcRmNtww=;
+        s=korg; t=1649943158;
+        bh=U7VrowGIt51BBuafI68PUaNxkub7+Nl8xDesxPINkq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bPrjwA9pRSkFBdxInZ8Pbk9G/Y1N45reHGPRIIZGKSxH7x0mXjxPifP+ODf7dSvGm
-         YnBG0hfuwuqoA0dUwGbAhTGmx+P+9+cFGYMp5rQh0L7HLR2/Z1R6qao4p5rQ3PSygL
-         OB330XhaOpSPAVlsNrt+oXHRT7kW5tRv49svW0Dk=
+        b=1wlvtlh/9ocbF+KWxNzrvYNPzzfGp9cH64+4HjYHml6kFThSc5rTuG08A7QwDFHNp
+         f/R9ZM5ejXS+DPwyixw0qqcAVNcGDhlwg2nI/c3uu3oSWweEEaQJHgTnnuTvuQtxlv
+         whgHhf9uHpuXj0pRIKA7xRBf58FxhefwX2E5iaHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.4 031/475] KEYS: fix length validation in keyctl_pkey_params_get_2()
-Date:   Thu, 14 Apr 2022 15:06:56 +0200
-Message-Id: <20220414110856.026406958@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 056/475] ALSA: hda/realtek: Fix audio regression on Mi Notebook Pro 2020
+Date:   Thu, 14 Apr 2022 15:07:21 +0200
+Message-Id: <20220414110856.720967013@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,66 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-commit c51abd96837f600d8fd940b6ab8e2da578575504 upstream.
+commit f30741cded62f87bb4b1cc58bc627f076abcaba8 upstream.
 
-In many cases, keyctl_pkey_params_get_2() is validating the user buffer
-lengths against the wrong algorithm properties.  Fix it to check against
-the correct properties.
+Commit 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording
+issue") is to solve recording issue met on AL236, by matching codec
+variant ALC269_TYPE_ALC257 and ALC269_TYPE_ALC256.
 
-Probably this wasn't noticed before because for all asymmetric keys of
-the "public_key" subtype, max_data_size == max_sig_size == max_enc_size
-== max_dec_size.  However, this isn't necessarily true for the
-"asym_tpm" subtype (it should be, but it's not strictly validated).  Of
-course, future key types could have different values as well.
+This match can be too broad and Mi Notebook Pro 2020 is broken by the
+patch.
 
-Fixes: 00d60fd3b932 ("KEYS: Provide keyctls to drive the new key type ops for asymmetric keys [ver #2]")
-Cc: <stable@vger.kernel.org> # v4.20+
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Instead, use codec ID to be narrow down the scope, in order to make
+ALC256 unaffected.
+
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215484
+Fixes: 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording issue")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220330061335.1015533-1-kai.heng.feng@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/keys/keyctl_pkey.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ sound/pci/hda/patch_realtek.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/security/keys/keyctl_pkey.c
-+++ b/security/keys/keyctl_pkey.c
-@@ -135,15 +135,23 @@ static int keyctl_pkey_params_get_2(cons
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -3557,8 +3557,8 @@ static void alc256_shutup(struct hda_cod
+ 	/* If disable 3k pulldown control for alc257, the Mic detection will not work correctly
+ 	 * when booting with headset plugged. So skip setting it for the codec alc257
+ 	 */
+-	if (spec->codec_variant != ALC269_TYPE_ALC257 &&
+-	    spec->codec_variant != ALC269_TYPE_ALC256)
++	if (codec->core.vendor_id != 0x10ec0236 &&
++	    codec->core.vendor_id != 0x10ec0257)
+ 		alc_update_coef_idx(codec, 0x46, 0, 3 << 12);
  
- 	switch (op) {
- 	case KEYCTL_PKEY_ENCRYPT:
-+		if (uparams.in_len  > info.max_dec_size ||
-+		    uparams.out_len > info.max_enc_size)
-+			return -EINVAL;
-+		break;
- 	case KEYCTL_PKEY_DECRYPT:
- 		if (uparams.in_len  > info.max_enc_size ||
- 		    uparams.out_len > info.max_dec_size)
- 			return -EINVAL;
- 		break;
- 	case KEYCTL_PKEY_SIGN:
-+		if (uparams.in_len  > info.max_data_size ||
-+		    uparams.out_len > info.max_sig_size)
-+			return -EINVAL;
-+		break;
- 	case KEYCTL_PKEY_VERIFY:
--		if (uparams.in_len  > info.max_sig_size ||
--		    uparams.out_len > info.max_data_size)
-+		if (uparams.in_len  > info.max_data_size ||
-+		    uparams.in2_len > info.max_sig_size)
- 			return -EINVAL;
- 		break;
- 	default:
-@@ -151,7 +159,7 @@ static int keyctl_pkey_params_get_2(cons
- 	}
- 
- 	params->in_len  = uparams.in_len;
--	params->out_len = uparams.out_len;
-+	params->out_len = uparams.out_len; /* Note: same as in2_len */
- 	return 0;
- }
- 
+ 	if (!spec->no_shutup_pins)
 
 
