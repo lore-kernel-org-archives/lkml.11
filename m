@@ -2,249 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B24C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61147C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237885AbiDNLVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 07:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
+        id S242598AbiDNLWN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 07:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiDNLVr (ORCPT
+        with ESMTP id S242597AbiDNLWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 07:21:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B271007;
-        Thu, 14 Apr 2022 04:19:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 940A7615B5;
-        Thu, 14 Apr 2022 11:19:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 773E6C385A9;
-        Thu, 14 Apr 2022 11:19:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649935161;
-        bh=uonZmGj6UwVaNb2sM+LihxzgT+rXNF6cANN7BJHZV9c=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=n1vqKXgwsn5BfVgyQom8fQVlCI6EwgTk2SCqLA/GpmsMRE2MYXYzErkvOwG4Ov9Gt
-         VewI5yn8FToHtJjAdre9mIAgINYrNDDqF+bH6doF5sC7ymZ52x+G61mdmsBckpwd9l
-         8P8LEAkzc1cAfLaxoJmodKwyibqjqlal8+/QEm8wNGo4P7CX5a8F5AGf7FrS+4/YRy
-         TKb0PBNrBy3k0gtqRxlJAyRUPmYsVafwIXgU86L0m1pZVNzvitOb74jyJAB7qCJxkx
-         gRhY2y7eUpsWWhMYrQLoTFQRiGFqpsWItQNm352aOn+U0H2SU/iJ+NYk3brEPHoW6C
-         fseNGg2QcTCUg==
-Message-ID: <bf2fcc93babdbf541fffc6cc5f5756f391773a75.camel@kernel.org>
-Subject: Re: [PATCH V4 14/31] x86/sgx: Support VA page allocation without
- reclaiming
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>,
-        dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
-        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
-        x86@kernel.org, shuah@kernel.org, linux-kselftest@vger.kernel.org
-Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
-        cedric.xing@intel.com, haitao.huang@intel.com,
-        mark.shanahan@intel.com, vijay.dhanraj@intel.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 14 Apr 2022 14:18:12 +0300
-In-Reply-To: <0ab32196f5056b25c34fb89fcc4dc28a5d875d2e.1649878359.git.reinette.chatre@intel.com>
-References: <cover.1649878359.git.reinette.chatre@intel.com>
-         <0ab32196f5056b25c34fb89fcc4dc28a5d875d2e.1649878359.git.reinette.chatre@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 
+        Thu, 14 Apr 2022 07:22:09 -0400
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A841FCE5;
+        Thu, 14 Apr 2022 04:19:44 -0700 (PDT)
+Received: by mail-yb1-f172.google.com with SMTP id j2so8883136ybu.0;
+        Thu, 14 Apr 2022 04:19:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dY83H0aPEfDTdUo23MndvBRZZwuNuwRYnVKAWx3MFcc=;
+        b=hTLRdySs3CnpaoymfFiM0y+PetDtOzg8joG6JeTvcOymw/WDpAF5uzwknJ8t0LRBVT
+         I+kcuzIn9LHA4QMYkgS/A+mCY0jUBayfLSo+EgS2HECKTepTptyEdA7DCjIuMujFBvth
+         h6DI7Mv4D2wnOc7xe0cCa2NOPDRYjH4MvwDAHO9Eoe9QPeFLUBmvjLWEduB1VwuQ4qML
+         xRJUP6xAKE1Ydo/qwllNsbCj3Q9D5xUUiUe4zDWillfZfEUHsV4efvowMqqlArMOJnh+
+         8kOex9vW9o7n0FVP+InF2nbmwQo0UHWvtMfQiGghY5VpaPT3mgullEHZfsNRWODIqQnA
+         P5gA==
+X-Gm-Message-State: AOAM530oo9GlqneVIjgHSjGfNsZkw70uXNGYqI9O/wtyNwppNCSte/dV
+        ssEsNqqPvNRMFPyjXj4KDxjmR06F+u8Wu2REZEE=
+X-Google-Smtp-Source: ABdhPJyXV07maZap62IutTg/mwVDj/CfiQiLME5IwIFkAJnTY85PIrUap0WcF7eity1wAkpRDD0UVobPG71n48VtbjA=
+X-Received: by 2002:a05:6902:187:b0:63d:9c95:edca with SMTP id
+ t7-20020a056902018700b0063d9c95edcamr1246534ybh.81.1649935183962; Thu, 14 Apr
+ 2022 04:19:43 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220411233832.391817-1-dmitry.osipenko@collabora.com>
+ <20220411233832.391817-4-dmitry.osipenko@collabora.com> <CAJZ5v0gf1J+yPW14TAdLGLGfO+-2s=r0DDP7d+Rgop3=dB0gaQ@mail.gmail.com>
+ <af51d9d0-26ba-fc66-05f1-d92ef7172730@collabora.com>
+In-Reply-To: <af51d9d0-26ba-fc66-05f1-d92ef7172730@collabora.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 14 Apr 2022 13:19:32 +0200
+Message-ID: <CAJZ5v0jFQi1x1Fnfk04n+HTTirz19-_xW2NgJtpOYyPgVh3Afw@mail.gmail.com>
+Subject: Re: [PATCH v7 03/20] reboot: Print error message if restart handler
+ has duplicated priority
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Joshua Thompson <funaho@jurai.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        xen-devel@lists.xenproject.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-13 at 14:10 -0700, Reinette Chatre wrote:
-> struct sgx_encl should be protected with the mutex
-> sgx_encl->lock. One exception is sgx_encl->page_cnt that
-> is incremented (in sgx_encl_grow()) when an enclave page
-> is added to the enclave. The reason the mutex is not held
-> is to allow the reclaimer to be called directly if there are
-> no EPC pages (in support of a new VA page) available at the time.
->=20
-> Incrementing sgx_encl->page_cnt without sgc_encl->lock held
-> is currently (before SGX2) safe from concurrent updates because
-> all paths in which sgx_encl_grow() is called occur before
-> enclave initialization and are protected with an atomic
-> operation on SGX_ENCL_IOCTL.
->=20
-> SGX2 includes support for dynamically adding pages after
-> enclave initialization where the protection of SGX_ENCL_IOCTL
-> is not available.
->=20
-> Make direct reclaim of EPC pages optional when new VA pages
-> are added to the enclave. Essentially the existing "reclaim"
-> flag used when regular EPC pages are added to an enclave
-> becomes available to the caller when used to allocate VA pages
-> instead of always being "true".
->=20
-> When adding pages without invoking the reclaimer it is possible
-> to do so with sgx_encl->lock held, gaining its protection against
-> concurrent updates to sgx_encl->page_cnt after enclave
-> initialization.
->=20
-> No functional change.
->=20
-> Reported-by: Haitao Huang <haitao.huang@intel.com>
-> Tested-by: Haitao Huang <haitao.huang@intel.com>
-> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+On Thu, Apr 14, 2022 at 12:24 AM Dmitry Osipenko
+<dmitry.osipenko@collabora.com> wrote:
+>
+> On 4/13/22 21:48, Rafael J. Wysocki wrote:
+> > On Tue, Apr 12, 2022 at 1:39 AM Dmitry Osipenko
+> > <dmitry.osipenko@collabora.com> wrote:
+> >>
+> >> Add sanity check which ensures that there are no two restart handlers
+> >> registered using the same priority. This requirement will become mandatory
+> >> once all drivers will be converted to the new API and such errors will be
+> >> fixed.
+> >>
+> >> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> >
+> > The first two patches in the series are fine with me and there's only
+> > one minor nit regarding this one (below).
+> >
+> >> ---
+> >>  kernel/reboot.c | 15 +++++++++++++++
+> >>  1 file changed, 15 insertions(+)
+> >>
+> >> diff --git a/kernel/reboot.c b/kernel/reboot.c
+> >> index ed4e6dfb7d44..acdae4e95061 100644
+> >> --- a/kernel/reboot.c
+> >> +++ b/kernel/reboot.c
+> >> @@ -182,6 +182,21 @@ static ATOMIC_NOTIFIER_HEAD(restart_handler_list);
+> >>   */
+> >>  int register_restart_handler(struct notifier_block *nb)
+> >>  {
+> >> +       int ret;
+> >> +
+> >> +       ret = atomic_notifier_chain_register_unique_prio(&restart_handler_list, nb);
+> >> +       if (ret != -EBUSY)
+> >> +               return ret;
+> >> +
+> >> +       /*
+> >> +        * Handler must have unique priority. Otherwise call order is
+> >> +        * determined by registration order, which is unreliable.
+> >> +        *
+> >> +        * This requirement will become mandatory once all drivers
+> >> +        * will be converted to use new sys-off API.
+> >> +        */
+> >> +       pr_err("failed to register restart handler using unique priority\n");
+> >
+> > I would use pr_info() here, because this is not a substantial error AFAICS.
+>
+> It's indeed not a substantial error so far, but it will become
+> substantial later on once only unique priorities will be allowed. The
+> pr_warn() could be a good compromise here, pr_info() is too mild, IMO.
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Well, I'm still unconvinced about requiring all of the users of this
+interface to use unique priorities.
 
-Nit: I don't think tested-by is in the right patch here. Maybe
-Haitao's tested-by should be moved into patch that actually adds
-support for EAUG? Not something I would NAK this patch, just
-wondering...
+Arguably, there are some of them who don't really care about the
+ordering, so could there be an option for them to specify the lack of
+care by, say, passing 0 as the priority that would be regarded as a
+special case?
 
-> ---
-> Changes since V3:
-> - New patch prompted by Haitao encountering the
-> =C2=A0 WARN_ON_ONCE(encl->page_cnt % SGX_VA_SLOT_COUNT)
-> =C2=A0 within sgx_encl_grow() during his SGX2 multi-threaded
-> =C2=A0 unit tests.
->=20
-> =C2=A0arch/x86/kernel/cpu/sgx/encl.c=C2=A0 | 6 ++++--
-> =C2=A0arch/x86/kernel/cpu/sgx/encl.h=C2=A0 | 4 ++--
-> =C2=A0arch/x86/kernel/cpu/sgx/ioctl.c | 8 ++++----
-> =C2=A03 files changed, 10 insertions(+), 8 deletions(-)
->=20
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/enc=
-l.c
-> index 546423753e4c..92516aeca405 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.c
-> +++ b/arch/x86/kernel/cpu/sgx/encl.c
-> @@ -869,6 +869,8 @@ void sgx_zap_enclave_ptes(struct sgx_encl *encl, unsi=
-gned long addr)
-> =C2=A0
-> =C2=A0/**
-> =C2=A0 * sgx_alloc_va_page() - Allocate a Version Array (VA) page
-> + * @reclaim: Reclaim EPC pages directly if none available. Enclave
-> + *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mutex sho=
-uld not be held if this is set.
-> =C2=A0 *
-> =C2=A0 * Allocate a free EPC page and convert it to a Version Array (VA) =
-page.
-> =C2=A0 *
-> @@ -876,12 +878,12 @@ void sgx_zap_enclave_ptes(struct sgx_encl *encl, un=
-signed long addr)
-> =C2=A0 *=C2=A0=C2=A0 a VA page,
-> =C2=A0 *=C2=A0=C2=A0 -errno otherwise
-> =C2=A0 */
-> -struct sgx_epc_page *sgx_alloc_va_page(void)
-> +struct sgx_epc_page *sgx_alloc_va_page(bool reclaim)
-> =C2=A0{
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct sgx_epc_page *epc_=
-page;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int ret;
-> =C2=A0
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0epc_page =3D sgx_alloc_epc_pag=
-e(NULL, true);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0epc_page =3D sgx_alloc_epc_pag=
-e(NULL, reclaim);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (IS_ERR(epc_page))
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0return ERR_CAST(epc_page);
-> =C2=A0
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/enc=
-l.h
-> index 253ebdd1c5be..66adb8faec45 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.h
-> +++ b/arch/x86/kernel/cpu/sgx/encl.h
-> @@ -116,14 +116,14 @@ struct sgx_encl_page *sgx_encl_page_alloc(struct sg=
-x_encl *encl,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 unsigned long offset,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 u64 secinfo_flags);
-> =C2=A0void sgx_zap_enclave_ptes(struct sgx_encl *encl, unsigned long addr=
-);
-> -struct sgx_epc_page *sgx_alloc_va_page(void);
-> +struct sgx_epc_page *sgx_alloc_va_page(bool reclaim);
-> =C2=A0unsigned int sgx_alloc_va_slot(struct sgx_va_page *va_page);
-> =C2=A0void sgx_free_va_slot(struct sgx_va_page *va_page, unsigned int off=
-set);
-> =C2=A0bool sgx_va_page_full(struct sgx_va_page *va_page);
-> =C2=A0void sgx_encl_free_epc_page(struct sgx_epc_page *page);
-> =C2=A0struct sgx_encl_page *sgx_encl_load_page(struct sgx_encl *encl,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 unsigned long addr);
-> -struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl);
-> +struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl, bool reclaim);
-> =C2=A0void sgx_encl_shrink(struct sgx_encl *encl, struct sgx_va_page *va_=
-page);
-> =C2=A0
-> =C2=A0#endif /* _X86_ENCL_H */
-> diff --git a/arch/x86/kernel/cpu/sgx/ioctl.c b/arch/x86/kernel/cpu/sgx/io=
-ctl.c
-> index bb8cdb2ad0d1..5d41aa204761 100644
-> --- a/arch/x86/kernel/cpu/sgx/ioctl.c
-> +++ b/arch/x86/kernel/cpu/sgx/ioctl.c
-> @@ -17,7 +17,7 @@
-> =C2=A0#include "encl.h"
-> =C2=A0#include "encls.h"
-> =C2=A0
-> -struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl)
-> +struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl, bool reclaim)
-> =C2=A0{
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct sgx_va_page *va_pa=
-ge =3D NULL;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void *err;
-> @@ -30,7 +30,7 @@ struct sgx_va_page *sgx_encl_grow(struct sgx_encl *encl=
-)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0if (!va_page)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ret=
-urn ERR_PTR(-ENOMEM);
-> =C2=A0
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0va_page->epc_page =3D sgx_alloc_va_page();
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0va_page->epc_page =3D sgx_alloc_va_page(reclaim);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0if (IS_ERR(va_page->epc_page)) {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0err=
- =3D ERR_CAST(va_page->epc_page);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0kfr=
-ee(va_page);
-> @@ -64,7 +64,7 @@ static int sgx_encl_create(struct sgx_encl *encl, struc=
-t sgx_secs *secs)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct file *backing;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0long ret;
-> =C2=A0
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0va_page =3D sgx_encl_grow(encl=
-);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0va_page =3D sgx_encl_grow(encl=
-, true);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (IS_ERR(va_page))
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0return PTR_ERR(va_page);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else if (va_page)
-> @@ -275,7 +275,7 @@ static int sgx_encl_add_page(struct sgx_encl *encl, u=
-nsigned long src,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0return PTR_ERR(epc_page);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
-> =C2=A0
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0va_page =3D sgx_encl_grow(encl=
-);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0va_page =3D sgx_encl_grow(encl=
-, true);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (IS_ERR(va_page)) {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0ret =3D PTR_ERR(va_page);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0goto err_out_free;
-
-
-BR, Jarkko
+IOW, if you pass 0, you'll be run along the others who've also passed
+0, but if you pass anything different from 0, it must be unique.  What
+do you think?
