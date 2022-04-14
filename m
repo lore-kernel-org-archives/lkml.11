@@ -2,79 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:52:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240121AbiDNLxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 07:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
+        id S242794AbiDNLys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 07:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbiDNLxf (ORCPT
+        with ESMTP id S229990AbiDNLyq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 07:53:35 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C2754BD0;
-        Thu, 14 Apr 2022 04:51:11 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 1EEEC1F47996
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649937067;
-        bh=FQo3+DfDK/439bMdjsIJSbbQW7m+3RsLgRDDfki4H+U=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=YtZBD7RNl720F69+xtlmXyfdDxjpi1ksA1V3yHN1HBA6AEH5w+VeB7DI9ibavjKHp
-         ZjGwaDwxN6p4gy8x8MbJRnoAamqkn+diH9XzFHyDYHLNqyUhI5IkEXRuv1V9yIzUDU
-         AYKcVdlaGGJYKVZd0ruW3n8o5eHJ/KA0XifmgbWE0Zi+B8mz0QSBmBpFmHyQTnPCGV
-         qiWeXeq4ZGX5n+lMeRiDzj4II7gDE09xt+ks3FgMSN1jDl1LJ5P3bgAvEVMRBgwHdA
-         5FFEZ0UDm6uyqdjercTqlpjz0C2WX369JjI3QCtFbS/aax9x7MO9bYwmNdz+pG65OE
-         re3ANfGXiXIIA==
-Message-ID: <ee2f0819-8c9e-4160-c4ae-fb4ad0da3f3b@collabora.com>
-Date:   Thu, 14 Apr 2022 13:51:04 +0200
+        Thu, 14 Apr 2022 07:54:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E8A6211D;
+        Thu, 14 Apr 2022 04:52:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 993D561896;
+        Thu, 14 Apr 2022 11:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBC6CC385A1;
+        Thu, 14 Apr 2022 11:52:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649937141;
+        bh=WB7PfvcJeXvB4XqllL9QJvqkJ0Tac8DuyDc45w9vliY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QPSm2DurlaEc21S2pAeLWhY2fpbmKjl3Pg8G29ozFssKJBzfbufO82JgSwO1eNOVm
+         XQCwBwk0AbVb1FpHPcfUUGRfzqEU7fPoFxfmgOO9vH00OahEbbrlBktpEMBiUwvWdE
+         TaS3h6u6E/Qu3OsvPTMT5ujAQXNhN3BbtYWIQlb+fKoorxJHvf0oq8eAehTufXkr1H
+         jQt5zKsdH/lp7zh4vTE14+erKGI2KxBWcEHM2cj8GSE5SuHSiV7Jbnfp0vI8uJLx1z
+         iUzLs6xsxGGx/vM4938mkqdrYvRYN8Z6P8vZYROUGbyyAU4P78RPaqJWJFU67aDpCq
+         7G50vrCaKwiqw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id B4FB540407; Thu, 14 Apr 2022 08:52:17 -0300 (-03)
+Date:   Thu, 14 Apr 2022 08:52:17 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] perf report: Set PERF_SAMPLE_DATA_SRC bit for Arm SPE
+ event
+Message-ID: <YlgK8dAY/mivWCD+@kernel.org>
+References: <20220413092317.756022-1-leo.yan@linaro.org>
+ <Yld4fzWWY07ksB+5@kernel.org>
+ <9ad30442-41f8-6e17-cb4a-ab102b3ebd69@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v6 1/2] dt-bindings: Add DT schema for Arm Mali Valhall
- GPU
-Content-Language: en-US
-To:     Nick Fan <Nick.Fan@mediatek.com>, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
-        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        alyssa.rosenzweig@collabora.com, Daniel Vetter <daniel@ffwll.ch>,
-        wenst@chromium.org, linux-arm-kernel@lists.infradead.org
-References: <20220414025023.11516-1-Nick.Fan@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220414025023.11516-1-Nick.Fan@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9ad30442-41f8-6e17-cb4a-ab102b3ebd69@arm.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/04/22 04:50, Nick Fan ha scritto:
-> Add devicetree schema for Arm Mali Valhall GPU
+Em Thu, Apr 14, 2022 at 11:29:48AM +0100, James Clark escreveu:
 > 
-> Define a compatible string for the Mali Valhall GPU
-> for MediaTek's SoC platform.
 > 
-> Signed-off-by: Nick Fan <Nick.Fan@mediatek.com>
+> On 14/04/2022 02:27, Arnaldo Carvalho de Melo wrote:
+> > Em Wed, Apr 13, 2022 at 05:23:17PM +0800, Leo Yan escreveu:
+> >> Since commit bb30acae4c4d ("perf report: Bail out --mem-mode if mem info
+> >> is not available") "perf mem report" and "perf report --mem-mode"
+> >> don't report result if the PERF_SAMPLE_DATA_SRC bit is missed in sample
+> >> type.
+> >>
+> >> The commit ffab48705205 ("perf: arm-spe: Fix perf report --mem-mode")
+> >> partially fixes the issue.  It adds PERF_SAMPLE_DATA_SRC bit for Arm SPE
+> >> event, this allows the perf data file generated by kernel v5.18-rc1 or
+> >> later version can be reported properly.
+> >>
+> >> On the other hand, perf tool still fails to be backward compatibility
+> >> for a data file recorded by an older version's perf which contains Arm
+> >> SPE trace data.  This patch is a workaround in reporting phase, when
+> >> detects ARM SPE PMU event and without PERF_SAMPLE_DATA_SRC bit, it will
+> >> force to set the bit in the sample type and give a warning info.
+> >>
+> >> Fixes: bb30acae4c4d ("perf report: Bail out --mem-mode if mem info is not available")
+> >> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> >> Tested-by: German Gomez <german.gomez@arm.com>
+> >> ---
+> >> v2: Change event name from "arm_spe_" to "arm_spe";
+> >>     Add German's test tag.
+> > 
+> > Tentatively applied, would be great to have James' and Ravi's
+> > Acked-by/Reviewed-by, which I'll add before pushing this out if provided
+> > in time.
+> > 
+> > - Arnaldo
+> >  
+> >>  tools/perf/builtin-report.c | 16 ++++++++++++++++
+> >>  1 file changed, 16 insertions(+)
+> >>
+> >> diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
+> >> index 1ad75c7ba074..acb07a4a9b67 100644
+> >> --- a/tools/perf/builtin-report.c
+> >> +++ b/tools/perf/builtin-report.c
+> >> @@ -353,6 +353,7 @@ static int report__setup_sample_type(struct report *rep)
+> >>  	struct perf_session *session = rep->session;
+> >>  	u64 sample_type = evlist__combined_sample_type(session->evlist);
+> >>  	bool is_pipe = perf_data__is_pipe(session->data);
+> >> +	struct evsel *evsel;
+> >>  
+> >>  	if (session->itrace_synth_opts->callchain ||
+> >>  	    session->itrace_synth_opts->add_callchain ||
+> >> @@ -407,6 +408,21 @@ static int report__setup_sample_type(struct report *rep)
+> >>  	}
+> >>  
+> >>  	if (sort__mode == SORT_MODE__MEMORY) {
+> >> +		/*
+> >> +		 * FIXUP: prior to kernel 5.18, Arm SPE missed to set
+> >> +		 * PERF_SAMPLE_DATA_SRC bit in sample type.  For backward
+> >> +		 * compatibility, set the bit if it's an old perf data file.
+> >> +		 */
+> >> +		evlist__for_each_entry(session->evlist, evsel) {
+> >> +			if (strstr(evsel->name, "arm_spe") &&
+> >> +				!(sample_type & PERF_SAMPLE_DATA_SRC)) {
+> >> +				ui__warning("PERF_SAMPLE_DATA_SRC bit is not set "
+> >> +					    "for Arm SPE event.\n");
+> 
+> Looks ok to me. Personally I would remove the warning, otherwise people are going to start
+> thinking that they need to do something about it or something bad has happened.
+> 
+> But because we've fixed it up there shouldn't really need to be a warning or any action.
+> 
+> I don't feel too strongly about this though, so I will leave it up to Leo to make the
+> final decision:
+> 
+> Reviewed-by: James Clark <james.clark@arm.com>
 
-Hello Nick,
-Unfortunately, this binding is completely wrong.
+Thanks, collecting your review,
 
-First of all, there's no arm,mali-valhall driver upstream - this will be managed
-by panfrost later, yes, but right now there's no support.
-Then, you're also setting opp-microvolt in a way that will never (or, at least,
-not anytime soon) be supported by the upstream driver, as it manages only one
-supply for devfreq scaling.
-
-Besides, please don't push bindings that have no upstream driver, especially if
-these are for downstream drivers requiring proprietary components, while a
-completely open source implementation is in the works.
-
-Regards,
-Angelo
+- Arnaldo
