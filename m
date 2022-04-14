@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A32DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241343AbiDNJAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        id S241367AbiDNJAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241323AbiDNJA1 (ORCPT
+        with ESMTP id S241357AbiDNJAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:00:27 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24A168982
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:58:03 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id n22so3941966pfa.0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:58:03 -0700 (PDT)
+        Thu, 14 Apr 2022 05:00:49 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF756BDD1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:58:16 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id h5so4224488pgc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:58:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=K7ZmOmH1IbMc+vnlcJBZfbxN3MEcHeLW2ET7s3Wh5sM=;
-        b=I70WfUKgVpQ6q+asH3FAmRn1WWiOAy6zd0FZbkAq6a02yN2z6/+ljmprknkpE2cMGP
-         b4fjuvaH99F1aAEhWhnan9EeGlHqrNslTlrjI4++n/eXgw1TU26x9LyLn7zzYY7G8I5H
-         k+Me9mMeCsC6PFp93hM/rk+BLLAkGkljpvOBs/M9dmFGcEAxWhAOIEZbIEa6HSBsTTR/
-         gGDOtgcz78mbZNfs+WMW7SVniVtfBKOzZjoUJOB74VvgPmFiGz4yVUfDdsGyyDfDMEYI
-         /7LrxWRqv+J5fTU5AIfm6CDGouRBJSKF5fdrjc8qplsLME+iRSJfjU0b9+2f2fdEOGPX
-         9LJg==
+        bh=Flouc9x4YW1EROU8wB1b7QSoEspFYDh7fC18OAMupnU=;
+        b=oony/Txz5UItxFolta6iBfVnB8Y1xpXvK3iNV5pZyj98ppFo9RkGtVpwBS+DKI8QWO
+         VwGRSP+JOqEQKfBIFD3st+33YwNN2BP25EYis48bexbK4VejcsLUZYH6XDcLI9Him/Cc
+         pdL4JgTE8s4JX3p8FES71ZLoECOOogMnaangOCqpr0OoafDq3QrY56Or4zqI6gg3Rl4I
+         6PJpps2bvqQyRG8B5sAjDr83OMcBN8MiYs6T12aHSnzK6ovfvPD4vpB0khpULee6lrlv
+         lMsscFikXRKquMov+dpptRT9c7vJXLJ4n2ViPI2dPNKB+x+S5Mt3HpQnOIq2ER68Z3th
+         5ltQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=K7ZmOmH1IbMc+vnlcJBZfbxN3MEcHeLW2ET7s3Wh5sM=;
-        b=2Agu6DZauGZ9tsIxp1KpguAneP4rxMqjyBiaGsW9fPUmL8xIBK0FCuKisz0RbL019F
-         7OnhCPcokySOhBV5W+n0mTk9G72eTkhZmV+hAGJOry0ebmvMwcgy0b5On561cNkdpIQ9
-         qRHehQbAPOKeRnrd8rTuVLjQ7/etvKqT4vheVXPYPgvn0ilbWpYaDeiBIbe3ceZtDBYN
-         MmIufFTsgj72VIvJHKXa6P40rQjHHcLdooUV7IZSu5G20+34xqkc2dHapZNPJH/qFqpK
-         T2GZHFvRwrW76zb3WNygvWCSeB5nLLO0XJdvTIvnfru6Mpk6bffrXvi4dVJpiKuN2yBn
-         t9IQ==
-X-Gm-Message-State: AOAM532FYzxZYafcpJPuwxUG6ObIUPZaNJF8FWmWESlxqb+St3GNVj1J
-        ybqhNAH7gGpu06kGrrE3LCo=
-X-Google-Smtp-Source: ABdhPJwjedRUJ62C/VUVzRlP7p+Lh/lKMZPqawWi7OpyiXjnkb9bEleKPusTPvxIUdrOkQXNBlkZtg==
-X-Received: by 2002:aa7:88ce:0:b0:505:6a0b:c965 with SMTP id k14-20020aa788ce000000b005056a0bc965mr14021729pff.67.1649926683254;
-        Thu, 14 Apr 2022 01:58:03 -0700 (PDT)
+        bh=Flouc9x4YW1EROU8wB1b7QSoEspFYDh7fC18OAMupnU=;
+        b=HytLoPdyMFqf2tDr2TWq0eFPvOJ1OVoLqvBjAozSuQo5hk1FV7racS0TKIyG61CdhU
+         ZNGloXhKZY7jU04B1VvcCa+pCzUVsdNYb4W/zM7GxYNkDCKzrNJSkJhrfu91xP/OWJuW
+         UrQDARvdu09+tVpVwSeQqUzW1IIOLoGCq43fDSeVW7E19jBdx+srvBMXYpqX0iEDn2di
+         P3sPD8yd48cCU8kIRO4bk+F5NiQ0ZlpZUoFbbxJIpc6wt84n9z86sV1FtgqUtGEXMzcw
+         84lTzqrwgudEQ5jAkPzrZBanutVP30Uzc4PpY99RjIIipH3o+4u5C4FLT6TXoHl5JDi1
+         DdaQ==
+X-Gm-Message-State: AOAM531vQlPFbx1xxBsM1ULzt++ynMn8eJwKwQv/7L/dDRFdLaM3kK3M
+        gb59K2ztv7RAohEiUPe2KYY=
+X-Google-Smtp-Source: ABdhPJyHufbjJAEzA9QC+Uba/N3QwSoEgPj/JV96DrZ1cwqz0NEioGGRA5GL0D2mSmMpFjxGqs7n6g==
+X-Received: by 2002:a05:6a00:1bca:b0:505:ac8b:cc4b with SMTP id o10-20020a056a001bca00b00505ac8bcc4bmr14022293pfw.26.1649926696025;
+        Thu, 14 Apr 2022 01:58:16 -0700 (PDT)
 Received: from hyeyoo.. ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id p9-20020aa79e89000000b00505fada20dfsm1403537pfq.117.2022.04.14.01.57.57
+        by smtp.gmail.com with ESMTPSA id p9-20020aa79e89000000b00505fada20dfsm1403537pfq.117.2022.04.14.01.58.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 01:58:01 -0700 (PDT)
+        Thu, 14 Apr 2022 01:58:14 -0700 (PDT)
 From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
 To:     Vlastimil Babka <vbabka@suse.cz>
 Cc:     Marco Elver <elver@google.com>,
@@ -60,9 +60,9 @@ Cc:     Marco Elver <elver@google.com>,
         Hyeonggon Yoo <42.hyeyoo@gmail.com>,
         Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 04/23] mm/slab_common: cleanup kmalloc_track_caller()
-Date:   Thu, 14 Apr 2022 17:57:08 +0900
-Message-Id: <20220414085727.643099-5-42.hyeyoo@gmail.com>
+Subject: [PATCH v2 06/23] mm/sl[auo]b: fold kmalloc_order_trace() into kmalloc_large()
+Date:   Thu, 14 Apr 2022 17:57:10 +0900
+Message-Id: <20220414085727.643099-7-42.hyeyoo@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220414085727.643099-1-42.hyeyoo@gmail.com>
 References: <20220414085727.643099-1-42.hyeyoo@gmail.com>
@@ -72,126 +72,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make kmalloc_track_caller() wrapper of kmalloc_node_track_caller().
+There is no caller of kmalloc_order_trace() except kmalloc_large().
+Fold it into kmalloc_large() and remove kmalloc_order{,_trace}().
+
+Also add tracepoint in kmalloc_large() that was previously
+in kmalloc_order_trace().
 
 Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- include/linux/slab.h | 17 ++++++++---------
- mm/slab.c            |  6 ------
- mm/slob.c            |  6 ------
- mm/slub.c            | 22 ----------------------
- 4 files changed, 8 insertions(+), 43 deletions(-)
+Changes from v1:
+- updated some changelog (kmalloc_order() -> kmalloc_order_trace())
+
+ include/linux/slab.h | 22 ++--------------------
+ mm/slab_common.c     | 14 +++-----------
+ 2 files changed, 5 insertions(+), 31 deletions(-)
 
 diff --git a/include/linux/slab.h b/include/linux/slab.h
-index a3b9d4c20d7e..acdb4b7428f9 100644
+index 4c06d15f731c..6f6e22959b39 100644
 --- a/include/linux/slab.h
 +++ b/include/linux/slab.h
-@@ -639,6 +639,12 @@ static inline __alloc_size(1, 2) void *kcalloc(size_t n, size_t size, gfp_t flag
- 	return kmalloc_array(n, size, flags | __GFP_ZERO);
+@@ -484,26 +484,8 @@ static __always_inline void *kmem_cache_alloc_node_trace(struct kmem_cache *s, g
  }
+ #endif /* CONFIG_TRACING */
  
-+extern void *__kmalloc_node_track_caller(size_t size, gfp_t flags, int node,
-+					 unsigned long caller) __alloc_size(1);
-+#define kmalloc_node_track_caller(size, flags, node) \
-+	__kmalloc_node_track_caller(size, flags, node, \
-+				    _RET_IP_)
-+
- /*
-  * kmalloc_track_caller is a special version of kmalloc that records the
-  * calling function of the routine calling it for slab leak tracking instead
-@@ -647,9 +653,9 @@ static inline __alloc_size(1, 2) void *kcalloc(size_t n, size_t size, gfp_t flag
-  * allocator where we care about the real place the memory allocation
-  * request comes from.
-  */
--extern void *__kmalloc_track_caller(size_t size, gfp_t flags, unsigned long caller);
- #define kmalloc_track_caller(size, flags) \
--	__kmalloc_track_caller(size, flags, _RET_IP_)
-+	__kmalloc_node_track_caller(size, flags, \
-+				    NUMA_NO_NODE, _RET_IP_)
- 
- static inline __alloc_size(1, 2) void *kmalloc_array_node(size_t n, size_t size, gfp_t flags,
- 							  int node)
-@@ -668,13 +674,6 @@ static inline __alloc_size(1, 2) void *kcalloc_node(size_t n, size_t size, gfp_t
- 	return kmalloc_array_node(n, size, flags | __GFP_ZERO, node);
- }
- 
+-extern void *kmalloc_order(size_t size, gfp_t flags, unsigned int order) __assume_page_alignment
+-									 __alloc_size(1);
 -
--extern void *__kmalloc_node_track_caller(size_t size, gfp_t flags, int node,
--					 unsigned long caller) __alloc_size(1);
--#define kmalloc_node_track_caller(size, flags, node) \
--	__kmalloc_node_track_caller(size, flags, node, \
--			_RET_IP_)
--
- /*
-  * Shortcuts
-  */
-diff --git a/mm/slab.c b/mm/slab.c
-index 5ad55ca96ab6..5f20efc7a330 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -3675,12 +3675,6 @@ void *__kmalloc(size_t size, gfp_t flags)
- }
- EXPORT_SYMBOL(__kmalloc);
- 
--void *__kmalloc_track_caller(size_t size, gfp_t flags, unsigned long caller)
+-#ifdef CONFIG_TRACING
+-extern void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
+-				__assume_page_alignment __alloc_size(1);
+-#else
+-static __always_inline __alloc_size(1) void *kmalloc_order_trace(size_t size, gfp_t flags,
+-								 unsigned int order)
 -{
--	return __do_kmalloc(size, flags, caller);
+-	return kmalloc_order(size, flags, order);
 -}
--EXPORT_SYMBOL(__kmalloc_track_caller);
+-#endif
 -
+-static __always_inline __alloc_size(1) void *kmalloc_large(size_t size, gfp_t flags)
+-{
+-	unsigned int order = get_order(size);
+-	return kmalloc_order_trace(size, flags, order);
+-}
+-
++extern void *kmalloc_large(size_t size, gfp_t flags) __assume_page_alignment
++						     __alloc_size(1);
  /**
-  * kmem_cache_free - Deallocate an object
-  * @cachep: The cache the allocation was from.
-diff --git a/mm/slob.c b/mm/slob.c
-index c8c3b5662edf..6d0fc6ad1413 100644
---- a/mm/slob.c
-+++ b/mm/slob.c
-@@ -528,12 +528,6 @@ void *__kmalloc(size_t size, gfp_t gfp)
- }
- EXPORT_SYMBOL(__kmalloc);
- 
--void *__kmalloc_track_caller(size_t size, gfp_t gfp, unsigned long caller)
--{
--	return __do_kmalloc_node(size, gfp, NUMA_NO_NODE, caller);
--}
--EXPORT_SYMBOL(__kmalloc_track_caller);
--
- void *__kmalloc_node_track_caller(size_t size, gfp_t gfp,
- 					int node, unsigned long caller)
+  * kmalloc - allocate memory
+  * @size: how many bytes of memory are required.
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index c4d63f2c78b8..308cd5449285 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -925,10 +925,11 @@ gfp_t kmalloc_fix_flags(gfp_t flags)
+  * directly to the page allocator. We use __GFP_COMP, because we will need to
+  * know the allocation order to free the pages properly in kfree.
+  */
+-void *kmalloc_order(size_t size, gfp_t flags, unsigned int order)
++void *kmalloc_large(size_t size, gfp_t flags)
  {
-diff --git a/mm/slub.c b/mm/slub.c
-index e36c148e5069..e425c5c372de 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -4903,28 +4903,6 @@ int __kmem_cache_create(struct kmem_cache *s, slab_flags_t flags)
- 	return 0;
- }
+ 	void *ret = NULL;
+ 	struct page *page;
++	unsigned int order = get_order(size);
  
--void *__kmalloc_track_caller(size_t size, gfp_t gfpflags, unsigned long caller)
--{
--	struct kmem_cache *s;
--	void *ret;
--
--	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE))
--		return kmalloc_large(size, gfpflags);
--
--	s = kmalloc_slab(size, gfpflags);
--
--	if (unlikely(ZERO_OR_NULL_PTR(s)))
--		return s;
--
--	ret = slab_alloc(s, NULL, gfpflags, caller, size);
--
--	/* Honor the call site pointer we received. */
--	trace_kmalloc(caller, ret, size, s->size, gfpflags);
--
+ 	if (unlikely(flags & GFP_SLAB_BUG_MASK))
+ 		flags = kmalloc_fix_flags(flags);
+@@ -943,19 +944,10 @@ void *kmalloc_order(size_t size, gfp_t flags, unsigned int order)
+ 	ret = kasan_kmalloc_large(ret, size, flags);
+ 	/* As ret might get tagged, call kmemleak hook after KASAN. */
+ 	kmemleak_alloc(ret, size, 1, flags);
 -	return ret;
 -}
--EXPORT_SYMBOL(__kmalloc_track_caller);
+-EXPORT_SYMBOL(kmalloc_order);
 -
- void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
- 					int node, unsigned long caller)
- {
+-#ifdef CONFIG_TRACING
+-void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
+-{
+-	void *ret = kmalloc_order(size, flags, order);
+ 	trace_kmalloc(_RET_IP_, ret, size, PAGE_SIZE << order, flags);
+ 	return ret;
+ }
+-EXPORT_SYMBOL(kmalloc_order_trace);
+-#endif
++EXPORT_SYMBOL(kmalloc_large);
+ 
+ #ifdef CONFIG_SLAB_FREELIST_RANDOM
+ /* Randomize a generic freelist */
 -- 
 2.32.0
 
