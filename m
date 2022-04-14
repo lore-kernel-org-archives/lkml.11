@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DBEC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC29AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352157AbiDNOb6 (ORCPT
+        id S1352411AbiDNOcR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
+        Thu, 14 Apr 2022 10:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344331AbiDNNky (ORCPT
+        with ESMTP id S1344354AbiDNNlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:54 -0400
+        Thu, 14 Apr 2022 09:41:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57987120;
-        Thu, 14 Apr 2022 06:38:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95190120;
+        Thu, 14 Apr 2022 06:38:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16DE8B82983;
-        Thu, 14 Apr 2022 13:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A16FC385A1;
-        Thu, 14 Apr 2022 13:38:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C7BCB82983;
+        Thu, 14 Apr 2022 13:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B00C385A1;
+        Thu, 14 Apr 2022 13:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943506;
-        bh=hfd6vT7VujooZ737uHSpCZW0GxU2u0tKgL4SLiLbXOc=;
+        s=korg; t=1649943515;
+        bh=5UPzUyTwVNafOcXp7U06LQnhvjxS56Qaqm4pj8oYI6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XIOqzDjK1V2swjjRUkimTS9iEkpti5zTNA+hkMIdPI99PZzkvI9F0q75WLD6P+WM8
-         gH/E+BSP2L0DIMcX2fcL8H/Lw1F2Tpn8bjoyc8vVOLu9u1PUJgWg0ocs7r9Z0BUZRD
-         ivzBh9lsECSaqqUDDMCH+NVLaxvmTIqjBLaed3l4=
+        b=fFWHExJlP5DVl3NqOa1YSit61OOa/QwEGi+18FHvh4B8o76TP+3juWaMU9ySAIPez
+         kOnI7+6nJA4sMOzveabfgp9Oxm8MfKz5Pwz1Ob9Y2fcrL3lZoEA8nLnWNzAuDb3+3r
+         RlIWeS/VSy1JVpzwSLJTsNzV7V+ulDcTg2Z6mv8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 139/475] memory: emif: Add check for setup_interrupts
-Date:   Thu, 14 Apr 2022 15:08:44 +0200
-Message-Id: <20220414110859.037596144@linuxfoundation.org>
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 176/475] iommu/ipmmu-vmsa: Check for error num after setting mask
+Date:   Thu, 14 Apr 2022 15:09:21 +0200
+Message-Id: <20220414110900.060631646@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,45 +52,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit fd7bd80b46373887b390852f490f21b07e209498 ]
+[ Upstream commit 1fdbbfd5099f797a4dac05e7ef0192ba4a9c39b4 ]
 
-As the potential failure of the devm_request_threaded_irq(),
-it should be better to check the return value of the
-setup_interrupts() and return error if fails.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-Fixes: 68b4aee35d1f ("memory: emif: add interrupt and temperature handling")
+Fixes: 1c894225bf5b ("iommu/ipmmu-vmsa: IPMMU device is 40-bit bus master")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220224025444.3256530-1-jiasheng@iscas.ac.cn
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Link: https://lore.kernel.org/r/20220106024302.2574180-1-jiasheng@iscas.ac.cn
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index af296b6fcbbd..0d6b975616bb 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1515,7 +1515,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
- {
- 	struct emif_data	*emif;
- 	struct resource		*res;
--	int			irq;
-+	int			irq, ret;
- 
- 	if (pdev->dev.of_node)
- 		emif = of_get_memory_device_details(pdev->dev.of_node, &pdev->dev);
-@@ -1549,7 +1549,9 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
- 	emif_onetime_settings(emif);
- 	emif_debugfs_init(emif);
- 	disable_and_clear_all_interrupts(emif);
--	setup_interrupts(emif, irq);
-+	ret = setup_interrupts(emif, irq);
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 2639fc718117..584eefab1dbc 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1061,7 +1061,9 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ 	mmu->features = of_device_get_match_data(&pdev->dev);
+ 	memset(mmu->utlb_ctx, IPMMU_CTX_INVALID, mmu->features->num_utlbs);
+-	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
++	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
 +	if (ret)
-+		goto error;
++		return ret;
  
- 	/* One-time actions taken on probing the first device */
- 	if (!emif1) {
+ 	/* Map I/O memory and request IRQ. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 -- 
 2.34.1
 
