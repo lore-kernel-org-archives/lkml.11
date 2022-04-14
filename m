@@ -2,123 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC33C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3AAC43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353320AbiDNOjl (ORCPT
+        id S1353285AbiDNOj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
+        Thu, 14 Apr 2022 10:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344799AbiDNNol (ORCPT
+        with ESMTP id S1344774AbiDNNoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:41 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0374387B7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:40:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649943616; x=1681479616;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=oe/BJrwW4pAsB1nX950gAS+RLvGZsHho+J6bPq9fR/s=;
-  b=f7Oqqruip+H+RCFFbU4imMnNvJdYuksQFLYUgS3rJoRrhHB9fOUOh9JA
-   z7O6FK7ThLtJMwKA9PoQOKRubhl+5jakIHSVKmi2pGvL9RCcp09xBrk7y
-   qqqfum/RT0+PWij3GlybrYlkHkC4m+zSvDuciyzLdJybTfStNxMiQH9ly
-   /5L5qT46N1VSH6ItZeX1YIPRNWYg4W0vI5bO/CHk9LYxh3Qqy69eU0/3d
-   hjtW6907LjEm0XgqafmkyXbdbuW4+KoHqRyP5iQ5w+agPFKf0B1N2CIj5
-   t9n+byLJxvx9ujNDhMhtn4k26GSYQubg+Q+opUL/8M4lKXK5MtEuQsWZm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="260526415"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="260526415"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:40:16 -0700
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="573800067"
-Received: from nplaweck-mobl.ger.corp.intel.com (HELO localhost) ([10.249.149.236])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:40:11 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        "Wang, Zhi A" <zhi.a.wang@intel.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: refactor the i915 GVT support and move to the modern mdev API v3
-In-Reply-To: <20220414133427.GB2120790@nvidia.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220411141403.86980-1-hch@lst.de>
- <82c13d8e-1cb4-2873-86e9-16fd38e15b27@intel.com>
- <20220413154642.GA28095@lst.de> <871qy1geko.fsf@intel.com>
- <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
- <20220413232053.GA2120790@nvidia.com>
- <1c3aaab9-3bd4-95d4-9f9f-4be9e10e6516@intel.com>
- <20220414133427.GB2120790@nvidia.com>
-Date:   Thu, 14 Apr 2022 16:40:11 +0300
-Message-ID: <87ilrbeqbo.fsf@intel.com>
+        Thu, 14 Apr 2022 09:44:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5C3377D4;
+        Thu, 14 Apr 2022 06:40:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACC25B82994;
+        Thu, 14 Apr 2022 13:40:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08A00C385A5;
+        Thu, 14 Apr 2022 13:40:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649943604;
+        bh=Qy80bBpTWwyOzFCkTvhjMVEyPk6pMJmusaT928UuOpU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TTzOas4SpDDDaohU9/9FvBZaSaBL3tnZv5WeyqMZNlgtrHywSJSlH171hBU7aaPMr
+         gXd6xQyf2L7c3HPDf/fi0zOC6Zl0YPLM9QL8NQ64MgpQtyOEw3Aeu1yBLqNJNVlzKo
+         k/0TBnidrmwdLj7VfN5BwfCladgIMVncwMDGDHSc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 214/475] bpf, sockmap: Fix memleak in tcp_bpf_sendmsg while sk msg is full
+Date:   Thu, 14 Apr 2022 15:09:59 +0200
+Message-Id: <20220414110901.113925405@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
-> On Thu, Apr 14, 2022 at 12:20:42PM +0000, Wang, Zhi A wrote:
->> On 4/13/22 11:20 PM, Jason Gunthorpe wrote:
->> > On Wed, Apr 13, 2022 at 11:13:06PM +0000, Wang, Zhi A wrote:
->> >> Hi folks:
->> >>
->> >> Thanks so much for the efforts. I prepared a branch which contains all our patches.The aim of the branch is for the VFIO maintainers to pull the whole bunch easily after the drm-intel-next got merged through drm (as one of the MMIO patches depends on a patch in drm-intel-next).
->> >>
->> >> I dropped patch 4 and patch 5 as they have been covered by Jani's patches. Some conflicts was solved.
->> >> QA is going to test it today. 
->> >>
->> >> You can find it here:
->> >>
->> >> git clone https://github.com/intel/gvt-linux -b for-christoph
->> > 
->> > There are alot of extra commits on there - is it possible to base this
->> > straight on rc1 not on some kind of existing DRM tree?
->> > 
->> > Why did you choose drm/i915/fbc: Call intel_fbc_activate() directly
->> > from frontbuffer flush  as a base?
->> > 
->> > Jason
->> > 
->> 
->> Hi Jason:
->> 
->> I updated the branch. You can check if those are what you are expecting. :)
->
-> This is better, except for the first commit:
->
->  [DON'T PULL] drm/i915/dmc: split out dmc registers to a separate file
->  THIS PATCH WILL GO THROUGH DRM-INTEL-NEXT TO UPSTREAM
->
->  Clean up the massive i915_reg.h a bit with this isolated set of
->  registers.
->
->  v2: Remove stale comment (Lucas)
->
-> Clean the commit message and send that as a proper PR to
-> drm-intel-next, then everything else is OK.
+From: Wang Yufen <wangyufen@huawei.com>
 
-It's already in drm-intel-next, I guess the problem is basing the branch
-on something that doesn't have it. I'd probably just base everything
-cleanly on -rc1, and whoever does the merge between the two will need to
-account for the missing include in the result. It's just adding one line
-in the right place.
+[ Upstream commit 9c34e38c4a870eb30b13f42f5b44f42e9d19ccb8 ]
 
-BR,
-Jani.
+If tcp_bpf_sendmsg() is running while sk msg is full. When sk_msg_alloc()
+returns -ENOMEM error, tcp_bpf_sendmsg() goes to wait_for_memory. If partial
+memory has been alloced by sk_msg_alloc(), that is, msg_tx->sg.size is
+greater than osize after sk_msg_alloc(), memleak occurs. To fix we use
+sk_msg_trim() to release the allocated memory, then goto wait for memory.
 
+Other call paths of sk_msg_alloc() have the similar issue, such as
+tls_sw_sendmsg(), so handle sk_msg_trim logic inside sk_msg_alloc(),
+as Cong Wang suggested.
 
+This issue can cause the following info:
+WARNING: CPU: 3 PID: 7950 at net/core/stream.c:208 sk_stream_kill_queues+0xd4/0x1a0
+Call Trace:
+ <TASK>
+ inet_csk_destroy_sock+0x55/0x110
+ __tcp_close+0x279/0x470
+ tcp_close+0x1f/0x60
+ inet_release+0x3f/0x80
+ __sock_release+0x3d/0xb0
+ sock_close+0x11/0x20
+ __fput+0x92/0x250
+ task_work_run+0x6a/0xa0
+ do_exit+0x33b/0xb60
+ do_group_exit+0x2f/0xa0
+ get_signal+0xb6/0x950
+ arch_do_signal_or_restart+0xac/0x2a0
+ exit_to_user_mode_prepare+0xa9/0x200
+ syscall_exit_to_user_mode+0x12/0x30
+ do_syscall_64+0x46/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+ </TASK>
+
+WARNING: CPU: 3 PID: 2094 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+Call Trace:
+ <TASK>
+ __sk_destruct+0x24/0x1f0
+ sk_psock_destroy+0x19b/0x1c0
+ process_one_work+0x1b3/0x3c0
+ kthread+0xe6/0x110
+ ret_from_fork+0x22/0x30
+ </TASK>
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/20220304081145.2037182-3-wangyufen@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/core/skmsg.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 17cc1edd149c..a606ad8e8be2 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -27,6 +27,7 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
+ 		 int elem_first_coalesce)
+ {
+ 	struct page_frag *pfrag = sk_page_frag(sk);
++	u32 osize = msg->sg.size;
+ 	int ret = 0;
+ 
+ 	len -= msg->sg.size;
+@@ -35,13 +36,17 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
+ 		u32 orig_offset;
+ 		int use, i;
+ 
+-		if (!sk_page_frag_refill(sk, pfrag))
+-			return -ENOMEM;
++		if (!sk_page_frag_refill(sk, pfrag)) {
++			ret = -ENOMEM;
++			goto msg_trim;
++		}
+ 
+ 		orig_offset = pfrag->offset;
+ 		use = min_t(int, len, pfrag->size - orig_offset);
+-		if (!sk_wmem_schedule(sk, use))
+-			return -ENOMEM;
++		if (!sk_wmem_schedule(sk, use)) {
++			ret = -ENOMEM;
++			goto msg_trim;
++		}
+ 
+ 		i = msg->sg.end;
+ 		sk_msg_iter_var_prev(i);
+@@ -71,6 +76,10 @@ int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
+ 	}
+ 
+ 	return ret;
++
++msg_trim:
++	sk_msg_trim(sk, msg, osize);
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(sk_msg_alloc);
+ 
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+2.34.1
+
+
+
