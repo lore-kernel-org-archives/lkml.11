@@ -2,91 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EC2C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F46C35280
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351642AbiDNPkb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
+        id S237899AbiDNPm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245520AbiDNOh2 (ORCPT
+        with ESMTP id S1354099AbiDNPSM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:37:28 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5996FBE38
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:30:27 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id b24so6565287edu.10
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:30:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yqVUnyTrdGzzp4ZTHGXM3CWg4LdrPaGzwtzosxnpYJw=;
-        b=Xc/aUrg0ahKT8QbRWirSVbjz0aoFXK8HjWAVfiKS3ehuJN7Yl+bYVpxE9rxVTsgxZc
-         jXNR1bI26IdYB1CJDYMpbldCSRFYh3mUSsxr2mn5UmcikLAlCg8Ir5jCmOOxQK/eVFhB
-         AUeOutri3ibGpOx9u3ma0yTAHBxrN/OsByrBSbHKJvSY6hbjeP5Fz8WSf9UJC08hU9gb
-         9WnR3LU5QMyEmAGfudYwKnET7JCVFr9ZN08H5cIjgO1GdBMHi2fPCYRHBYrzTCGTNcAF
-         PRD6ilkJqi53BqJgrhVv112WiIcJCCh5SCfrjQc+UwJj23zXt2cleIHwz7AkLoeRnteF
-         nJWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yqVUnyTrdGzzp4ZTHGXM3CWg4LdrPaGzwtzosxnpYJw=;
-        b=ptpV8ed9ZmEfznkZcQ1/YpB0NwBgjiZIt+Vy8VVNHZ/+31gQFcyxHXoz/YSbEyNSIu
-         3Gbyev0hGgC/3dZgnBne9WLL4Biwdc/BTkdiYvQB5F7ZLoNLIJljlKB3z7pneKgAUYYY
-         cCUNfvuALsYEl8wnMpwgVV2TfqQ4feBb11q7V8eE0IWzzm7esbOeWZsF+F8uXE4l3z/k
-         H/D5lMtKXUhP4uMlxcHSTc6migDmW0qTIZoNi7mp8z4OSU4fJGk+5jguFesFiIOvsNOx
-         VWNsLt10uvrtTfcGA6k77VtjHnn261iKB+2inl9zNutKklXFT1AF2fYA6WtVrRDZ9Ay5
-         IsPw==
-X-Gm-Message-State: AOAM533KH9M6AOWaq32uFrv9CjTVmxb4IUFhLENuwi0X80eag9emLcgU
-        ws2/FT+rZeOcSYhoKv2ixbOXhcGVvcFli7UXFwHVYHhv
-X-Google-Smtp-Source: ABdhPJyg+8Mm6cCLmoGGWAe6/JOhiSWlO4bPWeBmmJ5IUGYdhM3IEnc8QY6wZ8OhdbgdYFJaOMu+DnCCR2SW7nUVQFU=
-X-Received: by 2002:a05:6402:270b:b0:419:3383:7a9f with SMTP id
- y11-20020a056402270b00b0041933837a9fmr3316555edd.191.1649946625790; Thu, 14
- Apr 2022 07:30:25 -0700 (PDT)
+        Thu, 14 Apr 2022 11:18:12 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251CFE7F68;
+        Thu, 14 Apr 2022 08:06:28 -0700 (PDT)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 40FCE61EA1928;
+        Thu, 14 Apr 2022 17:06:25 +0200 (CEST)
+Message-ID: <068becdf-2d88-65a1-5977-1fedd34a8f0b@molgen.mpg.de>
+Date:   Thu, 14 Apr 2022 17:06:24 +0200
 MIME-Version: 1.0
-References: <20220331070115.29421-1-bjorn.ardo@axis.com>
-In-Reply-To: <20220331070115.29421-1-bjorn.ardo@axis.com>
-From:   Jassi Brar <jassisinghbrar@gmail.com>
-Date:   Thu, 14 Apr 2022 09:30:14 -0500
-Message-ID: <CABb+yY1zrHYLBjY_EoC7bkTsWcKOhzCjp-5vgvqP0HEAJicdXQ@mail.gmail.com>
-Subject: Re: [PATCH] mailbox: forward the hrtimer if not queued and under a lock
-To:     =?UTF-8?B?QmrDtnJuIEFyZMO2?= <bjorn.ardo@axis.com>
-Cc:     kernel@axis.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] tpm: cr50: Add new device/vendor ID 0x504a6666
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     "Jes B. Klinke" <jbk@chromium.org>,
+        linux-integrity@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>,
+        Peter Huewe <peterhuewe@gmx.de>, linux-kernel@vger.kernel.org
+References: <20220405173741.4023216-1-jbk@chromium.org>
+ <6528eec1-0ab1-a5ff-3e30-2e06256dfd04@molgen.mpg.de>
+ <YlgOqpe85pe3P/JP@kernel.org>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <YlgOqpe85pe3P/JP@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 2:01 AM Bj=C3=B6rn Ard=C3=B6 <bjorn.ardo@axis.com> =
-wrote:
->
-> This reverts commit c7dacf5b0f32957b24ef29df1207dc2cd8307743,
-> "mailbox: avoid timer start from callback"
->
-> The previous commit was reverted since it lead to a race that
-> caused the hrtimer to not be started at all. The check for
-> hrtimer_active() in msg_submit() will return true if the
-> callback function txdone_hrtimer() is currently running. This
-> function could return HRTIMER_NORESTART and then the timer
-> will not be restarted, and also msg_submit() will not start
-> the timer. This will lead to a message actually being submitted
-> but no timer will start to check for its compleation.
->
-> The original fix that added checking hrtimer_active() was added to
-> avoid a warning with hrtimer_forward. Looking in the kernel
-> another solution to avoid this warning is to check hrtimer_is_queued()
-> before calling hrtimer_forward_now() instead. This however requires a
-> lock so the timer is not started by msg_submit() inbetween this check
-> and the hrtimer_forward() call.
->
-This is a very dense api used by many use-cases, I am not confident
-making any changes without confirming its a real issue with the common
-code. Please share your client code and traces, that will help me get
-a clearer picture.
+Dear Jarkko,
 
-Thanks.
+
+Am 14.04.22 um 14:08 schrieb Jarkko Sakkinen:
+> On Thu, Apr 07, 2022 at 12:21:44PM +0200, Paul Menzel wrote:
+
+>> Thank you for your patch.
+>>
+>> Am 05.04.22 um 19:37 schrieb Jes B. Klinke:
+>>> Accept one additional numerical value of DID:VID for next generation
+>>> Google TPM, to be used in future Chromebooks.
+>>
+>> Maybe extend:
+>>
+>> … Google TPM with new firmware …
+>>
+>> The TPM with the new firmware has the code name TI50, and going to use the
+>> same interfaces.
+>>
+>>> This patch touches more lines than may seem necessary, as a result of
+>>> the need to move the error case to sit after the two recognized cases.
+>>>
+>>> Signed-off-by: Jes B. Klinke <jbk@chromium.org>
+>>> ---
+>>>
+>>>    drivers/char/tpm/tpm_tis_i2c_cr50.c | 21 +++++++++++++--------
+>>>    1 file changed, 13 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm_tis_i2c_cr50.c
+>>> index f6c0affbb4567..bf54ebd6724b0 100644
+>>> --- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
+>>> +++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
+>>> @@ -31,6 +31,7 @@
+>>>    #define TPM_CR50_TIMEOUT_SHORT_MS	2		/* Short timeout during transactions */
+>>>    #define TPM_CR50_TIMEOUT_NOIRQ_MS	20		/* Timeout for TPM ready without IRQ */
+>>>    #define TPM_CR50_I2C_DID_VID		0x00281ae0L	/* Device and vendor ID reg value */
+>>> +#define TPM_TI50_I2C_DID_VID		0x504a6666L	/* Device and vendor ID reg value */
+>>>    #define TPM_CR50_I2C_MAX_RETRIES	3		/* Max retries due to I2C errors */
+>>>    #define TPM_CR50_I2C_RETRY_DELAY_LO	55		/* Min usecs between retries on I2C */
+>>>    #define TPM_CR50_I2C_RETRY_DELAY_HI	65		/* Max usecs between retries on I2C */
+>>> @@ -742,16 +743,20 @@ static int tpm_cr50_i2c_probe(struct i2c_client *client)
+>>>    	}
+>>>    	vendor = le32_to_cpup((__le32 *)buf);
+>>> -	if (vendor != TPM_CR50_I2C_DID_VID) {
+>>> -		dev_err(dev, "Vendor ID did not match! ID was %08x\n", vendor);
+>>> -		tpm_cr50_release_locality(chip, true);
+>>> -		return -ENODEV;
+>>> +	if (vendor == TPM_CR50_I2C_DID_VID) {
+>>> +		dev_info(dev, "cr50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
+>>> +			 client->addr, client->irq, vendor >> 16);
+>>> +		return tpm_chip_register(chip);
+>>> +	}
+>>> +	if (vendor == TPM_TI50_I2C_DID_VID) {
+>>> +		dev_info(dev, "ti50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
+>>> +			 client->addr, client->irq, vendor >> 16);
+>>> +		return tpm_chip_register(chip);
+>>>    	}
+>>
+>> Both branches are quite similar. Can a ternary operator be used?
+>>
+>>      dev_info(dev, "%s TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
+>>      	 (vendor == TPM_CR50_I2C_DID_VID) ? "cr50" : "ti50", client->addr,
+>> client->irq, vendor >> 16);
+>>      return tpm_chip_register(chip);
+>>
+>> and the original flow be left? (A separate variable can also be added.)
+>>
+>>> -	dev_info(dev, "cr50 TPM 2.0 (i2c 0x%02x irq %d id 0x%x)\n",
+>>> -		 client->addr, client->irq, vendor >> 16);
+>>> -
+>>> -	return tpm_chip_register(chip);
+>>> +	dev_err(dev, "Vendor ID did not match! ID was %08x\n", vendor);
+>>> +	tpm_cr50_release_locality(chip, true);
+>>> +	return -ENODEV;
+>>>    }
+>>>    /**
+
+> OK, these are legit suggestions. Paul, can you do these changes and add my
+> reviewed-by for the +1 version?
+
+I guess you mean Jes?
+
+
+Kind regards,
+
+Paul
