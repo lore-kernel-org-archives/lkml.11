@@ -2,109 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E86C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 015EEC4707A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358545AbiDNPly (ORCPT
+        id S1358787AbiDNPmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
+        Thu, 14 Apr 2022 11:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347629AbiDNOwO (ORCPT
+        with ESMTP id S1355432AbiDNPEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:52:14 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0094FBD7ED
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:41:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649947293; x=1681483293;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/nmAQuF8uidNgq7HJ/eFp9m+rY8zxzb44tZes2w07Zo=;
-  b=UpKBXCqJf9KBli+bRNFRD1zGSrTZFxES9EAiVQNqcA7GPGlhwUtsgLdY
-   Gitj/aG1M7BIC/JVSzQrvUcgqUe8y325hyuol/9mVxVC9eSlezRWWxNWN
-   NGl/w33m9ttIvaYh4cgJrtwvQURw0SmvT5jBTlcBjJpUZ6pr1tdmrIbVE
-   WEn/90lX7qGOo/g/UwYjz9wgy0qAPRyZDfvZLpRSJDknt4Pp29sG4aIxc
-   b5+5HIo51RpxjtvaEXYoL7RT5FT67uPsJWlIPnBL+w7MUPnOg+STwtv/e
-   X74ZLJjtuEJyXT5jeAjgus9NLZB1m8pae9HPy9tMw5IX1+rK6qj30fHO5
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="244828908"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="244828908"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:41:32 -0700
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="725385705"
-Received: from aviljane-mobl.ger.corp.intel.com (HELO [10.249.254.86]) ([10.249.254.86])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:41:25 -0700
-Message-ID: <94ddf51a-90ae-dee8-5d6a-45ee2cd1e584@linux.intel.com>
-Date:   Thu, 14 Apr 2022 16:41:23 +0200
+        Thu, 14 Apr 2022 11:04:35 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500D1A8EC0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:44:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=07JiligZE/4GH4BaZTL7wgTjvBdZxthvgQyY/4H+jtA=; b=U5KNuPPiSY3gWFaMAmgvDiJiAo
+        UMct/Awrtq9CTXyRMreCQBa8XsfWjAViM9oQ5WRjsrKK1gSm/S7wwnIvZ2aOIMwlj+6zSmlSd7gP8
+        Hi32LDtaXzc/h1ze8wtPbK0QGVw7ayKN1KEAJiqChfc1bH45pavDVa2vjvrQJAX0zbvArVLN+cPJj
+        12+E4JK6ufHMGW19AZsmeyen0JppChZKQdDn7+YyacoUsXUZvuUu9g0E/0a0LEcih89GQQcVYP12/
+        UeMWDA1T3Sxl8k42r4j3bB7Ig9oChiT83U8Zm2+pGIEyK7+SFuI8OEbjxAQu3ZtSodB6Qu4YxxrZH
+        OjhDvt/g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nf0i0-0052Va-5V; Thu, 14 Apr 2022 14:44:32 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 750A730080F;
+        Thu, 14 Apr 2022 16:44:29 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 346482B388774; Thu, 14 Apr 2022 16:44:29 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 16:44:29 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Kuyo Chang <kuyo.chang@mediatek.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        wsd_upstream@mediatek.com, Ingo Molnar <mingo@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH 1/1] [PATCH v3]sched/pelt: Fix the attach_entity_load_avg
+ calculate method
+Message-ID: <YlgzTS+laNNvMukT@hirez.programming.kicks-ass.net>
+References: <20220414090229.342-1-kuyo.chang@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 5/5] drm/i915: stolen memory use ttm backend
-Content-Language: en-US
-To:     Robert Beckett <bob.beckett@collabora.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
-References: <20220412193817.2098308-1-bob.beckett@collabora.com>
- <20220412193817.2098308-6-bob.beckett@collabora.com>
-From:   =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>
-In-Reply-To: <20220412193817.2098308-6-bob.beckett@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414090229.342-1-kuyo.chang@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
+I've taken the liberty of carrying over the tags from v2 and reworked
+the Changelog a little.
 
-On 4/12/22 21:38, Robert Beckett wrote:
-> +struct ttm_resource *
-> +i915_gem_stolen_reserve_range(struct drm_i915_private *i915,
-> +			      resource_size_t size,
-> +			      u64 start, u64 end)
->   {
-> -	int ret;
-> +	struct intel_memory_region *mem = i915->mm.stolen_region;
->   
-> -	if (!drm_mm_initialized(&i915->mm.stolen))
-> -		return -ENODEV;
-> -
-> -	/* WaSkipStolenMemoryFirstPage:bdw+ */
-> -	if (GRAPHICS_VER(i915) >= 8 && start < 4096)
-> -		start = 4096;
+---
+Subject: sched/pelt: Fix attach_entity_load_avg() corner case
+From: kuyo chang <kuyo.chang@mediatek.com>
+Date: Thu, 14 Apr 2022 17:02:20 +0800
 
-Did we lose this Workaround?
+From: kuyo chang <kuyo.chang@mediatek.com>
 
-Need to continue reviewing this patchnext week.
+The warning in cfs_rq_is_decayed() triggered:
 
+    SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+		  cfs_rq->avg.util_avg ||
+		  cfs_rq->avg.runnable_avg)
 
-Thx,
+There exists a corner case in attach_entity_load_avg() which will
+cause load_sum to be zero while load_avg will not be.
 
-Thomas
+Consider se_weight is 88761 as per the sched_prio_to_weight[] table.
+Further assume the get_pelt_divider() is 47742, this gives:
+se->avg.load_avg is 1.
 
+However, calculating load_sum results in 0:
 
+  se->avg.load_sum = div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
+  se->avg.load_sum = 1*47742/88761 = 0.
 
+Then enqueue_load_avg() adds this to the cfs_rq totals:
 
-> -
-> -	mutex_lock(&i915->mm.stolen_lock);
-> -	ret = drm_mm_insert_node_in_range(&i915->mm.stolen, node,
-> -					  size, alignment, 0,
-> -					  start, end, DRM_MM_INSERT_BEST);
-> -	mutex_unlock(&i915->mm.stolen_lock);
-> +	if (!mem)
-> +		return ERR_PTR(-ENODEV);
-> +	return intel_region_ttm_resource_alloc(mem, size, start, end, I915_BO_ALLOC_CONTIGUOUS);
-> +}
->   
-> -	
+  cfs_rq->avg.load_avg += se->avg.load_avg;
+  cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
+
+Resulting in load_avg being 1 with load_sum is 0, which will trigger
+the WARN.
+
+Fixes: f207934fb79d ("sched/fair: Align PELT windows between cfs_rq and its se")
+Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
+[peterz: massage changelog]
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Link: https://lkml.kernel.org/r/20220414090229.342-1-kuyo.chang@mediatek.com
+---
+ kernel/sched/fair.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3829,11 +3829,11 @@ static void attach_entity_load_avg(struc
+ 
+ 	se->avg.runnable_sum = se->avg.runnable_avg * divider;
+ 
+-	se->avg.load_sum = divider;
+-	if (se_weight(se)) {
+-		se->avg.load_sum =
+-			div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
+-	}
++	se->avg.load_sum = se->avg.load_avg * divider;
++	if (se_weight(se) < se->avg.load_sum)
++		se->avg.load_sum = div_u64(se->avg.load_sum, se_weight(se));
++	else
++		se->avg.load_sum = 1;
+ 
+ 	enqueue_load_avg(cfs_rq, se);
+ 	cfs_rq->avg.util_avg += se->avg.util_avg;
