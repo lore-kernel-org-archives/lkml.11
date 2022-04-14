@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F300C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243307AbiDNM2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 08:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
+        id S243250AbiDNM2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243188AbiDNM1O (ORCPT
+        with ESMTP id S243237AbiDNM1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 08:27:14 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23DF2D1F1;
-        Thu, 14 Apr 2022 05:24:45 -0700 (PDT)
+        Thu, 14 Apr 2022 08:27:32 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E402BB2A;
+        Thu, 14 Apr 2022 05:24:54 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 59F2940003;
-        Thu, 14 Apr 2022 12:24:42 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id DB01040011;
+        Thu, 14 Apr 2022 12:24:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649939084;
+        t=1649939093;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TwDxNSRrfQ0fwbGL5JfChMYmoOedvb2POPLu1+VI9fs=;
-        b=mxv/3mdrs1ZRE2G4jRlJUKnhx4QvHcUxICZ/dnBY1HfoYqvWx8UcKdWjJrPsVBPjO8lE5j
-        7N4AS6z5rgZOiJr9/qeBKRgAcJ9yD6EEgW2fHVrcxwgJSj5w572rVg2L81HSG50QfXX/RR
-        fFv1z0h3Fin5WOgxYU6i/3goa+cweBWnJqnSTBjhZpisiV32NJOEz0rvoCaTwN6zCorD6C
-        Jb7J5IKDtTI3zzpRnTIx6guWqjZrUqZxGXLrmzUSewlVP5YTmfS1nEIu/iIoTenFgSfPdn
-        PQu/aEZQU1YKKPZEPzSNb97djG662523O4v/926xJXaAF1VNW1tq/yB6VLar7g==
+        bh=cK1q3GoW1XIF/YF8LlVHAMZt+VQi14OcCuETPC0h7lg=;
+        b=ktdbfLdoTLhrltw28ZpmX9o+ZahqCBw4lZHR1TrsNLUFjYV7ve7qb8CkVYm6MwLNT61lFp
+        iAeJgkpap8p8+GfoFN+7pyiu5HIBZcgzPmDIhHRRgvD713Y15IdlphDDUGuzo/jt6HUrFR
+        Oum0LWPPemQ5iY3lSBRKQS0wtSdf2LoGpftCsBI3THWQjJhw6SRtPdSIolak+BdTJyz5Ar
+        Dz1guQ97kz/PCKXDwKO0uLygU7B2O9YrTTDAZuuBKGgRAQwkyDuiDhbU6HTkxsPTmjuzsX
+        qxaMzo4nWLBu2wpHUSRfNkOgpu7khaH8d6Ee18HvLinNjC8J0H3KjRABNg/T3w==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -52,9 +52,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Jimmy Lalande <jimmy.lalande@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 02/12] net: dsa: add Renesas RZ/N1 switch tag driver
-Date:   Thu, 14 Apr 2022 14:22:40 +0200
-Message-Id: <20220414122250.158113-3-clement.leger@bootlin.com>
+Subject: [PATCH net-next 07/12] net: dsa: rzn1-a5psw: add statistics support
+Date:   Thu, 14 Apr 2022 14:22:45 +0200
+Message-Id: <20220414122250.158113-8-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220414122250.158113-1-clement.leger@bootlin.com>
 References: <20220414122250.158113-1-clement.leger@bootlin.com>
@@ -65,171 +65,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The switch that is present on the Renesas RZ/N1 SoC uses a specific
-VLAN value followed by 6 bytes which contains forwarding configuration.
+Add per-port statistics. This support requries to add a stat lock since
+statistics are stored in two 32 bits registers, the hi part one being
+global and latched when accessing the lo part.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- net/dsa/Kconfig          |   8 +++
- net/dsa/Makefile         |   1 +
- net/dsa/tag_rzn1_a5psw.c | 112 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 121 insertions(+)
- create mode 100644 net/dsa/tag_rzn1_a5psw.c
+ drivers/net/dsa/rzn1_a5psw.c | 101 +++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h |   2 +
+ 2 files changed, 103 insertions(+)
 
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 8cb87b5067ee..e5b17108fa22 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -132,6 +132,13 @@ config NET_DSA_TAG_RTL8_4
- 	  Say Y or M if you want to enable support for tagging frames for Realtek
- 	  switches with 8 byte protocol 4 tags, such as the Realtek RTL8365MB-VC.
+diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+index 5bee999f7050..7ab7d9054427 100644
+--- a/drivers/net/dsa/rzn1_a5psw.c
++++ b/drivers/net/dsa/rzn1_a5psw.c
+@@ -16,6 +16,59 @@
  
-+config NET_DSA_TAG_RZN1_A5PSW
-+	tristate "Tag driver for Renesas RZ/N1 A5PSW switch"
-+	help
-+	  Say Y or M if you want to enable support for tagging frames for
-+	  Renesas RZ/N1 embedded switch that uses a 8 byte tag located after
-+	  destination MAC address.
-+
- config NET_DSA_TAG_LAN9303
- 	tristate "Tag driver for SMSC/Microchip LAN9303 family of switches"
- 	help
-@@ -159,4 +166,5 @@ config NET_DSA_TAG_XRS700X
- 	  Say Y or M if you want to enable support for tagging frames for
- 	  Arrow SpeedChips XRS700x switches that use a single byte tag trailer.
+ #include "rzn1_a5psw.h"
  
-+
- endif
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index 9f75820e7c98..af28c24ead18 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_NET_DSA_TAG_OCELOT_8021Q) += tag_ocelot_8021q.o
- obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
- obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
- obj-$(CONFIG_NET_DSA_TAG_RTL8_4) += tag_rtl8_4.o
-+obj-$(CONFIG_NET_DSA_TAG_RZN1_A5PSW) += tag_rzn1_a5psw.o
- obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
- obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
- obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
-diff --git a/net/dsa/tag_rzn1_a5psw.c b/net/dsa/tag_rzn1_a5psw.c
-new file mode 100644
-index 000000000000..7818c1c0fca2
---- /dev/null
-+++ b/net/dsa/tag_rzn1_a5psw.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2022 Schneider Electric
-+ *
-+ * Clément Léger <clement.leger@bootlin.com>
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/etherdevice.h>
-+#include <net/dsa.h>
-+
-+#include "dsa_priv.h"
-+
-+/* To define the outgoing port and to discover the incoming port a TAG is
-+ * inserted after Src MAC :
-+ *
-+ *       Dest MAC       Src MAC           TAG         Type
-+ * ...| 1 2 3 4 5 6 | 1 2 3 4 5 6 | 1 2 3 4 5 6 7 8 | 1 2 |...
-+ *                                |<--------------->|
-+ *
-+ * See struct a5psw_tag for layout
-+ */
-+
-+#define A5PSW_TAG_VALUE			0xE001
-+#define A5PSW_TAG_LEN			8
-+#define A5PSW_CTRL_DATA_FORCE_FORWARD	BIT(0)
-+/* This is both used for xmit tag and rcv tagging */
-+#define A5PSW_CTRL_DATA_PORT		GENMASK(3, 0)
-+
-+struct a5psw_tag {
-+	u16 ctrl_tag;
-+	u16 ctrl_data;
-+	u32 ctrl_data2;
++struct a5psw_stats {
++	u16 offset;
++	const char *name;
 +};
 +
-+static struct sk_buff *a5psw_tag_xmit(struct sk_buff *skb, struct net_device *dev)
-+{
-+	struct a5psw_tag *ptag, tag = {0};
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	u32 data2_val;
++#define STAT_DESC(_offset, _name) {.offset = _offset, .name = _name}
 +
-+	/* The Ethernet switch we are interfaced with needs packets to be at
-+	 * least 64 bytes (including FCS) otherwise they will be discarded when
-+	 * they enter the switch port logic. When tagging is enabled, we need
-+	 * to make sure that packets are at least 68 bytes (including FCS and
-+	 * tag).
-+	 */
-+	if (__skb_put_padto(skb, ETH_ZLEN + sizeof(tag), false))
-+		return NULL;
++static const struct a5psw_stats a5psw_stats[] = {
++	STAT_DESC(0x868, "aFrameTransmitted"),
++	STAT_DESC(0x86C, "aFrameReceived"),
++	STAT_DESC(0x870, "aFrameCheckSequenceErrors"),
++	STAT_DESC(0x874, "aAlignmentErrors"),
++	STAT_DESC(0x878, "aOctetsTransmitted"),
++	STAT_DESC(0x87C, "aOctetsReceived"),
++	STAT_DESC(0x880, "aTxPAUSEMACCtrlFrames"),
++	STAT_DESC(0x884, "aRxPAUSEMACCtrlFrames"),
++	/* If */
++	STAT_DESC(0x888, "ifInErrors"),
++	STAT_DESC(0x88C, "ifOutErrors"),
++	STAT_DESC(0x890, "ifInUcastPkts"),
++	STAT_DESC(0x894, "ifInMulticastPkts"),
++	STAT_DESC(0x898, "ifInBroadcastPkts"),
++	STAT_DESC(0x89C, "ifOutDiscards"),
++	STAT_DESC(0x8A0, "ifOutUcastPkts"),
++	STAT_DESC(0x8A4, "ifOutMulticastPkts"),
++	STAT_DESC(0x8A8, "ifOutBroadcastPkts"),
++	/* Ether */
++	STAT_DESC(0x8AC, "etherStatsDropEvents"),
++	STAT_DESC(0x8B0, "etherStatsOctets"),
++	STAT_DESC(0x8B4, "etherStatsPkts"),
++	STAT_DESC(0x8B8, "etherStatsUndersizePkts"),
++	STAT_DESC(0x8BC, "etherStatsetherStatsOversizePktsDropEvents"),
++	STAT_DESC(0x8C0, "etherStatsPkts64Octets"),
++	STAT_DESC(0x8C4, "etherStatsPkts65to127Octets"),
++	STAT_DESC(0x8C8, "etherStatsPkts128to255Octets"),
++	STAT_DESC(0x8CC, "etherStatsPkts256to511Octets"),
++	STAT_DESC(0x8D0, "etherStatsPkts512to1023Octets"),
++	STAT_DESC(0x8D4, "etherStatsPkts1024to1518Octets"),
++	STAT_DESC(0x8D8, "etherStatsPkts1519toXOctets"),
++	STAT_DESC(0x8DC, "etherStatsJabbers"),
++	STAT_DESC(0x8E0, "etherStatsFragments"),
 +
-+	/* provide 'A5PSW_TAG_LEN' bytes additional space */
-+	skb_push(skb, A5PSW_TAG_LEN);
++	STAT_DESC(0x8E8, "VLANReceived"),
++	STAT_DESC(0x8EC, "VLANTransmitted"),
 +
-+	/* make room between MACs and Ether-Type to insert tag */
-+	dsa_alloc_etype_header(skb, A5PSW_TAG_LEN);
-+
-+	ptag = dsa_etype_header_pos_tx(skb);
-+
-+	data2_val = FIELD_PREP(A5PSW_CTRL_DATA_PORT, BIT(dp->index));
-+	tag.ctrl_tag = htons(A5PSW_TAG_VALUE);
-+	tag.ctrl_data = htons(A5PSW_CTRL_DATA_FORCE_FORWARD);
-+	tag.ctrl_data2 = htonl(data2_val);
-+
-+	memcpy(ptag, &tag, sizeof(struct a5psw_tag));
-+
-+	return skb;
-+}
-+
-+static struct sk_buff *a5psw_tag_rcv(struct sk_buff *skb,
-+				     struct net_device *dev)
-+{
-+	struct a5psw_tag *tag;
-+	int port;
-+
-+	if (unlikely(!pskb_may_pull(skb, A5PSW_TAG_LEN))) {
-+		dev_warn_ratelimited(&dev->dev,
-+				     "Dropping packet, cannot pull\n");
-+		return NULL;
-+	}
-+
-+	tag = dsa_etype_header_pos_rx(skb);
-+
-+	if (tag->ctrl_tag != htons(A5PSW_TAG_VALUE)) {
-+		dev_warn_ratelimited(&dev->dev, "Dropping packet due to invalid TAG marker\n");
-+		return NULL;
-+	}
-+
-+	port = FIELD_GET(A5PSW_CTRL_DATA_PORT, ntohs(tag->ctrl_data));
-+
-+	skb->dev = dsa_master_find_slave(dev, 0, port);
-+	if (!skb->dev)
-+		return NULL;
-+
-+	skb_pull_rcsum(skb, A5PSW_TAG_LEN);
-+	dsa_strip_etype_header(skb, A5PSW_TAG_LEN);
-+
-+	dsa_default_offload_fwd_mark(skb);
-+
-+	return skb;
-+}
-+
-+static const struct dsa_device_ops a5psw_netdev_ops = {
-+	.name	= "a5psw",
-+	.proto	= DSA_TAG_PROTO_RZN1_A5PSW,
-+	.xmit	= a5psw_tag_xmit,
-+	.rcv	= a5psw_tag_rcv,
-+	.needed_headroom = A5PSW_TAG_LEN,
++	STAT_DESC(0x910, "aDeferred"),
++	STAT_DESC(0x914, "aMultipleCollisions"),
++	STAT_DESC(0x918, "aSingleCollisions"),
++	STAT_DESC(0x91C, "aLateCollisions"),
++	STAT_DESC(0x920, "aExcessiveCollisions"),
++	STAT_DESC(0x924, "aCarrierSenseErrors"),
 +};
 +
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_A5PSW);
-+module_dsa_tag_driver(a5psw_netdev_ops);
+ static void a5psw_reg_writel(struct a5psw *a5psw, int offset, u32 value)
+ {
+ 	writel(value, a5psw->base + offset);
+@@ -316,6 +369,50 @@ static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
+ 	a5psw_port_fdb_flush(a5psw, port);
+ }
+ 
++static void a5psw_get_strings(struct dsa_switch *ds, int port, u32 stringset,
++			      uint8_t *data)
++{
++	unsigned int u;
++
++	if (stringset != ETH_SS_STATS)
++		return;
++
++	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++) {
++		strncpy(data + u * ETH_GSTRING_LEN, a5psw_stats[u].name,
++			ETH_GSTRING_LEN);
++	}
++}
++
++static void a5psw_get_ethtool_stats(struct dsa_switch *ds, int port,
++				    uint64_t *data)
++{
++	struct a5psw *a5psw = ds->priv;
++	u32 reg_lo, reg_hi;
++	unsigned int u;
++
++	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++) {
++		/* A5PSW_STATS_HIWORD is global and thus, access must be
++		 * exclusive
++		 */
++		spin_lock(&a5psw->stats_lock);
++		reg_lo = a5psw_reg_readl(a5psw, a5psw_stats[u].offset +
++					 A5PSW_PORT_OFFSET(port));
++		/* A5PSW_STATS_HIWORD is latched on stat read */
++		reg_hi = a5psw_reg_readl(a5psw, A5PSW_STATS_HIWORD);
++
++		data[u] = ((u64)reg_hi << 32) | reg_lo;
++		spin_unlock(&a5psw->stats_lock);
++	}
++}
++
++static int a5psw_get_sset_count(struct dsa_switch *ds, int port, int sset)
++{
++	if (sset != ETH_SS_STATS)
++		return 0;
++
++	return ARRAY_SIZE(a5psw_stats);
++}
++
+ static int a5psw_setup(struct dsa_switch *ds)
+ {
+ 	struct a5psw *a5psw = ds->priv;
+@@ -395,6 +492,9 @@ const struct dsa_switch_ops a5psw_switch_ops = {
+ 	.phylink_mac_link_up = a5psw_phylink_mac_link_up,
+ 	.port_change_mtu = a5psw_port_change_mtu,
+ 	.port_max_mtu = a5psw_port_max_mtu,
++	.get_sset_count = a5psw_get_sset_count,
++	.get_strings = a5psw_get_strings,
++	.get_ethtool_stats = a5psw_get_ethtool_stats,
+ 	.set_ageing_time = a5psw_set_ageing_time,
+ 	.port_bridge_join = a5psw_port_bridge_join,
+ 	.port_bridge_leave = a5psw_port_bridge_leave,
+@@ -580,6 +680,7 @@ static int a5psw_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	a5psw->dev = dev;
++	spin_lock_init(&a5psw->stats_lock);
+ 	spin_lock_init(&a5psw->lk_lock);
+ 	spin_lock_init(&a5psw->reg_lock);
+ 	a5psw->base = devm_platform_ioremap_resource(pdev, 0);
+diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
+index 2d96a2afbc3a..b34ea549e936 100644
+--- a/drivers/net/dsa/rzn1_a5psw.h
++++ b/drivers/net/dsa/rzn1_a5psw.h
+@@ -177,6 +177,7 @@
+  * @mdio_freq: MDIO bus frequency requested
+  * @pcs: Array of PCS connected to the switch ports (not for the CPU)
+  * @ds: DSA switch struct
++ * @stats_lock: lock to access statistics (shared HI counter)
+  * @lk_lock: Lock for the lookup table
+  * @reg_lock: Lock for register read-modify-write operation
+  * @flooding_ports: List of ports that should be flooded
+@@ -190,6 +191,7 @@ struct a5psw {
+ 	u32 mdio_freq;
+ 	struct phylink_pcs *pcs[A5PSW_PORTS_NUM - 1];
+ 	struct dsa_switch ds;
++	spinlock_t stats_lock;
+ 	spinlock_t lk_lock;
+ 	spinlock_t reg_lock;
+ 	u32 flooding_ports;
 -- 
 2.34.1
 
