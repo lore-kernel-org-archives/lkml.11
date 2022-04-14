@@ -2,110 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AE3C38A04
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB53C38162
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359497AbiDNPpb (ORCPT
+        id S1359363AbiDNPoO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
+        Thu, 14 Apr 2022 11:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344538AbiDNP0G (ORCPT
+        with ESMTP id S1352656AbiDNPRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:26:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39E43F55E0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:09:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649948951;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RtGebAgbSA9lYbaI57i+Rxn48XdJu/DmmwsLsGsA5XE=;
-        b=h4E1dznwiky0aO7TPmmVB8bA51he+XsSUqEVkHoZJD9DvrJxaQsMtySW3Ea5rSgePuEexQ
-        IKTx90BRBzUr6TaaIx3OT4RBsL04qrpeeuCGl4JGmKXzG7SSBDnC55r9i+Py5XvhUwDZix
-        cDBVl18s4bk2AohzrlZMc64anZmKUBM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-C04J5NPBMgWBva7j5I52gA-1; Thu, 14 Apr 2022 11:09:08 -0400
-X-MC-Unique: C04J5NPBMgWBva7j5I52gA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5B015185A7BA;
-        Thu, 14 Apr 2022 15:09:07 +0000 (UTC)
-Received: from turbo.dinechin (unknown [10.39.192.131])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B8B5FC07F51;
-        Thu, 14 Apr 2022 15:09:04 +0000 (UTC)
-From:   Christophe de Dinechin <dinechin@redhat.com>
-To:     trivial@kernel.org
-Cc:     Ben Segall <bsegall@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 3/3] virtio-pci: Use cpumask_available to fix compilation error
-Date:   Thu, 14 Apr 2022 17:08:55 +0200
-Message-Id: <20220414150855.2407137-4-dinechin@redhat.com>
-In-Reply-To: <20220414150855.2407137-1-dinechin@redhat.com>
-References: <20220414150855.2407137-1-dinechin@redhat.com>
+        Thu, 14 Apr 2022 11:17:40 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A627F61A35;
+        Thu, 14 Apr 2022 08:02:35 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id u15so10544016ejf.11;
+        Thu, 14 Apr 2022 08:02:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NaW3uwRS/6FaXBKfVrvwdBzKWMrtN62MAAhE0D3p16s=;
+        b=Ftmn2tslRoFo5kjZZYcZh376SNswuFaAST8TXXySj1EQZyxHD/y2bW4tGghR0A6pfi
+         TP6wVNRcGA0ZENqH6SN3h1Jrxlc19ZJa3qeVQs8hu1iLq0WPWehSREUluuICNIDkvPTd
+         CQuwy7NS5c3v571sugYalQ3qxjjt/HUKyt0ddL+suHPyPl/N0XIwxBrxJJ5YqBvoJyTI
+         WTFH5x5Nc6Q/DbGAY+BLdbSD8oG4QWfU2UigHgSPVDALH+dsEGEmeuNZ9HpFAz0LgU8C
+         i1pEdHZb3Jjb5g1b3vJds6l+/dWEow0QWj37myQqXHCgZKBT34dyrqMPz1oUOsq1656l
+         d5Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NaW3uwRS/6FaXBKfVrvwdBzKWMrtN62MAAhE0D3p16s=;
+        b=RlZYhJDYkKvgPOsNLVRKzKDGzjvriXKINLF9g6/eRfpOO1di35xIO38TR1Di8H7cCk
+         Jaa9HxWTssVtRW7aq7lGc+XogTYHekvYv6YCrI8lDtTLnWyIJzotEJydIZf/s5GqUBYH
+         f3s0q07SZIerYQWLtCQtnnMP17m+jc8zYJEyR6BO6YMPQdVn7qGpUwXF/CYWoDTH77hv
+         lfjf0a1o+GTa92rsE7E6y07+RraKCwKgVQqWtzr5QNRd6V98AUTyrXanW1j8rMjCKEcl
+         c3hgLIz09eMLx4e5FB9WFJzUj1zHkuBsxxv/0dPJx3rmt54gVXY6piDAxtHBmdiAr4GX
+         eI7g==
+X-Gm-Message-State: AOAM533W95JoXOVLTc9txkL8WDYlE2oQuGkYtvTw8e8/Tv+rbOOCaD/c
+        xS7rxKcXrYJRt1xU/sgd75YSKJ2oNOsriOnN3S4=
+X-Google-Smtp-Source: ABdhPJxsfCiDGHoztilISww5idTIll6LpIs4Gm/tQhfvSoxH+J/SSbqV2+n5Tfdxyh4VfsvxmoLehq2tfeBEWE0xEU8=
+X-Received: by 2002:a17:907:8a14:b0:6e8:9691:62f7 with SMTP id
+ sc20-20020a1709078a1400b006e8969162f7mr2720540ejc.497.1649948554022; Thu, 14
+ Apr 2022 08:02:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <20220409120901.267526-1-dzm91@hust.edu.cn> <YlQbqnYP/jcYinvz@hovoldconsulting.com>
+In-Reply-To: <YlQbqnYP/jcYinvz@hovoldconsulting.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 14 Apr 2022 18:01:57 +0300
+Message-ID: <CAHp75VeTqmdLhavZ+VbBYSFMDHr0FG4iKFGdbzE-wo5MCNikAA@mail.gmail.com>
+Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
+To:     Johan Hovold <johan@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
+        USB <linux-usb@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With GCC 12 and defconfig, we get the following error:
+On Mon, Apr 11, 2022 at 9:33 PM Johan Hovold <johan@kernel.org> wrote:
+> On Sat, Apr 09, 2022 at 08:09:00PM +0800, Dongliang Mu wrote:
+> > From: Dongliang Mu <mudongliangabcd@gmail.com>
+> >
+> > cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
+> > with ctx. However, in the unbind function - cdc_ncm_unbind,
+> > it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
+> > a dangling pointer. The following ioctl operation will trigger
+> > the UAF in the function cdc_ncm_set_dgram_size.
+> >
+> > Fix this by setting dev->data[0] as zero.
+>
+> This sounds like a poor band-aid. Please explain how this prevent the
+> ioctl() from racing with unbind().
 
-|   CC      drivers/virtio/virtio_pci_common.o
-| drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
-| drivers/virtio/virtio_pci_common.c:257:29: error: the comparison will
-|  always evaluate as ‘true’ for the pointer operand in
-|  ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 8)’
-|  must not be NULL [-Werror=address]
-|   257 |                         if (vp_dev->msix_affinity_masks[i])
-|       |                             ^~~~~~
+Good question. Isn't it the commit 2c9d6c2b871d ("usbnet: run unbind()
+before unregister_netdev()") which changed the ordering of the
+interface shutdown and basically makes this race happen? I don't see
+how we can guarantee that IOCTL won't be called until we quiescence
+the network device =E2=80=94 my understanding that on device surprise remov=
+al
+we have to first shutdown what it created and then unbind the device.
+If I understand the original issue correctly then the problem is in
+usbnet->unbind and it should actually be split to two hooks, otherwise
+it seems every possible IOCTL callback must have some kind of
+reference counting and keep an eye on the surprise removal.
 
-This happens in the case where CONFIG_CPUMASK_OFFSTACK is not defined,
-since we typedef cpumask_var_t as an array. The compiler is essentially
-complaining that an array pointer cannot be NULL. This is not a very
-important warning, but there is a function called cpumask_available that
-seems to be defined just for that case, so the fix is easy.
+Johan, can you correct me if my understanding is wrong?
 
-Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
-Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
----
- drivers/virtio/virtio_pci_common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index d724f676608b..5c44a2f13c93 100644
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -254,7 +254,7 @@ void vp_del_vqs(struct virtio_device *vdev)
- 
- 	if (vp_dev->msix_affinity_masks) {
- 		for (i = 0; i < vp_dev->msix_vectors; i++)
--			if (vp_dev->msix_affinity_masks[i])
-+			if (cpumask_available(vp_dev->msix_affinity_masks[i]))
- 				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
- 	}
- 
--- 
-2.35.1
-
+--=20
+With Best Regards,
+Andy Shevchenko
