@@ -2,152 +2,506 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10EEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242234AbiDNKUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 06:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60744 "EHLO
+        id S242220AbiDNKUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 06:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242173AbiDNKTS (ORCPT
+        with ESMTP id S242161AbiDNKTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 06:19:18 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36DE71A06
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 03:16:49 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id i20so8531867ybj.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 03:16:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bDa3LynvAWi9G+t+qDhkZRMBEIo8Z9HoZR7DqBkZoTw=;
-        b=An3vk4uE3ZKFrbF1hAOQIl6/JG9QKiJVxe6AxjV0nZqCr7Kz/Wi2u5+nxew/idPPIZ
-         ESqg8cvJZoA+AYHcMR4JVf9zGir9PAvp2JoCFjEf8mcgB9GyfpqpP4B1iVrpSyPuduuZ
-         RavZ/OOL563MxsK7nV5k5VtBQivOPW/Yz2qpYSI7mNwgweHB8WtspbsP1BVf3RsUin+s
-         YvIiKnRjh1vW2Zply5d++0ktoQz4n2Pt8KQnJnhh9e7aLF+m1psDF6Ky8+4T/w5YQ2Wb
-         ljK0k4qKcb9IOjJ1kx23YYbzw2AHxEIWkplQlsWSjXe4xGMit3B7iJpNlACbJwS88dBf
-         RxxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bDa3LynvAWi9G+t+qDhkZRMBEIo8Z9HoZR7DqBkZoTw=;
-        b=pEkJLT28NUgDxR29cbXe8hYsikzN3PcI3/2c/IXvtgJ2eeYbww7x4mJqAXnCbTOSzT
-         uWMOBFf0eol+vQH/bDDKgChxWCrHSrzUxAy9ntH4l8AOqqqhgXVlImzS5r6Eb/d1QZTL
-         VKPxjdcFXtpJbUuNAcevqtJ50PDeP5+wslscBdRC312mKf7ErAP5xgzrOshqgA5AlKlM
-         rqzv/FwGF18dTGTHNHDgpoKkzzodHIm5nvoGqOuiQAuBbTodv36qrRX5CxOVB68b8f36
-         jUxSw0zwv0kx74w8t4jDhlOVZMlAll/qftjkRAUi99jYjcusbB/DWpQFcaZglXTbV5D1
-         gMog==
-X-Gm-Message-State: AOAM532hxXypFLBdQ3DUTn62t6mVAuiuyNwmucDWX/tsmNJ+lRreRsGO
-        qzDkXGajOnY317Zp1rKDhf+6wgelcGSkLYuqRV++mw==
-X-Google-Smtp-Source: ABdhPJyUoyz9HxUuWijcfs8B79lAnJ1m33JWanb2J3NFOpZtRwEccgqzlRv/mN00zGG0MR6dhLl3v5pc9ex6vK3Cpnw=
-X-Received: by 2002:a25:e703:0:b0:641:f7ba:cda7 with SMTP id
- e3-20020a25e703000000b00641f7bacda7mr812557ybh.211.1649931408712; Thu, 14 Apr
- 2022 03:16:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18C36F4A5;
+        Thu, 14 Apr 2022 03:16:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FE7461E6D;
+        Thu, 14 Apr 2022 10:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544D7C385AE;
+        Thu, 14 Apr 2022 10:16:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649931408;
+        bh=Y2aGv88e5fvitjsk2xbnWu4JwxO1Aq2HvAslEfjqqeE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=D4x3fE5bq4kg+f8mAMTmYYy0Rrtfz/vvTVOgEkjWA/hH/eTG/oWR7vKF1KQn2IoZL
+         fEFZYsGFlD8FnSSrxDYZi6ptBFTLO98LLAGTX8fST368yC4PmyGuwfw+TDmpc7Ngwi
+         eG11vt0f63cFZkIJ8OeZKRnGAAFW0hakmMe9x13rN0PPwaCCIGeQAsZcT1W722kUws
+         K/VQuhRtAturoRPGlWsxgTNmCfHGsyiTjj778DmO9HoX2yjW9dxvdmVMyZqMKwE+ej
+         /9Xs0vQgh/CfBE2BvWoyRlmsPIYLZDjE0aDeiiWhKtnFrRjsXE16sAS57t6QoRzyip
+         EBuTYv9egS6TQ==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/7] arm64: dts: qcom: sm8450: Add qup nodes for qup0
+Date:   Thu, 14 Apr 2022 15:46:26 +0530
+Message-Id: <20220414101630.1189052-4-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220414101630.1189052-1-vkoul@kernel.org>
+References: <20220414101630.1189052-1-vkoul@kernel.org>
 MIME-Version: 1.0
-References: <030aacb0c1304e43ab917924dcf4f138@AcuMS.aculab.com>
- <20220411233447.rcencjivkhyltyxm@airbuntu> <4ca5cd70904d47bea0df93f7c0979c66@AcuMS.aculab.com>
- <CAKfTPtBWUvvFMsSnfcKsOpHFdvxvSWpjfuLpjwwQrwhQc7+xuw@mail.gmail.com>
- <20220413235719.xs72pm2kgihia46g@airbuntu> <CAKfTPtBtzmgJNM=2ekmE0-HT+r=qLqBJ6R1cggkGCNHbb3FPdQ@mail.gmail.com>
- <2956e0e1bbfe4309a749ebb3c8736799@AcuMS.aculab.com>
-In-Reply-To: <2956e0e1bbfe4309a749ebb3c8736799@AcuMS.aculab.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Thu, 14 Apr 2022 12:16:37 +0200
-Message-ID: <CAKfTPtB0EniWa_Wqx9596Zm5ZyoB3CRWwkgcYgxYB=318eWsWQ@mail.gmail.com>
-Subject: Re: Scheduling tasks on idle cpu
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Qais Yousef <qais.yousef@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "bsegall@google.com" <bsegall@google.com>,
-        "mgorman@suse.de" <mgorman@suse.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "parth@linux.ibm.com" <parth@linux.ibm.com>,
-        "chris.hyser@oracle.com" <chris.hyser@oracle.com>,
-        "pkondeti@codeaurora.org" <pkondeti@codeaurora.org>,
-        "Valentin.Schneider@arm.com" <Valentin.Schneider@arm.com>,
-        "patrick.bellasi@matbug.net" <patrick.bellasi@matbug.net>,
-        "pjt@google.com" <pjt@google.com>, "pavel@ucw.cz" <pavel@ucw.cz>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "qperret@google.com" <qperret@google.com>,
-        "tim.c.chen@linux.intel.com" <tim.c.chen@linux.intel.com>,
-        Wei Wang <wvw@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 at 10:35, David Laight <David.Laight@aculab.com> wrote:
->
-> From: Vincent Guittot
-> > Sent: 14 April 2022 08:54
-> >
-> > On Thu, 14 Apr 2022 at 01:57, Qais Yousef <qais.yousef@arm.com> wrote:
-> > >
-> > > On 04/12/22 11:07, Vincent Guittot wrote:
-> > > > On Tue, 12 Apr 2022 at 10:39, David Laight <David.Laight@aculab.com> wrote:
-> > > > > Yes I want the CFS scheduler to pick an idle cpu in preference
-> > > > > to an active RT one.
-> > > >
-> > > > When task 34512 wakes up, scheduler checks if prev or this cpu are
-> > > > idle which is not the case for you. Then, it compares the load of prev
-> > > > and this_cpu and seems to select this_cpu (cpu17).
-> > > >
-> > > > Once cpu17 selected, it will try to find an idle cpu which shares LLC
-> > > > but it seems that the scheduler didn't find one and finally keeps task
-> > > > 34512 on this_cpu.
-> > > >
-> > > > Note that during the next tick, a load balance will be trigger if
-> > > > this_cpu still have both RT and task 34512,
-> > >
-> > > David said there are idle cpus
-> > >
-> > >         "  There are two physical cpu with 20 cores each (with hyperthreading).
-> > >         16, 18, 34, 36 and 38 were idle. So both 16 and 18 should be on the
-> > >         same NUMA node. All the others are running the same RT thread code.  "
-> > >
-> > > Except for the possibility of them becoming idle just after the task has woken
-> > > up, shouldn't one of them have been picked?
-> >
-> > we don't loop on all cpus in the LLC to find an idle one but compute a
-> > reasonable number of iteration based on the avg_idle
->
-> Is there a way to dump the kernel NUMA/LLC tables?
-> This might be relevant (with everything idle):
-> # cat /proc/schedstat
-> version 15
-> timestamp 5388989193
-> cpu0 0 0 0 0 0 0 117226041384582 250531565354 206276873
-> domain0 00,00100001 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-> domain1 55,55555555 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-> domain2 ff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-> cpu1 0 0 0 0 0 0 115978661288718 251736933814 297093280
-> domain0 00,00200002 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-> domain1 aa,aaaaaaaa 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-> domain2 ff,ffffffff 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-> All the later cpu follow the same pattern (domain0 shifts left every cpu).
->
-> I could interpret that as meaning:
-> cpu n and (n + 20) are the hyperthreading pairs.
-> Even numbered cpu are on one chip, odd numbered on the other.
->
-> The migrate was:
->   34533 [017]: sched_migrate_task: pid=34512 prio=120 orig_cpu=14 dest_cpu=17
-> All the idle cpu were even.
->
-> > David can rerun is use case after disabling sched_feat(SIS_PROP)
->
-> How would I do that?
+qup0 has 7 SEs, with SE7 as uart and already added, so add the
+remaining 6 SEs (i2c and spi) along with pinconf for these SEs
 
-echo NO_SIS_PROP > /sys/kernel/debug/sched/features
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sm8450.dtsi | 412 +++++++++++++++++++++++++++
+ 1 file changed, 412 insertions(+)
 
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
+diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+index 93ff677f0d35..48f8035ea200 100644
+--- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+@@ -334,6 +334,25 @@ CLUSTER_PD: cpu-cluster0 {
+ 		};
+ 	};
+ 
++	qup_opp_table_100mhz: qup-100mhz-opp-table {
++		compatible = "operating-points-v2";
++
++		opp-50000000 {
++			opp-hz = /bits/ 64 <50000000>;
++			required-opps = <&rpmhpd_opp_min_svs>;
++		};
++
++		opp-75000000 {
++			opp-hz = /bits/ 64 <75000000>;
++			required-opps = <&rpmhpd_opp_low_svs>;
++		};
++
++		opp-100000000 {
++			opp-hz = /bits/ 64 <100000000>;
++			required-opps = <&rpmhpd_opp_svs>;
++		};
++	};
++
+ 	reserved_memory: reserved-memory {
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+@@ -746,6 +765,292 @@ qupv3_id_0: geniqup@9c0000 {
+ 			ranges;
+ 			status = "disabled";
+ 
++			i2c0: i2c@980000 {
++				compatible = "qcom,geni-i2c";
++				reg = <0x0 0x00980000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S0_CLK>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_i2c0_data_clk>;
++				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 0 QCOM_GPI_I2C>,
++				       <&gpi_dma0 1 0 QCOM_GPI_I2C>;
++				dma-names = "tx", "rx";
++				status = "disabled";
++			};
++
++			spi0: spi@980000 {
++				compatible = "qcom,geni-spi";
++				reg = <0x0 0x00980000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S0_CLK>;
++				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_spi0_data_clk>, <&qup_spi0_cs>;
++				power-domains = <&rpmhpd SM8450_CX>;
++				operating-points-v2 = <&qup_opp_table_100mhz>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 0 QCOM_GPI_SPI>,
++				       <&gpi_dma0 1 0 QCOM_GPI_SPI>;
++				dma-names = "tx", "rx";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
++
++			i2c1: i2c@984000 {
++				compatible = "qcom,geni-i2c";
++				reg = <0x0 0x00984000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S1_CLK>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_i2c1_data_clk>;
++				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 1 QCOM_GPI_I2C>,
++				       <&gpi_dma0 1 1 QCOM_GPI_I2C>;
++				dma-names = "tx", "rx";
++				status = "disabled";
++			};
++
++			spi1: spi@984000 {
++				compatible = "qcom,geni-spi";
++				reg = <0x0 0x00984000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S1_CLK>;
++				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_spi1_data_clk>, <&qup_spi1_cs>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 1 QCOM_GPI_SPI>,
++				       <&gpi_dma0 1 1 QCOM_GPI_SPI>;
++				dma-names = "tx", "rx";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
++
++			i2c2: i2c@988000 {
++				compatible = "qcom,geni-i2c";
++				reg = <0x0 0x00988000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S2_CLK>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_i2c2_data_clk>;
++				interrupts = <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 2 QCOM_GPI_I2C>,
++				       <&gpi_dma0 1 2 QCOM_GPI_I2C>;
++				dma-names = "tx", "rx";
++				status = "disabled";
++			};
++
++			spi2: spi@988000 {
++				compatible = "qcom,geni-spi";
++				reg = <0x0 0x00988000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S2_CLK>;
++				interrupts = <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_spi2_data_clk>, <&qup_spi2_cs>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 2 QCOM_GPI_SPI>,
++				       <&gpi_dma0 1 2 QCOM_GPI_SPI>;
++				dma-names = "tx", "rx";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
++
++
++			i2c3: i2c@98c000 {
++				compatible = "qcom,geni-i2c";
++				reg = <0x0 0x0098c000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S3_CLK>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_i2c3_data_clk>;
++				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 3 QCOM_GPI_I2C>,
++				       <&gpi_dma0 1 3 QCOM_GPI_I2C>;
++				dma-names = "tx", "rx";
++				status = "disabled";
++			};
++
++			spi3: spi@98c000 {
++				compatible = "qcom,geni-spi";
++				reg = <0x0 0x0098c000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S3_CLK>;
++				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_spi3_data_clk>, <&qup_spi3_cs>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 3 QCOM_GPI_SPI>,
++				       <&gpi_dma0 1 3 QCOM_GPI_SPI>;
++				dma-names = "tx", "rx";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
++
++			i2c4: i2c@990000 {
++				compatible = "qcom,geni-i2c";
++				reg = <0x0 0x00990000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S4_CLK>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_i2c4_data_clk>;
++				interrupts = <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 4 QCOM_GPI_I2C>,
++				       <&gpi_dma0 1 4 QCOM_GPI_I2C>;
++				dma-names = "tx", "rx";
++				status = "disabled";
++			};
++
++			spi4: spi@990000 {
++				compatible = "qcom,geni-spi";
++				reg = <0x0 0x00990000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S4_CLK>;
++				interrupts = <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_spi4_data_clk>, <&qup_spi4_cs>;
++				power-domains = <&rpmhpd SM8450_CX>;
++				operating-points-v2 = <&qup_opp_table_100mhz>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 4 QCOM_GPI_SPI>,
++				       <&gpi_dma0 1 4 QCOM_GPI_SPI>;
++				dma-names = "tx", "rx";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
++
++			i2c5: i2c@994000 {
++				compatible = "qcom,geni-i2c";
++				reg = <0x0 0x00994000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S5_CLK>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_i2c5_data_clk>;
++				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 5 QCOM_GPI_I2C>,
++				       <&gpi_dma0 1 5 QCOM_GPI_I2C>;
++				dma-names = "tx", "rx";
++				status = "disabled";
++			};
++
++			spi5: spi@994000 {
++				compatible = "qcom,geni-spi";
++				reg = <0x0 0x00994000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S5_CLK>;
++				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_spi5_data_clk>, <&qup_spi5_cs>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 5 QCOM_GPI_SPI>,
++				       <&gpi_dma0 1 5 QCOM_GPI_SPI>;
++				dma-names = "tx", "rx";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
++
++
++			i2c6: i2c@998000 {
++				compatible = "qcom,geni-i2c";
++				reg = <0x0 0x998000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S6_CLK>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_i2c6_data_clk>;
++				interrupts = <GIC_SPI 607 IRQ_TYPE_LEVEL_HIGH>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 6 QCOM_GPI_I2C>,
++				       <&gpi_dma0 1 6 QCOM_GPI_I2C>;
++				dma-names = "tx", "rx";
++				status = "disabled";
++			};
++
++			spi6: spi@998000 {
++				compatible = "qcom,geni-spi";
++				reg = <0x0 0x998000 0x0 0x4000>;
++				clock-names = "se";
++				clocks = <&gcc GCC_QUPV3_WRAP0_S6_CLK>;
++				interrupts = <GIC_SPI 607 IRQ_TYPE_LEVEL_HIGH>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&qup_spi6_data_clk>, <&qup_spi6_cs>;
++				interconnects = <&clk_virt MASTER_QUP_CORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
++						<&system_noc MASTER_A2NOC_SNOC 0 &gem_noc SLAVE_LLCC 0>,
++						<&aggre2_noc MASTER_QUP_0 0 &mc_virt SLAVE_EBI1 0>;
++				interconnect-names = "qup-core", "qup-config", "qup-memory";
++				dmas = <&gpi_dma0 0 6 QCOM_GPI_SPI>,
++				       <&gpi_dma0 1 6 QCOM_GPI_SPI>;
++				dma-names = "tx", "rx";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
++
+ 			uart7: serial@99c000 {
+ 				compatible = "qcom,geni-debug-uart";
+ 				reg = <0 0x0099c000 0 0x4000>;
+@@ -1121,6 +1426,41 @@ tlmm: pinctrl@f100000 {
+ 			gpio-ranges = <&tlmm 0 0 211>;
+ 			wakeup-parent = <&pdc>;
+ 
++			qup_i2c0_data_clk: qup-i2c0-data-clk {
++				pins = "gpio0", "gpio1";
++				function = "qup0";
++			};
++
++			qup_i2c1_data_clk: qup-i2c1-data-clk {
++				pins = "gpio4", "gpio5";
++				function = "qup1";
++			};
++
++			qup_i2c2_data_clk: qup-i2c2-data-clk {
++				pins = "gpio8", "gpio9";
++				function = "qup2";
++			};
++
++			qup_i2c3_data_clk: qup-i2c3-data-clk {
++				pins = "gpio12", "gpio13";
++				function = "qup3";
++			};
++
++			qup_i2c4_data_clk: qup-i2c4-data-clk {
++				pins = "gpio16", "gpio17";
++				function = "qup4";
++			};
++
++			qup_i2c5_data_clk: qup-i2c5-data-clk {
++				pins = "gpio206", "gpio207";
++				function = "qup5";
++			};
++
++			qup_i2c6_data_clk: qup-i2c6-data-clk {
++				pins = "gpio20", "gpio21";
++				function = "qup6";
++			};
++
+ 			qup_i2c13_data_clk: qup-i2c13-data-clk {
+ 				pins = "gpio48", "gpio49";
+ 				function = "qup13";
+@@ -1135,6 +1475,78 @@ qup_i2c14_data_clk: qup-i2c14-data-clk {
+ 				bias-pull-up;
+ 			};
+ 
++			qup_spi0_cs: qup-spi0-cs {
++				pins = "gpio3";
++				function = "qup0";
++			};
++
++			qup_spi0_data_clk: qup-spi0-data-clk {
++				pins = "gpio0", "gpio1", "gpio2";
++				function = "qup0";
++			};
++
++			qup_spi1_cs: qup-spi1-cs {
++				pins = "gpio7";
++				function = "qup1";
++			};
++
++			qup_spi1_data_clk: qup-spi1-data-clk {
++				pins = "gpio4", "gpio5", "gpio6";
++				function = "qup1";
++			};
++
++			qup_spi2_cs: qup-spi2-cs {
++				pins = "gpio11";
++				function = "qup2";
++			};
++
++			qup_spi2_data_clk: qup-spi2-data-clk {
++				pins = "gpio8", "gpio9", "gpio10";
++				function = "qup2";
++			};
++
++			qup_spi3_cs: qup-spi3-cs {
++				pins = "gpio15";
++				function = "qup3";
++			};
++
++			qup_spi3_data_clk: qup-spi3-data-clk {
++				pins = "gpio12", "gpio13", "gpio14";
++				function = "qup3";
++			};
++
++			qup_spi4_cs: qup-spi4-cs {
++				pins = "gpio19";
++				function = "qup4";
++				drive-strength = <6>;
++				bias-disable;
++			};
++
++			qup_spi4_data_clk: qup-spi4-data-clk {
++				pins = "gpio16", "gpio17", "gpio18";
++				function = "qup4";
++			};
++
++			qup_spi5_cs: qup-spi5-cs {
++				pins = "gpio85";
++				function = "qup5";
++			};
++
++			qup_spi5_data_clk: qup-spi5-data-clk {
++				pins = "gpio206", "gpio207", "gpio84";
++				function = "qup5";
++			};
++
++			qup_spi6_cs: qup-spi6-cs {
++				pins = "gpio23";
++				function = "qup6";
++			};
++
++			qup_spi6_data_clk: qup-spi6-data-clk {
++				pins = "gpio20", "gpio21", "gpio22";
++				function = "qup6";
++			};
++
+ 			qup_uart7_rx: qup-uart7-rx {
+ 				pins = "gpio26";
+ 				function = "qup7";
+-- 
+2.34.1
+
