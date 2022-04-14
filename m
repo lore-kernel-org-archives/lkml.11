@@ -2,200 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3864C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F601C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241445AbiDNJEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47710 "EHLO
+        id S241453AbiDNJE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241466AbiDNJCN (ORCPT
+        with ESMTP id S241595AbiDNJCl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:02:13 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEB62657F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:59:49 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id c23so4173530plo.0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:59:49 -0700 (PDT)
+        Thu, 14 Apr 2022 05:02:41 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8FB11146
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:00:17 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id t12so4121350pll.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:00:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=l9QL4BycKE4eFXdrmUENq07WhnIQYOOU7butyGlrlts=;
-        b=oLxmbrdrrSYOas267DSbgnV7X8Q/M59tbvkzw39YowuMa64Stzy1Sc8jRluxQdezP0
-         l1U5kP+u3MOVEuii/WM2XiAh4B58+UWrMK8YwohsdbefFYmO/oHVr8S66x2ZpuxhG44x
-         4Z4Oc+GPnUvwz/ShIKcgm74rGBZLYTuHCRpl+x/SbY11vbucdT/KaTNwb4B6O35Y4NAg
-         Ka3rTgD2CJnenUkq3d2MuHWGZneo6s2DoYCL5GSoIM8BvRFOjFLb+MDcs6cQ2Zod9Y9v
-         qW8iJh3R5ZK/Rihp8i1pWxhoUpxne6sbZs/VxMXWAMdjRn/cNTEWx5lrUVSUNwpnjhJS
-         w8IQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bm6j4Sj81g1kNoBEMCttfjxLkn0RWePq1WSEM7XPmtI=;
+        b=fxHH32p5j0e+cdXaMKgpfUspQX84794ZwP+Pf19RC5R0BLWEj+NyAaWz8nz7IPUrOW
+         1NOs4YA249O7wbPC0KZzR/8lHcPHtMGBkjJ456cIFSglWwHyTuq4jY81Y6MBvG2fiyY+
+         nt8oLvp/huyt+32y5hg6RHMqA9v2+w3OteeRA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=l9QL4BycKE4eFXdrmUENq07WhnIQYOOU7butyGlrlts=;
-        b=5pQew7exTuE9ZSLiw6j0guM4t87P3pZ3DsPzcFqUgxSpg4OAM3d2EK2UlebafAwAE5
-         plhZzcM4sOxhIPqTaMzxkuJkX35c6G3aJuHKqDBefgf0O1fuZ/Ng9ooxjxjHgb3ty2K9
-         OXTiN6NPgnSjdm1m3jMyI0OovlxlhhlqXVX7hf2V0J+46Q2dwkGgGCMWPTpz7PV9wMmc
-         YyGiY0CwBdPf21/X2GV3Nje54ZjqOXwk2faJyxWh+TPy65yq0ZK9TSkRn2mW5ghCjhm5
-         qVzaNrY3YrtrlqSL8TlqogL2qSsChofPIi0KQAq1k38kwoPykfP+emAykS34s+2tJgOk
-         kyuA==
-X-Gm-Message-State: AOAM5333ex5z3IqIhT+rV1Epwf7byn7YmVAQX1Fpmlp5BLCWK54XSZD1
-        9QHscFNErzsWeJ4eFRvoUGE=
-X-Google-Smtp-Source: ABdhPJwMF9eGt5BVU1QUVYQqLceYeeGQhDCgIiFSWMMEQ+Qv2jWmAMGkEiShivvQT1P6HAfwJXPljg==
-X-Received: by 2002:a17:90b:4f8d:b0:1c6:408b:6b0d with SMTP id qe13-20020a17090b4f8d00b001c6408b6b0dmr3217496pjb.90.1649926789022;
-        Thu, 14 Apr 2022 01:59:49 -0700 (PDT)
-Received: from hyeyoo.. ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id p9-20020aa79e89000000b00505fada20dfsm1403537pfq.117.2022.04.14.01.59.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bm6j4Sj81g1kNoBEMCttfjxLkn0RWePq1WSEM7XPmtI=;
+        b=tBx310n7kYY9KgXKPA/rl5EfD9o2GFDbQo2EpC3GUewohrxpWxEwZVg6rTjD+ZN4W5
+         h0h0G+UrCJiUEKXGMkBKd+b+uhNYk4uslkVEx+GU01Icv3+gd0Mc45rLZqSWFOxXEDGA
+         h7c5Il6hNZrXtLlLSFfsk/nBeWflf6l0BUQfclj0284l8TOMUZlinzWnWjZ8mrKSvByU
+         SQ/HAVxuAeK/vMXiO0xEYtra7jk4AccQMVQzzWu+7nl63x7tFmdcvihE81Uf0Fdp57mY
+         I7pnyl39NQvAedb891X7G6aB0Dht5LbVSU6cnfFSKUkUZsEfs4O5bQjRjCFV/H6W7qzn
+         EzWQ==
+X-Gm-Message-State: AOAM533R1bte8iyqKzvZNCqT99bZCXJL/u84mU3c1oU4DaxiJm0JEmmv
+        bJKf2eDp8EqJT+HifVFDGA1qyg==
+X-Google-Smtp-Source: ABdhPJx7X+z3T7obGlkfwniBmq4ySimshUk0QxfezcyPmQw82MV8mGhksCsy7itbjwsr0JNQdzeAVg==
+X-Received: by 2002:a17:90b:4b11:b0:1cb:2a65:f275 with SMTP id lx17-20020a17090b4b1100b001cb2a65f275mr3229394pjb.33.1649926816349;
+        Thu, 14 Apr 2022 02:00:16 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:b53a:7315:ec5:64b0])
+        by smtp.gmail.com with ESMTPSA id q9-20020a638c49000000b00398677b6f25sm1340942pgn.70.2022.04.14.02.00.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 01:59:47 -0700 (PDT)
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 21/23] mm/sl[au]b: remove kmem_cache_alloc_node_trace()
-Date:   Thu, 14 Apr 2022 17:57:25 +0900
-Message-Id: <20220414085727.643099-22-42.hyeyoo@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220414085727.643099-1-42.hyeyoo@gmail.com>
-References: <20220414085727.643099-1-42.hyeyoo@gmail.com>
+        Thu, 14 Apr 2022 02:00:15 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     Robert Foss <robert.foss@linaro.org>, Xin Ji <xji@analogixsemi.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/bridge: anx7625: Fill in empty ELD when no connector
+Date:   Thu, 14 Apr 2022 17:00:04 +0800
+Message-Id: <20220414090003.1806535-1-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmem_cache_alloc_node_trace() was introduced by commit 4a92379bdfb4
-("slub tracing: move trace calls out of always inlined functions to reduce
-kernel code size") to avoid inlining tracepoints for inlined kmalloc
-function calls.
+Speaker may share I2S with DP and .get_eld callback will be called when
+speaker is playing. When HDMI wans't connected, the connector will be
+null. Instead of return an error, fill in empty ELD.
 
-Now that we use same tracepoint in kmalloc and normal caches,
-kmem_cache_alloc_node_trace() can be replaced with
-__kmem_cache_alloc_node() and kasan_kmalloc().
-
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
 ---
- include/linux/slab.h | 26 ++++++++------------------
- mm/slab.c            | 19 -------------------
- mm/slub.c            | 16 ----------------
- 3 files changed, 8 insertions(+), 53 deletions(-)
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/slab.h b/include/linux/slab.h
-index 0630c37ee630..c1aed9d97cf2 100644
---- a/include/linux/slab.h
-+++ b/include/linux/slab.h
-@@ -497,21 +497,6 @@ static __always_inline void kfree_bulk(size_t size, void **p)
- 	kmem_cache_free_bulk(NULL, size, p);
- }
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index 6516f9570b86..f2bc30c98c77 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -1932,14 +1932,14 @@ static int anx7625_audio_get_eld(struct device *dev, void *data,
+ 	struct anx7625_data *ctx = dev_get_drvdata(dev);
  
--#ifdef CONFIG_TRACING
--extern void *kmem_cache_alloc_node_trace(struct kmem_cache *s, gfp_t gfpflags,
--					 int node, size_t size) __assume_slab_alignment
--								__alloc_size(4);
--#else /* CONFIG_TRACING */
--static __always_inline void *kmem_cache_alloc_node_trace(struct kmem_cache *s, gfp_t gfpflags,
--							 int node, size_t size)
--{
--	void *ret = kmem_cache_alloc_node(s, gfpflags, node);
--
--	ret = kasan_kmalloc(s, ret, size, gfpflags);
--	return ret;
--}
--#endif /* CONFIG_TRACING */
--
- extern void *kmalloc_large_node(size_t size, gfp_t flags, int node)
- 				__assume_page_alignment __alloc_size(1);
- 
-@@ -523,6 +508,9 @@ static __always_inline void *kmalloc_large(size_t size, gfp_t flags)
- #ifndef CONFIG_SLOB
- static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t flags, int node)
- {
-+	struct kmem_cache *s;
-+	void *objp;
-+
- 	if (__builtin_constant_p(size)) {
- 		unsigned int index;
- 
-@@ -534,9 +522,11 @@ static __always_inline __alloc_size(1) void *kmalloc_node(size_t size, gfp_t fla
- 		if (!index)
- 			return ZERO_SIZE_PTR;
- 
--		return kmem_cache_alloc_node_trace(
--				kmalloc_caches[kmalloc_type(flags)][index],
--						flags, node, size);
-+		s = kmalloc_caches[kmalloc_type(flags)][index];
-+
-+		objp = __kmem_cache_alloc_node(s, NULL, flags, node, _RET_IP_);
-+		objp = kasan_kmalloc(s, objp, size, flags);
-+		return objp;
+ 	if (!ctx->connector) {
+-		dev_err(dev, "connector not initial\n");
+-		return -EINVAL;
++		/* Pass en empty ELD if connector not available */
++		memset(buf, 0, len);
++	} else {
++		dev_dbg(dev, "audio copy eld\n");
++		memcpy(buf, ctx->connector->eld,
++		       min(sizeof(ctx->connector->eld), len));
  	}
- 	return __kmalloc_node(size, flags, node);
- }
-diff --git a/mm/slab.c b/mm/slab.c
-index fc00aca62ae3..24010e72f603 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -3508,25 +3508,6 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
- }
- EXPORT_SYMBOL(kmem_cache_alloc_bulk);
  
--#ifdef CONFIG_TRACING
--void *kmem_cache_alloc_node_trace(struct kmem_cache *cachep,
--				  gfp_t flags,
--				  int nodeid,
--				  size_t size)
--{
--	void *ret;
+-	dev_dbg(dev, "audio copy eld\n");
+-	memcpy(buf, ctx->connector->eld,
+-	       min(sizeof(ctx->connector->eld), len));
 -
--	ret = slab_alloc_node(cachep, NULL, flags, nodeid, size, _RET_IP_);
--
--	ret = kasan_kmalloc(cachep, ret, size, flags);
--	trace_kmem_cache_alloc(cachep->name, _RET_IP_, ret,
--			       size, cachep->size,
--			       flags, nodeid);
--	return ret;
--}
--EXPORT_SYMBOL(kmem_cache_alloc_node_trace);
--#endif
--
- #ifdef CONFIG_PRINTK
- void kmem_obj_info(struct kmem_obj_info *kpp, void *object, struct slab *slab)
- {
-diff --git a/mm/slub.c b/mm/slub.c
-index bc9c96ce0521..1899c7e1de10 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -3222,22 +3222,6 @@ void *__kmem_cache_alloc_node(struct kmem_cache *s, struct list_lru *lru, gfp_t
+ 	return 0;
  }
- EXPORT_SYMBOL(__kmem_cache_alloc_node);
  
--#ifdef CONFIG_TRACING
--void *kmem_cache_alloc_node_trace(struct kmem_cache *s,
--				    gfp_t gfpflags,
--				    int node, size_t size)
--{
--	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, size);
--
--	trace_kmem_cache_alloc(s->name, _RET_IP_, ret,
--			       size, s->size, gfpflags, node);
--
--	ret = kasan_kmalloc(s, ret, size, gfpflags);
--	return ret;
--}
--EXPORT_SYMBOL(kmem_cache_alloc_node_trace);
--#endif
--
- /*
-  * Slow path handling. This may still be called frequently since objects
-  * have a longer lifetime than the cpu slabs in most processing loads.
 -- 
-2.32.0
+2.35.1.1178.g4f1659d476-goog
 
