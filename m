@@ -2,89 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 134EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241074AbiDNIpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
+        id S241081AbiDNIqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239558AbiDNIph (ORCPT
+        with ESMTP id S241076AbiDNIpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:45:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D712965796;
-        Thu, 14 Apr 2022 01:43:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A5536208B;
-        Thu, 14 Apr 2022 08:43:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3406C385A5;
-        Thu, 14 Apr 2022 08:43:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649925791;
-        bh=iHZqK4K6Vu+KtomeHU+dePQzrkU7Y2MgGUiDicf1Wms=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YfpsG3DHQxvqsl7laZpVeqMWas0uw1WWEfQ7MdGYXDkI0ZdQnz/wgk09mSVBb2cp+
-         uGskG3PDsJrK3Z8JEcgBj4VxDusYggKK5JoLf8MzikpDfm7rLDUcQv5qWLWuQXJAz7
-         AETSy1Xar9DIGuU+nARBCnLJkDXTKWFu+1dY/4Jp2bsY+luai/i7tHt4D547WhPFi/
-         WjbNX37dYJtr5eh7qViBy/zt2jXJziDaxiq0sawamgjY7vg4voXnK5E/LaV0lp9ET+
-         pWBh3d0F3tyBLP7Z3Pjo/93FqilmSqUNCoI7keU14fNphnYJMQ8LngUZOnQSyDnGSk
-         4qKTDEfb58k2Q==
-Date:   Thu, 14 Apr 2022 10:42:59 +0200
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tan Tee Min <tee.min.tan@linux.intel.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp
- checking loop
-Message-ID: <20220414104259.0b928249@kernel.org>
-In-Reply-To: <20220414072934.GA10025@linux.intel.com>
-References: <20220413040115.2351987-1-tee.min.tan@intel.com>
-        <20220413125915.GA667752@hoboy.vegasvil.org>
-        <20220414072934.GA10025@linux.intel.com>
+        Thu, 14 Apr 2022 04:45:55 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1FB657A8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:43:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/HRtMQ3dw3W4AEXwOIIlBJhmt/aYSbzI1lzRClxR+6I=; b=N7OuvHI8LIFE07QlIOsfuEK5Rm
+        tNkvlnKNJc+i5MnPdreiFqUjAnosGMEJPmg9IFW6vVeQd5sQaLFi/NXTTF4EJpUgW2ykQyiSiqFOO
+        qXaVknO24GTUnEGiqWWWwyNYFoc/2HNPlBU5LDu1oeJvFa7C4VPULmR5i2CMknqqXJd1RuKgL0pgT
+        zV15DAXrZuYWlVqkA1vsIK26AkcGn3Km/DEa3/3FWW6cRJ77uqD/m9/Cb0JFJHICff/UavWs/oJtR
+        PXsCGcPO60JVUB1vu8NfpIMBzMny4u2Q1XuDLAtthiAgMqDghO+qI6AttpLwSsbwxUkAIiIxMFiz5
+        6kwJ0sUw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nev4X-00EyER-QO; Thu, 14 Apr 2022 08:43:25 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6C3AB30080F;
+        Thu, 14 Apr 2022 10:43:25 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 55F1E2B3A873C; Thu, 14 Apr 2022 10:43:25 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 10:43:25 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 09/18] objtool: Add stack validation cmdline option
+Message-ID: <YlferZa7SP6hVgcA@hirez.programming.kicks-ass.net>
+References: <cover.1649891421.git.jpoimboe@redhat.com>
+ <a13c502a91ae0bef8dfeb502d7dee88e73039355.1649891421.git.jpoimboe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a13c502a91ae0bef8dfeb502d7dee88e73039355.1649891421.git.jpoimboe@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 15:29:34 +0800 Tan Tee Min wrote:
-> > > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> > > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> > > @@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
-> > >  			/* Check if timestamp is OK from context descriptor */
-> > >  			do {
-> > >  				ret = dwmac4_rx_check_timestamp(next_desc);
-> > > -				if (ret < 0)
-> > > +				if (ret <= 0)
-> > >  					goto exit;
-> > >  				i++;
-> > >  
-> > > +				fsleep(1);  
-> > 
-> > This is nutty.  Why isn't this code using proper deferral mechanisms
-> > like work or kthread?  
-> 
-> Appreciate your comment.
-> The dwmac4_wrback_get_rx_timestamp_status() is called by stmmac_rx()
-> function which is scheduled by NAPI framework.
-> Do we still need to create deferred work inside NAPI work?
-> Would you mind to explain it more in detail?
+On Wed, Apr 13, 2022 at 04:19:44PM -0700, Josh Poimboeuf wrote:
+> +	if (opts.stackval || opts.orc || opts.uaccess) {
+> +		ret = validate_functions(file);
+> +		if (ret < 0)
+> +			goto out;
+> +		warnings += ret;
+>  
+> +		ret = validate_unwind_hints(file, NULL);
+>  		if (ret < 0)
+>  			goto out;
+>  		warnings += ret;
+> +
+> +		if (!warnings) {
+> +			ret = validate_reachable_instructions(file);
+> +			if (ret < 0)
+> +				goto out;
+> +			warnings += ret;
+> +		}
+>  	}
 
-fsleep() is a big hammer, can you try cpu_relax() and bumping the max
-loop count a little?
+Doesn't SLS also depend on validate_functions() ?
