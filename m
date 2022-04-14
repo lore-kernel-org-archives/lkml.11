@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38999C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 389B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238225AbiDNOFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
+        id S240694AbiDNOGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344017AbiDNNaP (ORCPT
+        with ESMTP id S1344011AbiDNNaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2957592D02;
-        Thu, 14 Apr 2022 06:26:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130B49285F;
+        Thu, 14 Apr 2022 06:26:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C69D5B82984;
-        Thu, 14 Apr 2022 13:26:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 227CDC385A9;
-        Thu, 14 Apr 2022 13:26:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A36D461B18;
+        Thu, 14 Apr 2022 13:26:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0616C385A1;
+        Thu, 14 Apr 2022 13:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942779;
-        bh=iQRV5ateyNk7x82zVTTRxMV9NpHDhO7Yy587hC+Z5TU=;
+        s=korg; t=1649942768;
+        bh=XYu6qLhe0TZaFiCEAAGO00g2C77EF4AtExQ0erqZzXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xD1Yn8bZVSMAAPaPKjIL5PIwj9taXe1KQnlovcs98vLR6sUOtm5E+b80IoqrJi5U4
-         nyXVoI+O8mxhDHI5B/xqVxD1Yk+0MXcF4WXkKlEBwHpHSJgwURaasc96Pruc1GlVzX
-         Qq9fawfA7pwK8spqinDme40j9TZj+ufaRqY46BgM=
+        b=fA9NuZzzKTYuY/0nHHnsmnNGH2pY1DRv6NxMnybQ+W638lPo9RmciacMKd98C2ugO
+         HSgLilroKmwhBcuCwGl7y8Vn9nHmbzkPG4KAOwAx5gAj7PcoJP+0++WoPpBIjae5h3
+         2U8Qz8x6F0pOC4NyPaXWfZ6CnbRlvrnAwDGoAD+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Fangrui Song <maskray@google.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 258/338] riscv module: remove (NOLOAD)
-Date:   Thu, 14 Apr 2022 15:12:41 +0200
-Message-Id: <20220414110846.233086921@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 4.19 255/338] KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasnt activated
+Date:   Thu, 14 Apr 2022 15:12:38 +0200
+Message-Id: <20220414110846.149417188@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,53 +48,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fangrui Song <maskray@google.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 60210a3d86dc57ce4a76a366e7841dda746a33f7 ]
+commit b1e34d325397a33d97d845e312d7cf2a8b646b44 upstream.
 
-On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
-inappropriate for .plt, .got, and .got.plt sections which are always
-SHT_PROGBITS.
+Setting non-zero values to SYNIC/STIMER MSRs activates certain features,
+this should not happen when KVM_CAP_HYPERV_SYNIC{,2} was not activated.
 
-In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
-and (NOLOAD) will be essentially ignored. In ld.lld, since
-https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
-customize the output section type"), ld.lld will report a `section type
-mismatch` error (later changed to a warning). Just remove (NOLOAD) to
-fix the warning.
+Note, it would've been better to forbid writing anything to SYNIC/STIMER
+MSRs, including zeroes, however, at least QEMU tries clearing
+HV_X64_MSR_STIMER0_CONFIG without SynIC. HV_X64_MSR_EOM MSR is somewhat
+'special' as writing zero there triggers an action, this also should not
+happen when SynIC wasn't activated.
 
-[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
-section should be marked as not loadable" on
-https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
-outdated for ELF.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1597
-Fixes: ab1ef68e5401 ("RISC-V: Add sections of PLT and GOT for kernel module")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-4-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/module.lds | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kvm/hyperv.c |   17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/arch/riscv/kernel/module.lds b/arch/riscv/kernel/module.lds
-index 295ecfb341a2..18ec719899e2 100644
---- a/arch/riscv/kernel/module.lds
-+++ b/arch/riscv/kernel/module.lds
-@@ -2,7 +2,7 @@
- /* Copyright (C) 2017 Andes Technology Corporation */
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -237,7 +237,7 @@ static int synic_set_msr(struct kvm_vcpu
+ 	struct kvm_vcpu *vcpu = synic_to_vcpu(synic);
+ 	int ret;
  
- SECTIONS {
--	.plt (NOLOAD) : { BYTE(0) }
--	.got (NOLOAD) : { BYTE(0) }
--	.got.plt (NOLOAD) : { BYTE(0) }
-+	.plt : { BYTE(0) }
-+	.got : { BYTE(0) }
-+	.got.plt : { BYTE(0) }
- }
--- 
-2.35.1
-
+-	if (!synic->active && !host)
++	if (!synic->active && (!host || data))
+ 		return 1;
+ 
+ 	trace_kvm_hv_synic_set_msr(vcpu->vcpu_id, msr, data, host);
+@@ -283,6 +283,9 @@ static int synic_set_msr(struct kvm_vcpu
+ 	case HV_X64_MSR_EOM: {
+ 		int i;
+ 
++		if (!synic->active)
++			break;
++
+ 		for (i = 0; i < ARRAY_SIZE(synic->sint); i++)
+ 			kvm_hv_notify_acked_sint(vcpu, i);
+ 		break;
+@@ -544,6 +547,12 @@ static int stimer_start(struct kvm_vcpu_
+ static int stimer_set_config(struct kvm_vcpu_hv_stimer *stimer, u64 config,
+ 			     bool host)
+ {
++	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
++	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
++
++	if (!synic->active && (!host || config))
++		return 1;
++
+ 	trace_kvm_hv_stimer_set_config(stimer_to_vcpu(stimer)->vcpu_id,
+ 				       stimer->index, config, host);
+ 
+@@ -558,6 +567,12 @@ static int stimer_set_config(struct kvm_
+ static int stimer_set_count(struct kvm_vcpu_hv_stimer *stimer, u64 count,
+ 			    bool host)
+ {
++	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
++	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
++
++	if (!synic->active && (!host || count))
++		return 1;
++
+ 	trace_kvm_hv_stimer_set_count(stimer_to_vcpu(stimer)->vcpu_id,
+ 				      stimer->index, count, host);
+ 
 
 
