@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4660C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8F4C35273
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350975AbiDNO3f (ORCPT
+        id S1350961AbiDNO3d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        Thu, 14 Apr 2022 10:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343979AbiDNNjc (ORCPT
+        with ESMTP id S1343965AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DCB38DA4;
-        Thu, 14 Apr 2022 06:36:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838639A993;
+        Thu, 14 Apr 2022 06:36:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1377A61D70;
-        Thu, 14 Apr 2022 13:36:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CFADC385A1;
-        Thu, 14 Apr 2022 13:36:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2068C61CF3;
+        Thu, 14 Apr 2022 13:36:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D16EC385A9;
+        Thu, 14 Apr 2022 13:35:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943373;
-        bh=a1FB1C4oh8JpBDRnXblNf0XsxNYuOI3qecPvB/K0FLk=;
+        s=korg; t=1649943359;
+        bh=lGxzoZQcpGG+SFTb6be7RF4mMGO8GD8TToyJJ+Yuhnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WtO2dkxZyucbP4T6EL95exxImrQxH+OITXqLe77IsZ2f1SnOtj51zt4x4BGn8mudu
-         Bp5KO6CNekeuFIVkuGzJ8Rhv3YIEJ55QEOuNwJzy4ajnOXAws/zww9TwEm9cW5kYQY
-         cyR9i+ApvqMe68rS/DC+GudNCgmigXKvvJyrxcs4=
+        b=vPEpScLRHIfaDGJCd6C+N2FR7Px4ZFo5dNtk0ipU5wc9glHvKTEECO+CS6jKyd9GS
+         lLTJAsTeR8vzr8gB6eVVmCnkr6gE2gMcQg6rnTSSXftOyMFpPbvymWGhg/sd3K6ktk
+         TRXC2VC3JMVh450+3vQ7NoR8cCUQmq42q7xTGGwg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 130/475] ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
-Date:   Thu, 14 Apr 2022 15:08:35 +0200
-Message-Id: <20220414110858.787873144@linuxfoundation.org>
+Subject: [PATCH 5.4 126/475] media: video/hdmi: handle short reads of hdmi info frame.
+Date:   Thu, 14 Apr 2022 15:08:31 +0200
+Message-Id: <20220414110858.677611532@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,36 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit 4d06f92f38b799295ae22c98be7a20cac3e2a1a7 ]
+[ Upstream commit 4a92fc6e55da5b87cecb572275deaff6ac9dd27e ]
 
-The function devm_kzalloc() in rt5663_parse_dp() can fail, so its return
-value should be checked.
+Calling hdmi_infoframe_unpack() with static sizeof(buffer) skips all
+the size checking done later in hdmi_infoframe_unpack().  A better
+value is the amount of data read into buffer.
 
-Fixes: 457c25efc592 ("ASoC: rt5663: Add the function of impedance sensing")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225131030.27248-1-baijiaju1990@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 480b8b3e42c3 ("video/hdmi: Pass buffer size to infoframe unpack functions")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5663.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/i2c/adv7511-v4l2.c | 2 +-
+ drivers/media/i2c/adv7604.c      | 2 +-
+ drivers/media/i2c/adv7842.c      | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
-index 3610be1590fc..19e2f622718d 100644
---- a/sound/soc/codecs/rt5663.c
-+++ b/sound/soc/codecs/rt5663.c
-@@ -3478,6 +3478,8 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
- 		table_size = sizeof(struct impedance_mapping_table) *
- 			rt5663->pdata.impedance_sensing_num;
- 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
-+		if (!rt5663->imp_table)
-+			return -ENOMEM;
- 		ret = device_property_read_u32_array(dev,
- 			"realtek,impedance_sensing_table",
- 			(u32 *)rt5663->imp_table, table_size);
+diff --git a/drivers/media/i2c/adv7511-v4l2.c b/drivers/media/i2c/adv7511-v4l2.c
+index 809fa44ed988..86267e01c251 100644
+--- a/drivers/media/i2c/adv7511-v4l2.c
++++ b/drivers/media/i2c/adv7511-v4l2.c
+@@ -555,7 +555,7 @@ static void log_infoframe(struct v4l2_subdev *sd, const struct adv7511_cfg_read_
+ 	buffer[3] = 0;
+ 	buffer[3] = hdmi_infoframe_checksum(buffer, len + 4);
+ 
+-	if (hdmi_infoframe_unpack(&frame, buffer, sizeof(buffer)) < 0) {
++	if (hdmi_infoframe_unpack(&frame, buffer, len + 4) < 0) {
+ 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__, cri->desc);
+ 		return;
+ 	}
+diff --git a/drivers/media/i2c/adv7604.c b/drivers/media/i2c/adv7604.c
+index b887299ac195..1cee69919e1b 100644
+--- a/drivers/media/i2c/adv7604.c
++++ b/drivers/media/i2c/adv7604.c
+@@ -2444,7 +2444,7 @@ static int adv76xx_read_infoframe(struct v4l2_subdev *sd, int index,
+ 		buffer[i + 3] = infoframe_read(sd,
+ 				       adv76xx_cri[index].payload_addr + i);
+ 
+-	if (hdmi_infoframe_unpack(frame, buffer, sizeof(buffer)) < 0) {
++	if (hdmi_infoframe_unpack(frame, buffer, len + 3) < 0) {
+ 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__,
+ 			 adv76xx_cri[index].desc);
+ 		return -ENOENT;
+diff --git a/drivers/media/i2c/adv7842.c b/drivers/media/i2c/adv7842.c
+index 02cbab826d0b..a581e822ce6f 100644
+--- a/drivers/media/i2c/adv7842.c
++++ b/drivers/media/i2c/adv7842.c
+@@ -2574,7 +2574,7 @@ static void log_infoframe(struct v4l2_subdev *sd, struct adv7842_cfg_read_infofr
+ 	for (i = 0; i < len; i++)
+ 		buffer[i + 3] = infoframe_read(sd, cri->payload_addr + i);
+ 
+-	if (hdmi_infoframe_unpack(&frame, buffer, sizeof(buffer)) < 0) {
++	if (hdmi_infoframe_unpack(&frame, buffer, len + 3) < 0) {
+ 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__, cri->desc);
+ 		return;
+ 	}
 -- 
 2.34.1
 
