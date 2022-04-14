@@ -2,212 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:08:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46507C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235917AbiDNRKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36242 "EHLO
+        id S237917AbiDNRLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347133AbiDNRKH (ORCPT
+        with ESMTP id S245204AbiDNRHc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:10:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D91B369CF
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:01:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649955666;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4B1/0zprUHgX3VT2zhq8T9uZ6S7ysF6md7j6hbXhF8M=;
-        b=Dw8CGa7CTv/3Ef6SYfSLyXxUsgoMcd71MDuwZ25MRN64AwYw68kn7Gt+IO29YEAmKdePQZ
-        xbUpREuh0aIdKBbYc0FNz2fOb5H1/z8DgE/rK0RfLu7DQghNKHputl1gS+iseLv2DUNHmA
-        1nHEtOCNHDc3I9YDYnJzSE9rtlKojFU=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-341-7TlB9aR2OnCUYblOC-sKWQ-1; Thu, 14 Apr 2022 13:01:05 -0400
-X-MC-Unique: 7TlB9aR2OnCUYblOC-sKWQ-1
-Received: by mail-qk1-f199.google.com with SMTP id u7-20020ae9d807000000b00680a8111ef6so3649504qkf.17
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:01:05 -0700 (PDT)
+        Thu, 14 Apr 2022 13:07:32 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DAC24947
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:51:32 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id r13so11196220ejd.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:51:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:from:to:mime-version
+         :content-transfer-encoding;
+        bh=XOd+p86G00lunlXk7UiHmgo7WyOO3mZyzWAm62f9218=;
+        b=dIGE0xRWthwh4l4lBoq+ZWVv0iTqfivf6+kURsN5+m+SIECtzVltOeXO9d1caKoO2F
+         G7uxzZU9JqU3ehDwGLUlOjxy4zjipGfJv66XIFtKL9eJrfkzGvDVeEtLNFixl0I0tD2V
+         uSOp3KVfdgo/z5ewSoNAAj5M3A46EPXx/7TZo32jYhXoy7rQ/OrVNnICC+UVT9Pytq4I
+         COfIUjzA1UavyGN+T8nSwOK+gTwWF7R1Ow50mrZOxBOwlU/XvmPef6zM8FTrxdY6TUiv
+         9WFBA94jiVGaVYjLFhjDQCPmkXxPn/cX2O1TUqSZDtyPjXUpZr25vCrPIHk2RIP8rdqg
+         7nIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4B1/0zprUHgX3VT2zhq8T9uZ6S7ysF6md7j6hbXhF8M=;
-        b=KC525HSATLW7T5OKD/oAR9TSyXBS+lqv8TH/7nW6lMaVkrcJmOQXVOVs/Oe5f3Wyq/
-         FxtFCk6WQoWaxe1MAgd7vtbevcQVO4t1WdVAHuIiakd2Ipdnjf9xJ0Ka6Qeomgf7rh20
-         bIH0P5apCzN6aSXVOVJpOTDRGuce1vfkTYb2DTqGTxdlotpXvEHiZEOo2c70Bxy/rNxg
-         sptAhn8cSK/TstXx4ZeoORQik+VM3+KVqSNi+FlRfLMYdfTk3vUZei2L6MFbSPlwCX1K
-         Nyj4uY2cT2LU0mSEPdLB4+1MtZs736fgyKMEUMuMZu8qcslt1RNpBra1bip8Wogrj6WD
-         6rZA==
-X-Gm-Message-State: AOAM531dprcAdQLtqS/TNWQzrIyDvvtVIsep+OdG73hPRzzMIiuvhf7o
-        ZHzhfpdL49d4LieZRiks95s5T+M6nr4tgILHwp9NQfzXsLf8atuDPtgA43oFQaPelgbunR66pfH
-        6eXR3ljgaqTTEEhq4yBqwtK1L
-X-Received: by 2002:a05:620a:1903:b0:67d:243b:a8ae with SMTP id bj3-20020a05620a190300b0067d243ba8aemr2608417qkb.142.1649955664664;
-        Thu, 14 Apr 2022 10:01:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwPWnG9sKZnoc4ROrcDaT5+CKtcHx0u44tTJaHAF47tvPdCZfGyVldRbmpYGKCc/3kyEjM3kQ==
-X-Received: by 2002:a05:620a:1903:b0:67d:243b:a8ae with SMTP id bj3-20020a05620a190300b0067d243ba8aemr2608377qkb.142.1649955664121;
-        Thu, 14 Apr 2022 10:01:04 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id c3-20020ac87d83000000b002e1d1b3df15sm1459694qtd.44.2022.04.14.10.01.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 10:01:03 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 10:01:00 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH 02/18] objtool: Support data symbol printing
-Message-ID: <20220414170100.c66rfyvk7dp33bxx@treble>
-References: <cover.1649891421.git.jpoimboe@redhat.com>
- <097057f88605aa67b0e3ec573fcf394ae7ac4d6f.1649891421.git.jpoimboe@redhat.com>
- <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
- <20220414152148.cwdefx744kymqcut@treble>
- <Ylg+bewBpaqqYgeB@hirez.programming.kicks-ass.net>
- <20220414153854.rqkt465xn4vzndr7@treble>
- <YlhNo026PgjJuCIU@hirez.programming.kicks-ass.net>
+        h=x-gm-message-state:message-id:date:subject:from:to:mime-version
+         :content-transfer-encoding;
+        bh=XOd+p86G00lunlXk7UiHmgo7WyOO3mZyzWAm62f9218=;
+        b=Owv8R13UKsBkN+lQw2lBgO/PeDA/IbNeR1AfxgSvXkrAEN505lCGoUs9fUmolwYwCf
+         LsMRQbd2paHqwVOmVT3xo9EBbcbBBLALyJpgUc3l9baCQe6hliKGEIvHrAoJOJq/1GW1
+         TPw2V0WwHur7RT15PXOweuNYcNJE1i4K9Z8FUUZhHRVUMAp43RBPxm/2Ny96sRaU4myw
+         0GyGhoXdutbwd+lFpoGJ4MGptUCcOrWKuHKaxb+GwbHWaOpgLSyu8Rx8A2BTZfmT9icY
+         h/AVSepUBRyowlMG4+K7q/ijQuTvvyzFufi4mL5aBOd4nfAeIbC8uC4rUpU1ueLZuinB
+         aTAw==
+X-Gm-Message-State: AOAM531krg2aJXOspIUmvYKQ3rRtasyMZ3IsQgOAigZjGSglt2AwMqHS
+        1LMA965IGgZCc/+wQqRAdqh2umyGB94=
+X-Google-Smtp-Source: ABdhPJy7rPm4DnN167lmeS6GOnuyeNcPRrLtsIL50i5A4PcUOk72PYzZ9VUXLri/TrGJv1HvhE3APQ==
+X-Received: by 2002:a17:906:6a15:b0:6e8:aa5a:f386 with SMTP id qw21-20020a1709066a1500b006e8aa5af386mr3186127ejc.649.1649955090858;
+        Thu, 14 Apr 2022 09:51:30 -0700 (PDT)
+Received: from [127.0.0.1] (77.119.216.48.wireless.dyn.drei.com. [77.119.216.48])
+        by smtp.gmail.com with ESMTPSA id gl2-20020a170906e0c200b006a767d52373sm778124ejb.182.2022.04.14.09.51.29
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Apr 2022 09:51:30 -0700 (PDT)
+Message-ID: <9c1e7a075ddba2037af5d6ba0a002363@swift.generated>
+Date:   Thu, 14 Apr 2022 18:51:20 +0200
+Subject: AW: your-internet.de
+From:   Gerard Scholz <gerardscholz1978@gmail.com>
+To:     "" <linux-kernel@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YlhNo026PgjJuCIU@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 06:36:51PM +0200, Peter Zijlstra wrote:
-> On Thu, Apr 14, 2022 at 08:38:54AM -0700, Josh Poimboeuf wrote:
-> 
-> > > Yes, I'd not seen that yet, what's that for? The Changelog alludes to
-> > > something, but I don't think it actually does get used later.
-> > 
-> > Nick had asked for something like that, it's just a way to avoid doing
-> > math every time we look at a warning, i.e. to convert func+offset to
-> > sec+offset.
-> > 
-> > But it's kind of ugly and I'm not 100% happy with it.
-> > 
-> > Maybe it should be behind an option (--sec-offsets)?
-> 
-> Can do I suppose... Myself, I have this script:
-> 
-> $ cat objdump-func.sh
-> #!/bin/bash
-> 
-> OBJ=$1; shift
-> FUNC=$1; shift
-> 
-> objdump -wdr $@ $OBJ | awk "/^\$/ { P=0; } /$FUNC[^>]*>:\$/ { P=1; O=strtonum(\"0x\" \$1); } { if (P) { o=strtonum(\"0x\" \$1); printf(\"%04x \", o-O); print \$0; } }"
-
-That is nice, just added to my ~/bin.
-
-And how am I just learning about objdump "-w" ?!?!
-
-I wrote up a new version of that patch which adds a '--sec-address'
-option (see below), but maybe I'll just drop it for now.  It's not
-really relevant to this set anyway.
+Guten Tag
 
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: [PATCH] objtool: Add option to print section addresses
+your-internet.de wird nicht mehr ben=C3=B6tigt, und desha=
+lb zur Feilbietung ausgeschrieben.
 
-To help prevent objtool users from having to do math, add an option to
-print the section address in addition to the function address.
+Ihr freue mich =C3=BCber Ihr Feedba=
+ck
 
-Normal:
+Mit sch=C3=B6nen Gr=C3=BC=C3=9Fen
 
-  vmlinux.o: warning: objtool: fixup_exception()+0x2d1: unreachable instruction
+Gerard Scholz
 
-With '--sec-address':
 
-  vmlinux.o: warning: objtool: fixup_exception()+0x2d1 (.text+0x76c51): unreachable instruction
-
-Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
----
- tools/objtool/builtin-check.c           |  1 +
- tools/objtool/include/objtool/builtin.h |  1 +
- tools/objtool/include/objtool/warn.h    | 31 ++++++++++++++-----------
- 3 files changed, 19 insertions(+), 14 deletions(-)
-
-diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index 3df46e9b4b03..2c562e3dec55 100644
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -55,6 +55,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN(0, "module", &opts.module, "object is part of a kernel module"),
- 	OPT_BOOLEAN(0, "no-fp", &opts.no_fp, "skip frame pointer validation"),
- 	OPT_BOOLEAN(0, "no-unreachable", &opts.no_unreachable, "skip 'unreachable instruction' warnings"),
-+	OPT_BOOLEAN(0, "sec-address", &opts.sec_address, "print section addresses in warnings"),
- 	OPT_BOOLEAN(0, "stats", &opts.stats, "print statistics"),
- 	OPT_BOOLEAN(0, "vmlinux", &opts.vmlinux, "vmlinux.o validation"),
- 
-diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index 0cac9bd6a97f..e6910a66317a 100644
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -33,6 +33,7 @@ struct opts {
- 	bool module;
- 	bool no_fp;
- 	bool no_unreachable;
-+	bool sec_address;
- 	bool stats;
- 	bool vmlinux;
- };
-diff --git a/tools/objtool/include/objtool/warn.h b/tools/objtool/include/objtool/warn.h
-index c4bde3e2a79c..a3e79ae75f2e 100644
---- a/tools/objtool/include/objtool/warn.h
-+++ b/tools/objtool/include/objtool/warn.h
-@@ -11,30 +11,33 @@
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <fcntl.h>
-+#include <objtool/builtin.h>
- #include <objtool/elf.h>
- 
- extern const char *objname;
- 
- static inline char *offstr(struct section *sec, unsigned long offset)
- {
--	struct symbol *func;
--	char *name, *str;
--	unsigned long name_off;
-+	bool is_text = (sec->sh.sh_flags & SHF_EXECINSTR);
-+	struct symbol *sym = NULL;
-+	char *str;
-+	int len;
- 
--	func = find_func_containing(sec, offset);
--	if (!func)
--		func = find_symbol_containing(sec, offset);
--	if (func) {
--		name = func->name;
--		name_off = offset - func->offset;
-+	if (is_text)
-+		sym = find_func_containing(sec, offset);
-+	if (!sym)
-+		sym = find_symbol_containing(sec, offset);
-+
-+	if (sym) {
-+		str = malloc(strlen(sym->name) + strlen(sec->name) + 40);
-+		len = sprintf(str, "%s+0x%lx", sym->name, offset - sym->offset);
-+		if (opts.sec_address)
-+			sprintf(str+len, " (%s+0x%lx)", sec->name, offset);
- 	} else {
--		name = sec->name;
--		name_off = offset;
-+		str = malloc(strlen(sec->name) + 20);
-+		sprintf(str, "%s+0x%lx", sec->name, offset);
- 	}
- 
--	str = malloc(strlen(name) + 20);
--	sprintf(str, "%s+0x%lx", name, name_off);
--
- 	return str;
- }
- 
--- 
-2.34.1
-
+......=
+......................................................
