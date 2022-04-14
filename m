@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8259DC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1C0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348394AbiDNOEg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
+        id S245726AbiDNOEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343642AbiDNN3o (ORCPT
+        with ESMTP id S1343721AbiDNN3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4817AFB37;
-        Thu, 14 Apr 2022 06:25:05 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6811972C2;
+        Thu, 14 Apr 2022 06:25:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5120E61B18;
-        Thu, 14 Apr 2022 13:25:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABA1C385A5;
-        Thu, 14 Apr 2022 13:25:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BA7A60C14;
+        Thu, 14 Apr 2022 13:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39063C385A5;
+        Thu, 14 Apr 2022 13:25:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942704;
-        bh=y/6QWyHJQWMox/n6yuWOD0Hy6obv+LdOOes8hW9Ekn4=;
+        s=korg; t=1649942718;
+        bh=vwmuZqbJK0KqW6xKxen/8iR9Vo2RXhr+F1ti4l//GUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vZeNGa8FmbXZ8FcHyTj42DhM1BPDoCBbL+hpq5lgfpFxjISCefvkZ0ilb2TufRA78
-         Q01we3nQ4e+5TN+yiREZwH36W2OEsXD+F9lRID0ink1RaOv6pnwRhSpo8pmtXg4flb
-         hmiDtsLN3iAEzwZJLxuu2Xn25EhFNQ/NYkYYypGw=
+        b=WqYYcHEIZ15anILIygFOuGHtMF6lIzRcE4h1fDmxJrk7KzVUYbco229cV0QAOUfgQ
+         ZSvzgyCwp3SwBS/Al2yIouX/HAr3zrIjmGm2J2lXTtPbcNZeA7wBd77T9H4PfHgpTg
+         Yrv7Bxk4OYuiCofaKUUx2eXlZFB/+HgEZeQna504=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Manish Rangankar <mrangankar@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 230/338] scsi: qla2xxx: Use correct feature type field during RFF_ID processing
-Date:   Thu, 14 Apr 2022 15:12:13 +0200
-Message-Id: <20220414110845.436867440@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.19 234/338] ubifs: Fix deadlock in concurrent rename whiteout and inode writeback
+Date:   Thu, 14 Apr 2022 15:12:17 +0200
+Message-Id: <20220414110845.548577310@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -52,46 +48,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Rangankar <mrangankar@marvell.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit a7e05f7a1bcbe4ee055479242de46c5c16ab03b1 upstream.
+commit afd427048047e8efdedab30e8888044e2be5aa9c upstream.
 
-During SNS Register FC-4 Features (RFF_ID) the initiator driver was sending
-incorrect type field for NVMe supported device. Use correct feature type
-field.
+Following hung tasks:
+[   77.028764] task:kworker/u8:4    state:D stack:    0 pid:  132
+[   77.028820] Call Trace:
+[   77.029027]  schedule+0x8c/0x1b0
+[   77.029067]  mutex_lock+0x50/0x60
+[   77.029074]  ubifs_write_inode+0x68/0x1f0 [ubifs]
+[   77.029117]  __writeback_single_inode+0x43c/0x570
+[   77.029128]  writeback_sb_inodes+0x259/0x740
+[   77.029148]  wb_writeback+0x107/0x4d0
+[   77.029163]  wb_workfn+0x162/0x7b0
 
-Link: https://lore.kernel.org/r/20220310092604.22950-12-njavali@marvell.com
-Fixes: e374f9f59281 ("scsi: qla2xxx: Migrate switch registration commands away from mailbox interface")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Manish Rangankar <mrangankar@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[   92.390442] task:aa              state:D stack:    0 pid: 1506
+[   92.390448] Call Trace:
+[   92.390458]  schedule+0x8c/0x1b0
+[   92.390461]  wb_wait_for_completion+0x82/0xd0
+[   92.390469]  __writeback_inodes_sb_nr+0xb2/0x110
+[   92.390472]  writeback_inodes_sb_nr+0x14/0x20
+[   92.390476]  ubifs_budget_space+0x705/0xdd0 [ubifs]
+[   92.390503]  do_rename.cold+0x7f/0x187 [ubifs]
+[   92.390549]  ubifs_rename+0x8b/0x180 [ubifs]
+[   92.390571]  vfs_rename+0xdb2/0x1170
+[   92.390580]  do_renameat2+0x554/0x770
+
+, are caused by concurrent rename whiteout and inode writeback processes:
+	rename_whiteout(Thread 1)	        wb_workfn(Thread2)
+ubifs_rename
+  do_rename
+    lock_4_inodes (Hold ui_mutex)
+    ubifs_budget_space
+      make_free_space
+        shrink_liability
+	  __writeback_inodes_sb_nr
+	    bdi_split_work_to_wbs (Queue new wb work)
+					      wb_do_writeback(wb work)
+						__writeback_single_inode
+					          ubifs_write_inode
+					            LOCK(ui_mutex)
+							   ↑
+	      wb_wait_for_completion (Wait wb work) <-- deadlock!
+
+Reproducer (Detail program in [Link]):
+  1. SYS_renameat2("/mp/dir/file", "/mp/dir/whiteout", RENAME_WHITEOUT)
+  2. Consume out of space before kernel(mdelay) doing budget for whiteout
+
+Fix it by doing whiteout space budget before locking ubifs inodes.
+BTW, it also fixes wrong goto tag 'out_release' in whiteout budget
+error handling path(It should at least recover dir i_size and unlock
+4 ubifs inodes).
+
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214733
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_gs.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ fs/ubifs/dir.c |   25 +++++++++++++++----------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_gs.c
-+++ b/drivers/scsi/qla2xxx/qla_gs.c
-@@ -691,8 +691,7 @@ qla2x00_rff_id(scsi_qla_host_t *vha, u8
- 		return (QLA_SUCCESS);
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1341,6 +1341,7 @@ static int do_rename(struct inode *old_d
+ 
+ 	if (flags & RENAME_WHITEOUT) {
+ 		union ubifs_dev_desc *dev = NULL;
++		struct ubifs_budget_req wht_req;
+ 
+ 		dev = kmalloc(sizeof(union ubifs_dev_desc), GFP_NOFS);
+ 		if (!dev) {
+@@ -1362,6 +1363,20 @@ static int do_rename(struct inode *old_d
+ 		whiteout_ui->data = dev;
+ 		whiteout_ui->data_len = ubifs_encode_dev(dev, MKDEV(0, 0));
+ 		ubifs_assert(c, !whiteout_ui->dirty);
++
++		memset(&wht_req, 0, sizeof(struct ubifs_budget_req));
++		wht_req.dirtied_ino = 1;
++		wht_req.dirtied_ino_d = ALIGN(whiteout_ui->data_len, 8);
++		/*
++		 * To avoid deadlock between space budget (holds ui_mutex and
++		 * waits wb work) and writeback work(waits ui_mutex), do space
++		 * budget before ubifs inodes locked.
++		 */
++		err = ubifs_budget_space(c, &wht_req);
++		if (err) {
++			iput(whiteout);
++			goto out_release;
++		}
  	}
  
--	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha),
--	    FC4_TYPE_FCP_SCSI);
-+	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha), type);
- }
+ 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
+@@ -1436,16 +1451,6 @@ static int do_rename(struct inode *old_d
+ 	}
  
- static int qla_async_rffid(scsi_qla_host_t *vha, port_id_t *d_id,
-@@ -744,7 +743,7 @@ static int qla_async_rffid(scsi_qla_host
- 	ct_req->req.rff_id.port_id[1] = d_id->b.area;
- 	ct_req->req.rff_id.port_id[2] = d_id->b.al_pa;
- 	ct_req->req.rff_id.fc4_feature = fc4feature;
--	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI - FCP */
-+	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI-FCP or FC-NVMe */
+ 	if (whiteout) {
+-		struct ubifs_budget_req wht_req = { .dirtied_ino = 1,
+-				.dirtied_ino_d = \
+-				ALIGN(ubifs_inode(whiteout)->data_len, 8) };
+-
+-		err = ubifs_budget_space(c, &wht_req);
+-		if (err) {
+-			iput(whiteout);
+-			goto out_release;
+-		}
+-
+ 		inc_nlink(whiteout);
+ 		mark_inode_dirty(whiteout);
  
- 	sp->u.iocb_cmd.u.ctarg.req_size = RFF_ID_REQ_SIZE;
- 	sp->u.iocb_cmd.u.ctarg.rsp_size = RFF_ID_RSP_SIZE;
 
 
