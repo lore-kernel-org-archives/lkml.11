@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD6EC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35712C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350780AbiDNO2d (ORCPT
+        id S1350824AbiDNO2p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
+        Thu, 14 Apr 2022 10:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344007AbiDNNjd (ORCPT
+        with ESMTP id S1343978AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98308F98A;
-        Thu, 14 Apr 2022 06:36:37 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B306029CBE;
+        Thu, 14 Apr 2022 06:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C537B82968;
-        Thu, 14 Apr 2022 13:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFED5C385A5;
-        Thu, 14 Apr 2022 13:36:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51E4361D70;
+        Thu, 14 Apr 2022 13:36:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C205C385A1;
+        Thu, 14 Apr 2022 13:36:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943395;
-        bh=2oZ6o3YYR84xrbyRZvsWvVcONdqA2nZyWHB3WsSIGY8=;
+        s=korg; t=1649943370;
+        bh=EU4Slk4Q8gyxEduV72kD+AGQbRHJaz2gtjEeHLEpv9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=le1XNdyCPlObyCnDyh//1xy6z4nt/H2yraTtc6hbz+9ndCmOqGlBulEgSmJJ4YVg1
-         qHXnCEwOfoNq1l+2u2uOoKlKXWEB577/z6o1QM2cH4qZ2uvJqZVAMqrzL53LzRru6n
-         x0xHS5nG+Q9gqz09H75eVZPJwaQBGx2M4wfLxTlI=
+        b=k3MUwh6KGKZld75WZ12VnD0Dwu4RkhWZ4nhC3Q4lb2O72lgC50b/RxIoBorDzox6M
+         iO9M04a8xDtp3cmSq7j5Z46/rXKxG2d0KDv8T5jGNawTXYLzlcS6W+fSGxf9uDE5MU
+         02QnCd9VYgs5Ach2Ep5egvkFTxkJ/wArH9VOEe90=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 141/475] ALSA: firewire-lib: fix uninitialized flag for AV/C deferred transaction
-Date:   Thu, 14 Apr 2022 15:08:46 +0200
-Message-Id: <20220414110859.092999202@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 129/475] uaccess: fix nios2 and microblaze get_user_8()
+Date:   Thu, 14 Apr 2022 15:08:34 +0200
+Message-Id: <20220414110858.760491922@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,81 +50,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit bf0cd60b7e33cf221fbe1114e4acb2c828b0af0d ]
+[ Upstream commit a97b693c3712f040c5802f32b2d685352e08cefa ]
 
-AV/C deferred transaction was supported at a commit 00a7bb81c20f ("ALSA:
-firewire-lib: Add support for deferred transaction") while 'deferrable'
-flag can be uninitialized for non-control/notify AV/C transactions.
-UBSAN reports it:
+These two architectures implement 8-byte get_user() through
+a memcpy() into a four-byte variable, which won't fit.
 
-kernel: ================================================================================
-kernel: UBSAN: invalid-load in /build/linux-aa0B4d/linux-5.15.0/sound/firewire/fcp.c:363:9
-kernel: load of value 158 is not a valid value for type '_Bool'
-kernel: CPU: 3 PID: 182227 Comm: irq/35-firewire Tainted: P           OE     5.15.0-18-generic #18-Ubuntu
-kernel: Hardware name: Gigabyte Technology Co., Ltd. AX370-Gaming 5/AX370-Gaming 5, BIOS F42b 08/01/2019
-kernel: Call Trace:
-kernel:  <IRQ>
-kernel:  show_stack+0x52/0x58
-kernel:  dump_stack_lvl+0x4a/0x5f
-kernel:  dump_stack+0x10/0x12
-kernel:  ubsan_epilogue+0x9/0x45
-kernel:  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-kernel:  fcp_response.part.0.cold+0x1a/0x2b [snd_firewire_lib]
-kernel:  fcp_response+0x28/0x30 [snd_firewire_lib]
-kernel:  fw_core_handle_request+0x230/0x3d0 [firewire_core]
-kernel:  handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? transmit_complete_callback+0x9f/0x120 [firewire_core]
-kernel:  ar_context_tasklet+0xa8/0x2e0 [firewire_ohci]
-kernel:  tasklet_action_common.constprop.0+0xea/0xf0
-kernel:  tasklet_action+0x22/0x30
-kernel:  __do_softirq+0xd9/0x2e3
-kernel:  ? irq_finalize_oneshot.part.0+0xf0/0xf0
-kernel:  do_softirq+0x75/0xa0
-kernel:  </IRQ>
-kernel:  <TASK>
-kernel:  __local_bh_enable_ip+0x50/0x60
-kernel:  irq_forced_thread_fn+0x7e/0x90
-kernel:  irq_thread+0xba/0x190
-kernel:  ? irq_thread_fn+0x60/0x60
-kernel:  kthread+0x11e/0x140
-kernel:  ? irq_thread_check_affinity+0xf0/0xf0
-kernel:  ? set_kthread_struct+0x50/0x50
-kernel:  ret_from_fork+0x22/0x30
-kernel:  </TASK>
-kernel: ================================================================================
+Use a temporary 64-bit variable instead here, and use a double
+cast the way that risc-v and openrisc do to avoid compile-time
+warnings.
 
-This commit fixes the bug. The bug has no disadvantage for the non-
-control/notify AV/C transactions since the flag has an effect for AV/C
-response with INTERIM (0x0f) status which is not used for the transactions
-in AV/C general specification.
-
-Fixes: 00a7bb81c20f ("ALSA: firewire-lib: Add support for deferred transaction")
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220304125647.78430-1-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 6a090e97972d ("arch/microblaze: support get_user() of size 8 bytes")
+Fixes: 5ccc6af5e88e ("nios2: Memory management")
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/firewire/fcp.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/microblaze/include/asm/uaccess.h | 18 +++++++++---------
+ arch/nios2/include/asm/uaccess.h      | 26 ++++++++++++++++----------
+ 2 files changed, 25 insertions(+), 19 deletions(-)
 
-diff --git a/sound/firewire/fcp.c b/sound/firewire/fcp.c
-index bbfbebf4affb..df44dd5dc4b2 100644
---- a/sound/firewire/fcp.c
-+++ b/sound/firewire/fcp.c
-@@ -240,9 +240,7 @@ int fcp_avc_transaction(struct fw_unit *unit,
- 	t.response_match_bytes = response_match_bytes;
- 	t.state = STATE_PENDING;
- 	init_waitqueue_head(&t.wait);
--
--	if (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03)
--		t.deferrable = true;
-+	t.deferrable = (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03);
+diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
+index a1f206b90753..c8cd66c8d257 100644
+--- a/arch/microblaze/include/asm/uaccess.h
++++ b/arch/microblaze/include/asm/uaccess.h
+@@ -171,27 +171,27 @@ extern long __user_bad(void);
  
- 	spin_lock_irq(&transactions_lock);
- 	list_add_tail(&t.list, &transactions);
+ #define __get_user(x, ptr)						\
+ ({									\
+-	unsigned long __gu_val = 0;					\
+ 	long __gu_err;							\
+ 	switch (sizeof(*(ptr))) {					\
+ 	case 1:								\
+-		__get_user_asm("lbu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lbu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 2:								\
+-		__get_user_asm("lhu", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lhu", (ptr), x, __gu_err);		\
+ 		break;							\
+ 	case 4:								\
+-		__get_user_asm("lw", (ptr), __gu_val, __gu_err);	\
++		__get_user_asm("lw", (ptr), x, __gu_err);		\
+ 		break;							\
+-	case 8:								\
+-		__gu_err = __copy_from_user(&__gu_val, ptr, 8);		\
+-		if (__gu_err)						\
+-			__gu_err = -EFAULT;				\
++	case 8: {							\
++		__u64 __x = 0;						\
++		__gu_err = raw_copy_from_user(&__x, ptr, 8) ?		\
++							-EFAULT : 0;	\
++		(x) = (typeof(x))(typeof((x) - (x)))__x;		\
+ 		break;							\
++	}								\
+ 	default:							\
+ 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
+ 	}								\
+-	x = (__force __typeof__(*(ptr))) __gu_val;			\
+ 	__gu_err;							\
+ })
+ 
+diff --git a/arch/nios2/include/asm/uaccess.h b/arch/nios2/include/asm/uaccess.h
+index e83f831a76f9..6be5e913c42e 100644
+--- a/arch/nios2/include/asm/uaccess.h
++++ b/arch/nios2/include/asm/uaccess.h
+@@ -89,6 +89,7 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ /* Optimized macros */
+ #define __get_user_asm(val, insn, addr, err)				\
+ {									\
++	unsigned long __gu_val;						\
+ 	__asm__ __volatile__(						\
+ 	"       movi    %0, %3\n"					\
+ 	"1:   " insn " %1, 0(%2)\n"					\
+@@ -97,14 +98,20 @@ extern __must_check long strnlen_user(const char __user *s, long n);
+ 	"       .section __ex_table,\"a\"\n"				\
+ 	"       .word 1b, 2b\n"						\
+ 	"       .previous"						\
+-	: "=&r" (err), "=r" (val)					\
++	: "=&r" (err), "=r" (__gu_val)					\
+ 	: "r" (addr), "i" (-EFAULT));					\
++	val = (__force __typeof__(*(addr)))__gu_val;			\
+ }
+ 
+-#define __get_user_unknown(val, size, ptr, err) do {			\
++extern void __get_user_unknown(void);
++
++#define __get_user_8(val, ptr, err) do {				\
++	u64 __val = 0;							\
+ 	err = 0;							\
+-	if (__copy_from_user(&(val), ptr, size)) {			\
++	if (raw_copy_from_user(&(__val), ptr, sizeof(val))) {		\
+ 		err = -EFAULT;						\
++	} else {							\
++		val = (typeof(val))(typeof((val) - (val)))__val;	\
+ 	}								\
+ 	} while (0)
+ 
+@@ -120,8 +127,11 @@ do {									\
+ 	case 4:								\
+ 		__get_user_asm(val, "ldw", ptr, err);			\
+ 		break;							\
++	case 8:								\
++		__get_user_8(val, ptr, err);				\
++		break;							\
+ 	default:							\
+-		__get_user_unknown(val, size, ptr, err);		\
++		__get_user_unknown();					\
+ 		break;							\
+ 	}								\
+ } while (0)
+@@ -130,9 +140,7 @@ do {									\
+ 	({								\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+-	__get_user_common(__gu_val, sizeof(*(ptr)), __gu_ptr, __gu_err);\
+-	(x) = (__force __typeof__(x))__gu_val;				\
++	__get_user_common(x, sizeof(*(ptr)), __gu_ptr, __gu_err);	\
+ 	__gu_err;							\
+ 	})
+ 
+@@ -140,11 +148,9 @@ do {									\
+ ({									\
+ 	long __gu_err = -EFAULT;					\
+ 	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+-	unsigned long __gu_val = 0;					\
+ 	if (access_ok( __gu_ptr, sizeof(*__gu_ptr)))	\
+-		__get_user_common(__gu_val, sizeof(*__gu_ptr),		\
++		__get_user_common(x, sizeof(*__gu_ptr),			\
+ 			__gu_ptr, __gu_err);				\
+-	(x) = (__force __typeof__(x))__gu_val;				\
+ 	__gu_err;							\
+ })
+ 
 -- 
 2.34.1
 
