@@ -2,90 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A53CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA964C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238867AbiDNQzU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
+        id S240046AbiDNQzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240609AbiDNQwT (ORCPT
+        with ESMTP id S241993AbiDNQys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:52:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A67B137F48
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:21:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E318A62050
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:21:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA412C385A5;
-        Thu, 14 Apr 2022 16:21:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649953285;
-        bh=VfHrJD3Nz0ZjdlZiEWgIt64kysymj8lJEi2ZpJKeQCQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zIGcEsJHdFirNEXRfXkkgsn8xZbYHTC80OtiTRTWC8b8h9fB5udNZAqlHRkYFfgTm
-         9rPCM0hVyJyhyJNlreNvcHGTH20eybGzQ2EUzNN9I7efMngHmJDDnWIPmg+tCQuW/B
-         6LFZ5DdXC9+hg30esoB+KTtDiS0X6r4g/2MQSvi8=
-Date:   Thu, 14 Apr 2022 18:21:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Adrien Thierry <athierry@redhat.com>
-Cc:     Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Thu, 14 Apr 2022 12:54:48 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19461DCAAA;
+        Thu, 14 Apr 2022 09:23:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=wc0zecBG9PRD3cpgt/xufo/bM6yKJdx0qFwKfforMTI=; b=v+po431oSVmhIPMHliuQ5LKFxp
+        RNgGgiGdeoNsm2jcbw5ecs6cEh4G8JXDMzu/LX4V6XF8hcl6iddFIGYPhBY6WVdzHBWswq1x6s2l4
+        oY4jkNMljzszrvkALkBiPzD+mf4CyQNA6NQ/5i/YmzoQDGQ01+vhcdIP32GHnrXS8Ecseb3c5LI24
+        ZDzVJGs3r1HFLUhQ87odSw4fko9zJLSfNtNTpwD5kR8lpuzJCKAiWaNvxkUEcp2JPWr+yZ7Qb7QJc
+        XIGyVCzX7xEuyX3hjfjB+EFpxXwt9UdRYM42ws/yiWHCMIPniDuxxyb7cMmmXbfOvplg9g0gisXEL
+        KAJTSZnQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58264)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nf2G5-0004lu-6D; Thu, 14 Apr 2022 17:23:48 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nf2G2-0004RX-HE; Thu, 14 Apr 2022 17:23:46 +0100
+Date:   Thu, 14 Apr 2022 17:23:46 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Maxime Ripard <mripard@kernel.org>,
-        Takashi Iwai <tiwai@suse.com>, linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging: bcm2835-audio: fully describe config symbol
-Message-ID: <YlhKAoWCdAKMqIht@kroah.com>
-References: <20220414152340.68932-1-athierry@redhat.com>
- <20220414152340.68932-2-athierry@redhat.com>
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 02/12] net: dsa: add Renesas RZ/N1 switch tag
+ driver
+Message-ID: <YlhKkriHziPsWBCV@shell.armlinux.org.uk>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+ <20220414122250.158113-3-clement.leger@bootlin.com>
+ <20220414142242.vsvv3vxexc7i3ukm@skbuf>
+ <20220414163546.3f6c5157@fixe.home>
+ <20220414151146.a2fncklswo6utiyd@skbuf>
+ <20220414181815.5037651e@fixe.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220414152340.68932-2-athierry@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220414181815.5037651e@fixe.home>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 11:23:39AM -0400, Adrien Thierry wrote:
-> Explain SND_BCM2835 config option in more detail, especially the
-> implications of using the bcm2835-audio driver in conjunction with vc4
-> for HDMI audio.
+On Thu, Apr 14, 2022 at 06:18:15PM +0200, Clément Léger wrote:
+> Le Thu, 14 Apr 2022 18:11:46 +0300,
+> Vladimir Oltean <olteanv@gmail.com> a écrit :
 > 
-> Reported by checkpatch:
+> > On Thu, Apr 14, 2022 at 04:35:46PM +0200, Clément Léger wrote:
+> > > > Please keep variable declarations sorted in decreasing order of line
+> > > > length (applies throughout the patch series, I won't repeat this comment).  
+> > > 
+> > > Acked, both PCS and DSA driver are ok with that rule. Missed that one
+> > > though.  
+> > 
+> > Are you sure? Because a5psw_port_stp_state_set() says otherwise.
 > 
-> WARNING: please write a help paragraph that fully describes the config
-> symbol
-> FILE: drivers/staging/vc04_services/bcm2835-audio/Kconfig:2
-> 
-> Signed-off-by: Adrien Thierry <athierry@redhat.com>
-> ---
->  drivers/staging/vc04_services/bcm2835-audio/Kconfig | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/vc04_services/bcm2835-audio/Kconfig b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
-> index d32ea348e846..7cd0b3c0cae4 100644
-> --- a/drivers/staging/vc04_services/bcm2835-audio/Kconfig
-> +++ b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
-> @@ -5,5 +5,8 @@ config SND_BCM2835
->  	select SND_PCM
->  	select BCM2835_VCHIQ
->  	help
-> -	  Say Y or M if you want to support BCM2835 built in audio
-> +	  Say Y or M if you want to support BCM2835 built in audio.
-> +	  This driver handles both 3.5mm and HDMI audio. However, please
-> +	  note that when HDMI audio is enabled with this driver, the vc4
-> +	  driver cannot be used simultaneously, otherwise HDMI will break.
+> Weeeeell, ok let's say I missed these two. Would be useful to have such
+> checks in checkpatch.pl.
 
-"will break"?  What exactly do you mean by this?  What will fail?  How
-will it fail?  Why does this matter in a Kconfig help text?
+Note that it's a local networking coding-style issue, rather than being
+kernel-wide.
 
-thanks,
-
-greg k-h
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
