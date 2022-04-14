@@ -2,109 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A69AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344033AbiDNRyg (ORCPT
+        id S1344051AbiDNRzK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47462 "EHLO
+        Thu, 14 Apr 2022 13:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344090AbiDNRyW (ORCPT
+        with ESMTP id S242032AbiDNRzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:54:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2313FEACAD;
-        Thu, 14 Apr 2022 10:51:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEBD060C8A;
-        Thu, 14 Apr 2022 17:51:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21A70C385A5;
-        Thu, 14 Apr 2022 17:51:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649958712;
-        bh=/30L5l2odtYOi3S0HqVqkjz/ODW+LxlgQAuoeJjHwE0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FcL6I9CukDB32MSfHaI30C4KsHDiTbuDTLiwJ8MtFunGgLt2Xn8ua3g0SY/M0FBLq
-         M4GvWbu91Rj5P0lf22nFAEoOZ6rIAeSmtK8Z98XKuROOQz41OYZXEvxuE0+Shk4gxY
-         ZoYz9Ie+O6t45i/Ix4IqattyBK/RZ22XA4xs5/XT6Tu4lDdOuSmmAq6FIdG5L/wLOr
-         USLAuWvyIwDtIXLxsZibwTUfAYEMpVrQiLOyoGSPhCQ6M9wsfL0mEtmw3zJDsHje7O
-         JODjxal5BqD4Cyfbz56O8rmjdMn7uZY39NCknncJBB9ZhVU61ISaI0DO68wzICrp8q
-         aJlZnmWLh1gTw==
-Date:   Thu, 14 Apr 2022 18:51:46 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 4/4] regulator: sm5703-regulator: Add regulators support
- for SM5703 MFD
-Message-ID: <YlhfMkBqst87qvtD@sirena.org.uk>
-References: <20220414170616.23319-1-markuss.broks@gmail.com>
- <20220414170616.23319-5-markuss.broks@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Z0LrZJXyjIRCPfH2"
-Content-Disposition: inline
-In-Reply-To: <20220414170616.23319-5-markuss.broks@gmail.com>
-X-Cookie: Available while quantities last.
+        Thu, 14 Apr 2022 13:55:06 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0C6EA75C;
+        Thu, 14 Apr 2022 10:52:39 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1649958757; bh=6C6PdBrdjpVD+lDLvCPNyZNWgXILs8pi8aPP0Tgp7b4=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=fK6IYtcazQmhRt8qRgxHB5m3SJz42BhC54qK2Y6vVu0LIsJH5deQAcZlPl45WMt+X
+         Is1cuRiFSq/6NpORZ26A5ao+ymQfWM6WXdUSxz4opAgk3skNIzNcf/eFbSeTBDIOz3
+         hD+abQvC3nKril/fb+Y0rUta35cg2lhEfq1zAZxs=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH v2 1/2] dt-bindings: dma: Add Apple ADMAC
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <85DF53F6-74BA-4D8D-8E8E-DFD67B24DA19@cutebit.org>
+Date:   Thu, 14 Apr 2022 19:52:36 +0200
+Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>, Vinod Koul <vkoul@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A9849767-1A50-4C57-AE40-3DD7FB475130@cutebit.org>
+References: <20220411222204.96860-1-povik+lin@cutebit.org>
+ <20220411222204.96860-2-povik+lin@cutebit.org>
+ <YlhBLJQVYvTGlx4o@robh.at.kernel.org>
+ <85DF53F6-74BA-4D8D-8E8E-DFD67B24DA19@cutebit.org>
+To:     Rob Herring <robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---Z0LrZJXyjIRCPfH2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On 14. 4. 2022, at 19:23, Martin Povi=C5=A1er <povik@cutebit.org> =
+wrote:
+>=20
+>>=20
+>> On 14. 4. 2022, at 17:43, Rob Herring <robh@kernel.org> wrote:
+>>=20
+>> On Tue, Apr 12, 2022 at 12:22:03AM +0200, Martin Povi=C5=A1er wrote:
+>>> Apple's Audio DMA Controller (ADMAC) is used to fetch and store =
+audio
+>>> samples on SoCs from the "Apple Silicon" family.
+>>>=20
+>>> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
+>>> ---
+>>>=20
+>>> After the v1 discussion, I dropped the =
+apple,internal-irq-destination
+>>> property and instead the index of the usable interrupt is now =
+signified
+>>> by prepending -1 entries to the interrupts=3D list. This works when =
+I do
+>>> it like this:
+>>>=20
+>>> interrupt-parent =3D <&aic>;
+>>> interrupts =3D <AIC_IRQ 0xffffffff 0>,
+>>> <AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
+>>=20
+>>=20
+>> BTW, just use '-1'. dtc takes negative values (and other =
+expressions).
+>=20
+> Ha! <-1> didn=E2=80=99t work for me but <(-1)> does.
+>=20
+>>=20
+>>>=20
+>>> I would find it neat to do it like this:
+>>>=20
+>>> interrupts-extended =3D <0xffffffff>,
+>>> <&aic AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
+>>>=20
+>>> but unfortunately the kernel doesn't pick up on it:
+>>>=20
+>>> [ 0.767964] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 0 not found
+>>> [ 0.773943] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 1 not found
+>>> [ 0.780154] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 2 not found
+>>> [ 0.786367] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 3 not found
+>>> [ 0.788592] apple-admac 238200000.dma-controller: error -6: no =
+usable interrupt
+>>=20
+>> We should make this case work. It is less fragile IMO as it doesn't=20=
 
-On Thu, Apr 14, 2022 at 08:06:15PM +0300, Markuss Broks wrote:
+>> depend on the provider's translation of cells.
+>=20
+> Then I may send some patch to that end.
 
-> +++ b/drivers/regulator/Makefile
-> @@ -173,5 +173,6 @@ obj-$(CONFIG_REGULATOR_WM831X) +=3D wm831x-ldo.o
->  obj-$(CONFIG_REGULATOR_WM8350) +=3D wm8350-regulator.o
->  obj-$(CONFIG_REGULATOR_WM8400) +=3D wm8400-regulator.o
->  obj-$(CONFIG_REGULATOR_WM8994) +=3D wm8994-regulator.o
-> +obj-$(CONFIG_REGULATOR_SM5703) +=3D sm5703-regulator.o
-> =20
+Turns out there=E2=80=99s no need. Passing in <0> in place of a phandle =
+reference
+looks like what we want:
+=
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/dr=
+ivers/of/base.c?h=3Dv5.18-rc2#n1334
 
-Please keep the Kconfig and Makefile sorted.
+(Confirmed by testing to do the right thing with the IRQs.)
 
-> +static const int sm5703_buck_voltagemap[] =3D {
-> +	1000000, 1000000, 1000000, 1000000,
-> +	1000000, 1000000, 1000000, 1000000,
-> +	1000000, 1000000, 1000000, 1100000,
-> +	1200000, 1300000, 1400000, 1500000,
-> +	1600000, 1700000, 1800000, 1900000,
-> +	2000000, 2100000, 2200000, 2300000,
-> +	2400000, 2500000, 2600000, 2700000,
-> +	2800000, 2900000, 3000000, 3000000,
-> +};
-
-Are the repeated values at the ends of the array actually valid or do
-they indicate the part being driven out of spec?  If it's out of spec
-then it's better to exclude them since otherwise we might choose one of
-those values when configuring a voltage which may not actually work as
-desired.
-
---Z0LrZJXyjIRCPfH2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJYXzIACgkQJNaLcl1U
-h9DVtwf+N9TxlnsrmD3gmtxCP88m0egnYv2wkBye2EQazhLNwpw3ir6hRAh54lG6
-ZPVc2dhUrXiqYmifTGW0F1AnVyAYXOD31TfaW8MWx+cKO8EHAZuZ/Ft6Z9zlfB/R
-polfgdIRTOJO4v8IaMpqkOONxS1LIZydCm1bYE5l62EEq274JjQATq8bdEhA948q
-ynBRZqLavYTLhXkY1mCVRcRAQq8XbINOfJZKFq8yMabTNVZcsKQcyv0WiIz4IUUl
-UH22eoY865JPFP1X96inbbjc/S4eyoxKCNIb6zh3on2nask54GTsCtinjK5RyjZF
-DfhZ7G4GwuUo3vgSAnWJ3uXIHqXXkg==
-=Q53Z
------END PGP SIGNATURE-----
-
---Z0LrZJXyjIRCPfH2--
+Martin=
