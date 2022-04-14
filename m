@@ -2,90 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2595C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F10C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243501AbiDNQAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
+        id S1350229AbiDNQBG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359472AbiDNPpZ (ORCPT
+        with ESMTP id S1359760AbiDNPrR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:45:25 -0400
+        Thu, 14 Apr 2022 11:47:17 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF223F3A5B
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:32:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A745F61D1;
+        Thu, 14 Apr 2022 08:32:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Yidt7R5bheIfbYpn867nE8JQLZqnVpDSVLNv8ery+dk=; b=FAnI244LULICsDqLqtDUx9+abr
-        dmQY4PY/y5ohjZDKBQQ/9ng7A+uDXKdNQYVYgNfSWPNBOefKpMm4rOLkDAtQjRCszNW8ErMWtMKBP
-        Z+Q6cAmqL4GvFjSMUKt5RYbo7B2xwEFHZ6rFDHQ511QF6XVddbJb0lXitM9zDWGHSHDrjeJroHeFk
-        SuIXr9JnXZkRorlXP7z/RLhOtqsputjnaXSsTKFhVUfvAvSHkKtp0i0Wh6K3Tn3PhOvuFW/4GK82s
-        aQnNfJkoMGepsrQ6mDNtqo8PfAfVuI4tNkE+QvHY3nPdSAARUnvYk0mu/wpl9jKDJtd/O4dgGG7LC
-        uERcRV6Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=6sMmhzgZCrm6waVxP9z2dHOgrG0ZsUX1GrMhTQVx3XE=; b=htOTffnGnm8zSygfrWwW7s68j+
+        o/8A7s8CcStsUleAWtAwwdPLZY/dteSvmaaQX4ry8g/5oxsjKrcHjIjKJaObrZkKO0TnnAYy4SMSG
+        0LMpl7n9rrVyNcd1hjDQY2gH2tqd11Ucwh8e0jXl5zD1vfUdG0FPyAhadJkYta7tb0LVrXN7/Z8hl
+        HN5VyZ6/Xcwd/ftPW5Lm24MGgTcRIJ/z6niVxOXyErPQukcxB30fXaEIJFO3lLp8O8h4MZ3xMU1d4
+        W/P4+Fvka0a6Ih4HY/loN5mIzgyG6FyybT9Zdr/ANuW302BJ8MYsG/Q7LZsUmhNXKahgbUfaZc/8N
+        i//ObZjA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nf1Ru-00536U-Am; Thu, 14 Apr 2022 15:31:58 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D54D73002DE;
-        Thu, 14 Apr 2022 17:31:57 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B5DD62041A9A0; Thu, 14 Apr 2022 17:31:57 +0200 (CEST)
-Date:   Thu, 14 Apr 2022 17:31:57 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH 02/18] objtool: Support data symbol printing
-Message-ID: <Ylg+bewBpaqqYgeB@hirez.programming.kicks-ass.net>
-References: <cover.1649891421.git.jpoimboe@redhat.com>
- <097057f88605aa67b0e3ec573fcf394ae7ac4d6f.1649891421.git.jpoimboe@redhat.com>
- <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
- <20220414152148.cwdefx744kymqcut@treble>
+        id 1nf1ST-00536t-Fi; Thu, 14 Apr 2022 15:32:33 +0000
+Message-ID: <75a7b583-187d-569d-5ed0-2bb0e1b1ec7b@infradead.org>
+Date:   Thu, 14 Apr 2022 08:32:26 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414152148.cwdefx744kymqcut@treble>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 5.4 004/475] hv: utils: add PTP_1588_CLOCK to Kconfig to
+ fix build
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        linux-hyperv@vger.kernel.org,
+        Michael Kelley <mikelley@microsoft.com>,
+        =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>
+References: <20220414110855.141582785@linuxfoundation.org>
+ <20220414110855.274446341@linuxfoundation.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220414110855.274446341@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 08:21:48AM -0700, Josh Poimboeuf wrote:
-> On Thu, Apr 14, 2022 at 09:05:47AM +0200, Peter Zijlstra wrote:
-> > On Wed, Apr 13, 2022 at 04:19:37PM -0700, Josh Poimboeuf wrote:
-> > 
-> > > @@ -34,8 +37,8 @@ static inline char *offstr(struct section *sec, unsigned long offset)
-> > >  
-> > >  	str = malloc(strlen(name) + 20);
-> > >  
-> > > -	if (func)
-> > > -		sprintf(str, "%s()+0x%lx", name, name_off);
-> > > +	if (sym)
-> > > +		sprintf(str, "%s%s+0x%lx", name, is_text ? "()" : "", name_off);
-> > >  	else
-> > >  		sprintf(str, "%s+0x%lx", name, name_off);
-> > 
-> > So I like the patch, except that "()" thing is something where we differ
-> > from the kernel's %ps format and I've cursed it a number of times
-> > because I then have to manually edit (iow remove) things when pasting it
-> > in various scripts etc..
+
+
+On 4/14/22 06:06, Greg Kroah-Hartman wrote:
+> From: Randy Dunlap <rdunlap@infradead.org>
 > 
-> Oh, hm, that's true.  I can remove them if you prefer.
-
-Yeah, I think taking it out is best, easier if we're consistent with %ps
-for everybody.
-
-> > That said, it totally makes sense to differentiate between a text and
-> > data symbol this way :/
+> commit 1dc2f2b81a6a9895da59f3915760f6c0c3074492 upstream.
 > 
-> Yes, but if we're keeping the "Add sec+offset to warnings" patch then
-> that distinction is already (kind of) being made by showing the data
-> section name.  And the data symbol warnings should be rare.
+> The hyperv utilities use PTP clock interfaces and should depend a
+> a kconfig symbol such that they will be built as a loadable module or
+> builtin so that linker errors do not happen.
+> 
+> Prevents these build errors:
+> 
+> ld: drivers/hv/hv_util.o: in function `hv_timesync_deinit':
+> hv_util.c:(.text+0x37d): undefined reference to `ptp_clock_unregister'
+> ld: drivers/hv/hv_util.o: in function `hv_timesync_init':
+> hv_util.c:(.text+0x738): undefined reference to `ptp_clock_register'
+> 
+> Fixes: 3716a49a81ba ("hv_utils: implement Hyper-V PTP source")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: "K. Y. Srinivasan" <kys@microsoft.com>
+> Cc: Haiyang Zhang <haiyangz@microsoft.com>
+> Cc: Stephen Hemminger <sthemmin@microsoft.com>
+> Cc: Wei Liu <wei.liu@kernel.org>
+> Cc: Dexuan Cui <decui@microsoft.com>
+> Cc: linux-hyperv@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+> Link: https://lore.kernel.org/r/20211126023316.25184-1-rdunlap@infradead.org
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> Cc: Petr Štetiar <ynezz@true.cz>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/hv/Kconfig |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> --- a/drivers/hv/Kconfig
+> +++ b/drivers/hv/Kconfig
+> @@ -17,6 +17,7 @@ config HYPERV_TIMER
+>  config HYPERV_UTILS
+>  	tristate "Microsoft Hyper-V Utilities driver"
+>  	depends on HYPERV && CONNECTOR && NLS
+> +	depends on PTP_1588_CLOCK_OPTIONAL
 
-Yes, I'd not seen that yet, what's that for? The Changelog alludes to
-something, but I don't think it actually does get used later.
+AFAICT PTP_1588_CLOCK_OPTIONAL does not exist in 5.4 kernels,
+so this should not be used there.
+
+>  	help
+>  	  Select this option to enable the Hyper-V Utilities.
+>  
+> 
+> 
+
+-- 
+~Randy
