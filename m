@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 555A5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6039C4167E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346623AbiDNPDM (ORCPT
+        id S1349149AbiDNPDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
+        Thu, 14 Apr 2022 11:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346444AbiDNN5H (ORCPT
+        with ESMTP id S1346579AbiDNN5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA5F7E5A5;
-        Thu, 14 Apr 2022 06:46:44 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:42 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827C9A0BE4;
+        Thu, 14 Apr 2022 06:47:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 774BF61DA7;
-        Thu, 14 Apr 2022 13:46:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8292DC385A5;
-        Thu, 14 Apr 2022 13:46:43 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E654CCE296C;
+        Thu, 14 Apr 2022 13:47:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07B7CC385A5;
+        Thu, 14 Apr 2022 13:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944003;
-        bh=58RmXMaSK5PuvhFzkytvjVsSYIvGzU7PtUDOIzpbiJs=;
+        s=korg; t=1649944040;
+        bh=MUCKA24Zs1D0m4ra/Njaa4sqlCCsLYxZeE9nhFH/L9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hcnCzoEr4CPTyTaFdzuTwH23G0jc9s937/+CaH5DhEq0JsY83pzEUFYLRUkTy6tH5
-         hHtet3sJKQeJe5duMdHlXo8B/eDBCWazWtaTMnJHvo3IyvMP0BhcMBaMUHb3ZCJ+Mk
-         nfJ+Qe2ZA0wTJfmRpb3IVa7d3LDoLuyIP9z98H4I=
+        b=ielZWYGzSYuKwUrTJhk1R1FLsHcow7ENHmVLJdD1CgDfsmAvdt+w5SIq7Br5tOGM8
+         5126aFje+nq83Oe15vifVgzqbOBhQ0adAw0aAlH4lK36NedeftQh/OJhHmvvXNjc8r
+         wfNtVeZLBC+moAAwUNbQ4a5NpMxffZk1rYu+mufE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.4 360/475] ubi: fastmap: Return error code if memory allocation fails in add_aeb()
-Date:   Thu, 14 Apr 2022 15:12:25 +0200
-Message-Id: <20220414110905.157178761@linuxfoundation.org>
+        stable@vger.kernel.org, Lotus Fenn <lotusf@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        Like Xu <likexu@tencent.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 372/475] KVM: x86/svm: Clear reserved bits written to PerfEvtSeln MSRs
+Date:   Thu, 14 Apr 2022 15:12:37 +0200
+Message-Id: <20220414110905.487395839@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,86 +53,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Jim Mattson <jmattson@google.com>
 
-commit c3c07fc25f37c157fde041b3a0c3dfcb1590cbce upstream.
+[ Upstream commit 9b026073db2f1ad0e4d8b61c83316c8497981037 ]
 
-Abort fastmap scanning and return error code if memory allocation fails
-in add_aeb(). Otherwise ubi will get wrong peb statistics information
-after scanning.
+AMD EPYC CPUs never raise a #GP for a WRMSR to a PerfEvtSeln MSR. Some
+reserved bits are cleared, and some are not. Specifically, on
+Zen3/Milan, bits 19 and 42 are not cleared.
 
-Fixes: dbb7d2a88d2a7b ("UBI: Add fastmap core")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When emulating such a WRMSR, KVM should not synthesize a #GP,
+regardless of which bits are set. However, undocumented bits should
+not be passed through to the hardware MSR. So, rather than checking
+for reserved bits and synthesizing a #GP, just clear the reserved
+bits.
+
+This may seem pedantic, but since KVM currently does not support the
+"Host/Guest Only" bits (41:40), it is necessary to clear these bits
+rather than synthesizing #GP, because some popular guests (e.g Linux)
+will set the "Host Only" bit even on CPUs that don't support
+EFER.SVME, and they don't expect a #GP.
+
+For example,
+
+root@Ubuntu1804:~# perf stat -e r26 -a sleep 1
+
+ Performance counter stats for 'system wide':
+
+                 0      r26
+
+       1.001070977 seconds time elapsed
+
+Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379957] unchecked MSR access error: WRMSR to 0xc0010200 (tried to write 0x0000020000130026) at rIP: 0xffffffff9b276a28 (native_write_msr+0x8/0x30)
+Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379958] Call Trace:
+Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379963]  amd_pmu_disable_event+0x27/0x90
+
+Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
+Reported-by: Lotus Fenn <lotusf@google.com>
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Reviewed-by: Like Xu <likexu@tencent.com>
+Reviewed-by: David Dunn <daviddunn@google.com>
+Message-Id: <20220226234131.2167175-1-jmattson@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/ubi/fastmap.c |   28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ arch/x86/kvm/pmu_amd.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
---- a/drivers/mtd/ubi/fastmap.c
-+++ b/drivers/mtd/ubi/fastmap.c
-@@ -468,7 +468,9 @@ static int scan_pool(struct ubi_device *
- 			if (err == UBI_IO_FF_BITFLIPS)
- 				scrub = 1;
- 
--			add_aeb(ai, free, pnum, ec, scrub);
-+			ret = add_aeb(ai, free, pnum, ec, scrub);
-+			if (ret)
-+				goto out;
- 			continue;
- 		} else if (err == 0 || err == UBI_IO_BITFLIPS) {
- 			dbg_bld("Found non empty PEB:%i in pool", pnum);
-@@ -638,8 +640,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 0);
-+		ret = add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 0);
-+		if (ret)
-+			goto fail;
+diff --git a/arch/x86/kvm/pmu_amd.c b/arch/x86/kvm/pmu_amd.c
+index d9990951fd0a..6bc656abbe66 100644
+--- a/arch/x86/kvm/pmu_amd.c
++++ b/arch/x86/kvm/pmu_amd.c
+@@ -245,12 +245,10 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	/* MSR_EVNTSELn */
+ 	pmc = get_gp_pmc_amd(pmu, msr, PMU_TYPE_EVNTSEL);
+ 	if (pmc) {
+-		if (data == pmc->eventsel)
+-			return 0;
+-		if (!(data & pmu->reserved_bits)) {
++		data &= ~pmu->reserved_bits;
++		if (data != pmc->eventsel)
+ 			reprogram_gp_counter(pmc, data);
+-			return 0;
+-		}
++		return 0;
  	}
  
- 	/* read EC values from used list */
-@@ -649,8 +653,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 0);
-+		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 0);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	/* read EC values from scrub list */
-@@ -660,8 +666,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 1);
-+		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 1);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	/* read EC values from erase list */
-@@ -671,8 +679,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 1);
-+		ret = add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 1);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	ai->mean_ec = div_u64(ai->ec_sum, ai->ec_count);
+ 	return 1;
+-- 
+2.35.1
+
 
 
