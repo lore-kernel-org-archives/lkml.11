@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A02EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241753AbiDNOq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
+        id S229846AbiDNOr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345096AbiDNNpG (ORCPT
+        with ESMTP id S1345103AbiDNNpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0EB8C7EA;
-        Thu, 14 Apr 2022 06:41:47 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750E29D4C6;
+        Thu, 14 Apr 2022 06:42:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7D872CE2997;
-        Thu, 14 Apr 2022 13:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9591EC385A5;
-        Thu, 14 Apr 2022 13:41:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2664BB828F4;
+        Thu, 14 Apr 2022 13:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ACB0C385A5;
+        Thu, 14 Apr 2022 13:41:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943704;
-        bh=unB4ulgNZBhxE4EVs0x+5X4sPJKpx0fUEWJr24CUuIs=;
+        s=korg; t=1649943717;
+        bh=H3Dt4cJJwR/zpCWMq7h5pmwL4k+5EyFj/mhPC5rRNJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A97SSqglzhWpmRzI9b8OnKGh3K+ckgAMvYI1Cdc/rp6vxE48KXdPIMmqnpIcnoBiM
-         1Tb7Y4lX0dvODy5ESiI+12EIsbxz0RnVyjeXBOTR26UE8+532HNL0fOCojNmcZ6bw+
-         I+YPKqO1z+AFpXG9FWlpagTlSsjeX0WjXA/XZMZ4=
+        b=0T6GTAJn44Pb9xY9d1D/nldgd3/dzSjwhUtwuBEUqAsT830zdIOtsUutfA0Lwto3J
+         ZWO2EiMB/Q3iTmEBRSm+KMMmedyl77Jw46PyFafCXfGQK4bXgRiMuOTEnfTMklbGrx
+         nxrAIaY8wlx5m7Vn5P+g8lXO4CStxYKKgq/3pfAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 250/475] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
-Date:   Thu, 14 Apr 2022 15:10:35 +0200
-Message-Id: <20220414110902.109646695@linuxfoundation.org>
+Subject: [PATCH 5.4 255/475] tty: hvc: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:10:40 +0200
+Message-Id: <20220414110902.246799352@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,43 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
+[ Upstream commit 53819a0d97aace1425bb042829e3446952a9e8a9 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+__setup() handlers should return 1 to indicate that the boot option
+has been handled or 0 to indicate that it was not handled.
+Add a pr_warn() message if the option value is invalid and then
+always return 1.
 
-Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 86b40567b917 ("tty: replace strict_strtoul() with kstrtoul()")
+Cc: Jingoo Han <jg1.han@samsung.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Julian Wiedmann <jwi@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: linuxppc-dev@lists.ozlabs.org
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220308024228.20477-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/hvc/hvc_iucv.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-index 53f52b9a0acd..c2df70712ca2 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-@@ -1038,6 +1038,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
- 	if (node) {
- 		pctl->regmap1 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap1))
- 			return PTR_ERR(pctl->regmap1);
- 	} else if (regmap) {
-@@ -1051,6 +1052,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
- 	if (node) {
- 		pctl->regmap2 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap2))
- 			return PTR_ERR(pctl->regmap2);
- 	}
+diff --git a/drivers/tty/hvc/hvc_iucv.c b/drivers/tty/hvc/hvc_iucv.c
+index 2af1e5751bd6..796fbff623f6 100644
+--- a/drivers/tty/hvc/hvc_iucv.c
++++ b/drivers/tty/hvc/hvc_iucv.c
+@@ -1470,7 +1470,9 @@ static int __init hvc_iucv_init(void)
+  */
+ static	int __init hvc_iucv_config(char *val)
+ {
+-	 return kstrtoul(val, 10, &hvc_iucv_devices);
++	if (kstrtoul(val, 10, &hvc_iucv_devices))
++		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
++	return 1;
+ }
+ 
+ 
 -- 
 2.34.1
 
