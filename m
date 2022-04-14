@@ -2,110 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5F9C54F46
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D75F8C4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238162AbiDNQGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
+        id S239837AbiDNQG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349560AbiDNP4z (ORCPT
+        with ESMTP id S1349699AbiDNP5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:56:55 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D616100A47;
-        Thu, 14 Apr 2022 08:36:47 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B491B100007;
-        Thu, 14 Apr 2022 15:36:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649950605;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ztYFw9ifTWPMIRCBm5gIwDz/r3tBF1L5vZf09P1ty6Q=;
-        b=VvfTg0F10Po1ICzpPdgQ9YX+cnSUYpJPHhT/B+HZaTBwxxsi3I6IFKpFcS4le9E89U5yX0
-        tsMscD7QVYOmzkaFotYiRsif6VYzKOhYDgLncGfuKfFBm6gdiFnUh1bBD1Uw0AEEeCqKJs
-        MkC5WOOnEuZ9nN7UjI6IzyGODB5ZeLZxe187YWw77PtPiCAZBuXSpckhiJ8rQwTK/TO3uP
-        +ERWZQvWY2HWV2t3naLWP2+1lcqBrqJUwH7rjTNqXeNsZjjmWhGCFC7IkZLF6zrQOeoqjd
-        rZk07PHs5846fc4m3OM9uFsFZt/AZa7HvjUPQngEaWgTrbXB8GaX0pr/1E1noQ==
-Date:   Thu, 14 Apr 2022 17:36:42 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Md Sadre Alam <quic_mdalam@quicinc.com>
-Cc:     mani@kernel.org, richard@nod.at, vigneshr@ti.com,
-        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, konrad.dybcio@somainline.org,
-        quic_srichara@quicinc.com
-Subject: Re: [PATCH V2] mtd: rawnand: qcom: fix memory corruption that
- causes panic
-Message-ID: <20220414173642.56baedf5@xps13>
-In-Reply-To: <1649950217-32272-1-git-send-email-quic_mdalam@quicinc.com>
-References: <1649950217-32272-1-git-send-email-quic_mdalam@quicinc.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Thu, 14 Apr 2022 11:57:00 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BAA1117;
+        Thu, 14 Apr 2022 08:38:35 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bh17so10795042ejb.8;
+        Thu, 14 Apr 2022 08:38:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8+m5adT567zqprh7f9s0omABbCf6PKSkE6Ew93ecezw=;
+        b=Ot4sc8uBEOGt8+xaWCm0Xn/ZpKN3HmP631Z3qflhTmHESnuTckWj/XO7eE/qldpjTC
+         hJ1gabD9scQlLSsN0y3ArbrWU5ippRVsiOjcktG9Y7hUJqJMl1G4k6gRCYIoqDfZ1/qP
+         T62EU7q6UvlPtFaUqjvxU2RHjoXdexqUEYyaJIDgDBxyEJb+V5cHaf+KIP9HYuBcy6Ff
+         L9c9r4hzUvAgkp6bhD4O5sQawv/odGs4tEWj65PoPhnMW7uiG3XyKbCZMWW3hjHbC3cs
+         ObNRnD5GZmEQ81Mg59BFAUud0NVMtEVfxs+jv4s6KZJksac2/OhQFjK2wfDOQrPg7vg1
+         T4sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8+m5adT567zqprh7f9s0omABbCf6PKSkE6Ew93ecezw=;
+        b=uySmtZjnangnz9Z8eEGyAuq0PHbjlKeBFQckPjO/A95oEXC3UDBw1D6EGMCrbYHdfh
+         m11UaWUGYYYR4uY2GozilRd+wiK0oNBDFxkHF75pCFuGDkfp3Q92LIF/DMxUGwll91zF
+         rMs/kKzF5xQRKWyiaLwUIeJ6XIt7ITLl8CT3KCahd7m+ucZ80jsg0+ExA8/YbYnqlwoG
+         Um1gUwgEupNC2H/ZFhcBFSEcF8vYoc+ThtfMujLrtzJavauWqhcjkzZk17jAKUBBgtGw
+         G//p3/oexwOmwUoOUIA/6MqiASYfNYqgZgVtj+p9oKYyNU9gb4NyvDRlZ1YOXabXonPE
+         phtA==
+X-Gm-Message-State: AOAM531p7O+VHNGGfU7ODiKfTvxGt80V7FlGKLmT0sP4+4CC2sHwdviS
+        3TU0BjJSJ5K5JgA+1ZUDWsdtPolPjeAKRAzQUlI=
+X-Google-Smtp-Source: ABdhPJyexSq+meEI+mCST7Vrc1i8ZOw2okSBPE0svB7hPOBvbw6tRUtryZGGUcnCMy+Xx/I1IyUpm5OpuuQ5tiZ1uhw=
+X-Received: by 2002:a17:906:1692:b0:6e8:d245:44a9 with SMTP id
+ s18-20020a170906169200b006e8d24544a9mr2827768ejd.639.1649950713929; Thu, 14
+ Apr 2022 08:38:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220413094011.185269-1-cosmin.tanislav@analog.com>
+ <20220413094011.185269-3-cosmin.tanislav@analog.com> <CAHp75VfzX8u45J3634yN5p-QTeT7w0Bos27OxeWOsb3MQ2VRVw@mail.gmail.com>
+ <80196942-4c33-7625-3945-86ce5b7b347f@gmail.com> <CAHp75VfAjvJz2KHYfDM+-8D+hSBtdKJm521EBY3VgCfUsAgt8Q@mail.gmail.com>
+ <0823cf19-60b5-3050-0e26-04b87a7ce5c0@gmail.com>
+In-Reply-To: <0823cf19-60b5-3050-0e26-04b87a7ce5c0@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 14 Apr 2022 18:37:57 +0300
+Message-ID: <CAHp75VeYX_ZWZPEUwpfaSGUGCayCaMapS-5MHhgT1r17Fqqoeg@mail.gmail.com>
+Subject: Re: [PATCH v1 3/3] iio: adc: ad4130: add AD4130 driver
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Md,
+On Thu, Apr 14, 2022 at 5:53 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+> On 4/14/22 16:45, Andy Shevchenko wrote:
+> > On Thu, Apr 14, 2022 at 2:06 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+> >> On 4/13/22 18:41, Andy Shevchenko wrote:
+> >>> On Wed, Apr 13, 2022 at 1:41 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
 
-quic_mdalam@quicinc.com wrote on Thu, 14 Apr 2022 21:00:17 +0530:
+...
 
-> This patch fixes a memory corruption that occurred in the
-> nand_scan() path for Hynix nand device.
->=20
-> On boot, for Hynix nand device will panic at a weird place:
-> | Unable to handle kernel NULL pointer dereference at virtual
->   address 00000070
-> | [00000070] *pgd=3D00000000
-> | Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-> | Modules linked in:
-> | CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-01473-g13ae1769cfb0
->   #38
-> | Hardware name: Generic DT based system
-> | PC is at nandc_set_reg+0x8/0x1c
-> | LR is at qcom_nandc_command+0x20c/0x5d0
-> | pc : [<c088b74c>]    lr : [<c088d9c8>]    psr: 00000113
-> | sp : c14adc50  ip : c14ee208  fp : c0cc970c
-> | r10: 000000a3  r9 : 00000000  r8 : 00000040
-> | r7 : c16f6a00  r6 : 00000090  r5 : 00000004  r4 :c14ee040
-> | r3 : 00000000  r2 : 0000000b  r1 : 00000000  r0 :c14ee040
-> | Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM Segment none
-> | Control: 10c5387d  Table: 8020406a  DAC: 00000051
-> | Register r0 information: slab kmalloc-2k start c14ee000 pointer offset
->   64 size 2048
-> | Process swapper/0 (pid: 1, stack limit =3D 0x(ptrval))
-> | nandc_set_reg from qcom_nandc_command+0x20c/0x5d0
-> | qcom_nandc_command from nand_readid_op+0x198/0x1e8
-> | nand_readid_op from hynix_nand_has_valid_jedecid+0x30/0x78
-> | hynix_nand_has_valid_jedecid from hynix_nand_init+0xb8/0x454
-> | hynix_nand_init from nand_scan_with_ids+0xa30/0x14a8
-> | nand_scan_with_ids from qcom_nandc_probe+0x648/0x7b0
-> | qcom_nandc_probe from platform_probe+0x58/0xac
->=20
-> The problem is that the nand_scan()'s qcom_nand_attach_chip callback
-> is updating the nandc->max_cwperpage from 1 to 4.This causes the
-> sg_init_table of clear_bam_transaction() in the driver's
-> qcom_nandc_command() to memset much more than what was initially
-> allocated by alloc_bam_transaction().
->=20
-> This patch will update nandc->max_cwperpage 1 to 4 after nand_scan()
-> returns, and remove updating nandc->max_cwperpage from
-> qcom_nand_attach_chip call back.
+> >>>> +#define AD4130_RESET_CLK_COUNT         64
+> >>>> +#define AD4130_RESET_BUF_SIZE          (AD4130_RESET_CLK_COUNT / 8)
+> >>>
+> >>> To be more precise shouldn't the above need to have DIV_ROUND_UP() ?
+> >>
+> >> Does it look like 64 / 8 needs any rounding?
+> >
+> > Currently no, but if someone puts 63 there or 65, what would be the outcome?
+> > OTOH, you may add a static assert to guarantee that CLK_COUNT is multiple of 8.
+> >
+>
+> No one will. 64 is defined in the datasheet and will never change. I'm
+> not gonna do anything about it. Actually, I can do something about it.
+> Remove AD4130_RESET_CLK_COUNT and only define AD4130_RESET_BUF_SIZE as
+> 8.
 
-Please update also the commit log.
+It would be better, indeed. And to whom it may concern you may add a
+comment explaining how 8 is derived.
 
-Fixes: ?
-Cc: stable ?
+...
 
-> Signed-off-by: Md Sadre Alam <quic_mdalam@quicinc.com>
-> Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
-> ---
-> [V2]
+> >>>> +       if (reg >= ARRAY_SIZE(ad4130_reg_size))
+> >>>> +               return -EINVAL;
+> >>>
+> >>> When this condition is true?
+> >>
+> >> When the user tries reading a register from direct_reg_access
+> >> that hasn't had its size defined.
+> >
+> > But how is it possible? Is the reg parameter taken directly from the user?
+> >
+>
+> Users can write whatever they want to direct_reg_access. Unless I add
+> max_register to the regmap_config, the register that the user selects
+> will just be passed to our reg_read and reg_write callbacks.
+>
+> Then it will be checked against the register size table.
 
-Thanks,
-Miqu=C3=A8l
+Thanks, I got it.
+
+...
+
+> >>>> + out:
+> >>>
+> >>> out_unlock: ?
+> >>> Ditto for similar cases.
+> >>
+> >> There's a single label in the function, and there's a mutex being
+> >> taken, and, logically, the mutex must be released on the exit path.
+> >> It's clear what the label is for to me.
+> >
+> > Wasn't clear to me until I went to the end of each of them (who
+> > guarantees that's the case for all of them?).
+>
+> Let's hope other people looking at that code will be able to figure out
+> what that label does then.
+
+OK. Let the maintainer decide.
+
+...
+
+> >>>> +               *val = st->bipolar ? -(1 << (chan->scan_type.realbits - 1)) : 0;
+> >>>
+> >>> Hmm... It seems like specific way to have a sign_extended, or actually
+> >>> reduced) mask.
+> >>> Can you rewrite it with the (potential)UB-free approach?
+> >>>
+> >>> (Note, that if realbits == 32, this will have a lot of fun in
+> >>> accordance with C standard.)
+> >>
+> >> Can you elaborate on this? The purpose of this statement is to shift the
+> >> results so that, when bipolar configuration is enabled, the raw value is
+> >> offset with 1 << (realbits - 1) towards negative.
+> >>
+> >> For the 24bit chips, 0x800000 becomes 0x000000.
+> >>
+> >> Maybe you misread it as left shift on a negative number? The number
+> >> is turned negative only after the shift...
+> >
+> > 1 << 31 is UB in accordance with the C standard.
+> >
+> > And the magic above seems to me the opposite to what sign_extend()
+> > does. Maybe even providing a general function for sign_comact() or so
+> > (you name it) would be also nice to have.
+>
+> I'm not trying to comact (I guess you meant compact) the sign of any
+> value. Please try to understand what is written in there. It's not
+> magic. If the chip is 24bit, and it's set up as bipolar, the raw value
+> must be offset by -0x800000, to account for 0x800000 being the
+> zero-scale value. For 16 bits, it's 0x8000.
+
+Yes, you shift zero offset to some value. I see that in several
+drivers, so I think it would be nice to have a macro for that
+somewhere in math.h. But it can be done later on.
+
+...
+
+> >>>> +       ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
+> >>>> +                                AD4130_WATERMARK_MASK,
+> >>>> +                                FIELD_PREP(AD4130_WATERMARK_MASK,
+> >>>> +                                           ad4130_watermark_reg_val(eff)));
+> >>>
+> >>> Temporary variable for mask?
+> >>
+> >> You mean for value?
+> >
+> >        mask = AD4130_WATERMARK_MASK;
+> >
+> >        ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
+> >                                 mask, FIELD_PREP(mask,
+> > ad4130_watermark_reg_val(eff)));
+>
+> Please bother reading the macro definition next-time. The mask argument
+> to FIELD_PREP must be a compile-time constant.
+
+Yes, it needs to be u32_encode_bits(), but in any case it's up to you,
+it's not anyhow a critical change.
+
+...
+
+> >>>> +       if (ret <= 0)
+> >>>
+> >>> = 0 ?! Can you elaborate, please, this case taking into account below?
+> >>>
+> >>
+> >> I guess I just did it because voltage = 0 doesn't make sense and would
+> >> make scale be 0.0.
+> >
+> > Again, what's the meaning of having it in the conjunction with
+> > dev_err_probe() call?
+> >
+> >>>> +               return dev_err_probe(dev, ret, "Cannot use reference %u\n",
+> >>>> +                                    ref_sel);
+> >
+> > It's confusing. I believe you need two different messages if you want
+> > to handle the 0 case.
+>
+> Why would I? The chip can't possibly use regulators with a voltage of 0,
+> right? Or dummy regulators, since these return negative. I think it's
+> fine as it is.
+
+Confusing part is what dev_err_probe() prints here when ret == 0.
+
+
+--
+With Best Regards,
+Andy Shevchenko
