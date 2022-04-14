@@ -2,165 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 462E0C352A1
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C805C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359157AbiDNPmo (ORCPT
+        id S1359410AbiDNPot (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54996 "EHLO
+        Thu, 14 Apr 2022 11:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352584AbiDNPRj (ORCPT
+        with ESMTP id S1350677AbiDNPQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:17:39 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E82DAE1272;
-        Thu, 14 Apr 2022 08:02:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B5CF9139F;
-        Thu, 14 Apr 2022 08:02:01 -0700 (PDT)
-Received: from [192.168.122.164] (U203867.austin.arm.com [10.118.30.26])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 921B63F5A1;
-        Thu, 14 Apr 2022 08:02:01 -0700 (PDT)
-Message-ID: <2c2ecd15-72c7-ced9-8092-eb375a426cd8@arm.com>
-Date:   Thu, 14 Apr 2022 10:02:00 -0500
+        Thu, 14 Apr 2022 11:16:50 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F74926DF;
+        Thu, 14 Apr 2022 07:59:27 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649948365;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=taiC+lrAFS/tnkPZvEFulCZnvrAxFQiGKHGcqlbV7mc=;
+        b=iTe0QCfkyFLaBgNBvQ7IFLqt0DWAk+yGnK6NCh79E9jkR5CdV9I75IFqcsJ3OU9lpORa+V
+        OgWt/cgFUjWRlpa/kHLOHXl+lh00bXfSG8yUIDw2Gw/nvJbD9ZtgrTS8wvUC/xvYwlv4IQ
+        KZ/gH8q2pcF0FSD4H42f/4goYtQM0wOsS2x2I/xFOFiBQtESgksjmID7MlwQhQnfVfnKxh
+        d3EcXdmkaLtYkS9da2ZQXrT0wT0rnaSaHOldG3GxxdjTKYdVp4BMf1ojA2vm1lCHxgLqgf
+        8D8RI5SQuhlxzpuWGujNU/zbSJJ3gWX2du8tAAQI/0Nk9cApfWprQL0uK9g2gg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649948365;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=taiC+lrAFS/tnkPZvEFulCZnvrAxFQiGKHGcqlbV7mc=;
+        b=/scsCx2hbnK3QHNX7kt4BtQhegatXU31z8wtBg6ipfLQ6NACtD+jZVXBfO0jZbk662hDQ8
+        zBkCQ7APDWo0QLCQ==
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH v2 1/3] timekeeping: Introduce fast accessor to clock tai
+In-Reply-To: <20220414091805.89667-2-kurt@linutronix.de>
+References: <20220414091805.89667-1-kurt@linutronix.de>
+ <20220414091805.89667-2-kurt@linutronix.de>
+Date:   Thu, 14 Apr 2022 16:59:24 +0200
+Message-ID: <87czhjemnn.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 4.19 155/338] net: bcmgenet: Use stronger register
- read/writes to assure ordering
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-References: <20220414110838.883074566@linuxfoundation.org>
- <20220414110843.312864762@linuxfoundation.org>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-In-Reply-To: <20220414110843.312864762@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Apr 14 2022 at 11:18, Kurt Kanzenbach wrote:
+> Introduce fast/NMI safe accessor to clock tai for tracing. The Linux kernel
+> tracing infrastructure has support for using different clocks to generate
+> timestamps for trace events. Especially in TSN networks it's useful to have TAI
+> as trace clock, because the application scheduling is done in accordance to the
+> network time, which is based on TAI. With a tai trace_clock in place, it becomes
+> very convenient to correlate network activity with Linux kernel application
+> traces.
 
-I would kill this commit too, since the final conclusion was that 
-underlying problem was a compiler bug (which has now been fixed).
+Steven, this is available for you to pull via:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip tai-for-tracing
+
+It's a single tagged commit on top of 5.18-rc2
 
 Thanks,
 
-
-
-On 4/14/22 08:10, Greg Kroah-Hartman wrote:
-> From: Jeremy Linton <jeremy.linton@arm.com>
-> 
-> [ Upstream commit 8d3ea3d402db94b61075617e71b67459a714a502 ]
-> 
-> GCC12 appears to be much smarter about its dependency tracking and is
-> aware that the relaxed variants are just normal loads and stores and
-> this is causing problems like:
-> 
-> [  210.074549] ------------[ cut here ]------------
-> [  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
-> [  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
-> [  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
-> [  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
-> [  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
-> [  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
-> [  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
-> [  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [  210.161358] pc : dev_watchdog+0x234/0x240
-> [  210.161364] lr : dev_watchdog+0x234/0x240
-> [  210.161368] sp : ffff8000080a3a40
-> [  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
-> [  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
-> [  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
-> [  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
-> [  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
-> [  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
-> [  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
-> [  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
-> [  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
-> [  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
-> [  210.269682] Call trace:
-> [  210.272133]  dev_watchdog+0x234/0x240
-> [  210.275811]  call_timer_fn+0x3c/0x15c
-> [  210.279489]  __run_timers.part.0+0x288/0x310
-> [  210.283777]  run_timer_softirq+0x48/0x80
-> [  210.287716]  __do_softirq+0x128/0x360
-> [  210.291392]  __irq_exit_rcu+0x138/0x140
-> [  210.295243]  irq_exit_rcu+0x1c/0x30
-> [  210.298745]  el1_interrupt+0x38/0x54
-> [  210.302334]  el1h_64_irq_handler+0x18/0x24
-> [  210.306445]  el1h_64_irq+0x7c/0x80
-> [  210.309857]  arch_cpu_idle+0x18/0x2c
-> [  210.313445]  default_idle_call+0x4c/0x140
-> [  210.317470]  cpuidle_idle_call+0x14c/0x1a0
-> [  210.321584]  do_idle+0xb0/0x100
-> [  210.324737]  cpu_startup_entry+0x30/0x8c
-> [  210.328675]  secondary_start_kernel+0xe4/0x110
-> [  210.333138]  __secondary_switched+0x94/0x98
-> 
-> The assumption when these were relaxed seems to be that device memory
-> would be mapped non reordering, and that other constructs
-> (spinlocks/etc) would provide the barriers to assure that packet data
-> and in memory rings/queues were ordered with respect to device
-> register reads/writes. This itself seems a bit sketchy, but the real
-> problem with GCC12 is that it is moving the actual reads/writes around
-> at will as though they were independent operations when in truth they
-> are not, but the compiler can't know that. When looking at the
-> assembly dumps for many of these routines its possible to see very
-> clean, but not strictly in program order operations occurring as the
-> compiler would be free to do if these weren't actually register
-> reads/write operations.
-> 
-> Its possible to suppress the timeout with a liberal bit of dma_mb()'s
-> sprinkled around but the device still seems unable to reliably
-> send/receive data. A better plan is to use the safer readl/writel
-> everywhere.
-> 
-> Since this partially reverts an older commit, which notes the use of
-> the relaxed variants for performance reasons. I would suggest that
-> any performance problems with this commit are targeted at relaxing only
-> the performance critical code paths after assuring proper barriers.
-> 
-> Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
-> Reported-by: Peter Robinson <pbrobinson@gmail.com>
-> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> Acked-by: Peter Robinson <pbrobinson@gmail.com>
-> Tested-by: Peter Robinson <pbrobinson@gmail.com>
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> Link: https://lore.kernel.org/r/20220310045358.224350-1-jeremy.linton@arm.com
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index d4be107ea4cd..c78b687a1443 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -83,7 +83,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
->   	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
->   		__raw_writel(value, offset);
->   	else
-> -		writel_relaxed(value, offset);
-> +		writel(value, offset);
->   }
->   
->   static inline u32 bcmgenet_readl(void __iomem *offset)
-> @@ -91,7 +91,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
->   	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
->   		return __raw_readl(offset);
->   	else
-> -		return readl_relaxed(offset);
-> +		return readl(offset);
->   }
->   
->   static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
+        tglx
 
