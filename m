@@ -2,246 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7862FC352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCD8C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359262AbiDNPmw (ORCPT
+        id S1359198AbiDNPmt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49248 "EHLO
+        Thu, 14 Apr 2022 11:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352724AbiDNPRm (ORCPT
+        with ESMTP id S1352566AbiDNPRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:17:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33418AF1DC
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:05:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649948729;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Lm2KX6xCsFISk/1YBbLurDta6IDegO+AQCRb/5z8eAw=;
-        b=RY8UCyLYf/+ALTdlAOtoZ0Qif8gUflDU8Nvd0L7iB5PbzyFeD0bk9+p5g7/vNKGgT+Gifw
-        hPrGwAMtITvlpCRqy31kw9CWuj5epao4z6CRdNTjSvtSVTFMDp4/QcnoGxBYTBbivySCS5
-        t/AaVCzw272rg1Tu0F3TriP+z4e2JGM=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-18-VA1BYmkxPsiaNcQ2IOAFBQ-1; Thu, 14 Apr 2022 11:05:28 -0400
-X-MC-Unique: VA1BYmkxPsiaNcQ2IOAFBQ-1
-Received: by mail-il1-f198.google.com with SMTP id j16-20020a056e02219000b002cbe5b76195so1060560ila.9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:05:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Lm2KX6xCsFISk/1YBbLurDta6IDegO+AQCRb/5z8eAw=;
-        b=kMjFrEp/qNvskz3taRVns5ghqWAzX6kwnbLZT+CogO2jaYvOFHnb/OB10yG8hlxfxy
-         vm0uL1my1iliToy7BWzyjoSjr5hAJ55jNrOo6ww23gt5Us/mTjYisuZ/9Xns4ntGR0M5
-         PnEkFoadQeze0SuUuQzGJ38n+FNSBH81k40WdGLdhwbH8zN9AZ7jQbLI/yHntLBPurUh
-         3d7mBMOk5fVHAuJAQJii7DHIOE5lJACxjvp6R2FxUxyX6XJdhthKPFn4UZ6/kjrGQB/r
-         RFF9xahrAgPGT6wkw0My/RcOIE7AL2TsoY398t/Sg6C9zZNF1LVhugQgELd4FjVz7uzI
-         5VUw==
-X-Gm-Message-State: AOAM5331L3m6pij7EZBInpWGTG0+obHpbGSstI2L85YQ+q1Y66r3oHLq
-        MLvJnu9R4SdZ9k0s/WYG5zSJTdFUtef9srFlt1lG9kEQHISoAshg0L55722sv7LyRzQnCT4120q
-        8siOr0DEUWyTtWPD/7nW/jtkO
-X-Received: by 2002:a05:6638:16d2:b0:323:7285:474b with SMTP id g18-20020a05663816d200b003237285474bmr1492755jat.61.1649948726970;
-        Thu, 14 Apr 2022 08:05:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyc/BZT0Z5C+G+l+ZYXKVVuTF4wLTQtkTki4+46inVlgigZB8yoPfeQABUizixqViIdsYjoWQ==
-X-Received: by 2002:a05:6638:16d2:b0:323:7285:474b with SMTP id g18-20020a05663816d200b003237285474bmr1492738jat.61.1649948726653;
-        Thu, 14 Apr 2022 08:05:26 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id v11-20020a92d24b000000b002caacf87598sm1177280ilg.1.2022.04.14.08.05.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:05:26 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 11:05:25 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ben Gardon <bgardon@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Andrew Jones <drjones@redhat.com>
-Subject: Re: [PATCH] kvm: selftests: Fix cut-off of addr_gva2gpa lookup
-Message-ID: <Ylg4Nel3rDpHUzKT@xz-m1.local>
-References: <20220414010703.72683-1-peterx@redhat.com>
- <Ylgn/Jw+FMIFqqc0@google.com>
+        Thu, 14 Apr 2022 11:17:39 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3EFCBAB95;
+        Thu, 14 Apr 2022 08:01:31 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 408E1139F;
+        Thu, 14 Apr 2022 08:01:31 -0700 (PDT)
+Received: from [192.168.122.164] (U203867.austin.arm.com [10.118.30.26])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1F9633F5A1;
+        Thu, 14 Apr 2022 08:01:31 -0700 (PDT)
+Message-ID: <d5ad3e6f-769d-05d8-3e94-21ec8b5cb3ba@arm.com>
+Date:   Thu, 14 Apr 2022 10:01:30 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Ylgn/Jw+FMIFqqc0@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.4 222/475] net: bcmgenet: Use stronger register
+ read/writes to assure ordering
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+ <20220414110901.335632939@linuxfoundation.org>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+In-Reply-To: <20220414110901.335632939@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 01:56:12PM +0000, Sean Christopherson wrote:
-> On Wed, Apr 13, 2022, Peter Xu wrote:
-> > Our QE team reported test failure on access_tracking_perf_test:
-> > 
-> > Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-> > guest physical test memory offset: 0x3fffbffff000
-> > 
-> > Populating memory             : 0.684014577s
-> > Writing to populated memory   : 0.006230175s
-> > Reading from populated memory : 0.004557805s
-> > ==== Test Assertion Failure ====
-> >   lib/kvm_util.c:1411: false
-> >   pid=125806 tid=125809 errno=4 - Interrupted system call
-> >      1  0x0000000000402f7c: addr_gpa2hva at kvm_util.c:1411
-> >      2   (inlined by) addr_gpa2hva at kvm_util.c:1405
-> >      3  0x0000000000401f52: lookup_pfn at access_tracking_perf_test.c:98
-> >      4   (inlined by) mark_vcpu_memory_idle at access_tracking_perf_test.c:152
-> >      5   (inlined by) vcpu_thread_main at access_tracking_perf_test.c:232
-> >      6  0x00007fefe9ff81ce: ?? ??:0
-> >      7  0x00007fefe9c64d82: ?? ??:0
-> >   No vm physical memory at 0xffbffff000
-> > 
-> > And I can easily reproduce it with a Intel(R) Xeon(R) CPU E5-2630 with 46
-> > bits PA.
-> > 
-> > It turns out that the address translation for clearing idle page tracking
-> > returned wrong result, in which addr_gva2gpa()'s last step should have
-> 
-> "should have" is very misleading, that makes it sound like the address was
-> intentionally truncated.  Or did you mean "should have been treated as 64-bit
-> value"?
+Hi,
 
-No I was purely lazy yesterday as it was late, sorry.  Obviously I should
-have hold-off the patch until this morning because I do plan to look at
-this into more details.
-
-So sadly it's only gcc that's not working properly with the bitfields.. at
-least in my minimum test here.
-
----8<---
-$ cat a.c
-#include <stdio.h>
-
-struct test1 {
-    unsigned long a:24;
-    unsigned long b:40;
-};
-
-int main(void)
-{
-    struct test1 val;
-    val.b = 0x123456789a;
-    printf("0x%lx\n", val.b * 16);
-    return 0;
-}
-$ gcc -o a.gcc a.c
-$ clang -o a.clang a.c
-$ ./a.gcc
-0x23456789a0
-$ ./a.clang
-0x123456789a0
-$ objdump -d a.gcc | grep -A20 -w main
-0000000000401126 <main>:
-  401126:       55                      push   %rbp
-  401127:       48 89 e5                mov    %rsp,%rbp
-  40112a:       48 83 ec 10             sub    $0x10,%rsp
-  40112e:       48 8b 45 f8             mov    -0x8(%rbp),%rax
-  401132:       25 ff ff ff 00          and    $0xffffff,%eax
-  401137:       48 89 c2                mov    %rax,%rdx
-  40113a:       48 b8 00 00 00 9a 78    movabs $0x123456789a000000,%rax
-  401141:       56 34 12
-  401144:       48 09 d0                or     %rdx,%rax
-  401147:       48 89 45 f8             mov    %rax,-0x8(%rbp)
-  40114b:       48 8b 45 f8             mov    -0x8(%rbp),%rax
-  40114f:       48 c1 e8 18             shr    $0x18,%rax
-  401153:       48 c1 e0 04             shl    $0x4,%rax
-  401157:       48 ba ff ff ff ff ff    movabs $0xffffffffff,%rdx
-  40115e:       00 00 00
-  401161:       48 21 d0                and    %rdx,%rax     <-------------------
-  401164:       48 89 c6                mov    %rax,%rsi
-  401167:       bf 10 20 40 00          mov    $0x402010,%edi
-  40116c:       b8 00 00 00 00          mov    $0x0,%eax
-  401171:       e8 ba fe ff ff          callq  401030 <printf@plt>
-$ objdump -d a.clang | grep -A20 -w main
-0000000000401130 <main>:
-  401130:       55                      push   %rbp
-  401131:       48 89 e5                mov    %rsp,%rbp
-  401134:       48 83 ec 10             sub    $0x10,%rsp
-  401138:       c7 45 fc 00 00 00 00    movl   $0x0,-0x4(%rbp)
-  40113f:       48 8b 45 f0             mov    -0x10(%rbp),%rax
-  401143:       48 25 ff ff ff 00       and    $0xffffff,%rax
-  401149:       48 b9 00 00 00 9a 78    movabs $0x123456789a000000,%rcx
-  401150:       56 34 12 
-  401153:       48 09 c8                or     %rcx,%rax
-  401156:       48 89 45 f0             mov    %rax,-0x10(%rbp)
-  40115a:       48 8b 75 f0             mov    -0x10(%rbp),%rsi
-  40115e:       48 c1 ee 18             shr    $0x18,%rsi
-  401162:       48 c1 e6 04             shl    $0x4,%rsi
-  401166:       48 bf 10 20 40 00 00    movabs $0x402010,%rdi
-  40116d:       00 00 00 
-  401170:       b0 00                   mov    $0x0,%al
-  401172:       e8 b9 fe ff ff          callq  401030 <printf@plt>
-  401177:       31 c0                   xor    %eax,%eax
-  401179:       48 83 c4 10             add    $0x10,%rsp
-  40117d:       5d                      pop    %rbp
----8<---
-
-> 
-> > treated "pte[index[0]].pfn" to be a 32bit value.
-> 
-> It didn't get treated as a 32-bit value, it got treated as a 40-bit value, because
-> the pfn is stored as 40 bits.
-> 
-> struct pageTableEntry {
-> 	uint64_t present:1;
-> 	uint64_t writable:1;
-> 	uint64_t user:1;
-> 	uint64_t write_through:1;
-> 	uint64_t cache_disable:1;
-> 	uint64_t accessed:1;
-> 	uint64_t dirty:1;
-> 	uint64_t reserved_07:1;
-> 	uint64_t global:1;
-> 	uint64_t ignored_11_09:3;
-> 	uint64_t pfn:40;  <================
-> 	uint64_t ignored_62_52:11;
-> 	uint64_t execute_disable:1;
-> };
-> 
-> > In above case the GPA
-> > address 0x3fffbffff000 got cut-off into 0xffbffff000, then it caused
-> > further lookup failure in the gpa2hva mapping.
-> > 
-> > I didn't yet check any other test that may fail too on some hosts, but
-> > logically any test using addr_gva2gpa() could suffer.
-> > 
-> > Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2075036
-> > Signed-off-by: Peter Xu <peterx@redhat.com>
-> > ---
-> >  tools/testing/selftests/kvm/lib/x86_64/processor.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-> > index 9f000dfb5594..6c356fb4a9bf 100644
-> > --- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-> > +++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-> > @@ -587,7 +587,7 @@ vm_paddr_t addr_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva)
-> >  	if (!pte[index[0]].present)
-> >  		goto unmapped_gva;
-> >  
-> > -	return (pte[index[0]].pfn * vm->page_size) + (gva & 0xfffu);
-> > +	return ((vm_paddr_t)pte[index[0]].pfn * vm->page_size) + (gva & 0xfffu);
-> 
-> This is but one of many paths that can get burned by pfn being 40 bits.  The
-> most backport friendly fix is probably to add a pfn=>gpa helper and use that to
-> place the myriad "pfn * vm->page_size" instances.
-
-Yes, I'll respin.
-
-> 
-> For a true long term solution, my vote is to do away with the bit field struct
-> and use #define'd masks and whatnot.
-
-I agree.
+I would kill this commit since the final conclusion was that underlying 
+problem was a compiler bug (which has now been fixed).
 
 Thanks,
 
--- 
-Peter Xu
+
+
+On 4/14/22 08:10, Greg Kroah-Hartman wrote:
+> From: Jeremy Linton <jeremy.linton@arm.com>
+> 
+> [ Upstream commit 8d3ea3d402db94b61075617e71b67459a714a502 ]
+> 
+> GCC12 appears to be much smarter about its dependency tracking and is
+> aware that the relaxed variants are just normal loads and stores and
+> this is causing problems like:
+> 
+> [  210.074549] ------------[ cut here ]------------
+> [  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
+> [  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
+> [  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
+> [  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
+> [  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
+> [  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
+> [  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
+> [  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  210.161358] pc : dev_watchdog+0x234/0x240
+> [  210.161364] lr : dev_watchdog+0x234/0x240
+> [  210.161368] sp : ffff8000080a3a40
+> [  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
+> [  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
+> [  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
+> [  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
+> [  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
+> [  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
+> [  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
+> [  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
+> [  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
+> [  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
+> [  210.269682] Call trace:
+> [  210.272133]  dev_watchdog+0x234/0x240
+> [  210.275811]  call_timer_fn+0x3c/0x15c
+> [  210.279489]  __run_timers.part.0+0x288/0x310
+> [  210.283777]  run_timer_softirq+0x48/0x80
+> [  210.287716]  __do_softirq+0x128/0x360
+> [  210.291392]  __irq_exit_rcu+0x138/0x140
+> [  210.295243]  irq_exit_rcu+0x1c/0x30
+> [  210.298745]  el1_interrupt+0x38/0x54
+> [  210.302334]  el1h_64_irq_handler+0x18/0x24
+> [  210.306445]  el1h_64_irq+0x7c/0x80
+> [  210.309857]  arch_cpu_idle+0x18/0x2c
+> [  210.313445]  default_idle_call+0x4c/0x140
+> [  210.317470]  cpuidle_idle_call+0x14c/0x1a0
+> [  210.321584]  do_idle+0xb0/0x100
+> [  210.324737]  cpu_startup_entry+0x30/0x8c
+> [  210.328675]  secondary_start_kernel+0xe4/0x110
+> [  210.333138]  __secondary_switched+0x94/0x98
+> 
+> The assumption when these were relaxed seems to be that device memory
+> would be mapped non reordering, and that other constructs
+> (spinlocks/etc) would provide the barriers to assure that packet data
+> and in memory rings/queues were ordered with respect to device
+> register reads/writes. This itself seems a bit sketchy, but the real
+> problem with GCC12 is that it is moving the actual reads/writes around
+> at will as though they were independent operations when in truth they
+> are not, but the compiler can't know that. When looking at the
+> assembly dumps for many of these routines its possible to see very
+> clean, but not strictly in program order operations occurring as the
+> compiler would be free to do if these weren't actually register
+> reads/write operations.
+> 
+> Its possible to suppress the timeout with a liberal bit of dma_mb()'s
+> sprinkled around but the device still seems unable to reliably
+> send/receive data. A better plan is to use the safer readl/writel
+> everywhere.
+> 
+> Since this partially reverts an older commit, which notes the use of
+> the relaxed variants for performance reasons. I would suggest that
+> any performance problems with this commit are targeted at relaxing only
+> the performance critical code paths after assuring proper barriers.
+> 
+> Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
+> Reported-by: Peter Robinson <pbrobinson@gmail.com>
+> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+> Acked-by: Peter Robinson <pbrobinson@gmail.com>
+> Tested-by: Peter Robinson <pbrobinson@gmail.com>
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> Link: https://lore.kernel.org/r/20220310045358.224350-1-jeremy.linton@arm.com
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index 2affdddc12bf..7a8a53807909 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -80,7 +80,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+>   	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+>   		__raw_writel(value, offset);
+>   	else
+> -		writel_relaxed(value, offset);
+> +		writel(value, offset);
+>   }
+>   
+>   static inline u32 bcmgenet_readl(void __iomem *offset)
+> @@ -88,7 +88,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+>   	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+>   		return __raw_readl(offset);
+>   	else
+> -		return readl_relaxed(offset);
+> +		return readl(offset);
+>   }
+>   
+>   static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
 
