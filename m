@@ -2,91 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D57C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 738E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242971AbiDNQNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
+        id S231377AbiDNQOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343919AbiDNQII (ORCPT
+        with ESMTP id S1347634AbiDNQKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:08:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E548B1042A5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649951407;
+        Thu, 14 Apr 2022 12:10:12 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AC54B429;
+        Thu, 14 Apr 2022 08:55:19 -0700 (PDT)
+Received: from zn.tnic (p2e55d808.dip0.t-ipconnect.de [46.85.216.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 759C11EC05DE;
+        Thu, 14 Apr 2022 17:55:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649951713;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8D7+XOXU9/ThUKgFTw5tvJGCfDTFVw/+YuhuBqPpcA4=;
-        b=YqX9av/ALWv/2mnstwo44xOqyunZkJ063obFMbRc5ndNozWD9HUK/7vkhS4a2PnZv8LSWa
-        xcCV6OpBJ4LCb5nmzVJ2/CUTbcy0/v7fO8eVjGY3KgEP9+E/DpkD2buaoVhsjxnP4BPELU
-        kUann/lTNuJ+Q1YK0aFZiY1nA94j8HI=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-1wwDwwIdOseBfzROo0BcqA-1; Thu, 14 Apr 2022 11:49:58 -0400
-X-MC-Unique: 1wwDwwIdOseBfzROo0BcqA-1
-Received: by mail-qk1-f199.google.com with SMTP id h8-20020a05620a244800b00699fb28d5e4so3505507qkn.22
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:49:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8D7+XOXU9/ThUKgFTw5tvJGCfDTFVw/+YuhuBqPpcA4=;
-        b=WD0gSB3JntYyQYTA0vo5U901rAf4S72S0ZeT/uaaO9jbLquEs/P5x3bPU+k8BNBBHu
-         WTX65kUK4/qAiJc+Tp1wG76AjZDu0mbvJELoVSYZywmRKDYE9QuG0pWjOt/uBp2TByOY
-         ku96/pLsPThK8X5oDWorZn1W8fQi3MVm6FNpPn+Mlay+GiQMWTcXagxHfZGpf/j4FKIH
-         C3H9orVBJs2jp3MhPZA3Em9PJhx4KI20hpkdcTTN+Ks/vjxm4h0LQQKjaKrttCzjm9YU
-         rWrhEY0VKXk4CQTOiVjh+QAifrQLi3inT6yddVAUpDzRco/sWAHtiL0bXZB8Ehn7RfIl
-         Lm7g==
-X-Gm-Message-State: AOAM530x+3cPoCJlR8dAWGdpEdb/oYsWa/Ae3GGXVUIt4SoibcBGDXRa
-        86KYOd7e8eM3NnqQYRsjLj0InBJ0PE0M3QdDT/VvCH9ZKKVMj37YPQNpgypRKHyaeHGunhonkhL
-        +EMkgeeYXqQgGjxANetFi2f0o
-X-Received: by 2002:ac8:5994:0:b0:2e0:5d77:4b5c with SMTP id e20-20020ac85994000000b002e05d774b5cmr2267052qte.289.1649951398201;
-        Thu, 14 Apr 2022 08:49:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyurAOacsp1J5ypPcymXOPFueuel96WgSthlPnqzRpQHW2dly7609r5byiGD3Y+Jx818HiHpQ==
-X-Received: by 2002:ac8:5994:0:b0:2e0:5d77:4b5c with SMTP id e20-20020ac85994000000b002e05d774b5cmr2267030qte.289.1649951397914;
-        Thu, 14 Apr 2022 08:49:57 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id u12-20020ac858cc000000b002ef01d55d2asm1429491qta.78.2022.04.14.08.49.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:49:57 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 08:49:54 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH 14/18] objtool: Add toolchain hacks cmdline option
-Message-ID: <20220414154954.tjv5peczw3tadd27@treble>
-References: <cover.1649891421.git.jpoimboe@redhat.com>
- <e04ec8f01fcb537675d6bd94ef65103a0a749318.1649891421.git.jpoimboe@redhat.com>
- <YlfWynPt6MGR5BZP@hirez.programming.kicks-ass.net>
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=BnxseTuJTt1+13p8Bbf/z4p5KH4GXzkEM2LCA1Q+mSA=;
+        b=ixFitl7wM62yP+tsOhRPxZgD1GGIJbFmMnv4ijIg0DwOt7uNBbOiVF/p3MS/LJIVEGBucc
+        4pk4WW3iNkwnJkqFQRuoBJCBSvipRW7EeUgE0xnTA+AkwB6Djac1YLUlxLGZVj/8HRPOrC
+        lZInPgtYZWtEqj2EdCfyVGijnb0AN+U=
+Date:   Thu, 14 Apr 2022 17:55:13 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv4 3/8] efi/x86: Implement support for unaccepted memory
+Message-ID: <YlhD4fajtABnLNvw@zn.tnic>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-4-kirill.shutemov@linux.intel.com>
+ <c4b987d5-00d3-40ea-4c20-bf82b7512dec@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YlfWynPt6MGR5BZP@hirez.programming.kicks-ass.net>
+In-Reply-To: <c4b987d5-00d3-40ea-4c20-bf82b7512dec@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 10:09:46AM +0200, Peter Zijlstra wrote:
-> On Wed, Apr 13, 2022 at 04:19:49PM -0700, Josh Poimboeuf wrote:
-> > Objtool secretly does a few awful hacks to overcome toolchain
-> > limitations.  Make those hacks explicit (and optional for other arches)
-> > by associating them with a new '--hacks' cmdline option and
-> > corresponding CONFIG_HAVE_TOOLCHAIN_HACKS.
+On Fri, Apr 08, 2022 at 10:26:14AM -0700, Dave Hansen wrote:
+> > +	/*
+> > +	 * Accept small regions that might not be able to be represented
+> > +	 * in the bitmap:
+> > +	 */
+> > +	if (end - start < 2 * PMD_SIZE) {
+> > +		__accept_memory(start, end);
+> > +		return;
+> > +	}
 > 
-> Should we either clarify the specific hacks done, or split this in two
-> options?
+> This is not my first time looking at this code and I still had to think
+> about this a bit.  That's not good.  That pathological case here is
+> actually something like this:
 > 
->   --hack-jump_label
->   --hack-noinstr
+> | 4k | 2044k + 2044k | 4k |
+> ^ 0x0 	     ^ 2MB	  ^ 4MB
+> 
+> Where we have a 2MB-aligned 4k accepted area, a 4088k unaccepted area,
+> then another 4k accepted area.  That will not result in any bits being
+> set in the accepted memory bitmap because no 2MB region is fully accepted.
 
-Yeah, maybe we should split them out somehow.
+I could use that ascii art very well in a comment above it instead of
+having to paint it in my mind each time.
+
+Thx.
 
 -- 
-Josh
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
