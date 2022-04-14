@@ -2,129 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA96C4707A
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B76C3527C
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346254AbiDNOun (ORCPT
+        id S1350210AbiDNO5G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
+        Thu, 14 Apr 2022 10:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344908AbiDNNov (ORCPT
+        with ESMTP id S1345596AbiDNNxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30C956415;
-        Thu, 14 Apr 2022 06:40:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EA6A4CE29B0;
-        Thu, 14 Apr 2022 13:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F4D1C385A5;
-        Thu, 14 Apr 2022 13:40:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943637;
-        bh=sWy0e/18JWbVs46Eodi28jgo6Ubg6qIZHedHHPj0BUE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gfdqK5E3vwKk48Va2jxeGLFyQRFxgYLRRaDfeGyTLv4IeqhnQKX0YAr3uq71q2MDM
-         qDe+Wj+78oa6q7vc6Luc8x7pPldjfluP4UfrNcnuGfJn+5Ef9sP0uEaYzTuzUS5t94
-         QfIp1a4vvO++87GZpdYVvXB701P1RoSCVCaPKzHc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 228/475] pwm: lpc18xx-sct: Initialize driver data and hardware before pwmchip_add()
-Date:   Thu, 14 Apr 2022 15:10:13 +0200
-Message-Id: <20220414110901.500914263@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:53:48 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEFCAAC8A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:44:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649943896; x=1681479896;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=h/1cEA2KokmS/KpSs5jH8/70OIy1UebIn7InZNEstbU=;
+  b=ds/GWiSq2YktergqhNzQ3YS57BVqKXDBn0OB6WpC96ohx6ZTtIE7UtNe
+   whcjME8jeCirLrqWsMMFniLOSaV+8X8uXx2YBFjJV+6KPt/WLYeJFNnfF
+   Jr452wZ0rtlcoZbhN68vO+gVOSoPcXjM+dHvVdLW1okMhqTTjrfyBSUr9
+   m/gAGKkOb5pmlgc2yB8HF7W0ZgmFQi8wQ6GyuuFDSGgCnPHSQ4F6QI6NA
+   hDb3CzM1fFoGcBxAohzHvEvE9SHkLxw7F/QfQpP96PSbaMfP8i7PGlkrp
+   qJsFZ//DAv/nNH6E1ITjqtCBCthLymIrHFdUVnr3fw4Av6iEcjy+Z2AdE
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262684401"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="262684401"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:44:56 -0700
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="573801563"
+Received: from nplaweck-mobl.ger.corp.intel.com (HELO localhost) ([10.249.149.236])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:44:52 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: refactor the i915 GVT support and move to the modern mdev API v3
+In-Reply-To: <20220414134129.GC2120790@nvidia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220411141403.86980-1-hch@lst.de>
+ <82c13d8e-1cb4-2873-86e9-16fd38e15b27@intel.com>
+ <20220413154642.GA28095@lst.de> <871qy1geko.fsf@intel.com>
+ <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
+ <20220413232053.GA2120790@nvidia.com>
+ <1c3aaab9-3bd4-95d4-9f9f-4be9e10e6516@intel.com>
+ <20220414133427.GB2120790@nvidia.com>
+ <ae3bec3f-b89a-2845-a924-046874fa38c7@intel.com>
+ <20220414134129.GC2120790@nvidia.com>
+Date:   Thu, 14 Apr 2022 16:44:52 +0300
+Message-ID: <87fsmfeq3v.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+On Thu, 14 Apr 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> On Thu, Apr 14, 2022 at 01:39:11PM +0000, Wang, Zhi A wrote:
+>> This one belongs to i915, which has already been queued in drm-intel-next, but
+>> not yet reached to the top. When it is landed in -rc, I will rebase this branch
+>> on it, then we can drop this patch in this branch.
+>
+> A commit called 'split out dmc registers' with no Fixes: will be sent
+> to a rc?
 
-[ Upstream commit 0401f24cd238ae200a23a13925f98de3d2c883b8 ]
+Won't. It's in drm-intel-next (and drm-next), headed to v5.19.
 
-When a driver calls pwmchip_add() it has to be prepared to immediately
-get its callbacks called. So move allocation of driver data and hardware
-initialization before the call to pwmchip_add().
+BR,
+Jani.
 
-This fixes a potential NULL pointer exception and a race condition on
-register writes.
-
-Fixes: 841e6f90bb78 ("pwm: NXP LPC18xx PWM/SCT driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pwm/pwm-lpc18xx-sct.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index 5ff11145c1a3..9b15b6a79082 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -400,12 +400,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_LIMIT,
- 			   BIT(lpc18xx_pwm->period_event));
- 
--	ret = pwmchip_add(&lpc18xx_pwm->chip);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
--		goto disable_pwmclk;
--	}
--
- 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
- 		struct lpc18xx_pwm_data *data;
- 
-@@ -415,14 +409,12 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 				    GFP_KERNEL);
- 		if (!data) {
- 			ret = -ENOMEM;
--			goto remove_pwmchip;
-+			goto disable_pwmclk;
- 		}
- 
- 		pwm_set_chip_data(pwm, data);
- 	}
- 
--	platform_set_drvdata(pdev, lpc18xx_pwm);
--
- 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
- 	val &= ~LPC18XX_PWM_BIDIR;
- 	val &= ~LPC18XX_PWM_CTRL_HALT;
-@@ -430,10 +422,16 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	val |= LPC18XX_PWM_PRE(0);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
- 
-+	ret = pwmchip_add(&lpc18xx_pwm->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
-+		goto disable_pwmclk;
-+	}
-+
-+	platform_set_drvdata(pdev, lpc18xx_pwm);
-+
- 	return 0;
- 
--remove_pwmchip:
--	pwmchip_remove(&lpc18xx_pwm->chip);
- disable_pwmclk:
- 	clk_disable_unprepare(lpc18xx_pwm->pwm_clk);
- 	return ret;
 -- 
-2.34.1
-
-
-
+Jani Nikula, Intel Open Source Graphics Center
