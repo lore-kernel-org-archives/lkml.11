@@ -2,153 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA4DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0A1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241502AbiDNJyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
+        id S241999AbiDNJ5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiDNJx6 (ORCPT
+        with ESMTP id S233679AbiDNJ45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:53:58 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B486543C
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:51:34 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 523652223A;
-        Thu, 14 Apr 2022 11:51:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649929892;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sQczWkxt6C6RQJavgWeWLcLLt74X0PEIwqF89ebEzJg=;
-        b=FsxB4Zeo6D5nOScWxByQkHw02uWV8Xov6sq0MSrpfbqyePoLkibaq/yiNGHOOuZx1wegp9
-        1S09GJR9ICXx5Ee0S0pBKm28uT3c7qC9YS72xhpJ9qWkOsdRVaYAY4GAuUijDdabfDMLzN
-        4xpYMjaMjWDTeL5BOCBaPPRiKFPGzS0=
+        Thu, 14 Apr 2022 05:56:57 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F86CEA;
+        Thu, 14 Apr 2022 02:54:30 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KfF9Z22C9zFpvV;
+        Thu, 14 Apr 2022 17:52:02 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Apr 2022 17:54:28 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Apr 2022 17:54:26 +0800
+From:   Wupeng Ma <mawupeng1@huawei.com>
+To:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <corbet@lwn.net>
+CC:     <ardb@kernel.org>, <tglx@linutronix.de>, <mingo@redhat.com>,
+        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zyccr.com>, <dvhart@infradead.org>, <andy@infradead.org>,
+        <rppt@kernel.org>, <paulmck@kernel.org>, <peterz@infradead.org>,
+        <jroedel@suse.de>, <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
+        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
+        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
+        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
+        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
+        <wangkefeng.wang@huawei.com>, <mawupeng1@huawei.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>
+Subject: [PATCH v2 0/9] introduce mirrored memory support for arm64
+Date:   Thu, 14 Apr 2022 18:13:05 +0800
+Message-ID: <20220414101314.1250667-1-mawupeng1@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Thu, 14 Apr 2022 11:51:32 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor.Ambarus@microchip.com
-Cc:     p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Nicolas.Ferre@microchip.com
-Subject: Re: [PATCH v3 1/3] mtd: spi-nor: Parse BFPT to determine the 4-Byte
- Address Mode methods
-In-Reply-To: <78aa1754-2f04-9f0b-72ef-f06535a413b0@microchip.com>
-References: <20220411125346.118274-1-tudor.ambarus@microchip.com>
- <20220411125346.118274-2-tudor.ambarus@microchip.com>
- <63b485a1e48d3116f8f49cc427049f81@walle.cc>
- <78aa1754-2f04-9f0b-72ef-f06535a413b0@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <9867708d5625e5bf8f5f50c72385efb6@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>> diff --git a/drivers/mtd/spi-nor/sfdp.c b/drivers/mtd/spi-nor/sfdp.c
->>> index a5211543d30d..2e40eba3744d 100644
->>> --- a/drivers/mtd/spi-nor/sfdp.c
->>> +++ b/drivers/mtd/spi-nor/sfdp.c
->>> @@ -401,6 +401,93 @@ static void
->>> spi_nor_regions_sort_erase_types(struct spi_nor_erase_map *map)
->>>       }
->>>  }
->>> 
->>> +/**
->>> + * spansion_set_4byte_addr_mode() - Set 4-byte address mode for
->>> Spansion
->>> + * flashes.
->>> + * @nor:     pointer to 'struct spi_nor'.
->>> + * @enable:  true to enter the 4-byte address mode, false to exit 
->>> the
->>> 4-byte
->>> + *           address mode.
->>> + *
->>> + * Return: 0 on success, -errno otherwise.
->>> + */
->>> +int spansion_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
->> 
->> Mh, so now some callback functions are in the core like the quad 
->> enable
->> methods and some are in sfdp.c. I think there should be only the 
->> parsing
->> in sfdp.c and all the callback methods should be in core.c; as they 
->> are
->> potentially used by the vendor modules.
-> 
-> All set_4byte_addr_mode methods are defined in sfdp.c and declared in 
-> sfdp.h.
-> I kept the methods defined in sfdp.c because SFDP defines their 
-> behavior/how
-> they work. Vendors already have access to all these methods when 
-> including
-> core.h (which includes sfdp.h). No need to move them to core, as they 
-> are
-> SFDP specific.
+From: Ma Wupeng <mawupeng1@huawei.com>
 
-The same is true for the quad enable method and they reside in core.c.
-Again, I think sfdp.c should be about the parsing, not the flash 
-handling
-itself. (And sfdp.h should be the equivalent to the spec in terms of
-constants). I mean SFDP will eventually cover everything, so will you 
-move
-all methods over to sfdp.c? All these methods can be used with flashes
-without SFDP.
+Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory ranges")
+introduced mirrored memory support for x86. This support rely on UEFI to
+report mirrored memory address ranges.  See UEFI 2.5 spec pages 157-158:
 
-SFDP just collects all the different methods used by flash manufacturers
-and put them into a table. I don't see how SFDP is a spec where they 
-specify
-a paricular method and all the flash manufacturer pick that up. I think 
-it
-is the other way around, a flash manufacturer does something
-proprietary and then it eventually ends up in the SFDP spec.
+  http://www.uefi.org/sites/default/files/resources/UEFI%202_5.pdf
 
->>> @@ -606,6 +693,24 @@ static int spi_nor_parse_bfpt(struct spi_nor 
->>> *nor,
->>>               break;
->>>       }
->>> 
->>> +     switch (bfpt.dwords[BFPT_DWORD(16)] & 
->>> BFPT_DWORD16_4B_ADDR_MODE_MASK)
->>> {
->> 
->> I was wondering why this is encoded as single bits and not as an
->> enumeration. To me it looks like it is intended to support
-> 
-> because I parse 2 bits and check if both the enter and the exit methods 
-> of
-> the 4b addr mode are specified.
+Memory mirroring is a technique used to separate memory into two separate
+channels, usually on a memory device, like a server. In memory mirroring,
+one channel is copied to another to create redundancy. This method makes
+input/output (I/O) registers and memory appear with more than one address
+range because the same physical byte is accessible at more than one
+address. Using memory mirroring, higher memory reliability and a higher
+level of memory consolidation are possible.
 
-No, I'm only speaking of either the entry or the exit mask. See
-below.
+Arm64 can support this too. So mirrored memory support is added to support
+arm64.
 
->> different methods at the same time. Thus I think there might be
->> multiple bits set in each entry and exit mask at once. The spec
->> lists all the entries as x_xxx1, x_xx1x, ..
->> 
->>> +     case BFPT_DWORD16_4B_ADDR_MODE_BRWR:
->> .. then this will only match if exactly these two bits are set.
->> 
-> 
-> these 2 bits are:
-> drivers/mtd/spi-nor/sfdp.h:#define BFPT_DWORD16_4B_ADDR_MODE_BRWR
->                  \
-> drivers/mtd/spi-nor/sfdp.h-     (BFPT_DWORD16_EN4B_BRWR |
-> BFPT_DWORD16_EX4B_BRWR)
+Efi_fake_mem is used for testing mirrored features and will not be used in
+production environment. This test features can fake memory's attribute
+values.
 
-I know this are two bits, but IMHO there can be multiple bits
-set in *each* of these masks. Eg. the enter mask could be
-0b00011 which would indicate that both the first and the second
-enter method is supported.
-(I'd expect that the exit mask will then be 0b00011, too).
+The reason why efi_fake_mem support is put first is that memory's attribute
+is reported by BIOS which is hard to simulate. With this support, any arm64
+machines with efi support can easily test mirrored features.
 
--michael
+The main purpose of this patchset is to introduce mirrored support for
+arm64 and we have already fixed the problems we had which is shown in
+patch #5 to patch #7 and try to bring total isolation in patch #8 which
+will disable mirror feature if kernelcore is not specified.
+
+In order to test this support in arm64:
+- patch this patchset
+- add efi_fake_mem=8G@0:0x10000 in kernel parameter to simulate mirrored
+  memroy between phy addr 0-8G.
+- add kernelcore=mirror in kernel parameter
+- start you kernel
+
+Patch #1-#2 introduce efi_fake_mem support for arm64.
+Patch #3-#4 introduce mirrored memory support form arm64.
+Patch #5-#7 fix some bugs for arm64 if memory reliable is enabled.
+Patch #8 disable mirror feature if kernelPHYS_PFNcore is not specified.
+Patch #9 remove some redundant code in ia64 efi_init.
+
+Changelog since v1:
+- update changelog in cover letter
+- use PHYS_PFN in patch #7 
+
+Ma Wupeng (9):
+  efi: Make efi_print_memmap() public
+  arm64: efi: Add fake memory support
+  efi: Make efi_find_mirror() public
+  arm64/mirror: arm64 enabling - find mirrored memory ranges
+  mm: Ratelimited mirrored memory related warning messages
+  mm: Demote warning message in vmemmap_verify() to debug level
+  mm: Calc the right pfn if page size is not 4K
+  efi: Disable mirror feature if kernelcore is not specified
+  ia64/efi: Code simplification in efi_init
+
+ .../admin-guide/kernel-parameters.txt         |  4 +-
+ arch/arm64/kernel/setup.c                     |  3 ++
+ arch/ia64/kernel/efi.c                        | 37 +-----------------
+ arch/x86/include/asm/efi.h                    |  5 ---
+ arch/x86/platform/efi/efi.c                   | 39 -------------------
+ drivers/firmware/efi/Kconfig                  |  2 +-
+ drivers/firmware/efi/efi.c                    | 26 +++++++++++++
+ drivers/firmware/efi/memmap.c                 | 16 ++++++++
+ include/linux/efi.h                           |  4 ++
+ include/linux/mm.h                            |  2 +
+ mm/memblock.c                                 |  4 +-
+ mm/page_alloc.c                               |  4 +-
+ mm/sparse-vmemmap.c                           |  2 +-
+ 13 files changed, 60 insertions(+), 88 deletions(-)
+
+-- 
+2.18.0.huawei.25
+
