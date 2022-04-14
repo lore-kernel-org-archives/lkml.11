@@ -2,73 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A33C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86EFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242300AbiDNKeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 06:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
+        id S242307AbiDNKe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 06:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbiDNKel (ORCPT
+        with ESMTP id S242302AbiDNKev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 06:34:41 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9629859A63
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 03:32:16 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 14 Apr
- 2022 18:32:15 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 14 Apr
- 2022 18:32:14 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] Staging: rtl8192u: Fix signedness bug in ieee80211_check_auth_response()
-Date:   Thu, 14 Apr 2022 18:32:12 +0800
-Message-ID: <1649932332-13305-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 14 Apr 2022 06:34:51 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B986542D;
+        Thu, 14 Apr 2022 03:32:26 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23EAWGiU118299;
+        Thu, 14 Apr 2022 05:32:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649932336;
+        bh=ddddJ7TATIJxXslnlLmWzV1vziFazwEocG5NL9EQV8w=;
+        h=From:To:CC:Subject:Date;
+        b=u+5BGrV0RJ0I4Nq7AtT0at+I6eVFcsc2qPSfWGj3sfe/fsu0jb177oD5c2LlmMMLi
+         ys3Evv1PgJo2fmtKHyB+pbsS1s+FurjWflz/KME0bLxFLjJo0Z1Lj6jvI9n9SU5nWY
+         U6isoXamIMgGfMiVRNpNbLQqhEO+BG81lyxS230w=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23EAWGOY011608
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 14 Apr 2022 05:32:16 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 14
+ Apr 2022 05:32:16 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 14 Apr 2022 05:32:16 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23EAWC6W097041;
+        Thu, 14 Apr 2022 05:32:13 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 0/2] AM62: Add support for AM62 USB wrapper driver
+Date:   Thu, 14 Apr 2022 16:02:07 +0530
+Message-ID: <20220414103211.16202-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-function ieee80211_check_auth_response () unsigned errcode receive auth_parse()'s
-errcode -ENOMEM.
+The following series of patches add support for AM62 USB wrapper driver
+and its corresponding bindings.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+changes since v3:
+- Removed the VBUS_VALID interrupt servicing as mode valid bit
+  need not be switched based on the connect/disconnect event.
+  The mode valid bit is being set during probe and cleared
+  during remove
+- As VBUS_VALID interrupt is not being used, removed the interrupts
+  property from the bindings. As there is change in the dt-bindings
+  I did not pick the reviewed-by tags from the earlier version of
+  the series.
 
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 1a43979939a8..4d060c3ec077 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -1461,7 +1461,7 @@ void ieee80211_softmac_check_all_nets(struct ieee80211_device *ieee)
- 	spin_unlock_irqrestore(&ieee->lock, flags);
- }
- 
--static inline u16 auth_parse(struct sk_buff *skb, u8 **challenge, int *chlen)
-+static inline s16 auth_parse(struct sk_buff *skb, u8 **challenge, int *chlen)
- {
- 	struct ieee80211_authentication *a;
- 	u8 *t;
-@@ -1826,7 +1826,7 @@ static void ieee80211_check_auth_response(struct ieee80211_device *ieee,
- {
- 	/* default support N mode, disable halfNmode */
- 	bool bSupportNmode = true, bHalfSupportNmode = false;
--	u16 errcode;
-+	s16 errcode;
- 	u8 *challenge;
- 	int chlen = 0;
- 	u32 iotAction;
+changes since v2:
+- Removed the implementation of detecting the role from the wrapper
+  driver and moved the implementation to using linux,extcon-usb-gpio
+  driver for role detection.
+- Updated the binding documentation and example to reflect the same.
+
+changes since v1:
+- Fixed the error with dev_pm_ops uninitialization, in patch 2.
+  This was reported by kernel test bot
+- In patch 1, made correction in grammer of clocks property description
+  and added maxItems in the interrupts property based on comments
+  received from Roger
+- In patch 1, corrected the title, fixed the description of
+  ti,syscon-phy-pll-refclk, added pattern properties and child node
+  in the example based on the comments from Krzysztof. 
+
+Aswath Govindraju (2):
+  dt-bindings: usb: Add documentation for AM62 USB Wrapper module
+  drivers: usb: dwc3: Add AM62 USB wrapper driver
+
+ .../devicetree/bindings/usb/ti,am62-usb.yaml  | 103 ++++++
+ drivers/usb/dwc3/Kconfig                      |   9 +
+ drivers/usb/dwc3/Makefile                     |   1 +
+ drivers/usb/dwc3/dwc3-am62.c                  | 332 ++++++++++++++++++
+ 4 files changed, 445 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/usb/ti,am62-usb.yaml
+ create mode 100644 drivers/usb/dwc3/dwc3-am62.c
+
 -- 
-2.7.4
+2.17.1
 
