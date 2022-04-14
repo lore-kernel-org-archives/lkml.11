@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C09C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07535C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353037AbiDNOe6 (ORCPT
+        id S1353120AbiDNOfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
+        Thu, 14 Apr 2022 10:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343974AbiDNNjc (ORCPT
+        with ESMTP id S1344062AbiDNNjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18EB9AE41;
-        Thu, 14 Apr 2022 06:36:07 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AD518370;
+        Thu, 14 Apr 2022 06:37:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BB24B82983;
-        Thu, 14 Apr 2022 13:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C529AC385A1;
-        Thu, 14 Apr 2022 13:36:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 603DAB828F4;
+        Thu, 14 Apr 2022 13:37:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4753C385A1;
+        Thu, 14 Apr 2022 13:37:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943365;
-        bh=Jc+JzbY33FN9h8pyG2ldw03fJ9OJVncRfFwxDY8PMaw=;
+        s=korg; t=1649943426;
+        bh=JFyZZRADxfo9q+pfWdPtQ2PaP46k1OOMtNnAGLXwdyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ILmo5si+nPxm8iMToXevG9F11VBVIDYxtkgpkB48rugb2TBd3Es83UOpx1azDYrsN
-         tVCU+NTFrRnLfuIEsbJ/WM7dMYZxJ8vVX3Hq83K8JCtMbtOYB3hl+hVMVeBabvHBeJ
-         nekHRGgDL5ag+aIOFyMNStQ9Ugj66gU/+IBcvwpg=
+        b=c7cQN6ndYpPd+Ge3xlHcVBVAwr4hOxvGmX7aFgtk0f/aMEhrpBtYGC5CL8vN6nOZT
+         Yd0XG2l+zpGvR5cxj0jQRxT7PTC4BwCOZsmO5Bp8tRnZt3FjsMZEJ8anVC2EeLP8po
+         oeB1UblIN/M7uX5J0+AFpku5CB5yErh3UmRxPkGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org, Wang Wensheng <wangwensheng4@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 092/475] selftests/x86: Add validity check and allow field splitting
-Date:   Thu, 14 Apr 2022 15:07:57 +0200
-Message-Id: <20220414110857.733001879@linuxfoundation.org>
+Subject: [PATCH 5.4 151/475] ASoC: imx-es8328: Fix error return code in imx_es8328_probe()
+Date:   Thu, 14 Apr 2022 15:08:56 +0200
+Message-Id: <20220414110859.368484190@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,38 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Wang Wensheng <wangwensheng4@huawei.com>
 
-[ Upstream commit b06e15ebd5bfb670f93c7f11a29b8299c1178bc6 ]
+[ Upstream commit 3b891513f95cba3944e72c1139ea706d04f3781b ]
 
-Add check to test if CC has a string. CC can have multiple sub-strings
-like "ccache gcc". Erorr pops up if it is treated as single string and
-double quotes are used around it. This can be fixed by removing the
-quotes and not treating CC as a single string.
+Fix to return a negative error code from the error handling case instead
+of 0, as done elsewhere in this function.
 
-Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220214184109.3739179-2-usama.anjum@collabora.com
+Fixes: 7e7292dba215 ("ASoC: fsl: add imx-es8328 machine driver")
+Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
+Link: https://lore.kernel.org/r/20220310091902.129299-1-wangwensheng4@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/x86/check_cc.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/fsl/imx-es8328.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/x86/check_cc.sh b/tools/testing/selftests/x86/check_cc.sh
-index 3e2089c8cf54..8c669c0d662e 100755
---- a/tools/testing/selftests/x86/check_cc.sh
-+++ b/tools/testing/selftests/x86/check_cc.sh
-@@ -7,7 +7,7 @@ CC="$1"
- TESTPROG="$2"
- shift 2
+diff --git a/sound/soc/fsl/imx-es8328.c b/sound/soc/fsl/imx-es8328.c
+index fad1eb6253d5..9e602c345619 100644
+--- a/sound/soc/fsl/imx-es8328.c
++++ b/sound/soc/fsl/imx-es8328.c
+@@ -87,6 +87,7 @@ static int imx_es8328_probe(struct platform_device *pdev)
+ 	if (int_port > MUX_PORT_MAX || int_port == 0) {
+ 		dev_err(dev, "mux-int-port: hardware only has %d mux ports\n",
+ 			MUX_PORT_MAX);
++		ret = -EINVAL;
+ 		goto fail;
+ 	}
  
--if "$CC" -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
-+if [ -n "$CC" ] && $CC -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
-     echo 1
- else
-     echo 0
 -- 
 2.34.1
 
