@@ -2,97 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFE7C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 18:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344899AbiDNTCT (ORCPT
+        id S1344944AbiDNTCZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
+        Thu, 14 Apr 2022 15:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240201AbiDNTCN (ORCPT
+        with ESMTP id S237212AbiDNTCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:02:13 -0400
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A17335DD1;
-        Thu, 14 Apr 2022 11:59:47 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id w23-20020a056830111700b00603c6d1ce73so38341otq.9;
-        Thu, 14 Apr 2022 11:59:47 -0700 (PDT)
+        Thu, 14 Apr 2022 15:02:14 -0400
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B363915C;
+        Thu, 14 Apr 2022 11:59:48 -0700 (PDT)
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-e2fa360f6dso6198226fac.2;
+        Thu, 14 Apr 2022 11:59:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=pHUh2xfElfPjM6pU2gjEs6VjREPddKoYEwJGkBqvcYE=;
-        b=DO9xEE1dpXZLuubX7Tbh9FEKQbcdE61dH8UxxFLS+u1pOemX52edHM1SYV6xHWSn5o
-         Y07ZeNcZKwxV+ml2FHWAkoZgSp6qFOxsG9J6upWqGlpHaZVlBt9eTXzNG6Rdqr5qcO8J
-         UH0mfEWrk1+485wUsdsseiYBrCyMQAR3FXOkTRgYGfjzaJxwBKG9CzMyfvA2FTf5J5EU
-         4xXX33zGqoYSy1UxHICri3wJ9ORsRqkekqGC0A1DGmaKbQcEMToZEBxSw3lmS7PQv7KY
-         9i3YxLzMfX2TqS1tuhQT9HFX6K2zxQx4qe9Fi3LKG2eIf1ri7UMsU1ef92loDayWbC/9
-         fCvA==
-X-Gm-Message-State: AOAM530FtZzIjnznOfoqusi6kwVt+LNDfLfYVsXG8YtbRX7ktX/f/Qe9
-        XxcvLoTEGdPhKxEZNI0hSA==
-X-Google-Smtp-Source: ABdhPJwxFAMtv8DAm3ujwrIJQGNBj431vuTsaLB8T0RGyUluEn6mJTkhlDsvH5C1eCLdJS3pLptDFQ==
-X-Received: by 2002:a05:6830:245e:b0:601:8b3:65e2 with SMTP id x30-20020a056830245e00b0060108b365e2mr1424662otr.255.1649962786597;
-        Thu, 14 Apr 2022 11:59:46 -0700 (PDT)
+        bh=lZfkYDeAjm+6YQ8+2GjY/45c8G+URa8JyKyRL4TBTWg=;
+        b=eDnHQ9UBfY1agg27rgPGLcXvAQnk4WLl9MH+wUcuURBBPODgoe1MpkzBT0BpAQA1Av
+         AZrzm1jtkLBBgcXOAGREiL5j4kVxXHXIukXGeI5UXRPvqKRQbwW90FOh/u3Ozfkk9YDL
+         X0S0GT7Vvr55JxMx0iilGz8EnloP4FsONzLxjrNOrNX2sJgKgf41mw7OIybTuN5VZrSF
+         ZiMTXsY2YsZJZ9aQzkx9qfXQXJi36obY1EHSkCeQydpsbLgxkigcPJwInRhTwLxGVsOJ
+         0KQPtS6DSaDIGtqN4IHRDpKiXjbUYZWsAEnwqifGWOe8FXvQrF66HlQkOsQHyp69oW9U
+         4eyg==
+X-Gm-Message-State: AOAM531mfrNjTMsbQ+mG9ONe+7oz1GeXC2A42fjx40G9sAl+B+lcgkQ1
+        HpavUWw9bnA5R898jOm9fINdfDXiWA==
+X-Google-Smtp-Source: ABdhPJzX7pRO8egJ5JEFd1QYqY3meBNkQfkQAz4MY34/Zz8sNPdgaQK2ZYpFC5e/5IA9h/iYF7Yf0Q==
+X-Received: by 2002:a05:6870:a546:b0:e2:ddbe:bdd6 with SMTP id p6-20020a056870a54600b000e2ddbebdd6mr6811oal.77.1649962787668;
+        Thu, 14 Apr 2022 11:59:47 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r8-20020a05683001c800b005cdadc2a837sm308728ota.70.2022.04.14.11.59.45
+        by smtp.gmail.com with ESMTPSA id e22-20020a056870239600b000e2f0c69849sm995484oap.11.2022.04.14.11.59.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 11:59:46 -0700 (PDT)
-Received: (nullmailer pid 2441851 invoked by uid 1000);
+        Thu, 14 Apr 2022 11:59:47 -0700 (PDT)
+Received: (nullmailer pid 2441856 invoked by uid 1000);
         Thu, 14 Apr 2022 18:59:45 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?b?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org,
-        Herve Codina <herve.codina@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-renesas-soc@vger.kernel.org,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?utf-8?q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-In-Reply-To: <20220414122250.158113-4-clement.leger@bootlin.com>
-References: <20220414122250.158113-1-clement.leger@bootlin.com> <20220414122250.158113-4-clement.leger@bootlin.com>
-Subject: Re: [PATCH net-next 03/12] dt-bindings: net: pcs: add bindings for Renesas RZ/N1 MII converter
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     linux-clk@vger.kernel.org, mturquette@baylibre.com,
+        robh+dt@kernel.org, devicetree@vger.kernel.org, sboyd@kernel.org,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        linux-kernel@vger.kernel.org, orsonzhai@gmail.com
+In-Reply-To: <20220414122657.526406-2-gengcixi@gmail.com>
+References: <20220414122657.526406-1-gengcixi@gmail.com> <20220414122657.526406-2-gengcixi@gmail.com>
+Subject: Re: [PATCH V2 1/3] dt-bindings: clk: sprd: Add bindings for ums512 clock controller
 Date:   Thu, 14 Apr 2022 13:59:45 -0500
-Message-Id: <1649962785.207360.2441850.nullmailer@robh.at.kernel.org>
+Message-Id: <1649962785.225391.2441855.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 14:22:41 +0200, Clément Léger wrote:
-> This MII converter can be found on the RZ/N1 processor family. The MII
-> converter ports are declared as subnodes which are then referenced by
-> users of the PCS driver such as the switch.
+On Thu, 14 Apr 2022 20:26:55 +0800, Cixi Geng wrote:
+> From: Cixi Geng <cixi.geng1@unisoc.com>
 > 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> Add a new bindings to describe ums512 clock compatible string.
+> 
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
 > ---
->  .../bindings/net/pcs/renesas,rzn1-miic.yaml   | 95 +++++++++++++++++++
->  include/dt-bindings/net/pcs-rzn1-miic.h       | 19 ++++
->  2 files changed, 114 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
->  create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
+>  .../bindings/clock/sprd,ums512-clk.yaml       | 108 ++++++++++++++++++
+>  1 file changed, 108 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
-./Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml:18:7: [warning] wrong indentation: expected 4 but found 6 (indentation)
-./Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml:95:7: [error] no new line character at the end of file (new-line-at-end-of-file)
+./Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml:22:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
 
 dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml: properties:clock-names: {'minItems': 1, 'maxItems': 4, 'items': [{'const': 'ext-26m'}, {'const': 'ext-32k'}, {'const': 'ext-4m'}, {'const': 'rco-100m'}]} should not be valid under {'required': ['maxItems']}
+	hint: "maxItems" is not needed with an "items" list
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml: ignoring, error in schema: properties: clock-names
+Documentation/devicetree/bindings/clock/sprd,ums512-clk.example.dtb:0:0: /example-0/soc/clock-controller@20200000: failed to match any schema with compatible: ['sprd,ums512-ap-clk']
+Documentation/devicetree/bindings/clock/sprd,ums512-clk.example.dtb:0:0: /example-0/soc/syscon@20100000: failed to match any schema with compatible: ['sprd,ums512-glbregs', 'syscon', 'simple-mfd']
 
 doc reference errors (make refcheckdocs):
 
