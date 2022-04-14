@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2EEC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3556C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354421AbiDNPST (ORCPT
+        id S1356138AbiDNPSk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        Thu, 14 Apr 2022 11:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347690AbiDNN71 (ORCPT
+        with ESMTP id S238894AbiDNNwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D0B6CA7D;
-        Thu, 14 Apr 2022 06:51:26 -0700 (PDT)
+        Thu, 14 Apr 2022 09:52:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DDFE31929;
+        Thu, 14 Apr 2022 06:44:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22A0461DF0;
-        Thu, 14 Apr 2022 13:51:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28619C385A5;
-        Thu, 14 Apr 2022 13:51:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBE9761D68;
+        Thu, 14 Apr 2022 13:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6DD2C385A5;
+        Thu, 14 Apr 2022 13:44:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944285;
-        bh=lkG/jii9kM2C+ITLvFttIvjANoTf3Gajm1ddtt4spd8=;
+        s=korg; t=1649943873;
+        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CH5kb43p7Ybt7Kom5hlmUn1/P5sL5rJShm/tPb2F5LKf19gQU44Xg/Y9gW5RDrmT0
-         GAhk4XEpDmPwtWr1FVKj8sQNeyyx1OCVKgYBlDYQB2JwwoRkhDaweM5lEzCvM4u9LP
-         XroflGrZCh9bhbDCkWsIJ5Od6/4dy/sIDnw0Gp7Y=
+        b=nczZKgwY2/XkhUNqUz8N9GsOOdXt5f2xO5P0t8MZkn/QCoG/PUG0RBJHX3Y4aHjE3
+         uOsY7xLLptg9nmfaLPOakCLkqbhrQd7FP+QqnPiqnYFkZeY/dWi7yW3XgxDHmVaMiu
+         eJXdh6SJf1NeAyqR4473RcUMYluBLbk4IkHOPEFY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ludovic Barre <ludovic.barre@st.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.4 460/475] mmc: mmci_sdmmc: Replace sg_dma_xxx macros
-Date:   Thu, 14 Apr 2022 15:14:05 +0200
-Message-Id: <20220414110907.930335570@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 305/475] ARM: mmp: Fix failure to remove sram device
+Date:   Thu, 14 Apr 2022 15:11:30 +0200
+Message-Id: <20220414110903.627433029@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,44 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ludovic Barre <ludovic.barre@st.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit 127e6e98ca9b8ac4f87698ebce1508e3449bb791 upstream.
+[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
 
-sg_dma_xxx should be used after a dma_map_sg call has been done to get bus
-addresses of each of the SG entries and their lengths.  But mmci_host_ops
-validate_data can be called before dma_map_sg.  This patch replaces theses
-macros by sg->offset and sg->length which are always defined.
+Make sure in .probe() to set driver data before the function is left to
+make it possible in .remove() to undo the actions done.
 
-Signed-off-by: Ludovic Barre <ludovic.barre@st.com>
-Link: https://lore.kernel.org/r/20200128090636.13689-2-ludovic.barre@st.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This fixes a potential memory leak and stops returning an error code in
+.remove() that is ignored by the driver core anyhow.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/mmci_stm32_sdmmc.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/drivers/mmc/host/mmci_stm32_sdmmc.c
-+++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
-@@ -36,8 +36,8 @@ int sdmmc_idma_validate_data(struct mmci
- 	 * excepted the last element which has no constraint on idmasize
- 	 */
- 	for_each_sg(data->sg, sg, data->sg_len - 1, i) {
--		if (!IS_ALIGNED(sg_dma_address(data->sg), sizeof(u32)) ||
--		    !IS_ALIGNED(sg_dma_len(data->sg), SDMMC_IDMA_BURST)) {
-+		if (!IS_ALIGNED(data->sg->offset, sizeof(u32)) ||
-+		    !IS_ALIGNED(data->sg->length, SDMMC_IDMA_BURST)) {
- 			dev_err(mmc_dev(host->mmc),
- 				"unaligned scatterlist: ofst:%x length:%d\n",
- 				data->sg->offset, data->sg->length);
-@@ -45,7 +45,7 @@ int sdmmc_idma_validate_data(struct mmci
- 		}
- 	}
+diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
+index 6794e2db1ad5..ecc46c31004f 100644
+--- a/arch/arm/mach-mmp/sram.c
++++ b/arch/arm/mach-mmp/sram.c
+@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
+ 	if (!info)
+ 		return -ENOMEM;
  
--	if (!IS_ALIGNED(sg_dma_address(data->sg), sizeof(u32))) {
-+	if (!IS_ALIGNED(data->sg->offset, sizeof(u32))) {
- 		dev_err(mmc_dev(host->mmc),
- 			"unaligned last scatterlist: ofst:%x length:%d\n",
- 			data->sg->offset, data->sg->length);
++	platform_set_drvdata(pdev, info);
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (res == NULL) {
+ 		dev_err(&pdev->dev, "no memory resource defined\n");
+@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
+ 	list_add(&info->node, &sram_bank_list);
+ 	mutex_unlock(&sram_lock);
+ 
+-	platform_set_drvdata(pdev, info);
+-
+ 	dev_info(&pdev->dev, "initialized\n");
+ 	return 0;
+ 
+@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
+ 	struct sram_bank_info *info;
+ 
+ 	info = platform_get_drvdata(pdev);
+-	if (info == NULL)
+-		return -ENODEV;
+ 
+-	mutex_lock(&sram_lock);
+-	list_del(&info->node);
+-	mutex_unlock(&sram_lock);
++	if (info->sram_size) {
++		mutex_lock(&sram_lock);
++		list_del(&info->node);
++		mutex_unlock(&sram_lock);
++
++		gen_pool_destroy(info->gpool);
++		iounmap(info->sram_virt);
++		kfree(info->pool_name);
++	}
+ 
+-	gen_pool_destroy(info->gpool);
+-	iounmap(info->sram_virt);
+-	kfree(info->pool_name);
+ 	kfree(info);
++
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
+
 
 
