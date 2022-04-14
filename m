@@ -2,116 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F10C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350229AbiDNQBG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
+        id S242943AbiDNQBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359760AbiDNPrR (ORCPT
+        with ESMTP id S1359844AbiDNPrZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:47:17 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A745F61D1;
-        Thu, 14 Apr 2022 08:32:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=6sMmhzgZCrm6waVxP9z2dHOgrG0ZsUX1GrMhTQVx3XE=; b=htOTffnGnm8zSygfrWwW7s68j+
-        o/8A7s8CcStsUleAWtAwwdPLZY/dteSvmaaQX4ry8g/5oxsjKrcHjIjKJaObrZkKO0TnnAYy4SMSG
-        0LMpl7n9rrVyNcd1hjDQY2gH2tqd11Ucwh8e0jXl5zD1vfUdG0FPyAhadJkYta7tb0LVrXN7/Z8hl
-        HN5VyZ6/Xcwd/ftPW5Lm24MGgTcRIJ/z6niVxOXyErPQukcxB30fXaEIJFO3lLp8O8h4MZ3xMU1d4
-        W/P4+Fvka0a6Ih4HY/loN5mIzgyG6FyybT9Zdr/ANuW302BJ8MYsG/Q7LZsUmhNXKahgbUfaZc/8N
-        i//ObZjA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nf1ST-00536t-Fi; Thu, 14 Apr 2022 15:32:33 +0000
-Message-ID: <75a7b583-187d-569d-5ed0-2bb0e1b1ec7b@infradead.org>
-Date:   Thu, 14 Apr 2022 08:32:26 -0700
+        Thu, 14 Apr 2022 11:47:25 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B611F70FB;
+        Thu, 14 Apr 2022 08:32:54 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nf1Se-0006Mb-Q0; Thu, 14 Apr 2022 17:32:44 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nf1Se-000PQJ-F2; Thu, 14 Apr 2022 17:32:44 +0200
+Subject: Re: [RFC PATCH 0/1] sample: bpf: introduce irqlat
+To:     Song Chen <chensong_2000@189.cn>
+References: <1649927240-18991-1-git-send-email-chensong_2000@189.cn>
+ <2e6ee265-903c-2b5c-aefd-ec24f930c999@iogearbox.net>
+ <ac371d36-2624-cdd8-0c15-62ccf53bed81@189.cn>
+Cc:     ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, brendan.d.gregg@gmail.com
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f4267d24-28ca-bd99-100e-6fa4ee84cc50@iogearbox.net>
+Date:   Thu, 14 Apr 2022 17:32:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 5.4 004/475] hv: utils: add PTP_1588_CLOCK to Kconfig to
- fix build
+In-Reply-To: <ac371d36-2624-cdd8-0c15-62ccf53bed81@189.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Michael Kelley <mikelley@microsoft.com>,
-        =?UTF-8?Q?Petr_=c5=a0tetiar?= <ynezz@true.cz>
-References: <20220414110855.141582785@linuxfoundation.org>
- <20220414110855.274446341@linuxfoundation.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220414110855.274446341@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26512/Thu Apr 14 10:28:56 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Song,
 
+On 4/14/22 1:25 PM, Song Chen wrote:
+> hi Daniel,
+> 
+> Thanks for liking the idea.
+> 
+> My target is embedded devices, that's why i get started from ebpf C.bcc and bpftrace is a good idea, but i prefer taking one thing at a time, what's more, i'm not familiar with python, it might take longer.
+> 
+> Once C code is accepted, i will move myself to bcc and bpftrace. Is it ok for you?
 
-On 4/14/22 06:06, Greg Kroah-Hartman wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
-> 
-> commit 1dc2f2b81a6a9895da59f3915760f6c0c3074492 upstream.
-> 
-> The hyperv utilities use PTP clock interfaces and should depend a
-> a kconfig symbol such that they will be built as a loadable module or
-> builtin so that linker errors do not happen.
-> 
-> Prevents these build errors:
-> 
-> ld: drivers/hv/hv_util.o: in function `hv_timesync_deinit':
-> hv_util.c:(.text+0x37d): undefined reference to `ptp_clock_unregister'
-> ld: drivers/hv/hv_util.o: in function `hv_timesync_init':
-> hv_util.c:(.text+0x738): undefined reference to `ptp_clock_register'
-> 
-> Fixes: 3716a49a81ba ("hv_utils: implement Hyper-V PTP source")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: "K. Y. Srinivasan" <kys@microsoft.com>
-> Cc: Haiyang Zhang <haiyangz@microsoft.com>
-> Cc: Stephen Hemminger <sthemmin@microsoft.com>
-> Cc: Wei Liu <wei.liu@kernel.org>
-> Cc: Dexuan Cui <decui@microsoft.com>
-> Cc: linux-hyperv@vger.kernel.org
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-> Link: https://lore.kernel.org/r/20211126023316.25184-1-rdunlap@infradead.org
-> Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> Cc: Petr Štetiar <ynezz@true.cz>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/hv/Kconfig |    1 +
->  1 file changed, 1 insertion(+)
-> 
-> --- a/drivers/hv/Kconfig
-> +++ b/drivers/hv/Kconfig
-> @@ -17,6 +17,7 @@ config HYPERV_TIMER
->  config HYPERV_UTILS
->  	tristate "Microsoft Hyper-V Utilities driver"
->  	depends on HYPERV && CONNECTOR && NLS
-> +	depends on PTP_1588_CLOCK_OPTIONAL
+The libbpf-based tools from the mentioned link in BCC are all C, not Python. Also bpftrace
+has guidelines for building it more portably that would be suitable for embedded devices [2].
+I'd presume these should still match your requirements?
 
-AFAICT PTP_1588_CLOCK_OPTIONAL does not exist in 5.4 kernels,
-so this should not be used there.
+Right now samples/bpf/ is a bit of a dumping ground of random things, some BPF samples better
+maintained than others, but generally samples/bpf/ is a bit of a mess. BPF has a huge ecosystem
+outside of kernel in its various areas it covers, so it has outgrown the few samples in there
+long ago, and you'll find many resources on how to get started in the wild.
 
->  	help
->  	  Select this option to enable the Hyper-V Utilities.
->  
+Adding this as a samples/bpf/ will have little value to others, since people may not be aware
+of them, and if they are they need to manually build/ship it, etc. If you upstream and can improve
+the tools in bpftrace/bcc as pointed out, then a lot more people will be able to consume them
+and benefit from it, and you get the shipping via distros for free.
+
+   [2] https://github.com/iovisor/bpftrace/blob/master/docs/embedded_builds.md
+
+Thanks again,
+Daniel
+
+> BR
+> 
+> Song
 > 
 > 
+> 在 2022/4/14 17:47, Daniel Borkmann 写道:
+>> On 4/14/22 11:07 AM, Song Chen wrote:
+>>> I'm planning to implement a couple of ebpf tools for preempt rt,
+>>> including irq latency, preempt latency and so on, how does it sound
+>>> to you?
+>>
+>> Sounds great, thanks! Please add these tools for upstream inclusion either to bpftrace [0] or
+>> bcc [1], then a wider range of users would be able to benefit from them as well as they are
+>> also shipped as distro packages and generally more widely used compared to kernel samples.
+>>
+>> Thanks Song!
+>>
+>>    [0] https://github.com/iovisor/bpftrace/tree/master/tools
+>>    [1] https://github.com/iovisor/bcc/tree/master/libbpf-tools
+>>
+>>> Song Chen (1):
+>>>    sample: bpf: introduce irqlat
+>>>
+>>>   samples/bpf/.gitignore    |   1 +
+>>>   samples/bpf/Makefile      |   5 ++
+>>>   samples/bpf/irqlat_kern.c |  81 ++++++++++++++++++++++++++++++
+>>>   samples/bpf/irqlat_user.c | 100 ++++++++++++++++++++++++++++++++++++++
+>>>   4 files changed, 187 insertions(+)
+>>>   create mode 100644 samples/bpf/irqlat_kern.c
+>>>   create mode 100644 samples/bpf/irqlat_user.c
+>>>
+>>
+>>
 
--- 
-~Randy
