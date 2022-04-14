@@ -2,140 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD398C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE287C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240788AbiDNPZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
+        id S236364AbiDNPZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348105AbiDNOCM (ORCPT
+        with ESMTP id S1348145AbiDNOCT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:02:12 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39F5D672;
-        Thu, 14 Apr 2022 06:58:21 -0700 (PDT)
+        Thu, 14 Apr 2022 10:02:19 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6449ADD8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:59:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649944701; x=1681480701;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=VmrXDG9iJKewRIG8lSEXIl4FCcpuFmOe4gRwKxCybl4=;
-  b=RfMoz9ZBhmLCfkBbLiYpwQz0khne0f906HyRjFYDD/w5x8hL4r/OAQR7
-   bu8RKcz8d2xBuRY7wkEa2b6sI29QN8/0JTAkI3mJPu5UVcl+f5LjqpxzH
-   WAgHxmTt/SHTOwcavwI4zl76AqoaTR03B2Mx+pUhX5McSOhEdoK9IjrZP
-   P0hU948fNn3JGhynDK3DwoRpE++NIZT1X/UUHnQWkAk+frB+UjLo5r7nr
-   Naa1JF3m+GwNe+/pM5pfUbHS/hDi4iWpL/+38HgMfV3VxlNgt0JIb3zYn
-   3CQ0CWKGlmYjL8CZkJuY8P4/A1vN5nXj1O7laU2x0hweHdwrXheEUocFF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262686545"
+  t=1649944759; x=1681480759;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=GDZXdZIyeMCAJpASuXEC2rLdsvUK9DibPgDtDpIJulQ=;
+  b=VmhhqJv0pU3nPSaHmEwLWDlfA5WFnfjT1K7rlHjt0a4LhEAPJetOPo9k
+   TlQmtNtkLGYrdVz8Eox0WEQKZnNyQAUWZTB++9X2RcFJ2Bt6mR7jNF93N
+   r0ACbiw4khaxx4jhDRfz6+dvz8rUhtByx8b1jZuM2ywQCZCiIQpUl9PCW
+   LhCaGlhfLuf6KQpkZCbGd0MiFNpQH4WaJ2aFsaNRy6itQyrj7AGICalFT
+   6OJ5NwF9VRLJlmJMroRfuh3+IA88xtljBCX7Qn+HkiE97TCtx8+JlqBO7
+   vtjBjBThRSp27dcTatN12xKjsGKUIFL1kuqI4FSveBd/o8GmqIdl0SW9d
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262378046"
 X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="262686545"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:58:20 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="262378046"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:59:18 -0700
 X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="725372894"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga005.jf.intel.com with ESMTP; 14 Apr 2022 06:58:17 -0700
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Evan Green <evgreen@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Rajat Jain <rajatja@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Youngjin Jang <yj84.jang@samsung.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
-References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
- <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
- <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
- <YlDoSY19HYNJGI50@rowland.harvard.edu>
- <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
- <YlRATrMxRWt9gVqt@rowland.harvard.edu>
- <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
- <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Message-ID: <b1df80e4-af6a-e84f-f49d-c74500bdec05@linux.intel.com>
-Date:   Thu, 14 Apr 2022 17:00:12 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+   d="scan'208";a="661383991"
+Received: from aviljane-mobl.ger.corp.intel.com (HELO [10.249.254.86]) ([10.249.254.86])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:59:15 -0700
+Message-ID: <955ad2c80d540ba9eee884d6a1f15b4d1604e306.camel@linux.intel.com>
+Subject: Re: [PATCH v2 2/5] drm/i915: sanitize mem_flags for stolen buffers
+From:   Thomas =?ISO-8859-1?Q?Hellstr=F6m?= 
+        <thomas.hellstrom@linux.intel.com>
+To:     Robert Beckett <bob.beckett@collabora.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
+Date:   Thu, 14 Apr 2022 15:58:53 +0200
+In-Reply-To: <20220412151838.1298956-3-bob.beckett@collabora.com>
+References: <20220412151838.1298956-1-bob.beckett@collabora.com>
+         <20220412151838.1298956-3-bob.beckett@collabora.com>
+Organization: Intel Sweden AB, Registration Number: 556189-6027
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-3.fc34) 
 MIME-Version: 1.0
-In-Reply-To: <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12.4.2022 18.40, Alan Stern wrote:
-> On Tue, Apr 12, 2022 at 05:56:42PM +0300, Mathias Nyman wrote:
->> On 11.4.2022 17.50, Alan Stern wrote:
->>> For example, what would happen if the user unplugs a device right in the 
->>> middle of the freeze transition, after the root hub has been frozen but 
->>> before the controller is frozen?  We don't want such an unplug event to 
->>> prevent the system from going into hibernation -- especially if the root 
->>> hub was not enabled for wakeup.
->>
->> We should be able to let system go to hibernate even if we get a disconnect
->> interrupt between roothub and host controller freeze.
->> Host is not yet suspended so no PME# wake is generated, only an interrupt.
->>
->> From Linux PM point of view it should be ok as well as the actual xhci
->> device that is generating the interrupt is hasnt completer freeze() 
->>
->> The xhci interrupt handler just needs to make sure that the disconnect
->> isn't propagated if roothub is suspended and wake on disconnect
->> is not set. And definitely make sure xhci doesn't start roothub polling. 
->>
->> When freeze() is called for the host we should prevent the host from 
->> generating interrupts.
-> 
-> I guess that means adding a new callback.  Or we could just suspend the 
-> controller, like Evan proposed originally
+On Tue, 2022-04-12 at 15:18 +0000, Robert Beckett wrote:
+> stolen regions are not page backed or considered iomem.
 
-Suspending the host in freeze should work.
-It will do an extra xhci controller state save stage, but that should be harmless.
+thus...
 
-But is there really a need for the suggested noirq part?
+A little more elaborate commit message please.
 
-+	.freeze_noirq	= hcd_pci_suspend_noirq, 
-
-That will try to set the host to PCI D3 state.
-It seems a bit unnecessary for freeze.
 
 > 
->>> (If the root hub _is_ enabled for wakeup then it's questionable.  
->>> Unplugging a device would be a wakeup event, so you could easily argue 
->>> that it _should_ prevent the system from going into hibernation.  After 
->>> all, if the unplug happened a few milliseconds later, after the system 
->>> had fully gone into hibernation, then it would cause the system to wake 
->>> up.)
->>>
->>>> Would it make sense prevent xHCI interrupt generation in the host
->>>> freeze() stage, clearing the xHCI EINT bit in addition to calling 
->>>> check_roothub_suspend()?
->>>> Then enable it back in thaw()
->>>
->>> That won't fully eliminate the problem mentioned in the preceding 
->>> paragraphs, although I guess it would help somewhat.
->>
->> Would the following steps solve this?
->>
->> 1. Disable device initiated resume for connected usb devices in freeze()
->>
->> 2. Don't propagate connect or OC changes if roothub is suspended and port wake
->>    flags are disabled. I.E don't kick roothub polling in xhci interrupt
->>    handler here.
+> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+
+
+> ---
+>  drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> I guess you can't just halt the entire host controller when only one of 
-> the root hubs is suspended with wakeup disabled.  That does complicate 
-> things.  But you could halt it as soon as both of the root hubs are 
-> frozen.  Wouldn't that prevent interrupt generation?
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+> b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+> index 358f8a1a30ce..9fe8132de3b2 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+> @@ -122,8 +122,9 @@ void i915_ttm_adjust_gem_after_move(struct
+> drm_i915_gem_object *obj)
+>  
+>         obj->mem_flags &= ~(I915_BO_FLAG_STRUCT_PAGE |
+> I915_BO_FLAG_IOMEM);
+>  
+> -       obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ?
+> I915_BO_FLAG_IOMEM :
+> -               I915_BO_FLAG_STRUCT_PAGE;
+> +       if (obj->mm.region->id != INTEL_REGION_STOLEN_SMEM)
+> +               obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo-
+> >resource) ? I915_BO_FLAG_IOMEM :
+> +                       I915_BO_FLAG_STRUCT_PAGE;
+>  
+>         cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo-
+> >resource,
+>                                            bo->ttm);
 
-True, but probably easier to just suspend host in freeze() as you stated above.
 
--Mathias
