@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BD3C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05951C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351821AbiDNObg (ORCPT
+        id S1351117AbiDNOaZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
+        Thu, 14 Apr 2022 10:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245358AbiDNNi1 (ORCPT
+        with ESMTP id S1343718AbiDNNjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064DBA0BD9;
-        Thu, 14 Apr 2022 06:32:01 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635C92DA9D;
+        Thu, 14 Apr 2022 06:34:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CEB4B8296A;
-        Thu, 14 Apr 2022 13:31:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10913C385A1;
-        Thu, 14 Apr 2022 13:31:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3613C61B9C;
+        Thu, 14 Apr 2022 13:34:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BDE6C385A5;
+        Thu, 14 Apr 2022 13:34:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943118;
-        bh=pz4SwLnyQgVCpN4F2tuLiBG4T/dHTViBa/Utc5NSmC4=;
+        s=korg; t=1649943281;
+        bh=d4O27U53NQuo3r5YsqxIsVaJL9tlsKieMII9b+7QXmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RpAhRedYLOUOVNAPn3MgrRMCU2Ph6/JCPv52SVFUE6Rj7stH2Ie9gLGNa/M/tKN8L
-         5Q98/vrdmgxyMZTF9BH4hyLtbiAeqKX6Qu8GlaAgoF9c57VRSBRRKcL2zyqZf58emG
-         oRIv+/Zoa7NiCmMR1S3kvvh/x++A3IWy3jLC/QtM=
+        b=y0aIOYBKId2r8FdOGovrsIEI6IQ+DxMyctNHdh9gIv2S4hLAL1BE9DiwMeiz3jZXl
+         m+he+WObuoBM+Md498o3H2HKiZIbnJuaBG6cuZpFUJCIVftKL0K1KUwsIiafrODxnu
+         03qlNqIYj8xoSND5YHjv9vAlP4gxPOo24HINhu4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.4 040/475] f2fs: fix to do sanity check on .cp_pack_total_block_count
-Date:   Thu, 14 Apr 2022 15:07:05 +0200
-Message-Id: <20220414110856.278362208@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 100/475] PM: suspend: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:08:05 +0200
+Message-Id: <20220414110857.953538753@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,76 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 5b5b4f85b01604389f7a0f11ef180a725bf0e2d4 upstream.
+[ Upstream commit 7a64ca17e4dd50d5f910769167f3553902777844 ]
 
-As bughunter reported in bugzilla:
+If an invalid option is given for "test_suspend=<option>", the entire
+string is added to init's environment, so return 1 instead of 0 from
+the __setup handler.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215709
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
+    test_suspend=invalid"
 
-f2fs may hang when mounting a fuzzed image, the dmesg shows as below:
+and
 
-__filemap_get_folio+0x3a9/0x590
-pagecache_get_page+0x18/0x60
-__get_meta_page+0x95/0x460 [f2fs]
-get_checkpoint_version+0x2a/0x1e0 [f2fs]
-validate_checkpoint+0x8e/0x2a0 [f2fs]
-f2fs_get_valid_checkpoint+0xd0/0x620 [f2fs]
-f2fs_fill_super+0xc01/0x1d40 [f2fs]
-mount_bdev+0x18a/0x1c0
-f2fs_mount+0x15/0x20 [f2fs]
-legacy_get_tree+0x28/0x50
-vfs_get_tree+0x27/0xc0
-path_mount+0x480/0xaa0
-do_mount+0x7c/0xa0
-__x64_sys_mount+0x8b/0xe0
-do_syscall_64+0x38/0xc0
-entry_SYSCALL_64_after_hwframe+0x44/0xae
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     test_suspend=invalid
 
-The root cause is cp_pack_total_block_count field in checkpoint was fuzzed
-to one, as calcuated, two cp pack block locates in the same block address,
-so then read latter cp pack block, it will block on the page lock due to
-the lock has already held when reading previous cp pack block, fix it by
-adding sanity check for cp_pack_total_block_count.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2ce986892faf ("PM / sleep: Enhance test_suspend option with repeat capability")
+Fixes: 27ddcc6596e5 ("PM / sleep: Add state field to pm_states[] entries")
+Fixes: a9d7052363a6 ("PM: Separate suspend to RAM functionality from core")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/checkpoint.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/power/suspend_test.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -848,6 +848,7 @@ static struct page *validate_checkpoint(
- 	struct page *cp_page_1 = NULL, *cp_page_2 = NULL;
- 	struct f2fs_checkpoint *cp_block = NULL;
- 	unsigned long long cur_version = 0, pre_version = 0;
-+	unsigned int cp_blocks;
- 	int err;
+diff --git a/kernel/power/suspend_test.c b/kernel/power/suspend_test.c
+index 60564b58de07..bfd2a96c695c 100644
+--- a/kernel/power/suspend_test.c
++++ b/kernel/power/suspend_test.c
+@@ -157,22 +157,22 @@ static int __init setup_test_suspend(char *value)
+ 	value++;
+ 	suspend_type = strsep(&value, ",");
+ 	if (!suspend_type)
+-		return 0;
++		return 1;
  
- 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
-@@ -855,15 +856,16 @@ static struct page *validate_checkpoint(
- 	if (err)
- 		return NULL;
- 
--	if (le32_to_cpu(cp_block->cp_pack_total_block_count) >
--					sbi->blocks_per_seg) {
-+	cp_blocks = le32_to_cpu(cp_block->cp_pack_total_block_count);
-+
-+	if (cp_blocks > sbi->blocks_per_seg || cp_blocks <= F2FS_CP_PACKS) {
- 		f2fs_warn(sbi, "invalid cp_pack_total_block_count:%u",
- 			  le32_to_cpu(cp_block->cp_pack_total_block_count));
- 		goto invalid_cp;
+ 	repeat = strsep(&value, ",");
+ 	if (repeat) {
+ 		if (kstrtou32(repeat, 0, &test_repeat_count_max))
+-			return 0;
++			return 1;
  	}
- 	pre_version = *version;
  
--	cp_addr += le32_to_cpu(cp_block->cp_pack_total_block_count) - 1;
-+	cp_addr += cp_blocks - 1;
- 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
- 					&cp_page_2, version);
- 	if (err)
+ 	for (i = PM_SUSPEND_MIN; i < PM_SUSPEND_MAX; i++)
+ 		if (!strcmp(pm_labels[i], suspend_type)) {
+ 			test_state_label = pm_labels[i];
+-			return 0;
++			return 1;
+ 		}
+ 
+ 	printk(warn_bad_state, suspend_type);
+-	return 0;
++	return 1;
+ }
+ __setup("test_suspend", setup_test_suspend);
+ 
+-- 
+2.34.1
+
 
 
