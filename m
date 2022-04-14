@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 853A2C352A1
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346531AbiDNN5a (ORCPT
+        id S1346630AbiDNN5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
+        Thu, 14 Apr 2022 09:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244626AbiDNN1v (ORCPT
+        with ESMTP id S244507AbiDNN1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:27:51 -0400
+        Thu, 14 Apr 2022 09:27:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E83A2061;
-        Thu, 14 Apr 2022 06:20:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F0897BBF;
+        Thu, 14 Apr 2022 06:20:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65D76B82985;
-        Thu, 14 Apr 2022 13:20:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACB79C385A9;
-        Thu, 14 Apr 2022 13:20:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B7D1B82968;
+        Thu, 14 Apr 2022 13:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05F6C385B9;
+        Thu, 14 Apr 2022 13:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942438;
-        bh=McLg5ljU88naHu06xQFkcxJXg/8T/W6NCQIW5jatmUM=;
+        s=korg; t=1649942419;
+        bh=Egr88YpiSUHE4xOHeYgePSswWMplcasX3QygVT4vgvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j0OILCglb4M0/+4zTQGxc6UGqgGoKH1R0v+HvPhjXkLeq6WWJxDvyG8TuicWkcsMh
-         N1Db7y7FQzsj4u2ECmprXMnmeYm47Jlx/hs7rqwhauaPdLrBdXvWcn+Vz+2vgQOc1Y
-         H9stESKere8P5aKZpe4/wgPVhodZu3mijBd5oP0Y=
+        b=QAiJOKHChr8kY1PlUBWdtkhQ5MMhNGY0dJIR5eKEGf//rsQsF7NCe7CiwqJ1ISrjd
+         jN0XNb98DvQTE4H501f4F0YjIJwz6M3Peur/kNc9pqa7EOQhbTHo/UtYWYSZDUJJcF
+         L0oFVNT9CZEXLVv9dsoDGYeZiGYJXKsIP9k40q/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 136/338] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
-Date:   Thu, 14 Apr 2022 15:10:39 +0200
-Message-Id: <20220414110842.778897912@linuxfoundation.org>
+Subject: [PATCH 4.19 129/338] scsi: pm8001: Fix command initialization in pm80XX_send_read_log()
+Date:   Thu, 14 Apr 2022 15:10:32 +0200
+Message-Id: <20220414110842.572635505@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -52,55 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
+[ Upstream commit 1a37b6738b58d86f6b144b3fc754ace0f2e0166d ]
 
-The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
-have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
-mode.
+Since the sata_cmd struct is zeroed out before its fields are initialized,
+there is no need for using "|=" to initialize the ncqtag_atap_dir_m
+field. Using a standard assignment removes the sparse warning:
 
-Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
-uses 11 when enabling the regulator at boot.
+warning: invalid assignment: |=
 
-Make bq24190_vbus_is_enabled() also check for 11 so that it does not
-wrongly returns false when the bits are set to 11.
+Also, since the ncqtag_atap_dir_m field has type __le32, use cpu_to_le32()
+to generate the assigned value.
 
-Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
-Cc: Bastien Nocera <hadess@hadess.net>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-5-damien.lemoal@opensource.wdc.com
+Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
+Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/bq24190_charger.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
+ drivers/scsi/pm8001/pm80xx_hwi.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
-index 863208928cf0..c830343be61e 100644
---- a/drivers/power/supply/bq24190_charger.c
-+++ b/drivers/power/supply/bq24190_charger.c
-@@ -43,6 +43,7 @@
- #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
- #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
- #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
-+#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
- #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
- #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
- #define BQ24190_REG_POC_SYS_MIN_MIN			3000
-@@ -568,7 +569,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
- 	pm_runtime_mark_last_busy(bdi->dev);
- 	pm_runtime_put_autosuspend(bdi->dev);
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 3e814c0469fb..d0f3b65224f5 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -1826,7 +1826,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
  
--	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
-+	if (ret)
-+		return ret;
-+
-+	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
-+		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
- }
+ 	sata_cmd.tag = cpu_to_le32(ccb_tag);
+ 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
+-	sata_cmd.ncqtag_atap_dir_m |= ((0x1 << 7) | (0x5 << 9));
++	sata_cmd.ncqtag_atap_dir_m = cpu_to_le32((0x1 << 7) | (0x5 << 9));
+ 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
  
- static const struct regulator_ops bq24190_vbus_ops = {
+ 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd, 0);
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index c63b5db435c5..c73a365da1d8 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -1516,7 +1516,7 @@ static void pm80xx_send_read_log(struct pm8001_hba_info *pm8001_ha,
+ 
+ 	sata_cmd.tag = cpu_to_le32(ccb_tag);
+ 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
+-	sata_cmd.ncqtag_atap_dir_m_dad |= ((0x1 << 7) | (0x5 << 9));
++	sata_cmd.ncqtag_atap_dir_m_dad = cpu_to_le32(((0x1 << 7) | (0x5 << 9)));
+ 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
+ 
+ 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd, 0);
 -- 
 2.34.1
 
