@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A149FC4167D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349565AbiDNOUp (ORCPT
+        id S1349606AbiDNOUx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
+        Thu, 14 Apr 2022 10:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343942AbiDNNjb (ORCPT
+        with ESMTP id S1343928AbiDNNja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB28A8EDB;
-        Thu, 14 Apr 2022 06:35:38 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420C195A28;
+        Thu, 14 Apr 2022 06:35:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBD2A61D70;
-        Thu, 14 Apr 2022 13:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8527C385A1;
-        Thu, 14 Apr 2022 13:35:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AED52CE296C;
+        Thu, 14 Apr 2022 13:35:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4016C385A5;
+        Thu, 14 Apr 2022 13:35:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943337;
-        bh=WDYk853cnf7XgNf3KD/FCThRZet/E/qBvqM1/yjX7og=;
+        s=korg; t=1649943326;
+        bh=i20hMlwUrKYD3765QCI98YqipXHd9k85Jzwc+oQE5hA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mj2SljdI7uf2hUgeydgwAhbJ7NhOxVSRxz+hQU3tQF67Jyk/UeprXOIB1ozbGGmpu
-         9d14c2RuF9ygdYoFs+bwFQ91wtf6vbrYUoIB4B9RP/pDIs+7nJ38lCLwKcKy0LAOXo
-         cA1ME2qUBG1+Jy02DfHc449025id12M5yC1GT7Vw=
+        b=CVTdLxcV1/rNRtIIGtdYM9HLUKcsbxim8REa8W+eeIDgKZQn3woiaXHZyeuH4BEq/
+         XIDk40+EVoV/Tcj3MgjvgjUZA2txaLzxtkLcTwgC8gx+zPwRPkgyRDSDnpY6gWsx1i
+         i1V5LTWH9SgHTYvEtPLP1Zgw3Uzs1Y9LA7huEkPc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 118/475] video: fbdev: atmel_lcdfb: fix an error code in atmel_lcdfb_probe()
-Date:   Thu, 14 Apr 2022 15:08:23 +0200
-Message-Id: <20220414110858.454507840@linuxfoundation.org>
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 115/475] media: hantro: Fix overfill bottom register field name
+Date:   Thu, 14 Apr 2022 15:08:20 +0200
+Message-Id: <20220414110858.370629779@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,48 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit fee5c1e4b789e41719af9fee0e2dd397cd31988f ]
+[ Upstream commit 89d78e0133e71ba324fb67ca776223fba4353418 ]
 
-If "sinfo->config" is not found, then return -ENODEV.  Don't
-return success.
+The Hantro H1 hardware can crop off pixels from the right and bottom of
+the source frame. These are controlled with the H1_REG_IN_IMG_CTRL_OVRFLB
+and H1_REG_IN_IMG_CTRL_OVRFLR in the H1_REG_IN_IMG_CTRL register.
 
-Fixes: b985172b328a ("video: atmel_lcdfb: add device tree suport")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+The ChromeOS kernel driver that this was based on incorrectly added the
+_D4 suffix H1_REG_IN_IMG_CTRL_OVRFLB. This field crops the bottom of the
+input frame, and the number is _not_ divided by 4. [1]
+
+Correct the name to avoid confusion when crop support with the selection
+API is added.
+
+[1] https://chromium.googlesource.com/chromiumos/third_party/kernel/+/refs/ \
+	heads/chromeos-4.19/drivers/staging/media/hantro/hantro_h1_vp8_enc.c#377
+
+Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+Fixes: a29add8c9bb2 ("media: rockchip/vpu: rename from rockchip to hantro")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/atmel_lcdfb.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/staging/media/hantro/hantro_h1_jpeg_enc.c | 2 +-
+ drivers/staging/media/hantro/hantro_h1_regs.h     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
-index cf2bfff2efbf..b91919861075 100644
---- a/drivers/video/fbdev/atmel_lcdfb.c
-+++ b/drivers/video/fbdev/atmel_lcdfb.c
-@@ -1062,15 +1062,16 @@ static int __init atmel_lcdfb_probe(struct platform_device *pdev)
+diff --git a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
+index 8b76f1f13b06..e81a354b8872 100644
+--- a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
++++ b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
+@@ -23,7 +23,7 @@ static void hantro_h1_set_src_img_ctrl(struct hantro_dev *vpu,
  
- 	INIT_LIST_HEAD(&info->modelist);
- 
--	if (pdev->dev.of_node) {
--		ret = atmel_lcdfb_of_init(sinfo);
--		if (ret)
--			goto free_info;
--	} else {
-+	if (!pdev->dev.of_node) {
- 		dev_err(dev, "cannot get default configuration\n");
- 		goto free_info;
- 	}
- 
-+	ret = atmel_lcdfb_of_init(sinfo);
-+	if (ret)
-+		goto free_info;
-+
-+	ret = -ENODEV;
- 	if (!sinfo->config)
- 		goto free_info;
- 
+ 	reg = H1_REG_IN_IMG_CTRL_ROW_LEN(pix_fmt->width)
+ 		| H1_REG_IN_IMG_CTRL_OVRFLR_D4(0)
+-		| H1_REG_IN_IMG_CTRL_OVRFLB_D4(0)
++		| H1_REG_IN_IMG_CTRL_OVRFLB(0)
+ 		| H1_REG_IN_IMG_CTRL_FMT(ctx->vpu_src_fmt->enc_fmt);
+ 	vepu_write_relaxed(vpu, reg, H1_REG_IN_IMG_CTRL);
+ }
+diff --git a/drivers/staging/media/hantro/hantro_h1_regs.h b/drivers/staging/media/hantro/hantro_h1_regs.h
+index d6e9825bb5c7..30e7e7b920b5 100644
+--- a/drivers/staging/media/hantro/hantro_h1_regs.h
++++ b/drivers/staging/media/hantro/hantro_h1_regs.h
+@@ -47,7 +47,7 @@
+ #define H1_REG_IN_IMG_CTRL				0x03c
+ #define     H1_REG_IN_IMG_CTRL_ROW_LEN(x)		((x) << 12)
+ #define     H1_REG_IN_IMG_CTRL_OVRFLR_D4(x)		((x) << 10)
+-#define     H1_REG_IN_IMG_CTRL_OVRFLB_D4(x)		((x) << 6)
++#define     H1_REG_IN_IMG_CTRL_OVRFLB(x)		((x) << 6)
+ #define     H1_REG_IN_IMG_CTRL_FMT(x)			((x) << 2)
+ #define H1_REG_ENC_CTRL0				0x040
+ #define    H1_REG_ENC_CTRL0_INIT_QP(x)			((x) << 26)
 -- 
 2.34.1
 
