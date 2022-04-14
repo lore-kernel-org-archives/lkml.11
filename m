@@ -2,78 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7C3C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E11C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343941AbiDNRxQ (ORCPT
+        id S1343964AbiDNRxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        Thu, 14 Apr 2022 13:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343931AbiDNRxN (ORCPT
+        with ESMTP id S1343948AbiDNRxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:53:13 -0400
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DA8EA754;
-        Thu, 14 Apr 2022 10:50:48 -0700 (PDT)
-Received: by mail-oi1-f177.google.com with SMTP id b188so6155252oia.13;
-        Thu, 14 Apr 2022 10:50:48 -0700 (PDT)
+        Thu, 14 Apr 2022 13:53:46 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B62AEA767
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:51:20 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id n8so5287261plh.1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:51:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=R60EpWC4+M+3jSe48lUE7Gq4ExP+RSflXlkjF6VcaNg=;
+        b=MJT5ZerLaHe0JjBpnq1LElIVlHvKx2ombKDP9yRuUPnzETaAhn9nIFw2s+5thyg8ck
+         z+Auc/bX6s4XDzQD7WK+/TG6WF/NPaz7NxNF+va1neIBQvkDM8rvE/Z8Bu7yJMiDjGhr
+         Qq/F7VMSrZoc5QrzMA5rKvUUC9eGBE4aSx1/AZufDrZmL8MFVO75636rgU+GQRNVBJf+
+         XMC2Wjv8LayNUGel212gOwnBPbKqlmm34ot5OyZMuDQLngo5WNI+Qvm1BsfC5EhRNMHA
+         pczXurvhUftRw1ejmjb5pCtSqc/EQVw3Lip1QWxc1k5n4sDFrV6ZrKI9OY/a3Zk8+Y1S
+         UitA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Gp1UQaeAUFHUmZt7KJQtTaDbqEgS8GIsE7NBeOPlykc=;
-        b=yWu+lO1f+sxrnN2TrMfqaD/MIfFG3ODL9jNKiDXO9YdmM7Ej0Tjbd9JZWRwa18JYjv
-         VuPAAEPCaRuk0RdtfsiXxyKSMkcSPwTZd2lWi/mg5BSWbz2xDwsmieACzQnZpWeAZbV4
-         ChNghX3YnFV9fN++MyXYJk0qmiH723po9pt7d5Tctbt7N7w9HYb2Ay4yIvfZwq6fYpa0
-         yh0Apfxsm2jelt+Ap8jF9onJ+9YJPNfCNsVtDRfMHYJWYop18zVn8H/W1MYQfNPp5GQS
-         X0ayG2bd/UytLH0YUodI4o0K2UrQbSN7nDTqF4/96lWGhOV/LlB7g4tKH6kSujo2j3Un
-         dcxg==
-X-Gm-Message-State: AOAM531TKuOI3BYJXru3Mz2q9xYur0v5ObLLQfXY0tHdrCEtIIvacL1f
-        WYdHDy2RN1pcPXWl+XAbBA==
-X-Google-Smtp-Source: ABdhPJwmLAk/ZemFazWzMfXV6Baqk65MFZCVYcK2ITCgH70geCs74ZOtJeb1URftFeedrkn/I6NRow==
-X-Received: by 2002:a05:6808:124f:b0:321:855d:5b19 with SMTP id o15-20020a056808124f00b00321855d5b19mr1870495oiv.30.1649958647785;
-        Thu, 14 Apr 2022 10:50:47 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o18-20020a9d7652000000b005cbf6f5d7c5sm267475otl.21.2022.04.14.10.50.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 10:50:47 -0700 (PDT)
-Received: (nullmailer pid 2303359 invoked by uid 1000);
-        Thu, 14 Apr 2022 17:50:46 -0000
-Date:   Thu, 14 Apr 2022 12:50:46 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <fabio.estevam@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-mmc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH v6 12/13] dt-bindings: usb: ci-hdrc-usb2: Add i.MX8DXL
- compatible string
-Message-ID: <Ylhe9qXRhghSxUQp@robh.at.kernel.org>
-References: <20220413103356.3433637-1-abel.vesa@nxp.com>
- <20220413103356.3433637-13-abel.vesa@nxp.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=R60EpWC4+M+3jSe48lUE7Gq4ExP+RSflXlkjF6VcaNg=;
+        b=a2KEhPo0R6k2MtHOn5DEJnZHPgLoNLz14stkJESfht64shtlgDgUTy6OqwXZcKZZmX
+         RDjg7wk8IvOjaoFkLnq27qq0JqMpNYtC9k8fzRH63wkxaSwgfRLdX0z3Cnnj48aZAl87
+         7csbKRZrwUMv/2xQcQZn7YTsPDjZqXfUgJk6sUquAelEpAC7qIuM6a2OD0qxH2EOs9/h
+         7gUqiRIJJk2c2EsZyDlcqa58Angkmuugpg1CQ+sNl+qI/J3AO6EiYRob2kSlHzJouFH2
+         y5XNlSzN1PXVg+SFk6W1kpWunYFfv6GehHEBW/l43jVYSeYko7ghcUafU6QyUolXJTBI
+         iGxw==
+X-Gm-Message-State: AOAM5320D3FR+GzkLBXOmuJNhkiJfQARccClQEIFntZpokEQqVz6KFFy
+        uzo/j9CBVN/Hnb6x3MWgKAjgzA==
+X-Google-Smtp-Source: ABdhPJwRAMampTIjKcuBpR+du+kxiuKgR+5wRxgzxrak8w+8zYw1w59xdKpX2VjJw2lzIeX2jldwgw==
+X-Received: by 2002:a17:902:b7c9:b0:158:b09e:527a with SMTP id v9-20020a170902b7c900b00158b09e527amr6104672plz.40.1649958679806;
+        Thu, 14 Apr 2022 10:51:19 -0700 (PDT)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id p3-20020a056a000b4300b004faee36ea56sm506706pfo.155.2022.04.14.10.51.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 10:51:19 -0700 (PDT)
+Message-ID: <584183e2-2473-6185-e07d-f478da118b87@linaro.org>
+Date:   Thu, 14 Apr 2022 10:51:18 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413103356.3433637-13-abel.vesa@nxp.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     cgroups@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
+ <20220414164409.GA5404@blackbody.suse.cz>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
+ pending
+In-Reply-To: <20220414164409.GA5404@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 13:33:55 +0300, Abel Vesa wrote:
-> Add i.MX8DXL compatible string to ci-hdrc-usb2 bindings
-> documentation.
-> 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  Documentation/devicetree/bindings/usb/ci-hdrc-usb2.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Hi Michal,
+Thanks for your analysis.
 
-Acked-by: Rob Herring <robh@kernel.org>
+On 4/14/22 09:44, Michal Koutný wrote:
+> Hello Tadeusz.
+> 
+> Thanks for analyzing this syzbot report. Let me provide my understanding
+> of the test case and explanation why I think your patch fixes it but is
+> not fully correct.
+> 
+> On Tue, Apr 12, 2022 at 12:24:59PM -0700, Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+>> Syzbot found a corrupted list bug scenario that can be triggered from
+>> cgroup css_create(). The reproduces writes to cgroup.subtree_control
+>> file, which invokes cgroup_apply_control_enable(), css_create(), and
+>> css_populate_dir(), which then randomly fails with a fault injected -ENOMEM.
+> 
+> The reproducer code makes it hard for me to understand which function
+> fails with ENOMEM.
+> But I can see your patch fixes the reproducer and your additional debug
+> patch which proves that css->destroy_work is re-queued.
+
+Yes, it is hard to see the actual failing point because, I think it is randomly
+failing in different places. I think in the actual case that causes the list
+corruption is in fact in css_create().
+It is the css_create() error path that does fist rcu enqueue in:
+
+https://elixir.bootlin.com/linux/v5.10.109/source/kernel/cgroup/cgroup.c#L5228
+
+and the second is triggered by the css->refcnt calling css_release()
+
+The reason why we don't see it actually failing in css_create() in the trace
+dump is that the fail_dump() is rate-limited, see:
+https://elixir.bootlin.com/linux/v5.18-rc2/source/lib/fault-inject.c#L44
+
+I was confused as well, so I put additional debug prints in every place
+where css_release() can fail, and it was actually in
+css_create()->cgroup_idr_alloc() that failed in my case.
+
+What happened was, the write triggered:
+cgroup_subtree_control_write()->cgroup_apply_control()->cgroup_apply_control_enable()->css_create()
+
+which, allocates and initializes the css, then fails in cgroup_idr_alloc(),
+bails out and calls queue_rcu_work(cgroup_destroy_wq, &css->destroy_rwork);
+
+then cgroup_subtree_control_write() bails out to out_unlock:, which then goes:
+
+cgroup_kn_unlock()->cgroup_put()->css_put()->percpu_ref_put(&css->refcnt)->percpu_ref_put_many(ref)
+
+which then calls ref->data->release(ref) and enqueues the same
+&css->destroy_rwork on cgroup_destroy_wq causing list corruption in insert_work.
+
+>> In such scenario the css_create() error path rcu enqueues css_free_rwork_fn
+>> work for an css->refcnt initialized with css_release() destructor,
+> 
+> Note that css_free_rwork_fn() utilizes css->destroy_*r*work.
+> The error path in css_create() open codes relevant parts of
+> css_release_work_fn() so that css_release() can be skipped and the
+> refcnt is eventually just percpu_ref_exit()'d.
+> 
+>> and there is a chance that the css_release() function will be invoked
+>> for a cgroup_subsys_state, for which a destroy_work has already been
+>> queued via css_create() error path.
+> 
+> But I think the problem is css_populate_dir() failing in
+> cgroup_apply_control_enable(). (Is this what you actually meant?
+> css_create() error path is then irrelevant, no?)
+
+I thought so too at first as the the crushdump shows that this is failing
+in css_populate_dir(), but this is not the fail that causes the list corruption.
+The code can recover from the fail in css_populate_dir().
+The fail that causes trouble is in css_create(), that makes it go to its error path.
+I can dig out the patch with my debug prints and request syzbot to run it
+if you want.
+
+> 
+> The already created csses should then be rolled back via
+> 	cgroup_restore_control(cgrp);
+> 	cgroup_apply_control_disable(cgrp);
+> 	   ...
+> 	   kill_css(css)
+> 
+> I suspect the double-queuing is a result of the fact that there exists
+> only the single reference to the css->refcnt. I.e. it's
+> percpu_ref_kill_and_confirm()'d and released both at the same time.
+> 
+> (Normally (when not killing the last reference), css->destroy_work reuse
+> is not a problem because of the sequenced chain
+> css_killed_work_fn()->css_put()->css_release().)
+> 
+>> This can be avoided by adding a check to css_release() that checks
+>> if it has already been enqueued.
+> 
+> If that's what's happening, then your patch omits the final
+> css_release_work_fn() in favor of css_killed_work_fn() but both should
+> be run during the rollback upon css_populate_dir() failure.
+
+This change only prevents from double queue:
+
+queue_[rcu]_work(cgroup_destroy_wq, &css->destroy_rwork);
+
+I don't see how it affects the css_killed_work_fn() clean path.
+I didn't look at it, since I thought it is irrelevant in this case.
+
+-- 
+Thanks,
+Tadeusz
