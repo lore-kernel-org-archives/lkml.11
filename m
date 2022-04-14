@@ -2,99 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B462C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E1F1C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242246AbiDNJ5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        id S242219AbiDNJ5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242050AbiDNJ5F (ORCPT
+        with ESMTP id S242046AbiDNJ5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:57:05 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1A9167C0;
-        Thu, 14 Apr 2022 02:54:40 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id b19so6134985wrh.11;
-        Thu, 14 Apr 2022 02:54:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qz4eoGCjwqiVTIGhSK37UOjVOVCpyvZrQ4WRtbzGJcY=;
-        b=o6Q2r7jKuN5KwGswZCLVojX54AFIYdM8E7FrOjUvQcnVhxqQaEAlspQV217XzhSoAv
-         HD0LmIr8jJ2vFXbfZwCw2TPEHTwaaL4g+qu7J4ZEC0nGohy2w2QiiYlPq1SoyfDNhbVw
-         Jr8PQ88O8YL6MDLMXDXARCdmw4Id3hifEtFjffLRP7opy6qBf83OePZLNAFo1V/j/j9p
-         M8SbmFrrA3oFhfoRsrHLZaEJjLstgP49/4bGHjOqMNBt8wBXBfChyvkUyhUWZzrLEZTq
-         tfY1JfDmZWzim41tkAtdj05+o4/hu2EdCVtbQo0tROIKgQDo2/nUJxuN5C/cUoThnV/Y
-         07rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qz4eoGCjwqiVTIGhSK37UOjVOVCpyvZrQ4WRtbzGJcY=;
-        b=LfGRhJX6cvjbPmvv1Su8E2vzEVZMGg5QeWcoFM8bn/K3YsSFNy1hUXr9UoV5AslQrT
-         X7pLh8oBORGQhEUafPjTlqsnfEcDJMTEa6niB75YmiPZg9+vVsQgeOtBEffbDkCSmd7n
-         gwgLazxiZ61BWXWtwvhcBKiVHik9ZBkBj8hZxjUkc00a8IiVbTDAPNHaWj9bEZ0yLug1
-         JwngmazROsVUvA1/I5dDvRWtFueBRURcmp3g0o8ZQXptSnvWik5npoeiO4Y0XAgUl31I
-         jo/9slyCvrMDPPaSTTX0m9hwLebU4OHCsPu59BAcXUuZ9Ygmjd+u4kHCo/3xJzqnqncs
-         sSgw==
-X-Gm-Message-State: AOAM531nHzu7E8sHQDNA8TeRBXCFJzpUCQUAiPkjrB+T523QkDRG2Rs3
-        fKCglqoohEdZ4FiTR0kgpqw=
-X-Google-Smtp-Source: ABdhPJyJpElLXIDRtcHN0en+en7f4nKd00rYFyVmnDPQ66HEr4AxsmGykL5nNAhtm9fVYQ9i1B0T5g==
-X-Received: by 2002:a5d:47cc:0:b0:204:1c9d:2157 with SMTP id o12-20020a5d47cc000000b002041c9d2157mr1421460wrc.294.1649930079091;
+        Thu, 14 Apr 2022 05:57:04 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84AA614018;
         Thu, 14 Apr 2022 02:54:39 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id d14-20020a056000186e00b0020405198faasm1633727wri.52.2022.04.14.02.54.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 02:54:38 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mt76: mt7921: make read-only array ppet16_ppet8_ru3_ru0 static const
-Date:   Thu, 14 Apr 2022 10:54:38 +0100
-Message-Id: <20220414095438.294980-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KfF9m0WzxzFprV;
+        Thu, 14 Apr 2022 17:52:12 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Apr 2022 17:54:37 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Apr 2022 17:54:36 +0800
+From:   Wupeng Ma <mawupeng1@huawei.com>
+To:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <corbet@lwn.net>
+CC:     <ardb@kernel.org>, <tglx@linutronix.de>, <mingo@redhat.com>,
+        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zyccr.com>, <dvhart@infradead.org>, <andy@infradead.org>,
+        <rppt@kernel.org>, <paulmck@kernel.org>, <peterz@infradead.org>,
+        <jroedel@suse.de>, <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
+        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
+        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
+        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
+        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
+        <wangkefeng.wang@huawei.com>, <mawupeng1@huawei.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>
+Subject: [PATCH v2 7/9] mm: Calc the right pfn if page size is not 4K
+Date:   Thu, 14 Apr 2022 18:13:12 +0800
+Message-ID: <20220414101314.1250667-8-mawupeng1@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
+In-Reply-To: <20220414101314.1250667-1-mawupeng1@huawei.com>
+References: <20220414101314.1250667-1-mawupeng1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't populate the read-only array ppet16_ppet8_ru3_ru0 on the stack but
-instead make it static const. Also makes the object code a little smaller.
+From: Ma Wupeng <mawupeng1@huawei.com>
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Previous 0x100000 is used to check the 4G limit in
+find_zone_movable_pfns_for_nodes(). This is right in x86 because
+the page size can only be 4K. But 16K and 64K are available in
+arm64. So replace it with PHYS_PFN(SZ_4G).
+
+Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/main.c | 2 +-
+ mm/page_alloc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-index fdaf2451bc1d..d400a3297b0c 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-@@ -12,7 +12,7 @@ static void
- mt7921_gen_ppe_thresh(u8 *he_ppet, int nss)
- {
- 	u8 i, ppet_bits, ppet_size, ru_bit_mask = 0x7; /* HE80 */
--	u8 ppet16_ppet8_ru3_ru0[] = {0x1c, 0xc7, 0x71};
-+	static const u8 ppet16_ppet8_ru3_ru0[] = {0x1c, 0xc7, 0x71};
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 6e5b4488a0c5..570d0ebf98df 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -7870,7 +7870,7 @@ static void __init find_zone_movable_pfns_for_nodes(void)
  
- 	he_ppet[0] = FIELD_PREP(IEEE80211_PPE_THRES_NSS_MASK, nss - 1) |
- 		     FIELD_PREP(IEEE80211_PPE_THRES_RU_INDEX_BITMASK_MASK,
+ 			usable_startpfn = memblock_region_memory_base_pfn(r);
+ 
+-			if (usable_startpfn < 0x100000) {
++			if (usable_startpfn < PHYS_PFN(SZ_4G)) {
+ 				mem_below_4gb_not_mirrored = true;
+ 				continue;
+ 			}
 -- 
-2.35.1
+2.18.0.huawei.25
 
