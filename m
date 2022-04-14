@@ -2,150 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241301AbiDNJAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
+        id S241316AbiDNJAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241300AbiDNJAC (ORCPT
+        with ESMTP id S241320AbiDNJAJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:00:02 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285A6692A9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:39 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id 12so4100181pll.12
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SvUcfGV0AI5Z5Ok9/naO7LBjVi2omORuN4/12C7DmHE=;
-        b=JR2RAEmge/keIR/Ml2wlBOCVlLAFG6iue7Hc3B84gbF39ETD8Z6w5ipfhgjcI5pt7n
-         3JnqtA6jCC1bW0jZPfN623VDrHkCImpoQypj/WGex6PSaxrG78yJ+B0oaSeDTcxiPJNp
-         6+7kCsCgADfNs8lZ7ExcafvNtMW+mL8Sxp0dfM5e+MAOc5Dugo3w+JoIdZeUc9/ctGFJ
-         /DOI7zCm0yXvjyIIriUxmTSBHhaO2uTX3GLvTBIH6SYDd6L6Tr/DK4za39KscI7iwIRS
-         ZAV5k+h52w0ZHukEJP+LOLZNUzhayIx+qoSZpg21P01X01Yt7gTi3+tFVmTG+mUm99mi
-         SVDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SvUcfGV0AI5Z5Ok9/naO7LBjVi2omORuN4/12C7DmHE=;
-        b=DzjTzL5wXfzUUZSERtd5lNjLNqjpNvsFzH/3LfjI1H4U5WctE1rXwXGApEb1P14emb
-         ufZgZIIdj7aU5tw94r4YZF5SzaXqi6kyliUywQeInGRq+HiauDZ59C5G6Yx00TKPTEvr
-         wFYw6c/Qaze83L7X30CFIN9JCqz2U/uLMyc2J+7KUh9oWZvXJRL+xuAyARRSukY0Xtn6
-         EcVJf4FiuApI1ntLBz+SN/SZsPkCioECiD+YyuUa31OtLewj78Yl3xFgcsic6ihAp1gO
-         WnnSOR4HAmJPXx/fNVmz0Q742SiVbya39Fr2YxYJBMbLbA7y1yhcMy06ByIBEPvvjYyg
-         piVw==
-X-Gm-Message-State: AOAM530+UoeHonAoFb/K+aeXQ51aFZigS/qbR9i6/2cJuTK/2Z26+8AQ
-        h9vEsS0JXXeok51FFSQJgb4=
-X-Google-Smtp-Source: ABdhPJyizoPS3uBWKhkZvBXCVjTSS1AwqRPB39uv9wUmFhns1Opl4pKj6mE0GhOs94q49W+tXxsj1Q==
-X-Received: by 2002:a17:902:b495:b0:158:8318:4cf9 with SMTP id y21-20020a170902b49500b0015883184cf9mr13576324plr.33.1649926658591;
-        Thu, 14 Apr 2022 01:57:38 -0700 (PDT)
-Received: from hyeyoo.. ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id p9-20020aa79e89000000b00505fada20dfsm1403537pfq.117.2022.04.14.01.57.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 01:57:36 -0700 (PDT)
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Marco Elver <elver@google.com>,
-        Matthew WilCox <willy@infradead.org>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 00/23] common kmalloc for SLUB and SLAB v2
-Date:   Thu, 14 Apr 2022 17:57:04 +0900
-Message-Id: <20220414085727.643099-1-42.hyeyoo@gmail.com>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
+        Thu, 14 Apr 2022 05:00:09 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10075.outbound.protection.outlook.com [40.107.1.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14A76A049;
+        Thu, 14 Apr 2022 01:57:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EAKekkIZ9SJWGAnLaEAaZ82bAEgzDpjzIoUGurjz+GazMPV1UNItDYIZJvt5Yjs5w2Vgw2zNMFc9dsx5X6TAKrKdAbht3enZXfSQTkY7fzmRqhqKr+qfUIDDlNQxqbM5YWEiQ2KbBUxPZhqbeFB6Gg+uNR+jCZuMS+vQoZ1I9Y+Phx3khgpKhRKqDZ4dUqFcT5YMMgZXAcD4k13h+b9opNrngfISbSRik3rGHPLuLI7iqcVDBjcJ227jIRVzZ8CuCAowwUjhHttHSeRugg2bVo+/yx/3JC+eq/apC3BtufwzHzb4KRNFSUPJfiOrS0+OWMW1DZOSf8+Mi/jo1lLZ2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Xhw8Jsl6Cq3akNhM9czpuGMs2PfZ+hvKY2Wr/srftBE=;
+ b=KoCF1uaek0DaMKB5AHZnt3yl9HI0vnWfpSDj3/UZLGOSwdKCzK9eQDCZuuEEygAmyJRi9ee/tv7+rxBeHIpqUcFJeeHUlCUnQvGV8UTOE08nx9PGkuy9wZ1ZDHCQZhekX1t/efaC3moVh/xElQTtMOu50KhNSaQwlCVfXguQ2fXvcg8aMAYoPFGnCfTKLw6yCohku+N2IiskTK4Qcakhqi+dQI6+mI2w/DQQeNelhV87LI0i6FXR6/nga5tBtKgu66Iq92c5IJX5DOyJlswFUE7LaHd4W3EylE61c3+BNKX+t4u8Ou8BFEIhI01mWg6pOGsgR3KP7Tj8J2vQaupV/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Xhw8Jsl6Cq3akNhM9czpuGMs2PfZ+hvKY2Wr/srftBE=;
+ b=bnkQWE8bb/jYw0LU0kd4nnbWa9yPAktsOSstWVihOjyYh1AxTNwt1fj+Ep3m0v/2Gvwt1rIByztvNQC1qJHFoBJtfeMBPhyeTpUUr2oyryiLNpFPtZMFzPZDPtpu6OnsGGyXOgAI3FuTBUSJ9D4k+o+lEe3ePufcxfd0iBr3LXw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by VI1PR04MB7101.eurprd04.prod.outlook.com (2603:10a6:800:12e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Thu, 14 Apr
+ 2022 08:57:40 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::d8b5:5914:5189:ffa5]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::d8b5:5914:5189:ffa5%6]) with mapi id 15.20.5164.020; Thu, 14 Apr 2022
+ 08:57:40 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, shawnguo@kernel.org
+Cc:     hverkuil-cisco@xs4all.nl, robh+dt@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, aisheng.dong@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3] media: amphion: fix decoder's interlaced field
+Date:   Thu, 14 Apr 2022 16:57:22 +0800
+Message-Id: <20220414085722.3919-1-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.35.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR01CA0007.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::11) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a5a62c05-9084-41e9-eb45-08da1df4d4a8
+X-MS-TrafficTypeDiagnostic: VI1PR04MB7101:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB7101DF47AA2C419005E42549E7EF9@VI1PR04MB7101.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ujq++/7QePM0WOdHyqw1rUX1SAfmz/AsDVu2ONd5lnm8tZb6vnYaKVqL9Jy29w0X3M0l8bq4g5mHLwAYjam84BseWi3ToV0/L/TXudvaQs7D9YTYRnBp80f1T4n5J0Y90MrcV3TvOa31c5tg8d7UgMOxcCwHhFKRUPuKrIAO6bJAgGH0E5aOPl8Cz4iJo9mxe+wOuXfUHcAT3fhwdLvSSclhHagEmHaHm5dj89YxsQblHY/zLMglPsQZNT97+H+Yo3cLDqmiwfWNjoFP9QNmTLDKLRhaGLusdOw+gHsVUQHhJEv6qQSw/DEuOCqfnHmcQ9RgcfaMcpGOB7TZ8sHCnkP+P6QkdmzJ9b84nBhZYoIyasoMmc4vvt7Bx0p+T1BKapjonbVXueBIMHAUpdhXQWE2XsFwZNlgi9wcYAQrmHF1ixeZIANEnFfzlkmdiL+/scwTnpnXUy1JQ6lXYCO2YRAiVmZi4Nk55aEpXhxcQBXPAqYiOicWV4+yZqdoYcxYoqOHSRBAGLqBCrFY4xGfeGsoycvd0W1R40FHpO+eszZNkbHuFffhYN0b6WhheOyp5ybpqNyJ6sSFBtN51B7JkG4Z+DxrRCXTJ5VkikSGCOOVB3F6bnqOshQxR+RaTCWPJCJWdW+vcld9Ks1PP0zQLtLJhQ2UOvQ9biUtmpY8Q42iELDTPTd2tmUs/mGW26Mp/DpTKNPmTcJmA0f7Do4yqg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(5660300002)(6486002)(2906002)(8676002)(2616005)(6666004)(6506007)(4326008)(52116002)(86362001)(316002)(6512007)(36756003)(38100700002)(38350700002)(26005)(186003)(66556008)(83380400001)(66476007)(1076003)(66946007)(7416002)(8936002)(44832011);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FuXOrDP0ZYXQAQk4B3mIB9Yc45O1SE/P9jNAIB0hwIyFpWji5edbV+3/Idjh?=
+ =?us-ascii?Q?sd7Gkq13nZeWCWweV0uWJQvSg2LaDqxd+aeRK+lILsxeJWLdAXPvFtY8emv5?=
+ =?us-ascii?Q?LWlSHDm9D+jcOi6vt1i8ax7W0DQecnjaVjamyrgWxm5ZfXRmrdAYOJuQVR5m?=
+ =?us-ascii?Q?91vBW2+iREThmYyHHf5mgi/ibIOBLFlA+6IxPH0fUUzfJdLdNHCc6IjR+GgQ?=
+ =?us-ascii?Q?UBFcbh55AnfsB53+UWt4wT+oU4EGzVmnX+0XwlYcRzDNchB8Xk/TWRPKuBvP?=
+ =?us-ascii?Q?0sXunc2vpadpnk9zZ4KNd+gS2+zUXHh4CmNCFh2KUpJgUL0EV3mezE841SAH?=
+ =?us-ascii?Q?GQiwk1UIsZf9ixVs43WhCfTeFXkkqEvi6UHMKbB3v7vhubF/i6hF4sTs9bgD?=
+ =?us-ascii?Q?R2eimkCPmc65U55Ec05d1xlzLNQvO1Qv2viphm08kkCFqKtF1eWPpNJcc7Ar?=
+ =?us-ascii?Q?ShKjhR0RTunQS5Um4b/PVuFYdEpOYnpn0ZTQfuphBNrCH7Z8w5Mn1FRSsB1L?=
+ =?us-ascii?Q?Mq0mVGq4LV/i9LtRpRK8zahMRKHdmop3+WqCQfYAiTrSfgX+yPPUpSuWlAxc?=
+ =?us-ascii?Q?srz44zwHdmvsICoixKHq0HRApxycWhAcu68+ECPCvvfMGh+maNTr1Y1b3wJ0?=
+ =?us-ascii?Q?4Ah7lCpwyrh2BEBw6hZtuTdfIT5kwMbAtb4WUU6x6VE0YL2weA0w5J73D7h8?=
+ =?us-ascii?Q?m4J+ZCrn5P/KJMqEd85HHVBlQlvIKh9k9ZuRJ3MZ8Xrl3TmWnF1W4oDFuYXb?=
+ =?us-ascii?Q?/16S6tX/cNxLSEtMKTdrRfo8y/rF2C0yphKoiDRzbqcxGaHIDOF3SzVNyHP7?=
+ =?us-ascii?Q?0dcWFgPp8kUjBH/zV1BdJV/3/7UhU0RlhlpcAsKqEnIffsusST6+jy61Tr7h?=
+ =?us-ascii?Q?e39HktNj5ou/hj+iVxE4EkHRq1LQW3mOxCjQgouDgHoLMh3I+baMCIy+DAXE?=
+ =?us-ascii?Q?HwJ7cYSZuUGyeXLxy36LQyhI6EllPjGbBRrlAXG6bsz4IQn+LpYdTK86WV7T?=
+ =?us-ascii?Q?p4ey+7XOmrDpSPx0+A9iSivu0ipIQ6U4mGlT9GFTlsGQnu+IwmYm/BmhVh84?=
+ =?us-ascii?Q?xYYxbZmXwfuEJraWJqWO/yEWaeWqy0/beUz74bEPoYEKX5YufXBx/6/Jknns?=
+ =?us-ascii?Q?9fwbP3O3QvuF8ea+3vi0kHAg2llRPVH30SBugJRDFksCbHEdv9UtnzphbX+D?=
+ =?us-ascii?Q?Phe75NJAcLrKCRh+2y/xf5GdB4iMVe3Gd4KTs04ytXoJOZr6I1yLtcjJqc9q?=
+ =?us-ascii?Q?xInRG9mLicfdb/ZbWBwQ7K537g55ddNCoWXGj9qnZEwCREsgK/OFdn9iFRct?=
+ =?us-ascii?Q?odvCZTVI1QsdmYt0EW39Z7mTIrLa6IZ+aw2Fc7y8D6lfqx6QhfqKMBEfIy8B?=
+ =?us-ascii?Q?dE16+hL7soPThtxYYYwqV0H8PxV1fZS7U9Bpxz3Acowk7pv7OuqJi9SoqPJ7?=
+ =?us-ascii?Q?kOfPaCy4zqSYxYrRB93075N7oOV9jrXO6FwrYSuMZhGnVFVUK/uPFJraLABd?=
+ =?us-ascii?Q?VpVZyAHgi3Q6qgZV8oYuTlfsF9SXcYppscKgWM7VD0yJ2/iXOMRgBk5INdQW?=
+ =?us-ascii?Q?hTMl4mN7TAO60j7OhyW0gSqm6Tj0eYZKDCrIqLnUBvVzzoU9KCeDCiZujwxg?=
+ =?us-ascii?Q?mlWHNMNAOqca1ZmGooehuR31805i5mVW3z5/TVspvUKjbSqW209hQrjPO4ID?=
+ =?us-ascii?Q?zWo2S2L7zc+axh/IZVjOZcv8oLu1af8fLwYAm9T/zPEj6pWf2CFme4aEFSwV?=
+ =?us-ascii?Q?VFJjdW+rog=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5a62c05-9084-41e9-eb45-08da1df4d4a8
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 08:57:40.6537
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vknaH93W39ygm9oq0ilGhrxJfa3Hh/SDAI46AYQu18CvqFGU93FTHfN+MX4ejuSr+D1BIexvzBgyZpmTVd2yng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7101
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since v1:
-- The code is basically same, but split some patches to make it
-easier to review.
-- Adjusted comments and added Reviewed-by from Vlastimil. Thanks!
+For interlaced frame, the amphion vpu will store the
+two fields sequential into one buffer, top-bottom order
+so the field should be set to V4L2_FIELD_SEQ_TB.
+fix the previous bug that set it to V4L2_FIELD_SEQ_BT wrongly.
 
-Hello, this series is cleanup of kmalloc code. After this series,
-kmalloc subsystem is perfectly generalized on SLAB and SLUB.
+Fixes: 6de8d628df6e ("media: amphion: add v4l2 m2m vpu decoder stateful driver")
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+---
+ drivers/media/platform/amphion/vdec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This series is not small, but each patch is easy to review and
-I bet you will like this :)
-
-Many thanks to Matthew, Marco, Vlastimil who gave comments
-in previous series.
-
-Any feedbacks will be appreciated.
-Thanks!
-
-======== series description =======
-
-patch 1-2 make slab_alloc_node() in SLAB available for non-NUMA
-configurations for further cleanup.
-
-patch 3-12 remove duplicate code in common kmalloc functions.
-
-patch 13 makes SLAB pass requests larger than order-1 page to page
-allocator. This is useful for further generalization.
-
-patch 14-16 unify tracepoints. after them, we use only
-kmem_cache_alloc and kmem_cache_free tracepoints in slab allocators.
-
-patch 17-18 generalize whole kmalloc subsystem on SLAB/SLUB.
-
-patch 19-20 factor out common code of __kmalloc_node()
-and __kmalloc_node_track_caller().
-
-patch 21 removes now unnecessary kmem_cache_alloc_node_trace().
-
-patch 22-23 is small improvements of __ksize(). They are not part of
-generalization but depends on this series.
-
-Hyeonggon Yoo (23):
-  mm/slab: move NUMA-related code to __do_cache_alloc()
-  mm/slab: cleanup slab_alloc() and slab_alloc_node()
-  mm/slab_common: remove CONFIG_NUMA ifdefs for common kmalloc functions
-  mm/slab_common: cleanup kmalloc_track_caller()
-  mm/slab_common: cleanup __kmalloc()
-  mm/sl[auo]b: fold kmalloc_order_trace() into kmalloc_large()
-  mm/slub: move kmalloc_large_node() to slab_common.c
-  mm/slab_common: make kmalloc_large_node() consistent with
-    kmalloc_large()
-  mm/slab_common: cleanup kmalloc_large()
-  mm/slab_common: cleanup kmem_cache_alloc{,node,lru}
-  mm/slab_common: kmalloc_node: pass large requests to page allocator
-  mm/slab_common: cleanup kmalloc()
-  mm/slab: kmalloc: pass requests larger than order-1 page to page
-    allocator
-  mm/slab_common: print cache name in tracepoints
-  mm/slab_common: use same tracepoint in kmalloc and normal caches
-  mm/slab_common: rename tracepoint
-  mm/slab_common: implement __kmem_cache_free()
-  mm/sl[au]b: generalize kmalloc subsystem
-  mm/slab_common: add kasan_kmalloc() in __kmalloc_node_track_caller()
-  mm/slab_common: factor out __do_kmalloc_node()
-  mm/sl[au]b: remove kmem_cache_alloc_node_trace()
-  mm/sl[auo]b: move definition of __ksize() to mm/slab.h
-  mm/sl[au]b: check if large object is valid in __ksize()
-
- include/linux/slab.h        | 245 ++++++++++++-------------
- include/trace/events/kmem.h | 109 ++---------
- mm/slab.c                   | 354 ++++++------------------------------
- mm/slab.h                   |   9 +
- mm/slab_common.c            | 146 ++++++++++++---
- mm/slob.c                   |  78 +++-----
- mm/slub.c                   | 264 ++-------------------------
- 7 files changed, 350 insertions(+), 855 deletions(-)
-
+diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
+index 09628dd0c855..0a1976852b0d 100644
+--- a/drivers/media/platform/amphion/vdec.c
++++ b/drivers/media/platform/amphion/vdec.c
+@@ -804,7 +804,7 @@ static void vdec_init_fmt(struct vpu_inst *inst)
+ 	if (vdec->codec_info.progressive)
+ 		inst->cap_format.field = V4L2_FIELD_NONE;
+ 	else
+-		inst->cap_format.field = V4L2_FIELD_SEQ_BT;
++		inst->cap_format.field = V4L2_FIELD_SEQ_TB;
+ 	if (vdec->codec_info.color_primaries == V4L2_COLORSPACE_DEFAULT)
+ 		vdec->codec_info.color_primaries = V4L2_COLORSPACE_REC709;
+ 	if (vdec->codec_info.transfer_chars == V4L2_XFER_FUNC_DEFAULT)
 -- 
-2.32.0
+2.35.1
 
