@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C730C38A04
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B00C38A2E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245484AbiDNNna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
+        id S245552AbiDNNni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245263AbiDNN2n (ORCPT
+        with ESMTP id S245317AbiDNN2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B12939E4;
-        Thu, 14 Apr 2022 06:22:10 -0700 (PDT)
+        Thu, 14 Apr 2022 09:28:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1579BAC5;
+        Thu, 14 Apr 2022 06:22:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D880DB82983;
-        Thu, 14 Apr 2022 13:22:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 426E0C385AA;
-        Thu, 14 Apr 2022 13:22:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1EB5B82986;
+        Thu, 14 Apr 2022 13:22:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F69C385A5;
+        Thu, 14 Apr 2022 13:22:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942527;
-        bh=EWN/7L55u75adv+qjP3MgLPwUeZ7+C3NKYz1XAHFdGc=;
+        s=korg; t=1649942536;
+        bh=sd0NXxd0gz5WV080qFGi9PRjHeovtrpCI+ZAGK+PE1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MbSVDTUXoDpit8iXSZIVmUqlS8crhizIMIW9EqRC1cE2X6vcOoFsnzSU0VEdhDtGc
-         GFyzR4/u0D70XzdYXyL0MbY6BCCCjrZxeC9FdkuuZQHYPlP+A/23bO4LKqPaGUgNVJ
-         wAw/dHDncDQ+apCndEQQGnK1+P9aWhiTQiln9+GE=
+        b=TSsQOVhR1uQNyevcDFs6+tEuY9VRD5W3P1o3+GZlYjG4znouBa/Lp82o7sXFZhWkt
+         aRfgpu4LSY+Y2SqyKV5wwNOiQVceflTPAvj5HhfkmFOVXfqhDmpJil6TZwMv+8nAKk
+         DVBLuK8s8fNI6gdzbFWT2ZGtHBslNfx2ZRuHSvrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Thierry Reding <treding@nvidia.com>,
         Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 169/338] clk: loongson1: Terminate clk_div_table with sentinel element
-Date:   Thu, 14 Apr 2022 15:11:12 +0200
-Message-Id: <20220414110843.709613554@linuxfoundation.org>
+Subject: [PATCH 4.19 171/338] clk: tegra: tegra124-emc: Fix missing put_device() call in emc_ensure_emc_driver
+Date:   Thu, 14 Apr 2022 15:11:14 +0200
+Message-Id: <20220414110843.765477988@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,35 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3eb00f89162e80083dfcaa842468b510462cfeaa ]
+[ Upstream commit 6d6ef58c2470da85a99119f74d34216c8074b9f0 ]
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div = 0).
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling path.
 
-Fixes: b4626a7f4892 ("CLK: Add Loongson1C clock support")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
-Link: https://lore.kernel.org/r/20220218000922.134857-3-j.neuschaefer@gmx.net
+Fixes: 2db04f16b589 ("clk: tegra: Add EMC clock driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+Link: https://lore.kernel.org/r/20220112104501.30655-1-linmq006@gmail.com
 Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/loongson1/clk-loongson1c.c | 1 +
+ drivers/clk/tegra/clk-emc.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/loongson1/clk-loongson1c.c b/drivers/clk/loongson1/clk-loongson1c.c
-index 3466f7320b40..e3aa502761a3 100644
---- a/drivers/clk/loongson1/clk-loongson1c.c
-+++ b/drivers/clk/loongson1/clk-loongson1c.c
-@@ -40,6 +40,7 @@ static const struct clk_div_table ahb_div_table[] = {
- 	[1] = { .val = 1, .div = 4 },
- 	[2] = { .val = 2, .div = 3 },
- 	[3] = { .val = 3, .div = 3 },
-+	[4] = { /* sentinel */ }
- };
+diff --git a/drivers/clk/tegra/clk-emc.c b/drivers/clk/tegra/clk-emc.c
+index 0621a3a82ea6..7aeace88be6e 100644
+--- a/drivers/clk/tegra/clk-emc.c
++++ b/drivers/clk/tegra/clk-emc.c
+@@ -190,6 +190,7 @@ static struct tegra_emc *emc_ensure_emc_driver(struct tegra_clk_emc *tegra)
  
- void __init ls1x_clk_init(void)
+ 	tegra->emc = platform_get_drvdata(pdev);
+ 	if (!tegra->emc) {
++		put_device(&pdev->dev);
+ 		pr_err("%s: cannot find EMC driver\n", __func__);
+ 		return NULL;
+ 	}
 -- 
 2.34.1
 
