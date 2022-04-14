@@ -2,118 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9232AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244732AbiDNNfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        id S244745AbiDNNfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232326AbiDNN0l (ORCPT
+        with ESMTP id S244219AbiDNN0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:26:41 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303F49F6C9;
-        Thu, 14 Apr 2022 06:20:02 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id ff2d205ac2d432a1; Thu, 14 Apr 2022 15:20:01 +0200
-Received: from kreacher.localnet (unknown [213.134.181.101])
+        Thu, 14 Apr 2022 09:26:35 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C03E9E9CE;
+        Thu, 14 Apr 2022 06:19:55 -0700 (PDT)
+Received: from leknes.fjasle.eu ([46.142.96.207]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1M9Frd-1ncUUo06fH-006M6Y; Thu, 14 Apr 2022 15:16:41 +0200
+Received: from localhost.fjasle.eu (bergen.fjasle.eu [IPv6:fdda:8718:be81:0:6f0:21ff:fe91:394])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 9843966BE86;
-        Thu, 14 Apr 2022 15:20:00 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v3 2/9] PCI/PM: Drop the runtime_d3cold device flag
-Date:   Thu, 14 Apr 2022 15:04:27 +0200
-Message-ID: <8077784.T7Z3S40VBb@kreacher>
-In-Reply-To: <5838942.lOV4Wx5bFT@kreacher>
-References: <4419002.LvFx2qVVIh@kreacher> <11975904.O9o76ZdvQC@kreacher> <5838942.lOV4Wx5bFT@kreacher>
+        (Client did not present a certificate)
+        by leknes.fjasle.eu (Postfix) with ESMTPS id F148D3C07B;
+        Thu, 14 Apr 2022 15:16:38 +0200 (CEST)
+Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
+Received: by localhost.fjasle.eu (Postfix, from userid 1000)
+        id 176FB489; Thu, 14 Apr 2022 15:09:43 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 15:09:43 +0200
+From:   Nicolas Schier <nicolas@fjasle.eu>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Yann Droneaud <ydroneaud@opteya.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCHv1] kbuild: support W=e to make build abort in case of
+ warning
+Message-ID: <YlgdF9qmJyYGHKXZ@bergen.fjasle.eu>
+References: <1422803720-14723-1-git-send-email-ydroneaud@opteya.com>
+ <20220408084607.106468-1-ydroneaud@opteya.com>
+ <CAK7LNAQZLt_OecOogOQiSu5snW+sffsMoFgVcjPTx_idj_=_tQ@mail.gmail.com>
+ <CAKwvOd=yNnKsHJo0QWvoTuFF9p-y=cTftTD+7FY-wJ_f23zFTQ@mail.gmail.com>
+ <81585705-6ed8-12e5-1355-332a6a5d2b17@infradead.org>
+ <CAK7LNAS6ap9dR=kzRgQgt+d7FBBbVrwEqGU9g_pFD+nzMUt+gQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.101
-X-CLIENT-HOSTNAME: 213.134.181.101
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgieegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudekuddruddtudenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddutddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehm
- ihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK7LNAS6ap9dR=kzRgQgt+d7FBBbVrwEqGU9g_pFD+nzMUt+gQ@mail.gmail.com>
+Jabber-ID: nicolas@jabber.no
+X-Operating-System: Debian GNU/Linux bookworm/sid
+X-Provags-ID: V03:K1:VTplRYcqIA5m2LMYqAqfH7kOd6LlSKl27R7wPnUpoSX7DH+yGlI
+ RdfbT5Dvgi1MV94r997k8qAfnPAh9w/CQ3C7C0GRNvpCsdEA1pn71/H/o3GPfzye/76CSfx
+ dIl8ftEj0I1iuA5ikapiNgX2Rdtf7LnynYC9QbICwSIRgg9t/qJN91tNKyqipzTSYZgwRyU
+ H9kv5Re/u8EPsrx8a1Tjg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:frxQrqfiJnI=:fPuItlHpxR50/T1pphQzzo
+ YNfmgEBLM2Wulpvd6R7Yycyca81nrmYHvKCdFb4vLTkH0Tw8APtUX7ZI/3O2VsVUDUjbbnUbz
+ 19UhkPEzJHAa9XUhhvEafoUgtKDuEZ9Jqgpo1RQK6ASk6yxu2lwKY4r5WS45MngI9Oa/MGyPm
+ s2jpq4OkSPTS40K+3kZbPFRlE2CltVwT38uKO1zbui6HA91gLNY6ftVFKi0S/AySx5h9eLZzj
+ 8tw6dwkL/HL6YNB9P0Wg6zcfyTdaRT5aabguMW+viGWLJN8QSEQgQ9hv7NCah2mLs3hPgdsbK
+ wEzuWvmjFcnHtl5CJLx/25MRinnqPUfb89GhAXAR4LL9J2lSuASkrlJta8SS40JmWEpgTuyOK
+ JodFVro5mQ3TBRh47F0yMhHqp5KfoiIqDAULNDS3TVWYs5eD2nLMG97xJgpOWLCGB4UfsCUnr
+ n4dHxnI2Y9I4Whm1ZNJU0BjEGsp94Czcyui58oOQo9h0MtJM6aWiryQCRfbPRNggqL/NP4q1+
+ n66vqIYQDyn19VmKIJccd0q8zzYDaL573K87fY1gxziLJjEWkgTTdkvwmIslAPExDxXnis2eQ
+ NJqgkhuWJwPG2y/FwUyhobYrrWHud9wj8nE9QXAlvJys6kMDuQG6WBS7Q3ufCQ/NXwXHIXRSq
+ 8LAfQO7c3SAJUri3ZYauvPUH3zCuIohyXQ7u7UmFRdfliHg+2bsEnuxrWS5vy1zxDo74=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+På lø. 09. april 2022 kl. 10.47 +0000 skrev Masahiro Yamada:
+> On Sat, Apr 9, 2022 at 5:36 AM Randy Dunlap <rdunlap@infradead.org> Wrote:
+> >
+> >
+> >
+> > On 4/8/22 13:29, Nick Desaulniers wrote:
+> > > On Fri, Apr 8, 2022 at 4:06 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> > >>
+> > >> On Fri, Apr 8, 2022 at 5:46 PM Yann Droneaud <ydroneaud@opteya.com> wrote:
+> > >>>
+> > >>> When developing new code/feature, CONFIG_WERROR is most
+> > >>> often turned off, especially for people using make W=12 to
+> > >>> get more warnings.
+> > >>>
+> > >>> In such case, turning on -Werror temporarily would require
+> > >>> switching on CONFIG_WERROR in the configuration, building,
+> > >>> then switching off CONFIG_WERROR.
+> > >>>
+> > >>> For this use case, this patch introduces a new 'e' modifier
+> > >>> to W= as a short hand for KCFLAGS+=-Werror" so that -Werror
+> > >>> got added to the kernel (built-in) and modules' CFLAGS.
+> > >>>
+> > >>> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+> > >>> ---
+> > >>>  Makefile                   |  1 +
+> > >>>  scripts/Makefile.extrawarn | 13 +++++++++++--
+> > >>>  2 files changed, 12 insertions(+), 2 deletions(-)
+> > >>>
+> > >>> Changes since v0[0]:
+> > >>>
+> > >>>  - rebase on top of commit 64a91907c896 ("kbuild: refactor scripts/Makefile.extrawarn")
+> > >>>  - document use case after commit 3fe617ccafd6 ("Enable '-Werror' by default for all kernel builds")
+> > >>>
+> > >>> [0] https://lore.kernel.org/all/1422803720-14723-1-git-send-email-ydroneaud@opteya.com/
+> > >>
+> > >>
+> > >> I remembered the previous submission, I liked it, but I had lost it.
+> > >>
+> > >> It seems already 7 years ago, (before I became the Kbuild maintainer).
+> > >> Thanks for coming back to this.
+> > >>
+> > >>
+> > >> I like this, but I will wait some time for review comments.
+> > >
+> > > Dunno, this seems pretty simple:
+> > >
+> > > $ ./scripts/config -e WERROR
+> > > $ make ... W=12
+> >
+> > Yeah, that's about what I was thinking too..
+> 
+> 
+> 
+> But, you cannot change the .config
+> when you build external modules.
+> 
+> "make W=e" might be useful for people who strive to
+> keep their downstream modules warning-free.
+> 
+> 
+> W=e is the same pattern.
+> I do not see much downside.
 
-This flag is not needed any more, so drop it.
+If I set CONFIG_WERROR=y on the make command line, I could have the 
+same result, don't I?
 
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
+  make CONFIG_WERROR=1 ...
 
-v1 -> v3:
-   * Added R-by from Mika.
+no matter if in-tree or for external kernel modules.
 
----
- drivers/pci/pci-driver.c |    2 --
- drivers/pci/pci.c        |    3 ---
- include/linux/pci.h      |    4 ----
- 3 files changed, 9 deletions(-)
-
-Index: linux-pm/drivers/pci/pci-driver.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci-driver.c
-+++ linux-pm/drivers/pci/pci-driver.c
-@@ -1337,8 +1337,6 @@ static int pci_pm_runtime_resume(struct
- 	if (pm && pm->runtime_resume)
- 		error = pm->runtime_resume(dev);
- 
--	pci_dev->runtime_d3cold = false;
--
- 	return error;
- }
- 
-Index: linux-pm/drivers/pci/pci.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci.c
-+++ linux-pm/drivers/pci/pci.c
-@@ -2703,8 +2703,6 @@ int pci_finish_runtime_suspend(struct pc
- 	if (target_state == PCI_POWER_ERROR)
- 		return -EIO;
- 
--	dev->runtime_d3cold = target_state == PCI_D3cold;
--
- 	/*
- 	 * There are systems (for example, Intel mobile chips since Coffee
- 	 * Lake) where the power drawn while suspended can be significantly
-@@ -2722,7 +2720,6 @@ int pci_finish_runtime_suspend(struct pc
- 	if (error) {
- 		pci_enable_wake(dev, target_state, false);
- 		pci_restore_ptm_state(dev);
--		dev->runtime_d3cold = false;
- 	}
- 
- 	return error;
-Index: linux-pm/include/linux/pci.h
-===================================================================
---- linux-pm.orig/include/linux/pci.h
-+++ linux-pm/include/linux/pci.h
-@@ -379,10 +379,6 @@ struct pci_dev {
- 	unsigned int	mmio_always_on:1;	/* Disallow turning off io/mem
- 						   decoding during BAR sizing */
- 	unsigned int	wakeup_prepared:1;
--	unsigned int	runtime_d3cold:1;	/* Whether go through runtime
--						   D3cold, not set for devices
--						   powered on/off by the
--						   corresponding bridge */
- 	unsigned int	skip_bus_pm:1;	/* Internal: Skip bus-level PM */
- 	unsigned int	ignore_hotplug:1;	/* Ignore hotplug events */
- 	unsigned int	hotplug_user_indicators:1; /* SlotCtl indicators
-
-
-
+Kind regards,
+Nicolas
