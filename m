@@ -2,105 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F004C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 998C2C35273
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348250AbiDNODy (ORCPT
+        id S1348276AbiDNOEL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        Thu, 14 Apr 2022 10:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244564AbiDNN1n (ORCPT
+        with ESMTP id S244599AbiDNN1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:27:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3757A0BF6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942428;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JsNnlC4y7P/vpE0xDeBLZNUoZ387++jz5xn6fyKPXY0=;
-        b=eyUr9wZdIoe+vtvZ7KsiTTpsMBqvLFQdL/K2hMcHCwQthDqF2yJ9HFUxunPRYEBFpBhBi1
-        VYUp9BoSEAbqkfDdnpUXVyRKvvrGvEVIbdvidS4AGBDVRxWxjUPR1jTycftyMgRy/gSpIc
-        9OISnK0sHBkr4s/f0HFXcTuQ+X1LHhI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-284-53Dr_1THPoeY7HodHojW1g-1; Thu, 14 Apr 2022 09:20:27 -0400
-X-MC-Unique: 53Dr_1THPoeY7HodHojW1g-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:27:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107EBA146A;
+        Thu, 14 Apr 2022 06:20:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6026D800B21;
-        Thu, 14 Apr 2022 13:20:26 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BFAAB53CD;
-        Thu, 14 Apr 2022 13:20:24 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 05/34] KVM: x86: hyper-v: Expose support for extended gva ranges for flush hypercalls
-Date:   Thu, 14 Apr 2022 15:19:44 +0200
-Message-Id: <20220414132013.1588929-6-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5EC26125A;
+        Thu, 14 Apr 2022 13:20:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2C6AC385A5;
+        Thu, 14 Apr 2022 13:20:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942435;
+        bh=4HMK3GT9i/Jy4zL+ToJ0EBuc9JHHhZpWYG5PSt3u5fU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vUZfNO/IODExwjwM8B5MhSE9wxvVEyXCXCYJS54z9hWQClP3of46Jb8znKCzlE0fE
+         x+hOEvEne9Xmrx3J6toaxSGIEi/zCsMLdo6Hr3+oi54BIaxw6K61TrfoA8Me2ndeop
+         qz0jNS83XLYO3fyJS6WkMltpifyjaV9CfmREQ7Uw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 135/338] drm/tegra: Fix reference leak in tegra_dsi_ganged_probe
+Date:   Thu, 14 Apr 2022 15:10:38 +0200
+Message-Id: <20220414110842.741975873@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extended GVA ranges support bit seems to indicate whether lower 12
-bits of GVA can be used to specify up to 4095 additional consequent
-GVAs to flush. This is somewhat described in TLFS.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-Previously, KVM was handling HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX}
-requests by flushing the whole VPID so technically, extended GVA
-ranges were already supported. As such requests are handled more
-gently now, advertizing support for extended ranges starts making
-sense to reduce the size of TLB flush requests.
+[ Upstream commit 221e3638feb8bc42143833c9a704fa89b6c366bb ]
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore. Add put_device() call to fix this.
+
+Fixes: e94236cde4d5 ("drm/tegra: dsi: Add ganged mode support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/hyperv-tlfs.h | 2 ++
- arch/x86/kvm/hyperv.c              | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/gpu/drm/tegra/dsi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
-index 0a9407dc0859..5225a85c08c3 100644
---- a/arch/x86/include/asm/hyperv-tlfs.h
-+++ b/arch/x86/include/asm/hyperv-tlfs.h
-@@ -61,6 +61,8 @@
- #define HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE		BIT(10)
- /* Support for debug MSRs available */
- #define HV_FEATURE_DEBUG_MSRS_AVAILABLE			BIT(11)
-+/* Support for extended gva ranges for flush hypercalls available */
-+#define HV_FEATURE_EXT_GVA_RANGES_FLUSH			BIT(14)
- /*
-  * Support for returning hypercall output block via XMM
-  * registers is available
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 759e1a16e5c3..1a6f9628cee9 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -2702,6 +2702,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 			ent->ebx |= HV_DEBUGGING;
- 			ent->edx |= HV_X64_GUEST_DEBUGGING_AVAILABLE;
- 			ent->edx |= HV_FEATURE_DEBUG_MSRS_AVAILABLE;
-+			ent->edx |= HV_FEATURE_EXT_GVA_RANGES_FLUSH;
+diff --git a/drivers/gpu/drm/tegra/dsi.c b/drivers/gpu/drm/tegra/dsi.c
+index ee6ca8fa1c65..e2903bf7821b 100644
+--- a/drivers/gpu/drm/tegra/dsi.c
++++ b/drivers/gpu/drm/tegra/dsi.c
+@@ -1456,8 +1456,10 @@ static int tegra_dsi_ganged_probe(struct tegra_dsi *dsi)
+ 		dsi->slave = platform_get_drvdata(gangster);
+ 		of_node_put(np);
  
- 			/*
- 			 * Direct Synthetic timers only make sense with in-kernel
+-		if (!dsi->slave)
++		if (!dsi->slave) {
++			put_device(&gangster->dev);
+ 			return -EPROBE_DEFER;
++		}
+ 
+ 		dsi->slave->master = dsi;
+ 	}
 -- 
-2.35.1
+2.34.1
+
+
 
