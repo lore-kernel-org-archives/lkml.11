@@ -2,157 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55616C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432CEC3527E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349282AbiDNOTo (ORCPT
+        id S1349255AbiDNOTi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35576 "EHLO
+        Thu, 14 Apr 2022 10:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245743AbiDNNi6 (ORCPT
+        with ESMTP id S245737AbiDNNiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774A5A776F;
-        Thu, 14 Apr 2022 06:34:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12B8761D2D;
-        Thu, 14 Apr 2022 13:34:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18FAFC385A5;
-        Thu, 14 Apr 2022 13:34:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943247;
-        bh=LkG14/5++LS3YAYaWOkPhw6jaMaYk60qm+svSCsFjIc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W+NKELI2Arfz+qI3nSXhNDOqbeubv+HK1mY/ZfnaVkUATfjnECFazvxJUXvAS42jw
-         TG8BgRZSgfgBk+ZJFDIBgE/YQ6iOKNGLCfXzH88zSVa5M/rP5fCoHKPpAsITPRsUmQ
-         sFyrNUIiORvI8yYSGe5ESpzoyhdVXK2sEfyEXPqc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.4 085/475] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-Date:   Thu, 14 Apr 2022 15:07:50 +0200
-Message-Id: <20220414110857.532255593@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:38:55 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FB4A7764
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:34:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649943244; x=1681479244;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UNppWNaeAIa10Dki/dKqomPYngkMUhRRYFw1rQFeEto=;
+  b=fsqYLjJMDwNNimsEVg76wQCLe6u9t3iju7mq8/dJKdddMfbSH1JJa500
+   PAUctHLbl93OdNsu0XDGX6HMN9nnoGYUHTd6u2s216jCvUZlqWC7O0aXO
+   A8khr5MYm3Sv40tf5WZiAGOguuW3mzf3YiErmFkV5bcLDNAFSsm1eDNCD
+   MwxwoVMwhyPGeDk0Pb2jQiDk/Pa4QK79sYLIfuykBk3Sh1Q8COw+Pp4g4
+   PTv4sTY3Q7kayR8RfH7nnbCl+n0cUrESpBWxIhskNwZ83cq/7KXeq5pf7
+   J09Dkk8VmcGQnCr/8I2Q5w0h4M8fm8vh40v47DcCcV/Q6hwIXkSFXqIuT
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="243516091"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="243516091"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:34:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="508406979"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 14 Apr 2022 06:34:03 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nezbm-0000zx-Cz;
+        Thu, 14 Apr 2022 13:34:02 +0000
+Date:   Thu, 14 Apr 2022 21:33:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [axboe-block:sock-nolock.2 5/5] net/mptcp/subflow.c:1796:20: error:
+ too few arguments to function call, expected 2, have 1
+Message-ID: <202204142114.rOCzHB7d-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git sock-nolock.2
+head:   95f2e3bd27b30244f79deacbc1aac49d294bd854
+commit: 95f2e3bd27b30244f79deacbc1aac49d294bd854 [5/5] net: allow sk_prot->release_cb() without sock lock held
+config: hexagon-randconfig-r041-20220414 (https://download.01.org/0day-ci/archive/20220414/202204142114.rOCzHB7d-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6b7e6ea489f6dd45a9b0da9ac20871560917b9b0)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git/commit/?id=95f2e3bd27b30244f79deacbc1aac49d294bd854
+        git remote add axboe-block https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git
+        git fetch --no-tags axboe-block sock-nolock.2
+        git checkout 95f2e3bd27b30244f79deacbc1aac49d294bd854
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/
 
-commit 9466987f246758eb7e9071ae58005253f631271e upstream.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
-was also inefficient if the length was not a multiple of 4, since it
-would needlessly fall back to copying the entire buffer bytewise.
+All errors (new ones prefixed by >>):
 
-We already have a perfectly good memcpy_toio function, so just call that
-instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
-was already using it anyway.
-
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-6-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   48 +---------------
- 1 file changed, 4 insertions(+), 44 deletions(-)
-
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -12,6 +12,7 @@
- #include <linux/interrupt.h>
- #include <linux/bcma/bcma.h>
- #include <linux/sched.h>
-+#include <linux/io.h>
- #include <asm/unaligned.h>
- 
- #include <soc.h>
-@@ -445,47 +446,6 @@ brcmf_pcie_write_ram32(struct brcmf_pcie
- 
- 
- static void
--brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
--			  void *srcaddr, u32 len)
--{
--	void __iomem *address = devinfo->tcm + mem_offset;
--	__le32 *src32;
--	__le16 *src16;
--	u8 *src8;
--
--	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
--		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
--			src8 = (u8 *)srcaddr;
--			while (len) {
--				iowrite8(*src8, address);
--				address++;
--				src8++;
--				len--;
--			}
--		} else {
--			len = len / 2;
--			src16 = (__le16 *)srcaddr;
--			while (len) {
--				iowrite16(le16_to_cpu(*src16), address);
--				address += 2;
--				src16++;
--				len--;
--			}
--		}
--	} else {
--		len = len / 4;
--		src32 = (__le32 *)srcaddr;
--		while (len) {
--			iowrite32(le32_to_cpu(*src32), address);
--			address += 4;
--			src32++;
--			len--;
--		}
--	}
--}
--
--
--static void
- brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
- 			  void *dstaddr, u32 len)
- {
-@@ -1561,8 +1521,8 @@ static int brcmf_pcie_download_fw_nvram(
- 		return err;
- 
- 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
--	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
--				  (void *)fw->data, fw->size);
-+	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
-+		    (void *)fw->data, fw->size);
- 
- 	resetintr = get_unaligned_le32(fw->data);
- 	release_firmware(fw);
-@@ -1576,7 +1536,7 @@ static int brcmf_pcie_download_fw_nvram(
- 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
- 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
- 			  nvram_len;
--		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
-+		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
- 		brcmf_fw_nvram_free(nvram);
- 	} else {
- 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
+>> net/mptcp/subflow.c:1796:20: error: too few arguments to function call, expected 2, have 1
+           tcp_release_cb(ssk);
+           ~~~~~~~~~~~~~~    ^
+   include/net/tcp.h:337:6: note: 'tcp_release_cb' declared here
+   void tcp_release_cb(struct sock *sk, bool locked);
+        ^
+>> net/mptcp/subflow.c:1841:31: error: incompatible function pointer types assigning to 'void (*)(struct sock *, bool)' (aka 'void (*)(struct sock *, _Bool)') from 'void (struct sock *)' [-Werror,-Wincompatible-function-pointer-types]
+           tcp_prot_override.release_cb = tcp_release_cb_override;
+                                        ^ ~~~~~~~~~~~~~~~~~~~~~~~
+   2 errors generated.
 
 
+vim +1796 net/mptcp/subflow.c
+
+cec37a6e41aae7 Peter Krystad    2020-01-21  1788  
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1789  static void tcp_release_cb_override(struct sock *ssk)
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1790  {
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1791  	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1792  
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1793  	if (mptcp_subflow_has_delegated_action(subflow))
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1794  		mptcp_subflow_process_delegated(ssk);
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1795  
+b19bc2945b40b9 Paolo Abeni      2021-01-20 @1796  	tcp_release_cb(ssk);
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1797  }
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1798  
+2303f994b3e187 Peter Krystad    2020-01-21  1799  static struct tcp_ulp_ops subflow_ulp_ops __read_mostly = {
+2303f994b3e187 Peter Krystad    2020-01-21  1800  	.name		= "mptcp",
+2303f994b3e187 Peter Krystad    2020-01-21  1801  	.owner		= THIS_MODULE,
+2303f994b3e187 Peter Krystad    2020-01-21  1802  	.init		= subflow_ulp_init,
+2303f994b3e187 Peter Krystad    2020-01-21  1803  	.release	= subflow_ulp_release,
+cec37a6e41aae7 Peter Krystad    2020-01-21  1804  	.clone		= subflow_ulp_clone,
+2303f994b3e187 Peter Krystad    2020-01-21  1805  };
+2303f994b3e187 Peter Krystad    2020-01-21  1806  
+cec37a6e41aae7 Peter Krystad    2020-01-21  1807  static int subflow_ops_init(struct request_sock_ops *subflow_ops)
+cec37a6e41aae7 Peter Krystad    2020-01-21  1808  {
+cec37a6e41aae7 Peter Krystad    2020-01-21  1809  	subflow_ops->obj_size = sizeof(struct mptcp_subflow_request_sock);
+cec37a6e41aae7 Peter Krystad    2020-01-21  1810  	subflow_ops->slab_name = "request_sock_subflow";
+cec37a6e41aae7 Peter Krystad    2020-01-21  1811  
+cec37a6e41aae7 Peter Krystad    2020-01-21  1812  	subflow_ops->slab = kmem_cache_create(subflow_ops->slab_name,
+cec37a6e41aae7 Peter Krystad    2020-01-21  1813  					      subflow_ops->obj_size, 0,
+cec37a6e41aae7 Peter Krystad    2020-01-21  1814  					      SLAB_ACCOUNT |
+cec37a6e41aae7 Peter Krystad    2020-01-21  1815  					      SLAB_TYPESAFE_BY_RCU,
+cec37a6e41aae7 Peter Krystad    2020-01-21  1816  					      NULL);
+cec37a6e41aae7 Peter Krystad    2020-01-21  1817  	if (!subflow_ops->slab)
+cec37a6e41aae7 Peter Krystad    2020-01-21  1818  		return -ENOMEM;
+cec37a6e41aae7 Peter Krystad    2020-01-21  1819  
+79c0949e9a09f6 Peter Krystad    2020-01-21  1820  	subflow_ops->destructor = subflow_req_destructor;
+79c0949e9a09f6 Peter Krystad    2020-01-21  1821  
+cec37a6e41aae7 Peter Krystad    2020-01-21  1822  	return 0;
+cec37a6e41aae7 Peter Krystad    2020-01-21  1823  }
+cec37a6e41aae7 Peter Krystad    2020-01-21  1824  
+d39dceca388ad0 Paolo Abeni      2020-06-26  1825  void __init mptcp_subflow_init(void)
+2303f994b3e187 Peter Krystad    2020-01-21  1826  {
+08b8d080982fec Florian Westphal 2020-07-30  1827  	mptcp_subflow_request_sock_ops = tcp_request_sock_ops;
+08b8d080982fec Florian Westphal 2020-07-30  1828  	if (subflow_ops_init(&mptcp_subflow_request_sock_ops) != 0)
+cec37a6e41aae7 Peter Krystad    2020-01-21  1829  		panic("MPTCP: failed to init subflow request sock ops\n");
+cec37a6e41aae7 Peter Krystad    2020-01-21  1830  
+cec37a6e41aae7 Peter Krystad    2020-01-21  1831  	subflow_request_sock_ipv4_ops = tcp_request_sock_ipv4_ops;
+7ea851d19b2359 Florian Westphal 2020-11-30  1832  	subflow_request_sock_ipv4_ops.route_req = subflow_v4_route_req;
+cec37a6e41aae7 Peter Krystad    2020-01-21  1833  
+cec37a6e41aae7 Peter Krystad    2020-01-21  1834  	subflow_specific = ipv4_specific;
+cec37a6e41aae7 Peter Krystad    2020-01-21  1835  	subflow_specific.conn_request = subflow_v4_conn_request;
+cec37a6e41aae7 Peter Krystad    2020-01-21  1836  	subflow_specific.syn_recv_sock = subflow_syn_recv_sock;
+cec37a6e41aae7 Peter Krystad    2020-01-21  1837  	subflow_specific.sk_rx_dst_set = subflow_finish_connect;
+4cf86ae84c7183 Paolo Abeni      2022-03-07  1838  	subflow_specific.rebuild_header = subflow_rebuild_header;
+cec37a6e41aae7 Peter Krystad    2020-01-21  1839  
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1840  	tcp_prot_override = tcp_prot;
+b19bc2945b40b9 Paolo Abeni      2021-01-20 @1841  	tcp_prot_override.release_cb = tcp_release_cb_override;
+b19bc2945b40b9 Paolo Abeni      2021-01-20  1842  
+
+:::::: The code at line 1796 was first introduced by commit
+:::::: b19bc2945b40b9fd38e835700907ffe8534ef0de mptcp: implement delegated actions
+
+:::::: TO: Paolo Abeni <pabeni@redhat.com>
+:::::: CC: Jakub Kicinski <kuba@kernel.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
