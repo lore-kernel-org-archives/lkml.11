@@ -2,67 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB40C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241113AbiDNIs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
+        id S241068AbiDNIuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbiDNIsx (ORCPT
+        with ESMTP id S236287AbiDNIuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:48:53 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46EA065D0B;
-        Thu, 14 Apr 2022 01:46:29 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 39BB280A4;
-        Thu, 14 Apr 2022 08:43:51 +0000 (UTC)
-Date:   Thu, 14 Apr 2022 11:46:26 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Fixes tag needs some work in the omap-fixes tree
-Message-ID: <YlffYlfFuH6ur7GP@atomide.com>
-References: <20220413070201.248a9b11@canb.auug.org.au>
- <773CBF24-F8B7-481F-BBCE-53C13198FBED@goldelico.com>
+        Thu, 14 Apr 2022 04:50:35 -0400
+X-Greylist: delayed 1529 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 01:48:11 PDT
+Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [185.185.170.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15AF11EAEC;
+        Thu, 14 Apr 2022 01:48:10 -0700 (PDT)
+Received: from hillosipuli.retiisi.eu (89-27-103-169.bb.dnainternet.fi [89.27.103.169])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sailus)
+        by lahtoruutu.iki.fi (Postfix) with ESMTPSA id 866091B001CF;
+        Thu, 14 Apr 2022 11:48:08 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
+        t=1649926088;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MwUGtzT4Ya5DJOi91TQOaG6spJ7XBSP7OpQSwUZss98=;
+        b=EdC/gE0hA/6Fdl3DmUDyB2l0ulqvfwYlI2I6scFIHxmzsLSys89Y7mHwozeSVArPbXdbEL
+        rdf2l1pK/jgSs7m5Etecjp9NThoYbgDaOq2GjBL4SkyowaYisPAZ6nyf3wVl6aA03ynomm
+        FnF92dxVua5fjqKl3s0veFPwEN3Zcka98F4tauaC23RAIeQDojh1fyQxEgtQ7VnHi6oHVC
+        EnS6LMF7+wBPMEvZnaXkLhzUsvwKuSqpp0vhpkLGC7F1j6ct5tEiOkBRvl8BQcofjlz/NG
+        8lUNwpyOOSzEIT99XWRQnym8GvaQErgd2LOwjXgR2JAtD7oq9bCV65LIeyn7OA==
+Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 3664A634C91;
+        Thu, 14 Apr 2022 11:48:08 +0300 (EEST)
+Date:   Thu, 14 Apr 2022 11:48:08 +0300
+From:   Sakari Ailus <sakari.ailus@iki.fi>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Shunqian Zheng <zhengsq@rock-chips.com>,
+        kernel-janitors@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/30] media: i2c: ov5695: fix typos in comments
+Message-ID: <YlffyFr5pgdeBtD2@valkosipuli.retiisi.eu>
+References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+ <20220314115354.144023-10-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <773CBF24-F8B7-481F-BBCE-53C13198FBED@goldelico.com>
+In-Reply-To: <20220314115354.144023-10-Julia.Lawall@inria.fr>
+ARC-Seal: i=1; s=lahtoruutu; d=iki.fi; t=1649926088; a=rsa-sha256;
+        cv=none;
+        b=CdM10Dj5w6c6AifGUuTLWi4GKdhe71NKcZjgOVfP9p632bcCZAIAfZaaKzS5+Xc8hwMr1r
+        GAWQRBY+S8hpfV/grjiy/KI+fWIjUl6bFLSDp12v40OJRtzni6ArbiYUQhpj8vF2RHYvut
+        PfSCiT47VLq3EH2LZWeJY65I8OCZVvqjEfZA/z/64Jv6CkUbhnP8MidcqHOPjfspgfkyr7
+        9RRz3FxKsIRt2SoLKJfEYQdLcW+VCCz0wGfo8H0vwF8JfFjkNz627ziGSs2mln57VkoC0t
+        1B8VzVK9toqtnd6ZX7Zq6rEi39JtL9Y58CzFvxfA3XEGb8rWJOHsuTx1Erms5g==
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=lahtoruutu; t=1649926088;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MwUGtzT4Ya5DJOi91TQOaG6spJ7XBSP7OpQSwUZss98=;
+        b=wJPCzT71qx5KQ17MNk0VM85QDNLRK3UrOPfpuHhqtfMdTszmmWw99YwirdLBMMNi2i2K0Y
+        Xxqi2Cu1/PuZemZ7FvHmpe3iIr/7x/tvGHTW19ou4vwoBuBqMgWw9wH608vajaSQhUNKqJ
+        SDxi/AoGriUAunbT5NZXThqe3Ol212JByQMV8k3195CZfkbNKG4ay42OmxBUVgc8/irVFu
+        418EAnl6sdW/4fClu4RRMRvaD7AflChZdOw3D6apHriPAwHu/TJUeFPlpPgc40opjl+OY+
+        yCPv0HMLWixpoRroZ5ik4kDWVvW49FbGDqXmBVfERF1wkjXF39kjn+q79hMEWA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* H. Nikolaus Schaller <hns@goldelico.com> [220413 06:19]:
-> Hi Stephen,
+On Mon, Mar 14, 2022 at 12:53:33PM +0100, Julia Lawall wrote:
+> Various spelling mistakes in comments.
+> Detected with the help of Coccinelle.
 > 
-> > Am 12.04.2022 um 23:02 schrieb Stephen Rothwell <sfr@canb.auug.org.au>:
-> > 
-> > Hi all,
-> > 
-> > In commit
-> > 
-> >  9be24a73de12 ("ARM: dts: Fix mmc order for omap3-gta04")
-> > 
-> > Fixes tag
-> > 
-> >  Fixes: commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-> > 
-> > has these problem(s):
-> > 
-> >  - leading word 'commit' unexpected
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 > 
-> Ah, I see.
-> Diff of patch is good but the commit message needs editing.
+> ---
+>  drivers/media/i2c/ov5695.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> What is the procedure to fix this case?
+> diff --git a/drivers/media/i2c/ov5695.c b/drivers/media/i2c/ov5695.c
+> index 439385938a51..910309783885 100644
+> --- a/drivers/media/i2c/ov5695.c
+> +++ b/drivers/media/i2c/ov5695.c
+> @@ -1122,7 +1122,7 @@ static int ov5695_set_ctrl(struct v4l2_ctrl *ctrl)
+>  
+>  	switch (ctrl->id) {
+>  	case V4L2_CID_EXPOSURE:
+> -		/* 4 least significant bits of expsoure are fractional part */
+> +		/* 4 least significant bits of exposure are fractional part */
+>  		ret = ov5695_write_reg(ov5695->client, OV5695_REG_EXPOSURE,
+>  				       OV5695_REG_VALUE_24BIT, ctrl->val << 4);
+>  		break;
 
-Thanks for catching this, no need to do anything. I've fixed it up
-and pushed out an updated fixes branch.
+Applied, thanks!
 
-Regards,
-
-TOny
+-- 
+Sakari Ailus
