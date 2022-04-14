@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9777CC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 255E4C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346826AbiDNOvJ (ORCPT
+        id S1346082AbiDNOuk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        Thu, 14 Apr 2022 10:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345213AbiDNNpa (ORCPT
+        with ESMTP id S1344914AbiDNNoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173F55FD5;
-        Thu, 14 Apr 2022 06:43:05 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C3F56775;
+        Thu, 14 Apr 2022 06:40:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBEA4B828E6;
-        Thu, 14 Apr 2022 13:43:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3825CC385A1;
-        Thu, 14 Apr 2022 13:43:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D07A161BA7;
+        Thu, 14 Apr 2022 13:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C85C385A1;
+        Thu, 14 Apr 2022 13:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943782;
-        bh=HAjsokNLpm1BGeHXA8hl2TeS4FY5QiuvnC9KI1mxvmM=;
+        s=korg; t=1649943640;
+        bh=jwt4CADUzDZcKMg31hsForQ2DAABZD9u7dOEA4ghXUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a+YxLXDTvw4JvAUJHteToh92/Yr+AxWdJvCpE+4nD9mHpnaE3Db4saQvs1PHFIqk7
-         z16hgm5lwPbc9uiQS533dREXUAYBatNjEueW9lNXzP6OHf+aFPyfRzovdyHKH0y54S
-         1UUsA1xZ6wUmqGCaoxMjuFXe9QMLvRtC65NyD2UU=
+        b=LA+x1a1CDTxlMNywmuWLLb/OMqH1QWBbqIGjlX+OAmkZZ98qgvxd1hr9F4qoFpN23
+         E+D6HvmPTZjYtwt8KkMl6avJ4xIWSiiOXqqPHGjoJQWY8aUOLH/LVII36i0mcFeOZO
+         rYqr9KKQtQC1mruhJffoPlupJqgp3smpkunsEiFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 280/475] irqchip/qcom-pdc: Fix broken locking
-Date:   Thu, 14 Apr 2022 15:11:05 +0200
-Message-Id: <20220414110902.936801628@linuxfoundation.org>
+Subject: [PATCH 5.4 229/475] misc: alcor_pci: Fix an error handling path
+Date:   Thu, 14 Apr 2022 15:10:14 +0200
+Message-Id: <20220414110901.529728373@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,54 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
+[ Upstream commit 5b3dc949f554379edcb8ef6111aa5ecb78feb798 ]
 
-pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
-and has a raw spinlock for mutual exclusion, which is uses with
-interruptible primitives.
+A successful ida_simple_get() should be balanced by a corresponding
+ida_simple_remove().
 
-This means that this critical section can itself be interrupted.
-Should the interrupt also be a PDC interrupt, and the endpoint driver
-perform an irq_disable() on that interrupt, we end-up in a deadlock.
+Add the missing call in the error handling path of the probe.
 
-Fix this by using the irqsave/irqrestore variants of the locking
-primitives.
+While at it, switch to ida_alloc()/ida_free() instead to
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
-Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
+Fixes: 4f556bc04e3c ("misc: cardreader: add new Alcor Micro Cardreader PCI driver")
+Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/918a9875b7f67b7f8f123c4446452603422e8c5e.1644136776.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/qcom-pdc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/misc/cardreader/alcor_pci.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index faa7d61b9d6c..239a889df608 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -50,17 +50,18 @@ static u32 pdc_reg_read(int reg, u32 i)
- static void pdc_enable_intr(struct irq_data *d, bool on)
- {
- 	int pin_out = d->hwirq;
-+	unsigned long flags;
- 	u32 index, mask;
- 	u32 enable;
+diff --git a/drivers/misc/cardreader/alcor_pci.c b/drivers/misc/cardreader/alcor_pci.c
+index 1fadb95b85b0..ba5d5c102b3c 100644
+--- a/drivers/misc/cardreader/alcor_pci.c
++++ b/drivers/misc/cardreader/alcor_pci.c
+@@ -260,7 +260,7 @@ static int alcor_pci_probe(struct pci_dev *pdev,
+ 	if (!priv)
+ 		return -ENOMEM;
  
- 	index = pin_out / 32;
- 	mask = pin_out % 32;
+-	ret = ida_simple_get(&alcor_pci_idr, 0, 0, GFP_KERNEL);
++	ret = ida_alloc(&alcor_pci_idr, GFP_KERNEL);
+ 	if (ret < 0)
+ 		return ret;
+ 	priv->id = ret;
+@@ -274,7 +274,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
+ 	ret = pci_request_regions(pdev, DRV_NAME_ALCOR_PCI);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Cannot request region\n");
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto error_free_ida;
+ 	}
  
--	raw_spin_lock(&pdc_lock);
-+	raw_spin_lock_irqsave(&pdc_lock, flags);
- 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
- 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
- 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
--	raw_spin_unlock(&pdc_lock);
-+	raw_spin_unlock_irqrestore(&pdc_lock, flags);
+ 	if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM)) {
+@@ -318,6 +319,8 @@ static int alcor_pci_probe(struct pci_dev *pdev,
+ 
+ error_release_regions:
+ 	pci_release_regions(pdev);
++error_free_ida:
++	ida_free(&alcor_pci_idr, priv->id);
+ 	return ret;
  }
  
- static void qcom_pdc_gic_mask(struct irq_data *d)
+@@ -331,7 +334,7 @@ static void alcor_pci_remove(struct pci_dev *pdev)
+ 
+ 	mfd_remove_devices(&pdev->dev);
+ 
+-	ida_simple_remove(&alcor_pci_idr, priv->id);
++	ida_free(&alcor_pci_idr, priv->id);
+ 
+ 	pci_release_regions(pdev);
+ 	pci_set_drvdata(pdev, NULL);
 -- 
 2.34.1
 
