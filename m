@@ -2,83 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F20C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 568F4C41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355886AbiDNP7j (ORCPT
+        id S1355953AbiDNP7p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53686 "EHLO
+        Thu, 14 Apr 2022 11:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353453AbiDNPkx (ORCPT
+        with ESMTP id S1349882AbiDNPkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:40:53 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CD2DBD13;
-        Thu, 14 Apr 2022 08:21:01 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-e2afb80550so5605891fac.1;
-        Thu, 14 Apr 2022 08:21:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lqRJc6X1Uv0L9nq++wQS5HzuhbVfOhr/gAFMGNc6R2Y=;
-        b=oEFrsuKmNujZGOMK5NNnLW1ECNUQe31gcUw4k1Z/YvFn87ashgyRFusJ1P9K+sZLR3
-         xf5kkg5p1ZPdX/FZ8OtDLbrU6PV7aQCChlqO/efTiLxEa3fJUvwYEUq7T8pieozXfXPx
-         065P7P8mobbWq0LY36EwrKht5SuIR+qvyckAoTuJPBcO3EOYyJYkh1Yrkret0WqvKOCf
-         qET2e+U/I2+wCY/fy1L7SzV2lCYBS+DDAPvCsAYchJ1Wbp5PgvPKkWxRJIqP406ULx9h
-         ZDD9VF+AyiEHYzOBqjGDfXf8Xaq4rvFD2I6vggj29RkI8LUxwyUV8sOZiFzTKbDtRV5S
-         2zBQ==
-X-Gm-Message-State: AOAM531aV4qDGcf2p8/KH7KbO21mx7/nv/bMt9yC1BOxJ2fJrLHiG2Gd
-        ofSpZ1rjijDeog6tbLyPSw==
-X-Google-Smtp-Source: ABdhPJxa75gqRlvYa8FhtXUMqFApngGD186Lmi8++a0QWdKFaMB5fVO1TNjyXAbtou2UEFajQ1tWOw==
-X-Received: by 2002:a05:6870:461d:b0:de:4705:7fe8 with SMTP id z29-20020a056870461d00b000de47057fe8mr1701434oao.221.1649949661055;
-        Thu, 14 Apr 2022 08:21:01 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bn41-20020a056808232900b003222f6e2ae8sm105922oib.29.2022.04.14.08.20.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:21:00 -0700 (PDT)
-Received: (nullmailer pid 2077061 invoked by uid 1000);
-        Thu, 14 Apr 2022 15:20:59 -0000
-Date:   Thu, 14 Apr 2022 10:20:59 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, Viresh Kumar <vireshk@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-pm@vger.kernel.org,
-        Nishanth Menon <nm@ti.com>, Taniya Das <tdas@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-clk@vger.kernel.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        linux-arm-msm@vger.kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-scsi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [RFC PATCH v2 1/6] dt-bindings: clock: qcom,gcc-sdm845: add
- parent power domain
-Message-ID: <Ylg7292ZqfwS4TUr@robh.at.kernel.org>
-References: <20220411154347.491396-1-krzysztof.kozlowski@linaro.org>
- <20220411154347.491396-2-krzysztof.kozlowski@linaro.org>
+        Thu, 14 Apr 2022 11:40:19 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8F01EAF3;
+        Thu, 14 Apr 2022 08:19:51 -0700 (PDT)
+Received: from [192.168.0.175] (ip5f5aed13.dynamic.kabel-deutschland.de [95.90.237.19])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: buczek)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 36EBE61EA1928;
+        Thu, 14 Apr 2022 17:19:50 +0200 (CEST)
+Message-ID: <4e83fb26-4d4a-d482-640c-8104973b7ebf@molgen.mpg.de>
+Date:   Thu, 14 Apr 2022 17:19:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411154347.491396-2-krzysztof.kozlowski@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        dm-devel@redhat.com
+Cc:     it+linux@molgen.mpg.de,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From:   Donald Buczek <buczek@molgen.mpg.de>
+Subject: ext4_writepages: jbd2_start: 5120 pages, ino 11; err -5
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022 17:43:42 +0200, Krzysztof Kozlowski wrote:
-> Allow Qualcomm GCC to register its parent power domain (e.g. RPMHPD) to
-> properly pass performance state from children.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/clock/qcom,gcc-sdm845.yaml | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+We have a cluster scheduler which provides each cluster job with a private scratch filesystem (TMPDIR). These are created when a job starts and removed when a job completes. The setup works by fallocate, losetup, mkfs.ext4, mkdir, mount, "losetup -d", rm and the teardown just does a umount and rmdir.
 
-Acked-by: Rob Herring <robh@kernel.org>
+This works but there is one nuisance: The systems usually have a lot of memory and some jobs write a lot of data to their scratch filesystems. So when a job finishes, there often is a lot to sync by umount which sometimes takes many minutes and wastes a lot of I/O bandwidth. Additionally, the reserved space can't be returned and reused until the umount is finished and the backing file is deleted.
+
+So I was looking for a way to avoid that but didn't find something straightforward. The workaround I've found so far is using a dm-device (linear target) between the filesystem and the loop device and then use this sequence for teardown:
+
+- fcntl EXT4_IOC_SHUTDOWN with EXT4_GOING_FLAGS_NOLOGFLUSH
+- dmestup reload $dmname --table "0 $sectors zero"
+- dmsetup resume $dmname --noflush
+- umount $mountpoint
+- dmsetup remove --deferred $dmname
+- rmdir $mountpoint
+
+This seems to do what I want. The unnecessary flushing of the temporary data is redirected from the backing file into the zero target and it works really fast. There is one remaining problem though, which might be just a cosmetic one: Although ext4 is shut down to prevent it from writing, I sometimes get the error message from the subject in the logs:
+
+[2963044.462043] EXT4-fs (dm-1): mounted filesystem without journal. Opts: (null)
+[2963044.686994] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
+[2963044.728391] EXT4-fs (dm-2): mounted filesystem without journal. Opts: (null)
+[2963055.585198] EXT4-fs (dm-2): shut down requested (2)
+[2963064.821246] EXT4-fs (dm-2): mounted filesystem without journal. Opts: (null)
+[2963074.838259] EXT4-fs (dm-2): shut down requested (2)
+[2963095.979089] EXT4-fs (dm-0): shut down requested (2)
+[2963096.066376] EXT4-fs (dm-0): ext4_writepages: jbd2_start: 5120 pages, ino 11; err -5
+[2963108.636648] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
+[2963125.194740] EXT4-fs (dm-0): shut down requested (2)
+[2963166.708088] EXT4-fs (dm-1): shut down requested (2)
+[2963169.334437] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
+[2963227.515974] EXT4-fs (dm-0): shut down requested (2)
+[2966222.515143] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
+[2966222.523390] EXT4-fs (dm-1): mounted filesystem without journal. Opts: (null)
+[2966222.598071] EXT4-fs (dm-2): mounted filesystem without journal. Opts: (null)
+
+So I'd like to ask a few questions:
+
+- Is this error message expected or is it a bug?
+- Can it be ignored or is there a leak or something on that error path.
+- Is there a better way to do what I want? Something I've overlooked?
+- I consider to create a new dm target or add an option to an existing one, because I feel that "zero" underneath a filesystem asks for problems because a filesystem expects to read back the data that it wrote, and the "error" target would trigger lots of errors during the writeback attempts. What I really want is a target which silently discard writes and returns errors on reads. Any opinion about that?
+- But to use devicemapper to eat away the I/O is also just a workaround to the fact that we can't parse some flag to umount to say that we are okay to lose all data and leave the filesystem in a corrupted state if this was the last reference to it. Would this be a useful feature?
+
+Best
+   Donald
+-- 
+Donald Buczek
+buczek@molgen.mpg.de
