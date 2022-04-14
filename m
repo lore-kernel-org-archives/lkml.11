@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 389B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AD2C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240694AbiDNOGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57308 "EHLO
+        id S238869AbiDNOGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344011AbiDNNaO (ORCPT
+        with ESMTP id S1344010AbiDNNaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:30:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130B49285F;
-        Thu, 14 Apr 2022 06:26:09 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF6091AD9;
+        Thu, 14 Apr 2022 06:26:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A36D461B18;
-        Thu, 14 Apr 2022 13:26:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0616C385A1;
-        Thu, 14 Apr 2022 13:26:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC2FFB82941;
+        Thu, 14 Apr 2022 13:26:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B00FC385A1;
+        Thu, 14 Apr 2022 13:26:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942768;
-        bh=XYu6qLhe0TZaFiCEAAGO00g2C77EF4AtExQ0erqZzXw=;
+        s=korg; t=1649942762;
+        bh=WpbV/kui7UuD8bM1N5stKLj/lbS2sxBNhDGAcSvyodg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fA9NuZzzKTYuY/0nHHnsmnNGH2pY1DRv6NxMnybQ+W638lPo9RmciacMKd98C2ugO
-         HSgLilroKmwhBcuCwGl7y8Vn9nHmbzkPG4KAOwAx5gAj7PcoJP+0++WoPpBIjae5h3
-         2U8Qz8x6F0pOC4NyPaXWfZ6CnbRlvrnAwDGoAD+A=
+        b=HTDtUYofVo1oKplaTbnEe2IOfNl8tPHnDdxZ69o1IPG/Ett0e/gLDf+Sqtw8z/ybu
+         JTDNv/K9th80L2KXv559GNXX0imFjTrVJZdSHsUuU+DgfZOWP+rNw1kA2fiYsrqfYR
+         uvio//SsywvugSape2l7Ikks/yJoNldEM3PY4PAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 4.19 255/338] KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasnt activated
-Date:   Thu, 14 Apr 2022 15:12:38 +0200
-Message-Id: <20220414110846.149417188@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.19 253/338] um: Fix uml_mconsole stop/go
+Date:   Thu, 14 Apr 2022 15:12:36 +0200
+Message-Id: <20220414110846.092114486@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -48,74 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 
-commit b1e34d325397a33d97d845e312d7cf2a8b646b44 upstream.
+commit 1a3a6a2a035bb6c3a7ef4c788d8fd69a7b2d6284 upstream.
 
-Setting non-zero values to SYNIC/STIMER MSRs activates certain features,
-this should not happen when KVM_CAP_HYPERV_SYNIC{,2} was not activated.
+Moving to an EPOLL based IRQ controller broke uml_mconsole stop/go
+commands. This fixes it and restores stop/go functionality.
 
-Note, it would've been better to forbid writing anything to SYNIC/STIMER
-MSRs, including zeroes, however, at least QEMU tries clearing
-HV_X64_MSR_STIMER0_CONFIG without SynIC. HV_X64_MSR_EOM MSR is somewhat
-'special' as writing zero there triggers an action, this also should not
-happen when SynIC wasn't activated.
-
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220325132140.25650-4-vkuznets@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: ff6a17989c08 ("Epoll based IRQ controller")
+Signed-off-by: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/hyperv.c |   17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ arch/um/drivers/mconsole_kern.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -237,7 +237,7 @@ static int synic_set_msr(struct kvm_vcpu
- 	struct kvm_vcpu *vcpu = synic_to_vcpu(synic);
- 	int ret;
+--- a/arch/um/drivers/mconsole_kern.c
++++ b/arch/um/drivers/mconsole_kern.c
+@@ -218,7 +218,7 @@ void mconsole_go(struct mc_request *req)
  
--	if (!synic->active && !host)
-+	if (!synic->active && (!host || data))
- 		return 1;
- 
- 	trace_kvm_hv_synic_set_msr(vcpu->vcpu_id, msr, data, host);
-@@ -283,6 +283,9 @@ static int synic_set_msr(struct kvm_vcpu
- 	case HV_X64_MSR_EOM: {
- 		int i;
- 
-+		if (!synic->active)
-+			break;
-+
- 		for (i = 0; i < ARRAY_SIZE(synic->sint); i++)
- 			kvm_hv_notify_acked_sint(vcpu, i);
- 		break;
-@@ -544,6 +547,12 @@ static int stimer_start(struct kvm_vcpu_
- static int stimer_set_config(struct kvm_vcpu_hv_stimer *stimer, u64 config,
- 			     bool host)
+ void mconsole_stop(struct mc_request *req)
  {
-+	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
-+	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
-+
-+	if (!synic->active && (!host || config))
-+		return 1;
-+
- 	trace_kvm_hv_stimer_set_config(stimer_to_vcpu(stimer)->vcpu_id,
- 				       stimer->index, config, host);
+-	deactivate_fd(req->originating_fd, MCONSOLE_IRQ);
++	block_signals();
+ 	os_set_fd_block(req->originating_fd, 1);
+ 	mconsole_reply(req, "stopped", 0, 0);
+ 	for (;;) {
+@@ -242,6 +242,7 @@ void mconsole_stop(struct mc_request *re
+ 	os_set_fd_block(req->originating_fd, 0);
+ 	reactivate_fd(req->originating_fd, MCONSOLE_IRQ);
+ 	mconsole_reply(req, "", 0, 0);
++	unblock_signals();
+ }
  
-@@ -558,6 +567,12 @@ static int stimer_set_config(struct kvm_
- static int stimer_set_count(struct kvm_vcpu_hv_stimer *stimer, u64 count,
- 			    bool host)
- {
-+	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
-+	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
-+
-+	if (!synic->active && (!host || count))
-+		return 1;
-+
- 	trace_kvm_hv_stimer_set_count(stimer_to_vcpu(stimer)->vcpu_id,
- 				      stimer->index, count, host);
- 
+ static DEFINE_SPINLOCK(mc_devices_lock);
 
 
