@@ -2,153 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8688FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241608AbiDNPeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        id S243342AbiDNPeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245233AbiDNOIH (ORCPT
+        with ESMTP id S1348298AbiDNOMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:08:07 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACA38D689;
-        Thu, 14 Apr 2022 07:00:56 -0700 (PDT)
+        Thu, 14 Apr 2022 10:12:36 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC34214096;
+        Thu, 14 Apr 2022 07:04:24 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id bh17so10244904ejb.8;
+        Thu, 14 Apr 2022 07:04:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649944857; x=1681480857;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=4dS3wy8SxaPfJ6KPRvcosGOBDu1pk2jmUrq2bCl6TEA=;
-  b=x1Z4EhEk8RUTm6r2WpDL7jUt/xNEZVeTZDwt8kAO3yCdIAzMmvdGBKCz
-   TEYX5LEukJZN1Ja7OeQyq66ivKBv3ow2SdZpLApmgUo2/4uYYHYEUxYYf
-   ov53kbSfprdbSlIZNIM6vQ53lLnsqp9wEx/UODaK40TwtjJxqgiOO4lwR
-   k=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Apr 2022 07:00:56 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:00:55 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 07:00:55 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 07:00:51 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v10 1/2] arm64: dts: qcom: sc7280: Add pinmux for I2S speaker and Headset
-Date:   Thu, 14 Apr 2022 19:30:26 +0530
-Message-ID: <1649944827-6455-2-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649944827-6455-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1649944827-6455-1-git-send-email-quic_srivasam@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lCC3Pfudq3lc52JAAG1sG7HbUkpkTnk/H8GtNDbWO8Q=;
+        b=JDV8GhcH1zuJn0OOA5UBejxDG49F0Z45Kj3qjuDnZOLw3BeSKpEqyUCjjG41ySlXbg
+         FEnNIudzU1mntcXCjLDBNBT8BKflg+3dpqBlAaleqoEHANJ9daDRUsG+0hsKroKanNn9
+         a7B3NDbIxMlL3YYwChHq8Wi0QE7bmKoQmzJQQn4WTpw8xvcu5f9qrJoMUP0hVujhS1La
+         oU4dxgEbPcHNoSUBtp/w2e/hP9XwkAs51/H3gCbxQcdVcR6z2efMHTrRc27Q40/sjRzm
+         xlRKxL0j5fJhLCnTMldi5q+qjMWbAMDY+34Xv/TVcFb6jzOcJRVmnSRik4t4sUMpGu7J
+         3fJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lCC3Pfudq3lc52JAAG1sG7HbUkpkTnk/H8GtNDbWO8Q=;
+        b=W82b45rpXmRYljZ+faz/GGy9MI2LtFVCcjA48gTvEYiVywQO5hE6ybsIyvuIEMQKdh
+         0C1/1+ibGuGAxHz/zfl186MVrwxfOJv3q7K4zlCAQY6+NSlqCXWiLLqliIMCUeXyP19c
+         2k2NwOa0wSg0b0tBI0p1XdIYXDb9fUIsS9Z59G2/fiNSTRJp2jcbb+SKVqlBMk3omnmF
+         LExjnXN9ZcX4PRXV9kVU/k48Ti39hsJtmjZHnVQQYbJIOI++MbgzSRAWA38+en1cmrp2
+         7O8dyDWMIZ29Mo3H9ES/URpS/aLTw8/91SLHy/dOKEFe5IzBXf8S6XGi9ezN1st2xOeJ
+         IFWQ==
+X-Gm-Message-State: AOAM533l6gphMMR6haQwaDKLEI4hWtCSMMxn/Y1oLX27KkjQGdfZ1we4
+        cMkykQcxluTyHx6LUbAT5EP7OcbFdWLiQvjQeOc=
+X-Google-Smtp-Source: ABdhPJzszOBX2OhJxDlnmeyI7hbBMe+wTy+WsTqeQ46bA+0Zq92wgXNJ34vsRZTe3citZvGtZp6VSUszInRrYxxPFTM=
+X-Received: by 2002:a17:906:b157:b0:6d0:9f3b:a6aa with SMTP id
+ bt23-20020a170906b15700b006d09f3ba6aamr2461492ejb.365.1649945062793; Thu, 14
+ Apr 2022 07:04:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220409120901.267526-1-dzm91@hust.edu.cn> <YlQbqnYP/jcYinvz@hovoldconsulting.com>
+ <CAD-N9QV=tRxcRH_bD7-3X4sLKYBu4LYDk5tTfUAaX2JDd7nLTg@mail.gmail.com>
+In-Reply-To: <CAD-N9QV=tRxcRH_bD7-3X4sLKYBu4LYDk5tTfUAaX2JDd7nLTg@mail.gmail.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Thu, 14 Apr 2022 22:03:55 +0800
+Message-ID: <CAD-N9QXs7+AyGRUgJMe9YGBsUe67QK+y+=Q6OCVABQnwWn+1dA@mail.gmail.com>
+Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
+        USB <linux-usb@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pinmux nodes for primary and secondary I2S for SC7280 based platforms.
+On Thu, Apr 14, 2022 at 9:58 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>
+> On Mon, Apr 11, 2022 at 8:14 PM Johan Hovold <johan@kernel.org> wrote:
+> >
+> > On Sat, Apr 09, 2022 at 08:09:00PM +0800, Dongliang Mu wrote:
+> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
+> > >
+> > > cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
+> > > with ctx. However, in the unbind function - cdc_ncm_unbind,
+> > > it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
+> > > a dangling pointer. The following ioctl operation will trigger
+> > > the UAF in the function cdc_ncm_set_dgram_size.
+> > >
+> > > Fix this by setting dev->data[0] as zero.
+> >
+> > This sounds like a poor band-aid. Please explain how this prevent the
+> > ioctl() from racing with unbind().
+>
+> You mean the following thread interlaving?
+>
+> ioctl                                unbind
+>                                 cdc_ncm_free(ctx);
+> dev->data[0]
+>                                  dev->data[0] = 0;
+>
+> It seems this will still trigger UAF. Maybe we need to add mutex to
+> prevent this. But I am not sure.
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
----
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 14 +++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi     | 40 ++++++++++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
+ioctl                                   unbind
+                                  cdc_ncm_free(ctx);
+                                  dev->data[0] = 0;
+dev->data[0]
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 015a347..fb1f4ca 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -359,6 +359,20 @@
- 	bias-disable;
- };
- 
-+&mi2s1_data0 {
-+	drive-strength = <6>;
-+	bias-disable;
-+};
-+
-+&mi2s1_sclk {
-+	drive-strength = <6>;
-+	bias-disable;
-+};
-+
-+&mi2s1_ws {
-+	drive-strength = <6>;
-+};
-+
- &pm7325_gpios {
- 	key_vol_up_default: key-vol-up-default {
- 		pins = "gpio6";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index ebbf4a4..ccecf26e 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -3619,6 +3619,46 @@
- 				function = "edp_hot";
- 			};
- 
-+			mi2s0_data0: mi2s0-data0 {
-+				pins = "gpio98";
-+				function = "mi2s0_data0";
-+			};
-+
-+			mi2s0_data1: mi2s0-data1 {
-+				pins = "gpio99";
-+				function = "mi2s0_data1";
-+			};
-+
-+			mi2s0_mclk: mi2s0-mclk {
-+				pins = "gpio96";
-+				function = "pri_mi2s";
-+			};
-+
-+			mi2s0_sclk: mi2s0-sclk {
-+				pins = "gpio97";
-+				function = "mi2s0_sck";
-+			};
-+
-+			mi2s0_ws: mi2s0-ws {
-+				pins = "gpio100";
-+				function = "mi2s0_ws";
-+			};
-+
-+			mi2s1_data0: mi2s1-data0 {
-+				pins = "gpio107";
-+				function = "mi2s1_data0";
-+			};
-+
-+			mi2s1_sclk: mi2s1-sclk {
-+				pins = "gpio106";
-+				function = "mi2s1_sck";
-+			};
-+
-+			mi2s1_ws: mi2s1-ws {
-+				pins = "gpio108";
-+				function = "mi2s1_ws";
-+			};
-+
- 			pcie1_clkreq_n: pcie1-clkreq-n {
- 				pins = "gpio79";
- 				function = "pcie1_clkreqn";
--- 
-2.7.4
+This will trigger a null pointer dereference if my patch is applied, right?
 
+>
+> >
+> > Johan
+> >
+> > > ==================================================================
+> > > BUG: KASAN: use-after-free in cdc_ncm_set_dgram_size+0xc91/0xde0
+> > > Read of size 8 at addr ffff8880755210b0 by task dhcpcd/3174
+> > >
+> > > Call Trace:
+> > >  <TASK>
+> > >  __dump_stack lib/dump_stack.c:88 [inline]
+> > >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> > >  print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+> > >  print_report mm/kasan/report.c:429 [inline]
+> > >  kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+> > >  cdc_ncm_set_dgram_size+0xc91/0xde0 drivers/net/usb/cdc_ncm.c:608
+> > >  cdc_ncm_change_mtu+0x10c/0x140 drivers/net/usb/cdc_ncm.c:798
+> > >  __dev_set_mtu net/core/dev.c:8519 [inline]
+> > >  dev_set_mtu_ext+0x352/0x5b0 net/core/dev.c:8572
+> > >  dev_set_mtu+0x8e/0x120 net/core/dev.c:8596
+> > >  dev_ifsioc+0xb87/0x1090 net/core/dev_ioctl.c:332
+> > >  dev_ioctl+0x1b9/0xe30 net/core/dev_ioctl.c:586
+> > >  sock_do_ioctl+0x15a/0x230 net/socket.c:1136
+> > >  sock_ioctl+0x2f1/0x640 net/socket.c:1239
+> > >  vfs_ioctl fs/ioctl.c:51 [inline]
+> > >  __do_sys_ioctl fs/ioctl.c:870 [inline]
+> > >  __se_sys_ioctl fs/ioctl.c:856 [inline]
+> > >  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > >  do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+> > >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > RIP: 0033:0x7f00859e70e7
+> > > RSP: 002b:00007ffedd503dd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+> > > RAX: ffffffffffffffda RBX: 00007f00858f96c8 RCX: 00007f00859e70e7
+> > > RDX: 00007ffedd513fc8 RSI: 0000000000008922 RDI: 0000000000000018
+> > > RBP: 00007ffedd524178 R08: 00007ffedd513f88 R09: 00007ffedd513f38
+> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> > > R13: 00007ffedd513fc8 R14: 0000000000000028 R15: 0000000000008922
+> > >  </TASK>
+> >
+> > > Reported-by: syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com
+> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > ---
+> > >  drivers/net/usb/cdc_ncm.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+> > > index 15f91d691bba..9fc2df9f0b63 100644
+> > > --- a/drivers/net/usb/cdc_ncm.c
+> > > +++ b/drivers/net/usb/cdc_ncm.c
+> > > @@ -1019,6 +1019,7 @@ void cdc_ncm_unbind(struct usbnet *dev, struct usb_interface *intf)
+> > >
+> > >       usb_set_intfdata(intf, NULL);
+> > >       cdc_ncm_free(ctx);
+> > > +     dev->data[0] = 0;
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(cdc_ncm_unbind);
