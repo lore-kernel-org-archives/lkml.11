@@ -2,102 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4117C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC30AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241943AbiDNJsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41036 "EHLO
+        id S242038AbiDNJs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241966AbiDNJqn (ORCPT
+        with ESMTP id S241972AbiDNJqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 05:46:43 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:44:01 PDT
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8DA6E54C
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:44:01 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220414094251f0f4b22f51d08a3779
-        for <linux-kernel@vger.kernel.org>;
-        Thu, 14 Apr 2022 11:42:57 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=4xST5nXMealzJWOxw0+fWFESwSlcs/PlqI2uAm5csAw=;
- b=Yl0EQYXrkCNaKKsvBtvQlMTcSanTd8OQSDD1ocSkKm4p2tyWLt77g1rJ5lsKVmnhjPkTSv
- V1q+QzaP1eURa4Y1KGuxLsrk8/7FJrFrX1Qa7cf7tWYFqd0IPNia6TmqR2RxhLRuk1moP9IS
- +q42CDQ4uiCJIl8SKVubXMIKKVOhA=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 17/20] tty: n_gsm: fix reset fifo race condition
-Date:   Thu, 14 Apr 2022 02:42:22 -0700
-Message-Id: <20220414094225.4527-17-daniel.starke@siemens.com>
-In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
-References: <20220414094225.4527-1-daniel.starke@siemens.com>
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D897716CE;
+        Thu, 14 Apr 2022 02:44:01 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1new0p-002mNt-5C; Thu, 14 Apr 2022 19:43:40 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 14 Apr 2022 17:43:39 +0800
+Date:   Thu, 14 Apr 2022 17:43:39 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Will Deacon <will@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] crypto: arm64/sm4 - Fix wrong dependency of NEON/CE
+ implementation
+Message-ID: <Ylfsy5VoJx9ACg3f@gondor.apana.org.au>
+References: <20220411031313.35449-1-tianjia.zhang@linux.alibaba.com>
+ <20220413102209.GB1229@willie-the-truck>
+ <Yla4pSKW+6I5jIfS@zx2c4.com>
+ <20220414093445.GA2006@willie-the-truck>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414093445.GA2006@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On Thu, Apr 14, 2022 at 10:34:45AM +0100, Will Deacon wrote:
+>
+> Cheers, then I'll leave this fix for Herbert to pick up.
 
-gsmtty_write() and gsm_dlci_data_output() properly guard the fifo access.
-However, gsm_dlci_close() and gsmtty_flush_buffer() modifies the fifo but
-do not guard this.
-Add a guard here to prevent race conditions on parallel writes to the fifo.
+Sorry, I think it was my merge error that created this bug
+in the first place.  I'll pick up the fix.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index f4ec48c0d6d7..1e135a71860f 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1446,13 +1446,17 @@ static int gsm_control_wait(struct gsm_mux *gsm, struct gsm_control *control)
- 
- static void gsm_dlci_close(struct gsm_dlci *dlci)
- {
-+	unsigned long flags;
-+
- 	del_timer(&dlci->t1);
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
- 	dlci->state = DLCI_CLOSED;
- 	if (dlci->addr != 0) {
- 		tty_port_tty_hangup(&dlci->port, false);
-+		spin_lock_irqsave(&dlci->lock, flags);
- 		kfifo_reset(&dlci->fifo);
-+		spin_unlock_irqrestore(&dlci->lock, flags);
- 		/* Ensure that gsmtty_open() can return. */
- 		tty_port_set_initialized(&dlci->port, 0);
- 		wake_up_interruptible(&dlci->port.open_wait);
-@@ -3150,13 +3154,17 @@ static unsigned int gsmtty_chars_in_buffer(struct tty_struct *tty)
- static void gsmtty_flush_buffer(struct tty_struct *tty)
- {
- 	struct gsm_dlci *dlci = tty->driver_data;
-+	unsigned long flags;
-+
- 	if (dlci->state == DLCI_CLOSED)
- 		return;
- 	/* Caution needed: If we implement reliable transport classes
- 	   then the data being transmitted can't simply be junked once
- 	   it has first hit the stack. Until then we can just blow it
- 	   away */
-+	spin_lock_irqsave(&dlci->lock, flags);
- 	kfifo_reset(&dlci->fifo);
-+	spin_unlock_irqrestore(&dlci->lock, flags);
- 	/* Need to unhook this DLCI from the transmit queue logic */
- }
- 
+Thanks,
 -- 
-2.25.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
