@@ -2,225 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D75F8C4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0675C4167E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239837AbiDNQG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
+        id S237142AbiDNQGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349699AbiDNP5A (ORCPT
+        with ESMTP id S1349704AbiDNP5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 11:57:00 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BAA1117;
-        Thu, 14 Apr 2022 08:38:35 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bh17so10795042ejb.8;
-        Thu, 14 Apr 2022 08:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8+m5adT567zqprh7f9s0omABbCf6PKSkE6Ew93ecezw=;
-        b=Ot4sc8uBEOGt8+xaWCm0Xn/ZpKN3HmP631Z3qflhTmHESnuTckWj/XO7eE/qldpjTC
-         hJ1gabD9scQlLSsN0y3ArbrWU5ippRVsiOjcktG9Y7hUJqJMl1G4k6gRCYIoqDfZ1/qP
-         T62EU7q6UvlPtFaUqjvxU2RHjoXdexqUEYyaJIDgDBxyEJb+V5cHaf+KIP9HYuBcy6Ff
-         L9c9r4hzUvAgkp6bhD4O5sQawv/odGs4tEWj65PoPhnMW7uiG3XyKbCZMWW3hjHbC3cs
-         ObNRnD5GZmEQ81Mg59BFAUud0NVMtEVfxs+jv4s6KZJksac2/OhQFjK2wfDOQrPg7vg1
-         T4sw==
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D56D25EA
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:39:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649950739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t3cZ/yakMUfrN5XmUvj9bTbScCTr9kRRHTB7H1tbd/s=;
+        b=WWuDMi3UL5jTTVJS0MdT8nnlQK2ptmtPb/n99RW5j9jq5ELEEWJeVoyIi3ZwK3+3c6cOs7
+        cFHh2mmUSQOTF3ps9W1B6Nca6xxAF3Z0GwPFwpsoezLYEV0jHCQuyAc4igfMM6ZLd3ha8z
+        jWUJz+UsJnlu5m/5WxKVd+NKPllO21Q=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-6-ePcWycZjNDCIoKapxmrgQg-1; Thu, 14 Apr 2022 11:38:58 -0400
+X-MC-Unique: ePcWycZjNDCIoKapxmrgQg-1
+Received: by mail-qv1-f70.google.com with SMTP id j7-20020a05621419c700b004461f75de48so2603045qvc.10
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:38:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8+m5adT567zqprh7f9s0omABbCf6PKSkE6Ew93ecezw=;
-        b=uySmtZjnangnz9Z8eEGyAuq0PHbjlKeBFQckPjO/A95oEXC3UDBw1D6EGMCrbYHdfh
-         m11UaWUGYYYR4uY2GozilRd+wiK0oNBDFxkHF75pCFuGDkfp3Q92LIF/DMxUGwll91zF
-         rMs/kKzF5xQRKWyiaLwUIeJ6XIt7ITLl8CT3KCahd7m+ucZ80jsg0+ExA8/YbYnqlwoG
-         Um1gUwgEupNC2H/ZFhcBFSEcF8vYoc+ThtfMujLrtzJavauWqhcjkzZk17jAKUBBgtGw
-         G//p3/oexwOmwUoOUIA/6MqiASYfNYqgZgVtj+p9oKYyNU9gb4NyvDRlZ1YOXabXonPE
-         phtA==
-X-Gm-Message-State: AOAM531p7O+VHNGGfU7ODiKfTvxGt80V7FlGKLmT0sP4+4CC2sHwdviS
-        3TU0BjJSJ5K5JgA+1ZUDWsdtPolPjeAKRAzQUlI=
-X-Google-Smtp-Source: ABdhPJyexSq+meEI+mCST7Vrc1i8ZOw2okSBPE0svB7hPOBvbw6tRUtryZGGUcnCMy+Xx/I1IyUpm5OpuuQ5tiZ1uhw=
-X-Received: by 2002:a17:906:1692:b0:6e8:d245:44a9 with SMTP id
- s18-20020a170906169200b006e8d24544a9mr2827768ejd.639.1649950713929; Thu, 14
- Apr 2022 08:38:33 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=t3cZ/yakMUfrN5XmUvj9bTbScCTr9kRRHTB7H1tbd/s=;
+        b=27nlpNnImtNbmyhRHdAUHnE84e1i/OQBLMdRMksx20BgBPoT/AXbANvtUu9s8RnxKZ
+         Q4NgcQzW/igR3iYylSy+we75Z4dJlcsLBfcvMRADQB/Yn9rLwrRGflMOWsGKEQEA4BHM
+         CleN8zo/L7OmCKJ86wCTpRuVIFgnAuPQg1l+G/7hdK0tNyWhAKhK3iNUslVPIj1jv2em
+         0MKaXxz+/AsnLuStzDFiA5LmnRwNeX+3UJRtluUpiKMbxBbCG+7KchJkC+xbMBxopngF
+         /1bFrt85fzP2xEKkqWztOKFw1pFvQwqvDESHkT1T47OwTQuECFoMyVK3p1jMZ/Uil+LG
+         sD3Q==
+X-Gm-Message-State: AOAM533FTpLW2JFC1es1dhFkX39/R6uqezXtaell2l1WC+qc1xjhJBpK
+        okoLLtCYnWLiET6BbmkYMhVPGY55Nf664hwOySoWg3KTBZTSWjP9p99QydKjzp2tmwt/JswOoNw
+        gLVS9MaAZP746EnI59LqdWUX9
+X-Received: by 2002:a0c:a68a:0:b0:443:d22b:cdff with SMTP id t10-20020a0ca68a000000b00443d22bcdffmr3789363qva.47.1649950737892;
+        Thu, 14 Apr 2022 08:38:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJze8W46NbV6/9Tp9r6j9MjY3E2Hv+NCeywBGGSwJGOsm+zY4ZuLFFBm5i+ghYIJgBO5EZamqQ==
+X-Received: by 2002:a0c:a68a:0:b0:443:d22b:cdff with SMTP id t10-20020a0ca68a000000b00443d22bcdffmr3789344qva.47.1649950737666;
+        Thu, 14 Apr 2022 08:38:57 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id a4-20020a37b104000000b0069c2ba88bdasm1130550qkf.85.2022.04.14.08.38.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 08:38:57 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 08:38:54 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 02/18] objtool: Support data symbol printing
+Message-ID: <20220414153854.rqkt465xn4vzndr7@treble>
+References: <cover.1649891421.git.jpoimboe@redhat.com>
+ <097057f88605aa67b0e3ec573fcf394ae7ac4d6f.1649891421.git.jpoimboe@redhat.com>
+ <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
+ <20220414152148.cwdefx744kymqcut@treble>
+ <Ylg+bewBpaqqYgeB@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20220413094011.185269-1-cosmin.tanislav@analog.com>
- <20220413094011.185269-3-cosmin.tanislav@analog.com> <CAHp75VfzX8u45J3634yN5p-QTeT7w0Bos27OxeWOsb3MQ2VRVw@mail.gmail.com>
- <80196942-4c33-7625-3945-86ce5b7b347f@gmail.com> <CAHp75VfAjvJz2KHYfDM+-8D+hSBtdKJm521EBY3VgCfUsAgt8Q@mail.gmail.com>
- <0823cf19-60b5-3050-0e26-04b87a7ce5c0@gmail.com>
-In-Reply-To: <0823cf19-60b5-3050-0e26-04b87a7ce5c0@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 14 Apr 2022 18:37:57 +0300
-Message-ID: <CAHp75VeYX_ZWZPEUwpfaSGUGCayCaMapS-5MHhgT1r17Fqqoeg@mail.gmail.com>
-Subject: Re: [PATCH v1 3/3] iio: adc: ad4130: add AD4130 driver
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Ylg+bewBpaqqYgeB@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 5:53 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
-> On 4/14/22 16:45, Andy Shevchenko wrote:
-> > On Thu, Apr 14, 2022 at 2:06 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
-> >> On 4/13/22 18:41, Andy Shevchenko wrote:
-> >>> On Wed, Apr 13, 2022 at 1:41 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+On Thu, Apr 14, 2022 at 05:31:57PM +0200, Peter Zijlstra wrote:
+> On Thu, Apr 14, 2022 at 08:21:48AM -0700, Josh Poimboeuf wrote:
+> > On Thu, Apr 14, 2022 at 09:05:47AM +0200, Peter Zijlstra wrote:
+> > > On Wed, Apr 13, 2022 at 04:19:37PM -0700, Josh Poimboeuf wrote:
+> > > 
+> > > > @@ -34,8 +37,8 @@ static inline char *offstr(struct section *sec, unsigned long offset)
+> > > >  
+> > > >  	str = malloc(strlen(name) + 20);
+> > > >  
+> > > > -	if (func)
+> > > > -		sprintf(str, "%s()+0x%lx", name, name_off);
+> > > > +	if (sym)
+> > > > +		sprintf(str, "%s%s+0x%lx", name, is_text ? "()" : "", name_off);
+> > > >  	else
+> > > >  		sprintf(str, "%s+0x%lx", name, name_off);
+> > > 
+> > > So I like the patch, except that "()" thing is something where we differ
+> > > from the kernel's %ps format and I've cursed it a number of times
+> > > because I then have to manually edit (iow remove) things when pasting it
+> > > in various scripts etc..
+> > 
+> > Oh, hm, that's true.  I can remove them if you prefer.
+> 
+> Yeah, I think taking it out is best, easier if we're consistent with %ps
+> for everybody.
 
-...
+Will do.
 
-> >>>> +#define AD4130_RESET_CLK_COUNT         64
-> >>>> +#define AD4130_RESET_BUF_SIZE          (AD4130_RESET_CLK_COUNT / 8)
-> >>>
-> >>> To be more precise shouldn't the above need to have DIV_ROUND_UP() ?
-> >>
-> >> Does it look like 64 / 8 needs any rounding?
-> >
-> > Currently no, but if someone puts 63 there or 65, what would be the outcome?
-> > OTOH, you may add a static assert to guarantee that CLK_COUNT is multiple of 8.
-> >
->
-> No one will. 64 is defined in the datasheet and will never change. I'm
-> not gonna do anything about it. Actually, I can do something about it.
-> Remove AD4130_RESET_CLK_COUNT and only define AD4130_RESET_BUF_SIZE as
-> 8.
+> > > That said, it totally makes sense to differentiate between a text and
+> > > data symbol this way :/
+> > 
+> > Yes, but if we're keeping the "Add sec+offset to warnings" patch then
+> > that distinction is already (kind of) being made by showing the data
+> > section name.  And the data symbol warnings should be rare.
+> 
+> Yes, I'd not seen that yet, what's that for? The Changelog alludes to
+> something, but I don't think it actually does get used later.
 
-It would be better, indeed. And to whom it may concern you may add a
-comment explaining how 8 is derived.
+Nick had asked for something like that, it's just a way to avoid doing
+math every time we look at a warning, i.e. to convert func+offset to
+sec+offset.
 
-...
+But it's kind of ugly and I'm not 100% happy with it.
 
-> >>>> +       if (reg >= ARRAY_SIZE(ad4130_reg_size))
-> >>>> +               return -EINVAL;
-> >>>
-> >>> When this condition is true?
-> >>
-> >> When the user tries reading a register from direct_reg_access
-> >> that hasn't had its size defined.
-> >
-> > But how is it possible? Is the reg parameter taken directly from the user?
-> >
->
-> Users can write whatever they want to direct_reg_access. Unless I add
-> max_register to the regmap_config, the register that the user selects
-> will just be passed to our reg_read and reg_write callbacks.
->
-> Then it will be checked against the register size table.
+Maybe it should be behind an option (--sec-offsets)?
 
-Thanks, I got it.
+-- 
+Josh
 
-...
-
-> >>>> + out:
-> >>>
-> >>> out_unlock: ?
-> >>> Ditto for similar cases.
-> >>
-> >> There's a single label in the function, and there's a mutex being
-> >> taken, and, logically, the mutex must be released on the exit path.
-> >> It's clear what the label is for to me.
-> >
-> > Wasn't clear to me until I went to the end of each of them (who
-> > guarantees that's the case for all of them?).
->
-> Let's hope other people looking at that code will be able to figure out
-> what that label does then.
-
-OK. Let the maintainer decide.
-
-...
-
-> >>>> +               *val = st->bipolar ? -(1 << (chan->scan_type.realbits - 1)) : 0;
-> >>>
-> >>> Hmm... It seems like specific way to have a sign_extended, or actually
-> >>> reduced) mask.
-> >>> Can you rewrite it with the (potential)UB-free approach?
-> >>>
-> >>> (Note, that if realbits == 32, this will have a lot of fun in
-> >>> accordance with C standard.)
-> >>
-> >> Can you elaborate on this? The purpose of this statement is to shift the
-> >> results so that, when bipolar configuration is enabled, the raw value is
-> >> offset with 1 << (realbits - 1) towards negative.
-> >>
-> >> For the 24bit chips, 0x800000 becomes 0x000000.
-> >>
-> >> Maybe you misread it as left shift on a negative number? The number
-> >> is turned negative only after the shift...
-> >
-> > 1 << 31 is UB in accordance with the C standard.
-> >
-> > And the magic above seems to me the opposite to what sign_extend()
-> > does. Maybe even providing a general function for sign_comact() or so
-> > (you name it) would be also nice to have.
->
-> I'm not trying to comact (I guess you meant compact) the sign of any
-> value. Please try to understand what is written in there. It's not
-> magic. If the chip is 24bit, and it's set up as bipolar, the raw value
-> must be offset by -0x800000, to account for 0x800000 being the
-> zero-scale value. For 16 bits, it's 0x8000.
-
-Yes, you shift zero offset to some value. I see that in several
-drivers, so I think it would be nice to have a macro for that
-somewhere in math.h. But it can be done later on.
-
-...
-
-> >>>> +       ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
-> >>>> +                                AD4130_WATERMARK_MASK,
-> >>>> +                                FIELD_PREP(AD4130_WATERMARK_MASK,
-> >>>> +                                           ad4130_watermark_reg_val(eff)));
-> >>>
-> >>> Temporary variable for mask?
-> >>
-> >> You mean for value?
-> >
-> >        mask = AD4130_WATERMARK_MASK;
-> >
-> >        ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
-> >                                 mask, FIELD_PREP(mask,
-> > ad4130_watermark_reg_val(eff)));
->
-> Please bother reading the macro definition next-time. The mask argument
-> to FIELD_PREP must be a compile-time constant.
-
-Yes, it needs to be u32_encode_bits(), but in any case it's up to you,
-it's not anyhow a critical change.
-
-...
-
-> >>>> +       if (ret <= 0)
-> >>>
-> >>> = 0 ?! Can you elaborate, please, this case taking into account below?
-> >>>
-> >>
-> >> I guess I just did it because voltage = 0 doesn't make sense and would
-> >> make scale be 0.0.
-> >
-> > Again, what's the meaning of having it in the conjunction with
-> > dev_err_probe() call?
-> >
-> >>>> +               return dev_err_probe(dev, ret, "Cannot use reference %u\n",
-> >>>> +                                    ref_sel);
-> >
-> > It's confusing. I believe you need two different messages if you want
-> > to handle the 0 case.
->
-> Why would I? The chip can't possibly use regulators with a voltage of 0,
-> right? Or dummy regulators, since these return negative. I think it's
-> fine as it is.
-
-Confusing part is what dev_err_probe() prints here when ret == 0.
-
-
---
-With Best Regards,
-Andy Shevchenko
