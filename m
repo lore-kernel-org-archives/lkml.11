@@ -2,104 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F601C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C75AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241453AbiDNJE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
+        id S241495AbiDNJFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241595AbiDNJCl (ORCPT
+        with ESMTP id S241590AbiDNJCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:02:41 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8FB11146
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:00:17 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id t12so4121350pll.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:00:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bm6j4Sj81g1kNoBEMCttfjxLkn0RWePq1WSEM7XPmtI=;
-        b=fxHH32p5j0e+cdXaMKgpfUspQX84794ZwP+Pf19RC5R0BLWEj+NyAaWz8nz7IPUrOW
-         1NOs4YA249O7wbPC0KZzR/8lHcPHtMGBkjJ456cIFSglWwHyTuq4jY81Y6MBvG2fiyY+
-         nt8oLvp/huyt+32y5hg6RHMqA9v2+w3OteeRA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bm6j4Sj81g1kNoBEMCttfjxLkn0RWePq1WSEM7XPmtI=;
-        b=tBx310n7kYY9KgXKPA/rl5EfD9o2GFDbQo2EpC3GUewohrxpWxEwZVg6rTjD+ZN4W5
-         h0h0G+UrCJiUEKXGMkBKd+b+uhNYk4uslkVEx+GU01Icv3+gd0Mc45rLZqSWFOxXEDGA
-         h7c5Il6hNZrXtLlLSFfsk/nBeWflf6l0BUQfclj0284l8TOMUZlinzWnWjZ8mrKSvByU
-         SQ/HAVxuAeK/vMXiO0xEYtra7jk4AccQMVQzzWu+7nl63x7tFmdcvihE81Uf0Fdp57mY
-         I7pnyl39NQvAedb891X7G6aB0Dht5LbVSU6cnfFSKUkUZsEfs4O5bQjRjCFV/H6W7qzn
-         EzWQ==
-X-Gm-Message-State: AOAM533R1bte8iyqKzvZNCqT99bZCXJL/u84mU3c1oU4DaxiJm0JEmmv
-        bJKf2eDp8EqJT+HifVFDGA1qyg==
-X-Google-Smtp-Source: ABdhPJx7X+z3T7obGlkfwniBmq4ySimshUk0QxfezcyPmQw82MV8mGhksCsy7itbjwsr0JNQdzeAVg==
-X-Received: by 2002:a17:90b:4b11:b0:1cb:2a65:f275 with SMTP id lx17-20020a17090b4b1100b001cb2a65f275mr3229394pjb.33.1649926816349;
-        Thu, 14 Apr 2022 02:00:16 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:b53a:7315:ec5:64b0])
-        by smtp.gmail.com with ESMTPSA id q9-20020a638c49000000b00398677b6f25sm1340942pgn.70.2022.04.14.02.00.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 02:00:15 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Robert Foss <robert.foss@linaro.org>, Xin Ji <xji@analogixsemi.com>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/bridge: anx7625: Fill in empty ELD when no connector
-Date:   Thu, 14 Apr 2022 17:00:04 +0800
-Message-Id: <20220414090003.1806535-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 14 Apr 2022 05:02:40 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B423422292;
+        Thu, 14 Apr 2022 02:00:13 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.31:43882.1165221160
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-123.150.8.43 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id 97FC1100226;
+        Thu, 14 Apr 2022 17:00:11 +0800 (CST)
+Received: from  ([123.150.8.43])
+        by gateway-153622-dep-749df8664c-cv9r2 with ESMTP id 74a86b6b571a4cd2ac806d568bb29da3 for ast@kernel.org;
+        Thu, 14 Apr 2022 17:00:12 CST
+X-Transaction-ID: 74a86b6b571a4cd2ac806d568bb29da3
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 123.150.8.43
+X-MEDUSA-Status: 0
+Sender: chensong_2000@189.cn
+From:   Song Chen <chensong_2000@189.cn>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Song Chen <chensong_2000@189.cn>
+Subject: [RFC PATCH 0/1] sample: bpf: introduce irqlat
+Date:   Thu, 14 Apr 2022 17:07:20 +0800
+Message-Id: <1649927240-18991-1-git-send-email-chensong_2000@189.cn>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Speaker may share I2S with DP and .get_eld callback will be called when
-speaker is playing. When HDMI wans't connected, the connector will be
-null. Instead of return an error, fill in empty ELD.
+I'm planning to implement a couple of ebpf tools for preempt rt,
+including irq latency, preempt latency and so on, how does it sound
+to you?
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
----
- drivers/gpu/drm/bridge/analogix/anx7625.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Song Chen (1):
+  sample: bpf: introduce irqlat
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 6516f9570b86..f2bc30c98c77 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -1932,14 +1932,14 @@ static int anx7625_audio_get_eld(struct device *dev, void *data,
- 	struct anx7625_data *ctx = dev_get_drvdata(dev);
- 
- 	if (!ctx->connector) {
--		dev_err(dev, "connector not initial\n");
--		return -EINVAL;
-+		/* Pass en empty ELD if connector not available */
-+		memset(buf, 0, len);
-+	} else {
-+		dev_dbg(dev, "audio copy eld\n");
-+		memcpy(buf, ctx->connector->eld,
-+		       min(sizeof(ctx->connector->eld), len));
- 	}
- 
--	dev_dbg(dev, "audio copy eld\n");
--	memcpy(buf, ctx->connector->eld,
--	       min(sizeof(ctx->connector->eld), len));
--
- 	return 0;
- }
- 
+ samples/bpf/.gitignore    |   1 +
+ samples/bpf/Makefile      |   5 ++
+ samples/bpf/irqlat_kern.c |  81 ++++++++++++++++++++++++++++++
+ samples/bpf/irqlat_user.c | 100 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 187 insertions(+)
+ create mode 100644 samples/bpf/irqlat_kern.c
+ create mode 100644 samples/bpf/irqlat_user.c
+
 -- 
-2.35.1.1178.g4f1659d476-goog
+2.25.1
 
