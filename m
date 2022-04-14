@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8959EC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 590D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351598AbiDNObI (ORCPT
+        id S1351672AbiDNObZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
+        Thu, 14 Apr 2022 10:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245539AbiDNNim (ORCPT
+        with ESMTP id S1344286AbiDNNkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAB09286F;
-        Thu, 14 Apr 2022 06:32:47 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5603D120;
+        Thu, 14 Apr 2022 06:38:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 98B8ECE296C;
-        Thu, 14 Apr 2022 13:32:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B433C385A5;
-        Thu, 14 Apr 2022 13:32:43 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C43D6CE296C;
+        Thu, 14 Apr 2022 13:38:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A59C385A1;
+        Thu, 14 Apr 2022 13:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943164;
-        bh=MSTbhPiz+0gIdLuJbCp8xgfsyCNe3dcUzSOKZ3PzUac=;
+        s=korg; t=1649943490;
+        bh=aBLnrYbFg0SEzV9XqSQqHdOnr+QHRmjllQIhQ/14OPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FiQFmrVifZe9aV7i4dn3fWo065zQLGBm4BVLnaFsTW+5tEe0+I6uNhE2xl69fsg9q
-         H+aVMxse1vImhXBJIBT2baUi7H22BftWCV8vXxRWfBLXwDFMwsuhQ42XieJgkWj4YM
-         Tn813YHZtowjcBZLQCyoE81+G2FcZ4+jspiqai00=
+        b=EtWjaql7171t0YQRxBnMbw7uhmdiuY/9OZ+08kwV8GVOvQl8VQvoc4UA2GiCm1zhv
+         m4j5MRxZajG/9PXm7FaiGKuf48ll8M/yooCtM7pTOG85mN7gmlklD0JecobCO9FIos
+         gOAxK1y7NM8fT/R0CplRLOoTcgqzTFN65FHfuIUM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chinwen Chang <chinwen.chang@mediatek.com>,
-        Nicholas Tang <nicholas.tang@mediatek.com>,
-        Yee Lee <yee.lee@mediatek.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 058/475] mm/kmemleak: reset tag when compare object pointer
-Date:   Thu, 14 Apr 2022 15:07:23 +0200
-Message-Id: <20220414110856.776535860@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 172/475] net: dsa: mv88e6xxx: Enable port policy support on 6097
+Date:   Thu, 14 Apr 2022 15:09:17 +0200
+Message-Id: <20220414110859.950098375@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -55,99 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-commit bfc8089f00fa526dea983844c880fa8106c33ac4 upstream.
+[ Upstream commit 585d42bb57bb358d48906660a8de273b078810b1 ]
 
-When we use HW-tag based kasan and enable vmalloc support, we hit the
-following bug.  It is due to comparison between tagged object and
-non-tagged pointer.
+This chip has support for the same per-port policy actions found in
+later versions of LinkStreet devices.
 
-We need to reset the kasan tag when we need to compare tagged object and
-non-tagged pointer.
-
-  kmemleak: [name:kmemleak&]Scan area larger than object 0xffffffe77076f440
-  CPU: 4 PID: 1 Comm: init Tainted: G S      W         5.15.25-android13-0-g5cacf919c2bc #1
-  Hardware name: MT6983(ENG) (DT)
-  Call trace:
-   add_scan_area+0xc4/0x244
-   kmemleak_scan_area+0x40/0x9c
-   layout_and_allocate+0x1e8/0x288
-   load_module+0x2c8/0xf00
-   __se_sys_finit_module+0x190/0x1d0
-   __arm64_sys_finit_module+0x20/0x30
-   invoke_syscall+0x60/0x170
-   el0_svc_common+0xc8/0x114
-   do_el0_svc+0x28/0xa0
-   el0_svc+0x60/0xf8
-   el0t_64_sync_handler+0x88/0xec
-   el0t_64_sync+0x1b4/0x1b8
-  kmemleak: [name:kmemleak&]Object 0xf5ffffe77076b000 (size 32768):
-  kmemleak: [name:kmemleak&]  comm "init", pid 1, jiffies 4294894197
-  kmemleak: [name:kmemleak&]  min_count = 0
-  kmemleak: [name:kmemleak&]  count = 0
-  kmemleak: [name:kmemleak&]  flags = 0x1
-  kmemleak: [name:kmemleak&]  checksum = 0
-  kmemleak: [name:kmemleak&]  backtrace:
-       module_alloc+0x9c/0x120
-       move_module+0x34/0x19c
-       layout_and_allocate+0x1c4/0x288
-       load_module+0x2c8/0xf00
-       __se_sys_finit_module+0x190/0x1d0
-       __arm64_sys_finit_module+0x20/0x30
-       invoke_syscall+0x60/0x170
-       el0_svc_common+0xc8/0x114
-       do_el0_svc+0x28/0xa0
-       el0_svc+0x60/0xf8
-       el0t_64_sync_handler+0x88/0xec
-       el0t_64_sync+0x1b4/0x1b8
-
-Link: https://lkml.kernel.org/r/20220318034051.30687-1-Kuan-Ying.Lee@mediatek.com
-Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Chinwen Chang <chinwen.chang@mediatek.com>
-Cc: Nicholas Tang <nicholas.tang@mediatek.com>
-Cc: Yee Lee <yee.lee@mediatek.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f3a2cd326e44 ("net: dsa: mv88e6xxx: introduce .port_set_policy")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kmemleak.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/mm/kmemleak.c
-+++ b/mm/kmemleak.c
-@@ -787,6 +787,8 @@ static void add_scan_area(unsigned long
- 	unsigned long flags;
- 	struct kmemleak_object *object;
- 	struct kmemleak_scan_area *area = NULL;
-+	unsigned long untagged_ptr;
-+	unsigned long untagged_objp;
- 
- 	object = find_and_get_object(ptr, 1);
- 	if (!object) {
-@@ -795,6 +797,9 @@ static void add_scan_area(unsigned long
- 		return;
- 	}
- 
-+	untagged_ptr = (unsigned long)kasan_reset_tag((void *)ptr);
-+	untagged_objp = (unsigned long)kasan_reset_tag((void *)object->pointer);
-+
- 	if (scan_area_cache)
- 		area = kmem_cache_alloc(scan_area_cache, gfp_kmemleak_mask(gfp));
- 
-@@ -806,8 +811,8 @@ static void add_scan_area(unsigned long
- 		goto out_unlock;
- 	}
- 	if (size == SIZE_MAX) {
--		size = object->pointer + object->size - ptr;
--	} else if (ptr + size > object->pointer + object->size) {
-+		size = untagged_objp + object->size - untagged_ptr;
-+	} else if (untagged_ptr + size > untagged_objp + object->size) {
- 		kmemleak_warn("Scan area larger than object 0x%08lx\n", ptr);
- 		dump_object_info(object);
- 		kmem_cache_free(scan_area_cache, area);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 40b105daaf9e..87d28ef82559 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3062,6 +3062,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
+ 	.port_set_duplex = mv88e6xxx_port_set_duplex,
+ 	.port_set_speed = mv88e6185_port_set_speed,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
++	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+ 	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+-- 
+2.34.1
+
 
 
