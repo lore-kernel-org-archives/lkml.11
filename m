@@ -2,117 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD1AC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C54C41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347474AbiDNPjp (ORCPT
+        id S1346810AbiDNPj0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50250 "EHLO
+        Thu, 14 Apr 2022 11:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351684AbiDNOb1 (ORCPT
+        with ESMTP id S1352018AbiDNObq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:31:27 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E81EB36AE;
-        Thu, 14 Apr 2022 07:21:50 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 14:21:48 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649946109;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xG0YNv6UpmTWIvybxRgaQrZpZmMJBavRFa1QDKMAijY=;
-        b=jAUaU3bf2lGKNCIiX7EWhCHJcoRDl03lRXP4cloKxnJOMdkvo3Dl2NZ2FwZJcUUnJkeBWa
-        JzqUJfgk2ukX2mkuokO2QjMnij6ke379QLH2rbBncIAE/7cuAX34AMtBQfaa5pVNelU0HG
-        5IcZMkCdWnk5aJ322sAcGx7X5ympD9ajDj61FLbj2nsBvGqYukfY7xSKb/bvOMUXNbp4Sw
-        4Z2i2cElzuClJ0rujbvM4L5zGPnQQznWv1TDP1CGQ8QEoTmVUoZTrwQriEiL2OvOG5IQEx
-        0Ib+1SltjZi2+r9FGnt67xIfumdPcfVdM8mOKKJwDy3Nci33pbdNNjTqWYfkaQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649946109;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xG0YNv6UpmTWIvybxRgaQrZpZmMJBavRFa1QDKMAijY=;
-        b=8dfz2LXEAG/kV/cIq6zkrIS+9+QfLuW2ZhYcZ1JJffnz2jQeSuvQ/SEXAwEw4q8Ikmn6Gp
-        yw4ctHzrbt0NBGDg==
-From:   "tip-bot2 for Anna-Maria Behnsen" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] tracing/timer: Add missing argument documentation
- of trace points
-Cc:     "Anna-Maria Behnsen" <anna-maria@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220411140115.24185-1-anna-maria@linutronix.de>
-References: <20220411140115.24185-1-anna-maria@linutronix.de>
+        Thu, 14 Apr 2022 10:31:46 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492F3C12F1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:22:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649946170; x=1681482170;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=wcOZ08M12WSd63gaezIShH6Ul4Xo33/RqAiEoJUbfpM=;
+  b=BAuk0CLRAF68TyhSajEVm41chwDHij6U3D6swD+wNJQF2QLFHCcSiQrH
+   eYZy+66ZDjJ4eGVx3qx+t6Eku2HiPg+Wc1fz6PdfOz82UTz3fLicTmk0q
+   iWeE1zQkHN9MjXx3ObL3euDXerQpoROdmTMkPY85Di+LvT/CfqBRq7uYV
+   /149n+CcmE+xqToJFaquQfAGzXlOEDqydbl0bY6SYOlhiF2KaTuqx/JnM
+   WJN198PEVpp77XMqnNBe5qLY7nIzqRfHUoPwGkn0NVi2dx7DE74/8oLhC
+   bAMdEyiAzxyGR5n7rfFMYhwfbj+94Cz7z/fKX45jnmPh1IpY9DtmPO8W8
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262383629"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="262383629"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:22:50 -0700
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="573817803"
+Received: from nplaweck-mobl.ger.corp.intel.com (HELO localhost) ([10.249.149.236])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:22:47 -0700
+From:   Jani Nikula <jani.nikula@intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>
+Subject: Re: [PATCH 0/1] add support for enum module parameters
+In-Reply-To: <YlgfXxjefuxiXjtC@kroah.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220414123033.654198-1-jani.nikula@intel.com>
+ <YlgfXxjefuxiXjtC@kroah.com>
+Date:   Thu, 14 Apr 2022 17:22:47 +0300
+Message-ID: <87a6cneoco.fsf@intel.com>
 MIME-Version: 1.0
-Message-ID: <164994610801.4207.12614965303442956238.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the timers/core branch of tip:
+On Thu, 14 Apr 2022, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> On Thu, Apr 14, 2022 at 03:30:32PM +0300, Jani Nikula wrote:
+>> Hey, I've sent this before, ages ago, but haven't really followed
+>> through with it. I still think it would be useful for many scenarios
+>> where a plain number is a clumsy interface for a module param.
+>> 
+>> Thoughts?
+>
+> We should not be adding new module parameters anyway (they operate on
+> code, not data/devices), so what would this be used for?
 
-Commit-ID:     fde33ca4cb2bae6472714123b451475fdfd9995c
-Gitweb:        https://git.kernel.org/tip/fde33ca4cb2bae6472714123b451475fdfd9995c
-Author:        Anna-Maria Behnsen <anna-maria@linutronix.de>
-AuthorDate:    Mon, 11 Apr 2022 16:01:15 +02:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Thu, 14 Apr 2022 16:14:49 +02:00
+I think it's just easier to use names than random values, and this also
+gives you range check on the input.
 
-tracing/timer: Add missing argument documentation of trace points
+I also keep telling people not to add new module parameters, but it's
+not like they're going away anytime soon.
 
-Documentation of trace points timer_start, timer_expire_entry and
-hrtimer_start lack always the last argument. Add it to keep implementation
-and documentation in sync.
+If there's a solution to being able to pass device specific debug
+parameters at probe time, I'm all ears. At least i915 has a bunch of
+things which can't really be changed after probe, when debugfs for the
+device is around. Module parameters aren't ideal, but debugfs doesn't
+work for this.
 
-Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220411140115.24185-1-anna-maria@linutronix.de
 
----
- include/trace/events/timer.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+BR,
+Jani.
 
-diff --git a/include/trace/events/timer.h b/include/trace/events/timer.h
-index 6ad031c..2e713a7 100644
---- a/include/trace/events/timer.h
-+++ b/include/trace/events/timer.h
-@@ -48,6 +48,7 @@ DEFINE_EVENT(timer_class, timer_init,
-  * timer_start - called when the timer is started
-  * @timer:	pointer to struct timer_list
-  * @expires:	the timers expiry time
-+ * @flags:	the timers flags
-  */
- TRACE_EVENT(timer_start,
- 
-@@ -84,6 +85,7 @@ TRACE_EVENT(timer_start,
- /**
-  * timer_expire_entry - called immediately before the timer callback
-  * @timer:	pointer to struct timer_list
-+ * @baseclk:	value of timer_base::clk when timer expires
-  *
-  * Allows to determine the timer latency.
-  */
-@@ -190,7 +192,8 @@ TRACE_EVENT(hrtimer_init,
- 
- /**
-  * hrtimer_start - called when the hrtimer is started
-- * @hrtimer: pointer to struct hrtimer
-+ * @hrtimer:	pointer to struct hrtimer
-+ * @mode:	the hrtimers mode
-  */
- TRACE_EVENT(hrtimer_start,
- 
+-- 
+Jani Nikula, Intel Open Source Graphics Center
