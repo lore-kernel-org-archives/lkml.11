@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BDBC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9AC6C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347128AbiDNOLj (ORCPT
+        id S1347201AbiDNOLo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
+        Thu, 14 Apr 2022 10:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244867AbiDNN2N (ORCPT
+        with ESMTP id S1344232AbiDNNbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA257A6E12;
-        Thu, 14 Apr 2022 06:21:06 -0700 (PDT)
+        Thu, 14 Apr 2022 09:31:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F109E6;
+        Thu, 14 Apr 2022 06:28:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D791618E3;
-        Thu, 14 Apr 2022 13:21:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 802CEC385A1;
-        Thu, 14 Apr 2022 13:21:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56028B82941;
+        Thu, 14 Apr 2022 13:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A533AC385A5;
+        Thu, 14 Apr 2022 13:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942465;
-        bh=eWY6ofTpSdy8cdSc096Y426V6ZJbRKoWWuKcAkr2quM=;
+        s=korg; t=1649942929;
+        bh=UQOJQUi4iWDpbVkJGYblS6j+kLS1BBB77zDXwNgSVTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=12sTBKXc3OL4yP4yXnO0yS0zReoVqHhNG6QqUltKN8Bh82RHvyZqQABxV0305nvUZ
-         360emhuumFMyqO9AiHDgllmr9VqOLTyldWEc9drqF/HaSBCr0UI2TQfK1hrR2AKpeV
-         KMMfJtFYZJD6oyFjrrwv/BVU297iv07MVVtBFngU=
+        b=TPAh4YykaAkZneqP+f5G+W+i1d7ekz2Eh2QCI6c4B92BQ0ObliV7kaYYN4aFyRtNn
+         ftxj96rY0o46aIXFh1V5KU/giGzOXOXtntcsTewy9rdLDuraqJBZUmq1KaWG7MNlaT
+         gqJo9JrKQL2+WhycjipDcY0OHzT+O8mU6Z1UlqUc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Scott Branden <scott.branden@broadcom.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 145/338] PCI: Reduce warnings on possible RW1C corruption
-Date:   Thu, 14 Apr 2022 15:10:48 +0200
-Message-Id: <20220414110843.032381429@linuxfoundation.org>
+Subject: [PATCH 4.19 311/338] spi: bcm-qspi: fix MSPI only access with bcm_qspi_exec_mem_op()
+Date:   Thu, 14 Apr 2022 15:13:34 +0200
+Message-Id: <20220414110847.732388711@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -54,71 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+From: Kamal Dasu <kdasu.kdev@gmail.com>
 
-[ Upstream commit 92c45b63ce22c8898aa41806e8d6692bcd577510 ]
+[ Upstream commit 2c7d1b281286c46049cd22b43435cecba560edde ]
 
-For hardware that only supports 32-bit writes to PCI there is the
-possibility of clearing RW1C (write-one-to-clear) bits. A rate-limited
-messages was introduced by fb2659230120, but rate-limiting is not the best
-choice here. Some devices may not show the warnings they should if another
-device has just produced a bunch of warnings. Also, the number of messages
-can be a nuisance on devices which are otherwise working fine.
+This fixes case where MSPI controller is used to access spi-nor
+flash and BSPI block is not present.
 
-Change the ratelimit to a single warning per bus. This ensures no bus is
-'starved' of emitting a warning and also that there isn't a continuous
-stream of warnings. It would be preferable to have a warning per device,
-but the pci_dev structure is not available here, and a lookup from devfn
-would be far too slow.
-
-Suggested-by: Bjorn Helgaas <helgaas@kernel.org>
-Fixes: fb2659230120 ("PCI: Warn on possible RW1C corruption for sub-32 bit config writes")
-Link: https://lore.kernel.org/r/20200806041455.11070-1-mark.tomlinson@alliedtelesis.co.nz
-Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Scott Branden <scott.branden@broadcom.com>
+Fixes: 5f195ee7d830 ("spi: bcm-qspi: Implement the spi_mem interface")
+Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220328142442.7553-1-kdasu.kdev@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/access.c | 9 ++++++---
- include/linux/pci.h  | 1 +
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/spi/spi-bcm-qspi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/access.c b/drivers/pci/access.c
-index 3c8ffd62dc00..98ee5f05fc0f 100644
---- a/drivers/pci/access.c
-+++ b/drivers/pci/access.c
-@@ -160,9 +160,12 @@ int pci_generic_config_write32(struct pci_bus *bus, unsigned int devfn,
- 	 * write happen to have any RW1C (write-one-to-clear) bits set, we
- 	 * just inadvertently cleared something we shouldn't have.
- 	 */
--	dev_warn_ratelimited(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
--			     size, pci_domain_nr(bus), bus->number,
--			     PCI_SLOT(devfn), PCI_FUNC(devfn), where);
-+	if (!bus->unsafe_warn) {
-+		dev_warn(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
-+			 size, pci_domain_nr(bus), bus->number,
-+			 PCI_SLOT(devfn), PCI_FUNC(devfn), where);
-+		bus->unsafe_warn = 1;
-+	}
+diff --git a/drivers/spi/spi-bcm-qspi.c b/drivers/spi/spi-bcm-qspi.c
+index 82c24c85f45b..3f291db7b39a 100644
+--- a/drivers/spi/spi-bcm-qspi.c
++++ b/drivers/spi/spi-bcm-qspi.c
+@@ -970,7 +970,7 @@ static int bcm_qspi_exec_mem_op(struct spi_mem *mem,
+ 	addr = op->addr.val;
+ 	len = op->data.nbytes;
  
- 	mask = ~(((1 << (size * 8)) - 1) << ((where & 0x3) * 8));
- 	tmp = readl(addr) & mask;
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index a4bbce871e08..3e06e9790c25 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -581,6 +581,7 @@ struct pci_bus {
- 	struct bin_attribute	*legacy_io;	/* Legacy I/O for this bus */
- 	struct bin_attribute	*legacy_mem;	/* Legacy mem */
- 	unsigned int		is_added:1;
-+	unsigned int		unsafe_warn:1;	/* warned about RW1C config write */
- };
+-	if (bcm_qspi_bspi_ver_three(qspi) == true) {
++	if (has_bspi(qspi) && bcm_qspi_bspi_ver_three(qspi) == true) {
+ 		/*
+ 		 * The address coming into this function is a raw flash offset.
+ 		 * But for BSPI <= V3, we need to convert it to a remapped BSPI
+@@ -989,7 +989,7 @@ static int bcm_qspi_exec_mem_op(struct spi_mem *mem,
+ 	    len < 4)
+ 		mspi_read = true;
  
- #define to_pci_bus(n)	container_of(n, struct pci_bus, dev)
+-	if (mspi_read)
++	if (!has_bspi(qspi) || mspi_read)
+ 		return bcm_qspi_mspi_exec_mem_op(spi, op);
+ 
+ 	ret = bcm_qspi_bspi_set_mode(qspi, op, 0);
 -- 
-2.34.1
+2.35.1
 
 
 
