@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBDDC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0206AC35273
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349628AbiDNOU5 (ORCPT
+        id S1349403AbiDNOUF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
+        Thu, 14 Apr 2022 10:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343915AbiDNNja (ORCPT
+        with ESMTP id S1343634AbiDNNjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A450892844;
-        Thu, 14 Apr 2022 06:35:23 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD70829C90;
+        Thu, 14 Apr 2022 06:34:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 23056CE29B1;
-        Thu, 14 Apr 2022 13:35:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A0F7C385A5;
-        Thu, 14 Apr 2022 13:35:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51A5EB82983;
+        Thu, 14 Apr 2022 13:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF3EFC385A1;
+        Thu, 14 Apr 2022 13:34:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943320;
-        bh=M43zBSh0J1qFOy7MbpredyPB4xIiw+Rzryk0cRsz4ps=;
+        s=korg; t=1649943270;
+        bh=5IqUjJTSOJ5iA71G3v7PMy802c6wfxcw7Yd0aVsWReA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LV9vft4YH07IRanM7Y0r6XFYqenqf1wcHjQ3/KxQ/qGN54slnxXTYUd7cAJyQqMXS
-         XKoQXg9S1IiX+L+8BKEq4JiBz5H7NBtiOjRc0KfP4l6tEwYf7ydNaxUAZqs4bB+b9I
-         Opyr6AF96bVJoyw7CZsO5EWe8r9rj0JBSybB/S2Q=
+        b=gmbXrsVjqMkkzzqZMBz55Li/FmjdH8b+KhMc3ekOsg2EvBkC+0HBobEXndaa37QJv
+         UZsxEsBBNSzRpgXP4CE3lD17klqiSWfCu7QvBopARunpzYo8qIrbpRIVlA6wd2ity1
+         o2ZJtLy9+CZHZFRRb2uY/RQqs04kUBAN4XVEWd8w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Zary <linux@zary.sk>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 113/475] media: bttv: fix WARNING regression on tunerless devices
-Date:   Thu, 14 Apr 2022 15:08:18 +0200
-Message-Id: <20220414110858.315509848@linuxfoundation.org>
+        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.4 045/475] jffs2: fix memory leak in jffs2_do_mount_fs
+Date:   Thu, 14 Apr 2022 15:07:10 +0200
+Message-Id: <20220414110856.417847316@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,50 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Zary <linux@zary.sk>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit ef058cc8b7193d15a771272359c7454839ae74ee ]
+commit d051cef784de4d54835f6b6836d98a8f6935772c upstream.
 
-Commit 2161536516ed ("media: media/pci: set device_caps in struct video_device")
-introduced a regression: V4L2_CAP_TUNER is always present in device_caps,
-even when the device has no tuner.
+If jffs2_build_filesystem() in jffs2_do_mount_fs() returns an error,
+we can observe the following kmemleak report:
 
-This causes a warning:
-WARNING: CPU: 0 PID: 249 at drivers/media/v4l2-core/v4l2-ioctl.c:1102 v4l_querycap+0xa0/0xb0 [videodev]
+--------------------------------------------
+unreferenced object 0xffff88811b25a640 (size 64):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffa493be24>] kmem_cache_alloc_trace+0x584/0x880
+    [<ffffffffa5423a06>] jffs2_sum_init+0x86/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+unreferenced object 0xffff88812c760000 (size 65536):
+  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
+  hex dump (first 32 bytes):
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+  backtrace:
+    [<ffffffffa493a449>] __kmalloc+0x6b9/0x910
+    [<ffffffffa5423a57>] jffs2_sum_init+0xd7/0x130
+    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
+    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
+    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
+    [...]
+--------------------------------------------
 
-Fixes: 2161536516ed ("media: media/pci: set device_caps in struct video_device")
-Signed-off-by: Ondrej Zary <linux@zary.sk>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This is because the resources allocated in jffs2_sum_init() are not
+released. Call jffs2_sum_exit() to release these resources to solve
+the problem.
+
+Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
+Cc: stable@vger.kernel.org
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/pci/bt8xx/bttv-driver.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/jffs2/build.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
-index 570530d976d2..6441e7d63d97 100644
---- a/drivers/media/pci/bt8xx/bttv-driver.c
-+++ b/drivers/media/pci/bt8xx/bttv-driver.c
-@@ -3898,7 +3898,7 @@ static int bttv_register_video(struct bttv *btv)
+--- a/fs/jffs2/build.c
++++ b/fs/jffs2/build.c
+@@ -415,13 +415,15 @@ int jffs2_do_mount_fs(struct jffs2_sb_in
+ 		jffs2_free_ino_caches(c);
+ 		jffs2_free_raw_node_refs(c);
+ 		ret = -EIO;
+-		goto out_free;
++		goto out_sum_exit;
+ 	}
  
- 	/* video */
- 	vdev_init(btv, &btv->video_dev, &bttv_video_template, "video");
--	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_TUNER |
-+	btv->video_dev.device_caps = V4L2_CAP_VIDEO_CAPTURE |
- 				     V4L2_CAP_READWRITE | V4L2_CAP_STREAMING;
- 	if (btv->tuner_type != TUNER_ABSENT)
- 		btv->video_dev.device_caps |= V4L2_CAP_TUNER;
-@@ -3919,7 +3919,7 @@ static int bttv_register_video(struct bttv *btv)
- 	/* vbi */
- 	vdev_init(btv, &btv->vbi_dev, &bttv_video_template, "vbi");
- 	btv->vbi_dev.device_caps = V4L2_CAP_VBI_CAPTURE | V4L2_CAP_READWRITE |
--				   V4L2_CAP_STREAMING | V4L2_CAP_TUNER;
-+				   V4L2_CAP_STREAMING;
- 	if (btv->tuner_type != TUNER_ABSENT)
- 		btv->vbi_dev.device_caps |= V4L2_CAP_TUNER;
+ 	jffs2_calc_trigger_levels(c);
  
--- 
-2.34.1
-
+ 	return 0;
+ 
++ out_sum_exit:
++	jffs2_sum_exit(c);
+  out_free:
+ 	kvfree(c->blocks);
+ 
 
 
