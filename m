@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E03C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E053AC4707A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350489AbiDNPD4 (ORCPT
+        id S1352048AbiDNPEB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
+        Thu, 14 Apr 2022 11:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346572AbiDNN5m (ORCPT
+        with ESMTP id S1346567AbiDNN5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23148CDAE;
-        Thu, 14 Apr 2022 06:47:12 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B3C83B38;
+        Thu, 14 Apr 2022 06:47:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9064E61D73;
-        Thu, 14 Apr 2022 13:47:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70AFDC385A1;
-        Thu, 14 Apr 2022 13:47:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A94D761DAB;
+        Thu, 14 Apr 2022 13:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B53F0C385A1;
+        Thu, 14 Apr 2022 13:47:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944032;
-        bh=t0g3o+vjO6oyTmJLg+UH2gahFuYs6k7jNgBfmjGR/W4=;
+        s=korg; t=1649944026;
+        bh=59nRNgDgCe3ne56lbosghpRk61Xrl+tdqC0JaDJz/4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xukP+4mtal+m8n9gxBz6mrd6YcFhVHL0kmL1cfLONE1zGIFY2gcOLIqawhzb3xAjK
-         zdXtt7N01jH4/ovDSPn5+C10ipBR26+CCJhSc8XXxaH3H7J25d2YAiVsPnwpLkPMVt
-         Ui66FF936W9qEUl+J+qu9fkQYj3ZwYf5xZ+2gH0c=
+        b=cbUsXXsKjmU2O9X5UR7b8vGYgduLWchkSnkR1U97v5+4+yICGUQ5mfn9rcyaaIMpC
+         GIVq0lnTYPnH5+oNIvh0G+GkFEEi9FizyD0lAVn/4KmtVdG4hmLFsCHRsyDSyBPVwD
+         1EK4ncDWpsTEXYhA1MClsQPrYhOS9SzuZEmNVL00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 369/475] rtc: wm8350: Handle error for wm8350_register_irq
-Date:   Thu, 14 Apr 2022 15:12:34 +0200
-Message-Id: <20220414110905.404559971@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.4 367/475] KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasnt activated
+Date:   Thu, 14 Apr 2022 15:12:32 +0200
+Message-Id: <20220414110905.349401010@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,55 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 43f0269b6b89c1eec4ef83c48035608f4dcdd886 ]
+commit b1e34d325397a33d97d845e312d7cf2a8b646b44 upstream.
 
-As the potential failure of the wm8350_register_irq(),
-it should be better to check it and return error if fails.
-Also, it need not free 'wm_rtc->rtc' since it will be freed
-automatically.
+Setting non-zero values to SYNIC/STIMER MSRs activates certain features,
+this should not happen when KVM_CAP_HYPERV_SYNIC{,2} was not activated.
 
-Fixes: 077eaf5b40ec ("rtc: rtc-wm8350: add support for WM8350 RTC")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220303085030.291793-1-jiasheng@iscas.ac.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Note, it would've been better to forbid writing anything to SYNIC/STIMER
+MSRs, including zeroes, however, at least QEMU tries clearing
+HV_X64_MSR_STIMER0_CONFIG without SynIC. HV_X64_MSR_EOM MSR is somewhat
+'special' as writing zero there triggers an action, this also should not
+happen when SynIC wasn't activated.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220325132140.25650-4-vkuznets@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/rtc-wm8350.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ arch/x86/kvm/hyperv.c |   16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/rtc/rtc-wm8350.c b/drivers/rtc/rtc-wm8350.c
-index 2018614f258f..6eaa9321c074 100644
---- a/drivers/rtc/rtc-wm8350.c
-+++ b/drivers/rtc/rtc-wm8350.c
-@@ -432,14 +432,21 @@ static int wm8350_rtc_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -205,7 +205,7 @@ static int synic_set_msr(struct kvm_vcpu
+ 	struct kvm_vcpu *vcpu = synic_to_vcpu(synic);
+ 	int ret;
  
--	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
- 			    wm8350_rtc_update_handler, 0,
- 			    "RTC Seconds", wm8350);
-+	if (ret)
-+		return ret;
+-	if (!synic->active && !host)
++	if (!synic->active && (!host || data))
+ 		return 1;
+ 
+ 	trace_kvm_hv_synic_set_msr(vcpu->vcpu_id, msr, data, host);
+@@ -251,6 +251,9 @@ static int synic_set_msr(struct kvm_vcpu
+ 	case HV_X64_MSR_EOM: {
+ 		int i;
+ 
++		if (!synic->active)
++			break;
 +
- 	wm8350_mask_irq(wm8350, WM8350_IRQ_RTC_SEC);
+ 		for (i = 0; i < ARRAY_SIZE(synic->sint); i++)
+ 			kvm_hv_notify_acked_sint(vcpu, i);
+ 		break;
+@@ -514,6 +517,11 @@ static int stimer_set_config(struct kvm_
+ {
+ 	union hv_stimer_config new_config = {.as_uint64 = config},
+ 		old_config = {.as_uint64 = stimer->config.as_uint64};
++	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
++	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
++
++	if (!synic->active && (!host || config))
++		return 1;
  
--	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
- 			    wm8350_rtc_alarm_handler, 0,
- 			    "RTC Alarm", wm8350);
-+	if (ret) {
-+		wm8350_free_irq(wm8350, WM8350_IRQ_RTC_SEC, wm8350);
-+		return ret;
-+	}
+ 	trace_kvm_hv_stimer_set_config(stimer_to_vcpu(stimer)->vcpu_id,
+ 				       stimer->index, config, host);
+@@ -533,6 +541,12 @@ static int stimer_set_config(struct kvm_
+ static int stimer_set_count(struct kvm_vcpu_hv_stimer *stimer, u64 count,
+ 			    bool host)
+ {
++	struct kvm_vcpu *vcpu = stimer_to_vcpu(stimer);
++	struct kvm_vcpu_hv_synic *synic = vcpu_to_synic(vcpu);
++
++	if (!synic->active && (!host || count))
++		return 1;
++
+ 	trace_kvm_hv_stimer_set_count(stimer_to_vcpu(stimer)->vcpu_id,
+ 				      stimer->index, count, host);
  
- 	return 0;
- }
--- 
-2.35.1
-
 
 
