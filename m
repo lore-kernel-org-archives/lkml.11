@@ -2,131 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D46B6C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 06:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AA1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 06:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240054AbiDNGXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 02:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
+        id S240059AbiDNGXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 02:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240012AbiDNGXf (ORCPT
+        with ESMTP id S240026AbiDNGXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 02:23:35 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 054CD1F601;
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14404D24A;
         Wed, 13 Apr 2022 23:21:11 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BE1761576;
+Received: by mail-pl1-x629.google.com with SMTP id n18so3867418plg.5;
+        Wed, 13 Apr 2022 23:21:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=v6BSL8VhVmwIej2fDS4fILub4T69woLAa8tFuzppLBk=;
+        b=myoGwm2G1MSWxH52mFS6PB//GYIp24Zl7kzfWhLsbgDggF7p3Uq899B13XQH5s71gu
+         HHFqo6T+QWWaM66hqv+AyVlDLgA/ey/zDE2HM5L7WTYH4D2kU2LDq9fB6nM1HjNmFtCp
+         hEqP6Z0xmeWKJqmVJ2bT6wT/f9FTWcSfZT1ed9mXOqC/ZtcS0ppQJyMNs4teGiBy2J3R
+         nGsG4/HlF/Up6SkA56i2FJJZzhjZLHyUV95Ii+3tbh5yryu0XvRuWwPUFVqgq9b+ij1o
+         A54iIEeEkJ81az7JwRj8iFxQMs2XOc+AC/ZlQRYtkaZZIUz1liYyXYTwdzsiLOPqesFB
+         Glmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=v6BSL8VhVmwIej2fDS4fILub4T69woLAa8tFuzppLBk=;
+        b=13dzXlrVJkwyOBkNc1y7IPQcywIMm3woZQcKbkDOKa7EtCkYMSini3AOaN/HMqQthp
+         X/f0GooRlanmIR/YiqrqGnLRgLlN1O5A51cRVF6qwsPJ2u9oFL8W02y4Qobg1tGkix4K
+         tCVOoO9mRcdpXhVe7sSFIW0iGmTtj4+IETHVk07B9auikQBEVe/FlJGZUK0dC+HvLLyD
+         cJ1n2HRJ0/yar2g4Vghx+uyfi+CqYmjehLvS2XA/E6/d6VbP98hkzHSdS9U7E/txgcI8
+         6iJfyj4WG2B3R0O2infPBmMeeNp+94bfFdlO3jW+3WjxABuC7NES88cKd8PIUOq2rX8a
+         HlRQ==
+X-Gm-Message-State: AOAM532ggi1s5ONqX3eODP269Ue7cHc2Xnp+lbCn32gXqTWUNlIEmUPN
+        UwsvVvT6DZj2AAuGsijVCYE=
+X-Google-Smtp-Source: ABdhPJx/+VfCKqnYmadJUeIHFXxCThNG7ojieyEdrIdWyLC4NUzoCeJQJbvhMw0o07fEgwbpqK4R8g==
+X-Received: by 2002:a17:90b:314a:b0:1cd:3a73:3a99 with SMTP id ip10-20020a17090b314a00b001cd3a733a99mr2641203pjb.189.1649917270729;
         Wed, 13 Apr 2022 23:21:10 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.37.202])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4EAD83F70D;
-        Wed, 13 Apr 2022 23:21:03 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     christophe.leroy@csgroup.eu, catalin.marinas@arm.com,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>
-Subject: [PATCH V7 2/7] powerpc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date:   Thu, 14 Apr 2022 11:51:20 +0530
-Message-Id: <20220414062125.609297-3-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220414062125.609297-1-anshuman.khandual@arm.com>
-References: <20220414062125.609297-1-anshuman.khandual@arm.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from localhost.localdomain ([119.3.119.18])
+        by smtp.googlemail.com with ESMTPSA id nl17-20020a17090b385100b001c70883f6ccsm5042588pjb.36.2022.04.13.23.21.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 23:21:10 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        akpm@linux-foundation.org, liam.howlett@oracle.com,
+        david@redhat.com, maz@kernel.org, Felix.Kuehling@amd.com,
+        maciej.szmigiero@oracle.com, apopple@nvidia.com,
+        bharata@linux.ibm.com, linuxram@us.ibm.com
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
+Subject: [RESEND][PATCH] KVM: PPC: Book3S HV: fix incorrect NULL check on list iterator
+Date:   Thu, 14 Apr 2022 14:21:03 +0800
+Message-Id: <20220414062103.8153-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This defines and exports a platform specific custom vm_get_page_prot() via
-subscribing ARCH_HAS_VM_GET_PAGE_PROT. While here, this also localizes
-arch_vm_get_page_prot() as __vm_get_page_prot() and moves it near
-vm_get_page_prot().
+The bug is here:
+	if (!p)
+                return ret;
 
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-kernel@vger.kernel.org
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+The list iterator value 'p' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found.
+
+To fix the bug, Use a new value 'iter' as the list iterator, while use
+the old value 'p' as a dedicated variable to point to the found element.
+
+Cc: stable@vger.kernel.org
+Fixes: dfaa973ae9605 ("KVM: PPC: Book3S HV: In H_SVM_INIT_DONE, migrate remaining normal-GFNs to secure-GFNs")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 ---
- arch/powerpc/Kconfig               |  1 +
- arch/powerpc/include/asm/mman.h    | 12 ------------
- arch/powerpc/mm/book3s64/pgtable.c | 17 +++++++++++++++++
- 3 files changed, 18 insertions(+), 12 deletions(-)
+ arch/powerpc/kvm/book3s_hv_uvmem.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 174edabb74fa..69e44358a235 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -140,6 +140,7 @@ config PPC
- 	select ARCH_HAS_TICK_BROADCAST		if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAS_UACCESS_FLUSHCACHE
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
-+	select ARCH_HAS_VM_GET_PAGE_PROT	if PPC_BOOK3S_64
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select ARCH_KEEP_MEMBLOCK
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
-diff --git a/arch/powerpc/include/asm/mman.h b/arch/powerpc/include/asm/mman.h
-index 7cb6d18f5cd6..1b024e64c8ec 100644
---- a/arch/powerpc/include/asm/mman.h
-+++ b/arch/powerpc/include/asm/mman.h
-@@ -24,18 +24,6 @@ static inline unsigned long arch_calc_vm_prot_bits(unsigned long prot,
- }
- #define arch_calc_vm_prot_bits(prot, pkey) arch_calc_vm_prot_bits(prot, pkey)
- 
--static inline pgprot_t arch_vm_get_page_prot(unsigned long vm_flags)
--{
--#ifdef CONFIG_PPC_MEM_KEYS
--	return (vm_flags & VM_SAO) ?
--		__pgprot(_PAGE_SAO | vmflag_to_pte_pkey_bits(vm_flags)) :
--		__pgprot(0 | vmflag_to_pte_pkey_bits(vm_flags));
--#else
--	return (vm_flags & VM_SAO) ? __pgprot(_PAGE_SAO) : __pgprot(0);
--#endif
--}
--#define arch_vm_get_page_prot(vm_flags) arch_vm_get_page_prot(vm_flags)
--
- static inline bool arch_validate_prot(unsigned long prot, unsigned long addr)
+diff --git a/arch/powerpc/kvm/book3s_hv_uvmem.c b/arch/powerpc/kvm/book3s_hv_uvmem.c
+index e414ca44839f..0cb20ee6a632 100644
+--- a/arch/powerpc/kvm/book3s_hv_uvmem.c
++++ b/arch/powerpc/kvm/book3s_hv_uvmem.c
+@@ -360,13 +360,15 @@ static bool kvmppc_gfn_is_uvmem_pfn(unsigned long gfn, struct kvm *kvm,
+ static bool kvmppc_next_nontransitioned_gfn(const struct kvm_memory_slot *memslot,
+ 		struct kvm *kvm, unsigned long *gfn)
  {
- 	if (prot & ~(PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM | PROT_SAO))
-diff --git a/arch/powerpc/mm/book3s64/pgtable.c b/arch/powerpc/mm/book3s64/pgtable.c
-index 052e6590f84f..8b474ab32f67 100644
---- a/arch/powerpc/mm/book3s64/pgtable.c
-+++ b/arch/powerpc/mm/book3s64/pgtable.c
-@@ -7,6 +7,7 @@
- #include <linux/mm_types.h>
- #include <linux/memblock.h>
- #include <linux/memremap.h>
-+#include <linux/pkeys.h>
- #include <linux/debugfs.h>
- #include <misc/cxl-base.h>
+-	struct kvmppc_uvmem_slot *p;
++	struct kvmppc_uvmem_slot *p = NULL, *iter;
+ 	bool ret = false;
+ 	unsigned long i;
  
-@@ -549,3 +550,19 @@ unsigned long memremap_compat_align(void)
- }
- EXPORT_SYMBOL_GPL(memremap_compat_align);
- #endif
-+
-+pgprot_t vm_get_page_prot(unsigned long vm_flags)
-+{
-+	unsigned long prot = pgprot_val(protection_map[vm_flags &
-+					(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]);
-+
-+	if (vm_flags & VM_SAO)
-+		prot |= _PAGE_SAO;
-+
-+#ifdef CONFIG_PPC_MEM_KEYS
-+	prot |= vmflag_to_pte_pkey_bits(vm_flags);
-+#endif
-+
-+	return __pgprot(prot);
-+}
-+EXPORT_SYMBOL(vm_get_page_prot);
+-	list_for_each_entry(p, &kvm->arch.uvmem_pfns, list)
+-		if (*gfn >= p->base_pfn && *gfn < p->base_pfn + p->nr_pfns)
++	list_for_each_entry(iter, &kvm->arch.uvmem_pfns, list)
++		if (*gfn >= iter->base_pfn && *gfn < iter->base_pfn + iter->nr_pfns) {
++			p = iter;
+ 			break;
++		}
+ 	if (!p)
+ 		return ret;
+ 	/*
 -- 
-2.25.1
+2.17.1
 
