@@ -2,68 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 049A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 221AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347623AbiDNXdi (ORCPT
+        id S1347657AbiDNXdx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 19:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
+        Thu, 14 Apr 2022 19:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241351AbiDNXde (ORCPT
+        with ESMTP id S241019AbiDNXdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 19:33:34 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAE5A76F3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:31:08 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id d19-20020a0566022bf300b00645eba5c992so3915916ioy.4
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:31:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=cacxPvYX+7YoVTe1rbwEqAdwSgHbgFcryjKRqnj4k6o=;
-        b=Ztt8oG97gzB/D4ZSJdjdD3KmUo85hx7e9/axpKRFHz8rMaYoBjN3u5VzDVdMyhjdhF
-         Kd8xQSb3X1sdc/fhyupxiSkjtnFr24RDJQChLktbWnWhe6QnlEgO7SMG19yEheef3Xh2
-         3sgPEz0kC4Mfhcd/Ee2fhFcwL69yvcX/saGa2B46vHi0bBDV6p4gv4FrzbZtopUCxkBA
-         YD23vYKyt3Jm11I2k+vifF4srgP7TSUYOu5mLps7aADJqwY0+KPA3WO3399gCQoR1rUI
-         od7vwI97y3YrZn4vrPAu8jYwOLgVi61mpIATL4QKhH9JC9YCRhv3HA+ELwEvUy44+wUf
-         Tqmw==
-X-Gm-Message-State: AOAM533fPkaPq9rZsuQnIC99m6LE/xn9kqkBqLcinOosg7/sb/mRaD+f
-        GAOZR0blu3qkP0Q9cqFbyDk2T3ZvdjHMAnnx0lO9IhNsTLCq
-X-Google-Smtp-Source: ABdhPJyIevyU0774Z/8ufRGfExJNo+ANrxot63r6R9B7mINzokzQuOulhQeJNK64zaCiOhEPwslyPLTq+36eX8PN6//sDidtLde9
+        Thu, 14 Apr 2022 19:33:50 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE48EAAC8D
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:31:22 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 5776C2C0108;
+        Thu, 14 Apr 2022 23:31:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1649979081;
+        bh=nLGseaeJSdIN7Ydb5DoUDNo/fmfPTnWO349E8fE98jo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NZ+APCVYoaG0wa2UGn1BLxv0AFC4Z5KjmXYmwSAD23r9iFOhtp0xc8p7llwYDfP7P
+         zfEOdgmoiQ8mKZtOScxWbinKc1b369YUOiSxGvlACOkr+PoP0B8SgjvU6g28/4CiXA
+         sURT+bL4HfCY7ZeX4nMV0LlNw0KEEhEeiErLRQU3jF6ipvcoHU/JqI+oBF9pD8a/9n
+         YH4Z9gFXLpu7dpQlnkyE1IrKe/APzeBSPrNlss7LIa8PrCuNqodxmv79xRngEtxcgJ
+         dFIslGm66EJgGmzQIbYHAQxs4kDRGzSNzCrE7m0LBMuolFxkTz4dGulQzX4BBD5lMQ
+         59VyDMNIxaMnQ==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B6258aec90000>; Fri, 15 Apr 2022 11:31:21 +1200
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id 1EDC513EE11;
+        Fri, 15 Apr 2022 11:31:21 +1200 (NZST)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id 6E77F2A2679; Fri, 15 Apr 2022 11:31:16 +1200 (NZST)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     linus.walleij@linaro.org, robh+dt@kernel.org,
+        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        kostap@marvell.com, robert.marko@sartura.hr
+Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v4 0/4] arm64: mvebu: Support for Marvell 98DX2530 (and variants)
+Date:   Fri, 15 Apr 2022 11:30:51 +1200
+Message-Id: <20220414233055.586962-1-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:16d2:b0:323:7285:474b with SMTP id
- g18-20020a05663816d200b003237285474bmr2431975jat.61.1649979067429; Thu, 14
- Apr 2022 16:31:07 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 16:31:07 -0700
-In-Reply-To: <9ff91977-a6b5-90f9-3502-58ac641e1307@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003378b905dca5b0e6@google.com>
-Subject: Re: [syzbot] UBSAN: array-index-out-of-bounds in pvr2_i2c_core_init
-From:   syzbot <syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com>
-To:     isely@pobox.com, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, mchehab@kernel.org,
-        paskripkin@gmail.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=L59jvNb8 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=jGREw9QuPlHGdXEqdN8A:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+This series adds support for the Marvell 98DX2530 SoC which is the Contro=
+l and
+Management CPU integrated into the AlleyCat5/AlleyCat5X series of Marvell
+switches.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+The CPU core is an ARM Cortex-A55 with neon, simd and crypto extensions.
 
-Reported-and-tested-by: syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
+This is fairly similar to the Armada-3700 SoC so most of the required
+peripherals are already supported. This series adds a devicetree and pinc=
+trl
+driver for the SoC and the RD-AC5X-32G16HVG6HLG reference board.
 
-Tested on:
+In the v3 series I've dropped out a few patches. The MMC stuff is more
+complicated than just adding a compatible string. The mvneta changes have=
+ gone
+in via net-next.
 
-commit:         115acbb5 Merge tag 's390-5.18-3' of git://git.kernel.o..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=eb177500e563582f
-dashboard link: https://syzkaller.appspot.com/bug?extid=1a247e36149ffd709a9b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=113c24e0f00000
+Chris Packham (4):
+  dt-bindings: pinctrl: mvebu: Document bindings for AC5
+  pinctrl: mvebu: pinctrl driver for 98DX2530 SoC
+  arm64: dts: marvell: Add Armada 98DX2530 SoC and RD-AC5X board
+  arm64: marvell: enable the 98DX2530 pinctrl driver
 
-Note: testing is done by a robot and is best-effort only.
+ .../bindings/pinctrl/marvell,ac5-pinctrl.yaml |  72 +++++
+ arch/arm64/Kconfig.platforms                  |   2 +
+ arch/arm64/boot/dts/marvell/Makefile          |   1 +
+ .../boot/dts/marvell/armada-98dx2530.dtsi     | 302 ++++++++++++++++++
+ arch/arm64/boot/dts/marvell/rd-ac5x.dts       |  82 +++++
+ drivers/pinctrl/mvebu/Kconfig                 |   4 +
+ drivers/pinctrl/mvebu/Makefile                |   1 +
+ drivers/pinctrl/mvebu/pinctrl-ac5.c           | 261 +++++++++++++++
+ 8 files changed, 725 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/marvell,ac5=
+-pinctrl.yaml
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/rd-ac5x.dts
+ create mode 100644 drivers/pinctrl/mvebu/pinctrl-ac5.c
+
+--=20
+2.35.1
+
