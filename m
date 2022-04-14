@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56741C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8CDC4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345044AbiDNNpC (ORCPT
+        id S1345198AbiDNNpY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
+        Thu, 14 Apr 2022 09:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245707AbiDNN3U (ORCPT
+        with ESMTP id S245740AbiDNN3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAFAAFADF;
-        Thu, 14 Apr 2022 06:23:46 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE42AFB07;
+        Thu, 14 Apr 2022 06:24:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80AF6B8296A;
-        Thu, 14 Apr 2022 13:23:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE698C385A1;
-        Thu, 14 Apr 2022 13:23:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C557618F8;
+        Thu, 14 Apr 2022 13:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78E56C385A1;
+        Thu, 14 Apr 2022 13:24:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942624;
-        bh=nkCUznEb/nxqNrdjFSYcrmrAOYnmEWFuMdAke85b898=;
+        s=korg; t=1649942640;
+        bh=EMxSx4orwuA7jGZm2KFPLJ5bfImcWmd7r958OxzUynE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nObHoSvBUjkSeLjoBSgBz5PEJ+4mKUVP1w4mX6DMlMFeC3TE4IQo4P80If7F721Vv
-         rbag/eHpOmkDltpVcjmfMTjwhYBC4Hcyrbq4zCcjJ6S1KlqmhI3qXoymwXhPotu9RV
-         kbq6MUuu7iTHwJXNdmV3CZNIh4xu8TcdI/6+3kY4=
+        b=MJWFyPYh5hO9nIlkpQ0AKwAV+hFJtPusiNBosnSiNsRN2g/ThpuIHQHHyPMcDEcrH
+         kyJoIum+myPhLLVnwFoaNytW3h12qBvUtmO8rPoW7Ad1UKRExwriKDqfS8uytHH1dU
+         85tkTfFvUnx2PdudSiPXUqQjZZw717YLtrcD5f0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Brown <matthew.brown.dev@gmail.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 195/338] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
-Date:   Thu, 14 Apr 2022 15:11:38 +0200
-Message-Id: <20220414110844.447281431@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 209/338] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Thu, 14 Apr 2022 15:11:52 +0200
+Message-Id: <20220414110844.845907017@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,80 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Menzel <pmenzel@molgen.mpg.de>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 633174a7046ec3b4572bec24ef98e6ee89bce14b ]
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-Buidling raid6test on Ubuntu 21.10 (ppc64le) with GNU Make 4.3 shows the
-errors below:
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-    $ cd lib/raid6/test/
-    $ make
-    <stdin>:1:1: error: stray ‘\’ in program
-    <stdin>:1:2: error: stray ‘#’ in program
-    <stdin>:1:11: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ \
-        before ‘<’ token
-
-    [...]
-
-The errors come from the HAS_ALTIVEC test, which fails, and the POWER
-optimized versions are not built. That’s also reason nobody noticed on the
-other architectures.
-
-GNU Make 4.3 does not remove the backslash anymore. From the 4.3 release
-announcment:
-
-> * WARNING: Backward-incompatibility!
->   Number signs (#) appearing inside a macro reference or function invocation
->   no longer introduce comments and should not be escaped with backslashes:
->   thus a call such as:
->     foo := $(shell echo '#')
->   is legal.  Previously the number sign needed to be escaped, for example:
->     foo := $(shell echo '\#')
->   Now this latter will resolve to "\#".  If you want to write makefiles
->   portable to both versions, assign the number sign to a variable:
->     H := \#
->     foo := $(shell echo '$H')
->   This was claimed to be fixed in 3.81, but wasn't, for some reason.
->   To detect this change search for 'nocomment' in the .FEATURES variable.
-
-So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
-files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
-of \# in Makefiles") and define and use a $(pound) variable.
-
-Reference for the change in make:
-https://git.savannah.gnu.org/cgit/make.git/commit/?id=c6966b323811c37acedff05b57
-
-Cc: Matt Brown <matthew.brown.dev@gmail.com>
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Song Liu <song@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/raid6/test/Makefile | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
-index 79777645cac9..e7b54ec8ca70 100644
---- a/lib/raid6/test/Makefile
-+++ b/lib/raid6/test/Makefile
-@@ -4,6 +4,8 @@
- # from userspace.
- #
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 87497a00241f..1c57ddaeff1b 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -412,7 +412,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
-+pound := \#
-+
- CC	 = gcc
- OPTFLAGS = -O2			# Adjust as desired
- CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
-@@ -44,7 +46,7 @@ else ifeq ($(HAS_NEON),yes)
-         OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
-         CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
- else
--        HAS_ALTIVEC := $(shell printf '\#include <altivec.h>\nvector int a;\n' |\
-+        HAS_ALTIVEC := $(shell printf '$(pound)include <altivec.h>\nvector int a;\n' |\
-                          gcc -c -x c - >/dev/null && rm ./-.o && echo yes)
-         ifeq ($(HAS_ALTIVEC),yes)
-                 CFLAGS += -I../../../arch/powerpc/include
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
+ }
+ 
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -442,7 +442,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -490,7 +490,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -535,7 +535,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
 -- 
 2.34.1
 
