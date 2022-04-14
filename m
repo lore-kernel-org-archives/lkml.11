@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A4BC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A86BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349497AbiDNOUa (ORCPT
+        id S1349389AbiDNOUD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
+        Thu, 14 Apr 2022 10:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343914AbiDNNja (ORCPT
+        with ESMTP id S1343559AbiDNNjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE4893189;
-        Thu, 14 Apr 2022 06:35:24 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F060818392;
+        Thu, 14 Apr 2022 06:34:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E12C861D29;
-        Thu, 14 Apr 2022 13:35:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE2F8C385A5;
-        Thu, 14 Apr 2022 13:35:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AACFFB8296A;
+        Thu, 14 Apr 2022 13:34:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E965C385A5;
+        Thu, 14 Apr 2022 13:34:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943323;
-        bh=XS+IbrG0j3DZS5xyepIIdLvBWKhipwwYz91ray5Y8ok=;
+        s=korg; t=1649943264;
+        bh=CdMOvF6r2GW8m2roTh6MVKEvGZyY1x+ccDj8OjjuD2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ygfunR2a1aqvCYEXsU82lvP8PubU617dO4VDC7LtNFKZZilmyALNNx+TL0bZSUkBI
-         n8TBlIOcnqePb19QyPTzZsaRpVx2jowEnslY7GYsa3rfhAEWVedDSBDjsv/TRkLhSU
-         ArMJyEXDJinYrAc/epKr/Rdo18nwf45ejK4UOCrw=
+        b=Jo6XPMrT7i4m0IRj+9BNe5Mj9DSJKFXVOr+qtiuzxhwkUTDaFp+5a+21d05f3FPjc
+         dRkpTd48zKR/AoiTiMxZcHbqYDKuOqHOLiJueJsdwlq13DXq3hx3m/ZPjYXdzDmzVF
+         HS2Zd58Sc/sGuygIlwQL+rc1PIbE4me31rDaNVq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 114/475] media: coda: Fix missing put_device() call in coda_get_vdoa_data
-Date:   Thu, 14 Apr 2022 15:08:19 +0200
-Message-Id: <20220414110858.342775720@linuxfoundation.org>
+        stable@vger.kernel.org, Nikita Shubin <n.shubin@yadro.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.4 053/475] riscv: Fix fill_callchain return value
+Date:   Thu, 14 Apr 2022 15:07:18 +0200
+Message-Id: <20220414110856.638091092@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,37 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Nikita Shubin <n.shubin@yadro.com>
 
-[ Upstream commit ca85d271531a1e1c86f24b892f57b7d0a3ddb5a6 ]
+commit 2b2b574ac587ec5bd7716a356492a85ab8b0ce9f upstream.
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+perf_callchain_store return 0 on success, -1 otherwise,
+fix fill_callchain to return correct bool value.
 
-Fixes: e7f3c5481035 ("[media] coda: use VDOA for un-tiling custom macroblock format")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: dbeb90b0c1eb ("riscv: Add perf callchain support")
+Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/coda/coda-common.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/kernel/perf_callchain.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
-index 834f11fe9dc2..0adc54832657 100644
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -372,6 +372,7 @@ static struct vdoa_data *coda_get_vdoa_data(void)
- 	if (!vdoa_data)
- 		vdoa_data = ERR_PTR(-EPROBE_DEFER);
+--- a/arch/riscv/kernel/perf_callchain.c
++++ b/arch/riscv/kernel/perf_callchain.c
+@@ -77,7 +77,7 @@ void perf_callchain_user(struct perf_cal
  
-+	put_device(&vdoa_pdev->dev);
- out:
- 	of_node_put(vdoa_node);
+ bool fill_callchain(unsigned long pc, void *entry)
+ {
+-	return perf_callchain_store(entry, pc);
++	return perf_callchain_store(entry, pc) == 0;
+ }
  
--- 
-2.34.1
-
+ void notrace walk_stackframe(struct task_struct *task,
 
 
