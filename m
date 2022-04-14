@@ -2,175 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1255BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29982C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241643AbiDNPe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
+        id S242205AbiDNPfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348790AbiDNONJ (ORCPT
+        with ESMTP id S1348432AbiDNORh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:13:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFBFC6F1A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:05:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649945107; x=1681481107;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jKQm+kUuUqino+2dW5Y03gm+/rXNyu9sTs6oih6VvXk=;
-  b=nY7idIvgrogFc1bP24fWo1R0+CTAfCL+xU6OTTtT7epQcFuwjecSACa7
-   RP6xkrO+eD74SfjrfCBxxxoeqMMxVXoYDTfVOaCDT9YjCkA9sWOYZhYyG
-   psp3ujf2yk8aQOY5D/XQd39GCkJb0jRDhiMgGnhtvGzIfP+kPgkjZW0E5
-   vJrIs8r3aTbw8W64297bxTkpRi0Keb1f1CSWY/oGUbjbWuJW8UImisRzE
-   S2QAoEW8Xh0VrmnVmCa/Z4v3z3h4FN5JfrGSxuFNlURAx9ND5yYy6h2vp
-   B4WVL6x1chtxFyROFyy6fEJ2xDmGrYyhozg8lt5W/+6TyXapN6NwfFSsH
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="325840839"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="325840839"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:04:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="624106685"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Apr 2022 07:04:53 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nf05d-000110-BZ;
-        Thu, 14 Apr 2022 14:04:53 +0000
-Date:   Thu, 14 Apr 2022 22:04:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        Thu, 14 Apr 2022 10:17:37 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20DE643C;
+        Thu, 14 Apr 2022 07:09:31 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id lc2so10238015ejb.12;
+        Thu, 14 Apr 2022 07:09:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2rkXhqhY7efsoNHeKBNjLWLTlehipPL06cKEYrELDoE=;
+        b=oPdb6JdCw9IROlIzMRiYvvz2TRgW/BxWVCTViSQmffZKBYt7tKf0QUZxJJZZ//oGlH
+         sljcWr/8dqrxBTqwehzh/2DdgVuDTUXLafbuBKSvNLm92yhE7VhdTky2atxs7bh5CMn2
+         8iFO5a77ZQ7ANOxWhdhT8VjyBIsk4WXGDmFg72r3ERAqy5KOaqkxzgQSIsGcWN/IyXnZ
+         CXsdxlBacFCJpUDpN6OvI3hp5MOS+PnZZI6d9FsVjWiTfKqZTsAeod4FKaxyINLjaGrP
+         8qZZOOMxVnlVJaW9DW3IyC3DtjGgtmwKXujK+U204FK5IIr2v1/7ZhDMGjBjYZogsuzH
+         Zwlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2rkXhqhY7efsoNHeKBNjLWLTlehipPL06cKEYrELDoE=;
+        b=PFMEeDttYOZJdNsZbMGboFwZoqTV0N7z2CgrpfTpTz9VNnoPvL6AsrEiG5BI72OpjC
+         T6db6Tr4RaoHw9ycFpFvvi+hLFCYvD9wT7rs2dKOUugOhEOrXqwS53sOEiHun8b7jwtd
+         cL1AQor6v0ew9nf7WbemzOU/4ORlFIYfSKCgMWzrsGBGSBP2+ybGdDoNEH5I6ClMiIB6
+         /5zwG8jfmnU1nDB4EILk/jOMqV4Iu6U9zc25/ANXciJJNxepnR0Rp/NnGesS16OtP21d
+         GAXbdSY2LIl3ZmY+dd0GeT+Jz9rUjpdu/BiojiUZ6yfJxJ/rRnT/MPzrIDcltAsJ6i5o
+         pdpQ==
+X-Gm-Message-State: AOAM531XKqi+UR677Y9dEHS2QRTt224HDUHlz8sG9OvNr3c7v1CUjLgg
+        4GUaph7eErvUMq4lp9L9cD0=
+X-Google-Smtp-Source: ABdhPJwXy6TRdwJjRxVXoqn1xOpWvZYKuFRBJ4c3rG85mqVm8BuhiXE863afkfeQpj2DM6qjJ58gWA==
+X-Received: by 2002:a17:907:6294:b0:6e1:ea4:74a3 with SMTP id nd20-20020a170907629400b006e10ea474a3mr2479410ejc.168.1649945370519;
+        Thu, 14 Apr 2022 07:09:30 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id cy5-20020a0564021c8500b0041fec3310desm1082701edb.68.2022.04.14.07.09.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 07:09:30 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 17:09:28 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [djwong-xfs:vectorized-scrub 38/396]
- fs/xfs/scrub/agheader_repair.c:585:2: error: implicit declaration of
- function 'xbitmap_walk'
-Message-ID: <202204142115.5hNAAWHG-lkp@intel.com>
+Subject: Re: [net-next PATCH v2 4/4] drivers: net: dsa: qca8k: drop
+ dsa_switch_ops from qca8k_priv
+Message-ID: <20220414140928.dcpsxfa6shjzslrq@skbuf>
+References: <20220412173019.4189-1-ansuelsmth@gmail.com>
+ <20220412173019.4189-5-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220412173019.4189-5-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
-head:   bd756ef7af68274b79308166ee64949d288be861
-commit: d8273f3634d00732c204ba1c112bf1b9efcc6e4d [38/396] xfs: make AGFL repair function avoid crosslinked blocks
-config: hexagon-buildonly-randconfig-r002-20220413 (https://download.01.org/0day-ci/archive/20220414/202204142115.5hNAAWHG-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=d8273f3634d00732c204ba1c112bf1b9efcc6e4d
-        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
-        git fetch --no-tags djwong-xfs vectorized-scrub
-        git checkout d8273f3634d00732c204ba1c112bf1b9efcc6e4d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+On Tue, Apr 12, 2022 at 07:30:19PM +0200, Ansuel Smith wrote:
+> Now that dsa_switch_ops is not switch specific anymore, we can drop it
+> from qca8k_priv and use the static ops directly for the dsa_switch
+> pointer.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-Note: the djwong-xfs/vectorized-scrub HEAD bd756ef7af68274b79308166ee64949d288be861 builds fine.
-      It only hurts bisectability.
-
-All errors (new ones prefixed by >>):
-
->> fs/xfs/scrub/agheader_repair.c:585:2: error: implicit declaration of function 'xbitmap_walk' [-Werror,-Wimplicit-function-declaration]
-           xbitmap_walk(agfl_extents, xrep_agfl_check_extent, &ra);
-           ^
-   1 error generated.
-
-
-vim +/xbitmap_walk +585 fs/xfs/scrub/agheader_repair.c
-
-   525	
-   526	/*
-   527	 * Map out all the non-AGFL OWN_AG space in this AG so that we can deduce
-   528	 * which blocks belong to the AGFL.
-   529	 *
-   530	 * Compute the set of old AGFL blocks by subtracting from the list of OWN_AG
-   531	 * blocks the list of blocks owned by all other OWN_AG metadata (bnobt, cntbt,
-   532	 * rmapbt).  These are the old AGFL blocks, so return that list and the number
-   533	 * of blocks we're actually going to put back on the AGFL.
-   534	 */
-   535	STATIC int
-   536	xrep_agfl_collect_blocks(
-   537		struct xfs_scrub	*sc,
-   538		struct xfs_buf		*agf_bp,
-   539		struct xbitmap		*agfl_extents,
-   540		xfs_agblock_t		*flcount)
-   541	{
-   542		struct xrep_agfl	ra;
-   543		struct xfs_mount	*mp = sc->mp;
-   544		struct xfs_btree_cur	*cur;
-   545		int			error;
-   546	
-   547		ra.sc = sc;
-   548		ra.freesp = agfl_extents;
-   549		xbitmap_init(&ra.agmetablocks);
-   550		xbitmap_init(&ra.crossed);
-   551	
-   552		/* Find all space used by the free space btrees & rmapbt. */
-   553		cur = xfs_rmapbt_init_cursor(mp, sc->tp, agf_bp, sc->sa.pag);
-   554		error = xfs_rmap_query_all(cur, xrep_agfl_walk_rmap, &ra);
-   555		xfs_btree_del_cursor(cur, error);
-   556		if (error)
-   557			goto out_bmp;
-   558	
-   559		/* Find all blocks currently being used by the bnobt. */
-   560		cur = xfs_allocbt_init_cursor(mp, sc->tp, agf_bp,
-   561				sc->sa.pag, XFS_BTNUM_BNO);
-   562		error = xbitmap_set_btblocks(&ra.agmetablocks, cur);
-   563		xfs_btree_del_cursor(cur, error);
-   564		if (error)
-   565			goto out_bmp;
-   566	
-   567		/* Find all blocks currently being used by the cntbt. */
-   568		cur = xfs_allocbt_init_cursor(mp, sc->tp, agf_bp,
-   569				sc->sa.pag, XFS_BTNUM_CNT);
-   570		error = xbitmap_set_btblocks(&ra.agmetablocks, cur);
-   571		xfs_btree_del_cursor(cur, error);
-   572		if (error)
-   573			goto out_bmp;
-   574	
-   575		/*
-   576		 * Drop the freesp meta blocks that are in use by btrees.
-   577		 * The remaining blocks /should/ be AGFL blocks.
-   578		 */
-   579		error = xbitmap_disunion(agfl_extents, &ra.agmetablocks);
-   580		if (error)
-   581			goto out_bmp;
-   582	
-   583		/* Strike out the blocks that are cross-linked. */
-   584		ra.rmap_cur = xfs_rmapbt_init_cursor(mp, sc->tp, agf_bp, sc->sa.pag);
- > 585		xbitmap_walk(agfl_extents, xrep_agfl_check_extent, &ra);
-   586		xfs_btree_del_cursor(ra.rmap_cur, 0);
-   587		error = xbitmap_disunion(agfl_extents, &ra.crossed);
-   588		if (error)
-   589			goto out_bmp;
-   590	
-   591		/*
-   592		 * Calculate the new AGFL size.  If we found more blocks than fit in
-   593		 * the AGFL we'll free them later.
-   594		 */
-   595		*flcount = min_t(uint64_t, xbitmap_hweight(agfl_extents),
-   596				 xfs_agfl_size(mp));
-   597	
-   598	out_bmp:
-   599		xbitmap_destroy(&ra.crossed);
-   600		xbitmap_destroy(&ra.agmetablocks);
-   601		return error;
-   602	}
-   603	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
