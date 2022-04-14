@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A42C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4D7C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbiDNOiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        id S239529AbiDNOht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344317AbiDNNks (ORCPT
+        with ESMTP id S245051AbiDNNiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0227120;
-        Thu, 14 Apr 2022 06:38:23 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E66699ED9;
+        Thu, 14 Apr 2022 06:31:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94D0AB828F4;
-        Thu, 14 Apr 2022 13:38:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1208C385A1;
-        Thu, 14 Apr 2022 13:38:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D918C61BB3;
+        Thu, 14 Apr 2022 13:31:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6DE3C385AB;
+        Thu, 14 Apr 2022 13:31:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943501;
-        bh=mW0/NGktVhnDCE4JOlUAkSAXhp8nnOUBGnleDCPXXx0=;
+        s=korg; t=1649943093;
+        bh=2mXHrAj04KtaHylAldGkgnozw1wbrx2qEfheCDOgjVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Xahp5+7LvZrruTvykkLjHl7jKJ8K5bBjQ+SxRQ2r0j+UEaNYF7fesm1EijCQCeso
-         2wG+2BHJPOgLPs5cTJe0JQlb2RRfXl7XcOefLjSP4qTDyKv/m/Ftdyb5r6kAPSfwMy
-         upYA0OgY4q7rjU4mvZNhkU0LV+JYDe6tmg0CYysg=
+        b=f5PsMA4DV+2KmpF0BOu+Dc2LIkmqCJNnQmodMH8IPwTANOh4AO00aVhtVzx+jE2DC
+         V0WlY/BSGvrfyE7Q68A60zHxIXC/0vWFJWrT6vRrD+2grb33QzucWBJTLAKRV3LQbL
+         N4sksy5E0R9J/8TQUa+0r7HIDKdj9n0+eY5/N71Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 137/475] ASoC: atmel_ssc_dai: Handle errors for clk_enable
-Date:   Thu, 14 Apr 2022 15:08:42 +0200
-Message-Id: <20220414110858.983052588@linuxfoundation.org>
+        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pavel Machek <pavel@denx.de>
+Subject: [PATCH 5.4 005/475] netdevice: add the case if dev is NULL
+Date:   Thu, 14 Apr 2022 15:06:30 +0200
+Message-Id: <20220414110855.302424208@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,40 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Yajun Deng <yajun.deng@linux.dev>
 
-[ Upstream commit f9e2ca0640e59d19af0ff285ee5591ed39069b09 ]
+commit b37a466837393af72fe8bcb8f1436410f3f173f3 upstream.
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error if fals.
+Add the case if dev is NULL in dev_{put, hold}, so the caller doesn't
+need to care whether dev is NULL or not.
 
-Fixes: cbaadf0f90d6 ("ASoC: atmel_ssc_dai: refactor the startup and shutdown")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301090637.3776558-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Pavel Machek <pavel@denx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/atmel/atmel_ssc_dai.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
-index ca603397651c..1e0973322cd0 100644
---- a/sound/soc/atmel/atmel_ssc_dai.c
-+++ b/sound/soc/atmel/atmel_ssc_dai.c
-@@ -280,7 +280,10 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3777,7 +3777,8 @@ void netdev_run_todo(void);
+  */
+ static inline void dev_put(struct net_device *dev)
+ {
+-	this_cpu_dec(*dev->pcpu_refcnt);
++	if (dev)
++		this_cpu_dec(*dev->pcpu_refcnt);
+ }
  
- 	/* Enable PMC peripheral clock for this SSC */
- 	pr_debug("atmel_ssc_dai: Starting clock\n");
--	clk_enable(ssc_p->ssc->clk);
-+	ret = clk_enable(ssc_p->ssc->clk);
-+	if (ret)
-+		return ret;
-+
- 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
+ /**
+@@ -3788,7 +3789,8 @@ static inline void dev_put(struct net_de
+  */
+ static inline void dev_hold(struct net_device *dev)
+ {
+-	this_cpu_inc(*dev->pcpu_refcnt);
++	if (dev)
++		this_cpu_inc(*dev->pcpu_refcnt);
+ }
  
- 	/* Reset the SSC unless initialized to keep it in a clean state */
--- 
-2.34.1
-
+ /* Carrier loss detection, dial on demand. The functions netif_carrier_on
 
 
