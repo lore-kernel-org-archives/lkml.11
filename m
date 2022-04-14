@@ -2,175 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C77B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239538AbiDNBzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 21:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        id S239547AbiDNB4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 21:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239305AbiDNBzp (ORCPT
+        with ESMTP id S239305AbiDNB4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 21:55:45 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21310222AD;
-        Wed, 13 Apr 2022 18:53:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1649901172; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=bHZeQVx3jN/0wqWfKct9TVkWDEcH+rjxGHeM8N+jHNXvYp6dZCkiYT+4xsgi/M6zk2/5/F8Gbb8iGtqVcnoS7QlRKYBbCk8EcHk7iMo3k5Q/F+SNWrWf8E5Mxk9baVJYgmvz02mx2FzV4oWRYLo/bSk01LYObJsfkq3qjcRxrTg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1649901172; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=0xSGVUhPZgbHPwFpu89X2W24g/jYetTI1SnOG7J0k5Q=; 
-        b=ILB/ySvWfxHiIPL83uUkzbN8L/mTJgBOejD3WRxH3mJN3jVDzNnv/VWUdXP+HquPTa5qleBfxgX6rW7KHijHVxh/3jeddiw9NqTNhl1YrLC3KwxhINwMBflnbI8sbyCEdUwm6AjItoCOQvnxlRktb3nxmk2LKFkMwHlvpm72oc8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649901172;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=0xSGVUhPZgbHPwFpu89X2W24g/jYetTI1SnOG7J0k5Q=;
-        b=YUrfkzFvJtEXiXaFmuqIesisz2N7XAQ47Y8mWmLX0uNtY6ey2bE5ketmWQrjAmsg
-        BS913aoLOTbtOLVY73+hsdm+aD+ihx/W3yFSch0hfxqFIfTVPKQ3yCOMzOPMBsCtivx
-        UUbfiHkTr7wtIXKp0l415ajJXf8zHBP/TxyYFa+A=
-Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1649901171025892.4263236824818; Wed, 13 Apr 2022 18:52:51 -0700 (PDT)
-Message-ID: <0dd1da16-232b-d634-3146-bf91e58c9543@arinc9.com>
-Date:   Thu, 14 Apr 2022 04:52:45 +0300
+        Wed, 13 Apr 2022 21:56:34 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF36222AD;
+        Wed, 13 Apr 2022 18:54:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649901252; x=1681437252;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ue8ojU1OGz7ohSofSTg5I/S9UOIB+twveGfs8YIbCw0=;
+  b=Hs8qNEZbYNR/VSC0EMUQPD5Qo90oBIT/qAuXfiQSYfoU6EFoVj9LkEdr
+   AiPvwhGrEbIJDDESZZV1UvKXGCC5zRKtPOt6frbjxGmkjqu1gfx3wbb2D
+   AC/vwFoYpOZkW+G6D+L3NUtG6yDU9+Xl7favyS6M7jAJwFT8eNDO5fhyQ
+   NX6kPHIdjrBEZtqm1Z5DWqObyBgPHlTvYXGL4nnnVcXnWp4nNUZo6NAKy
+   25iIqnwbcikMaBMq3DKHiqlutah9zQp+zuiI3q4b9EFI9GGHpESu/uLPy
+   w717BLXxDSm5674ldh3WuBNq/GV87b2jppNEk3Jv3f+FZZzrCX4tLQz3a
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="243408537"
+X-IronPort-AV: E=Sophos;i="5.90,258,1643702400"; 
+   d="scan'208";a="243408537"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 18:54:11 -0700
+X-IronPort-AV: E=Sophos;i="5.90,258,1643702400"; 
+   d="scan'208";a="725156508"
+Received: from sdoyen-mobl1.amr.corp.intel.com (HELO localhost) ([10.213.179.195])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 18:54:11 -0700
+Date:   Wed, 13 Apr 2022 18:54:10 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Alison Schofield <alison.schofield@intel.com>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        Martiros Shakhzadyan <vrzh@vrzh.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: media: atomisp: Use kmap_local_page() in
+ hmm_store()
+Message-ID: <Yld+wpMe1C51bKU3@iweiny-desk3>
+References: <20220413225531.9425-1-fmdefrancesco@gmail.com>
+ <20220414004454.GA1243697@alison-desk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 11/14] dt-bindings: pinctrl: add binding for Ralink MT7620
- pinctrl
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     erkin.bozoglu@xeront.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-References: <20220413060729.27639-1-arinc.unal@arinc9.com>
- <20220413060729.27639-12-arinc.unal@arinc9.com>
- <41fa58ee-728b-7f0d-eea7-448c59641d85@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <41fa58ee-728b-7f0d-eea7-448c59641d85@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414004454.GA1243697@alison-desk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/04/2022 18:37, Krzysztof Kozlowski wrote:
-> On 13/04/2022 08:07, Arınç ÜNAL wrote:
->> Add binding for the Ralink MT7620 pin controller for MT7620, MT7628 and
->> MT7688 SoCs.
->>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
->>   .../pinctrl/ralink,mt7620-pinctrl.yaml        | 87 +++++++++++++++++++
->>   1 file changed, 87 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/pinctrl/ralink,mt7620-pinctrl.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/pinctrl/ralink,mt7620-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/ralink,mt7620-pinctrl.yaml
->> new file mode 100644
->> index 000000000000..01578b8aa277
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pinctrl/ralink,mt7620-pinctrl.yaml
->> @@ -0,0 +1,87 @@
->> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/pinctrl/ralink,mt7620-pinctrl.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Ralink MT7620 Pin Controller
->> +
->> +maintainers:
->> +  - Arınç ÜNAL <arinc.unal@arinc9.com>
->> +  - Sergio Paracuellos <sergio.paracuellos@gmail.com>
->> +
->> +description:
->> +  Ralink MT7620 pin controller for MT7620, MT7628 and MT7688 SoCs.
->> +  The pin controller can only set the muxing of pin groups. Muxing indiviual pins
+On Wed, Apr 13, 2022 at 05:44:54PM -0700, Alison Schofield wrote:
+> On Thu, Apr 14, 2022 at 12:55:31AM +0200, Fabio M. De Francesco wrote:
+> > The use of kmap() is being deprecated in favor of kmap_local_page()
+> > where it is feasible. The same is true for kmap_atomic().
+> > 
+> > In file pci/hmm/hmm.c, function hmm_store() test if we are in atomic
+> > context and, if so, it calls kmap_atomic(), if not, it calls kmap().
+> > 
+> > First of all, in_atomic() shouldn't be used in drivers. This macro
+> > cannot always detect atomic context; in particular, it cannot know
+> > about held spinlocks in non-preemptible kernels.
+> > 
+> > Notwithstanding what it is said above, this code doesn't need to care
+> > whether or not it is executing in atomic context. It can simply use
+> > kmap_local_page() / kunmap_local() that can instead do the mapping /
+> > unmapping regardless of the context.
+> > 
+> > With kmap_local_page(), the mapping is per thread, CPU local and not
+> > globally visible. Therefore, hmm_store()() is a function where the use
+> > of kmap_local_page() in place of both kmap() and kmap_atomic() is
+> > correctly suited.
+> > 
+> > Convert the calls of kmap() / kunmap() and kmap_atomic() /
+> > kunmap_atomic() to kmap_local_page() / kunmap_local() and drop the
+> > unnecessary tests which test if the code is in atomic context.
+> > 
 > 
-> Run spellcheck on original bindings, don't copy same typos.
+> Not specifically about this patch, but more generally about all
+> such conversions - is there a 'proof' that shows this just works
 
-Will address, thanks!
+Just code inspection.  Most of them that I have done have been compile tested
+only.  Part of the key is that des is a local variable and is not aliased by
+anything outside this function.
 
-> 
->> +  is not supported. There is no pinconf support.
->> +
->> +properties:
->> +  compatible:
->> +    const: ralink,mt7620-pinctrl
->> +
->> +patternProperties:
->> +  '-pins$':
->> +    type: object
->> +    patternProperties:
->> +      '^(.*-)?pinmux$':
-> 
-> Why do you have two levels here? pins->pinmux->actual pin configuration?
+> or do we need to test each one. If the latter, then how?
 
-Yes, pins->pinmux->pin-configuration is currently how it's done.
+Generally there is no test if we don't have the hardware.  Some of the more
+difficult conversions will probably need to have some testing done but that
+will need to be discussed with the subsystem maintainers at the time.
 
-> Cannot be something like brcm,bcm636x has?
-
-Dunno, I'll take a look.
+Ira
 
 > 
->> +        type: object
->> +        description: node for pinctrl.
->> +        $ref: pinmux-node.yaml#
->> +
->> +        properties:
->> +          groups:
->> +            description: The pin group to select.
 > 
-> I wonder where do you configure particular pins because these are
-> groups... It's a bit confusing to configure "i2c" group into "i2c" -
-> looks obvious.
-
-We don't configure each pin particularly. Ralink driver only supports 
-muxing certain functions for certain pin groups as hinted on the binding 
-description.
-
-> 
->> +            enum: [
->> +              # For MT7620 SoC
->> +              ephy, i2c, mdio, nd_sd, pa, pcie, rgmii1, rgmii2, spi, spi refclk, uartf, uartlite, wdt, wled,
->> +
->> +              # For MT7628 and MT7688 SoCs
->> +              gpio, i2c, i2s, p0led_an, p0led_kn, p1led_an, p1led_kn, p2led_an, p2led_kn, p3led_an,
->> +              p3led_kn, p4led_an, p4led_kn, perst, pwm0, pwm1, refclk, sdmode, spi, spi cs1, spis, uart0,
->> +              uart1, uart2, wdt, wled_an, wled_kn,
->> +            ]
->> +
->> +          function:
->> +            description: The mux function to select.
->> +            enum: [
->> +              # For MT7620 SoC
->> +              ephy, gpio, gpio i2s, gpio uartf, i2c, i2s uartf, mdio, nand, pa, pcie refclk, pcie rst,
->> +              pcm gpio, pcm i2s, pcm uartf, refclk, rgmii1, rgmii2, sd, spi, spi refclk, uartf, uartlite,
->> +              wdt refclk, wdt rst, wled,
->> +
->> +              # For MT7628 and MT7688 SoCs
->> +              antenna, debug, gpio, i2c, i2s, jtag, p0led_an, p0led_kn, p1led_an, p1led_kn, p2led_an,
->> +              p2led_kn, p3led_an, p3led_kn, p4led_an, p4led_kn, pcie, pcm, perst, pwm, pwm0, pwm1,
->> +              pwm_uart2, refclk, rsvd, sdxc, sdxc d5 d4, sdxc d6, sdxc d7, spi, spi cs1, spis, sw_r, uart0,
->> +              uart1, uart2, utif, wdt, wled_an, wled_kn, -,
-> 
-> All these lines do not fit in 80-character limit. Linux coding style
-> still expects this in most of cases.
-
-Ok, dt_binding_check warns after 110 characters so I made it fit that. 
-I'll update to 80.
-
-Arınç
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > ---
+> >  drivers/staging/media/atomisp/pci/hmm/hmm.c | 14 ++------------
+> >  1 file changed, 2 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/staging/media/atomisp/pci/hmm/hmm.c b/drivers/staging/media/atomisp/pci/hmm/hmm.c
+> > index 46ac082cd3f1..54188197c3dc 100644
+> > --- a/drivers/staging/media/atomisp/pci/hmm/hmm.c
+> > +++ b/drivers/staging/media/atomisp/pci/hmm/hmm.c
+> > @@ -482,10 +482,7 @@ int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
+> >  		idx = (virt - bo->start) >> PAGE_SHIFT;
+> >  		offset = (virt - bo->start) - (idx << PAGE_SHIFT);
+> >  
+> > -		if (in_atomic())
+> > -			des = (char *)kmap_atomic(bo->page_obj[idx].page);
+> > -		else
+> > -			des = (char *)kmap(bo->page_obj[idx].page);
+> > +		des = (char *)kmap_local_page(bo->page_obj[idx].page);
+> >  
+> >  		if (!des) {
+> >  			dev_err(atomisp_dev,
+> > @@ -512,14 +509,7 @@ int hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes)
+> >  
+> >  		clflush_cache_range(des, len);
+> >  
+> > -		if (in_atomic())
+> > -			/*
+> > -			 * Note: kunmap_atomic requires return addr from
+> > -			 * kmap_atomic, not the page. See linux/highmem.h
+> > -			 */
+> > -			kunmap_atomic(des - offset);
+> > -		else
+> > -			kunmap(bo->page_obj[idx].page);
+> > +		kunmap_local(des);
+> >  	}
+> >  
+> >  	return 0;
+> > -- 
+> > 2.34.1
+> > 
+> > 
