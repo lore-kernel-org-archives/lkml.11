@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AEDEC4167D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C03C38A2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355031AbiDNOz1 (ORCPT
+        id S1355127AbiDNO5k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        Thu, 14 Apr 2022 10:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242186AbiDNNvz (ORCPT
+        with ESMTP id S1345719AbiDNNyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:51:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DB42CC85;
-        Thu, 14 Apr 2022 06:44:30 -0700 (PDT)
+        Thu, 14 Apr 2022 09:54:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40A3AF1F9;
+        Thu, 14 Apr 2022 06:45:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A0F2B82987;
-        Thu, 14 Apr 2022 13:44:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A953C385AB;
-        Thu, 14 Apr 2022 13:44:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CC34B82894;
+        Thu, 14 Apr 2022 13:45:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C36E3C385A5;
+        Thu, 14 Apr 2022 13:45:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943867;
-        bh=yjhMRVtZPGGwzhzbciu+Un3Q5Ng5Of8NYQwpe11SpUc=;
+        s=korg; t=1649943909;
+        bh=YedfbHokARXF1R9eOCu8pKjI0vnzLy2Rwmic1fTJJEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RewHEGtW8YzuVwGhG67ztC3ShMvcPNhiADlvFcllbegEQQnpRnjOg4gFObJhZfDM0
-         heIU4KxMzhb1VFpoB79RZOkNXTFyF7oNIJvIPmSHy35JXUizgEfbbOeKfSjEZxWODP
-         /CbtTAfF/XXuABvm1kwyulemsd+wcSd/lJmRCcQg=
+        b=jP7Un8hVR2hZQFm3nrwov1wgzBVvHmOmKCsxs6BmtWfhE6eZ1dnKi1QiLfFv0onNI
+         vAWijF7y7NXdEygdBfJtsEfEhn3dbO09JSo+AYvLnq02oVsQTas0D+SpOXYDLxyK8F
+         d10EyDeWy47LW3G/HSbwkwb/iwb2BoHcQeXvbVc8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 270/475] NFSv4/pNFS: Fix another issue with a list iterator pointing to the head
-Date:   Thu, 14 Apr 2022 15:10:55 +0200
-Message-Id: <20220414110902.662158964@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 325/475] scsi: qla2xxx: Fix N2N inconsistent PLOGI
+Date:   Thu, 14 Apr 2022 15:11:50 +0200
+Message-Id: <20220414110904.182666985@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,119 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 7c9d845f0612e5bcd23456a2ec43be8ac43458f1 ]
+commit c13ce47c64ea8f14e77eecb40d1e7c2ac667f898 upstream.
 
-In nfs4_callback_devicenotify(), if we don't find a matching entry for
-the deviceid, we're left with a pointer to 'struct nfs_server' that
-actually points to the list of super blocks associated with our struct
-nfs_client.
-Furthermore, even if we have a valid pointer, nothing pins the super
-block, and so the struct nfs_server could end up getting freed while
-we're using it.
+For N2N topology, ELS Passthrough is used to send PLOGI. On failure of ELS
+pass through PLOGI, driver flipped over to using LLIOCB PLOGI for N2N. This
+is not consistent. Delete the session to restart the connection where ELS
+pass through PLOGI would be used consistently.
 
-Since all we want is a pointer to the struct pnfs_layoutdriver_type,
-let's skip all the iteration over super blocks, and just use APIs to
-find the layout driver directly.
-
-Reported-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Fixes: 1be5683b03a7 ("pnfs: CB_NOTIFY_DEVICEID")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-7-njavali@marvell.com
+Fixes: c76ae845ea83 ("scsi: qla2xxx: Add error handling for PLOGI ELS passthrough")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/callback_proc.c | 27 +++++++++------------------
- fs/nfs/pnfs.c          | 11 +++++++++++
- fs/nfs/pnfs.h          |  2 ++
- 3 files changed, 22 insertions(+), 18 deletions(-)
+ drivers/scsi/qla2xxx/qla_iocb.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index b8a7b223b5b1..31922657e836 100644
---- a/fs/nfs/callback_proc.c
-+++ b/fs/nfs/callback_proc.c
-@@ -364,12 +364,11 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 				  struct cb_process_state *cps)
- {
- 	struct cb_devicenotifyargs *args = argp;
-+	const struct pnfs_layoutdriver_type *ld = NULL;
- 	uint32_t i;
- 	__be32 res = 0;
--	struct nfs_client *clp = cps->clp;
--	struct nfs_server *server = NULL;
+--- a/drivers/scsi/qla2xxx/qla_iocb.c
++++ b/drivers/scsi/qla2xxx/qla_iocb.c
+@@ -2859,6 +2859,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 					set_bit(ISP_ABORT_NEEDED,
+ 					    &vha->dpc_flags);
+ 					qla2xxx_wake_dpc(vha);
++					break;
+ 				}
+ 				/* fall through */
+ 			default:
+@@ -2868,9 +2869,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 				    fw_status[0], fw_status[1], fw_status[2]);
  
--	if (!clp) {
-+	if (!cps->clp) {
- 		res = cpu_to_be32(NFS4ERR_OP_NOT_IN_SESSION);
- 		goto out;
- 	}
-@@ -377,23 +376,15 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 	for (i = 0; i < args->ndevs; i++) {
- 		struct cb_devicenotifyitem *dev = &args->devs[i];
+ 				fcport->flags &= ~FCF_ASYNC_SENT;
+-				qla2x00_set_fcport_disc_state(fcport,
+-				    DSC_LOGIN_FAILED);
+-				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
++				qlt_schedule_sess_for_deletion(fcport);
+ 				break;
+ 			}
+ 			break;
+@@ -2882,8 +2881,7 @@ static void qla2x00_els_dcmd2_sp_done(sr
+ 			    fw_status[0], fw_status[1], fw_status[2]);
  
--		if (!server ||
--		    server->pnfs_curr_ld->id != dev->cbd_layout_type) {
--			rcu_read_lock();
--			list_for_each_entry_rcu(server, &clp->cl_superblocks, client_link)
--				if (server->pnfs_curr_ld &&
--				    server->pnfs_curr_ld->id == dev->cbd_layout_type) {
--					rcu_read_unlock();
--					goto found;
--				}
--			rcu_read_unlock();
--			continue;
-+		if (!ld || ld->id != dev->cbd_layout_type) {
-+			pnfs_put_layoutdriver(ld);
-+			ld = pnfs_find_layoutdriver(dev->cbd_layout_type);
-+			if (!ld)
-+				continue;
+ 			sp->fcport->flags &= ~FCF_ASYNC_SENT;
+-			qla2x00_set_fcport_disc_state(fcport, DSC_LOGIN_FAILED);
+-			set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
++			qlt_schedule_sess_for_deletion(fcport);
+ 			break;
  		}
--
--	found:
--		nfs4_delete_deviceid(server->pnfs_curr_ld, clp, &dev->cbd_dev_id);
-+		nfs4_delete_deviceid(ld, cps->clp, &dev->cbd_dev_id);
- 	}
--
-+	pnfs_put_layoutdriver(ld);
- out:
- 	kfree(args->devs);
- 	return res;
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 1b512df1003f..0471b6e0da16 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -92,6 +92,17 @@ find_pnfs_driver(u32 id)
- 	return local;
- }
  
-+const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id)
-+{
-+	return find_pnfs_driver(id);
-+}
-+
-+void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld)
-+{
-+	if (ld)
-+		module_put(ld->owner);
-+}
-+
- void
- unset_pnfs_layoutdriver(struct nfs_server *nfss)
- {
-diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
-index 3d55edd6b25a..68339680bb7d 100644
---- a/fs/nfs/pnfs.h
-+++ b/fs/nfs/pnfs.h
-@@ -226,6 +226,8 @@ struct pnfs_devicelist {
- 
- extern int pnfs_register_layoutdriver(struct pnfs_layoutdriver_type *);
- extern void pnfs_unregister_layoutdriver(struct pnfs_layoutdriver_type *);
-+extern const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id);
-+extern void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld);
- 
- /* nfs4proc.c */
- extern size_t max_response_pages(struct nfs_server *server);
--- 
-2.34.1
-
 
 
