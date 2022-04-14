@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E078CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C09C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353003AbiDNOep (ORCPT
+        id S1353037AbiDNOe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
+        Thu, 14 Apr 2022 10:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343509AbiDNNjD (ORCPT
+        with ESMTP id S1343974AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E79120;
-        Thu, 14 Apr 2022 06:34:18 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18EB9AE41;
+        Thu, 14 Apr 2022 06:36:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36286B8296A;
-        Thu, 14 Apr 2022 13:34:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 777BBC385A9;
-        Thu, 14 Apr 2022 13:34:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BB24B82983;
+        Thu, 14 Apr 2022 13:36:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C529AC385A1;
+        Thu, 14 Apr 2022 13:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943255;
-        bh=yjLGCQhLuR2ENNIxQCgjWECgQ0+Ex0Sw31OCB8GOKWc=;
+        s=korg; t=1649943365;
+        bh=Jc+JzbY33FN9h8pyG2ldw03fJ9OJVncRfFwxDY8PMaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZuN+BJTxmFtteXgzNsCQXyVHt8VfUNMXjqJy9ONemfHz/u8NXyGqM49OV2p6SuUKT
-         yMmLumua8ElJH1J/g0Ffh43KbC7WdHST2PaDPNvIGn9bENqZZzW51EcK6VyflgH1/r
-         oKu1yDI2ZlIs02bvtgQX/msD6tLQAMNE+aZZ0g8g=
+        b=ILmo5si+nPxm8iMToXevG9F11VBVIDYxtkgpkB48rugb2TBd3Es83UOpx1azDYrsN
+         tVCU+NTFrRnLfuIEsbJ/WM7dMYZxJ8vVX3Hq83K8JCtMbtOYB3hl+hVMVeBabvHBeJ
+         nekHRGgDL5ag+aIOFyMNStQ9Ugj66gU/+IBcvwpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 050/475] scsi: libsas: Fix sas_ata_qc_issue() handling of NCQ NON DATA commands
-Date:   Thu, 14 Apr 2022 15:07:15 +0200
-Message-Id: <20220414110856.555771728@linuxfoundation.org>
+        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 092/475] selftests/x86: Add validity check and allow field splitting
+Date:   Thu, 14 Apr 2022 15:07:57 +0200
+Message-Id: <20220414110857.733001879@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,41 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-commit 8454563e4c2aafbfb81a383ab423ea8b9b430a25 upstream.
+[ Upstream commit b06e15ebd5bfb670f93c7f11a29b8299c1178bc6 ]
 
-To detect for the DMA_NONE (no data transfer) DMA direction,
-sas_ata_qc_issue() tests if the command protocol is ATA_PROT_NODATA.  This
-test does not include the ATA_CMD_NCQ_NON_DATA command as this command
-protocol is defined as ATA_PROT_NCQ_NODATA (equal to ATA_PROT_FLAG_NCQ) and
-not as ATA_PROT_NODATA.
+Add check to test if CC has a string. CC can have multiple sub-strings
+like "ccache gcc". Erorr pops up if it is treated as single string and
+double quotes are used around it. This can be fixed by removing the
+quotes and not treating CC as a single string.
 
-To include both NCQ and non-NCQ commands when testing for the DMA_NONE DMA
-direction, use "!ata_is_data()".
-
-Link: https://lore.kernel.org/r/20220220031810.738362-2-damien.lemoal@opensource.wdc.com
-Fixes: 176ddd89171d ("scsi: libsas: Reset num_scatter if libata marks qc as NODATA")
-Cc: stable@vger.kernel.org
-Reviewed-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220214184109.3739179-2-usama.anjum@collabora.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/libsas/sas_ata.c |    2 +-
+ tools/testing/selftests/x86/check_cc.sh | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/libsas/sas_ata.c
-+++ b/drivers/scsi/libsas/sas_ata.c
-@@ -201,7 +201,7 @@ static unsigned int sas_ata_qc_issue(str
- 		task->total_xfer_len = qc->nbytes;
- 		task->num_scatter = qc->n_elem;
- 		task->data_dir = qc->dma_dir;
--	} else if (qc->tf.protocol == ATA_PROT_NODATA) {
-+	} else if (!ata_is_data(qc->tf.protocol)) {
- 		task->data_dir = DMA_NONE;
- 	} else {
- 		for_each_sg(qc->sg, sg, qc->n_elem, si)
+diff --git a/tools/testing/selftests/x86/check_cc.sh b/tools/testing/selftests/x86/check_cc.sh
+index 3e2089c8cf54..8c669c0d662e 100755
+--- a/tools/testing/selftests/x86/check_cc.sh
++++ b/tools/testing/selftests/x86/check_cc.sh
+@@ -7,7 +7,7 @@ CC="$1"
+ TESTPROG="$2"
+ shift 2
+ 
+-if "$CC" -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
++if [ -n "$CC" ] && $CC -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
+     echo 1
+ else
+     echo 0
+-- 
+2.34.1
+
 
 
