@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8520EC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B66C47080
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345756AbiDNOu0 (ORCPT
+        id S1345797AbiDNOub (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
+        Thu, 14 Apr 2022 10:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344987AbiDNNo6 (ORCPT
+        with ESMTP id S1344942AbiDNNo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:58 -0400
+        Thu, 14 Apr 2022 09:44:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F5766615;
-        Thu, 14 Apr 2022 06:41:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433F920BD0;
+        Thu, 14 Apr 2022 06:40:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C26B1B82983;
-        Thu, 14 Apr 2022 13:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA8CC385A1;
-        Thu, 14 Apr 2022 13:41:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4ACCB8296A;
+        Thu, 14 Apr 2022 13:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230CCC385A5;
+        Thu, 14 Apr 2022 13:40:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943662;
-        bh=ZGW8BiQG7HCfwzspUwBInQ6eQWFaOMQ0x/bgFalDr/0=;
+        s=korg; t=1649943648;
+        bh=JNSG1rIavWuc32cfnqIlfwykyPVOl3m3sKZGU3GSBw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hyhg6aDU1kkhakg3XdJhPIG0TCIlBQDVKMwpbTzzrH9HHwjjgktyZWgogAB+BJUCf
-         eK62lN4FOmcGv9BLEbdFYKkHrUckzEasn9nh/e+BVWZTYItZLijY1KbKJ95EB9/ZoE
-         t0bh9xv+ggk1xd0fACm8QHqYoSdrxlXXf080+VsA=
+        b=aYcHsEu91R+sFGkYyAN50XRblrZKlQYP1MKssh1nOjxwoHYt3mmSnE7CmYWvNxwwN
+         kPpNR1EGHsLK0VTtsEPcTKlBTSZFKQPM8Xi80SdQtffuget+UzWROljHblUZI9ufJE
+         ZZYcrNr5xRSvKIXczDitajCFUxXOuhv1yG0iJOj4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Dirk Buchwalder <buchwalder@posteo.de>,
+        Robert Marko <robimarko@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 237/475] NFS: Return valid errors from nfs2/3_decode_dirent()
-Date:   Thu, 14 Apr 2022 15:10:22 +0200
-Message-Id: <20220414110901.751641174@linuxfoundation.org>
+Subject: [PATCH 5.4 232/475] clk: qcom: ipq8074: Use floor ops for SDCC1 clock
+Date:   Thu, 14 Apr 2022 15:10:17 +0200
+Message-Id: <20220414110901.614985022@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,104 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Dirk Buchwalder <buchwalder@posteo.de>
 
-[ Upstream commit 64cfca85bacde54caa64e0ab855c48734894fa37 ]
+[ Upstream commit b77d8306d84f83d1da68028a68c91da9c867b6f6 ]
 
-Valid return values for decode_dirent() callback functions are:
- 0: Success
- -EBADCOOKIE: End of directory
- -EAGAIN: End of xdr_stream
+Use floor ops on SDCC1 APPS clock in order to round down selected clock
+frequency and avoid overclocking SD/eMMC cards.
 
-All errors need to map into one of those three values.
+For example, currently HS200 cards were failling tuning as they were
+actually being clocked at 384MHz instead of 192MHz.
+This caused some boards to disable 1.8V I/O and force the eMMC into the
+standard HS mode (50MHz) and that appeared to work despite the eMMC being
+overclocked to 96Mhz in that case.
 
-Fixes: 573c4e1ef53a ("NFS: Simplify ->decode_dirent() calling sequence")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+There was a previous commit to use floor ops on SDCC clocks, but it looks
+to have only covered SDCC2 clock.
+
+Fixes: 9607f6224b39 ("clk: qcom: ipq8074: add PCIE, USB and SDCC clocks")
+
+Signed-off-by: Dirk Buchwalder <buchwalder@posteo.de>
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220210173100.505128-1-robimarko@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs2xdr.c |  2 +-
- fs/nfs/nfs3xdr.c | 21 ++++++---------------
- 2 files changed, 7 insertions(+), 16 deletions(-)
+ drivers/clk/qcom/gcc-ipq8074.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs2xdr.c b/fs/nfs/nfs2xdr.c
-index 887f9136a9db..af557dc2cfe1 100644
---- a/fs/nfs/nfs2xdr.c
-+++ b/fs/nfs/nfs2xdr.c
-@@ -953,7 +953,7 @@ int nfs2_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+diff --git a/drivers/clk/qcom/gcc-ipq8074.c b/drivers/clk/qcom/gcc-ipq8074.c
+index e01f5f591d1e..de48ba7eba3a 100644
+--- a/drivers/clk/qcom/gcc-ipq8074.c
++++ b/drivers/clk/qcom/gcc-ipq8074.c
+@@ -1074,7 +1074,7 @@ static struct clk_rcg2 sdcc1_apps_clk_src = {
+ 		.name = "sdcc1_apps_clk_src",
+ 		.parent_names = gcc_xo_gpll0_gpll2_gpll0_out_main_div2,
+ 		.num_parents = 4,
+-		.ops = &clk_rcg2_ops,
++		.ops = &clk_rcg2_floor_ops,
+ 	},
+ };
  
- 	error = decode_filename_inline(xdr, &entry->name, &entry->len);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	/*
- 	 * The type (size and byte order) of nfscookie isn't defined in
-diff --git a/fs/nfs/nfs3xdr.c b/fs/nfs/nfs3xdr.c
-index 23d75cddbb2e..84369d51353a 100644
---- a/fs/nfs/nfs3xdr.c
-+++ b/fs/nfs/nfs3xdr.c
-@@ -1968,7 +1968,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 		       bool plus)
- {
- 	struct user_namespace *userns = rpc_userns(entry->server->client);
--	struct nfs_entry old = *entry;
- 	__be32 *p;
- 	int error;
- 	u64 new_cookie;
-@@ -1988,15 +1987,15 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 
- 	error = decode_fileid3(xdr, &entry->ino);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	error = decode_inline_filename3(xdr, &entry->name, &entry->len);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	error = decode_cookie3(xdr, &new_cookie);
- 	if (unlikely(error))
--		return error;
-+		return -EAGAIN;
- 
- 	entry->d_type = DT_UNKNOWN;
- 
-@@ -2004,7 +2003,7 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 		entry->fattr->valid = 0;
- 		error = decode_post_op_attr(xdr, entry->fattr, userns);
- 		if (unlikely(error))
--			return error;
-+			return -EAGAIN;
- 		if (entry->fattr->valid & NFS_ATTR_FATTR_V3)
- 			entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
- 
-@@ -2019,11 +2018,8 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 			return -EAGAIN;
- 		if (*p != xdr_zero) {
- 			error = decode_nfs_fh3(xdr, entry->fh);
--			if (unlikely(error)) {
--				if (error == -E2BIG)
--					goto out_truncated;
--				return error;
--			}
-+			if (unlikely(error))
-+				return -EAGAIN;
- 		} else
- 			zero_nfs_fh3(entry->fh);
- 	}
-@@ -2032,11 +2028,6 @@ int nfs3_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
- 	entry->cookie = new_cookie;
- 
- 	return 0;
--
--out_truncated:
--	dprintk("NFS: directory entry contains invalid file handle\n");
--	*entry = old;
--	return -EAGAIN;
- }
- 
- /*
 -- 
 2.34.1
 
