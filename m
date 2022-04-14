@@ -2,90 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E46C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA88C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345621AbiDNTaF (ORCPT
+        id S1345644AbiDNTdx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        Thu, 14 Apr 2022 15:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345598AbiDNTaB (ORCPT
+        with ESMTP id S1345720AbiDNTcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:30:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF37ECB1A;
-        Thu, 14 Apr 2022 12:27:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 15:32:42 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C9C2ED4B;
+        Thu, 14 Apr 2022 12:30:15 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CD7C61D46;
-        Thu, 14 Apr 2022 19:27:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E3CFC385A1;
-        Thu, 14 Apr 2022 19:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649964452;
-        bh=KnMJB1zO5X3qgQXNARs/Rriw7wFtyJlRQ7Vu8tNqNNs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=JkEC3OGQavU5xCzgOxJRs8/hPF6uB7IexQKFtClIx00CflVCUdm/+GAUuYgjdl4W2
-         QKWFuNf75EJ/ieS8U1kPssWKsQEf6HA5VDhIiYJ28xs+kY4iGk2UWfQd/C/V1uvDS2
-         qiW31TXWqYa+s+7GWadfSA9DGE2jJwftVOJL7dx8MSs5BAdTM9ZtDZoGcw7O9YnZ3c
-         Eei8MVf2YeepVsvvLYUNQa3qVEDDZ3VqUkjVC/ymyWhdQsVXHoQp9ISUsJsjF62AYy
-         zLkC3SJPLN+uT3VR8CzR4nogeWL5QjjWvfCW0CZ9OWAMui3bvLJ3lXu2EgBwAXWeHY
-         OzsUouLfPpPNw==
-Date:   Thu, 14 Apr 2022 14:27:30 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Li Yang <leoyang.li@nxp.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] dt-bindings: pci: layerscape-pci: Add a optional
- property big-endian
-Message-ID: <20220414192730.GA763552@bhelgaas>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 8AA871F747;
+        Thu, 14 Apr 2022 19:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649964614;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PeyLvFfLPcu6npNhffBMTXhfIWBWIhlLCr+uIvrgKf0=;
+        b=Zd12RdZj7FuQb1/14hSVsAT/PRFujS+DQkawT07jSz1ZymtxRr3xgvkzJZoPCChpKM/eEb
+        FU14FfMML16jbqz/14PVYNsSoWAPkjHMJH4U17l2nYdC+orXwpjk2UPEZ2CjNQQWFtawNC
+        NudY6nLPcWixE+9lL3dnp2zGr8365uU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649964614;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PeyLvFfLPcu6npNhffBMTXhfIWBWIhlLCr+uIvrgKf0=;
+        b=EgH2wM/nvIaTpFzxxjV6SxRvKDhReeeIyOCAkta3mciy9QEdlmdSfMRXBq5DMsCz2jSRj2
+        vQ9uy6XiuSkqVCAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4B12F13A86;
+        Thu, 14 Apr 2022 19:30:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id hUG4EUZ2WGKQQAAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 14 Apr 2022 19:30:14 +0000
+Date:   Thu, 14 Apr 2022 21:26:06 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     dsterba@suse.cz, clm@fb.com, dsterba@suse.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, terrelln@fb.com
+Subject: Re: [PATCH v2] btrfs: zstd: use spin_lock in timer callback
+Message-ID: <20220414192606.GS15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Schspa Shi <schspa@gmail.com>,
+        clm@fb.com, dsterba@suse.com, josef@toxicpanda.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        terrelln@fb.com
+References: <20220411135136.GG15609@suse.cz>
+ <20220411155540.36853-1-schspa@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220311234938.8706-2-leoyang.li@nxp.com>
+In-Reply-To: <20220411155540.36853-1-schspa@gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 05:49:35PM -0600, Li Yang wrote:
-> From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+On Mon, Apr 11, 2022 at 11:55:41PM +0800, Schspa Shi wrote:
+> This is an optimization for fix fee13fe96529 ("btrfs:
+> correct zstd workspace manager lock to use spin_lock_bh()")
 > 
-> This property is to indicate the endianness when accessing the
-> PEX_LUT and PF register block, so if these registers are
-> implemented in big-endian, specify this property.
+> The critical region for wsm.lock is only accessed by the process context and
+> the softirq context.
 > 
-> Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/pci/layerscape-pci.txt | 4 ++++
->  1 file changed, 4 insertions(+)
+> Because in the soft interrupt, the critical section will not be preempted by the
+> soft interrupt again, there is no need to call spin_lock_bh(&wsm.lock) to turn
+> off the soft interrupt, spin_lock(&wsm.lock) is enough for this situation.
 > 
-> diff --git a/Documentation/devicetree/bindings/pci/layerscape-pci.txt b/Documentation/devicetree/bindings/pci/layerscape-pci.txt
-> index f36efa73a470..215d2ee65c83 100644
-> --- a/Documentation/devicetree/bindings/pci/layerscape-pci.txt
-> +++ b/Documentation/devicetree/bindings/pci/layerscape-pci.txt
-> @@ -40,6 +40,10 @@ Required properties:
->    of the data transferred from/to the IP block. This can avoid the software
->    cache flush/invalid actions, and improve the performance significantly.
->  
-> +Optional properties:
-> +- big-endian: If the PEX_LUT and PF register block is in big-endian, specify
-> +  this property.
+> Changelog:
+> v1 -> v2:
+> 	- Change the commit message to make it more readable.
+> 
+> [1] https://lore.kernel.org/all/20220408181523.92322-1-schspa@gmail.com/
+> 
+> Signed-off-by: Schspa Shi <schspa@gmail.com>
 
-What's the purpose of this?  I don't see any code that uses this
-property.
-
-I guess this might be related to of_device_is_big_endian()?  I do see
-some code that uses of_device_is_big_endian(), but nothing that looks
-relevant to layerscape in particular.
-
->  Example:
->  
->  	pcie@3400000 {
-> -- 
-> 2.25.1
-> 
+Added to misc-next, thanks.
