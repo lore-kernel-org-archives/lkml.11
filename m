@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B0BC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F19C35280
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351050AbiDNO3y (ORCPT
+        id S1351179AbiDNOam (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
+        Thu, 14 Apr 2022 10:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344188AbiDNNkK (ORCPT
+        with ESMTP id S1343671AbiDNNjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:10 -0400
+        Thu, 14 Apr 2022 09:39:15 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65163120;
-        Thu, 14 Apr 2022 06:37:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB772AC58;
+        Thu, 14 Apr 2022 06:34:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C7A08CE2997;
-        Thu, 14 Apr 2022 13:37:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D78E9C385A5;
-        Thu, 14 Apr 2022 13:37:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8C373CE2997;
+        Thu, 14 Apr 2022 13:34:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A20BDC385A1;
+        Thu, 14 Apr 2022 13:34:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943462;
-        bh=CJDEHaqs2OO5xDx5042fVeBV4hlsXrbPQw4D+12ZElY=;
+        s=korg; t=1649943273;
+        bh=SRZFenBE1fTgWua3HORaR5jxaHWxSCHWiQ3JxR8OrgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYERjCbDUIWFlHiTg+YZPk46jGFRJ2cpZtCvp5mjQz88YeU3AkpQefZ0IxIV2uFrp
-         e17vWvBSikAkuzcZIBu42WlKDXkykts1eb0Gr8z4BzxAMEK900rOECMHfopx5QuFbb
-         CwkmWq39KxxChS5J6UXXAPDtfhb347UXRIKBCsDc=
+        b=q3/Wxbfw+2Pk3aVthL99PhYeLlml5ZrZv2gYqwy9uDElRGlxwQhrFby9dvJLa+TFd
+         6/ks73pSk697xrjugVdhKD4KafFA0Am3roqoERXjWZN8adlaySrSw1+Abr8UZqEKW/
+         DLmsu59jCqy2cGOnlEYI2gbpNgOdWGb4Deaeyh0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 163/475] drm/amd/display: Fix a NULL pointer dereference in amdgpu_dm_connector_add_common_modes()
-Date:   Thu, 14 Apr 2022 15:09:08 +0200
-Message-Id: <20220414110859.700238236@linuxfoundation.org>
+Subject: [PATCH 5.4 089/475] crypto: authenc - Fix sleep in atomic context in decrypt_tail
+Date:   Thu, 14 Apr 2022 15:07:54 +0200
+Message-Id: <20220414110857.644768435@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,46 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 588a70177df3b1777484267584ef38ab2ca899a2 ]
+[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
 
-In amdgpu_dm_connector_add_common_modes(), amdgpu_dm_create_common_mode()
-is assigned to mode and is passed to drm_mode_probed_add() directly after
-that. drm_mode_probed_add() passes &mode->head to list_add_tail(), and
-there is a dereference of it in list_add_tail() without recoveries, which
-could lead to NULL pointer dereference on failure of
-amdgpu_dm_create_common_mode().
+The function crypto_authenc_decrypt_tail discards its flags
+argument and always relies on the flags from the original request
+when starting its sub-request.
 
-Fix this by adding a NULL check of mode.
+This is clearly wrong as it may cause the SLEEPABLE flag to be
+set when it shouldn't.
 
-This bug was found by a static analyzer.
-
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: e7b07ceef2a6 ("drm/amd/display: Merge amdgpu_dm_types and amdgpu_dm")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ crypto/authenc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 8e4d863c7570..29f8b4bd5a76 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -5013,6 +5013,9 @@ static void amdgpu_dm_connector_add_common_modes(struct drm_encoder *encoder,
- 		mode = amdgpu_dm_create_common_mode(encoder,
- 				common_modes[i].name, common_modes[i].w,
- 				common_modes[i].h);
-+		if (!mode)
-+			continue;
-+
- 		drm_mode_probed_add(connector, mode);
- 		amdgpu_dm_connector->num_modes++;
- 	}
+diff --git a/crypto/authenc.c b/crypto/authenc.c
+index 3f0ed9402582..321da9038995 100644
+--- a/crypto/authenc.c
++++ b/crypto/authenc.c
+@@ -263,7 +263,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+ 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+ 
+ 	skcipher_request_set_tfm(skreq, ctx->enc);
+-	skcipher_request_set_callback(skreq, aead_request_flags(req),
++	skcipher_request_set_callback(skreq, flags,
+ 				      req->base.complete, req->base.data);
+ 	skcipher_request_set_crypt(skreq, src, dst,
+ 				   req->cryptlen - authsize, req->iv);
 -- 
 2.34.1
 
