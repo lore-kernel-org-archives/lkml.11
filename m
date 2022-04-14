@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD4CCC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C70D4C4707F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348364AbiDNPPr (ORCPT
+        id S1347980AbiDNPPj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
+        Thu, 14 Apr 2022 11:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347563AbiDNN7T (ORCPT
+        with ESMTP id S1347556AbiDNN7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D998E41317;
-        Thu, 14 Apr 2022 06:50:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FC840A22;
+        Thu, 14 Apr 2022 06:50:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DDE061D29;
-        Thu, 14 Apr 2022 13:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C204C385A9;
-        Thu, 14 Apr 2022 13:50:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B15D561DF2;
+        Thu, 14 Apr 2022 13:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C024DC385A9;
+        Thu, 14 Apr 2022 13:50:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944203;
-        bh=Q/SpDShfMss9VqbWYb4EgrcpKPzSvLkkplVBgVsTLB8=;
+        s=korg; t=1649944201;
+        bh=VxIjDwH7eRyRaCftgapw72SxFpbdfPP7dZX6OClGp/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SXY88CeHqWfIBa/ZZduoI/8s4Xv82Oru8CB57asgovmnvj0gi5NuhpGe2No4bAeT/
-         ZExlXqbyae161PceWEC23vfUYPIxFCqQcBtJepk6jGp2ojgQrpzEh35fctz5tn4n0A
-         HvkN6nUfhw7XyDgVI1pGZ3xBYYXksRarK079XEbs=
+        b=E+xSDk9TGLSoEOD8vv5AQhUtDcLhuXqy7eVLX386XDO8k2SbTTtgxQmk9gcew55/f
+         KJfBz/m0YriIfkd6qSfiLcvWm0M/l8qucxC2bSATOpqTELtlwAl0zEQ7VlzpdlWMZF
+         MiEGbe/dqBQbzYwAxuD9fxiQQFBa6EwcQzCFAOA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Juergen E. Fischer" <fischer@norbit.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 394/475] scsi: aha152x: Fix aha152x_setup() __setup handler return value
-Date:   Thu, 14 Apr 2022 15:12:59 +0200
-Message-Id: <20220414110906.097665887@linuxfoundation.org>
+Subject: [PATCH 5.4 429/475] net: stmmac: Fix unset max_speed difference between DT and non-DT platforms
+Date:   Thu, 14 Apr 2022 15:13:34 +0200
+Message-Id: <20220414110907.069616917@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,50 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Chen-Yu Tsai <wens@csie.org>
 
-[ Upstream commit cc8294ec4738d25e2bb2d71f7d82a9bf7f4a157b ]
+[ Upstream commit c21cabb0fd0b54b8b54235fc1ecfe1195a23bcb2 ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; doing so just pollutes init's
-environment with strings that are not init arguments/parameters).
+In commit 9cbadf094d9d ("net: stmmac: support max-speed device tree
+property"), when DT platforms don't set "max-speed", max_speed is set to
+-1; for non-DT platforms, it stays the default 0.
 
-Return 1 from aha152x_setup() to indicate that the boot option has been
-handled.
+Prior to commit eeef2f6b9f6e ("net: stmmac: Start adding phylink support"),
+the check for a valid max_speed setting was to check if it was greater
+than zero. This commit got it right, but subsequent patches just checked
+for non-zero, which is incorrect for DT platforms.
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220223000623.5920-1-rdunlap@infradead.org
-Cc: "Juergen E. Fischer" <fischer@norbit.de>
-Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+In commit 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
+the conversion switched completely to checking for non-zero value as a
+valid value, which caused 1000base-T to stop getting advertised by
+default.
+
+Instead of trying to fix all the checks, simply leave max_speed alone if
+DT property parsing fails.
+
+Fixes: 9cbadf094d9d ("net: stmmac: support max-speed device tree property")
+Fixes: 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220331184832.16316-1-wens@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/aha152x.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
-index eb466c2e1839..fdd9f1a5100c 100644
---- a/drivers/scsi/aha152x.c
-+++ b/drivers/scsi/aha152x.c
-@@ -3368,13 +3368,11 @@ static int __init aha152x_setup(char *str)
- 	setup[setup_count].synchronous = ints[0] >= 6 ? ints[6] : 1;
- 	setup[setup_count].delay       = ints[0] >= 7 ? ints[7] : DELAY_DEFAULT;
- 	setup[setup_count].ext_trans   = ints[0] >= 8 ? ints[8] : 0;
--	if (ints[0] > 8) {                                                /*}*/
-+	if (ints[0] > 8)
- 		printk(KERN_NOTICE "aha152x: usage: aha152x=<IOBASE>[,<IRQ>[,<SCSI ID>"
- 		       "[,<RECONNECT>[,<PARITY>[,<SYNCHRONOUS>[,<DELAY>[,<EXT_TRANS>]]]]]]]\n");
--	} else {
-+	else
- 		setup_count++;
--		return 0;
--	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index a46fea472bc4..70cbf48c2c03 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -428,8 +428,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ 	plat->phylink_node = np;
  
- 	return 1;
- }
+ 	/* Get max speed of operation from device tree */
+-	if (of_property_read_u32(np, "max-speed", &plat->max_speed))
+-		plat->max_speed = -1;
++	of_property_read_u32(np, "max-speed", &plat->max_speed);
+ 
+ 	plat->bus_id = of_alias_get_id(np, "ethernet");
+ 	if (plat->bus_id < 0)
 -- 
 2.35.1
 
