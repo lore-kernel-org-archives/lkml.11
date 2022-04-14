@@ -2,98 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1D1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7377DC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346928AbiDNOLb (ORCPT
+        id S1347005AbiDNOLg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49098 "EHLO
+        Thu, 14 Apr 2022 10:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244868AbiDNN2N (ORCPT
+        with ESMTP id S244871AbiDNN2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:28:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D930A76C1;
-        Thu, 14 Apr 2022 06:21:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8143A76D0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649942468;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UOg2AgFte5MATNuwhmZnhfjrYREecC41nw9W9kik+X8=;
+        b=NYvdOHZ450hBoa/GTY4Be6uKlsaneN1uWd6EpAEgSFpaaDk6h+S2YNvqt4G20SN5nHucRi
+        FpXDUzGW2V0VaBIUzO1wCEZG1t6AS7Vk931k5R/LiMnCpphcC28imu2Y5yItX+1Nnramy+
+        j7wsSnXVVsTC6DXwwXgsDdu7enMMHjs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-660-aDOaM6_EPo2bbTwEaNYNuw-1; Thu, 14 Apr 2022 09:21:05 -0400
+X-MC-Unique: aDOaM6_EPo2bbTwEaNYNuw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1A54B82910;
-        Thu, 14 Apr 2022 13:21:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FE32C385A5;
-        Thu, 14 Apr 2022 13:21:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942468;
-        bh=HTDpf9gOSoN+0VRBjXQ2P84SInQ0QONH+i4WXzJpWGo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ukp0RiStKsHSZX6hvbKE/gik8F5vqX9CNt50HnjizgNuj6kxuHXdaoxEYjtEq2Kt/
-         IMWCL3ggZSEJxzFKGfb3iCx7ykbhw4JpW6Zn2qCG6uC/+Wyo6/oQoaNk6ZFyf2xSkb
-         g8I2FxlcyrPFoWyt4Xxo3l3WqRMpCctt53Lr4v6s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 146/338] powerpc/sysdev: fix incorrect use to determine if list is empty
-Date:   Thu, 14 Apr 2022 15:10:49 +0200
-Message-Id: <20220414110843.060250057@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3B9E989FF06;
+        Thu, 14 Apr 2022 13:20:51 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7C3DD7774;
+        Thu, 14 Apr 2022 13:20:49 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 17/34] KVM: x86: hyper-v: Introduce fast kvm_hv_l2_tlb_flush_exposed() check
+Date:   Thu, 14 Apr 2022 15:19:56 +0200
+Message-Id: <20220414132013.1588929-18-vkuznets@redhat.com>
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+Introduce a helper to quickly check if KVM needs to handle VMCALL/VMMCALL
+from L2 in L0 to process L2 TLB flush requests.
 
-[ Upstream commit fa1321b11bd01752f5be2415e74a0e1a7c378262 ]
-
-'gtm' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
-
-Instead of checking the pointer it should be checked if
-the list is empty.
-
-Fixes: 83ff9dcf375c ("powerpc/sysdev: implement FSL GTM support")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220228142434.576226-1-jakobkoschel@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/powerpc/sysdev/fsl_gtm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/hyperv.c           | 6 ++++++
+ arch/x86/kvm/hyperv.h           | 7 +++++++
+ 3 files changed, 14 insertions(+)
 
-diff --git a/arch/powerpc/sysdev/fsl_gtm.c b/arch/powerpc/sysdev/fsl_gtm.c
-index d902306f4718..42fe959f6fc2 100644
---- a/arch/powerpc/sysdev/fsl_gtm.c
-+++ b/arch/powerpc/sysdev/fsl_gtm.c
-@@ -90,7 +90,7 @@ static LIST_HEAD(gtms);
-  */
- struct gtm_timer *gtm_get_timer16(void)
- {
--	struct gtm *gtm = NULL;
-+	struct gtm *gtm;
- 	int i;
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index ce62fde5f4ff..168600490bd1 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -616,6 +616,7 @@ struct kvm_vcpu_hv {
+ 		u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
+ 		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
+ 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
++		u32 nested_features_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
+ 	} cpuid_cache;
  
- 	list_for_each_entry(gtm, &gtms, list_node) {
-@@ -107,7 +107,7 @@ struct gtm_timer *gtm_get_timer16(void)
- 		spin_unlock_irq(&gtm->lock);
- 	}
- 
--	if (gtm)
-+	if (!list_empty(&gtms))
- 		return ERR_PTR(-EBUSY);
- 	return ERR_PTR(-ENODEV);
+ 	struct kvm_vcpu_hv_tlb_flush_ring tlb_flush_ring[HV_NR_TLB_FLUSH_RINGS];
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 79aabe0c33ec..68a0df4e3f66 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -2281,6 +2281,12 @@ void kvm_hv_set_cpuid(struct kvm_vcpu *vcpu)
+ 		hv_vcpu->cpuid_cache.syndbg_cap_eax = entry->eax;
+ 	else
+ 		hv_vcpu->cpuid_cache.syndbg_cap_eax = 0;
++
++	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_NESTED_FEATURES, 0);
++	if (entry)
++		hv_vcpu->cpuid_cache.nested_features_eax = entry->eax;
++	else
++		hv_vcpu->cpuid_cache.nested_features_eax = 0;
  }
+ 
+ int kvm_hv_set_enforce_cpuid(struct kvm_vcpu *vcpu, bool enforce)
+diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+index f593c9fd1dee..d8cb6d70dbc8 100644
+--- a/arch/x86/kvm/hyperv.h
++++ b/arch/x86/kvm/hyperv.h
+@@ -168,6 +168,13 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
+ 	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
+ }
+ 
++static inline bool kvm_hv_l2_tlb_flush_exposed(struct kvm_vcpu *vcpu)
++{
++	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++
++	return hv_vcpu && (hv_vcpu->cpuid_cache.nested_features_eax & HV_X64_NESTED_DIRECT_FLUSH);
++}
++
+ static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 -- 
-2.34.1
-
-
+2.35.1
 
