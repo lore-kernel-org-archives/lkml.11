@@ -2,67 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9955EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C96B7C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349789AbiDNPQT (ORCPT
+        id S1350181AbiDNPQ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
+        Thu, 14 Apr 2022 11:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347657AbiDNN7Z (ORCPT
+        with ESMTP id S1347688AbiDNN71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:25 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293CB338AB;
-        Thu, 14 Apr 2022 06:51:01 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 14 Apr 2022 09:59:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C934B432;
+        Thu, 14 Apr 2022 06:51:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id DA51121613;
-        Thu, 14 Apr 2022 13:50:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649944259; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w48CeVx/KrAp2wYmVlzeqrFMXv/esKDNwCLFBwxR02s=;
-        b=uaeMI/WNT2E/95xcEZ4JcQ06Tm3X0TddvO3ah9jLlN9Oyu476ryR9nE/gc0hsoQMF9Xwet
-        42oI+/ew7Nt4soJEztWKc0aUUJgjzRCuWPMawiC+Zip4wPYybteVu1qcHlzXuqwFUSBR5f
-        QkCHiQFPi3/MVQY1tUAblYHf2Cb8UKg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649944259;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w48CeVx/KrAp2wYmVlzeqrFMXv/esKDNwCLFBwxR02s=;
-        b=eatG4gJ5bW2m1wSrnnkUmuPzvJUWTkADZ8rmg6fn0riFO4RrBXCPQqc8ISHqJQUVX8puMA
-        +oACCwSr942bhbCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6A822132C0;
-        Thu, 14 Apr 2022 13:50:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id yBMNF8MmWGJnTgAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Thu, 14 Apr 2022 13:50:59 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id 527b0df8;
-        Thu, 14 Apr 2022 13:51:24 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-Subject: [PATCH v4 1/4] ceph: add support for encrypted snapshot names
-Date:   Thu, 14 Apr 2022 14:51:19 +0100
-Message-Id: <20220414135122.26821-2-lhenriques@suse.de>
-In-Reply-To: <20220414135122.26821-1-lhenriques@suse.de>
-References: <20220414135122.26821-1-lhenriques@suse.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F12E61E2F;
+        Thu, 14 Apr 2022 13:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F16C385A1;
+        Thu, 14 Apr 2022 13:51:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649944279;
+        bh=+8lXLn8Tcq7BDiyz8rcCoEZQQJFwZgXIBM2J2U9FhUM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DJ9VARRTbCeV94NjjDu59cPE21GVgngolXGZBgcrcheoF8V9wPbpLzH+m9Y3vors4
+         mm6ZH5ihGXeTL7BbiQTo5tUHP736kn0nISLuwQvWH1UaBMIq0HT2YDA8Pbz8mB3Dch
+         jMuxxWWugzZoiDUUsGm6DWn9DiwBdvXNbNxYVg9k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 5.4 458/475] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
+Date:   Thu, 14 Apr 2022 15:14:03 +0200
+Message-Id: <20220414110907.873929220@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -70,75 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since filenames in encrypted directories are already encrypted and shown
-as a base64-encoded string when the directory is locked, snapshot names
-should show a similar behaviour.
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
+commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
+
+Just like its done for ldopts and for both in tools/perf/Makefile.config.
+
+Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
+
+  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
+
+And we need to do it to allow for building with versions of clang where
+some gcc options selected by distros are not available.
+
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ceph/inode.c | 31 +++++++++++++++++++++++++++----
- 1 file changed, 27 insertions(+), 4 deletions(-)
+ tools/build/feature/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index fa0d3018d981..8e97efa2b1a7 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -91,9 +91,15 @@ struct inode *ceph_new_inode(struct inode *dir, struct dentry *dentry,
- 	if (err < 0)
- 		goto out_err;
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -204,7 +204,7 @@ strip-libs = $(filter-out -l%,$(1))
+ PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+ PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+ PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+-PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
++PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+ FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
  
--	err = ceph_fscrypt_prepare_context(dir, inode, as_ctx);
--	if (err)
--		goto out_err;
-+	/*
-+	 * We'll skip setting fscrypt context for snapshots, leaving that for
-+	 * the handle_reply().
-+	 */
-+	if (ceph_snap(dir) != CEPH_SNAPDIR) {
-+		err = ceph_fscrypt_prepare_context(dir, inode, as_ctx);
-+		if (err)
-+			goto out_err;
-+	}
- 
- 	return inode;
- out_err:
-@@ -157,6 +163,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
- 	};
- 	struct inode *inode = ceph_get_inode(parent->i_sb, vino, NULL);
- 	struct ceph_inode_info *ci = ceph_inode(inode);
-+	int ret = -ENOTDIR;
- 
- 	if (IS_ERR(inode))
- 		return inode;
-@@ -182,6 +189,22 @@ struct inode *ceph_get_snapdir(struct inode *parent)
- 	ci->i_rbytes = 0;
- 	ci->i_btime = ceph_inode(parent)->i_btime;
- 
-+	/* if encrypted, just borrow fscrypt_auth from parent */
-+	if (IS_ENCRYPTED(parent)) {
-+		struct ceph_inode_info *pci = ceph_inode(parent);
-+
-+		ci->fscrypt_auth = kmemdup(pci->fscrypt_auth,
-+					   pci->fscrypt_auth_len,
-+					   GFP_KERNEL);
-+		if (ci->fscrypt_auth) {
-+			inode->i_flags |= S_ENCRYPTED;
-+			ci->fscrypt_auth_len = pci->fscrypt_auth_len;
-+		} else {
-+			dout("Failed to alloc snapdir fscrypt_auth\n");
-+			ret = -ENOMEM;
-+			goto err;
-+		}
-+	}
- 	if (inode->i_state & I_NEW) {
- 		inode->i_op = &ceph_snapdir_iops;
- 		inode->i_fop = &ceph_snapdir_fops;
-@@ -195,7 +218,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
- 		discard_new_inode(inode);
- 	else
- 		iput(inode);
--	return ERR_PTR(-ENOTDIR);
-+	return ERR_PTR(ret);
- }
- 
- const struct inode_operations ceph_file_iops = {
+ ifeq ($(CC_NO_CLANG), 0)
+
+
