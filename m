@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4C8C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34353C4167E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356854AbiDNPWD (ORCPT
+        id S1356832AbiDNPVy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        Thu, 14 Apr 2022 11:21:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347613AbiDNN7Y (ORCPT
+        with ESMTP id S1347632AbiDNN7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842DD2497A;
-        Thu, 14 Apr 2022 06:50:30 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E09C4579B;
+        Thu, 14 Apr 2022 06:50:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 099AE61D29;
-        Thu, 14 Apr 2022 13:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13FB9C385A5;
-        Thu, 14 Apr 2022 13:50:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51F15B82894;
+        Thu, 14 Apr 2022 13:50:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6013C385A5;
+        Thu, 14 Apr 2022 13:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944229;
-        bh=t25n3AM0saTbG2YMZyMT/lqz1gLLuKjdtCWVtlIEgG8=;
+        s=korg; t=1649944238;
+        bh=UJ/ZCZObDlL/CWvNdNYfrmTLONFMY8IQg6iCnaVFk5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jy6qJ+geswDsyFZvxY/M7MRiSVck/uNCeMtf0+fmfciYdi10X+XMHe5k/BUGVjHux
-         GJzeg+MFHHoBoaXgqd1wSMHbKhDV+QKxWAPpEeRGqovjZA2LAbRPZu23cOoYTJPgyA
-         b+hyF5wahGNyNDxqb6vWc4u+WDcvvx0DRXofyEzE=
+        b=eMCwmEwhIFcDCpeuKZ8PLtNctoTGuGqfY5SxhuSyqXwCtgX6B5sNwbliaRubK6AI4
+         Gof47wBYEnG9QMq/4CVzQl4duPXp0/hWF7s/1wUGl3LmstInyJ+BwB8Pa0D+KI6RqP
+         wOgWsJ3J4waGAclRudjN9kyoPmILjIVmnTPDLeBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Hai <wanghai38@huawei.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Denis Nikitin <denik@chromium.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexey Budankov <alexey.budankov@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 390/475] ipv4: Invalidate neighbour for broadcast address upon address addition
-Date:   Thu, 14 Apr 2022 15:12:55 +0200
-Message-Id: <20220414110905.986788322@linuxfoundation.org>
+Subject: [PATCH 5.4 444/475] perf session: Remap buf if there is no space for event
+Date:   Thu, 14 Apr 2022 15:13:49 +0200
+Message-Id: <20220414110907.483969398@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,114 +55,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Denis Nikitin <denik@chromium.org>
 
-[ Upstream commit 0c51e12e218f20b7d976158fdc18019627326f7a ]
+[ Upstream commit bc21e74d4775f883ae1f542c1f1dc7205b15d925 ]
 
-In case user space sends a packet destined to a broadcast address when a
-matching broadcast route is not configured, the kernel will create a
-unicast neighbour entry that will never be resolved [1].
+If a perf event doesn't fit into remaining buffer space return NULL to
+remap buf and fetch the event again.
 
-When the broadcast route is configured, the unicast neighbour entry will
-not be invalidated and continue to linger, resulting in packets being
-dropped.
+Keep the logic to error out on inadequate input from fuzzing.
 
-Solve this by invalidating unresolved neighbour entries for broadcast
-addresses after routes for these addresses are internally configured by
-the kernel. This allows the kernel to create a broadcast neighbour entry
-following the next route lookup.
+This fixes perf failing on ChromeOS (with 32b userspace):
 
-Another possible solution that is more generic but also more complex is
-to have the ARP code register a listener to the FIB notification chain
-and invalidate matching neighbour entries upon the addition of broadcast
-routes.
+  $ perf report -v -i perf.data
+  ...
+  prefetch_event: head=0x1fffff8 event->header_size=0x30, mmap_size=0x2000000: fuzzed or compressed perf.data?
+  Error:
+  failed to process sample
 
-It is also possible to wave off the issue as a user space problem, but
-it seems a bit excessive to expect user space to be that intimately
-familiar with the inner workings of the FIB/neighbour kernel code.
-
-[1] https://lore.kernel.org/netdev/55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com/
-
-Reported-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 57fc032ad643ffd0 ("perf session: Avoid infinite loop when seeing invalid header.size")
+Reviewed-by: James Clark <james.clark@arm.com>
+Signed-off-by: Denis Nikitin <denik@chromium.org>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: https://lore.kernel.org/r/20220330031130.2152327-1-denik@chromium.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/arp.h       | 1 +
- net/ipv4/arp.c          | 9 +++++++--
- net/ipv4/fib_frontend.c | 5 ++++-
- 3 files changed, 12 insertions(+), 3 deletions(-)
+ tools/perf/util/session.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/arp.h b/include/net/arp.h
-index 4950191f6b2b..4a23a97195f3 100644
---- a/include/net/arp.h
-+++ b/include/net/arp.h
-@@ -71,6 +71,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
- 	      const unsigned char *src_hw, const unsigned char *th);
- int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
- void arp_ifdown(struct net_device *dev);
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force);
- 
- struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
- 			   struct net_device *dev, __be32 src_ip,
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 7b951992c372..b8fe943ae89d 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1116,13 +1116,18 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
- 	return err;
- }
- 
--static int arp_invalidate(struct net_device *dev, __be32 ip)
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
+diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
+index 8ff2c98e9032..01e15b445cb5 100644
+--- a/tools/perf/util/session.c
++++ b/tools/perf/util/session.c
+@@ -1960,6 +1960,7 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
+ 	       bool needs_swap, union perf_event *error)
  {
- 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
- 	int err = -ENXIO;
- 	struct neigh_table *tbl = &arp_tbl;
+ 	union perf_event *event;
++	u16 event_size;
  
- 	if (neigh) {
-+		if ((neigh->nud_state & NUD_VALID) && !force) {
-+			neigh_release(neigh);
-+			return 0;
-+		}
-+
- 		if (neigh->nud_state & ~NUD_NOARP)
- 			err = neigh_update(neigh, NULL, NUD_FAILED,
- 					   NEIGH_UPDATE_F_OVERRIDE|
-@@ -1169,7 +1174,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
- 		if (!dev)
- 			return -EINVAL;
- 	}
--	return arp_invalidate(dev, ip);
-+	return arp_invalidate(dev, ip, true);
- }
+ 	/*
+ 	 * Ensure we have enough space remaining to read
+@@ -1972,15 +1973,23 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
+ 	if (needs_swap)
+ 		perf_event_header__bswap(&event->header);
  
- /*
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index a95102fe6637..ef3e7a3e3a29 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1122,9 +1122,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 		return;
+-	if (head + event->header.size <= mmap_size)
++	event_size = event->header.size;
++	if (head + event_size <= mmap_size)
+ 		return event;
  
- 	/* Add broadcast address, if it is explicitly assigned. */
--	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
-+	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
- 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
- 			  prim, 0);
-+		arp_invalidate(dev, ifa->ifa_broadcast, false);
+ 	/* We're not fetching the event so swap back again */
+ 	if (needs_swap)
+ 		perf_event_header__bswap(&event->header);
+ 
+-	pr_debug("%s: head=%#" PRIx64 " event->header_size=%#x, mmap_size=%#zx:"
+-		 " fuzzed or compressed perf.data?\n",__func__, head, event->header.size, mmap_size);
++	/* Check if the event fits into the next mmapped buf. */
++	if (event_size <= mmap_size - head % page_size) {
++		/* Remap buf and fetch again. */
++		return NULL;
 +	}
++
++	/* Invalid input. Event size should never exceed mmap_size. */
++	pr_debug("%s: head=%#" PRIx64 " event->header.size=%#x, mmap_size=%#zx:"
++		 " fuzzed or compressed perf.data?\n", __func__, head, event_size, mmap_size);
  
- 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
- 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
-@@ -1140,6 +1142,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 				  prim, 0);
- 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
- 				  32, prim, 0);
-+			arp_invalidate(dev, prefix | ~mask, false);
- 		}
- 	}
+ 	return error;
  }
 -- 
 2.35.1
