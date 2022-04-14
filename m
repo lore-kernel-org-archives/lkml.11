@@ -2,97 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73401C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90482C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238475AbiDNHwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
+        id S239926AbiDNHwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbiDNHv5 (ORCPT
+        with ESMTP id S240796AbiDNHwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 03:51:57 -0400
-X-Greylist: delayed 2305 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 00:49:31 PDT
-Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0CA12602;
-        Thu, 14 Apr 2022 00:49:29 -0700 (PDT)
-Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.21])
-        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1netd6-0005jh-I9; Thu, 14 Apr 2022 08:11:00 +0100
-Message-ID: <3acd20b2-5882-7cc0-8a7b-7b406b768c1c@codethink.co.uk>
-Date:   Thu, 14 Apr 2022 08:11:00 +0100
+        Thu, 14 Apr 2022 03:52:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1E5621E14
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649922612;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=1Y+vrudYuOScug1x3eREZTNTaJiy+mJqX5LykZZBtpI=;
+        b=JTniA15eTOg43+ebqQDZRHk/pgiVO/Nm9LAW6j9+eFrrZdXy+Yb5j4rprAI24El2axUfUk
+        mXUCtmhMPfCfUpiU+y2NC0KkM/cvkoUs643qTscG8gi5rePiUI1VJWmwKi84B0tA7T0ToK
+        NRIjzS6+rDZRNQ7tQJbTNhuOwkXIUD0=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-613-4IwiZOY4O4qhw5xOJEg4aw-1; Thu, 14 Apr 2022 03:50:11 -0400
+X-MC-Unique: 4IwiZOY4O4qhw5xOJEg4aw-1
+Received: by mail-lf1-f70.google.com with SMTP id v13-20020ac2592d000000b0046bc30fe894so1997439lfi.14
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:50:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=1Y+vrudYuOScug1x3eREZTNTaJiy+mJqX5LykZZBtpI=;
+        b=sx+gW/R2tKhPjGehEMC0DuwkgDWO5/s7asE/bBGJkKGM+tYTiK92/ekDSEvaOUn+4e
+         JuJxBj0qmbKza82S7RWouCXrO/cDygK0cSJgygbjmiQiXgTWtI4KlzIECzkofrywM3zI
+         OeXI+LPumgbuWhujOlT2l9CdcRqziAU0zT+jgY33EBNR7jNQ6e/Z7WWfLLBqJt4thq1b
+         YlE87OMl3qdyZrT28DmlNJhVvhAifyyisHQ0esmShy9NLVjYtPG8sRcZ6PomRjt5rgBH
+         GOfEZ4m6rSFWFXvAYJ4hd4wiCsQOoPjmvHq1Y5tN3dy6pkSV9nFskSkm2XApwnPtGUH/
+         Ef+Q==
+X-Gm-Message-State: AOAM5322lwl61OjWvhF6Iq8z9AJqwJUDAQcZ5ertZouxWDgepTDtHXec
+        xIJ1naJQFvWdt2MsuU93xWEWwE8iDEJV9VovdVFaRwjAOJlb3db2/GowYlFDk6KnkMGXudEdbxS
+        EmWBkNYGfzL5ZNlgfclzmRU6Q1+rUsZC0M9IwX9z2
+X-Received: by 2002:a05:651c:451:b0:24b:626d:7b20 with SMTP id g17-20020a05651c045100b0024b626d7b20mr909792ljg.333.1649922609651;
+        Thu, 14 Apr 2022 00:50:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyoX/VLz7iTlARKUVkS321BZXmFkijVyh4oN8/MDT5jXLJnnQQHsn7ZID68qP3+f1a4DWhnfBTPV74z8wBO4Fc=
+X-Received: by 2002:a05:651c:451:b0:24b:626d:7b20 with SMTP id
+ g17-20020a05651c045100b0024b626d7b20mr909784ljg.333.1649922609477; Thu, 14
+ Apr 2022 00:50:09 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [V3] PCI: fu740: Drop to 2.5GT/s to fix initial device probing on
- some boards
-Content-Language: en-GB
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Alexandre Ghiti <alex@ghiti.fr>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Rob Herring <robh@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>,
-        Neill Whillans <neill.whillans@codethink.co.uk>
-References: <20220318152430.526320-1-ben.dooks@codethink.co.uk>
- <2442936e-a53e-59bf-488f-95eac26d1252@ghiti.fr>
- <85e864fd-762e-0780-f829-bfbb178ab24e@ghiti.fr>
- <bded4b1e-3404-6bcd-3289-dc8d5b4d713a@codethink.co.uk>
- <alpine.DEB.2.21.2204140048460.9383@angie.orcam.me.uk>
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-Organization: Codethink Limited.
-In-Reply-To: <alpine.DEB.2.21.2204140048460.9383@angie.orcam.me.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From:   Bruno Goncalves <bgoncalv@redhat.com>
+Date:   Thu, 14 Apr 2022 09:49:58 +0200
+Message-ID: <CA+QYu4oi-Lmfj1uh0f-JE0WRmmyjtU94xP8OpbLxAGjPkm69Ew@mail.gmail.com>
+Subject: testing/radix-tree: undefined reference to `kmem_cache_alloc_lru'
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     CKI Project <cki-project@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/04/2022 01:10, Maciej W. Rozycki wrote:
-> On Wed, 23 Mar 2022, Ben Dooks wrote:
-> 
->>> FWIW, I have tested this and it solved my issue with nvme not being probed,
->>> so:
->>>
->>> Tested-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
->>
->> Ok, great. Our test rig seems to be still working with this.
-> 
->   I ran simple verification of your change by interrupting U-Boot after a
-> power-up and issuing:
-> 
-> => setenv boot_pci_enum true
-> 
-> at the command prompt before booting from the uSD card and curiously
-> enough the root port comes up with the Link Capabilities Register
-> reporting the lack of Link Bandwidth Notification Capability in this
-> scenario, while it reports its presence if booted undisturbed, i.e.:
-> 
-> 		LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM L0s L1, Exit Latency L0s <4us, L1 <4us
-> 			ClockPM- Surprise- LLActRep+ BwNot- ASPMOptComp+
-> 
-> vs:
-> 
-> 		LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM L0s L1, Exit Latency L0s <4us, L1 <4us
-> 			ClockPM- Surprise- LLActRep+ BwNot+ ASPMOptComp+
-> 
-> It is fully reproducible.
-> 
->   Any idea what might be causing it?  I can't see it being explicitly set
-> or cleared anywhere, be it in U-Boot or Linux, so it must be done by the
-> device itself depending on something.  And the lack of this capability
-> seems to me like non-compliance for a multiple-lane, multiple-speed
-> device.
+Hello,
 
-I'll see if we can reproduce this
+Trying to build testing/radix-tree on mainline kernel fails with:
 
+make -C tools/testing/radix-tree/
+<snip>
+cc -fsanitize=address -fsanitize=undefined  main.o xarray.o
+radix-tree.o idr.o linux.o test.o find_bit.o bitmap.o slab.o
+regression1.o regression2.o regression3.o regression4.o tag_check.o
+multiorder.o idr-test.o iteration_check.o iteration_check_2.o
+benchmark.o  -lpthread -lurcu -o main
+/usr/bin/ld: xarray.o: in function `xas_split_alloc':
+/root/linux/tools/testing/radix-tree/../../../lib/xarray.c:1019:
+undefined reference to `kmem_cache_alloc_lru'
+/usr/bin/ld: xarray.o: in function `xas_nomem':
+/root/linux/tools/testing/radix-tree/../../../lib/xarray.c:305:
+undefined reference to `kmem_cache_alloc_lru'
+/usr/bin/ld: xarray.o: in function `xas_alloc':
+/root/linux/tools/testing/radix-tree/../../../lib/xarray.c:374:
+undefined reference to `kmem_cache_alloc_lru'
+/usr/bin/ld: xarray.o: in function `__xas_nomem':
+/root/linux/tools/testing/radix-tree/../../../lib/xarray.c:337:
+undefined reference to `kmem_cache_alloc_lru'
+/usr/bin/ld: /root/linux/tools/testing/radix-tree/../../../lib/xarray.c:340:
+undefined reference to `kmem_cache_alloc_lru'
+collect2: error: ld returned 1 exit status
+make: *** [<builtin>: main] Error 1
 
--- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+Thanks,
+Bruno Goncalves
 
-https://www.codethink.co.uk/privacy.html
