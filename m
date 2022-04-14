@@ -2,71 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4994AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D57C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242219AbiDNQMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        id S242971AbiDNQNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347424AbiDNQJ5 (ORCPT
+        with ESMTP id S1343919AbiDNQII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:09:57 -0400
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCD2FA217;
-        Thu, 14 Apr 2022 08:53:15 -0700 (PDT)
-Received: by mail-oi1-f171.google.com with SMTP id z2so1457102oic.6;
-        Thu, 14 Apr 2022 08:53:15 -0700 (PDT)
+        Thu, 14 Apr 2022 12:08:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E548B1042A5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:50:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649951407;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8D7+XOXU9/ThUKgFTw5tvJGCfDTFVw/+YuhuBqPpcA4=;
+        b=YqX9av/ALWv/2mnstwo44xOqyunZkJ063obFMbRc5ndNozWD9HUK/7vkhS4a2PnZv8LSWa
+        xcCV6OpBJ4LCb5nmzVJ2/CUTbcy0/v7fO8eVjGY3KgEP9+E/DpkD2buaoVhsjxnP4BPELU
+        kUann/lTNuJ+Q1YK0aFZiY1nA94j8HI=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-551-1wwDwwIdOseBfzROo0BcqA-1; Thu, 14 Apr 2022 11:49:58 -0400
+X-MC-Unique: 1wwDwwIdOseBfzROo0BcqA-1
+Received: by mail-qk1-f199.google.com with SMTP id h8-20020a05620a244800b00699fb28d5e4so3505507qkn.22
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:49:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=aJBwSvQ9K7ADQjEr30YYPw9oyPFj+rQRKPrYGiFxjgk=;
-        b=LGzQAwcXRa8LbJPwYUv/uF1ytkuMvrYiI7rOzNZXAL8PJTaEABkfF0RjhTH8PgG7le
-         6BpnpFyR+HZErLM5Tgo7/nFESlz85BjhVe1bQm/6K+ta8YTAskP9xQEB0IU8CWAxszZp
-         hlCbvJMF7O2WyujL4PFAl1NsS0X2zdzDGRv4SzedSTLYFs+yulT7Vyhw6hqMXT5wVVgJ
-         8O4ESENypdW2m/FNUpq7oZnJ2TkcfPJlJfpxxAEJf4z+SKNeBjhwMU7AMUcxck3+pIw7
-         xB+cMdnk5HcDEQqHrDRA5cKiE2gcz9WcDsrgH9d9uBFEwFejS5gRYsn7+RJiOZ0bqfaQ
-         puig==
-X-Gm-Message-State: AOAM530THVJDNx8Pjr/YvatsX+hnGcD9IF7JQNj2awaMgqTMdK++We4w
-        lGtEWcIq/eUp313scx86JZq4em6XRQ==
-X-Google-Smtp-Source: ABdhPJytijnI1Q94voFZOf7ePryvYTbB8w+h0jGC4akXV6bQy4qDmrmXfy7hz3oBnTTMo4w9MDK58Q==
-X-Received: by 2002:a05:6808:151f:b0:2fa:7d82:62a3 with SMTP id u31-20020a056808151f00b002fa7d8262a3mr1600273oiw.293.1649951594346;
-        Thu, 14 Apr 2022 08:53:14 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r8-20020a05683001c800b005cdadc2a837sm130913ota.70.2022.04.14.08.53.13
+        bh=8D7+XOXU9/ThUKgFTw5tvJGCfDTFVw/+YuhuBqPpcA4=;
+        b=WD0gSB3JntYyQYTA0vo5U901rAf4S72S0ZeT/uaaO9jbLquEs/P5x3bPU+k8BNBBHu
+         WTX65kUK4/qAiJc+Tp1wG76AjZDu0mbvJELoVSYZywmRKDYE9QuG0pWjOt/uBp2TByOY
+         ku96/pLsPThK8X5oDWorZn1W8fQi3MVm6FNpPn+Mlay+GiQMWTcXagxHfZGpf/j4FKIH
+         C3H9orVBJs2jp3MhPZA3Em9PJhx4KI20hpkdcTTN+Ks/vjxm4h0LQQKjaKrttCzjm9YU
+         rWrhEY0VKXk4CQTOiVjh+QAifrQLi3inT6yddVAUpDzRco/sWAHtiL0bXZB8Ehn7RfIl
+         Lm7g==
+X-Gm-Message-State: AOAM530x+3cPoCJlR8dAWGdpEdb/oYsWa/Ae3GGXVUIt4SoibcBGDXRa
+        86KYOd7e8eM3NnqQYRsjLj0InBJ0PE0M3QdDT/VvCH9ZKKVMj37YPQNpgypRKHyaeHGunhonkhL
+        +EMkgeeYXqQgGjxANetFi2f0o
+X-Received: by 2002:ac8:5994:0:b0:2e0:5d77:4b5c with SMTP id e20-20020ac85994000000b002e05d774b5cmr2267052qte.289.1649951398201;
+        Thu, 14 Apr 2022 08:49:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyurAOacsp1J5ypPcymXOPFueuel96WgSthlPnqzRpQHW2dly7609r5byiGD3Y+Jx818HiHpQ==
+X-Received: by 2002:ac8:5994:0:b0:2e0:5d77:4b5c with SMTP id e20-20020ac85994000000b002e05d774b5cmr2267030qte.289.1649951397914;
+        Thu, 14 Apr 2022 08:49:57 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id u12-20020ac858cc000000b002ef01d55d2asm1429491qta.78.2022.04.14.08.49.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:53:13 -0700 (PDT)
-Received: (nullmailer pid 2123568 invoked by uid 1000);
-        Thu, 14 Apr 2022 15:53:13 -0000
-Date:   Thu, 14 Apr 2022 10:53:13 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Nishanth Menon <nm@ti.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH 1/2] dt-bindings: rtc: Add TI K3 RTC devicetree bindings
- documentation
-Message-ID: <YlhDafvp34uv+X5/@robh.at.kernel.org>
-References: <20220412073138.25027-1-nm@ti.com>
- <20220412073138.25027-2-nm@ti.com>
+        Thu, 14 Apr 2022 08:49:57 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 08:49:54 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 14/18] objtool: Add toolchain hacks cmdline option
+Message-ID: <20220414154954.tjv5peczw3tadd27@treble>
+References: <cover.1649891421.git.jpoimboe@redhat.com>
+ <e04ec8f01fcb537675d6bd94ef65103a0a749318.1649891421.git.jpoimboe@redhat.com>
+ <YlfWynPt6MGR5BZP@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220412073138.25027-2-nm@ti.com>
+In-Reply-To: <YlfWynPt6MGR5BZP@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 02:31:37AM -0500, Nishanth Menon wrote:
-> This adds the documentation for the devicetree bindings of the Texas
-> Instruments RTC modules on K3 family of SoCs such as AM62x SoCs or
-> newer.
+On Thu, Apr 14, 2022 at 10:09:46AM +0200, Peter Zijlstra wrote:
+> On Wed, Apr 13, 2022 at 04:19:49PM -0700, Josh Poimboeuf wrote:
+> > Objtool secretly does a few awful hacks to overcome toolchain
+> > limitations.  Make those hacks explicit (and optional for other arches)
+> > by associating them with a new '--hacks' cmdline option and
+> > corresponding CONFIG_HAVE_TOOLCHAIN_HACKS.
+> 
+> Should we either clarify the specific hacks done, or split this in two
+> options?
+> 
+>   --hack-jump_label
+>   --hack-noinstr
 
-'devicetree bindings documentation' in the subject is redundant. You 
-already said that with 'dt-bindings'.
+Yeah, maybe we should split them out somehow.
 
-Rob
+-- 
+Josh
+
