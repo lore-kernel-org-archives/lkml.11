@@ -2,94 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA88C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA69C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345644AbiDNTdx (ORCPT
+        id S1345658AbiDNTfT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
+        Thu, 14 Apr 2022 15:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345720AbiDNTcm (ORCPT
+        with ESMTP id S240972AbiDNTfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:32:42 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C9C2ED4B;
-        Thu, 14 Apr 2022 12:30:15 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 8AA871F747;
-        Thu, 14 Apr 2022 19:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649964614;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PeyLvFfLPcu6npNhffBMTXhfIWBWIhlLCr+uIvrgKf0=;
-        b=Zd12RdZj7FuQb1/14hSVsAT/PRFujS+DQkawT07jSz1ZymtxRr3xgvkzJZoPCChpKM/eEb
-        FU14FfMML16jbqz/14PVYNsSoWAPkjHMJH4U17l2nYdC+orXwpjk2UPEZ2CjNQQWFtawNC
-        NudY6nLPcWixE+9lL3dnp2zGr8365uU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649964614;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PeyLvFfLPcu6npNhffBMTXhfIWBWIhlLCr+uIvrgKf0=;
-        b=EgH2wM/nvIaTpFzxxjV6SxRvKDhReeeIyOCAkta3mciy9QEdlmdSfMRXBq5DMsCz2jSRj2
-        vQ9uy6XiuSkqVCAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4B12F13A86;
-        Thu, 14 Apr 2022 19:30:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id hUG4EUZ2WGKQQAAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 14 Apr 2022 19:30:14 +0000
-Date:   Thu, 14 Apr 2022 21:26:06 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     dsterba@suse.cz, clm@fb.com, dsterba@suse.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, terrelln@fb.com
-Subject: Re: [PATCH v2] btrfs: zstd: use spin_lock in timer callback
-Message-ID: <20220414192606.GS15609@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Schspa Shi <schspa@gmail.com>,
-        clm@fb.com, dsterba@suse.com, josef@toxicpanda.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        terrelln@fb.com
-References: <20220411135136.GG15609@suse.cz>
- <20220411155540.36853-1-schspa@gmail.com>
+        Thu, 14 Apr 2022 15:35:15 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 611D7ECC70
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:32:50 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0322712FC;
+        Thu, 14 Apr 2022 12:32:50 -0700 (PDT)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C26B23F70D;
+        Thu, 14 Apr 2022 12:32:48 -0700 (PDT)
+Message-ID: <3b952d2d-3f41-e5dc-be2f-c58a5083e195@arm.com>
+Date:   Thu, 14 Apr 2022 21:32:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411155540.36853-1-schspa@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 0/7] feec() energy margin removal
+Content-Language: en-US
+To:     Vincent Donnefort <vincent.donnefort@arm.com>,
+        peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
+Cc:     linux-kernel@vger.kernel.org, morten.rasmussen@arm.com,
+        chris.redpath@arm.com, qperret@google.com
+References: <20220412134220.1588482-1-vincent.donnefort@arm.com>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <20220412134220.1588482-1-vincent.donnefort@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 11:55:41PM +0800, Schspa Shi wrote:
-> This is an optimization for fix fee13fe96529 ("btrfs:
-> correct zstd workspace manager lock to use spin_lock_bh()")
-> 
-> The critical region for wsm.lock is only accessed by the process context and
-> the softirq context.
-> 
-> Because in the soft interrupt, the critical section will not be preempted by the
-> soft interrupt again, there is no need to call spin_lock_bh(&wsm.lock) to turn
-> off the soft interrupt, spin_lock(&wsm.lock) is enough for this situation.
-> 
-> Changelog:
-> v1 -> v2:
-> 	- Change the commit message to make it more readable.
-> 
-> [1] https://lore.kernel.org/all/20220408181523.92322-1-schspa@gmail.com/
-> 
-> Signed-off-by: Schspa Shi <schspa@gmail.com>
+On 12/04/2022 15:42, Vincent Donnefort wrote:
 
-Added to misc-next, thanks.
+Nitpick: s/v3/v4 in cover letter
+
+> find_energy_efficient() (feec()) will migrate a task to save energy only
+
+s/find_energy_efficient/find_energy_efficient_cpu
+
+[...]
+
+LGTM. For the whole patch-set:
+
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
