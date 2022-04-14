@@ -2,45 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08822C3527D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BECECC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355062AbiDNO5V (ORCPT
+        id S1355184AbiDNO5w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
+        Thu, 14 Apr 2022 10:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345615AbiDNNxv (ORCPT
+        with ESMTP id S1345955AbiDNNzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:53:51 -0400
+        Thu, 14 Apr 2022 09:55:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A05EAC905;
-        Thu, 14 Apr 2022 06:45:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07226AFAD7;
+        Thu, 14 Apr 2022 06:45:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27E4C61DAB;
-        Thu, 14 Apr 2022 13:45:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33549C385A5;
-        Thu, 14 Apr 2022 13:45:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9788E61D29;
+        Thu, 14 Apr 2022 13:45:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F2B1C385A9;
+        Thu, 14 Apr 2022 13:45:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943900;
-        bh=XGQlQwPxyqB1z7uiORtHGQWYWpXQwbRPLgJUGwjU0ww=;
+        s=korg; t=1649943923;
+        bh=z2gKQDvjDAKZigd8ys86qyu4ItR5GIXfvt3KCuNW2lE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BUAkY03+NDr6cj9MYVSzpPI9rGL9TKGZR7GOeEwLltepJuvK23G1LfQGI0ZJrn3mz
-         kuxNyE0y81SDv+MwYnYVmFvZD4g3sT261CTMfj3uol+9cBk0kZdtW1ZxBWTix7YpE1
-         GDTxxPKxab0cqJks4LocEmEqPpoSh08WTV1sV7H4=
+        b=o2n76p6QOZ1Mm3IB3gWLUXr8Exo6WRYSB1hqDg78B+n55+qDHry6g+TdL68HQeAoF
+         Rj8snyjxv+Sck2U+TS3XO9mUNDEyentZl96zu3WPUpWfd84yuEl0p311fQQ9CE3sHY
+         Krgr6Dixcc58V/WyD7PIpuzUQmb44yJk+YiCykxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 323/475] scsi: qla2xxx: Fix hang due to session stuck
-Date:   Thu, 14 Apr 2022 15:11:48 +0200
-Message-Id: <20220414110904.126491633@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Keyon Jie <yang.jie@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rander Wang <rander.wang@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: [PATCH 5.4 330/475] ASoC: SOF: Intel: Fix NULL ptr dereference when ENOMEM
+Date:   Thu, 14 Apr 2022 15:11:55 +0200
+Message-Id: <20220414110904.320644296@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,78 +60,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-commit c02aada06d19a215c8291bd968a99a270e96f734 upstream.
+commit b7fb0ae09009d076964afe4c1a2bde1ee2bd88a9 upstream.
 
-User experienced device lost. The log shows Get port data base command was
-queued up, failed, and requeued again. Every time it is requeued, it set
-the FCF_ASYNC_ACTIVE. This prevents any recovery code from occurring
-because driver thinks a recovery is in progress for this session. In
-essence, this session is hung.  The reason it gets into this place is the
-session deletion got in front of this call due to link perturbation.
+Do not call snd_dma_free_pages() when snd_dma_alloc_pages() returns
+-ENOMEM because it leads to a NULL pointer dereference bug.
 
-Break the requeue cycle and exit.  The session deletion code will trigger a
-session relogin.
+The dmesg says:
 
-Link: https://lore.kernel.org/r/20220310092604.22950-8-njavali@marvell.com
-Fixes: 726b85487067 ("qla2xxx: Add framework for async fabric discovery")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  [ T1387] sof-audio-pci-intel-tgl 0000:00:1f.3: error: memory alloc failed: -12
+  [ T1387] BUG: kernel NULL pointer dereference, address: 0000000000000000
+  [ T1387] #PF: supervisor read access in kernel mode
+  [ T1387] #PF: error_code(0x0000) - not-present page
+  [ T1387] PGD 0 P4D 0
+  [ T1387] Oops: 0000 [#1] PREEMPT SMP NOPTI
+  [ T1387] CPU: 6 PID: 1387 Comm: alsa-sink-HDA A Tainted: G        W         5.17.0-rc4-superb-owl-00055-g80d47f5de5e3
+  [ T1387] Hardware name: HP HP Laptop 14s-dq2xxx/87FD, BIOS F.15 09/15/2021
+  [ T1387] RIP: 0010:dma_free_noncontiguous+0x37/0x80
+  [ T1387] Code: [... snip ...]
+  [ T1387] RSP: 0000:ffffc90002b87770 EFLAGS: 00010246
+  [ T1387] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+  [ T1387] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888101db30d0
+  [ T1387] RBP: 00000000fffffff4 R08: 0000000000000000 R09: 0000000000000000
+  [ T1387] R10: 0000000000000000 R11: ffffc90002b874d0 R12: 0000000000000001
+  [ T1387] R13: 0000000000058000 R14: ffff888105260c68 R15: ffff888105260828
+  [ T1387] FS:  00007f42e2ffd640(0000) GS:ffff888466b80000(0000) knlGS:0000000000000000
+  [ T1387] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [ T1387] CR2: 0000000000000000 CR3: 000000014acf0003 CR4: 0000000000770ee0
+  [ T1387] PKRU: 55555554
+  [ T1387] Call Trace:
+  [ T1387]  <TASK>
+  [ T1387]  cl_stream_prepare+0x10a/0x120 [snd_sof_intel_hda_common 146addf995b9279ae7f509621078cccbe4f875e1]
+  [... snip ...]
+  [ T1387]  </TASK>
+
+Cc: Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Jaroslav Kysela <perex@perex.cz>
+Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Cc: Keyon Jie <yang.jie@linux.intel.com>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Rander Wang <rander.wang@intel.com>
+Cc: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Cc: Takashi Iwai <tiwai@suse.com>
+Cc: sound-open-firmware@alsa-project.org
+Cc: alsa-devel@alsa-project.org
+Cc: linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org # v5.2+
+Fixes: d16046ffa6de040bf580a64d5f4d0aa18258a854 ("ASoC: SOF: Intel: Add Intel specific HDA firmware loader")
+Link: https://lore.kernel.org/lkml/20220224145124.15985-1-ammarfaizi2@gnuweeb.org/ # v1
+Link: https://lore.kernel.org/lkml/20220224180850.34592-1-ammarfaizi2@gnuweeb.org/ # v2
+Link: https://lore.kernel.org/lkml/20220224182818.40301-1-ammarfaizi2@gnuweeb.org/ # v3
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Link: https://lore.kernel.org/r/20220224185836.44907-1-ammarfaizi2@gnuweeb.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+[ammarfaizi2: Backport to Linux 5.4 LTS]
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_def.h  |    4 ++++
- drivers/scsi/qla2xxx/qla_init.c |   19 +++++++++++++++++--
- 2 files changed, 21 insertions(+), 2 deletions(-)
+ sound/soc/sof/intel/hda-loader.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -4870,4 +4870,8 @@ struct sff_8247_a0 {
- #include "qla_gbl.h"
- #include "qla_dbg.h"
- #include "qla_inline.h"
-+
-+#define IS_SESSION_DELETED(_fcport) (_fcport->disc_state == DSC_DELETE_PEND || \
-+				      _fcport->disc_state == DSC_DELETED)
-+
- #endif
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -572,6 +572,14 @@ qla2x00_async_adisc(struct scsi_qla_host
- 	struct srb_iocb *lio;
- 	int rval = QLA_FUNCTION_FAILED;
+--- a/sound/soc/sof/intel/hda-loader.c
++++ b/sound/soc/sof/intel/hda-loader.c
+@@ -50,7 +50,7 @@ static int cl_stream_prepare(struct snd_
+ 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV_SG, &pci->dev, size, dmab);
+ 	if (ret < 0) {
+ 		dev_err(sdev->dev, "error: memory alloc failed: %x\n", ret);
+-		goto error;
++		goto out_put;
+ 	}
  
-+	if (IS_SESSION_DELETED(fcport)) {
-+		ql_log(ql_log_warn, vha, 0xffff,
-+		       "%s: %8phC is being delete - not sending command.\n",
-+		       __func__, fcport->port_name);
-+		fcport->flags &= ~FCF_ASYNC_ACTIVE;
-+		return rval;
-+	}
-+
- 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT))
- 		return rval;
+ 	hstream->period_bytes = 0;/* initialize period_bytes */
+@@ -60,16 +60,17 @@ static int cl_stream_prepare(struct snd_
+ 	ret = hda_dsp_stream_hw_params(sdev, dsp_stream, dmab, NULL);
+ 	if (ret < 0) {
+ 		dev_err(sdev->dev, "error: hdac prepare failed: %x\n", ret);
+-		goto error;
++		goto out_free;
+ 	}
  
-@@ -1314,8 +1322,15 @@ int qla24xx_async_gpdb(struct scsi_qla_h
- 	struct port_database_24xx *pd;
- 	struct qla_hw_data *ha = vha->hw;
+ 	hda_dsp_stream_spib_config(sdev, dsp_stream, HDA_DSP_SPIB_ENABLE, size);
  
--	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
--	    fcport->loop_id == FC_NO_LOOP_ID) {
-+	if (IS_SESSION_DELETED(fcport)) {
-+		ql_log(ql_log_warn, vha, 0xffff,
-+		       "%s: %8phC is being delete - not sending command.\n",
-+		       __func__, fcport->port_name);
-+		fcport->flags &= ~FCF_ASYNC_ACTIVE;
-+		return rval;
-+	}
-+
-+	if (!vha->flags.online || fcport->flags & FCF_ASYNC_SENT) {
- 		ql_log(ql_log_warn, vha, 0xffff,
- 		    "%s: %8phC online %d flags %x - not sending command.\n",
- 		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
+ 	return hstream->stream_tag;
+ 
+-error:
+-	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
++out_free:
+ 	snd_dma_free_pages(dmab);
++out_put:
++	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
+ 	return ret;
+ }
+ 
 
 
