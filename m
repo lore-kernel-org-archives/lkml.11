@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5951DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242952AbiDNMBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 08:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
+        id S242340AbiDNMBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242899AbiDNMBF (ORCPT
+        with ESMTP id S242901AbiDNMBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 08:01:05 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B040B888E2;
-        Thu, 14 Apr 2022 04:58:37 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KfHyt6lhqz1HBvT;
-        Thu, 14 Apr 2022 19:57:58 +0800 (CST)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D129888F7;
+        Thu, 14 Apr 2022 04:58:39 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KfHxV665DzgYHt;
+        Thu, 14 Apr 2022 19:56:46 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Apr 2022 19:58:31 +0800
+ 15.1.2375.24; Thu, 14 Apr 2022 19:58:37 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Apr 2022 19:58:29 +0800
+ 15.1.2375.24; Thu, 14 Apr 2022 19:58:36 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -48,9 +48,9 @@ CC:     Zhen Lei <thunder.leizhen@huawei.com>,
         Chen Zhou <dingguo.cz@antgroup.com>,
         "John Donnelly" <John.p.donnelly@oracle.com>,
         Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH v22 3/9] arm64: kdump: Remove some redundant checks in map_mem()
-Date:   Thu, 14 Apr 2022 19:57:14 +0800
-Message-ID: <20220414115720.1887-4-thunder.leizhen@huawei.com>
+Subject: [PATCH v22 9/9] docs: kdump: Update the crashkernel description for arm64
+Date:   Thu, 14 Apr 2022 19:57:20 +0800
+Message-ID: <20220414115720.1887-10-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220414115720.1887-1-thunder.leizhen@huawei.com>
 References: <20220414115720.1887-1-thunder.leizhen@huawei.com>
@@ -65,66 +65,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the value of crashk_res.end is non-zero in this function, it indicates
-that function reserve_crashkernel() has been called under condition
-"if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))" in
-zone_sizes_init() before. And obviously the command line option
-"crashkernel=" must also exist, so crash_mem_map is also true.
+Now arm64 has added support for "crashkernel=X,high" and
+"crashkernel=Y,low", and implements "crashkernel=X[@offset]" in the
+same way as x86. So update the Documentation.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Acked-by: Baoquan He <bhe@redhat.com>
 ---
- arch/arm64/mm/mmu.c | 31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index 626ec32873c6c36..7666b4955e45cb3 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -528,14 +528,12 @@ static void __init map_mem(pgd_t *pgdp)
- 	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3f1cc5e317ed4a5..ae0aa63ffe82f59 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -795,7 +795,7 @@
+ 			memory region [offset, offset + size] for that kernel
+ 			image. If '@offset' is omitted, then a suitable offset
+ 			is selected automatically.
+-			[KNL, X86-64] Select a region under 4G first, and
++			[KNL, X86-64, ARM64] Select a region under 4G first, and
+ 			fall back to reserve region above 4G when '@offset'
+ 			hasn't been specified.
+ 			See Documentation/admin-guide/kdump/kdump.rst for further details.
+@@ -808,20 +808,20 @@
+ 			Documentation/admin-guide/kdump/kdump.rst for an example.
  
- #ifdef CONFIG_KEXEC_CORE
--	if (crash_mem_map) {
--		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
--		    IS_ENABLED(CONFIG_ZONE_DMA32))
--			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
--		else if (crashk_res.end)
--			memblock_mark_nomap(crashk_res.start,
--			    resource_size(&crashk_res));
--	}
-+	if (crash_mem_map &&
-+	    (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32)))
-+		flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
-+	else if (crashk_res.end)
-+		memblock_mark_nomap(crashk_res.start,
-+				    resource_size(&crashk_res));
- #endif
- 
- 	/* map all the memory banks */
-@@ -571,16 +569,13 @@ static void __init map_mem(pgd_t *pgdp)
- 	 * through /sys/kernel/kexec_crash_size interface.
- 	 */
- #ifdef CONFIG_KEXEC_CORE
--	if (crash_mem_map &&
--	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
--		if (crashk_res.end) {
--			__map_memblock(pgdp, crashk_res.start,
--				       crashk_res.end + 1,
--				       PAGE_KERNEL,
--				       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
--			memblock_clear_nomap(crashk_res.start,
--					     resource_size(&crashk_res));
--		}
-+	if (crashk_res.end) {
-+		__map_memblock(pgdp, crashk_res.start,
-+			       crashk_res.end + 1,
-+			       PAGE_KERNEL,
-+			       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
-+		memblock_clear_nomap(crashk_res.start,
-+				     resource_size(&crashk_res));
- 	}
- #endif
- }
+ 	crashkernel=size[KMG],high
+-			[KNL, X86-64] range could be above 4G. Allow kernel
++			[KNL, X86-64, ARM64] range could be above 4G. Allow kernel
+ 			to allocate physical memory region from top, so could
+ 			be above 4G if system have more than 4G ram installed.
+ 			Otherwise memory region will be allocated below 4G, if
+ 			available.
+ 			It will be ignored if crashkernel=X is specified.
+ 	crashkernel=size[KMG],low
+-			[KNL, X86-64] range under 4G. When crashkernel=X,high
++			[KNL, X86-64, ARM64] range under 4G. When crashkernel=X,high
+ 			is passed, kernel could allocate physical memory region
+ 			above 4G, that cause second kernel crash on system
+ 			that require some amount of low memory, e.g. swiotlb
+ 			requires at least 64M+32K low memory, also enough extra
+ 			low memory is needed to make sure DMA buffers for 32-bit
+-			devices won't run out. Kernel would try to allocate at
++			devices won't run out. Kernel would try to allocate
+ 			at least 256M below 4G automatically.
+ 			This one let user to specify own low range under 4G
+ 			for second kernel instead.
 -- 
 2.25.1
 
