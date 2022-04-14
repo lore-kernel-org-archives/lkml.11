@@ -2,305 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F64BC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED953C352A8
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244958AbiDNNh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
+        id S245006AbiDNNiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244535AbiDNN1h (ORCPT
+        with ESMTP id S244521AbiDNN1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:27:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDA65A0BF0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942426;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f5iYihMb+lSF7RY0apxqBt12TNsUyerl0pY6JXjrXAo=;
-        b=S8/yG+JBw26rPlgw8cc4DhSJTDoYAa0+3w0XN4jNrvRPFM8F8LvTmAPTyNAVRuOyfqrX+V
-        jAeOeSe0fKPKVcLbnYyQufjzmb5xHhWfoEFFH++6E8ti+lu4Cn1Zn/9W24XvQRY7+Bx/Qu
-        AjblvhJlZRDeQJHwQExjw4T45s1wQMc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-_31dG2XyPuit4xdxxmNTRQ-1; Thu, 14 Apr 2022 09:20:21 -0400
-X-MC-Unique: _31dG2XyPuit4xdxxmNTRQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:27:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1EA5A0BD5;
+        Thu, 14 Apr 2022 06:20:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C5883800882;
-        Thu, 14 Apr 2022 13:20:20 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E2E687774;
-        Thu, 14 Apr 2022 13:20:18 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 02/34] KVM: x86: hyper-v: Introduce TLB flush ring
-Date:   Thu, 14 Apr 2022 15:19:41 +0200
-Message-Id: <20220414132013.1588929-3-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D2A4618F8;
+        Thu, 14 Apr 2022 13:20:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D467C385A9;
+        Thu, 14 Apr 2022 13:20:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942424;
+        bh=i4IVF2b3uFlJ29VJ5FhjGZ5Tzc030PhifJs3cdijxs0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V6vBmkC9awEMLeQbCML1w8NdCUGJMtWTxA78/+TZ4tYP6B0UGc4zsYfhYpkwrtxEq
+         LMI+NsJhhVVS8ClgHrtepCE1eK6RzYs/wigjoTOrs6R5JlRMjupuzcUfMxAssMYiKx
+         O1hyGPntHQ+mF9kesl69wDGklZ+L1UD4QVtPid9c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 131/338] scsi: pm8001: Fix payload initialization in pm80xx_set_thermal_config()
+Date:   Thu, 14 Apr 2022 15:10:34 +0200
+Message-Id: <20220414110842.628926456@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To allow flushing individual GVAs instead of always flushing the whole
-VPID a per-vCPU structure to pass the requests is needed. Introduce a
-simple ring write-locked structure to hold two types of entries:
-individual GVA (GFN + up to 4095 following GFNs in the lower 12 bits)
-and 'flush all'.
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-The queuing rule is: if there's not enough space on the ring to put
-the request and leave at least 1 entry for 'flush all' - put 'flush
-all' entry.
+[ Upstream commit bb225b12dbcc82d53d637d10b8d70b64494f8c16 ]
 
-The size of the ring is arbitrary set to '16'.
+The fields of the set_ctrl_cfg_req structure have the __le32 type, so use
+cpu_to_le32() to assign them. This removes the sparse warnings:
 
-Note, kvm_hv_flush_tlb() only queues 'flush all' entries for now so
-there's very small functional change but the infrastructure is
-prepared to handle individual GVA flush requests.
+warning: incorrect type in assignment (different base types)
+    expected restricted __le32
+    got unsigned int
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-8-damien.lemoal@opensource.wdc.com
+Fixes: 842784e0d15b ("pm80xx: Update For Thermal Page Code")
+Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
+Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/kvm_host.h | 16 +++++++
- arch/x86/kvm/hyperv.c           | 83 +++++++++++++++++++++++++++++++++
- arch/x86/kvm/hyperv.h           | 13 ++++++
- arch/x86/kvm/x86.c              |  5 +-
- arch/x86/kvm/x86.h              |  1 +
- 5 files changed, 116 insertions(+), 2 deletions(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 1de3ad9308d8..b4dd2ff61658 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -578,6 +578,20 @@ struct kvm_vcpu_hv_synic {
- 	bool dont_zero_synic_pages;
- };
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index c73a365da1d8..2e743dc6b13a 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -881,9 +881,11 @@ pm80xx_set_thermal_config(struct pm8001_hba_info *pm8001_ha)
+ 	else
+ 		page_code = THERMAL_PAGE_CODE_8H;
  
-+#define KVM_HV_TLB_FLUSH_RING_SIZE (16)
-+
-+struct kvm_vcpu_hv_tlb_flush_entry {
-+	u64 addr;
-+	u64 flush_all:1;
-+	u64 pad:63;
-+};
-+
-+struct kvm_vcpu_hv_tlb_flush_ring {
-+	int read_idx, write_idx;
-+	spinlock_t write_lock;
-+	struct kvm_vcpu_hv_tlb_flush_entry entries[KVM_HV_TLB_FLUSH_RING_SIZE];
-+};
-+
- /* Hyper-V per vcpu emulation context */
- struct kvm_vcpu_hv {
- 	struct kvm_vcpu *vcpu;
-@@ -597,6 +611,8 @@ struct kvm_vcpu_hv {
- 		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
- 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
- 	} cpuid_cache;
-+
-+	struct kvm_vcpu_hv_tlb_flush_ring tlb_flush_ring;
- };
+-	payload.cfg_pg[0] = (THERMAL_LOG_ENABLE << 9) |
+-				(THERMAL_ENABLE << 8) | page_code;
+-	payload.cfg_pg[1] = (LTEMPHIL << 24) | (RTEMPHIL << 8);
++	payload.cfg_pg[0] =
++		cpu_to_le32((THERMAL_LOG_ENABLE << 9) |
++			    (THERMAL_ENABLE << 8) | page_code);
++	payload.cfg_pg[1] =
++		cpu_to_le32((LTEMPHIL << 24) | (RTEMPHIL << 8));
  
- /* Xen HVM per vcpu emulation context */
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index b402ad059eb9..fb716cf919ed 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -29,6 +29,7 @@
- #include <linux/kvm_host.h>
- #include <linux/highmem.h>
- #include <linux/sched/cputime.h>
-+#include <linux/spinlock.h>
- #include <linux/eventfd.h>
- 
- #include <asm/apicdef.h>
-@@ -954,6 +955,8 @@ static int kvm_hv_vcpu_init(struct kvm_vcpu *vcpu)
- 
- 	hv_vcpu->vp_index = vcpu->vcpu_idx;
- 
-+	spin_lock_init(&hv_vcpu->tlb_flush_ring.write_lock);
-+
- 	return 0;
- }
- 
-@@ -1789,6 +1792,74 @@ static u64 kvm_get_sparse_vp_set(struct kvm *kvm, struct kvm_hv_hcall *hc,
- 			      var_cnt * sizeof(*sparse_banks));
- }
- 
-+static inline int hv_tlb_flush_ring_free(struct kvm_vcpu_hv *hv_vcpu,
-+					 int read_idx, int write_idx)
-+{
-+	if (write_idx >= read_idx)
-+		return KVM_HV_TLB_FLUSH_RING_SIZE - (write_idx - read_idx) - 1;
-+
-+	return read_idx - write_idx - 1;
-+}
-+
-+static void hv_tlb_flush_ring_enqueue(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv_tlb_flush_ring *tlb_flush_ring;
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+	int ring_free, write_idx, read_idx;
-+	unsigned long flags;
-+
-+	if (!hv_vcpu)
-+		return;
-+
-+	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
-+
-+	spin_lock_irqsave(&tlb_flush_ring->write_lock, flags);
-+
-+	/*
-+	 * 'read_idx' is updated by the vCPU which does the flush, this
-+	 * happens without 'tlb_flush_ring->write_lock' being held; make
-+	 * sure we read it once.
-+	 */
-+	read_idx = READ_ONCE(tlb_flush_ring->read_idx);
-+	/*
-+	 * 'write_idx' is only updated here, under 'tlb_flush_ring->write_lock'.
-+	 * allow the compiler to re-read it, it can't change.
-+	 */
-+	write_idx = tlb_flush_ring->write_idx;
-+
-+	ring_free = hv_tlb_flush_ring_free(hv_vcpu, read_idx, write_idx);
-+	/* Full ring always contains 'flush all' entry */
-+	if (!ring_free)
-+		goto out_unlock;
-+
-+	tlb_flush_ring->entries[write_idx].addr = 0;
-+	tlb_flush_ring->entries[write_idx].flush_all = 1;
-+	/*
-+	 * Advance write index only after filling in the entry to
-+	 * synchronize with lockless reader.
-+	 */
-+	smp_wmb();
-+	tlb_flush_ring->write_idx = (write_idx + 1) % KVM_HV_TLB_FLUSH_RING_SIZE;
-+
-+out_unlock:
-+	spin_unlock_irqrestore(&tlb_flush_ring->write_lock, flags);
-+}
-+
-+void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv_tlb_flush_ring *tlb_flush_ring;
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+
-+	kvm_vcpu_flush_tlb_guest(vcpu);
-+
-+	if (!hv_vcpu)
-+		return;
-+
-+	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
-+
-+	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
-+}
-+
- static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- {
- 	struct kvm *kvm = vcpu->kvm;
-@@ -1797,6 +1868,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
- 	u64 valid_bank_mask;
- 	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
-+	struct kvm_vcpu *v;
-+	unsigned long i;
- 	bool all_cpus;
- 
- 	/*
-@@ -1876,10 +1949,20 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	 * analyze it here, flush TLB regardless of the specified address space.
- 	 */
- 	if (all_cpus) {
-+		kvm_for_each_vcpu(i, v, kvm)
-+			hv_tlb_flush_ring_enqueue(v);
-+
- 		kvm_make_all_cpus_request(kvm, KVM_REQ_HV_TLB_FLUSH);
- 	} else {
- 		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
- 
-+		for_each_set_bit(i, vcpu_mask, KVM_MAX_VCPUS) {
-+			v = kvm_get_vcpu(kvm, i);
-+			if (!v)
-+				continue;
-+			hv_tlb_flush_ring_enqueue(v);
-+		}
-+
- 		kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
- 	}
- 
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index da2737f2a956..6847caeaaf84 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -147,4 +147,17 @@ int kvm_vm_ioctl_hv_eventfd(struct kvm *kvm, struct kvm_hyperv_eventfd *args);
- int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 		     struct kvm_cpuid_entry2 __user *entries);
- 
-+
-+static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+
-+	if (!hv_vcpu)
-+		return;
-+
-+	hv_vcpu->tlb_flush_ring.read_idx = hv_vcpu->tlb_flush_ring.write_idx;
-+}
-+void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu);
-+
-+
- #endif
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index f633cff8cd7f..e5aec386d299 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3324,7 +3324,7 @@ static void kvm_vcpu_flush_tlb_all(struct kvm_vcpu *vcpu)
- 	static_call(kvm_x86_flush_tlb_all)(vcpu);
- }
- 
--static void kvm_vcpu_flush_tlb_guest(struct kvm_vcpu *vcpu)
-+void kvm_vcpu_flush_tlb_guest(struct kvm_vcpu *vcpu)
- {
- 	++vcpu->stat.tlb_flush;
- 
-@@ -3362,7 +3362,8 @@ void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
- 
- 	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
- 		kvm_vcpu_flush_tlb_guest(vcpu);
--		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-+		if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
-+			kvm_hv_vcpu_empty_flush_tlb(vcpu);
- 	} else if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu)) {
- 		kvm_vcpu_flush_tlb_guest(vcpu);
- 	}
-diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
-index 588792f00334..2324f496c500 100644
---- a/arch/x86/kvm/x86.h
-+++ b/arch/x86/kvm/x86.h
-@@ -58,6 +58,7 @@ static inline unsigned int __shrink_ple_window(unsigned int val,
- 
- #define MSR_IA32_CR_PAT_DEFAULT  0x0007040600070406ULL
- 
-+void kvm_vcpu_flush_tlb_guest(struct kvm_vcpu *vcpu);
- void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu);
- int kvm_check_nested_events(struct kvm_vcpu *vcpu);
- 
+ 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload, 0);
+ 	if (rc)
 -- 
-2.35.1
+2.34.1
+
+
 
