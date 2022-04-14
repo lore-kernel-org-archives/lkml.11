@@ -2,96 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90FF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1662C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240737AbiDNHou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
+        id S240742AbiDNHoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240541AbiDNHmr (ORCPT
+        with ESMTP id S240549AbiDNHmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 03:42:47 -0400
-X-Greylist: delayed 60624 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 00:40:23 PDT
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0B840931;
-        Thu, 14 Apr 2022 00:40:22 -0700 (PDT)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id 538A91C0005;
-        Thu, 14 Apr 2022 07:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649922021;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Rq+ltxRhp3LsK2RX5rxuOzGtedDWpOrBc28SFp5i+i8=;
-        b=arTbcMZiBsjtNMjJGQQQJpwzV9vLsoSnNN8re9d33XbbwOjOmkNoxL/QYcVkZURGAq9URo
-        Ye4bZxAj9Aj/Iga+wCvi7vKED4twsZ3YtaeME3Sxk7u2fhX3n7RGxiH5fRbSA/CGipN2Lx
-        cvptcxz5wRrsULGIsffsBw4yoOKXwHjKB9Q2uKV2eLQseg6EirqdibK7DvD76Ldx7deIL2
-        HrqykM5KMQ31E54EmAG6vj0ob4wzZ6S0fn1qdyp6wppgSoEZRR0mOWaF1JmdeVWZ9XL0Ys
-        K9y//3XUNuMwAx5mekMrmyTXy8ix9RFVUkPVXwvoLpu0lyJtd+Zv5I/ZtW/Mbw==
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>
-Subject: [PATCH v2 0/8] RZN1 USB Host support
-Date:   Thu, 14 Apr 2022 09:40:03 +0200
-Message-Id: <20220414074011.500533-1-herve.codina@bootlin.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 14 Apr 2022 03:42:50 -0400
+Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124A7205E0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:26 -0700 (PDT)
+Received: by mail-ua1-x935.google.com with SMTP id w21so1444035uan.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B+yelAQ9lNFMI5hOufKWMSWgyc6a2oTLMaNPif+dSo4=;
+        b=Ijl0UlJLuQJNxeS+00+kEK00vT7ArQW3/qBUuWGouccrXcnwKXAWw0Bf/7Eh7QqqNl
+         D9EqRcrZPWLUghmFk7OiLXimrH+3hNIl3Nz6tMFqxCoU4NG/2Cca8TRQJoEinJjqrPVN
+         BNhVX8kqdEbC/l/gXB5MLjfZLSZE26oc/XdL5Gaw+YSUNUKXIfz92WIE/2WS6TilxEn3
+         d93AMeRD/WQjDbeEGPLL2MyJeEpnV5oLnlnyn8hfNxgms2NWblSSh4LFMyYDaCBCZDPu
+         wyIv8asE4KzL4NwYWC+49wpSHFnOalpjBQu4vyHiDXzPal4tRoAVp+PTCi5fSm/rbxcB
+         j/Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B+yelAQ9lNFMI5hOufKWMSWgyc6a2oTLMaNPif+dSo4=;
+        b=NRmkUm1fW1KAtV7E6sJlyqGBsZ609T63VeEwjRPFHwGXGgrUBt8yFJRjcQnTdK4ikP
+         SVKFkBT7ViyQBsJ8+97IiBCMYooPG521CF//Vr/bkSbOd2rU0+xy4FqunhQzp/q0r5wV
+         SCzlJGm/dTQ8YGFBK7z8kt9l7nR6ty39mDUUuJJUOzcZp2WQPGg7lja3T8FwvmmAi7s1
+         srMpmYrvV6TrNimwCih7ZHgFiJWKETXPdIvv/Ws/GZKIQgA3adNJHdDeZwggS2FkJcPQ
+         gpCN27Hz7LnD/z1U7YZqnZicEhDNvL1AfGWNIn5arA/+xXO/4oL2fEdUrGzA4TtcqWfg
+         /Fsg==
+X-Gm-Message-State: AOAM533xxPKl/qd0LXZEZrHQt6qIwMV4iPZsxe2WDSXSRFtow7Fvm7yG
+        NHBsAltNwogWJCOLNC+AkWE5RTeUGRcTy6OL24EUjK+fXAXfog==
+X-Google-Smtp-Source: ABdhPJwsuKEakZkW6AxrgqVK3TOMuqurXvhoD6CAwsnkFCY887FYnTbTSEXVRqQWTzwHH0e4AL4Fl1q1VwslrqlmPWo=
+X-Received: by 2002:ab0:77d5:0:b0:352:42d7:88c2 with SMTP id
+ y21-20020ab077d5000000b0035242d788c2mr450693uar.1.1649922025781; Thu, 14 Apr
+ 2022 00:40:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220404143501.2016403-1-Liam.Howlett@oracle.com> <20220413235051.3a4eb7c86d31656c7aea250c@linux-foundation.org>
+In-Reply-To: <20220413235051.3a4eb7c86d31656c7aea250c@linux-foundation.org>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Thu, 14 Apr 2022 01:39:49 -0600
+Message-ID: <CAOUHufYWq2atD7wqx9rDpHZxpjZN+zP12+ivNBANvCgVUrtxsw@mail.gmail.com>
+Subject: Re: [PATCH v7 00/70] Introducing the Maple Tree
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Apr 14, 2022 at 12:50 AM Andrew Morton
+<akpm@linux-foundation.org> wrote:
+>
+> On Mon, 4 Apr 2022 14:35:26 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
+>
+> > Please add this patch set to your branch.  They are based on v5.18-rc1.
+>
+> Do we get a nice [0/n] cover letter telling us all about this?
+>
+> I have that all merged up and it compiles.
+>
+> https://lkml.kernel.org/r/20220402094550.129-1-lipeifeng@oppo.com and
+> https://lkml.kernel.org/r/20220412081014.399-1-lipeifeng@oppo.com are
+> disabled for now.
+>
+> Several patches were marked
+>
+> From: Liam
+> Signed-off-by: Matthew
+> Signed-off-by: Liam
+>
+> Which makes me wonder whether the attribution was correct.  Please
+> double-check.
+>
+> I made a lame attempt to fix up mglru's get_next_vma(), and it probably
+> wants a revisit in the maple-tree world anyway.  Please check this and
+> send me a better version ;)
 
-This series add support for the USB Host controllers available on
-RZN1 (r9a06g032) SOC.
+Thanks. This looks good to me.
 
-These USB Host controllers are PCI OHCI/EHCI controllers located
-behind a bridge.
+> --- a/mm/vmscan.c~mglru-vs-maple-tree
+> +++ a/mm/vmscan.c
+> @@ -3704,7 +3704,7 @@ static bool get_next_vma(struct mm_walk
+>
+>         while (walk->vma) {
+>                 if (next >= walk->vma->vm_end) {
+> -                       walk->vma = walk->vma->vm_next;
+> +                       walk->vma = find_vma(walk->mm, walk->vma->vm_end);
+>                         continue;
+>                 }
+>
+> @@ -3712,7 +3712,7 @@ static bool get_next_vma(struct mm_walk
+>                         return false;
+>
+>                 if (should_skip_vma(walk->vma->vm_start, walk->vma->vm_end, walk)) {
+> -                       walk->vma = walk->vma->vm_next;
+> +                       walk->vma = find_vma(walk->mm, walk->vma->vm_end);
+>                         continue;
+>                 }
+>
+> @@ -4062,7 +4062,7 @@ static void walk_mm(struct lruvec *lruve
+>                 /* the caller might be holding the lock for write */
+>                 if (mmap_read_trylock(mm)) {
+>                         unsigned long start = walk->next_addr;
+> -                       unsigned long end = mm->highest_vm_end;
+> +                       unsigned long end = TASK_SIZE;
+>
+>                         err = walk_page_range(mm, start, end, &mm_walk_ops, walk);
+>
+>
+> I flung a tree up at
+> git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mmtemp containing
+> mglru and mapletree and a few other things.  Could the mglru and
+> mapletree people please runtime test it, send any fixes?
 
-Regards,
-Herve
-
-Changes v2:
-- Convert bindings to json-schema
-- Update clocks description
-- Remove unneeded '.compatible = "renesas,pci-r9a06g032"'
-
-Herve Codina (8):
-  PCI: rcar-gen2: Add support for clocks
-  dt-bindings: PCI: renesas-pci-usb: Convert bindings to json-schema
-  dt-bindings: PCI: renesas-pci-usb: Allow multiple clocks
-  dt-bindings: PCI: renesas-pci-usb: Add device tree support for
-    r9a06g032
-  PCI: rcar-gen2: Add R9A06G032 support
-  ARM: dts: r9a06g032: Add internal PCI bridge node
-  ARM: dts: r9a06g032: Add USB PHY DT support
-  ARM: dts: r9a06g032: Link the PCI USB devices to the USB PHY
-
- .../devicetree/bindings/pci/pci-rcar-gen2.txt |  84 -----------
- .../bindings/pci/renesas,pci-usb.yaml         | 139 ++++++++++++++++++
- arch/arm/boot/dts/r9a06g032.dtsi              |  46 ++++++
- drivers/pci/controller/pci-rcar-gen2.c        |  29 +++-
- 4 files changed, 212 insertions(+), 86 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
- create mode 100644 Documentation/devicetree/bindings/pci/renesas,pci-usb.yaml
-
--- 
-2.35.1
-
+Will do.
