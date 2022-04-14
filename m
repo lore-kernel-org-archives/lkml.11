@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EEEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347158AbiDNOYa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
+        id S244764AbiDNOYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343990AbiDNNjd (ORCPT
+        with ESMTP id S1343995AbiDNNjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2F7222BD;
-        Thu, 14 Apr 2022 06:36:24 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D23D427FE;
+        Thu, 14 Apr 2022 06:36:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB103B8296A;
-        Thu, 14 Apr 2022 13:36:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B963C385A5;
-        Thu, 14 Apr 2022 13:36:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F4E561D67;
+        Thu, 14 Apr 2022 13:36:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AED05C385A1;
+        Thu, 14 Apr 2022 13:36:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943381;
-        bh=pgtTMJ3lOChN0sZhtkEWGnw/cn/E2bkd2HKG/XVMGcY=;
+        s=korg; t=1649943387;
+        bh=twS32qAeCTY/7ABgIeeyA6EBH7JxCA+yeGiHVh5MOYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EOXweEmT33RU3V9giVAnmOQ9C8IKDJOaV66yUrExpc5A2iGcGOxepvYW1eLDJS1u/
-         SkYCq0vaKdNq+SLh3IArnxpD66UfmxORh+OcbPCZBPLunUCSFDgq+o34htF71677dI
-         9Vm19H9Tvd2yT5poxJ66ayqYo0GzY3Q1Y0oJ7VEA=
+        b=V57kfvb9appD3gDBmwDVBIVuf0aNnljMZTpFoItIIkelKVgkZ3acNPcJj+6T2mz23
+         xC9FzZ4kY5zHy0uXeF0o4/cCIVm3uX3TxSw+qEG5OU50T0nCYTW4TK0czM1DXmOzEa
+         HebBTemaFRksUWAUXNAQSY/KW38ArTy3YUDfDXVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Qing <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Armin Wolf <W_Armin@gmx.de>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 095/475] spi: pxa2xx-pci: Balance reference count for PCI DMA device
-Date:   Thu, 14 Apr 2022 15:08:00 +0200
-Message-Id: <20220414110857.815309834@linuxfoundation.org>
+Subject: [PATCH 5.4 097/475] hwmon: (sch56xx-common) Replace WDOG_ACTIVE with WDOG_HW_RUNNING
+Date:   Thu, 14 Apr 2022 15:08:02 +0200
+Message-Id: <20220414110857.871154909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,75 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-[ Upstream commit 609d7ffdc42199a0ec949db057e3b4be6745d6c5 ]
+[ Upstream commit 647d6f09bea7dacf4cdb6d4ea7e3051883955297 ]
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+If the watchdog was already enabled by the BIOS after booting, the
+watchdog infrastructure needs to regularly send keepalives to
+prevent a unexpected reset.
+WDOG_ACTIVE only serves as an status indicator for userspace,
+we want to use WDOG_HW_RUNNING instead.
 
-Fixes: 743485ea3bee ("spi: pxa2xx-pci: Do a specific setup in a separate function")
-Fixes: 25014521603f ("spi: pxa2xx-pci: Enable DMA for Intel Merrifield")
-Reported-by: Wang Qing <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220223191637.31147-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Since my Fujitsu Esprimo P720 does not support the watchdog,
+this change is compile-tested only.
+
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: fb551405c0f8 (watchdog: sch56xx: Use watchdog core)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Link: https://lore.kernel.org/r/20220131211935.3656-5-W_Armin@gmx.de
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-pxa2xx-pci.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/hwmon/sch56xx-common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-pxa2xx-pci.c b/drivers/spi/spi-pxa2xx-pci.c
-index aafac128bb5f..4eb979a096c7 100644
---- a/drivers/spi/spi-pxa2xx-pci.c
-+++ b/drivers/spi/spi-pxa2xx-pci.c
-@@ -74,14 +74,23 @@ static bool lpss_dma_filter(struct dma_chan *chan, void *param)
- 	return true;
- }
+diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
+index 6c84780e358e..066b12990fbf 100644
+--- a/drivers/hwmon/sch56xx-common.c
++++ b/drivers/hwmon/sch56xx-common.c
+@@ -424,7 +424,7 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(struct device *parent,
+ 	if (nowayout)
+ 		set_bit(WDOG_NO_WAY_OUT, &data->wddev.status);
+ 	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
+-		set_bit(WDOG_ACTIVE, &data->wddev.status);
++		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
  
-+static void lpss_dma_put_device(void *dma_dev)
-+{
-+	pci_dev_put(dma_dev);
-+}
-+
- static int lpss_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- {
- 	struct pci_dev *dma_dev;
-+	int ret;
- 
- 	c->num_chipselect = 1;
- 	c->max_clk_rate = 50000000;
- 
- 	dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
-+	ret = devm_add_action_or_reset(&dev->dev, lpss_dma_put_device, dma_dev);
-+	if (ret)
-+		return ret;
- 
- 	if (c->tx_param) {
- 		struct dw_dma_slave *slave = c->tx_param;
-@@ -105,8 +114,9 @@ static int lpss_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- 
- static int mrfld_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- {
--	struct pci_dev *dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(21, 0));
- 	struct dw_dma_slave *tx, *rx;
-+	struct pci_dev *dma_dev;
-+	int ret;
- 
- 	switch (PCI_FUNC(dev->devfn)) {
- 	case 0:
-@@ -131,6 +141,11 @@ static int mrfld_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- 		return -ENODEV;
- 	}
- 
-+	dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(21, 0));
-+	ret = devm_add_action_or_reset(&dev->dev, lpss_dma_put_device, dma_dev);
-+	if (ret)
-+		return ret;
-+
- 	tx = c->tx_param;
- 	tx->dma_dev = &dma_dev->dev;
- 
+ 	/* Since the watchdog uses a downcounter there is no register to read
+ 	   the BIOS set timeout from (if any was set at all) ->
 -- 
 2.34.1
 
