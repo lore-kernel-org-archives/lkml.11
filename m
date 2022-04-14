@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C972C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51786C4707E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345039AbiDNOuA (ORCPT
+        id S1345414AbiDNOuO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
+        Thu, 14 Apr 2022 10:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345109AbiDNNpI (ORCPT
+        with ESMTP id S1345197AbiDNNpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5A3344D1;
-        Thu, 14 Apr 2022 06:42:09 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7142DE0;
+        Thu, 14 Apr 2022 06:42:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DC9A61B51;
-        Thu, 14 Apr 2022 13:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FE80C385A1;
-        Thu, 14 Apr 2022 13:42:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CD85B82894;
+        Thu, 14 Apr 2022 13:42:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2FAAC385A1;
+        Thu, 14 Apr 2022 13:42:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943728;
-        bh=PHHeuhm0NWxLPAAT62pIvnTG3/TxrZ35Cu7YW5GfDsI=;
+        s=korg; t=1649943777;
+        bh=pdKfEaBhOdEPnMMQxO73HzHu2frf8YGJH9jaef0S/A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m84sL6NiQUrfv3xT4FpuSsKIRNFEJ4pUcX/9spPzZKwn14bx1jT9vNj0URPvarhN0
-         tOrGBWETcWyc2gzlXcp0hzABj+Vef9S9wetn3rfE9H0zpR7Uuo+sCoP34SX7Qu/Wyj
-         59vwlSg+ibUMXaoNCQ1rNMavun6T0XzmCRfmhMe8=
+        b=HkU9HOS7WlY/6kISETeny0s/D4Xdh07PmxvJkS3iGpKU4hxGMjIPFp64aIDQTZH3Z
+         xhE9DtCd3Y6ROwN5YI8xGz5ixqUjGE/NLd0wTN5NEtVp3qjgohD9sTWeiIOU8/AbBU
+         5To2dkjNHE216sde3uYwBYbxRF3C1xlyJrFC7WCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Julius Werner <jwerner@chromium.org>,
-        David Gow <davidgow@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 258/475] firmware: google: Properly state IOMEM dependency
-Date:   Thu, 14 Apr 2022 15:10:43 +0200
-Message-Id: <20220414110902.331271619@linuxfoundation.org>
+        stable@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 278/475] loop: use sysfs_emit() in the sysfs xxx show()
+Date:   Thu, 14 Apr 2022 15:11:03 +0200
+Message-Id: <20220414110902.882092924@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,56 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Chaitanya Kulkarni <kch@nvidia.com>
 
-[ Upstream commit 37fd83916da2e4cae03d350015c82a67b1b334c4 ]
+[ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
 
-The Google Coreboot implementation requires IOMEM functions
-(memmremap, memunmap, devm_memremap), but does not specify this is its
-Kconfig. This results in build errors when HAS_IOMEM is not set, such as
-on some UML configurations:
+sprintf does not know the PAGE_SIZE maximum of the temporary buffer
+used for outputting sysfs content and it's possible to overrun the
+PAGE_SIZE buffer length.
 
-/usr/bin/ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
-coreboot_table.c:(.text+0x311): undefined reference to `memremap'
-/usr/bin/ld: coreboot_table.c:(.text+0x34e): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
-memconsole-coreboot.c:(.text+0x12d): undefined reference to `memremap'
-/usr/bin/ld: memconsole-coreboot.c:(.text+0x17e): undefined reference to `devm_memremap'
-/usr/bin/ld: memconsole-coreboot.c:(.text+0x191): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
-vpd.c:(.text+0x300): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
-vpd.c:(.text+0x382): undefined reference to `memremap'
-/usr/bin/ld: vpd.c:(.text+0x459): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
-vpd.c:(.text+0x59d): undefined reference to `memremap'
-/usr/bin/ld: vpd.c:(.text+0x5d3): undefined reference to `memunmap'
-collect2: error: ld returned 1 exit status
+Use a generic sysfs_emit function that knows the size of the
+temporary buffer and ensures that no overrun is done for offset
+attribute in
+loop_attr_[offset|sizelimit|autoclear|partscan|dio]_show() callbacks.
 
-Fixes: a28aad66da8b ("firmware: coreboot: Collapse platform drivers into bus core")
-Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
-Acked-By: Julius Werner <jwerner@chromium.org>
-Signed-off-by: David Gow <davidgow@google.com>
-Link: https://lore.kernel.org/r/20220225041502.1901806-1-davidgow@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Link: https://lore.kernel.org/r/20220215213310.7264-2-kch@nvidia.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/google/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/block/loop.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
-index 2fba0aa7fc54..20dfe39a0537 100644
---- a/drivers/firmware/google/Kconfig
-+++ b/drivers/firmware/google/Kconfig
-@@ -21,7 +21,7 @@ config GOOGLE_SMI
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index ffbe792410d1..6b3e27b8cd24 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -794,33 +794,33 @@ static ssize_t loop_attr_backing_file_show(struct loop_device *lo, char *buf)
  
- config GOOGLE_COREBOOT_TABLE
- 	tristate "Coreboot Table Access"
--	depends on ACPI || OF
-+	depends on HAS_IOMEM && (ACPI || OF)
- 	help
- 	  This option enables the coreboot_table module, which provides other
- 	  firmware modules access to the coreboot table. The coreboot table
+ static ssize_t loop_attr_offset_show(struct loop_device *lo, char *buf)
+ {
+-	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_offset);
++	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_offset);
+ }
+ 
+ static ssize_t loop_attr_sizelimit_show(struct loop_device *lo, char *buf)
+ {
+-	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
++	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
+ }
+ 
+ static ssize_t loop_attr_autoclear_show(struct loop_device *lo, char *buf)
+ {
+ 	int autoclear = (lo->lo_flags & LO_FLAGS_AUTOCLEAR);
+ 
+-	return sprintf(buf, "%s\n", autoclear ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", autoclear ? "1" : "0");
+ }
+ 
+ static ssize_t loop_attr_partscan_show(struct loop_device *lo, char *buf)
+ {
+ 	int partscan = (lo->lo_flags & LO_FLAGS_PARTSCAN);
+ 
+-	return sprintf(buf, "%s\n", partscan ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", partscan ? "1" : "0");
+ }
+ 
+ static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
+ {
+ 	int dio = (lo->lo_flags & LO_FLAGS_DIRECT_IO);
+ 
+-	return sprintf(buf, "%s\n", dio ? "1" : "0");
++	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
+ }
+ 
+ LOOP_ATTR_RO(backing_file);
 -- 
 2.34.1
 
