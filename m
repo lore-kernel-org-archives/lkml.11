@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEC3C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFFAC35295
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351277AbiDNOat (ORCPT
+        id S1351351AbiDNOax (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46918 "EHLO
+        Thu, 14 Apr 2022 10:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344272AbiDNNkc (ORCPT
+        with ESMTP id S245667AbiDNNit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B9D120;
-        Thu, 14 Apr 2022 06:38:07 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4072DA6E3E;
+        Thu, 14 Apr 2022 06:33:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 27C34CE29B0;
-        Thu, 14 Apr 2022 13:38:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1537AC385A5;
-        Thu, 14 Apr 2022 13:38:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D36CA61CF4;
+        Thu, 14 Apr 2022 13:33:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E54CFC385AA;
+        Thu, 14 Apr 2022 13:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943484;
-        bh=qVPat8VbyRp5wM1EpTisfmiO151cBtmB7e3IgJeEBow=;
+        s=korg; t=1649943217;
+        bh=uFktpmXq//VwMEg/Xye+cAieCQG7ieCXEqG53n4shp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cg/UG+ZbRVKqr8HDb0rX7D9lIGnInJdiEvMg5sN0N3ZodScrBPTULdA0nT9u+PVPx
-         RRuZw4XmCvHT0i34jLkaoaPGQvg0lYBRRcdFNAYnD3L0tlsbOSx2wzByhFERE6voJK
-         yaurJHel2FM8VYlOi1V/BegRcXTViS53arGwky4Y=
+        b=lbEWXK+fKWCaTwzpEMrT3McqzFCs73+uOtJ24eDW07jxJ7DL2eZ0ylkJhGTbUN9Jv
+         TT06AYiJ7WPSMEZmxdSYx7MRXjx0bcixasnHiIRMqrTnaLGFuDN1zPihYxASvLfv4R
+         YDDzRfnGiwfzaZKg0Y7XX6ASfLPV1kqjSSTiIB8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 135/475] printk: fix return value of printk.devkmsg __setup handler
-Date:   Thu, 14 Apr 2022 15:08:40 +0200
-Message-Id: <20220414110858.927637290@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Dirk=20M=C3=BCller?= <dmueller@suse.de>,
+        Paul Menzel <pmenzel@molgen.mpg.de>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.4 075/475] lib/raid6/test: fix multiple definition linking error
+Date:   Thu, 14 Apr 2022 15:07:40 +0200
+Message-Id: <20220414110857.253378136@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -56,70 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Dirk Müller <dmueller@suse.de>
 
-[ Upstream commit b665eae7a788c5e2bc10f9ac3c0137aa0ad1fc97 ]
+commit a5359ddd052860bacf957e65fe819c63e974b3a6 upstream.
 
-If an invalid option value is used with "printk.devkmsg=<value>",
-it is silently ignored.
-If a valid option value is used, it is honored but the wrong return
-value (0) is used, indicating that the command line option had an
-error and was not handled. This string is not added to init's
-environment strings due to init/main.c::unknown_bootoption()
-checking for a '.' in the boot option string and then considering
-that string to be an "Unused module parameter".
+GCC 10+ defaults to -fno-common, which enforces proper declaration of
+external references using "extern". without this change a link would
+fail with:
 
-Print a warning message if a bad option string is used.
-Always return 1 from the __setup handler to indicate that the command
-line option has been handled.
+  lib/raid6/test/algos.c:28: multiple definition of `raid6_call';
+  lib/raid6/test/test.c:22: first defined here
 
-Fixes: 750afe7babd1 ("printk: add kernel parameter to control writes to /dev/kmsg")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220228220556.23484-1-rdunlap@infradead.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+the pq.h header that is included already includes an extern declaration
+so we can just remove the redundant one here.
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Dirk Müller <dmueller@suse.de>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/printk/printk.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ lib/raid6/test/test.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 23e26a203a9e..bb2198b40756 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -146,8 +146,10 @@ static int __control_devkmsg(char *str)
+--- a/lib/raid6/test/test.c
++++ b/lib/raid6/test/test.c
+@@ -19,7 +19,6 @@
+ #define NDISKS		16	/* Including P and Q */
  
- static int __init control_devkmsg(char *str)
- {
--	if (__control_devkmsg(str) < 0)
-+	if (__control_devkmsg(str) < 0) {
-+		pr_warn("printk.devkmsg: bad option string '%s'\n", str);
- 		return 1;
-+	}
+ const char raid6_empty_zero_page[PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
+-struct raid6_calls raid6_call;
  
- 	/*
- 	 * Set sysctl string accordingly:
-@@ -166,7 +168,7 @@ static int __init control_devkmsg(char *str)
- 	 */
- 	devkmsg_log |= DEVKMSG_LOG_MASK_LOCK;
- 
--	return 0;
-+	return 1;
- }
- __setup("printk.devkmsg=", control_devkmsg);
- 
--- 
-2.34.1
-
+ char *dataptrs[NDISKS];
+ char data[NDISKS][PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
 
 
