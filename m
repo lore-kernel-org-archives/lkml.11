@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC982C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241636AbiDNJUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40848 "EHLO
+        id S241646AbiDNJUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241167AbiDNJUi (ORCPT
+        with ESMTP id S241602AbiDNJUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:20:38 -0400
+        Thu, 14 Apr 2022 05:20:39 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3483E5130A;
-        Thu, 14 Apr 2022 02:18:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E1251E4D;
+        Thu, 14 Apr 2022 02:18:15 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649927892;
+        s=2020; t=1649927893;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a//Ayf6Cd8/CsHAT40buAmbBeRMSfyUjelkzghG9ajI=;
-        b=lPl+ddht5blVzHrAnBdE9KsqTJEZMbBs0aOx2oy1+AV63uIVl5VCDZGsaUbQUgh5+602Xh
-        YTLzkz+i7NNfx7nXFZCglWU8lNN3NDultV74pP+5pecZlhtvV+EiKvrfuZ2fDrrPHi0gV5
-        0sjY72QxhIReM/h561J/9Mau/6QWDNFcQRhBij6NMmS962JPLyp2sByPQvDC256N7/I0vb
-        mQ7dR5oWOqGl4RUTVmCuStRdmlaVP+syP0VtT6bP828RCyersvUWEkdfP8FSq9I+TXIA3e
-        5goKc1e6Vde7XzInYq7EIy0uUbzlrsmAOR8s/rk9x4ZNAuxrMkt/7Ze8o81yHg==
+        bh=iLmCDPlHlx+4vJ7+eT/pCoYu1/+sbjT/6wC8EGaZi10=;
+        b=Ouz9SoFspDW418thOwaQ0Wmr2WP5cb7znTdJES07Jqk9ljP7qEuX4Ja0bp2p9Bx1rL46+0
+        KEM/ThW4kR7QqxstcwNG1UBJMbrSEcivkYgDo2AA3pJHs6Vv+FzGnev/fhr1PZlTqUDAWd
+        6f2Z2ddOjcAn5KCI+LKeV41G5Wyutpu08s+KxiTMHy/EPTRQLGrsB+Xt4YKuI6fXJkLvno
+        4K89hh3dbaTp+7PlMhnUVQK4fYa+WiGDSzXbiAzGiLOtHyRA3iNtaSgJD9QlQ+dOltQ2nK
+        RblARhI6wi4jP2x1Os0ZUdTxZUAMvhPMUzyZMgTeX2JXgl3mXcUdKIDh8hJV+g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649927892;
+        s=2020e; t=1649927893;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a//Ayf6Cd8/CsHAT40buAmbBeRMSfyUjelkzghG9ajI=;
-        b=CZ70hXWPP5URIE/vjVomUR7Egh4Nlo9mlKYwmbtQlb1yGW1SflMkNwffgoxYuBmo0hfQcQ
-        t0JUfnZoDEHbsgDA==
+        bh=iLmCDPlHlx+4vJ7+eT/pCoYu1/+sbjT/6wC8EGaZi10=;
+        b=Fup1SrnNBv5FuCo7x/lZ5UGJZXakS/VRTQw77bfksXFJPu8+Pso4qvtggfACDwPEjBiz36
+        3b1SHOh6BLCvwJAA==
 To:     John Stultz <john.stultz@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -46,9 +46,9 @@ To:     John Stultz <john.stultz@linaro.org>,
 Cc:     Richard Cochran <richardcochran@gmail.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v2 1/3] timekeeping: Introduce fast accessor to clock tai
-Date:   Thu, 14 Apr 2022 11:18:03 +0200
-Message-Id: <20220414091805.89667-2-kurt@linutronix.de>
+Subject: [PATCH v2 3/3] tracing: Add documentation for trace clock tai
+Date:   Thu, 14 Apr 2022 11:18:05 +0200
+Message-Id: <20220414091805.89667-4-kurt@linutronix.de>
 In-Reply-To: <20220414091805.89667-1-kurt@linutronix.de>
 References: <20220414091805.89667-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -57,86 +57,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce fast/NMI safe accessor to clock tai for tracing. The Linux kernel
-tracing infrastructure has support for using different clocks to generate
-timestamps for trace events. Especially in TSN networks it's useful to have TAI
-as trace clock, because the application scheduling is done in accordance to the
-network time, which is based on TAI. With a tai trace_clock in place, it becomes
-very convenient to correlate network activity with Linux kernel application
-traces.
-
-Use the same implementation as ktime_get_boot_fast_ns() does by reading the
-monotonic time and adding the TAI offset. The same limitations as for the fast
-boot implementation apply. The TAI offset may change at run time e.g., by
-setting the time or using adjtimex() with an offset. However, these kind of
-offset changes are rare events. Nevertheless, the user has to be aware and deal
-with it in post processing.
-
-An alternative approach would be to use the same implementation as
-ktime_get_real_fast_ns() does. However, this requires to add an additional u64
-member to the tk_read_base struct. This struct together with a seqcount is
-designed to fit into a single cache line on 64 bit architectures. Adding a new
-member would violate this constraint.
+Add documentation for newly introduced trace clock "tai".
+This clock corresponds to CLOCK_TAI.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- Documentation/core-api/timekeeping.rst |  1 +
- include/linux/timekeeping.h            |  1 +
- kernel/time/timekeeping.c              | 17 +++++++++++++++++
- 3 files changed, 19 insertions(+)
+ Documentation/trace/ftrace.rst | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/core-api/timekeeping.rst b/Documentation/core-api/timekeeping.rst
-index 729e24864fe7..22ec68f24421 100644
---- a/Documentation/core-api/timekeeping.rst
-+++ b/Documentation/core-api/timekeeping.rst
-@@ -132,6 +132,7 @@ Some additional variants exist for more specialized cases:
- .. c:function:: u64 ktime_get_mono_fast_ns( void )
- 		u64 ktime_get_raw_fast_ns( void )
- 		u64 ktime_get_boot_fast_ns( void )
-+		u64 ktime_get_tai_fast_ns( void )
- 		u64 ktime_get_real_fast_ns( void )
+diff --git a/Documentation/trace/ftrace.rst b/Documentation/trace/ftrace.rst
+index 45b8c56af67a..b37dc19e4d40 100644
+--- a/Documentation/trace/ftrace.rst
++++ b/Documentation/trace/ftrace.rst
+@@ -517,6 +517,18 @@ of ftrace. Here is a list of some of the key files:
+ 		processing should be able to handle them. See comments in the
+ 		ktime_get_boot_fast_ns() function for more information.
  
- 	These variants are safe to call from any context, including from
-diff --git a/include/linux/timekeeping.h b/include/linux/timekeeping.h
-index 78a98bdff76d..fe1e467ba046 100644
---- a/include/linux/timekeeping.h
-+++ b/include/linux/timekeeping.h
-@@ -177,6 +177,7 @@ static inline u64 ktime_get_raw_ns(void)
- extern u64 ktime_get_mono_fast_ns(void);
- extern u64 ktime_get_raw_fast_ns(void);
- extern u64 ktime_get_boot_fast_ns(void);
-+extern u64 ktime_get_tai_fast_ns(void);
- extern u64 ktime_get_real_fast_ns(void);
- 
- /*
-diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index dcdcb85121e4..2c22023fbf5f 100644
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -532,6 +532,23 @@ u64 notrace ktime_get_boot_fast_ns(void)
- }
- EXPORT_SYMBOL_GPL(ktime_get_boot_fast_ns);
- 
-+/**
-+ * ktime_get_tai_fast_ns - NMI safe and fast access to tai clock.
-+ *
-+ * The same limitations as described for ktime_get_boot_fast_ns() apply. The
-+ * mono time and the TAI offset are not read atomically which may yield wrong
-+ * readouts. However, an update of the TAI offset is an rare event e.g., caused
-+ * by settime or adjtimex with an offset. The user of this function has to deal
-+ * with the possibility of wrong timestamps in post processing.
-+ */
-+u64 notrace ktime_get_tai_fast_ns(void)
-+{
-+	struct timekeeper *tk = &tk_core.timekeeper;
++	tai:
++		This is the tai clock (CLOCK_TAI) and is derived from the wall-
++		clock time. However, this clock does not experience
++		discontinuities and backwards jumps caused by NTP inserting leap
++		seconds. Since the clock access is designed for use in tracing,
++		side effects are possible. The clock access may yield wrong
++		readouts in case the internal TAI offset is updated e.g., caused
++		by setting the system time or using adjtimex() with an offset.
++		These effects are rare and post processing should be able to
++		handle them. See comments in the ktime_get_tai_fast_ns()
++		function for more information.
 +
-+	return (ktime_get_mono_fast_ns() + ktime_to_ns(data_race(tk->offs_tai)));
-+}
-+EXPORT_SYMBOL_GPL(ktime_get_tai_fast_ns);
-+
- static __always_inline u64 __ktime_get_real_fast(struct tk_fast *tkf, u64 *mono)
- {
- 	struct tk_read_base *tkr;
+ 	To set a clock, simply echo the clock name into this file::
+ 
+ 	  # echo global > trace_clock
 -- 
 2.30.2
 
