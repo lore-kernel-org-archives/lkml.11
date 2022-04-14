@@ -2,141 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64496C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73401C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237421AbiDNHuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        id S238475AbiDNHwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232463AbiDNHuA (ORCPT
+        with ESMTP id S231676AbiDNHv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 03:50:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57EF7F3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:47:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649922455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hLR76CNlBvCn367FjMy29XVyfR2fU9onpgPKm9lbY1c=;
-        b=FoYcpcek4jNw7gnECGN/Ahvt2hYuRMKnsy7i2N62Cdnru0tKzGyRAzvWraaJmakEOF09Cr
-        3fJTnyOr60ncWahryny60DuDQjhAUmhxnN1LIn7iYq3Bu9UlRLJqp5vQxNTZjVDXHApNFT
-        xXwdEBH0jzgReDKEcb4XPCGQJm0m/A8=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-jW501v1YM2iaK6Rhjm3NxQ-1; Thu, 14 Apr 2022 03:47:34 -0400
-X-MC-Unique: jW501v1YM2iaK6Rhjm3NxQ-1
-Received: by mail-wm1-f71.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so1853361wmj.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:47:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=hLR76CNlBvCn367FjMy29XVyfR2fU9onpgPKm9lbY1c=;
-        b=mXUDCeS9yErnxgq+hKrAUt47zGlXPNgcT0vo0LjTKVxwl5/xC1JtMETbfDHIChtNsg
-         RSfEsWq7nibC56xu++JxAEFr1Rz6DnYMT+XfyKMBd89ZmQ0jTLhwKl7hS6N8AE3s/ljE
-         qY6HD9SiiXOFqSAKCA0/SRTeYuQkmHNdHAzd6v9bvYFfwYoTa0Pva6KbrjHg+Cll2Tri
-         EDFgZxI8b+6IllGEOL1Xp+nVVC1DNdZZ3u1OeHXqhf0gD3iYVTo12IcJ3h8wCS/HsXXB
-         cf1UtsZb1hCEIrnxuWuVOpYSLYU79EC+dQynIkqMi5bSKF7rsnSmztDrtG5G7SPvVzei
-         UWMQ==
-X-Gm-Message-State: AOAM531iqKUg+QT9JbxQf9O5XnsQyHtfeIwmoyAybMp1Ag9ZlhZDgbsm
-        yxiqIj/OLBgQvh8Fef8U8j1FGu6+N5kSVToCy0r48lHnMYNAKoTImL9q3GILmzQcjpAZrn27W3e
-        Dkw+EwviHNC/1ecjUTfFkuYuDiU8k0+t3TDztJajTn6WMUymlWb1zL/oNLu2mm52LONms6bPQMO
-        0S
-X-Received: by 2002:a05:6000:1684:b0:209:7fda:e3a with SMTP id y4-20020a056000168400b002097fda0e3amr996962wrd.709.1649922452719;
-        Thu, 14 Apr 2022 00:47:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyEJVPZguqe+57EiWbrcBRp0bTCz82V4YapmfmKU9u/wpnFSTs9cs8DetLk5K/Yq5vV4Bkr4Q==
-X-Received: by 2002:a05:6000:1684:b0:209:7fda:e3a with SMTP id y4-20020a056000168400b002097fda0e3amr996947wrd.709.1649922452438;
-        Thu, 14 Apr 2022 00:47:32 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id n42-20020a05600c3baa00b0038ffadd6e4asm169831wms.30.2022.04.14.00.47.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Apr 2022 00:47:31 -0700 (PDT)
-Message-ID: <2939c0cb-8e0c-7de4-7143-2df303bbb542@redhat.com>
-Date:   Thu, 14 Apr 2022 09:47:31 +0200
+        Thu, 14 Apr 2022 03:51:57 -0400
+X-Greylist: delayed 2305 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 00:49:31 PDT
+Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0CA12602;
+        Thu, 14 Apr 2022 00:49:29 -0700 (PDT)
+Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.21])
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1netd6-0005jh-I9; Thu, 14 Apr 2022 08:11:00 +0100
+Message-ID: <3acd20b2-5882-7cc0-8a7b-7b406b768c1c@codethink.co.uk>
+Date:   Thu, 14 Apr 2022 08:11:00 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v3 00/22] https://www.spinics.net/lists/kvm/msg267878.html
-Content-Language: en-US
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com
-References: <20220414074000.31438-1-pbonzini@redhat.com>
-In-Reply-To: <20220414074000.31438-1-pbonzini@redhat.com>
+Subject: Re: [V3] PCI: fu740: Drop to 2.5GT/s to fix initial device probing on
+ some boards
+Content-Language: en-GB
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Alexandre Ghiti <alex@ghiti.fr>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Rob Herring <robh@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        David Abdurachmanov <david.abdurachmanov@sifive.com>,
+        Neill Whillans <neill.whillans@codethink.co.uk>
+References: <20220318152430.526320-1-ben.dooks@codethink.co.uk>
+ <2442936e-a53e-59bf-488f-95eac26d1252@ghiti.fr>
+ <85e864fd-762e-0780-f829-bfbb178ab24e@ghiti.fr>
+ <bded4b1e-3404-6bcd-3289-dc8d5b4d713a@codethink.co.uk>
+ <alpine.DEB.2.21.2204140048460.9383@angie.orcam.me.uk>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+In-Reply-To: <alpine.DEB.2.21.2204140048460.9383@angie.orcam.me.uk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Uh-oh, wrong subject.  Should be "KVM MMU refactoring part 2: role changes".
+On 14/04/2022 01:10, Maciej W. Rozycki wrote:
+> On Wed, 23 Mar 2022, Ben Dooks wrote:
+> 
+>>> FWIW, I have tested this and it solved my issue with nvme not being probed,
+>>> so:
+>>>
+>>> Tested-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+>>
+>> Ok, great. Our test rig seems to be still working with this.
+> 
+>   I ran simple verification of your change by interrupting U-Boot after a
+> power-up and issuing:
+> 
+> => setenv boot_pci_enum true
+> 
+> at the command prompt before booting from the uSD card and curiously
+> enough the root port comes up with the Link Capabilities Register
+> reporting the lack of Link Bandwidth Notification Capability in this
+> scenario, while it reports its presence if booted undisturbed, i.e.:
+> 
+> 		LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM L0s L1, Exit Latency L0s <4us, L1 <4us
+> 			ClockPM- Surprise- LLActRep+ BwNot- ASPMOptComp+
+> 
+> vs:
+> 
+> 		LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM L0s L1, Exit Latency L0s <4us, L1 <4us
+> 			ClockPM- Surprise- LLActRep+ BwNot+ ASPMOptComp+
+> 
+> It is fully reproducible.
+> 
+>   Any idea what might be causing it?  I can't see it being explicitly set
+> or cleared anywhere, be it in U-Boot or Linux, so it must be done by the
+> device itself depending on something.  And the lack of this capability
+> seems to me like non-compliance for a multiple-lane, multiple-speed
+> device.
 
-Supersedes: <20220221162243.683208-1-pbonzini@redhat.com>
+I'll see if we can reproduce this
 
-Paolo
 
-On 4/14/22 09:39, Paolo Bonzini wrote:
-> Right now the "MMU role" is a messy mix of the shadow page table format
-> and the CPU paging mode (CR0/CR4/EFER, SMM, guest mode, etc).  Whenever
-> something is different between the MMU and the CPU, it is stored as an
-> extra field in struct kvm_mmu; for extra bonus complication, sometimes
-> the same thing is stored in both the role and an extra field.
-> 
-> This series cleans up things by putting the two in separate fields,
-> so that the "MMU role" represents exactly the role of the root page.
-> This in turn makes it possible to eliminate various fields that are
-> now redundant with either the CPU or te MMU role.
-> 
-> These patches have mostly been posted and reviewed already[1], and I
-> have now retested them on top of kvm/next.
-> 
-> Paolo
-> 
-> [1] https://patchew.org/linux/20220221162243.683208-1-pbonzini@redhat.com/
-> 
-> Paolo Bonzini (21):
->    KVM: x86/mmu: nested EPT cannot be used in SMM
->    KVM: x86/mmu: constify uses of struct kvm_mmu_role_regs
->    KVM: x86/mmu: pull computation of kvm_mmu_role_regs to kvm_init_mmu
->    KVM: x86/mmu: rephrase unclear comment
->    KVM: x86/mmu: remove "bool base_only" arguments
->    KVM: x86/mmu: split cpu_role from mmu_role
->    KVM: x86/mmu: do not recompute root level from kvm_mmu_role_regs
->    KVM: x86/mmu: remove ept_ad field
->    KVM: x86/mmu: remove kvm_calc_shadow_root_page_role_common
->    KVM: x86/mmu: cleanup computation of MMU roles for two-dimensional
->      paging
->    KVM: x86/mmu: cleanup computation of MMU roles for shadow paging
->    KVM: x86/mmu: store shadow EFER.NX in the MMU role
->    KVM: x86/mmu: remove extended bits from mmu_role, rename field
->    KVM: x86/mmu: rename kvm_mmu_role union
->    KVM: x86/mmu: remove redundant bits from extended role
->    KVM: x86/mmu: remove valid from extended role
->    KVM: x86/mmu: simplify and/or inline computation of shadow MMU roles
->    KVM: x86/mmu: pull CPU mode computation to kvm_init_mmu
->    KVM: x86/mmu: replace shadow_root_level with root_role.level
->    KVM: x86/mmu: replace root_level with cpu_role.base.level
->    KVM: x86/mmu: replace direct_map with root_role.direct
-> 
-> Sean Christopherson (1):
->    KVM: x86: Clean up and document nested #PF workaround
-> 
->   arch/x86/include/asm/kvm_host.h |  19 +-
->   arch/x86/kvm/mmu.h              |   2 +-
->   arch/x86/kvm/mmu/mmu.c          | 376 ++++++++++++++------------------
->   arch/x86/kvm/mmu/paging_tmpl.h  |  14 +-
->   arch/x86/kvm/mmu/tdp_mmu.c      |   4 +-
->   arch/x86/kvm/svm/nested.c       |  18 +-
->   arch/x86/kvm/svm/svm.c          |   2 +-
->   arch/x86/kvm/vmx/nested.c       |  15 +-
->   arch/x86/kvm/vmx/vmx.c          |   2 +-
->   arch/x86/kvm/x86.c              |  33 ++-
->   10 files changed, 219 insertions(+), 266 deletions(-)
-> 
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
 
+https://www.codethink.co.uk/privacy.html
