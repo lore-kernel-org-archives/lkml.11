@@ -2,79 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC18C4707E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF61C4707A
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357148AbiDNP3R (ORCPT
+        id S1356581AbiDNP25 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
+        Thu, 14 Apr 2022 11:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346456AbiDNN5K (ORCPT
+        with ESMTP id S1346530AbiDNN52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6E45FF0B;
-        Thu, 14 Apr 2022 06:46:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C395B82985;
-        Thu, 14 Apr 2022 13:46:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3495C385A5;
-        Thu, 14 Apr 2022 13:46:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943998;
-        bh=+r+nESv/qzOm6IdEf29mDmUPKKrFEOEg5L6QpN7iQjI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0wxejdwaRORRR0TsWDqP58k3TZmjVvoR2mqAnC0mNdQoB/V9w4lfvtJU4P7ICVlzC
-         3AQdS2jqL/20F0r0T5Z1yFvwnBW+wWCYpGrrgMexxsqXmvycV6vipmj7Z14t84tser
-         crP5+bYAT9HttWRmYzWekHuPMYH1qb5cEVl21GXc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.4 358/475] dt-bindings: mtd: nand-controller: Fix a comment in the examples
-Date:   Thu, 14 Apr 2022 15:12:23 +0200
-Message-Id: <20220414110905.101640914@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:57:28 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B68695F8F0;
+        Thu, 14 Apr 2022 06:47:18 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 9933A92009C; Thu, 14 Apr 2022 15:47:17 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 9485992009B;
+        Thu, 14 Apr 2022 14:47:17 +0100 (BST)
+Date:   Thu, 14 Apr 2022 14:47:17 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford Semiconductor
+ 950 UARTs
+In-Reply-To: <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2204141421190.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk> <alpine.DEB.2.21.2204132103190.9383@angie.orcam.me.uk> <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+On Thu, 14 Apr 2022, Andy Shevchenko wrote:
 
-commit 0e7f1b557974ce297e5e4c9d4245720fbb489886 upstream.
+> > >  Here's v3 of the outstanding fixes for Oxford Semiconductor 950 UARTs.
+> > > As the change for the default FIFO rx trigger level has been already
+> > > merged with commit d7aff291d069 ("serial: 8250: Define RX trigger levels
+> > > for OxSemi 950 devices") only one patch of the original series remains.
+> >
+> >  Ping for:
+> > <https://lore.kernel.org/lkml/alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk/>
+> 
+> I still didn't get the answer why BOTHER can't be used instead of
+> spreading the old hack.
 
-The controller properties should be in the controller 'parent' node,
-while properties in the children nodes are specific to the NAND
-*chip*. This error was already present during the yaml conversion.
+ I just fail to see any sense in repeating myself over and over.
 
-Fixes: 2d472aba15ff ("mtd: nand: document the NAND controller/NAND chip DT representation")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-3-miquel.raynal@bootlin.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> You mentioned fractional baud rates and
+> something else, and I asked why do you need them and from where you
+> got the limitation of 16-bit values for dividers when using BOTHER.
 
---- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-+++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
-@@ -139,6 +139,6 @@ examples:
-         nand-ecc-mode = "soft";
-         nand-ecc-algo = "bch";
- 
--        /* controller specific properties */
-+        /* NAND chip specific properties */
-       };
-     };
+ Sigh, I have documented it there with the original submission 10 months 
+ago and then repeated with every reiteration:
 
+>  Finally the 16-bit UART_DIV_MAX limitation of the baud rate requested
+> with `serial8250_get_baud_rate' makes the standard rates of 200bps and
+> lower inaccessible in the regular way with the baud base of 15625000.
+> That could be avoided by tweaking our 8250 driver core appropriately, but
+> I have figured out with modern serial port usage that would not be the
+> best use of my time.  Someone who does have a real need to use an Oxford
+> device at these low rates can step in and make the necessary chances.
 
+ To put it shortly: the `spd_cust' feature is out there and it works, and 
+contrary to what you assert requires no maintenance effort if you just 
+leave it alone, while the alternative has various shortcomings that do 
+require effort if they were to be addressed.  So please just get over it 
+and let users choose what suits them best while letting developers focus 
+on other stuff that keeps waiting.  If someone is happy with what BOTHER 
+offers, then by no means I keep them from using it.
+
+ I fail to understand really why a piece of code to correct and improve 
+broken UART baud rate calculation has to be stuck in limbo for almost a 
+year.  There is nothing wrong with this code and it has a proper change 
+description and my observation has been that actually broken code often 
+with half a sentence serving as justification gets accepted with no fuss 
+all the time. :(
+
+  Maciej
