@@ -2,84 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384DDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2A1C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346676AbiDNOLK (ORCPT
+        id S1346657AbiDNOLH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
+        Thu, 14 Apr 2022 10:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244990AbiDNN2X (ORCPT
+        with ESMTP id S244995AbiDNN2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:28:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF62CA88BA;
-        Thu, 14 Apr 2022 06:21:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36A0BA8ECA
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649942488;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qOQ6CGsOxUVsyswsisxdsFR0Ts3+yJGpZ9FQepIZMdA=;
+        b=D/k0NyjlthVebooC82ar5KS4a+bLB/BjKAqID0xramyP6p8/ajDAixFvQ3TwC6f1Xfi0kk
+        6GHi+dh8mrAAsic2hO0EUtPdEz/xIMmpIt8dIw4u9Vxn1xFUBcUZcepeoVEJ7YmnyaqJha
+        1+MI9Q4DxQeH9cPz2If5XPcPNNDPuE4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-424-S14lUwY_OqitwjEUsliXVQ-1; Thu, 14 Apr 2022 09:21:25 -0400
+X-MC-Unique: S14lUwY_OqitwjEUsliXVQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CC4DB82910;
-        Thu, 14 Apr 2022 13:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3EC2C385A5;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9CB8080352D;
         Thu, 14 Apr 2022 13:21:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942485;
-        bh=KBgLSDBc//2y/L9zqSx0+5aitd2ZUJZnb7pq1fsgObs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXaaetlXBYWVwypwjMNOFWuDlxMF0IE+tb0gzTcF3CSHh+3+0RuFpNwTUs1wm5YUq
-         wFv4T+sVB6Fc+d5hrooWjcVFRTG5KH3eATWwkHE538xjZqM5qjNk3OsYouZrL8b5/r
-         2luNcY/JZXsWrlIsfWDNAyRyKiikfsS1kMgupA3c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Wensheng <wangwensheng4@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 112/338] ASoC: imx-es8328: Fix error return code in imx_es8328_probe()
-Date:   Thu, 14 Apr 2022 15:10:15 +0200
-Message-Id: <20220414110842.096790841@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from fedora.redhat.com (unknown [10.40.195.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 89E059D7F;
+        Thu, 14 Apr 2022 13:21:22 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 33/34] KVM: selftests: hyperv_svm_test: Introduce L2 TLB flush test
+Date:   Thu, 14 Apr 2022 15:20:12 +0200
+Message-Id: <20220414132013.1588929-34-vkuznets@redhat.com>
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Wensheng <wangwensheng4@huawei.com>
+Enable Hyper-V L2 TLB flush and check that Hyper-V TLB flush hypercalls
+from L2 don't exit to L1 unless 'TlbLockCount' is set in the Partition
+assist page.
 
-[ Upstream commit 3b891513f95cba3944e72c1139ea706d04f3781b ]
-
-Fix to return a negative error code from the error handling case instead
-of 0, as done elsewhere in this function.
-
-Fixes: 7e7292dba215 ("ASoC: fsl: add imx-es8328 machine driver")
-Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
-Link: https://lore.kernel.org/r/20220310091902.129299-1-wangwensheng4@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- sound/soc/fsl/imx-es8328.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../selftests/kvm/x86_64/hyperv_svm_test.c    | 60 +++++++++++++++++--
+ 1 file changed, 56 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-es8328.c b/sound/soc/fsl/imx-es8328.c
-index 9953438086e4..735693274f49 100644
---- a/sound/soc/fsl/imx-es8328.c
-+++ b/sound/soc/fsl/imx-es8328.c
-@@ -93,6 +93,7 @@ static int imx_es8328_probe(struct platform_device *pdev)
- 	if (int_port > MUX_PORT_MAX || int_port == 0) {
- 		dev_err(dev, "mux-int-port: hardware only has %d mux ports\n",
- 			MUX_PORT_MAX);
-+		ret = -EINVAL;
- 		goto fail;
- 	}
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
+index 21f5ca9197da..99f0a2ead7df 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
+@@ -42,11 +42,24 @@ struct hv_enlightenments {
+  */
+ #define VMCB_HV_NESTED_ENLIGHTENMENTS (1U << 31)
  
++#define HV_SVM_EXITCODE_ENL 0xF0000000
++#define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH   (1)
++
+ static inline void vmmcall(void)
+ {
+ 	__asm__ __volatile__("vmmcall");
+ }
+ 
++static inline void hypercall(u64 control, vm_vaddr_t arg1, vm_vaddr_t arg2)
++{
++	asm volatile("mov %3, %%r8\n"
++		     "vmmcall"
++		     : "+c" (control), "+d" (arg1)
++		     :  "r" (arg2)
++		     : "cc", "memory", "rax", "rbx", "r8", "r9", "r10",
++		       "r11", "r12", "r13", "r14", "r15");
++}
++
+ void l2_guest_code(void)
+ {
+ 	GUEST_SYNC(3);
+@@ -62,11 +75,21 @@ void l2_guest_code(void)
+ 
+ 	GUEST_SYNC(5);
+ 
++	/* L2 TLB flush tests */
++	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
++		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
++	rdmsr(MSR_FS_BASE);
++	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
++		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
++	/* Make sure we're not issuing Hyper-V TLB flush call again */
++	__asm__ __volatile__ ("mov $0xdeadbeef, %rcx");
++
+ 	/* Done, exit to L1 and never come back.  */
+ 	vmmcall();
+ }
+ 
+-static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
++static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm,
++						    vm_vaddr_t pgs_gpa)
+ {
+ 	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
+ 	struct vmcb *vmcb = svm->vmcb;
+@@ -75,13 +98,23 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
+ 
+ 	GUEST_SYNC(1);
+ 
+-	wrmsr(HV_X64_MSR_GUEST_OS_ID, (u64)0x8100 << 48);
++	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
++	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
++	enable_vp_assist(svm->vp_assist_gpa, svm->vp_assist);
+ 
+ 	GUEST_ASSERT(svm->vmcb_gpa);
+ 	/* Prepare for L2 execution. */
+ 	generic_svm_setup(svm, l2_guest_code,
+ 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
+ 
++	/* L2 TLB flush setup */
++	hve->partition_assist_page = svm->partition_assist_gpa;
++	hve->hv_enlightenments_control.nested_flush_hypercall = 1;
++	hve->hv_vm_id = 1;
++	hve->hv_vp_id = 1;
++	current_vp_assist->nested_control.features.directhypercall = 1;
++	*(u32 *)(svm->partition_assist) = 0;
++
+ 	GUEST_SYNC(2);
+ 	run_guest(vmcb, svm->vmcb_gpa);
+ 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
+@@ -116,6 +149,20 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
+ 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
+ 	vmcb->save.rip += 2; /* rdmsr */
+ 
++
++	/*
++	 * L2 TLB flush test. First VMCALL should be handled directly by L0,
++	 * no VMCALL exit expected.
++	 */
++	run_guest(vmcb, svm->vmcb_gpa);
++	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
++	vmcb->save.rip += 2; /* rdmsr */
++	/* Enable synthetic vmexit */
++	*(u32 *)(svm->partition_assist) = 1;
++	run_guest(vmcb, svm->vmcb_gpa);
++	GUEST_ASSERT(vmcb->control.exit_code == HV_SVM_EXITCODE_ENL);
++	GUEST_ASSERT(vmcb->control.exit_info_1 == HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH);
++
+ 	run_guest(vmcb, svm->vmcb_gpa);
+ 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
+ 	GUEST_SYNC(6);
+@@ -126,7 +173,7 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
+ int main(int argc, char *argv[])
+ {
+ 	vm_vaddr_t nested_gva = 0;
+-
++	vm_vaddr_t hcall_page;
+ 	struct kvm_vm *vm;
+ 	struct kvm_run *run;
+ 	struct ucall uc;
+@@ -141,7 +188,12 @@ int main(int argc, char *argv[])
+ 	vcpu_set_hv_cpuid(vm, VCPU_ID);
+ 	run = vcpu_state(vm, VCPU_ID);
+ 	vcpu_alloc_svm(vm, &nested_gva);
+-	vcpu_args_set(vm, VCPU_ID, 1, nested_gva);
++
++	hcall_page = vm_vaddr_alloc_pages(vm, 1);
++	memset(addr_gva2hva(vm, hcall_page), 0x0,  getpagesize());
++
++	vcpu_args_set(vm, VCPU_ID, 2, nested_gva, addr_gva2gpa(vm, hcall_page));
++	vcpu_set_msr(vm, VCPU_ID, HV_X64_MSR_VP_INDEX, VCPU_ID);
+ 
+ 	for (stage = 1;; stage++) {
+ 		_vcpu_run(vm, VCPU_ID);
 -- 
-2.34.1
-
-
+2.35.1
 
