@@ -2,131 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90710C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241058AbiDNJJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
+        id S239536AbiDNJKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236690AbiDNJJI (ORCPT
+        with ESMTP id S241260AbiDNJJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:09:08 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29086C49E;
-        Thu, 14 Apr 2022 02:06:43 -0700 (PDT)
-Received: from [IPV6:2a01:e0a:120:3210:aefc:13d9:b947:5c76] (unknown [IPv6:2a01:e0a:120:3210:aefc:13d9:b947:5c76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id BB3791F401D3;
-        Thu, 14 Apr 2022 10:06:41 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649927202;
-        bh=xSwiJdR9H1GkemybcSFzfO6oTRwZpO+ePP5cbEY0jU8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oI3izQUAkCdzA4+jKP3zVRxx8Ms2GpghQckdh3wBPjZePBIjooW2Axvd+6OMX/hxv
-         PG2nQOjeNb1x5YnrqEcTe8K9Lj3w16evi5kqjloRixZydS7HTMVDRGl1qdKBSCSWkz
-         FizamigRFsSabugHYebGV+/uU4rnzpxLP4I/Muf2kgx6NgOXhWTC2b87FeWtu7mC2n
-         lKsSPF2EVF6nDE2Fu5ZIrhna4Pn3j/webgFXJoXTXXiAReSijghjgNSYRaEDShBMlQ
-         GWcggqYZjmtSTUIwim6zCJuJnE9Kt/b0W+9UUjcmGHNmpUoUgG5sbXmrqGFvXMaZnK
-         jXklgjCMndujg==
-Message-ID: <8c13a489-323b-79cf-2bb0-920e5a4e99e0@collabora.com>
-Date:   Thu, 14 Apr 2022 11:06:39 +0200
+        Thu, 14 Apr 2022 05:09:57 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358046E353;
+        Thu, 14 Apr 2022 02:07:33 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id mp16-20020a17090b191000b001cb5efbcab6so8702029pjb.4;
+        Thu, 14 Apr 2022 02:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eJF41dR8CM5e2ZZW3grRLN20zsR7Q9ZeigZpuEaXzjc=;
+        b=PubBcYCaKM0TfK3rk/m2r16WsUX8fa9v1AhUKvdN6Sx81eAbuEmzphFhmpikmLvSGQ
+         P55ZWsJ20a5BdLwO3FPv0wSO6uE1LM3zYzC+spSetN5hv8t1rKcnEyXC4WYdLnBjXkSc
+         WMgvWXJd+YtwCtuXcm/megCYH2TMcv4Y4kQU5DBafqSo2J8MVHvPOYQcevC8gfQqBVWN
+         ELiRpmcpdkmAsRCOASft5VvyaQ5duU8WRpV/vmvCelJ3HEebYTGuhv7pIu/9gutUvpKI
+         z23PR96nsLXLjgtQ0LUftCTRs3ZmdLCGGjdYvhgNxkSM9d9SpLTy3gl2v4+x2KqvpvEr
+         y93w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eJF41dR8CM5e2ZZW3grRLN20zsR7Q9ZeigZpuEaXzjc=;
+        b=tkIZG9WAYJhxIPFuAR1wPbdrG2R9xcKaZaidVYe/TM06lB4S8QB0a9lHQ/VuoXd2Fa
+         LLQeUCyiSSygryesbQYhl6k2Giwlvq78yNL4PgX63kA+MiJjIkbzBBKqxiUjCS3V2xSd
+         6oN5ASsa3fOpXGC8eo4TPwrgboo7UV7oGUhuLivb74lrwdsiN0oteIDs/wEAL6eUPkXW
+         hZJeQwa/6f9j2UCjfqqp5KI6qwjbncA1pqvzQQbBdhbFKnOBZ1bvFG5G6xU/r7612PKG
+         7MaHU2wosUSZaWBJUFFTT/LKHPP4uyUuHpDJ0cBFj1sCBtFtAWzvjd7twX2f/fpuQMLZ
+         c18w==
+X-Gm-Message-State: AOAM531HvGC+Ce3C4Sj29XVWo8UEQ8I4QgpxkDvnx5Zn6cB+tza3QQIP
+        H6Ec15gfjlt4xF8FYqpV/FVxmjickcE=
+X-Google-Smtp-Source: ABdhPJwUezP4/bTL7XIUAOgjBJ7RfzEbgDwelq3f6M1v5m7V18kS9wnJoX334HNzeNQ0xaUxsCd9ng==
+X-Received: by 2002:a17:903:2045:b0:158:c130:31b7 with SMTP id q5-20020a170903204500b00158c13031b7mr560517pla.154.1649927252796;
+        Thu, 14 Apr 2022 02:07:32 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm5368836pjl.39.2022.04.14.02.07.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 02:07:32 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     nsekhar@ti.com
+Cc:     brgl@bgdev.pl, linux-arm-kernel@lists.infradead.org,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] i2c: i2c-davinci: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Thu, 14 Apr 2022 09:07:27 +0000
+Message-Id: <20220414090727.2542000-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 09/17] media: uapi: HEVC: Define
- V4L2_CID_STATELESS_HEVC_SLICE_PARAMS as a dynamic array
-Content-Language: en-US
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        mchehab@kernel.org, hverkuil@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        sebastian.fricke@collabora.com
-References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
- <20220407152940.738159-10-benjamin.gaignard@collabora.com>
- <3179e400d52704d11dd150bf4270dab4c1064cad.camel@collabora.com>
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <3179e400d52704d11dd150bf4270dab4c1064cad.camel@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Le 08/04/2022 à 20:53, Nicolas Dufresne a écrit :
-> Le jeudi 07 avril 2022 à 17:29 +0200, Benjamin Gaignard a écrit :
->> Make explicit that V4L2_CID_STATELESS_HEVC_SLICE_PARAMS control is
->> a dynamic array control type.
->> Some drivers may be able to receive multiple slices in one control
->> to improve decoding performance.
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->> ---
->>   Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst | 2 ++
->>   include/media/hevc-ctrls.h                                | 3 +++
->>   2 files changed, 5 insertions(+)
->>
->> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->> index 7fcc6c2bac4c..1aaf3b84b584 100644
->> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->> @@ -2964,6 +2964,8 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->>       These bitstream parameters are defined according to :ref:`hevc`.
->>       They are described in section 7.4.7 "General slice segment header
->>       semantics" of the specification.
->> +    This control is a dynamically sized 1-dimensional array,
->> +    V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag must be set when using it.
->>   
->>   .. c:type:: v4l2_ctrl_hevc_slice_params
->>   
->> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
->> index 96a9b71d1def..28049e1a8a07 100644
->> --- a/include/media/hevc-ctrls.h
->> +++ b/include/media/hevc-ctrls.h
->> @@ -314,6 +314,9 @@ struct v4l2_hevc_pred_weight_table {
->>   /**
->>    * v4l2_ctrl_hevc_slice_params - HEVC slice parameters
->>    *
->> + * This control is a dynamically sized 1-dimensional array,
->> + * V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag must be set when using it.
->> + *
-> I'm not sure about this comment, but I'm sure you forgot:
->
->
-> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> @@ -1505,6 +1505,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum
-> v4l2_ctrl_type *type,
->                  break;
->          case V4L2_CID_STATELESS_HEVC_SLICE_PARAMS:
->                  *type = V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS;
-> +               *flags |= V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
->                  break;
->          case V4L2_CID_STATELESS_HEVC_SCALING_MATRIX:
->                  *type = V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX;
->
-> Also, in AV1 we have V4L2_AV1_MAX_TILE_COUNT, which can be used in cfg.dims,
-> something the driver will actually set. We could have
->
-> #define V4L2_HEVC_MAX_TILE_COUNT 600
->
-> And drives can set:
->
->     .dims = { V4L2_HEVC_MAX_TILE_COUNT },
->
-> In the control config.
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+pm_runtime_put_noidle. This change is just to simplify the code, no
+actual functional changes.
 
-Ok that will be in v6
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/i2c/busses/i2c-davinci.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
->
->>    * @bit_size: size (in bits) of the current slice data
->>    * @data_bit_offset: offset (in bits) to the video data in the current slice data
->>    * @nal_unit_type: specifies the coding type of the slice (B, P or I)
+diff --git a/drivers/i2c/busses/i2c-davinci.c b/drivers/i2c/busses/i2c-davinci.c
+index e9d07323c604..9e09db31a937 100644
+--- a/drivers/i2c/busses/i2c-davinci.c
++++ b/drivers/i2c/busses/i2c-davinci.c
+@@ -539,10 +539,9 @@ i2c_davinci_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
+ 
+ 	dev_dbg(dev->dev, "%s: msgs: %d\n", __func__, num);
+ 
+-	ret = pm_runtime_get_sync(dev->dev);
++	ret = pm_runtime_resume_and_get(dev->dev);
+ 	if (ret < 0) {
+ 		dev_err(dev->dev, "Failed to runtime_get device: %d\n", ret);
+-		pm_runtime_put_noidle(dev->dev);
+ 		return ret;
+ 	}
+ 
+@@ -821,10 +820,9 @@ static int davinci_i2c_probe(struct platform_device *pdev)
+ 
+ 	pm_runtime_enable(dev->dev);
+ 
+-	r = pm_runtime_get_sync(dev->dev);
++	r = pm_runtime_resume_and_get(dev->dev);
+ 	if (r < 0) {
+ 		dev_err(dev->dev, "failed to runtime_get device: %d\n", r);
+-		pm_runtime_put_noidle(dev->dev);
+ 		return r;
+ 	}
+ 
+@@ -898,11 +896,9 @@ static int davinci_i2c_remove(struct platform_device *pdev)
+ 
+ 	i2c_del_adapter(&dev->adapter);
+ 
+-	ret = pm_runtime_get_sync(&pdev->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	davinci_i2c_write_reg(dev, DAVINCI_I2C_MDR_REG, 0);
+ 
+-- 
+2.25.1
+
+
