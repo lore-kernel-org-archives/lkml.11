@@ -2,90 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA894C35274
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3B8C352A8
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346714AbiDNN5x (ORCPT
+        id S1346763AbiDNN5z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
+        Thu, 14 Apr 2022 09:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344247AbiDNNbW (ORCPT
+        with ESMTP id S244431AbiDNN0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:31:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFCD1B6;
-        Thu, 14 Apr 2022 06:28:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:26:53 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0C89F6E8;
+        Thu, 14 Apr 2022 06:20:04 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 12888393597a75da; Thu, 14 Apr 2022 15:20:03 +0200
+Received: from kreacher.localnet (unknown [213.134.181.101])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28E2E619FC;
-        Thu, 14 Apr 2022 13:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F3AC385A9;
-        Thu, 14 Apr 2022 13:28:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942937;
-        bh=xTC8NEoBFjAUAUSvY4B6++YNOBYS8QkkKluA+P6BqXQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KrJkCEK2cIYOP/RGZjK9naRasVEFNQ9z3dVM3q1OWyAVkg0ZWhnBYubS+KPKau/5z
-         Cv31oWEM5fwytt+PZIuiRp1TGycKxVWx20rhhVIarj3LKC+3nxDv2oI5pAH73YyK+H
-         Q+hWhoYPpMqeRjKXqFbFpbt4rIW16wt6SXSDIQWU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 4.19 314/338] mmc: renesas_sdhi: dont overwrite TAP settings when HS400 tuning is complete
-Date:   Thu, 14 Apr 2022 15:13:37 +0200
-Message-Id: <20220414110847.825058985@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by v370.home.net.pl (Postfix) with ESMTPSA id 69DCB66BE86;
+        Thu, 14 Apr 2022 15:20:02 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux PCI <linux-pci@vger.kernel.org>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH v3 1/9] PCI/PM: Resume subordinate bus in bus type callbacks
+Date:   Thu, 14 Apr 2022 15:04:13 +0200
+Message-ID: <3190097.aeNJFYEL58@kreacher>
+In-Reply-To: <5838942.lOV4Wx5bFT@kreacher>
+References: <4419002.LvFx2qVVIh@kreacher> <11975904.O9o76ZdvQC@kreacher> <5838942.lOV4Wx5bFT@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.181.101
+X-CLIENT-HOSTNAME: 213.134.181.101
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgieefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudekuddruddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddutddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehm
+ ihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhm
+X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit 03e59b1e2f56245163b14c69e0a830c24b1a3a47 upstream.
+Calling pci_resume_bus() on the secondary bus from pci_power_up() as
+it is done now is questionable, because it depends on the mandatory
+bridge power-up delays that are only covered by the PCI bus type PM
+callbacks.
 
-When HS400 tuning is complete and HS400 is going to be activated, we
-have to keep the current number of TAPs and should not overwrite them
-with a hardcoded value. This was probably a copy&paste mistake when
-upporting HS400 support from the BSP.
+For this reason, move the subordinate bus resume to those callbacks
+too and use the observation that if a bridge is being powered-up
+during resume from system-wide suspend, it may be still desirable
+to runtime-resume its subordinate bus after completing the system-
+wide transition (in case the resume of the devices on that bus is
+skipped during it).
 
-Fixes: 26eb2607fa28 ("mmc: renesas_sdhi: add eMMC HS400 mode support")
-Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220404114902.12175-1-wsa+renesas@sang-engineering.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 ---
- drivers/mmc/host/renesas_sdhi_core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/renesas_sdhi_core.c
-+++ b/drivers/mmc/host/renesas_sdhi_core.c
-@@ -302,10 +302,10 @@ static void renesas_sdhi_hs400_complete(
- 			SH_MOBILE_SDHI_SCC_TMPPORT2_HS400OSEL) |
- 			sd_scc_read32(host, priv, SH_MOBILE_SDHI_SCC_TMPPORT2));
+v1 -> v3:
+   * Added R-by from Mika.
+
+---
+ drivers/pci/pci-driver.c |   15 +++++++++++++--
+ drivers/pci/pci.c        |   15 ---------------
+ 2 files changed, 13 insertions(+), 17 deletions(-)
+
+Index: linux-pm/drivers/pci/pci-driver.c
+===================================================================
+--- linux-pm.orig/drivers/pci/pci-driver.c
++++ linux-pm/drivers/pci/pci-driver.c
+@@ -559,6 +559,17 @@ static void pci_pm_default_resume_early(
+ 	pci_pme_restore(pci_dev);
+ }
  
--	/* Set the sampling clock selection range of HS400 mode */
- 	sd_scc_write32(host, priv, SH_MOBILE_SDHI_SCC_DTCNTL,
- 		       SH_MOBILE_SDHI_SCC_DTCNTL_TAPEN |
--		       0x4 << SH_MOBILE_SDHI_SCC_DTCNTL_TAPNUM_SHIFT);
-+		       sd_scc_read32(host, priv,
-+				     SH_MOBILE_SDHI_SCC_DTCNTL));
++static void pci_pm_bridge_power_up_actions(struct pci_dev *pci_dev)
++{
++	pci_bridge_wait_for_secondary_bus(pci_dev);
++	/*
++	 * When powering on a bridge from D3cold, the whole hierarchy may be
++	 * powered on into D0uninitialized state, resume them to give them a
++	 * chance to suspend again
++	 */
++	pci_resume_bus(pci_dev->subordinate);
++}
++
+ #endif
  
+ #ifdef CONFIG_PM_SLEEP
+@@ -934,7 +945,7 @@ static int pci_pm_resume_noirq(struct de
+ 	pcie_pme_root_status_cleanup(pci_dev);
  
- 	if (host->pdata->flags & TMIO_MMC_HAVE_4TAP_HS400)
+ 	if (!skip_bus_pm && prev_state == PCI_D3cold)
+-		pci_bridge_wait_for_secondary_bus(pci_dev);
++		pci_pm_bridge_power_up_actions(pci_dev);
+ 
+ 	if (pci_has_legacy_pm_support(pci_dev))
+ 		return 0;
+@@ -1321,7 +1332,7 @@ static int pci_pm_runtime_resume(struct
+ 	pci_pm_default_resume(pci_dev);
+ 
+ 	if (prev_state == PCI_D3cold)
+-		pci_bridge_wait_for_secondary_bus(pci_dev);
++		pci_pm_bridge_power_up_actions(pci_dev);
+ 
+ 	if (pm && pm->runtime_resume)
+ 		error = pm->runtime_resume(dev);
+Index: linux-pm/drivers/pci/pci.c
+===================================================================
+--- linux-pm.orig/drivers/pci/pci.c
++++ linux-pm/drivers/pci/pci.c
+@@ -1310,21 +1310,6 @@ static int pci_dev_wait(struct pci_dev *
+ int pci_power_up(struct pci_dev *dev)
+ {
+ 	pci_platform_power_transition(dev, PCI_D0);
+-
+-	/*
+-	 * Mandatory power management transition delays are handled in
+-	 * pci_pm_resume_noirq() and pci_pm_runtime_resume() of the
+-	 * corresponding bridge.
+-	 */
+-	if (dev->runtime_d3cold) {
+-		/*
+-		 * When powering on a bridge from D3cold, the whole hierarchy
+-		 * may be powered on into D0uninitialized state, resume them to
+-		 * give them a chance to suspend again
+-		 */
+-		pci_resume_bus(dev->subordinate);
+-	}
+-
+ 	return pci_raw_set_power_state(dev, PCI_D0);
+ }
+ 
+
 
 
