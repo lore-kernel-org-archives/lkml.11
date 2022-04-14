@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26DCFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D274BC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344158AbiDNORC (ORCPT
+        id S1344238AbiDNOR2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        Thu, 14 Apr 2022 10:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245591AbiDNNio (ORCPT
+        with ESMTP id S245605AbiDNNip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E83AA5E96;
-        Thu, 14 Apr 2022 06:33:05 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8DDA5EBA;
+        Thu, 14 Apr 2022 06:33:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B94C161CB7;
-        Thu, 14 Apr 2022 13:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2455BC385A1;
-        Thu, 14 Apr 2022 13:33:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7466361B9C;
+        Thu, 14 Apr 2022 13:33:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EF62C385A5;
+        Thu, 14 Apr 2022 13:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943184;
-        bh=lvy1EaAg5jJVQ9Fh8shw9vK/BA7joh408Hti7U+5ILo=;
+        s=korg; t=1649943194;
+        bh=dbCTSqQ4qHrqImnvmxiYCxq28zGYTpEj35mVxVeZ4Y4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HeU2or1lFU1H61kH8TKoCPoRv+X20WhXRGPgWTv710N8XwUxXAfZDyWeBIOQbCKUO
-         jaRLBLv1vWP/x2nSJgafAvO5G+XEybPWD4fpvv0XdA1oZONevaBh0hQuHbHopr00Hc
-         uIAyylhLRoJ4FB2ZPmntjb0biVZXUlpOgC7Qr+sQ=
+        b=ezJC3SRc7oL2KSBnKQg+NRrYmasM1bSMF+C9Up1FTtjdFARkUMutVr3opoBCkFp0E
+         Zj6x5ipjhWXJr5Ejw8o5SFqWutKgbuOYZajcuI4oim8WER5WnYVA+egZ8dAbfMIjQX
+         1mW6xF3j+CSpIxkUQBGAVDpezsPlzAmAd+wu6cDI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 047/475] mm/pages_alloc.c: dont create ZONE_MOVABLE beyond the end of a node
-Date:   Thu, 14 Apr 2022 15:07:12 +0200
-Message-Id: <20220414110856.472906767@linuxfoundation.org>
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.4 068/475] video: fbdev: atari: Atari 2 bpp (STe) palette bugfix
+Date:   Thu, 14 Apr 2022 15:07:33 +0200
+Message-Id: <20220414110857.056712104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -55,105 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Popple <apopple@nvidia.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
 
-commit ddbc84f3f595cf1fc8234a191193b5d20ad43938 upstream.
+commit c8be5edbd36ceed2ff3d6b8f8e40643c3f396ea3 upstream.
 
-ZONE_MOVABLE uses the remaining memory in each node.  Its starting pfn
-is also aligned to MAX_ORDER_NR_PAGES.  It is possible for the remaining
-memory in a node to be less than MAX_ORDER_NR_PAGES, meaning there is
-not enough room for ZONE_MOVABLE on that node.
+The code to set the shifter STe palette registers has a long
+standing operator precedence bug, manifesting as colors set
+on a 2 bits per pixel frame buffer coming up with a distinctive
+blue tint.
 
-Unfortunately this condition is not checked for.  This leads to
-zone_movable_pfn[] getting set to a pfn greater than the last pfn in a
-node.
+Add parentheses around the calculation of the per-color palette
+data before shifting those into their respective bit field position.
 
-calculate_node_totalpages() then sets zone->present_pages to be greater
-than zone->spanned_pages which is invalid, as spanned_pages represents
-the maximum number of pages in a zone assuming no holes.
+This bug goes back a long way (2.4 days at the very least) so there
+won't be a Fixes: tag.
 
-Subsequently it is possible free_area_init_core() will observe a zone of
-size zero with present pages.  In this case it will skip setting up the
-zone, including the initialisation of free_lists[].
+Tested on ARAnyM as well on Falcon030 hardware.
 
-However populated_zone() checks zone->present_pages to see if a zone has
-memory available.  This is used by iterators such as
-walk_zones_in_node().  pagetypeinfo_showfree() uses this to walk the
-free_list of each zone in each node, which are assumed to be initialised
-due to the zone not being empty.
-
-As free_area_init_core() never initialised the free_lists[] this results
-in the following kernel crash when trying to read /proc/pagetypeinfo:
-
-  BUG: kernel NULL pointer dereference, address: 0000000000000000
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 0 P4D 0
-  Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC NOPTI
-  CPU: 0 PID: 456 Comm: cat Not tainted 5.16.0 #461
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-  RIP: 0010:pagetypeinfo_show+0x163/0x460
-  Code: 9e 82 e8 80 57 0e 00 49 8b 06 b9 01 00 00 00 4c 39 f0 75 16 e9 65 02 00 00 48 83 c1 01 48 81 f9 a0 86 01 00 0f 84 48 02 00 00 <48> 8b 00 4c 39 f0 75 e7 48 c7 c2 80 a2 e2 82 48 c7 c6 79 ef e3 82
-  RSP: 0018:ffffc90001c4bd10 EFLAGS: 00010003
-  RAX: 0000000000000000 RBX: ffff88801105f638 RCX: 0000000000000001
-  RDX: 0000000000000001 RSI: 000000000000068b RDI: ffff8880163dc68b
-  RBP: ffffc90001c4bd90 R08: 0000000000000001 R09: ffff8880163dc67e
-  R10: 656c6261766f6d6e R11: 6c6261766f6d6e55 R12: ffff88807ffb4a00
-  R13: ffff88807ffb49f8 R14: ffff88807ffb4580 R15: ffff88807ffb3000
-  FS:  00007f9c83eff5c0(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 0000000000000000 CR3: 0000000013c8e000 CR4: 0000000000350ef0
-  Call Trace:
-   seq_read_iter+0x128/0x460
-   proc_reg_read_iter+0x51/0x80
-   new_sync_read+0x113/0x1a0
-   vfs_read+0x136/0x1d0
-   ksys_read+0x70/0xf0
-   __x64_sys_read+0x1a/0x20
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fix this by checking that the aligned zone_movable_pfn[] does not exceed
-the end of the node, and if it does skip creating a movable zone on this
-node.
-
-Link: https://lkml.kernel.org/r/20220215025831.2113067-1-apopple@nvidia.com
-Fixes: 2a1e274acf0b ("Create the ZONE_MOVABLE zone")
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Link: https://lore.kernel.org/all/CAMuHMdU3ievhXxKR_xi_v3aumnYW7UNUO6qMdhgfyWTyVSsCkQ@mail.gmail.com
+Tested-by: Michael Schmitz <schmitzmic@gmail.com>
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/page_alloc.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/atafb.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -7326,10 +7326,17 @@ restart:
- 
- out2:
- 	/* Align start of ZONE_MOVABLE on all nids to MAX_ORDER_NR_PAGES */
--	for (nid = 0; nid < MAX_NUMNODES; nid++)
-+	for (nid = 0; nid < MAX_NUMNODES; nid++) {
-+		unsigned long start_pfn, end_pfn;
-+
- 		zone_movable_pfn[nid] =
- 			roundup(zone_movable_pfn[nid], MAX_ORDER_NR_PAGES);
- 
-+		get_pfn_range_for_nid(nid, &start_pfn, &end_pfn);
-+		if (zone_movable_pfn[nid] >= end_pfn)
-+			zone_movable_pfn[nid] = 0;
-+	}
-+
- out:
- 	/* restore the node_state */
- 	node_states[N_MEMORY] = saved_node_state;
+--- a/drivers/video/fbdev/atafb.c
++++ b/drivers/video/fbdev/atafb.c
+@@ -1692,9 +1692,9 @@ static int falcon_setcolreg(unsigned int
+ 			   ((blue & 0xfc00) >> 8));
+ 	if (regno < 16) {
+ 		shifter_tt.color_reg[regno] =
+-			(((red & 0xe000) >> 13) | ((red & 0x1000) >> 12) << 8) |
+-			(((green & 0xe000) >> 13) | ((green & 0x1000) >> 12) << 4) |
+-			((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
++			((((red & 0xe000) >> 13)   | ((red & 0x1000) >> 12)) << 8)   |
++			((((green & 0xe000) >> 13) | ((green & 0x1000) >> 12)) << 4) |
++			   ((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
+ 		((u32 *)info->pseudo_palette)[regno] = ((red & 0xf800) |
+ 						       ((green & 0xfc00) >> 5) |
+ 						       ((blue & 0xf800) >> 11));
+@@ -1980,9 +1980,9 @@ static int stste_setcolreg(unsigned int
+ 	green >>= 12;
+ 	if (ATARIHW_PRESENT(EXTD_SHIFTER))
+ 		shifter_tt.color_reg[regno] =
+-			(((red & 0xe) >> 1) | ((red & 1) << 3) << 8) |
+-			(((green & 0xe) >> 1) | ((green & 1) << 3) << 4) |
+-			((blue & 0xe) >> 1) | ((blue & 1) << 3);
++			((((red & 0xe)   >> 1) | ((red & 1)   << 3)) << 8) |
++			((((green & 0xe) >> 1) | ((green & 1) << 3)) << 4) |
++			  ((blue & 0xe)  >> 1) | ((blue & 1)  << 3);
+ 	else
+ 		shifter_tt.color_reg[regno] =
+ 			((red & 0xe) << 7) |
 
 
