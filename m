@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26DCFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245140AbiDNOQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S1344158AbiDNORC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245587AbiDNNio (ORCPT
+        with ESMTP id S245591AbiDNNio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:38:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FD4A56F6;
-        Thu, 14 Apr 2022 06:33:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E83AA5E96;
+        Thu, 14 Apr 2022 06:33:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3279361CEE;
-        Thu, 14 Apr 2022 13:33:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 411A9C385A5;
-        Thu, 14 Apr 2022 13:33:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B94C161CB7;
+        Thu, 14 Apr 2022 13:33:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2455BC385A1;
+        Thu, 14 Apr 2022 13:33:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943180;
-        bh=5gMEj3ZWj3J619D91+lITZa60DsE37BTIQg8AHTGWuw=;
+        s=korg; t=1649943184;
+        bh=lvy1EaAg5jJVQ9Fh8shw9vK/BA7joh408Hti7U+5ILo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dL9lbYyNPZkGd33TI2wGh8VbPZm907AdC9P26BIncLa4T6NsvcG8HxCEemKykt8CI
-         Ajbj5dbcYw0l3wmv6Kvi4gdIXFZ5OzRJofQOP3ZDphPTIYiL3VGqrkYsck1MRZ6vsK
-         vig+WpXLuXZClof/qdeMZoKQb6+9kH7kNV6xPwCU=
+        b=HeU2or1lFU1H61kH8TKoCPoRv+X20WhXRGPgWTv710N8XwUxXAfZDyWeBIOQbCKUO
+         jaRLBLv1vWP/x2nSJgafAvO5G+XEybPWD4fpvv0XdA1oZONevaBh0hQuHbHopr00Hc
+         uIAyylhLRoJ4FB2ZPmntjb0biVZXUlpOgC7Qr+sQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pekka Pessi <ppessi@nvidia.com>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>
-Subject: [PATCH 5.4 064/475] mailbox: tegra-hsp: Flush whole channel
-Date:   Thu, 14 Apr 2022 15:07:29 +0200
-Message-Id: <20220414110856.944824177@linuxfoundation.org>
+        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 047/475] mm/pages_alloc.c: dont create ZONE_MOVABLE beyond the end of a node
+Date:   Thu, 14 Apr 2022 15:07:12 +0200
+Message-Id: <20220414110856.472906767@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,41 +55,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pekka Pessi <ppessi@nvidia.com>
+From: Alistair Popple <apopple@nvidia.com>
 
-commit 60de2d2dc284e0dd1c2c897d08625bde24ef3454 upstream.
+commit ddbc84f3f595cf1fc8234a191193b5d20ad43938 upstream.
 
-The txdone can re-fill the mailbox. Keep polling the mailbox during the
-flush until all the messages have been delivered.
+ZONE_MOVABLE uses the remaining memory in each node.  Its starting pfn
+is also aligned to MAX_ORDER_NR_PAGES.  It is possible for the remaining
+memory in a node to be less than MAX_ORDER_NR_PAGES, meaning there is
+not enough room for ZONE_MOVABLE on that node.
 
-This fixes an issue with the Tegra Combined UART (TCU) where output can
-get truncated under high traffic load.
+Unfortunately this condition is not checked for.  This leads to
+zone_movable_pfn[] getting set to a pfn greater than the last pfn in a
+node.
 
-Signed-off-by: Pekka Pessi <ppessi@nvidia.com>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Fixes: 91b1b1c3da8a ("mailbox: tegra-hsp: Add support for shared mailboxes")
-Cc: stable@vger.kernel.org
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+calculate_node_totalpages() then sets zone->present_pages to be greater
+than zone->spanned_pages which is invalid, as spanned_pages represents
+the maximum number of pages in a zone assuming no holes.
+
+Subsequently it is possible free_area_init_core() will observe a zone of
+size zero with present pages.  In this case it will skip setting up the
+zone, including the initialisation of free_lists[].
+
+However populated_zone() checks zone->present_pages to see if a zone has
+memory available.  This is used by iterators such as
+walk_zones_in_node().  pagetypeinfo_showfree() uses this to walk the
+free_list of each zone in each node, which are assumed to be initialised
+due to the zone not being empty.
+
+As free_area_init_core() never initialised the free_lists[] this results
+in the following kernel crash when trying to read /proc/pagetypeinfo:
+
+  BUG: kernel NULL pointer dereference, address: 0000000000000000
+  #PF: supervisor read access in kernel mode
+  #PF: error_code(0x0000) - not-present page
+  PGD 0 P4D 0
+  Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC NOPTI
+  CPU: 0 PID: 456 Comm: cat Not tainted 5.16.0 #461
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+  RIP: 0010:pagetypeinfo_show+0x163/0x460
+  Code: 9e 82 e8 80 57 0e 00 49 8b 06 b9 01 00 00 00 4c 39 f0 75 16 e9 65 02 00 00 48 83 c1 01 48 81 f9 a0 86 01 00 0f 84 48 02 00 00 <48> 8b 00 4c 39 f0 75 e7 48 c7 c2 80 a2 e2 82 48 c7 c6 79 ef e3 82
+  RSP: 0018:ffffc90001c4bd10 EFLAGS: 00010003
+  RAX: 0000000000000000 RBX: ffff88801105f638 RCX: 0000000000000001
+  RDX: 0000000000000001 RSI: 000000000000068b RDI: ffff8880163dc68b
+  RBP: ffffc90001c4bd90 R08: 0000000000000001 R09: ffff8880163dc67e
+  R10: 656c6261766f6d6e R11: 6c6261766f6d6e55 R12: ffff88807ffb4a00
+  R13: ffff88807ffb49f8 R14: ffff88807ffb4580 R15: ffff88807ffb3000
+  FS:  00007f9c83eff5c0(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 0000000000000000 CR3: 0000000013c8e000 CR4: 0000000000350ef0
+  Call Trace:
+   seq_read_iter+0x128/0x460
+   proc_reg_read_iter+0x51/0x80
+   new_sync_read+0x113/0x1a0
+   vfs_read+0x136/0x1d0
+   ksys_read+0x70/0xf0
+   __x64_sys_read+0x1a/0x20
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fix this by checking that the aligned zone_movable_pfn[] does not exceed
+the end of the node, and if it does skip creating a movable zone on this
+node.
+
+Link: https://lkml.kernel.org/r/20220215025831.2113067-1-apopple@nvidia.com
+Fixes: 2a1e274acf0b ("Create the ZONE_MOVABLE zone")
+Signed-off-by: Alistair Popple <apopple@nvidia.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Oscar Salvador <osalvador@suse.de>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mailbox/tegra-hsp.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ mm/page_alloc.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/mailbox/tegra-hsp.c
-+++ b/drivers/mailbox/tegra-hsp.c
-@@ -403,6 +403,11 @@ static int tegra_hsp_mailbox_flush(struc
- 		value = tegra_hsp_channel_readl(ch, HSP_SM_SHRD_MBOX);
- 		if ((value & HSP_SM_SHRD_MBOX_FULL) == 0) {
- 			mbox_chan_txdone(chan, 0);
-+
-+			/* Wait until channel is empty */
-+			if (chan->active_req != NULL)
-+				continue;
-+
- 			return 0;
- 		}
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -7326,10 +7326,17 @@ restart:
  
+ out2:
+ 	/* Align start of ZONE_MOVABLE on all nids to MAX_ORDER_NR_PAGES */
+-	for (nid = 0; nid < MAX_NUMNODES; nid++)
++	for (nid = 0; nid < MAX_NUMNODES; nid++) {
++		unsigned long start_pfn, end_pfn;
++
+ 		zone_movable_pfn[nid] =
+ 			roundup(zone_movable_pfn[nid], MAX_ORDER_NR_PAGES);
+ 
++		get_pfn_range_for_nid(nid, &start_pfn, &end_pfn);
++		if (zone_movable_pfn[nid] >= end_pfn)
++			zone_movable_pfn[nid] = 0;
++	}
++
+ out:
+ 	/* restore the node_state */
+ 	node_states[N_MEMORY] = saved_node_state;
 
 
